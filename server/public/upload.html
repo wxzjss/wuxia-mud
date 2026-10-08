@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>发布 Mod · 武侠行</title>
+  <link rel="stylesheet" href="css/site.css">
+</head>
+
+<body>
+  <header id="site-head" class="site-head"></header>
+
+  <div class="wrap">
+    <h1 class="page-title">发布我的 Mod</h1>
+    <p class="page-lead">
+      两种方式：粘贴 <code>mod.json</code>，或选择打包好的 <code>.zip</code>。
+      <br>（在游戏「MOD 制作器」里点「一键上传」会更省事，这里是没有游戏时的手动通道。）
+    </p>
+
+    <div class="toolbar">
+      <button class="chip active" data-mode="json">粘贴 mod.json</button>
+      <button class="chip" data-mode="zip">上传 .zip 包</button>
+      <button class="chip" data-mode="demo" style="margin-left:auto">载入示例</button>
+    </div>
+
+    <div class="detail">
+      <div class="detail-main">
+        <div id="pane-json">
+          <div class="field">
+            <label>mod.json 内容 <span style="color:#9a917b">（必填）</span></label>
+            <textarea id="json" style="min-height:340px;font-family:Consolas,monospace;font-size:12.5px;white-space:pre"
+              placeholder='{
+  "id": "my_first_mod",
+  "name": "我的第一个 Mod",
+  "version": "1.0.0",
+  "author": "你的名字",
+  "category": "地图",
+  "desc": "加了一个小院子。",
+  "rooms": [
+    { "id": "my_yard", "name": "我的小院", "desc": "院里一棵老槐树。", "exits": { "s": "jiangnan_street" } }
+  ]
+}'></textarea>
+          </div>
+        </div>
+
+        <div id="pane-zip" style="display:none">
+          <div class="field">
+            <label>选择 ZIP 安装包</label>
+            <input type="file" id="zipfile" accept=".zip">
+          </div>
+          <div style="font-size:13.5px;color:#6f675a;line-height:1.95;background:#fff;border:1px solid #cfc6b0;border-radius:8px;padding:16px 18px">
+            <b style="font-family:var(--font);color:#2b2721;display:block;margin-bottom:8px">ZIP 包怎么来？</b>
+            ① 在游戏「MOD 管理器」里选中你的 Mod，点「导出 ZIP」；<br>
+            ② 或者自己把一个含 <code>mod.json</code> 的文件夹压成 zip（mod.json 在压缩包根目录或第一层子目录都行）；<br>
+            ③ 选好文件后，本站会自动从压缩包里读出 <code>mod.json</code> 并发布。
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:18px">
+          <label>更新说明（可选，会显示在详情页）</label>
+          <textarea id="note" style="min-height:70px" placeholder="这次更新了什么？比如：修复了 NPC 不出现的 bug。"></textarea>
+        </div>
+      </div>
+
+      <div class="detail-side">
+        <div class="side-box">
+          <div style="font-size:13px;color:#6f675a;line-height:1.9;margin-bottom:14px">
+            <b style="font-family:var(--font);color:#2b2721;display:block;margin-bottom:7px">发布前请确认</b>
+            ✓ <code>id</code> 全站唯一（重复会覆盖旧版本）<br>
+            ✓ <code>name</code> 已填写<br>
+            ✓ 至少有一类内容（房间/人物/物品/武学/任务/规则）<br>
+            ✓ <code>category</code> 在允许列表内
+          </div>
+          <div class="side-ops">
+            <button class="btn red" id="publish">检 查 并 发 布</button>
+            <button class="btn" id="check">只 检 查</button>
+            <button class="btn" id="format">格式化 JSON</button>
+          </div>
+        </div>
+
+        <div class="side-box" id="checkbox" style="display:none">
+          <div id="checkresult"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer id="site-foot" class="site-foot"></footer>
+
+  <div class="modal-mask hide" id="mask">
+    <div class="modal">
+      <div class="modal-head"><span id="m-title">提示</span><button id="m-close">✕</button></div>
+      <div class="modal-body" id="m-body"></div>
+      <div class="modal-foot" id="m-foot"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tencent-ai/workbuddy-cloud-sdk@dev/lib/index.global.js"></script>
+  <script src="js/cloud.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/localmods.js"></script>
+  <script src="js/examples.js"></script>
+  <script>
+    (function () {
+      SITE.renderHead('upload');
+      SITE.renderFoot();
+
+      const CATS = SITE.CATEGORIES;
+      let zipB64 = null, zipName = '';
+
+      /* 模式切换 */
+      document.querySelectorAll('[data-mode]').forEach(c => {
+        c.onclick = () => {
+          const m = c.getAttribute('data-mode');
+          if (m === 'demo') { pickDemo(); return; }
+          document.querySelectorAll('[data-mode]').forEach(x => x.classList.remove('active'));
+          c.classList.add('active');
+          document.getElementById('pane-json').style.display = m === 'json' ? '' : 'none';
+          document.getElementById('pane-zip').style.display = m === 'zip' ? '' : 'none';
+        };
+      });
+
+      function pickDemo() {
+        const keys = Object.keys(EXAMPLES);
+        const body = '<div style="display:flex;flex-direction:column;gap:9px">' +
+          keys.map(k => '<button class="btn" style="justify-content:flex-start;text-align:left" data-d="' + k + '">' +
+            '<span class="tag jade" style="margin-right:8px">' + EXAMPLES[k].badge + '</span>' + SITE.esc(EXAMPLES[k].title) + '</button>').join('') +
+          '</div>';
+        openModal('载入示例', body);
+        document.querySelectorAll('#m-body [data-d]').forEach(b => {
+          b.onclick = () => {
+            const e = EXAMPLES[b.getAttribute('data-d')];
+            const j = JSON.parse(JSON.stringify(e.json));
+            /* 改个 id 防止直接覆盖官方示例 */
+            j.id = (j.id || 'demo') + '_' + Math.random().toString(36).slice(2, 5);
+            document.getElementById('json').value = JSON.stringify(j, null, 2);
+            document.querySelectorAll('[data-mode]').forEach(x => x.classList.remove('active'));
+            document.querySelector('[data-mode="json"]').classList.add('active');
+            document.getElementById('pane-json').style.display = '';
+            document.getElementById('pane-zip').style.display = 'none';
+            closeModal();
+            SITE.toast('已载入示例，记得改掉 id 和 name', 'ok', 3200);
+          };
+        });
+      }
+
+      /* 选 zip */
+      document.getElementById('zipfile').onchange = e => {
+        const f = e.target.files[0];
+        if (!f) return;
+        zipName = f.name;
+        const fr = new FileReader();
+        fr.onload = () => {
+          const s = String(fr.result || '');
+          zipB64 = s.slice(s.indexOf(',') + 1);
+          SITE.toast('已读取 ZIP：' + f.name + '（' + SITE.fmtSize(f.size) + '）', 'ok');
+        };
+        fr.readAsDataURL(f);
+      };
+
+      /* 检查 */
+      function validate() {
+        const errs = [], warns = [];
+        let json = null;
+
+        if (zipB64) {
+          return { errs: [], warns: [], zip: true };
+        }
+
+        const raw = document.getElementById('json').value.trim();
+        if (!raw) { errs.push('还没有填写 mod.json 内容。'); return { errs, warns }; }
+
+        try { json = JSON.parse(raw); }
+        catch (e) { errs.push('JSON 格式错误：' + e.message); return { errs, warns }; }
+
+        if (!json.id) errs.push('缺少 id 字段（英文唯一标识）');
+        else if (!/^[\w\u4e00-\u9fa5.\-]+$/.test(json.id)) errs.push('id 含有不支持的字符，建议只用英文、数字、下划线');
+        if (!json.name) errs.push('缺少 name 字段（显示名称）');
+        if (json.category && CATS.indexOf(json.category) < 0) warns.push('category「' + json.category + '」不在推荐列表内，将归为「综合」');
+
+        const CN = { rooms: '房间', npcs: '人物', items: '物品', skills: '武学', quests: '任务', rules: '规则', sects: '门派', regions: '区域', dialogues: '对话' };
+        let total = 0;
+        Object.keys(CN).forEach(k => { if (Array.isArray(json[k])) total += json[k].length; });
+        if (total === 0) errs.push('这个 Mod 没有任何内容，无法发布（至少要有房间/人物/物品/武学/任务/规则之一）');
+
+        /* 简单一致性检查 */
+        (json.rooms || []).forEach((r, i) => {
+          if (!r.id) errs.push('第 ' + (i + 1) + ' 个房间缺少 id');
+          if (!r.name) warns.push('房间「' + (r.id || i + 1) + '」没有名称');
+        });
+        (json.npcs || []).forEach((n, i) => {
+          if (!n.id) errs.push('第 ' + (i + 1) + ' 个人物缺少 id');
+          if (!n.room) warns.push('人物「' + (n.name || n.id || i + 1) + '」没有指定所在房间，游戏里不会出现');
+        });
+        (json.items || []).forEach((it, i) => {
+          if (!it.id) errs.push('第 ' + (i + 1) + ' 件物品缺少 id');
+          if (!it.name) warns.push('物品「' + (it.id || i + 1) + '」没有名称');
+        });
+        (json.skills || []).forEach((s, i) => {
+          if (!s.id) errs.push('第 ' + (i + 1) + ' 门武学缺少 id');
+          if (!s.type) warns.push('武学「' + (s.name || s.id || i + 1) + '」没有指定 type（拳/剑/刀/内功等）');
+        });
+        (json.quests || []).forEach((q, i) => {
+          if (!q.id) errs.push('第 ' + (i + 1) + ' 个任务缺少 id');
+          if (!Array.isArray(q.stages) || !q.stages.length) warns.push('任务「' + (q.name || q.id || i + 1) + '」还没有阶段，玩家无法推进');
+        });
+
+        return { errs, warns, json };
+      }
+
+      document.getElementById('check').onclick = () => showCheck();
+      document.getElementById('format').onclick = () => {
+        try {
+          const j = JSON.parse(document.getElementById('json').value);
+          document.getElementById('json').value = JSON.stringify(j, null, 2);
+          SITE.toast('已格式化', 'ok');
+        } catch (e) { SITE.toast('JSON 格式错误：' + e.message, 'err', 3400); }
+      };
+
+      function showCheck() {
+        const r = validate();
+        const box = document.getElementById('checkbox');
+        const out = document.getElementById('checkresult');
+        box.style.display = '';
+        let h = '';
+        if (r.zip) {
+          h = '<div style="color:#3f7a63;font-size:14px">✓ 将上传 ZIP 包，内容检查由服务端完成。</div>';
+        } else if (!r.errs.length && !r.warns.length) {
+          h = '<div style="color:#3f7a63;font-size:14.5px;line-height:1.9">✓ 检查通过，可以发布了！</div>';
+        } else {
+          if (r.errs.length) {
+            h += '<div style="font-family:var(--font);font-size:14px;color:#9c2b25;margin-bottom:8px">✘ 必须修（' + r.errs.length + '）</div><ul style="margin:0 0 12px 18px">';
+            r.errs.forEach(e => h += '<li style="font-size:13px;color:#9c2b25;line-height:1.8">' + SITE.esc(e) + '</li>');
+            h += '</ul>';
+          }
+          if (r.warns.length) {
+            h += '<div style="font-family:var(--font);font-size:14px;color:#a06a10;margin-bottom:8px">⚠ 建议处理（' + r.warns.length + '）</div><ul style="margin:0 0 0 18px">';
+            r.warns.forEach(e => h += '<li style="font-size:13px;color:#a06a10;line-height:1.8">' + SITE.esc(e) + '</li>');
+            h += '</ul>';
+          }
+        }
+        out.innerHTML = h;
+        return r;
+      }
+
+      /* 发布 */
+      document.getElementById('publish').onclick = async () => {
+        const btn = document.getElementById('publish');
+        const r = validate();
+        if (r.errs && r.errs.length) {
+          showCheck();
+          SITE.toast('还有 ' + r.errs.length + ' 个错误，请先修好', 'err', 3400);
+          return;
+        }
+        if (!r.zip && !r.json) { SITE.toast('还没有填写内容', 'err'); return; }
+
+        const note = document.getElementById('note').value.trim();
+        const cloudOn = global.WXCLOUD && global.WXCLOUD.available();
+
+        btn.disabled = true; btn.textContent = '发布中…';
+        try {
+          let out = null;
+
+          if (cloudOn) {
+            /* ---- 云端发布 ---- */
+            let spec = r.json;
+            if (r.zip) {
+              /* 从 zip 里解出 mod.json */
+              spec = await readModJsonFromZipBlob();
+              if (!spec) throw new Error('压缩包里没找到 mod.json');
+            }
+            const CN = ['rooms', 'npcs', 'items', 'skills', 'quests', 'rules', 'sects', 'regions', 'dialogues'];
+            const content = {};
+            const counts = {};
+            CN.forEach(k => {
+              if (Array.isArray(spec[k]) && spec[k].length) {
+                content[k] = spec[k];
+                counts[k] = spec[k].length;
+              }
+            });
+            const authorName = spec.author || '匿名侠客';
+            const res = await global.WXCLOUD.db.publish({
+              id: spec.id,
+              name: spec.name,
+              version: spec.version || '1.0.0',
+              author: authorName,
+              category: CATS.indexOf(spec.category) >= 0 ? spec.category : '综合',
+              desc: spec.desc || '',
+              tags: Array.isArray(spec.tags) ? spec.tags : [],
+              counts: counts,
+              content: content
+            });
+            out = { id: spec.id, updated: res.updated, url: 'mod.html?id=' + encodeURIComponent(spec.id) };
+          } else {
+            /* ---- 本地服务端发布（云服务不可用时兜底） ---- */
+            const payload = { note: note, author: (r.json && r.json.author) || '匿名侠客' };
+            if (r.zip) {
+              payload.base64 = zipB64;
+              payload.name = zipName;
+            } else {
+              payload.json = JSON.stringify(r.json);
+              payload.id = r.json.id;
+            }
+            const d = await SITE.jpost('/api/mods', payload);
+            if (!d.ok) throw new Error(d.error || '发布失败');
+            out = { id: d.id, updated: d.updated, url: d.url || ('mod.html?id=' + d.id) };
+          }
+
+          openModal('发布成功 ✔',
+            '<div style="text-align:center;padding:10px 0">' +
+            '<div style="font-family:var(--font);font-size:19px;color:#3f7a63;margin-bottom:14px">' +
+            (out.updated ? '已更新你的 Mod！' : '你的 Mod 已经发布啦！') + '</div>' +
+            '<div style="font-size:13.5px;color:#6f675a;margin-bottom:8px">Mod ID：<code>' + SITE.esc(out.id) + '</code></div>' +
+            '<div style="font-size:12.5px;color:#9a917f;margin-bottom:16px">' +
+            (cloudOn ? '☁️ 已同步到云端，其他玩家也能看到并下载' : '💾 已存入本机站点数据') + '</div>' +
+            '<div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap">' +
+            '<a class="btn red" href="' + SITE.esc(out.url) + '">去看看页面</a>' +
+            '<a class="btn" href="list.html">返回列表</a>' +
+            '</div></div>');
+        } catch (e) {
+          SITE.toast('发布失败：' + (e.message || e), 'err', 4200);
+        } finally {
+          btn.disabled = false; btn.textContent = '检 查 并 发 布';
+        }
+      };
+
+      /* 在浏览器里解 zip 取出 mod.json（自带 store 模式 + deflate 兼容） */
+      async function readModJsonFromZipBlob() {
+        if (!zipB64) return null;
+        const bin = atob(zipB64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+
+        /* 逐个扫描局部文件头，找 mod.json */
+        let i = 0;
+        while (i + 30 <= bytes.length) {
+          const sig = bytes[i] | (bytes[i + 1] << 8) | (bytes[i + 2] << 16) | (bytes[i + 3] << 24);
+          if (sig !== 0x04034b50) { i++; continue; }
+          const method = bytes[i + 8] | (bytes[i + 9] << 8);
+          const compSize = bytes[i + 18] | (bytes[i + 19] << 8) | (bytes[i + 20] << 16) | (bytes[i + 21] << 24);
+          const nameLen = bytes[i + 26] | (bytes[i + 27] << 8);
+          const extLen = bytes[i + 28] | (bytes[i + 29] << 8);
+          const nameStart = i + 30;
+          let name = '';
+          for (let k = 0; k < nameLen; k++) name += String.fromCharCode(bytes[nameStart + k]);
+          name = decodeURIComponent(escape(name));
+
+          const dataStart = nameStart + nameLen + extLen;
+          if (/^([^/]+\/)?mod\.json$/i.test(name)) {
+            const raw = bytes.slice(dataStart, dataStart + compSize);
+            if (method === 0) return JSON.parse(new TextDecoder().decode(raw));
+            if (method === 8) {
+              const ds = new DecompressionStream('deflate-raw');
+              const stream = new Blob([raw]).stream().pipeThrough(ds);
+              const text = await new Response(stream).text();
+              return JSON.parse(text);
+            }
+            throw new Error('压缩包用了不支持的压缩方式');
+          }
+          i = dataStart + compSize;
+        }
+        return null;
+      }
+
+      /* 从 examples.html 跳过来时带 demo 参数 */
+      const demoKey = SITE.getQuery('demo');
+      if (demoKey && EXAMPLES[demoKey]) pickDemo();
+
+      /* 弹窗 */
+      function openModal(title, body) {
+        document.getElementById('m-title').textContent = title;
+        document.getElementById('m-body').innerHTML = body;
+        document.getElementById('m-foot').innerHTML = '<button class="btn sm" id="m-ok">关 闭</button>';
+        document.getElementById('mask').classList.remove('hide');
+        document.getElementById('m-ok').onclick = closeModal;
+      }
+      function closeModal() { document.getElementById('mask').classList.add('hide'); }
+      document.getElementById('m-close').onclick = closeModal;
+      document.getElementById('mask').onclick = e => { if (e.target.id === 'mask') closeModal(); };
+    })();
+  </script>
+</body>
+
+</html>

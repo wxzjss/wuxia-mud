@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>下载游戏 · 武侠行</title>
+  <link rel="stylesheet" href="css/site.css">
+  <style>
+    /* ---- 一键下载主卡片 ---- */
+    .dl-hero {
+      background: linear-gradient(160deg, #fffdf7 0%, #f7f2e4 100%);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 30px 30px 26px;
+      box-shadow: 0 2px 14px rgba(80, 62, 32, .07);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dl-hero::after {
+      content: "";
+      position: absolute;
+      right: -60px;
+      top: -60px;
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(156, 43, 37, .07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .dl-title {
+      font-size: 25px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: .5px;
+      margin: 0 0 8px;
+    }
+
+    .dl-sub {
+      font-size: 14px;
+      color: #6b6355;
+      line-height: 1.85;
+      margin: 0 0 22px;
+    }
+
+    .dl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 17px 34px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 3px 12px rgba(156, 43, 37, .28);
+      transition: transform .14s, box-shadow .14s, background .14s;
+    }
+
+    .dl-btn:hover:not(:disabled) {
+      background: #86241f;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(156, 43, 37, .34);
+    }
+
+    .dl-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .dl-btn:disabled {
+      opacity: .72;
+      cursor: progress;
+    }
+
+    /* ---- 主推：网页直接玩 ---- */
+    .web-hero {
+      background: linear-gradient(160deg, #fff8f2 0%, #fdefe8 100%);
+      border: 1px solid #e6c9bd;
+      border-radius: 14px;
+      padding: 30px 30px 26px;
+      box-shadow: 0 3px 18px rgba(156, 43, 37, .09);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 34px;
+    }
+
+    .web-hero::after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      top: -70px;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(156, 43, 37, .09) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .dl-btn.web {
+      background: linear-gradient(180deg, #b5352e, #9c2b25);
+      box-shadow: 0 4px 16px rgba(156, 43, 37, .34);
+      font-size: 19px;
+      padding: 19px 40px;
+    }
+
+    .dl-btn.web:hover:not(:disabled) {
+      background: linear-gradient(180deg, #c0413a, #86241f);
+      box-shadow: 0 7px 22px rgba(156, 43, 37, .42);
+    }
+
+    .note-row {
+      margin-top: 20px;
+      padding: 13px 16px;
+      background: rgba(255, 255, 255, .7);
+      border-left: 3px solid #d9b8ac;
+      border-radius: 0 7px 7px 0;
+      font-size: 13px;
+      color: #6b6355;
+      line-height: 1.85;
+      text-align: left;
+    }
+
+    .note-row b { color: var(--red); display: block; margin-bottom: 3px; }
+
+    /* 下载卡片降级视觉（次要） */
+    .dl-hero.offline {
+      background: linear-gradient(160deg, #fdfbf6 0%, #f5f1e6 100%);
+      box-shadow: none;
+      border-style: dashed;
+    }
+
+    .dl-hero.offline::after { display: none; }
+
+    .dl-btn .dl-icon {
+      font-size: 21px;
+      line-height: 1;
+    }
+
+    .dl-meta {
+      margin-top: 16px;
+      font-size: 13px;
+      color: #7d7466;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      align-items: center;
+    }
+
+    .dl-meta b {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .dl-progress {
+      margin-top: 14px;
+      height: 5px;
+      border-radius: 3px;
+      background: #e8e1d2;
+      overflow: hidden;
+      display: none;
+    }
+
+    .dl-progress.on {
+      display: block;
+    }
+
+    .dl-progress i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--gold), var(--red));
+      border-radius: 3px;
+      transition: width .25s;
+    }
+
+    /* ---- 下载后的三步 ---- */
+    .steps3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .step3 {
+      background: #fffdf8;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 16px 17px;
+      position: relative;
+    }
+
+    .step3 .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--gold);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 9px;
+    }
+
+    .step3 b {
+      display: block;
+      font-size: 14px;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .step3 p {
+      font-size: 13px;
+      color: #6b6355;
+      line-height: 1.8;
+      margin: 0;
+    }
+
+    .step3 code {
+      background: #f2ecdc;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 12px;
+      color: #8a3a30;
+      word-break: break-all;
+    }
+
+    .opt-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 16px;
+      font-size: 13px;
+      color: #6b6355;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .opt-row input {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--red);
+      cursor: pointer;
+    }
+
+    .dl-ok {
+      margin-top: 14px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      background: #eef6ec;
+      border: 1px solid #c9dfc4;
+      color: #33632c;
+      font-size: 13.5px;
+      line-height: 1.7;
+      display: none;
+    }
+
+    .dl-ok.on {
+      display: block;
+    }
+
+    .dl-err {
+      margin-top: 14px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      background: #fdf0ee;
+      border: 1px solid #e8c4bd;
+      color: #8a3a30;
+      font-size: 13.5px;
+      display: none;
+    }
+
+    .dl-err.on {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <header id="site-head" class="site-head"></header>
+
+  <div class="wrap">
+    <h1 class="page-title">玩《武侠行》</h1>
+    <p class="page-lead"><b>第一种方式最省事：直接在网页里玩</b>，不用下载、不用安装、不用配环境，点一下就开。</p>
+
+    <!-- ============ 主推：网页直接玩 ============ -->
+    <div class="web-hero">
+      <h2 class="dl-title">▶ 直接开始游戏</h2>
+      <p class="dl-sub">
+        点下面的按钮，浏览器里立刻开始。建角色、闯江湖、存档，全都照常。<br>
+        <b>不需要下载任何东西。</b>手机、平板、公司电脑都能玩。
+      </p>
+
+      <button class="dl-btn web" id="btn-play">
+        <span class="dl-icon">▶</span>
+        <span id="btn-play-text">开 始 游 戏</span>
+      </button>
+
+      <div class="dl-meta" id="play-meta"><span>正在检查游戏服务…</span></div>
+
+      <div class="note-row">
+        <b>网页版能做什么？</b>
+        <span>建角 / 探索 99 处地点 / 战斗 / 拜师 / 任务 / 存档 —— 和离线版一模一样。
+          唯一区别是存档存在浏览器里（换浏览器或清缓存会丢），想稳定保存就用下面的离线版。</span>
+      </div>
+    </div>
+
+    <!-- ============ 备选：下载离线版 ============ -->
+    <h2 class="section-title">想要离线版？（可选）</h2>
+    <div class="dl-hero offline">
+      <h2 class="dl-title">下载完整游戏</h2>
+      <p class="dl-sub">
+        网页版玩得不够过瘾、想离线玩、想改游戏文件、想自己做 Mod？
+        下载这个包，解压就能玩，<b>自带运行环境，什么都不用装</b>。
+      </p>
+
+      <button class="dl-btn" id="btn-dl">
+        <span class="dl-icon">⬇</span>
+        <span id="btn-dl-text">下载离线版（zip）</span>
+      </button>
+
+      <div class="dl-meta" id="pack-meta">
+        <span>正在读取打包信息…</span>
+      </div>
+
+      <div class="dl-progress" id="dl-prog"><i></i></div>
+
+      <label class="opt-row">
+        <input type="checkbox" id="opt-saves">
+        连同我的存档一起打包（如果这台机器上有存档的话）
+      </label>
+
+      <div class="dl-ok" id="dl-ok"></div>
+      <div class="dl-err" id="dl-err"></div>
+
+      <div class="steps3">
+        <div class="step3">
+          <span class="num">1</span>
+          <b>下载</b>
+          <p>点上面的按钮，等进度条走完，zip 就躺在你的「下载」文件夹里了。</p>
+        </div>
+        <div class="step3">
+          <span class="num">2</span>
+          <b>解压</b>
+          <p>右键 zip → 解压到当前文件夹。会得到一个 <code>jinyong-mud</code> 文件夹。</p>
+        </div>
+        <div class="step3">
+          <span class="num">3</span>
+          <b>双击开玩</b>
+          <p>进文件夹，双击 <code>start.bat</code>。浏览器会自动打开，直接开玩。</p>
+        </div>
+      </div>
+    </div>
+
+   <!-- ============ 环境要求 ============ -->
+    <h2 class="section-title">什么都不用装 ✅</h2>
+    <div class="card-grid">
+      <div class="info-card">
+        <b>自带运行环境</b>
+        <p>下载包里<b>已经带了一个 Node.js</b>（放在 <code>runtime\</code> 文件夹）。解压后双击 <code>start.bat</code> 直接就能玩，<b>不需要你去装任何东西</b>。</p>
+      </div>
+      <div class="info-card">
+        <b>为什么以前会报错？</b>
+        <p>旧版的包只带代码不带引擎，脚本会去系统里找 Node.js，找不到就提示「没有找到 Node.js」。现在这个问题已经修好，包里自带。</p>
+      </div>
+      <div class="info-card">
+        <b>完全离线</b>
+        <p>这个项目<b>零依赖</b>，没有 <code>node_modules</code>，不需要 <code>npm install</code>，玩的时候也不联网。</p>
+      </div>
+    </div>
+
+    <!-- ============ 手动启动 ============ -->
+    <h2 class="section-title">想手动启动？也可以</h2>
+    <p style="font-size:14px;color:#4a443a;line-height:1.95;margin-bottom:12px">
+      在解压出来的 <code>jinyong-mud</code> 目录里打开终端：
+    </p>
+    <pre class="ex-code">双击 start.bat          → 同时启动游戏(8787) + Mod 站(8788)，并自动开浏览器
+双击 start-standalone.bat → 游戏和 Mod 站合并到一个端口(8800)，只开一个窗口
+
+或者手动敲（用包里自带的 Node）：
+runtime\node.exe server/game-server.js     只启动游戏      → http://127.0.0.1:8787
+runtime\node.exe server/mod-site.js        只启动 Mod 站   → http://127.0.0.1:8788
+runtime\node.exe server/combined.js        合并单端口      → http://127.0.0.1:8800</pre>
+    <p style="font-size:13px;color:#6f675a;line-height:1.9;margin-top:10px">
+      如果你电脑上本来就装了 Node.js，把上面的 <code>runtime\node.exe</code> 换成 <code>node</code> 也一样能跑。
+    </p>
+
+    <!-- ============ Mod 用法 ============ -->
+    <h2 class="section-title">游戏里怎么用 Mod</h2>
+    <div class="card-grid">
+      <div class="info-card">
+        <b>安装别人的 Mod</b>
+        <p>游戏内「MOD 管理器」→「在线 Mod 市场」→ 找到喜欢的 → 点「一键下载安装」→ 回管理器启用 → 「重载全部」。</p>
+      </div>
+      <div class="info-card">
+        <b>本地安装 ZIP</b>
+        <p>「MOD 管理器」→「从文件安装」选 zip；或「从文件夹安装」选解压后的目录。</p>
+      </div>
+      <div class="info-card">
+        <b>自己做 Mod</b>
+        <p>「MOD 制作器」填表格 → 检查 → 保存 → 一键上传。<a href="tutorial.html">看小白教程 →</a></p>
+      </div>
+    </div>
+
+    <!-- ============ 常见问题 ============ -->
+    <h2 class="section-title">常见问题</h2>
+    <div class="info-card" style="margin-bottom:11px">
+      <b>窗口一闪就没了 / start.bat 打不开？</b>
+      <p>先看解压出来的文件夹里有没有 <code>runtime\node.exe</code>。有的话脚本会自动用它，不会报「没有找到 Node.js」。<b>如果没有这个文件</b>，说明压缩包没解压完整（有些解压软件会漏掉大文件），换 7-Zip / Bandizip 重新解压一次即可；实在不行再自行安装 <a href="https://nodejs.org/zh-cn" target="_blank" rel="noopener">Node.js</a>。</p>
+    </div>
+    <div class="info-card" style="margin-bottom:11px">
+      <b>端口被占用？</b>
+      <p>游戏默认 8787、Mod 站默认 8788。换端口：<code>node server/game-server.js 8887</code>。换完后记得在游戏「设置」里同步 Mod 站地址。</p>
+    </div>
+    <div class="info-card" style="margin-bottom:11px">
+      <b>Mod 装了没生效？</b>
+      <p>先确认管理器里开关是打开的，再点「重载全部」。有冲突的话，管理器右下角会列出来。</p>
+    </div>
+    <div class="info-card" style="margin-bottom:11px">
+      <b>存档在哪？会不会丢？</b>
+      <p>在 <code>saves/</code> 目录，纯文本 JSON。复制文件就能备份或搬到别的机器。下载时也可以勾选「连同存档一起打包」。</p>
+    </div>
+
+    <h2 class="section-title">目录结构</h2>
+    <pre class="ex-code">jinyong-mud/
+├── start.bat              双击启动（游戏 + Mod 站）
+├── start-standalone.bat   双击启动（合并单端口）
+├── runtime/
+│   └── node.exe           自带的 Node.js —— 所以不用另外装
+├── game/
+│   ├── data/              游戏世界数据（全是内容 JSON）
+│   ├── src/core/          引擎：世界 / 角色 / 战斗 / 指令 / Mod API / ZIP
+│   └── src/renderer/      前端界面（HTML / CSS / JS）
+├── server/
+│   ├── game-server.js     游戏服务（8787）
+│   ├── mod-site.js        Mod 网站服务（8788）
+│   ├── combined.js        合并服务（8800，单端口）
+│   ├── public/            网站页面
+│   └── site-data/         你上传的 Mod 存这里
+├── mods/                  已安装的 Mod（每个一个文件夹）
+├── saves/                 存档（纯 JSON，可自由备份）
+└── tools/                 测试脚本</pre>
+  </div>
+
+  <footer id="site-foot" class="site-foot"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tencent-ai/workbuddy-cloud-sdk@dev/lib/index.global.js"></script>
+  <script src="js/cloud.js"></script>
+  <script src="js/site.js"></script>
+  <script>
+    SITE.renderHead('game');
+    SITE.renderFoot();
+
+    /* ---- 开始游戏：跳到游戏网页版 ---- */
+    (function () {
+      var btn = document.getElementById('btn-play');
+      var meta = document.getElementById('play-meta');
+      if (!btn) return;
+      SITE.bindPlayButton(btn);
+      SITE.fetchGameUrl().then(function (u) {
+        if (!meta) return;
+        meta.innerHTML = '游戏地址：<a href="' + SITE.esc(u) + '" target="_blank" rel="noopener">' +
+          SITE.esc(u) + '</a>　·　新标签页打开，本站不丢';
+      }).catch(function () {
+        if (meta) meta.innerHTML = '无法读取游戏地址，点按钮试试。';
+      });
+    })();
+
+    (function () {
+      var btn = document.getElementById('btn-dl');
+      var btnText = document.getElementById('btn-dl-text');
+      var meta = document.getElementById('pack-meta');
+      var prog = document.getElementById('dl-prog');
+      var bar = prog.querySelector('i');
+      var okBox = document.getElementById('dl-ok');
+      var errBox = document.getElementById('dl-err');
+      var savesChk = document.getElementById('opt-saves');
+
+      function fmtKB(n) {
+        if (n < 1024 * 1024) return (n / 1024).toFixed(0) + ' KB';
+        return (n / 1024 / 1024).toFixed(1) + ' MB';
+      }
+
+      /* 拉一次打包信息，把体积 / 文件数显示出来 */
+      fetch('api/game-pack')
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (!d || !d.ok) throw new Error('bad');
+          var rt = d.runtime || {};
+          meta.innerHTML =
+            '<span>包含 <b>' + d.files + '</b> 个文件</span>' +
+            '<span>压缩后约 <b>' + fmtKB(d.rawBytes * 0.31) + '</b></span>' +
+            '<span>版本 <b>v' + d.version + '</b></span>' +
+            '<span>✅ <b>自带运行环境</b>' +
+            (rt.version ? '（Node ' + rt.version + '）' : '') + '</span>';
+        })
+        .catch(function () {
+          meta.innerHTML = '<span>零依赖 · 解压即玩 · 自带 6 个示例 Mod</span>';
+        });
+
+      btn.addEventListener('click', function () {
+        var withSaves = savesChk.checked;
+        btn.disabled = true;
+        btnText.textContent = '正在打包…';
+        okBox.className = 'dl-ok';
+        errBox.className = 'dl-err';
+        prog.className = 'dl-progress on';
+        bar.style.width = '6%';
+
+        /* 用 fetch + blob，好处是能读到进度、也能拿到真实文件名 */
+        var tick = 0;
+        var timer = setInterval(function () {
+          tick += 1;
+          bar.style.width = Math.min(88, 6 + tick * 4) + '%';
+          if (tick === 3) btnText.textContent = '正在压缩文件…';
+          if (tick === 7) btnText.textContent = '马上就好…';
+        }, 260);
+
+        var url = 'api/download-game' + (withSaves ? '?saves=1' : '');
+
+        fetch(url)
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            var name = 'jinyong-mud.zip';
+            var cd = res.headers.get('Content-Disposition') || '';
+            var m = /filename="([^"]+)"/.exec(cd);
+            if (m) name = m[1];
+            var count = res.headers.get('X-Pack-Files');
+            return res.blob().then(function (blob) {
+              return { blob: blob, name: name, count: count };
+            });
+          })
+          .then(function (r) {
+            clearInterval(timer);
+            bar.style.width = '100%';
+
+            var a = document.createElement('a');
+            var objUrl = URL.createObjectURL(r.blob);
+            a.href = objUrl;
+            a.download = r.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function () { URL.revokeObjectURL(objUrl); }, 4000);
+
+            okBox.className = 'dl-ok on';
+            okBox.innerHTML =
+              '✔ 打包完成，已开始下载：<b>' + SITE.esc(r.name) + '</b>' +
+              '（' + (r.blob.size / 1024).toFixed(0) + ' KB' +
+              (r.count ? '，' + r.count + ' 个文件' : '') + '）<br>' +
+              '解压后进 <code>jinyong-mud</code> 文件夹，双击 <code>start.bat</code> 就能玩。' +
+              '<br><b>包里有自带的 <code>runtime\\node.exe</code>，不需要另外安装 Node.js。</b>' +
+              '<br><span style="font-size:12.5px;color:#6f675a">如果解压后看不到 <code>runtime</code> 文件夹，说明解压不完整，换 7-Zip / Bandizip 再解压一次。</span>';
+            btnText.textContent = '重新下载';
+            btn.disabled = false;
+            setTimeout(function () { prog.className = 'dl-progress'; }, 1600);
+          })
+          .catch(function (e) {
+            clearInterval(timer);
+            prog.className = 'dl-progress';
+            errBox.className = 'dl-err on';
+            errBox.innerHTML = '打包失败：' + SITE.esc(String(e && e.message || e)) +
+              '<br>可以直接试这个地址：<a href="' + url + '">' + url + '</a>';
+            btnText.textContent = '重试';
+            btn.disabled = false;
+          });
+      });
+    })();
+  </script>
+</body>
+
+</html>

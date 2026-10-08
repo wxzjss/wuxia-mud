@@ -1,0 +1,11 @@
+# 运行期数据（不随代码走，云端从零重建）
+saves/
+site-data/
+mods/_local/
+server/_runtime_cache/
+
+# 临时 / 备份
+.livetest/
+.packtest/
+tools/_bak/
+*.log

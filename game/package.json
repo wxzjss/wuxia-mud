@@ -1,0 +1,42 @@
+{
+  "name": "wuxia-mud",
+  "productName": "武侠行",
+  "version": "1.0.0",
+  "description": "高自由度武侠 MUD 单机游戏，支持 Mod 生态",
+  "main": "src/main.js",
+  "author": "WorkBuddy",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "dist": "electron-builder --win --x64"
+  },
+  "devDependencies": {
+    "electron": "^38.0.0-beta.6",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.wuxiaxing.mud",
+    "productName": "武侠行",
+    "directories": {
+      "output": "../dist"
+    },
+    "files": [
+      "src/**/*",
+      "data/**/*",
+      "mods/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "portable",
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    }
+  }
+}

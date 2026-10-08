@@ -1,0 +1,161 @@
+{
+  "sects": {
+    "huashan": {
+      "id": "huashan", "name": "华山派", "align": "正道", "region": "huashan",
+      "desc": "五岳剑派之一，剑法轻灵，门户严谨。掌门岳不群有「君子剑」之名。",
+      "require": { "gender": "male" },
+      "ranks": ["外门弟子", "内门弟子", "执事弟子", "首座弟子", "副掌门", "掌门"],
+      "rankCost": 300,
+      "skills": ["huashan_sword", "huashan_sword_art", "zixia_gong", "huashan_qinggong", "huashan_jianyi"],
+      "entryItems": ["token_huashan"],
+      "entrySkills": ["huashan_sword", "basic_force"],
+      "rankSkills": { "1": ["huashan_sword_art"], "2": ["huashan_qinggong"], "3": ["zixia_gong"], "4": ["huashan_jianyi"], "5": ["huashan_jianyi"] }
+    },
+    "shaolin": {
+      "id": "shaolin", "name": "少林派", "align": "正道", "region": "shaolin",
+      "desc": "天下武学正宗，七十二绝技名震江湖。入寺需剃度，戒荤酒。",
+      "require": { "gender": "male", "karma": ">=0" },
+      "ranks": ["沙弥", "比丘", "知客僧", "首座", "长老", "方丈"],
+      "rankCost": 350,
+      "skills": ["shaolin_changquan", "weituo_zhang", "damo_sword", "yijinjing", "shaolin_bu"],
+      "entryItems": ["token_shaolin"],
+      "entrySkills": ["shaolin_changquan", "basic_force"],
+      "rankSkills": { "1": ["weituo_zhang"], "2": ["shaolin_bu"], "3": ["yijinjing"], "4": ["damo_sword"], "5": ["damo_sword"] }
+    },
+    "wudang": {
+      "id": "wudang", "name": "武当派", "align": "正道", "region": "wudang",
+      "desc": "以柔克刚，道法自然。太极拳剑并称双绝。",
+      "require": { "karma": ">=0" },
+      "ranks": ["记名弟子", "入室弟子", "三代弟子", "二代弟子", "首座", "掌门"],
+      "rankCost": 340,
+      "skills": ["wudang_taiji", "taiji_sword", "chunyang_gong", "tixu_zhang"],
+      "entryItems": [],
+      "entrySkills": ["wudang_taiji", "basic_force", "tixu_zhang"],
+      "rankSkills": { "1": ["taiji_sword"], "2": ["tixu_zhang"], "3": ["chunyang_gong"], "4": ["chunyang_gong"], "5": ["chunyang_gong"] }
+    },
+    "emei": {
+      "id": "emei", "name": "峨眉派", "align": "正道", "region": "emei",
+      "desc": "巾帼不让须眉，剑法刺法并重，门下皆为女子。",
+      "require": { "gender": "female" },
+      "ranks": ["记名弟子", "入门弟子", "入室弟子", "静字辈", "首座", "掌门"],
+      "rankCost": 320,
+      "skills": ["emei_sword", "emei_ci", "foguang_gong", "shaolin_bu"],
+      "entryItems": [],
+      "entrySkills": ["emei_sword", "basic_force"],
+      "rankSkills": { "1": ["emei_ci"], "2": ["foguang_gong"], "3": ["foguang_gong"], "4": ["foguang_gong"], "5": ["foguang_gong"] }
+    },
+    "gaibang": {
+      "id": "gaibang", "name": "丐帮", "align": "中立", "region": "gaibang",
+      "desc": "天下第一大帮，弟子遍布江湖。降龙十八掌与打狗棒法冠绝天下。",
+      "require": {},
+      "ranks": ["一袋弟子", "三袋弟子", "五袋弟子", "七袋长老", "九袋长老", "帮主"],
+      "rankCost": 260,
+      "skills": ["dagou_bangfa", "xianglong_zhang", "beggar_qinggong"],
+      "entryItems": ["bamboo_stick"],
+      "entrySkills": ["basic_staff", "basic_fist"],
+      "rankSkills": { "1": ["beggar_qinggong"], "2": ["dagou_bangfa"], "3": ["dagou_bangfa"], "4": ["xianglong_zhang"], "5": ["xianglong_zhang"] }
+    },
+    "tangmen": {
+      "id": "tangmen", "name": "唐门", "align": "中立", "region": "tangmen",
+      "desc": "蜀中唐门，暗器与毒术天下无双，门规森严。",
+      "require": { "race": "human" },
+      "ranks": ["外门", "内门", "核心弟子", "执事", "长老", "门主"],
+      "rankCost": 380,
+      "skills": ["tangmen_anqi", "tangmen_du"],
+      "entryItems": [],
+      "entrySkills": ["tangmen_anqi"],
+      "rankSkills": { "1": ["tangmen_du"], "2": ["tangmen_du"], "3": ["tangmen_du"], "4": ["tangmen_du"], "5": ["tangmen_du"] }
+    },
+    "mojiao": {
+      "id": "mojiao", "name": "日月神教", "align": "邪道", "region": "mojiao",
+      "desc": "被正道称为魔教，教众行事狠辣，然亦有真性情者。",
+      "require": { "karma": "<=50" },
+      "ranks": ["教众", "香主", "堂主", "长老", "光明右使", "教主"],
+      "rankCost": 300,
+      "skills": ["heimu_zhang", "xixing_dafa", "xuedao"],
+      "entryItems": [],
+      "entrySkills": ["heimu_zhang", "basic_force"],
+      "rankSkills": { "1": ["heimu_zhang"], "2": ["xixing_dafa"], "3": ["xixing_dafa"], "4": ["xuedao"], "5": ["xixing_dafa"] }
+    },
+    "miaojiang": {
+      "id": "miaojiang", "name": "苗疆五毒教", "align": "邪道", "region": "miaojiang",
+      "desc": "以蛊术闻名，教中女子居多，外人畏之如蛇蝎。",
+      "require": {},
+      "ranks": ["教众", "蛊师", "大蛊师", "护法", "长老", "教主"],
+      "rankCost": 320,
+      "skills": ["miao_gu", "ice_silk_zhang"],
+      "entryItems": [],
+      "entrySkills": ["miao_gu"],
+      "rankSkills": { "1": ["ice_silk_zhang"], "2": ["ice_silk_zhang"], "3": ["ice_silk_zhang"], "4": ["ice_silk_zhang"], "5": ["ice_silk_zhang"] }
+    },
+    "dali": {
+      "id": "dali", "name": "大理段氏", "align": "正道", "region": "dali",
+      "desc": "南疆皇族，一阳指与六脉神剑名动天下。",
+      "require": { "karma": ">=20" },
+      "ranks": ["侍卫", "近卫", "校尉", "统领", "王子", "皇帝"],
+      "rankCost": 450,
+      "skills": ["yiyang_zhi", "liumai_shenjian"],
+      "entryItems": [],
+      "entrySkills": ["yiyang_zhi"],
+      "rankSkills": { "1": ["yiyang_zhi"], "2": ["yiyang_zhi"], "3": ["liumai_shenjian"], "4": ["liumai_shenjian"], "5": ["liumai_shenjian"] }
+    },
+    "xingxiu": {
+      "id": "xingxiu", "name": "星宿派", "align": "邪道", "region": "xiyu",
+      "desc": "星宿老仙门下，专修化功大法与毒功，门风谄媚。",
+      "require": { "karma": "<=-20" },
+      "ranks": ["弟子", "师兄", "大师兄", "护法", "长老", "星宿老仙"],
+      "rankCost": 280,
+      "skills": ["tangmen_du", "cuixin_zhang"],
+      "entryItems": [],
+      "entrySkills": ["cuixin_zhang"],
+      "rankSkills": { "1": ["tangmen_du"], "2": ["tangmen_du"], "3": ["tangmen_du"], "4": ["cuixin_zhang"], "5": ["cuixin_zhang"] }
+    },
+    "gumu": {
+      "id": "gumu", "name": "古墓派", "align": "中立", "region": "gumu",
+      "desc": "终南山活死人墓，玉女心经与玉女剑法皆为其绝学，门人极少。",
+      "require": { "gender": "female" },
+      "ranks": ["弟子", "传人", "掌门弟子", "玉女", "长老", "掌门"],
+      "rankCost": 300,
+      "skills": ["emei_sword", "lingbo_weibu", "jiuyin_zhenjing"],
+      "entryItems": [],
+      "entrySkills": ["basic_sword", "lingbo_weibu"],
+      "rankSkills": { "1": ["emei_sword"], "2": ["emei_sword"], "3": ["jiuyin_zhenjing"], "4": ["jiuyin_zhenjing"], "5": ["jiuyin_zhenjing"] }
+    },
+    "taohua": {
+      "id": "taohua", "name": "桃花岛", "align": "中立", "region": "taohuadao",
+      "desc": "东邪黄药师所居，奇门遁甲、琴棋书画、武学药理无一不精。",
+      "require": { "attr": "悟性", ">=": 18 },
+      "ranks": ["记名弟子", "入室弟子", "亲传弟子", "首徒", "长老", "岛主"],
+      "rankCost": 400,
+      "skills": ["kuangfeng_daofa", "lingbo_weibu", "yiyang_zhi"],
+      "entryItems": [],
+      "entrySkills": ["kuangfeng_daofa"],
+      "rankSkills": { "1": ["lingbo_weibu"], "2": ["yiyang_zhi"], "3": ["yiyang_zhi"], "4": ["yiyang_zhi"], "5": ["yiyang_zhi"] }
+    },
+    "xiake": {
+      "id": "xiake", "name": "侠客岛", "align": "中立", "region": "xiake",
+      "desc": "海外仙山，赏善罚恶二使每十年一至。岛上石壁刻有太玄经。",
+      "require": { "level": ">=30" },
+      "ranks": ["岛民", "岛侍", "使者", "赏善使", "罚恶使", "岛主"],
+      "rankCost": 600,
+      "skills": ["jiuyang_shengong", "jiuyin_zhenjing", "dugu_jiujian"],
+      "entryItems": [],
+      "entrySkills": [],
+      "rankSkills": { "1": ["jiuyang_shengong"], "2": ["jiuyin_zhenjing"], "3": ["dugu_jiujian"], "4": ["dugu_jiujian"], "5": ["dugu_jiujian"] }
+    },
+    "xuedao": {
+      "id": "xuedao", "name": "血刀门", "align": "邪道", "region": "beijiang",
+      "desc": "西域血刀门，刀法凶悍，弟子多为亡命之徒。",
+      "require": { "karma": "<=0" },
+      "ranks": ["门下", "弟子", "弟子首", "堂主", "长老", "门主"],
+      "rankCost": 300,
+      "skills": ["xuedao"],
+      "entryItems": [],
+      "entrySkills": ["xuedao"],
+      "rankSkills": { "1": ["xuedao"], "2": ["xuedao"], "3": ["xuedao"], "4": ["xuedao"], "5": ["xuedao"] }
+    }
+  },
+  "ranks": {
+    "note": "此处保留给 mod 扩展自定义位阶体系"
+  }
+}

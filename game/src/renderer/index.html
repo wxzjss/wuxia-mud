@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>武侠行 · 江湖再启</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
+</head>
+
+<body>
+  <!-- 水墨背景 -->
+  <div id="bg-art">
+    <div class="mount m1"></div>
+    <div class="mount m2"></div>
+    <div class="mount m3"></div>
+    <div class="moon"></div>
+    <div class="mist"></div>
+  </div>
+
+  <!-- 开机 / 开局 -->
+  <div id="screen-start" class="screen active">
+    <div class="start-box">
+      <div class="brand">
+        <h1 class="game-title">武侠行</h1>
+        <div class="game-sub">江 湖 再 启 · 高 自 由 度 武 侠 MUD</div>
+        <div class="ink-line"></div>
+      </div>
+      <div class="start-actions">
+        <button class="btn-ink primary" data-act="continue" id="btn-continue" style="display:none">继 续 游 戏</button>
+        <button class="btn-ink primary" data-act="newgame" id="btn-newgame">创 建 角 色</button>
+        <button class="btn-ink" data-act="loadgame">读 取 存 档</button>
+        <button class="btn-ink" data-act="modcenter">M O D 管 理</button>
+        <button class="btn-ink" data-act="modmaker">M O D 制 作 器</button>
+        <button class="btn-ink" data-act="guidedoc">教 程 与 说 明</button>
+      </div>
+      <div class="start-foot">
+        <span id="start-stats"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 创建角色 -->
+  <div id="screen-create" class="screen">
+    <div class="create-box">
+      <h2 class="panel-title">立 身 江 湖</h2>
+      <div class="create-grid">
+        <div class="field">
+          <label>姓名</label>
+          <input id="c-name" type="text" maxlength="12" placeholder="请输入你的名字" value="">
+        </div>
+        <div class="field">
+          <label>性别</label>
+          <div class="seg" id="c-gender">
+            <button class="seg-btn active" data-v="male">男</button>
+            <button class="seg-btn" data-v="female">女</button>
+          </div>
+        </div>
+        <div class="field span2">
+          <label>出身（影响初始属性与物品）</label>
+          <div class="birth-list" id="c-births"></div>
+        </div>
+        <div class="field span2">
+          <label>天赋（可多选，最多 2 个）</label>
+          <div class="perk-list" id="c-perks"></div>
+        </div>
+        <div class="field span2">
+          <label>属性分配（剩余点数：<b id="c-points">10</b>）</label>
+          <div class="attr-alloc" id="c-attrs"></div>
+          <button class="btn-mini" id="c-roll">随机分配</button>
+          <button class="btn-mini" id="c-reset">重置</button>
+        </div>
+      </div>
+      <div class="create-foot">
+        <button class="btn-ink" data-act="back">返 回</button>
+        <button class="btn-ink primary" id="c-start">踏 入 江 湖</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主游戏界面 -->
+  <div id="screen-game" class="screen">
+    <header id="topbar">
+      <div class="tb-left">
+        <span class="tb-name" id="tb-name">侠客</span>
+        <span class="tb-sect" id="tb-sect"></span>
+        <span class="tb-title" id="tb-title"></span>
+      </div>
+      <div class="tb-bars">
+        <div class="tb-bar hp" title="气血">
+          <div class="fill" id="bar-hp"></div><span id="txt-hp"></span>
+        </div>
+        <div class="tb-bar mp" title="内力">
+          <div class="fill" id="bar-mp"></div><span id="txt-mp"></span>
+        </div>
+        <div class="tb-bar exp" title="经验">
+          <div class="fill" id="bar-exp"></div><span id="txt-exp"></span>
+        </div>
+      </div>
+      <div class="tb-right">
+        <span id="tb-money" class="tb-money"></span>
+        <span id="tb-time" class="tb-time"></span>
+      </div>
+    </header>
+
+    <div id="main">
+      <!-- 左侧：快捷面板 -->
+      <aside id="sidebar">
+        <div class="sb-group">
+          <div class="sb-title">角色</div>
+          <button class="sb-btn" data-panel="score">状态 (sc)</button>
+          <button class="sb-btn" data-panel="attr">属性</button>
+          <button class="sb-btn" data-panel="skills">武学</button>
+          <button class="sb-btn" data-panel="quests">任务</button>
+          <button class="sb-btn" data-panel="sect">门派</button>
+        </div>
+        <div class="sb-group">
+          <div class="sb-title">行囊</div>
+          <button class="sb-btn" data-panel="inventory">背包 (i)</button>
+          <button class="sb-btn" data-panel="equipment">装备 (eq)</button>
+          <button class="sb-btn" data-panel="affects">状态效果</button>
+        </div>
+        <div class="sb-group">
+          <div class="sb-title">江湖</div>
+          <button class="sb-btn" data-panel="social">人情往来</button>
+          <button class="sb-btn" data-panel="love">姻缘义亲</button>
+          <button class="sb-btn" data-panel="home">我的家宅</button>
+        </div>
+        <div class="sb-group">
+          <div class="sb-title">世界</div>
+          <button class="sb-btn" data-panel="map">地图 (map)</button>
+          <button class="sb-btn" data-panel="help">指令帮助</button>
+        </div>
+        <div class="sb-group">
+          <div class="sb-title">系统</div>
+          <button class="sb-btn" data-act="save">保存进度</button>
+          <button class="sb-btn" data-act="loadlist">读取存档</button>
+          <button class="sb-btn" data-act="modcenter">MOD 管理</button>
+          <button class="sb-btn" data-act="modmaker">MOD 制作器</button>
+          <button class="sb-btn" data-act="settings">设置</button>
+          <button class="sb-btn" data-act="backmenu">返回主菜单</button>
+        </div>
+      </aside>
+
+      <!-- 中间：文本流 -->
+      <section id="stage">
+        <div id="room-panel">
+          <div class="room-head">
+            <span id="room-name" class="room-name">——</span>
+            <span id="room-region" class="room-region"></span>
+            <span id="room-env" class="room-env"></span>
+          </div>
+          <div id="room-desc" class="room-desc"></div>
+          <div id="exits" class="exits"></div>
+          <div id="room-actions" class="room-actions"></div>
+        </div>
+
+        <div id="log" class="log"></div>
+
+        <div id="combat-panel" class="hidden">
+          <div class="combat-head">
+            <span>⚔ 战 斗 中</span>
+            <span id="combat-turn"></span>
+          </div>
+          <div id="combat-enemies" class="combat-enemies"></div>
+          <div id="combat-actions" class="combat-actions"></div>
+        </div>
+
+        <div id="cmdbar">
+          <span class="prompt">&gt;</span>
+          <input id="cmd-input" type="text" autocomplete="off" spellcheck="false" placeholder="输入指令，或点击下方快捷按钮…（输入 help 查看全部指令）">
+          <button id="cmd-send">发 送</button>
+        </div>
+        <div id="quickbar" class="quickbar"></div>
+      </section>
+
+      <!-- 右侧：场景 -->
+      <aside id="scene">
+        <!-- 新手引导（完成后自动收起） -->
+        <div class="scene-block guide-block" id="guide-block">
+          <div class="scene-title">
+            <span>新手指引</span>
+            <button class="guide-toggle" id="guide-detail" title="查看全部步骤">详情</button>
+          </div>
+          <div class="guide-body">
+            <div class="guide-progress">
+              <span id="guide-count" class="gp-count">0 / 11</span>
+              <span class="gp-bar"><i id="guide-bar"></i></span>
+            </div>
+            <div class="guide-now">
+              <div class="gn-goal" id="guide-goal">正在加载…</div>
+              <div class="gn-hint" id="guide-hint"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-block">
+          <div class="scene-title">此地人物</div>
+          <div id="scene-npcs" class="scene-list"></div>
+        </div>
+        <div class="scene-block">
+          <div class="scene-title">地上物品</div>
+          <div id="scene-items" class="scene-list"></div>
+        </div>
+        <div class="scene-block">
+          <div class="scene-title">当前任务</div>
+          <div id="scene-quests" class="scene-list"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- 通用弹窗 -->
+  <div id="modal-mask" class="modal-mask hidden">
+    <div id="modal" class="modal">
+      <div class="modal-head">
+        <span id="modal-title">标题</span>
+        <button id="modal-close">✕</button>
+      </div>
+      <div id="modal-body" class="modal-body"></div>
+      <div id="modal-foot" class="modal-foot"></div>
+    </div>
+  </div>
+
+  <!-- 选择对话弹窗 -->
+  <div id="choices-mask" class="modal-mask hidden">
+    <div class="choices">
+      <div id="choices-title" class="choices-title">请选择</div>
+      <div id="choices-list" class="choices-list"></div>
+    </div>
+  </div>
+
+  <!-- MOD 制作器 -->
+  <div id="screen-modmaker" class="screen">
+    <div class="mm-header">
+      <button class="btn-ink small" data-act="back">← 返回</button>
+      <h2>M O D  制 作 器</h2>
+      <div class="mm-header-right">
+        <button class="btn-ink small" id="mm-import">导入 Mod</button>
+        <button class="btn-ink small" id="mm-validate">检 查</button>
+        <button class="btn-ink small" id="mm-save">保存到本地</button>
+        <button class="btn-ink small primary" id="mm-upload">一键上传到 Mod 网站</button>
+      </div>
+    </div>
+    <div class="mm-body">
+      <nav class="mm-tabs">
+        <button class="mm-tab active" data-tab="basic">① 基本信息</button>
+        <button class="mm-tab" data-tab="rooms">② 地图房间</button>
+        <button class="mm-tab" data-tab="regions">③ 区域</button>
+        <button class="mm-tab" data-tab="npcs">④ 人物 NPC</button>
+        <button class="mm-tab" data-tab="items">⑤ 物品装备</button>
+        <button class="mm-tab" data-tab="skills">⑥ 武学功法</button>
+        <button class="mm-tab" data-tab="sects">⑦ 门派</button>
+        <button class="mm-tab" data-tab="stories">⑧ 剧情任务</button>
+        <button class="mm-tab" data-tab="dialogue">⑨ 对话树</button>
+        <button class="mm-tab" data-tab="functions">⑩ 功能 Mod</button>
+        <button class="mm-tab" data-tab="tutorial">📖 小白教程</button>
+        <button class="mm-tab" data-tab="json">⚙ 源码视图</button>
+        <button class="mm-tab" data-tab="report">✔ 检查报告</button>
+      </nav>
+      <div class="mm-content" id="mm-content"></div>
+    </div>
+  </div>
+
+  <!-- MOD 管理器 -->
+  <div id="screen-modcenter" class="screen">
+    <div class="mm-header">
+      <button class="btn-ink small" data-act="back">← 返回</button>
+      <h2>M O D  管 理 器</h2>
+      <div class="mm-header-right">
+        <button class="btn-ink small" id="mc-install">从文件安装</button>
+        <button class="btn-ink small" id="mc-install-folder">从文件夹安装</button>
+        <button class="btn-ink small" id="mc-local-dir">加载本地 Mod 文件夹</button>
+        <button class="btn-ink small" id="mc-open-folder">打开 Mod 目录</button>
+        <button class="btn-ink small" id="mc-open-web">打开 Mod 网站</button>
+        <button class="btn-ink small" id="mc-browse">在线 Mod 市场</button>
+        <button class="btn-ink small primary" id="mc-reload">重载全部</button>
+      </div>
+    </div>
+    <div class="mc-body">
+      <div class="mc-left">
+        <div class="mc-hint" id="mc-hint">启用顺序 = 加载顺序，越靠后覆盖越强。拖动或点箭头调整。</div>
+        <div id="mc-list" class="mc-list"></div>
+      </div>
+      <div class="mc-right">
+        <div id="mc-detail" class="mc-detail">
+          <div class="mc-empty">← 选择一个 Mod 查看详情</div>
+        </div>
+        <div class="mc-problems" id="mc-problems"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mod 市场 -->
+  <div id="screen-market" class="screen">
+    <div class="mm-header">
+      <button class="btn-ink small" data-act="back">← 返回</button>
+      <h2>在 线 M O D 市 场</h2>
+      <div class="mm-header-right">
+        <input id="mk-search" class="mk-search" placeholder="搜索 Mod…">
+        <button class="btn-ink small" id="mk-go">搜索</button>
+        <button class="btn-ink small" id="mk-sitecfg">网站设置</button>
+      </div>
+    </div>
+    <div class="mk-body">
+      <div id="mk-list" class="mk-list"></div>
+    </div>
+  </div>
+
+  <!-- 文档 -->
+  <div id="screen-doc" class="screen">
+    <div class="mm-header">
+      <button class="btn-ink small" data-act="back">← 返回</button>
+      <h2>教 程 与 说 明</h2>
+    </div>
+    <div class="doc-body" id="doc-body"></div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- ?v= 用于缓存穿透：改了这里就等于强制所有浏览器重新拉脚本。
+       配合服务端的 no-store，确保发版后不会有人继续跑旧代码。 -->
+  <script src="js/localmods.js?v=20261008i"></script>
+  <script src="js/app.js?v=20261008i"></script>
+  <script src="js/ui.js?v=20261008i"></script>
+  <script src="js/modmaker.js?v=20261008i"></script>
+  <script src="js/docdata.js?v=20261008i"></script>
+  <script src="js/start.js?v=20261008i"></script>
+</body>
+
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mod 制作教程 · 武侠行</title>
+  <link rel="stylesheet" href="css/site.css">
+</head>
+
+<body>
+  <header id="site-head" class="site-head"></header>
+
+  <div class="wrap">
+    <div class="doc">
+      <h1 class="page-title">小白也能做 Mod</h1>
+      <p class="page-lead">不用写代码，用游戏内置的「MOD 制作器」填表格就行。这份教程带你把第一个 Mod 做出来、发出去。</p>
+
+      <div class="toc">
+        <div class="toc-title">目录</div>
+        <div class="toc-list">
+          <a href="#s0">0. 准备工作（三种玩法）</a>
+          <a href="#s1">1. 起名字</a>
+          <a href="#s2">2. 造房子</a>
+          <a href="#s3">3. 放人物</a>
+          <a href="#s4">4. 加物品</a>
+          <a href="#s5">5. 写剧情</a>
+          <a href="#s6">6. 检查发布</a>
+          <a href="#s7">7. 装到游戏里（三种方式）</a>
+          <a href="#s8">效果语法</a>
+          <a href="#s9">条件语法</a>
+          <a href="#s10">五种类型</a>
+          <a href="#s11">手写 mod.json</a>
+          <a href="#s12">常见问题</a>
+        </div>
+      </div>
+
+      <h3 id="s0">0. 准备工作：三种玩法，随便挑</h3>
+      <div class="step">
+        <div class="step-no">0</div>
+        <div class="step-body">
+          <b>先决定你怎么「开始游戏」</b>
+          <p>《武侠行》有三种进入方式，<b>想做 Mod 的话，推荐用第 1 或第 2 种</b>：</p>
+          <table>
+            <tr><th>方式</th><th>怎么进</th><th>适合谁</th><th>Mod 能存哪</th></tr>
+            <tr>
+              <td><b>① 网页版</b><br><span class="dim">最省事</span></td>
+              <td>点本站顶栏的 <b>「▶ 开始游戏」</b>，或直接开游戏网址。<b>电脑、手机都能玩</b>，不用装东西。</td>
+              <td>想马上玩、想在手机上玩</td>
+              <td>存档在浏览器里；Mod 可存进你授权的本地文件夹</td>
+            </tr>
+            <tr>
+              <td><b>② 本地离线版</b><br><span class="dim">做 Mod 最方便</span></td>
+              <td>从 <a href="game.html">「玩《武侠行》」</a>页下载离线版 zip，解压后双击 <code>start.bat</code>。<br>包里自带运行环境，<b>什么都不用装</b>。</td>
+              <td>想稳定存档、想翻看游戏文件</td>
+              <td>直接就是游戏目录的 <code>mods/</code> 文件夹</td>
+            </tr>
+            <tr>
+              <td><b>③ 本地开发模式</b><br><span class="dim">改了立刻看效果</span></td>
+              <td>有源码的话，运行 <code>node server/combined.js</code>，浏览器开 <code>http://127.0.0.1:8800</code>。<br>游戏和本站同一个端口，<b>一键上传直接能通</b>。</td>
+              <td>频繁调试、想改游戏本体</td>
+              <td>游戏目录的 <code>mods/</code></td>
+            </tr>
+          </table>
+          <blockquote>
+            💡 <b>网页版和离线版是同一个游戏</b>，Mod 格式、玩法完全一样。
+            唯一区别：网页版的存档存在浏览器里（换浏览器或清缓存会丢），离线版存在硬盘上更稳。
+          </blockquote>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-no">📁</div>
+        <div class="step-body">
+          <b>在网页版里，Mod 存哪儿？—— 授权一个本地文件夹</b>
+          <p>浏览器不让网页随便往硬盘写文件，所以要先<b>手动授权一次</b>。授权之后，你在本站下载的 Mod 就<b>直接进那个文件夹</b>，跟存存档一样。</p>
+          <ol>
+            <li>回到<a href="index.html">首页</a>，找到 <b>「📁 本地 Mod 文件夹」</b>卡片</li>
+            <li>点 <b>「选择 Mod 文件夹」</b>，挑一个文件夹（建议新建一个，比如 <code>D:\wuxia-mods</code>）</li>
+            <li>浏览器会弹一个确认框，点<b>「允许编辑」/「保存更改」</b></li>
+            <li>搞定 ✅ 之后在本站下载任何 Mod，都会直接写进这个文件夹</li>
+          </ol>
+          <blockquote>
+            ⚠ <b>用的是 Chrome 或 Edge 吗？</b>这个功能只在它们上有效。用 Safari / Firefox 的话，
+            下载会照常存到你的「下载」文件夹，手动挪进 <code>mods/</code> 一样能用。
+          </blockquote>
+          <p>想让网页版用上这些 Mod，进游戏后打开 <b>「MOD 管理器」→ 点「加载本地 Mod 文件夹」</b>，
+          选同一个文件夹，里面的 Mod 就会被装进游戏（只在本机生效，不会被上传）。</p>
+        </div>
+      </div>
+
+      <h3 id="s1">1. 起个名字</h3>
+      <div class="step">
+        <div class="step-no">1</div>
+        <div class="step-body">
+          <b>打开制作器 →「① 基本信息」</b>
+          <p>游戏主界面左侧「MOD 制作器」，或主菜单直接进。</p>
+          <p>只需要填两个必填项：</p>
+          <ul>
+            <li><b>Mod 名称</b>：玩家看到的名字。比如「江南奇遇记」。</li>
+            <li><b>Mod 标识 ID</b>：英文小写+下划线，全站唯一。比如 <code>jiangnan_story</code>。用拼音最省事。</li>
+          </ul>
+          <blockquote>💡 ID 就像身份证号。传过之后不要再改，否则网站会当成两个不同的 Mod。</blockquote>
+        </div>
+      </div>
+
+      <h3 id="s2">2. 造一间房子</h3>
+      <div class="step">
+        <div class="step-no">2</div>
+        <div class="step-body">
+          <b>「② 地图房间」→ 新建房间</b>
+          <ul>
+            <li><b>房间名称</b>：游戏里显示的大字，如「听雨小筑」。</li>
+            <li><b>房间 ID</b>：英文唯一，如 <code>tianyu_xiaozhu</code>。</li>
+            <li><b>房间描述</b>：这里的风景。越有画面感越好，支持换行。</li>
+            <li><b>出口</b>：填「目标房间的 ID」。第一次做可以先不填，进游戏看看再说。</li>
+          </ul>
+          <p><b>怎么把新房间接到游戏原有地图上？</b>在出口输入框里点一下，会有下拉提示，列出所有已有房间 ID，比如 <code>jiangnan_street</code>、<code>road_jiangnan_1</code>。填进去就通了。</p>
+          <blockquote>⚠ 记住：连接是双向的。A 有出口通到 B，B 也要有出口通回 A，不然会走成死胡同。</blockquote>
+        </div>
+      </div>
+
+      <h3 id="s3">3. 放一个人物</h3>
+      <div class="step">
+        <div class="step-no">3</div>
+        <div class="step-body">
+          <b>「④ 人物 NPC」→ 新建人物</b>
+          <ul>
+            <li><b>姓名 / ID</b>：「白发渔翁」/ <code>fisher_old</code>。</li>
+            <li><b>所在房间</b>：下拉选你刚建的房间。</li>
+            <li><b>等级 / 气血 / 攻击</b>：新手村的 NPC 建议 1~5 级、气血 60~150。</li>
+            <li><b>打招呼</b>：玩家输入 <code>talk 白发渔翁</code> 时他说的话，每行一句。</li>
+          </ul>
+          <p>勾选「可请教武学」，玩家就能 <code>learn 白发渔翁</code> 学武功；勾「是商人」，就能 <code>list</code> 看货 <code>buy</code> 买东西。</p>
+        </div>
+      </div>
+
+      <h3 id="s4">4. 加一件物品</h3>
+      <div class="step">
+        <div class="step-no">4</div>
+        <div class="step-body">
+          <b>「⑤ 物品装备」→ 新建物品</b>
+          <ul>
+            <li><b>名称 / ID</b>：「九转还魂丹」/ <code>jiuzhuan_dan</code>。</li>
+            <li><b>类型</b>：丹药选「消耗品」，兵器选「武器」并填「装备部位 = 武器」，秘籍选「书籍」。</li>
+            <li><b>使用效果</b>：填 <code>+hp:200</code> 就是回血 200；填 <code>learn:basic_sword</code> 就是学会基础剑法。</li>
+            <li><b>属性加成</b>：武器铠甲填攻击 / 防御 / 气血加成，装备上就生效。</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 id="s5">5. 写一段剧情（进阶但很值）</h3>
+      <div class="step">
+        <div class="step-no">5</div>
+        <div class="step-body">
+          <b>「⑧ 剧情任务」+「⑨ 对话树」</b>
+          <p><b>任务</b>由若干「阶段」组成，玩家完成一个自动进下一个，最后发奖励。阶段达成类型有五种：</p>
+          <table>
+            <tr><th>类型</th><th>目标关键词填什么</th><th>什么时候算完成</th></tr>
+            <tr><td>对话/标记 flag</td><td>标记名，如 <code>q_demo_start</code></td><td>触发了这个标记</td></tr>
+            <tr><td>收集物品 item</td><td>物品 ID，如 <code>jinchuang_yao</code></td><td>身上有够数量</td></tr>
+            <tr><td>击杀目标 kill</td><td>NPC ID，如 <code>mob_bandit_chief</code></td><td>杀够数量</td></tr>
+            <tr><td>到达地点 room</td><td>房间 ID</td><td>走进这个房间</td></tr>
+            <tr><td>变量达成 var</td><td>变量名</td><td>变量达到数值</td></tr>
+          </table>
+          <p><b>对话树</b>是一串「节点」。每个节点有 ID、说话人和台词，还有若干「选项」，每个选项指向下一个节点，或者执行一个效果。</p>
+          <blockquote>
+            选项格式（每行一个）：<br>
+            <code>我愿往 -&gt; n2</code>　（进入节点 n2）<br>
+            <code>（开战） -&gt; kill</code>　（触发战斗效果）<br>
+            <code>收下酬金 -&gt; +money:200</code>
+          </blockquote>
+          <p>把对话里的选项效果写成 <code>quest:你的任务ID:2</code>，玩家点了就直接把任务推进到第 2 阶段。</p>
+          <p style="margin-top:10px"><a class="btn sm" href="examples.html">→ 看一个完整的剧情 Mod 示例</a></p>
+        </div>
+      </div>
+
+      <h3 id="s6">6. 检查 → 保存 → 发布</h3>
+      <div class="step">
+        <div class="step-no">6</div>
+        <div class="step-body">
+          <b>三步收尾</b>
+          <ol>
+            <li>点右上角 <b>检 查</b>。它会检查房间出口、武学类型、物品名称、NPC 所在房间、书籍指向的武学、任务阶段等，把问题全列在「✔ 检查报告」页。</li>
+            <li>点 <b>保存到本地</b>。Mod 会写进游戏目录 <code>mods/你的ID/</code>，去「MOD 管理器」启用并「重载全部」就能在游戏里玩到。</li>
+            <li>点 <b>一键上传到 Mod 网站</b>。填一句更新说明，上传完成后会给你一个网页地址 —— 你的作品就公开了。</li>
+          </ol>
+          <blockquote>💡 在「⚙ 源码视图」还能看到编译出来的 <code>mod.json</code>，可以下载留档，也可以直接复制到网页版上传页去发布。<br>
+          如果你用的是<b>网页版</b>（没装离线包），就跳过第 2 步，直接去 <a href="upload.html">上传页</a>粘贴 JSON 发布。</blockquote>
+        </div>
+      </div>
+
+      <h3 id="s7">7. 把你做的 Mod 装到游戏里</h3>
+      <p>做完的 Mod 有三条路进游戏，<b>看你用哪种方式玩游戏</b>：</p>
+      <table>
+        <tr><th>你在用</th><th>怎么装</th></tr>
+        <tr>
+          <td><b>网页版</b></td>
+          <td>把 Mod 存进你授权的本地文件夹（见第 0 节），然后游戏里「MOD 管理器」→ <b>「加载本地 Mod 文件夹」</b> → 选那个文件夹。<br>
+              <span class="dim">也可以通过 <a href="list.html">Mod 市场</a>点「下载」，直接写进文件夹。</span></td>
+        </tr>
+        <tr>
+          <td><b>本地离线版</b></td>
+          <td>「MOD 管理器」→ <b>「从文件安装」</b>选 <code>.zip</code>，或 <b>「从文件夹安装」</b>选整个目录。<br>
+              手动方式：把文件夹丢进游戏目录的 <code>mods/</code> 下，重启游戏。</td>
+        </tr>
+        <tr>
+          <td><b>从本站下载别人的</b></td>
+          <td>在 <a href="list.html">Mod 市场</a>或详情页点 <b>「下载」</b>：<br>
+              · 授权过文件夹 → 直接存进去（提示「✔ 已存进文件夹」）<br>
+              · 没授权 → 存到「下载」文件夹（提示「✔ 已下载」），手动挪进 <code>mods/</code></td>
+        </tr>
+      </table>
+      <blockquote>
+        🔒 <b>「本地私有 Mod」不会被上传。</b>从你本地文件夹加载进来的 Mod 会带上「本地」标签，
+        它们的「导出 ZIP」按钮是禁用的 —— 你机器上的东西不会莫名其妙跑到 Mod 站上。
+      </blockquote>
+
+      <h3 id="s8">效果语法速查</h3>
+      <p>很多输入框（房间进入效果、对话选项、任务阶段完成效果、物品使用效果、NPC 打招呼）都能填「效果」。格式是 <code>动作:参数</code>，多个之间用空格或分号隔开。</p>
+      <table>
+        <tr><th>写法</th><th>含义</th></tr>
+        <tr><td><code>say:你好</code></td><td>让 NPC / 环境说话</td></tr>
+        <tr><td><code>narrate:天色暗了下来</code></td><td>旁白式叙述（斜体）</td></tr>
+        <tr><td><code>me:微微一笑</code></td><td>动作描述</td></tr>
+        <tr><td><code>+hp:100</code> / <code>-hp:50</code></td><td>气血增减</td></tr>
+        <tr><td><code>+mp:50</code></td><td>内力增加</td></tr>
+        <tr><td><code>+money:500</code></td><td>给 500 文钱</td></tr>
+        <tr><td><code>+exp:200</code></td><td>经验 +200</td></tr>
+        <tr><td><code>+pot:50</code></td><td>潜能 +50</td></tr>
+        <tr><td><code>+item:长剑:2</code></td><td>获得 2 把长剑</td></tr>
+        <tr><td><code>-item:长剑:1</code></td><td>拿走 1 把长剑</td></tr>
+        <tr><td><code>learn:basic_sword</code></td><td>学会一门武学</td></tr>
+        <tr><td><code>+skill:basic_sword:10</code></td><td>武学等级 +10</td></tr>
+        <tr><td><code>forgetskill:basic_fist</code></td><td>遗忘一门武学</td></tr>
+        <tr><td><code>goto:room_id</code></td><td>把玩家传送到某房间</td></tr>
+        <tr><td><code>spawn:mob_wolf</code></td><td>当前房间刷出一个 NPC</td></tr>
+        <tr><td><code>despawn:mob_wolf</code></td><td>移除一个 NPC</td></tr>
+        <tr><td><code>flag:got_letter</code></td><td>打上剧情标记</td></tr>
+        <tr><td><code>unflag:got_letter</code></td><td>清除标记</td></tr>
+        <tr><td><code>quest:q_xxx:2</code></td><td>任务推进到第 2 阶段</td></tr>
+        <tr><td><code>questdone:q_xxx</code></td><td>直接完成某任务</td></tr>
+        <tr><td><code>joinSect:huashan</code></td><td>让玩家加入门派</td></tr>
+        <tr><td><code>+title:剑客</code></td><td>给玩家一个称号</td></tr>
+        <tr><td><code>combat:mob_bandit</code></td><td>立刻开始战斗</td></tr>
+        <tr><td><code>damage:50</code></td><td>对玩家造成 50 点伤害</td></tr>
+        <tr><td><code>heal:100</code></td><td>治疗 100 点</td></tr>
+        <tr><td><code>ending:结局名</code></td><td>触发结局</td></tr>
+        <tr><td><code>sound:click</code></td><td>播放音效</td></tr>
+        <tr><td><code>sleep:1000</code></td><td>停顿 1 秒</td></tr>
+      </table>
+
+      <h4>弹选择框</h4>
+      <p><code>menu:标题|选项A&gt;效果;;选项B&gt;效果</code></p>
+      <pre class="ex-code">menu:要不要帮我?|要，我这就去&gt;flag:help_yes;;算了吧&gt;say:那你走吧</pre>
+
+      <h3 id="s9">条件语法速查</h3>
+      <p>条件用来判断「什么时候才触发」，写在「触发条件」「学习条件」「任务阶段条件」等处。</p>
+      <table>
+        <tr><th>写法</th><th>含义</th></tr>
+        <tr><td><code>level&gt;=10</code></td><td>等级 ≥ 10</td></tr>
+        <tr><td><code>attr.悟性&gt;=20</code></td><td>悟性 ≥ 20</td></tr>
+        <tr><td><code>skill.basic_sword&gt;=50</code></td><td>基础剑法 ≥ 50 级</td></tr>
+        <tr><td><code>money&gt;=1000</code></td><td>身上钱 ≥ 1000 文</td></tr>
+        <tr><td><code>kills&gt;=100</code></td><td>杀敌数 ≥ 100</td></tr>
+        <tr><td><code>rep&gt;=500</code></td><td>声望 ≥ 500</td></tr>
+        <tr><td><code>hasitem:长剑</code></td><td>身上有长剑</td></tr>
+        <tr><td><code>flag:got_letter</code></td><td>有某剧情标记</td></tr>
+        <tr><td><code>sect:华山派</code></td><td>属于某门派</td></tr>
+        <tr><td><code>rank&gt;=3</code></td><td>门派职位 ≥ 3</td></tr>
+        <tr><td><code>chance:0.3</code></td><td>30% 概率通过</td></tr>
+        <tr><td><code>and(level&gt;=10, hasitem:长剑)</code></td><td>同时满足</td></tr>
+        <tr><td><code>or(sect:华山派, sect:武当派)</code></td><td>满足其一</td></tr>
+        <tr><td><code>not(flag:got_letter)</code></td><td>取反</td></tr>
+      </table>
+
+      <h3 id="s10">五种 Mod 类型，各自怎么做</h3>
+      <div class="card-grid">
+        <div class="info-card">
+          <b>📜 剧情 Mod</b>
+          <p>用「剧情任务」+「对话树」两页。先建任务写好阶段，再建对话，把选项效果写成 <code>quest:任务ID:阶段号</code>。</p>
+        </div>
+        <div class="info-card">
+          <b>🗺 地图 Mod</b>
+          <p>用「地图房间」+「区域」。房间互联靠出口，两边都要连上。区域让地图自动归组、上色。</p>
+        </div>
+        <div class="info-card">
+          <b>⚙ 功能 Mod</b>
+          <p>用「功能 Mod」页。调经验倍率就选「倍数调整」，目标填 <code>exp</code>，数值填 <code>2</code>。常用预设一键添加。</p>
+        </div>
+        <div class="info-card">
+          <b>🥋 功法 Mod</b>
+          <p>用「武学功法」页。类型选对（拳/剑/刀/内功/轻功），威力倍率 1.5 以上算强，配一两个「招式效果」。</p>
+        </div>
+        <div class="info-card">
+          <b>⚔ 物品 Mod</b>
+          <p>用「物品装备」页。武器记得选部位「武器」并填攻击加成；丹药填「使用效果」；秘籍用 <code>learn:武学ID</code>。</p>
+        </div>
+      </div>
+
+      <h3 id="s11">进阶：手写 mod.json</h3>
+      <p>制作器最终产出的是一个 <code>mod.json</code>。熟悉之后，你可以直接在网页版上传页粘贴 JSON 发布，也可以放进游戏目录 <code>mods/你的ID/mod.json</code>。</p>
+      <p>最小可用的 mod.json 长这样：</p>
+      <pre class="ex-code">{
+  "id": "my_first_mod",
+  "name": "我的第一个 Mod",
+  "version": "1.0.0",
+  "author": "你的名字",
+  "category": "地图",
+  "desc": "在江南边上加了一个小院子。",
+  "rooms": [
+    {
+      "id": "my_yard",
+      "name": "我的小院",
+      "region": "jiangnan",
+      "desc": "院里一棵老槐树，树下有张石桌。",
+      "exits": { "s": "jiangnan_street" }
+    }
+  ],
+  "npcs": [
+    {
+      "id": "my_cat",
+      "name": "黄猫",
+      "room": "my_yard",
+      "level": 1,
+      "hp": 20,
+      "desc": "一只肥硕的黄猫，正眯着眼晒太阳。",
+      "talk": ["喵。"]
+    }
+  ]
+}</pre>
+      <blockquote>
+        <b>增量覆盖：</b>想改游戏原有内容，就写一个同 ID 的房间 / 物品，只填要改的字段。<br>
+        比如想把「江南集市」的描述改掉，就写 <code>{"id":"jiangnan_market","desc":"新描述"}</code>，其他字段原样保留。<br>
+        <b>加载顺序：</b>多个 Mod 改了同一个 ID 时，在「MOD 管理器」里越靠下的越晚加载，覆盖力越强。
+      </blockquote>
+
+      <h3 id="s12">常见问题</h3>
+      <div class="info-card" style="margin-bottom:11px">
+        <b>Q：手机上能玩吗？能，但操作习惯不太一样</b>
+        <p>直接用手机浏览器打开游戏网址就行，界面会自动适配。手机上更适合看剧情、跑任务；
+        要精细打指令的话，还是键鼠更顺。存档存在手机浏览器里，换设备不通用。</p>
+      </div>
+      <div class="info-card" style="margin-bottom:11px">
+        <b>Q：「选择 Mod 文件夹」点了没反应 / 按钮不出现？</b>
+        <p>说明你的浏览器不支持「文件夹授权」。<b>换成 Chrome 或 Edge</b>（电脑版）就好。
+        不想换也没关系：下载会照常存到「下载」文件夹，手动拖进 <code>mods/</code> 一样能用。</p>
+      </div>
+      <div class="info-card" style="margin-bottom:11px">
+        <b>Q：在网页版做的 Mod，怎么让游戏用上？</b>
+        <p>把 Mod 存进授权的本地文件夹（或从 Mod 市场下载进那个文件夹），
+        然后游戏里「MOD 管理器」→ <b>「加载本地 Mod 文件夹」</b> → 选同一个文件夹。
+        加载进来的 Mod 会带「本地」标签，只在本机生效。</p>
+      </div>
+      <div class="info-card" style="margin-bottom:11px">
+        <b>Q：房间建好了，进游戏找不到？</b>
+        <p>多半是没连接。在某个已有房间的出口里填你的房间 ID，或者把你的房间出口指向 <code>jiangnan_street</code> 之类的原有房间。检查报告会提示孤立房间。</p>
+      </div>
+      <div class="info-card" style="margin-bottom:11px">
+        <b>Q：NPC 不出现？</b>
+        <p>检查「所在房间」是否选了、且那个房间 ID 确实存在（拼写要一致）。</p>
+      </div>
+      <div class="info-card" style="margin-bottom:11px">
+        <b>Q：上传失败连不上？</b>
+        <p>分两种情况：</p>
+        <ul>
+          <li><b>用网页版</b>：Mod 站就是你现在这个站，上传直接就能通，不用配任何东西。</li>
+          <li><b>用本地离线版</b>：确认 Mod 站在跑，且游戏「设置 → Mod 网站地址」填的地址和本站一致。
+              用 <code>start-standalone.bat</code>（合并服务）的话，地址填 <code>http://127.0.0.1:8800/site</code>。</li>
+        </ul>
+      </div>
+      <div class="info-card" style="margin-bottom:11px">
+        <b>Q：多个 Mod 冲突？</b>
+        <p>同名 ID 后加载的覆盖前面的。在 Mod 管理器里拖动箭头调整顺序。管理器右下角会列出检测到的冲突。</p>
+      </div>
+      <div class="info-card" style="margin-bottom:11px">
+        <b>Q：能写代码吗？</b>
+        <p>可以。在 <code>mods/你的ID/</code> 里放 <code>main.js</code>，引擎会加载它，可以注册自定义条件函数和效果函数，让 Mod 拥有无限可能。制作器的「⚙ 源码视图」是入口。</p>
+      </div>
+
+      <div class="step">
+        <div class="step-no">🚀</div>
+        <div class="step-body">
+          <b>不知道该做什么？先看官方的 6 个示例</b>
+          <p>官方随游戏发布了 6 个各类型的示例 Mod，<b>已经上架到本站</b>，
+          在 <a href="list.html">Mod 市场</a>里搜「示例」或点对应分类就能找到，直接下载安装即可：</p>
+          <table>
+            <tr><th>示例</th><th>分类</th><th>演示了什么</th></tr>
+            <tr><td><b>听雨山庄</b><br><code>demo_map</code></td><td>地图</td><td>在江南官道旁新增一处山庄，含 4 个房间 + 1 个区域。地图 Mod 的最小写法。</td></tr>
+            <tr><td><b>白发渔翁</b><br><code>demo_npc</code></td><td>综合</td><td>加一位可交谈、可请教武学、会给采药小差事的 NPC。NPC Mod 的完整示例。</td></tr>
+            <tr><td><b>百宝囊</b><br><code>demo_item</code></td><td>物品</td><td>回血回内的丹药、过渡用的软剑长袍、便宜的基础剑谱。物品的各类写法。</td></tr>
+            <tr><td><b>太虚剑意</b><br><code>demo_skill</code></td><td>功法</td><td>一门高阶剑法 + 配套心法秘籍，演示连击、无视防御、吸血三类招式效果。</td></tr>
+            <tr><td><b>江南除害</b><br><code>demo_quest</code></td><td>剧情</td><td>三阶段剧情：接任务 → 杀贼首 → 复命领赏。任务 + 对话树 + NPC + 奖励的完整串联。</td></tr>
+            <tr><td><b>轻松江湖</b><br><code>demo_func</code></td><td>功能</td><td>不改内容只改规则：双倍经验、双倍金钱、脱战回血、击杀额外潜能、自动拾取。</td></tr>
+          </table>
+          <p><a class="btn sm" href="examples.html">→ 在「示例文件」页看它们的完整 JSON</a></p>
+        </div>
+      </div>
+
+      <div style="margin-top:32px;text-align:center">
+        <a class="btn red" href="examples.html">看示例 Mod 文件</a>
+        <a class="btn" href="upload.html">去发布我的 Mod</a>
+      </div>
+    </div>
+  </div>
+
+  <footer id="site-foot" class="site-foot"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tencent-ai/workbuddy-cloud-sdk@dev/lib/index.global.js"></script>
+  <script src="js/cloud.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/localmods.js"></script>
+  <script>SITE.renderHead('tutorial'); SITE.renderFoot();</script>
+</body>
+
+</html>

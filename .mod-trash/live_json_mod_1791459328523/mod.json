@@ -1,0 +1,14 @@
+{
+  "id": "live_json_mod",
+  "name": "实测单文件Mod",
+  "version": "1.0.0",
+  "category": "功法",
+  "skills": [
+    {
+      "id": "live_skill",
+      "name": "测试心法"
+    }
+  ],
+  "__local": true,
+  "__localSource": "browser-folder"
+}

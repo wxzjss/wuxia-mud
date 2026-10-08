@@ -1,0 +1,99 @@
+{
+  "id": "demo_item",
+  "name": "百宝囊（物品示例）",
+  "version": "1.0.0",
+  "author": "武侠行官方",
+  "category": "物品",
+  "desc": "一批实用丹药与过渡装备：回血回内的消耗品、一把趁手软剑、一件轻便长袍，还有一本便宜的基础剑谱。物品 Mod 的各类写法都在这里。",
+  "tags": ["物品", "示例", "丹药", "装备"],
+  "gameVersion": "1.0.0",
+  "items": [
+    {
+      "id": "qingxin_dan",
+      "name": "清心丹",
+      "type": "consumable",
+      "price": 120,
+      "weight": 1,
+      "desc": "小小一粒，入口清凉，自喉间一路沁到心底。可解百毒、宁心神。",
+      "use": "+mp:200",
+      "stackable": true
+    },
+    {
+      "id": "huxin_dan",
+      "name": "护心丹",
+      "type": "consumable",
+      "price": 300,
+      "weight": 1,
+      "desc": "服下后一股暖流自胸腹散开，外伤立愈。",
+      "use": "+hp:500",
+      "stackable": true
+    },
+    {
+      "id": "shuanghua_dan",
+      "name": "霜华丹",
+      "type": "consumable",
+      "price": 800,
+      "weight": 1,
+      "desc": "丹色如霜，触之生寒。据说能大幅提升资质。",
+      "use": "+hp:200 +mp:200 +attr:悟性:1",
+      "stackable": true
+    },
+    {
+      "id": "wugou_jian",
+      "name": "无垢剑",
+      "type": "weapon",
+      "slot": "weapon",
+      "price": 2400,
+      "weight": 3,
+      "level": 15,
+      "atk": 45,
+      "dodge": 5,
+      "desc": "一柄通体莹白的软剑，出鞘无声。剑身极薄，却能削铁如泥。",
+      "stackable": false
+    },
+    {
+      "id": "qingyun_pao",
+      "name": "青云袍",
+      "type": "armor",
+      "slot": "body",
+      "price": 1800,
+      "weight": 2,
+      "level": 12,
+      "def": 32,
+      "hp": 80,
+      "desc": "青缎裁成，轻软透气，内衬软甲，行动间不碍手脚。",
+      "stackable": false
+    },
+    {
+      "id": "qingyun_boots",
+      "name": "踏云履",
+      "type": "armor",
+      "slot": "feet",
+      "price": 900,
+      "weight": 1,
+      "level": 10,
+      "def": 12,
+      "dodge": 15,
+      "desc": "鞋底缝着软牛皮，着地极轻，走山路如履平地。",
+      "stackable": false
+    },
+    {
+      "id": "book_basic_sword_cheap",
+      "name": "剑法入门抄本（残）",
+      "type": "book",
+      "price": 260,
+      "weight": 1,
+      "desc": "字迹潦草的抄本，只记了基础剑法的入门几式。便宜，也够用。",
+      "use": "learn:basic_sword",
+      "stackable": true
+    }
+  ],
+  "shops": [
+    {
+      "id": "shop_baihuo",
+      "name": "百宝货栈",
+      "keeper": "wen_jiangnan",
+      "items": ["qingxin_dan", "huxin_dan", "wugou_jian", "qingyun_pao", "qingyun_boots", "book_basic_sword_cheap"]
+    }
+  ]
+}

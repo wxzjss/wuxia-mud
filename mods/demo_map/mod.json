@@ -1,0 +1,50 @@
+{
+  "id": "demo_map",
+  "name": "听雨山庄（地图示例）",
+  "version": "1.0.0",
+  "author": "武侠行官方",
+  "category": "地图",
+  "desc": "在江南官道旁新增一处清幽山庄，含 4 个房间、1 个区域。地图 Mod 的最小示例，可以直接拿来改成你自己的场景。",
+  "tags": ["地图", "江南", "示例"],
+  "gameVersion": "1.0.0",
+  "regions": [
+    {
+      "id": "tingyu",
+      "name": "听雨山庄",
+      "color": "#7f9bb5",
+      "desc": "一座隐居江南的雅致庄园。"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "tingyu_gate",
+      "name": "山庄门口",
+      "region": "tingyu",
+      "desc": "两扇朱漆大门，门楣上挂着「听雨山庄」的匾额。门旁石狮蹲踞，阶前落了一地杏花。",
+      "exits": { "n": "tingyu_yard", "s": "road_jiangnan_1" }
+    },
+    {
+      "id": "tingyu_yard",
+      "name": "听雨庭院",
+      "region": "tingyu",
+      "desc": "院里一株老梅，枝干虬曲。廊下挂着几只鸟笼，无人却闻鸟鸣。雨丝打在青石板上，滴滴答答。",
+      "exits": { "s": "tingyu_gate", "n": "tingyu_hall", "e": "tingyu_pool" },
+      "onEnter": "narrate:檐角风铃轻响，似有人来。"
+    },
+    {
+      "id": "tingyu_hall",
+      "name": "听雨厅",
+      "region": "tingyu",
+      "desc": "厅中陈设简朴，一琴一案，墙上挂着一幅未干的山水。案上茶还温着，人却不知去了何处。",
+      "exits": { "s": "tingyu_yard" },
+      "onLook": "hint:画角似乎有一行小字。"
+    },
+    {
+      "id": "tingyu_pool",
+      "name": "听雨池",
+      "region": "tingyu",
+      "desc": "一泓碧水，池中锦鲤悠然。池畔有石桌石凳，桌上刻着棋盘，残局未完。",
+      "exits": { "w": "tingyu_yard" }
+    }
+  ]
+}

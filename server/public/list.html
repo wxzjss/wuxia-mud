@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mod 列表 · 武侠行</title>
+  <link rel="stylesheet" href="css/site.css">
+</head>
+
+<body>
+  <header id="site-head" class="site-head"></header>
+
+  <div class="wrap">
+    <h1 class="page-title">Mod 列表</h1>
+    <p class="page-lead">全部玩家作品。点卡片进详情，或直接下载 ZIP。</p>
+
+    <div class="toolbar">
+      <input class="tb-search" id="q" placeholder="搜索 Mod 名称 / 简介 / 作者 / 标签…">
+      <select class="tb-select" id="sort">
+        <option value="new">最新发布</option>
+        <option value="hot">下载最多</option>
+        <option value="update">最近更新</option>
+        <option value="name">按名称</option>
+      </select>
+      <select class="tb-select" id="size">
+        <option value="40">每页 40</option>
+        <option value="80">每页 80</option>
+        <option value="100">每页 100</option>
+      </select>
+      <button class="btn sm red" id="go">搜 索</button>
+    </div>
+
+    <div id="cats" style="margin-bottom:20px"></div>
+
+    <div id="list" class="mod-grid"><div class="loading">加载中…</div></div>
+
+    <div id="pager" style="margin-top:26px;text-align:center"></div>
+  </div>
+
+  <footer id="site-foot" class="site-foot"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tencent-ai/workbuddy-cloud-sdk@dev/lib/index.global.js"></script>
+  <script src="js/cloud.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/localmods.js"></script>
+  <script>
+    (function () {
+      SITE.renderHead('list');
+      SITE.renderFoot();
+
+      const st = { q: SITE.getQuery('q'), cat: SITE.getQuery('cat'), sort: 'new', page: 1, size: 40 };
+
+      const qEl = document.getElementById('q');
+      const sortEl = document.getElementById('sort');
+      const sizeEl = document.getElementById('size');
+      qEl.value = st.q;
+      sizeEl.value = String(st.size);
+
+      qEl.onkeydown = e => { if (e.key === 'Enter') { st.q = qEl.value.trim(); st.page = 1; load(); } };
+      document.getElementById('go').onclick = () => { st.q = qEl.value.trim(); st.page = 1; load(); };
+      sortEl.onchange = () => { st.sort = sortEl.value; st.page = 1; load(); };
+      sizeEl.onchange = () => { st.size = +sizeEl.value; st.page = 1; load(); };
+
+      async function loadCats() {
+        let cats = SITE.CATEGORIES;
+        try { const c = await SITE.fetchCategories(); if (c && c.length) cats = c; } catch (e) { }
+        document.getElementById('cats').innerHTML = SITE.catChips(cats, st.cat);
+        document.querySelectorAll('#cats .chip').forEach(b => {
+          b.onclick = () => { st.cat = b.getAttribute('data-cat'); st.page = 1; load(); };
+        });
+      }
+
+      async function load() {
+        const box = document.getElementById('list');
+        box.innerHTML = '<div class="loading">加载中…</div>';
+        let d;
+        try {
+          d = await SITE.fetchList({ q: st.q, cat: st.cat, sort: st.sort, page: st.page, size: st.size });
+        } catch (e) {
+          box.innerHTML = '<div class="empty">⚠ 无法连接 Mod 站服务。<br>请运行 <code>node server/mod-site.js</code></div>';
+          return;
+        }
+        if (!d) { box.innerHTML = '<div class="empty">加载失败</div>'; return; }
+
+        const list = d.mods || [];
+        box.innerHTML = list.length
+          ? list.map(m => SITE.modCard(m)).join('')
+          : '<div class="empty">没有找到符合条件的 Mod。<br>换个关键词，或者 <a href="list.html">看看全部</a>。</div>';
+
+        SITE.bindCopy(box);
+
+        /* 分页 */
+        const totalPage = Math.max(1, Math.ceil((d.total || 0) / (d.size || 40)));
+        const pg = document.getElementById('pager');
+        if (totalPage <= 1) { pg.innerHTML = '<span style="font-size:13px;color:#9a917f">共 ' + (d.total || 0) + ' 个 Mod' + (d.cloud ? '（云端）' : '') + '</span>'; return; }
+        let h = '<span style="font-size:13px;color:#9a917f;margin-right:12px">共 ' + d.total + ' 个 · 第 ' + d.page + '/' + totalPage + ' 页</span>';
+        h += '<button class="btn sm" data-pg="1">首页</button> ';
+        h += '<button class="btn sm" data-pg="' + Math.max(1, d.page - 1) + '">上一页</button> ';
+        h += '<button class="btn sm" data-pg="' + Math.min(totalPage, d.page + 1) + '">下一页</button> ';
+        h += '<button class="btn sm" data-pg="' + totalPage + '">末页</button>';
+        pg.innerHTML = h;
+        pg.querySelectorAll('[data-pg]').forEach(b => {
+          b.onclick = () => { st.page = +b.getAttribute('data-pg'); load(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+        });
+      }
+
+      loadCats().then(load);
+    })();
+  </script>
+</body>
+
+</html>

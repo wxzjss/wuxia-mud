@@ -1,0 +1,26 @@
+{
+  "id": "local_livetest_muzkkith",
+  "name": "本地测试·竹林隐士",
+  "version": "1.0.0",
+  "author": "小鱼",
+  "category": "剧情",
+  "desc": "从浏览器本地文件夹装进来的私有 Mod。",
+  "tags": [
+    "测试",
+    "本地"
+  ],
+  "rooms": [
+    {
+      "id": "lt_bamboo",
+      "name": "幽篁里",
+      "region": "secret",
+      "desc": "一片竹子，风过有声。",
+      "exits": {}
+    }
+  ],
+  "_mod": {
+    "id": "local_livetest_muzkkith"
+  },
+  "__local": true,
+  "__localSource": "browser-folder"
+}

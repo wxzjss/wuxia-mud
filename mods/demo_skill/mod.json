@@ -1,0 +1,120 @@
+{
+  "id": "demo_skill",
+  "name": "太虚剑意（功法示例）",
+  "version": "1.0.0",
+  "author": "武侠行官方",
+  "category": "功法",
+  "desc": "一门自创高阶剑法，配配套心法与秘籍。演示了连击、无视防御、吸血三类招式效果，以及学习门槛、属性加成、秘籍关联的写法。",
+  "tags": ["功法", "剑法", "示例", "内功"],
+  "gameVersion": "1.0.0",
+  "skills": [
+    {
+      "id": "taixu_jianyi",
+      "name": "太虚剑意",
+      "type": "sword",
+      "maxLevel": 180,
+      "difficulty": 4,
+      "damageMult": 2.1,
+      "accuracy": 25,
+      "mpCost": 30,
+      "desc": "剑走太虚，意在剑先。一出手便如云海翻涌，绵绵不绝。剑势本无定式，全在一念之间。",
+      "require": "level>=30",
+      "trainCost": 12,
+      "effects": [
+        { "type": "extraHit", "value": 0.35, "chance": 0.4, "turns": 1, "name": "剑影分光" },
+        { "type": "ignoreDef", "value": 0.4, "chance": 0.25, "turns": 1, "name": "无相" },
+        { "type": "drain", "value": 0.15, "chance": 0.3, "turns": 1, "name": "剑气回元" }
+      ]
+    },
+    {
+      "id": "taixu_xinfa",
+      "name": "太虚心法",
+      "type": "force",
+      "maxLevel": 200,
+      "difficulty": 4,
+      "damageMult": 1,
+      "mpCost": 0,
+      "mpBonus": 8,
+      "desc": "太虚剑意的内功根基。修之可扩经脉、增内力，与太虚剑意相配，威力更增。",
+      "require": "level>=25",
+      "bonus": { "hp": 6, "mp": 10 },
+      "effects": []
+    },
+    {
+      "id": "taixu_shenfa",
+      "name": "太虚身法",
+      "type": "dodge",
+      "maxLevel": 160,
+      "difficulty": 3,
+      "damageMult": 1,
+      "mpCost": 0,
+      "mpBonus": 3,
+      "dodgeBonus": 10,
+      "desc": "身形如烟，飘忽不定。修至深处，可于剑网之中来去自如。",
+      "require": "level>=20",
+      "bonus": { "dodge": 8 },
+      "effects": []
+    }
+  ],
+  "items": [
+    {
+      "id": "book_taixu",
+      "name": "太虚剑谱",
+      "type": "book",
+      "price": 5000,
+      "weight": 1,
+      "desc": "一册薄薄的手抄本，扉页写着「意在剑先」四字，笔锋如剑。",
+      "use": "learn:taixu_jianyi",
+      "stackable": true
+    },
+    {
+      "id": "book_taixu_xinfa",
+      "name": "太虚心法秘录",
+      "type": "book",
+      "price": 4200,
+      "weight": 1,
+      "desc": "内功心法的抄录本，纸上墨迹深黑，显然是后人反复研读所留。",
+      "use": "learn:taixu_xinfa",
+      "stackable": true
+    }
+  ],
+  "npcs": [
+    {
+      "id": "taixu_hermit",
+      "name": "太虚居士",
+      "title": "剑冢守人",
+      "gender": "male",
+      "room": "huashan_siguoya",
+      "level": 45,
+      "hp": 2600,
+      "mp": 1600,
+      "atk": 150,
+      "def": 90,
+      "dodge": 110,
+      "speed": 95,
+      "desc": "一个独臂老者，斜倚在断崖边的石上。身前插着一柄无锋的断剑。他闭着眼，仿佛睡着，周身却隐隐有剑意流转。",
+      "talk": [
+        "（老者不睁眼）剑者，心也。你手里那把，不过是铁。",
+        "（他抬起仅存的那只手，在空中一划）看出什么了么？",
+        "（沉默良久）三十年了，还没人看懂。"
+      ],
+      "canTeach": true,
+      "teach": ["taixu_jianyi", "taixu_xinfa"],
+      "ask": {
+        "剑": "剑之要义，在「无」。有意则有形，有形则可破。",
+        "太虚": "太虚者，无垠也。你练剑时，心里可还想着胜负？",
+        "师父": "（老者顿了顿）我没有什么师父，只有一柄断剑。",
+        "思过崖": "此地清净，适合想事情。你若想不通，就在这儿站上三日。"
+      },
+      "askDefault": "（老者摇头）说不清，说不清。",
+      "loot": ["book_taixu"],
+      "actions": [
+        {
+          "cmd": "请教",
+          "cond": "level>=30",
+          "effects": ["say:（老者终于睁眼）你的根基，勉强够了。", "learn:taixu_xinfa"]
+        }
+      ]
+    }
+  ]
+}

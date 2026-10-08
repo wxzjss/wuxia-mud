@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>武侠行 · Mod 江湖客栈</title>
+  <link rel="stylesheet" href="css/site.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
+</head>
+
+<body>
+  <header id="site-head" class="site-head"></header>
+
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-title">武 侠 行</div>
+      <div class="hero-sub">M O D · 江 湖 客 棧</div>
+      <div class="hero-ops">
+        <button class="btn red" id="hero-play">▶ 开 始 游 戏</button>
+        <a class="btn primary" href="tutorial.html">我要做 Mod</a>
+        <a class="btn" href="list.html">逛 Mod 列表</a>
+        <a class="btn" href="examples.html">看示例文件</a>
+      </div>
+      <div class="hero-hint">
+        打开网页就能玩，<b>不用下载、不用安装、不用配环境</b>。
+        想离线玩或改游戏文件？<a href="game.html">下载离线版 →</a>
+      </div>
+      <div class="hero-stats" id="hero-stats"></div>
+
+      <!-- ===== 本地 Mod 文件夹（File System Access） ===== -->
+      <div class="localmod-box" id="localmod-box">
+        <div class="lm-head">
+          <span class="lm-title">📁 本地 Mod 文件夹</span>
+          <span class="lm-badge" id="lm-badge">检测中…</span>
+        </div>
+        <div class="lm-body">
+          <p class="lm-desc" id="lm-desc">
+            授权一个本地文件夹后，你下载的 Mod 会<b>直接存进去</b>（像存档一样），
+            网页版游戏也能从那里读取你自己的私有 Mod。
+          </p>
+          <div class="lm-ops">
+            <button class="btn" id="lm-pick">选择 Mod 文件夹</button>
+            <button class="btn" id="lm-scan" style="display:none">扫描本地 Mod</button>
+            <button class="btn ghost" id="lm-forget" style="display:none">取消授权</button>
+          </div>
+          <div class="lm-list" id="lm-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <h2 class="section-title">🔥 最近上新</h2>
+    <div class="mod-grid" id="latest"><div class="loading">加载中…</div></div>
+
+    <h2 class="section-title">⚡ 最受欢迎</h2>
+    <div class="mod-grid" id="hot"><div class="loading">加载中…</div></div>
+
+    <h2 class="section-title">🏷 热门标签</h2>
+    <div class="tb-chips" id="tags"></div>
+
+    <h2 class="section-title">📖 三步上手</h2>
+    <div class="card-grid">
+      <div class="info-card">
+        <b>① 玩游戏</b>
+        <p>下载《武侠行》游戏本体，运行起来。在「MOD 管理器」里点「在线 Mod 市场」，一键下载安装别人做的 Mod。</p>
+      </div>
+      <div class="info-card">
+        <b>② 做 Mod ⭐</b>
+        <p>游戏里打开「MOD 制作器」，填表格就能造地图、NPC、武学、任务。全程不用写一行代码。</p>
+        <p style="margin-top:8px"><a href="tutorial.html">看完整教程 →</a></p>
+      </div>
+      <div class="info-card">
+        <b>③ 发作品</b>
+        <p>做完点「一键上传到 Mod 网站」，你的作品就出现在这里了。别人也能一键下载。</p>
+        <p style="margin-top:8px"><a href="upload.html">网页版上传 →</a></p>
+      </div>
+    </div>
+
+    <h2 class="section-title">🧭 支持哪些类型的 Mod</h2>
+    <div class="card-grid">
+      <div class="info-card"><b>📜 剧情 Mod</b><p>新增门派恩怨、奇遇支线、多结局。用「剧情任务 + 对话树」搭出完整故事线。</p></div>
+      <div class="info-card"><b>🗺 地图 Mod</b><p>加城镇、秘境、洞天。房间互联成网，区域自动归组到大地图上。</p></div>
+      <div class="info-card"><b>⚙ 功能 Mod</b><p>改规则：双倍经验、自动拾取、修改战斗公式、加全局事件钩子。</p></div>
+      <div class="info-card"><b>🥋 功法 Mod</b><p>自创武学，配毒、定身、吸血、连击等招式效果，指定学习门槛。</p></div>
+      <div class="info-card"><b>⚔ 物品 Mod</b><p>兵器防具丹药秘籍。支持属性加成、使用效果、堆叠、任务物品。</p></div>
+      <div class="info-card"><b>🏯 门派 Mod</b><p>自立门户，设职位阶梯、门派武学传承、加入条件。</p></div>
+    </div>
+  </div>
+
+  <footer id="site-foot" class="site-foot"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tencent-ai/workbuddy-cloud-sdk@dev/lib/index.global.js"></script>
+  <script src="js/cloud.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/localmods.js"></script>
+  <script>
+    (function () {
+      SITE.renderHead('home');
+      SITE.renderFoot();
+
+      /* ---- 开始游戏：直接跳游戏网页 ---- */
+      SITE.bindPlayButton(document.getElementById('hero-play'));
+
+      /* ---- 本地 Mod 文件夹 ---- */
+      (function () {
+        var box = document.getElementById('localmod-box');
+        if (!box) return;
+        var badge = document.getElementById('lm-badge');
+        var desc = document.getElementById('lm-desc');
+        var pick = document.getElementById('lm-pick');
+        var scan = document.getElementById('lm-scan');
+        var forget = document.getElementById('lm-forget');
+        var list = document.getElementById('lm-list');
+
+        if (!window.WXLOCAL || !window.WXLOCAL.supported()) {
+          badge.textContent = '不可用';
+          badge.className = 'lm-badge off';
+          desc.innerHTML = '你的浏览器不支持文件夹授权（<b>Chrome / Edge 支持</b>）。<br>' +
+            '没关系 —— 下载 Mod 时会照常存到你的「下载」文件夹，手动拖进 <code>mods/</code> 一样能用。';
+          pick.style.display = 'none';
+          return;
+        }
+
+        function paint(state) {
+          if (state === 'granted') {
+            badge.textContent = '已授权 · ' + window.WXLOCAL.folderName();
+            badge.className = 'lm-badge on';
+            pick.textContent = '更换文件夹';
+            scan.style.display = '';
+            forget.style.display = '';
+          } else if (state === 'prompt') {
+            badge.textContent = '需重新授权';
+            badge.className = 'lm-badge warn';
+            pick.textContent = '重新授权';
+            scan.style.display = 'none';
+            forget.style.display = '';
+          } else {
+            badge.textContent = '未授权';
+            badge.className = 'lm-badge';
+            pick.textContent = '选择 Mod 文件夹';
+            scan.style.display = 'none';
+            forget.style.display = 'none';
+          }
+        }
+
+        async function refresh() {
+          var st = await window.WXLOCAL.permissionState();
+          paint(st);
+        }
+
+        pick.addEventListener('click', async function () {
+          /* prompt 状态说明之前授权过，先试无感恢复 */
+          if ((await window.WXLOCAL.permissionState()) === 'prompt') {
+            var r = await window.WXLOCAL.restore(true);
+            if (r.ok) { paint('granted'); SITE.toast('已恢复授权', 'ok'); return; }
+          }
+          var res = await window.WXLOCAL.pickFolder();
+          if (res.ok) {
+            paint('granted');
+            SITE.toast('已授权文件夹：' + res.name, 'ok');
+            doScan();
+          } else if (!res.aborted) {
+            SITE.toast(res.error || '授权失败', 'warn', 3200);
+          }
+          refresh();
+        });
+
+        forget.addEventListener('click', async function () {
+          await window.WXLOCAL.forget();
+          list.innerHTML = '';
+          paint('none');
+          SITE.toast('已取消授权', 'ok');
+        });
+
+        async function doScan() {
+          list.innerHTML = '<div class="lm-empty">扫描中…</div>';
+          var mods = await window.WXLOCAL.scanMods();
+          if (!mods || !mods.length) {
+            list.innerHTML = '<div class="lm-empty">文件夹里还没有 Mod。' +
+              '把一个 <code>xxx/mod.json</code> 或 <code>xxx.json</code> 放进这个文件夹就会出现在这里。</div>';
+            return;
+          }
+          list.innerHTML = '<div class="lm-count">发现 ' + mods.length + ' 个本地 Mod：</div>' +
+            mods.map(function (m) {
+              var where = m.kind === 'folder' ? (m.folder + '/mod.json') : (m.id + '.json');
+              return '<div class="lm-item">' +
+                '<span class="lm-name">' + SITE.esc(m.name) + '</span>' +
+                '<span class="lm-meta">' + SITE.esc(m.category) + ' · v' + SITE.esc(m.version) +
+                ' · ' + SITE.esc(m.author) + '</span>' +
+                '<code class="lm-file">' + SITE.esc(where) + '</code></div>';
+            }).join('');
+        }
+        scan.addEventListener('click', doScan);
+
+        refresh().then(function () {
+          window.WXLOCAL.permissionState().then(function (st) {
+            if (st === 'granted') doScan();
+          });
+        });
+      })();
+
+      async function load() {
+        let stats = null;
+        try {
+          stats = await SITE.fetchStats();
+        } catch (e) {
+          document.getElementById('latest').innerHTML =
+            '<div class="empty">⚠ 无法连接 Mod 站服务。<br>请在项目目录运行：<code>node server/mod-site.js</code></div>';
+          document.getElementById('hot').innerHTML = '';
+          return;
+        }
+
+        const s = stats || {};
+        document.getElementById('hero-stats').innerHTML =
+          '<div class="hs-item"><span class="hs-num">' + (s.mods || 0) + '</span><span class="hs-label">收录 Mod</span></div>' +
+          '<div class="hs-item"><span class="hs-num">' + (s.downloads || 0) + '</span><span class="hs-label">累计下载</span></div>' +
+          '<div class="hs-item"><span class="hs-num">' + (s.authors || 0) + '</span><span class="hs-label">创作者</span></div>';
+
+        const latest = s.latest || [];
+        document.getElementById('latest').innerHTML = latest.length
+          ? latest.map(m => SITE.modCard(m)).join('')
+          : '<div class="empty">还没有 Mod。第一个作品，等你来！<br><br><a class="btn red" href="tutorial.html">学做 Mod</a></div>';
+
+        const hot = s.hot || [];
+        document.getElementById('hot').innerHTML = hot.length
+          ? hot.map(m => SITE.modCard(m)).join('')
+          : '<div class="empty">暂无下载记录</div>';
+
+        const tt = s.topTags || [];
+        document.getElementById('tags').innerHTML = tt.length
+          ? tt.map(t => '<a class="chip" href="list.html?q=' + encodeURIComponent(t.tag) + '">' + SITE.esc(t.tag) + ' ' + t.count + '</a>').join('')
+          : '<span style="color:#9a917f;font-size:13px">还没有标签</span>';
+
+        SITE.bindCopy(document);
+      }
+
+      load();
+    })();
+  </script>
+</body>
+
+</html>

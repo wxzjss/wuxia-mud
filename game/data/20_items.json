@@ -1,0 +1,1718 @@
+{
+  "items": {
+    "cloth_robe": {
+      "id": "cloth_robe",
+      "name": "粗布衣裳",
+      "type": "armor",
+      "slot": "身体",
+      "desc": "寻常的粗布衣裳，遮体而已。",
+      "stats": {
+        "def": 2
+      },
+      "value": 15,
+      "maxDurability": 60,
+      "quality": "worn"
+    },
+    "tattered_cloak": {
+      "id": "tattered_cloak",
+      "name": "破旧斗篷",
+      "type": "cloak",
+      "slot": "披风",
+      "desc": "洗得发白的旧斗篷，挡风尚可。",
+      "stats": {
+        "def": 1,
+        "dodge": 2
+      },
+      "value": 8,
+      "maxDurability": 40,
+      "quality": "worn"
+    },
+    "silk_robe": {
+      "id": "silk_robe",
+      "name": "蓝绸长衫",
+      "type": "armor",
+      "slot": "身体",
+      "desc": "上等绸料裁成的长衫，做工考究。",
+      "stats": {
+        "def": 6
+      },
+      "attr": {
+        "定力": 1
+      },
+      "value": 200,
+      "maxDurability": 100,
+      "quality": "fine"
+    },
+    "leather_armor": {
+      "id": "leather_armor",
+      "name": "皮甲",
+      "type": "armor",
+      "slot": "身体",
+      "desc": "牛皮硝制而成，颇为坚韧。",
+      "stats": {
+        "def": 14
+      },
+      "value": 350,
+      "maxDurability": 150,
+      "quality": "fine"
+    },
+    "chain_armor": {
+      "id": "chain_armor",
+      "name": "锁子甲",
+      "type": "armor",
+      "slot": "身体",
+      "desc": "细铁环环环相扣，刀剑难入。",
+      "stats": {
+        "def": 28
+      },
+      "value": 1200,
+      "maxDurability": 240,
+      "quality": "rare"
+    },
+    "black_gold_armor": {
+      "id": "black_gold_armor",
+      "name": "玄铁重甲",
+      "type": "armor",
+      "slot": "身体",
+      "desc": "以玄铁打造，沉重异常，却是护身至宝。",
+      "stats": {
+        "def": 65
+      },
+      "attr": {
+        "根骨": 3
+      },
+      "value": 8000,
+      "maxDurability": 500,
+      "require": {
+        "attr": "力量",
+        ">=": 30
+      },
+      "quality": "legend"
+    },
+    "wood_sword": {
+      "id": "wood_sword",
+      "name": "木剑",
+      "type": "weapon",
+      "slot": "武器",
+      "desc": "练功用的木剑，轻飘飘没什么分量。",
+      "stats": {
+        "atk": 3
+      },
+      "damage": 5,
+      "value": 10,
+      "weaponType": "剑",
+      "maxDurability": 40,
+      "tags": [
+        "weapon"
+      ],
+      "quality": "worn"
+    },
+    "iron_sword_basic": {
+      "id": "iron_sword_basic",
+      "name": "铁剑",
+      "type": "weapon",
+      "slot": "武器",
+      "desc": "寻常铁剑，锋刃尚可。",
+      "stats": {
+        "atk": 12
+      },
+      "damage": 15,
+      "value": 120,
+      "weaponType": "剑",
+      "grantsSkill": "basic_sword",
+      "maxDurability": 120,
+      "tags": [
+        "weapon"
+      ],
+      "quality": "common"
+    },
+    "fine_sword": {
+      "id": "fine_sword",
+      "name": "精钢长剑",
+      "type": "weapon",
+      "slot": "武器",
+      "desc": "精钢锻造，剑身如一泓秋水。",
+      "stats": {
+        "atk": 32
+      },
+      "damage": 34,
+      "value": 800,
+      "weaponType": "剑",
+      "maxDurability": 200,
+      "tags": [
+        "weapon"
+      ],
+      "quality": "rare"
+    },
+    "xuantie_sword": {
+      "id": "xuantie_sword",
+      "name": "玄铁重剑",
+      "type": "weapon",
+      "slot": "武器",
+      "desc": "重剑无锋，大巧不工。重逾百斤，非力大者不能挥动。",
+      "stats": {
+        "atk": 95
+      },
+      "damage": 100,
+      "value": 20000,
+      "weaponType": "剑",
+      "grantsSkill": "xuantie_jianfa",
+      "require": {
+        "attr": "力量",
+        ">=": 40
+      },
+      "maxDurability": 600,
+      "tags": [
+        "weapon"
+      ],
+      "quality": "legend"
+    },
+    "yitian_sword": {
+      "id": "yitian_sword",
+      "name": "倚天剑",
+      "type": "weapon",
+      "slot": "武器",
+      "desc": "武林至尊，宝刀屠龙；倚天不出，谁与争锋。剑中藏有秘籍。",
+      "stats": {
+        "atk": 150,
+        "critRate": 0.1
+      },
+      "damage": 160,
+      "value": 100000,
+      "weaponType": "剑",
+      "maxDurability": 999,
+      "tags": [
+        "weapon"
+      ],
+      "quality": "legend"
+    },
+    "hunting_knife": {
+      "id": "hunting_knife",
+      "name": "猎刀",
+      "type": "weapon",
+      "slot": "武器",
+      "desc": "猎户用的短刀，砍柴剥皮都好使。",
+      "stats": {
+        "atk": 8
+      },
+      "damage": 10,
+      "value": 40,
+      "weaponType": "刀",
+      "maxDurability": 80,
+      "tags": [
+        "weapon",
+        "tool"
+      ],
+      "quality": "worn"
+    },
+    "iron_blade": {
+      "id": "iron_blade",
+      "name": "砍山刀",
+      "type": "weapon",
+      "slot": "武器",
+      "desc": "刀背厚重，最适合劈砍。",
+      "stats": {
+        "atk": 16
+      },
+      "damage": 20,
+      "value": 150,
+      "weaponType": "刀",
+      "grantsSkill": "basic_blade",
+      "maxDurability": 140,
+      "tags": [
+        "weapon",
+        "tool"
+      ],
+      "quality": "common"
+    },
+    "blood_blade": {
+      "id": "blood_blade",
+      "name": "血刀",
+      "type": "weapon",
+      "slot": "武器",
+      "desc": "刀身泛着暗红，似有血气缠绕。",
+      "stats": {
+        "atk": 68,
+        "lifesteal": 0.1
+      },
+      "damage": 75,
+      "value": 6000,
+      "weaponType": "刀",
+      "maxDurability": 400,
+      "tags": [
+        "weapon",
+        "tool"
+      ],
+      "quality": "epic"
+    },
+    "wood_staff": {
+      "id": "wood_staff",
+      "name": "白蜡杆",
+      "type": "weapon",
+      "slot": "武器",
+      "desc": "白蜡木制成的棍棒，柔韧有力。",
+      "stats": {
+        "atk": 10
+      },
+      "damage": 12,
+      "value": 60,
+      "weaponType": "棍",
+      "grantsSkill": "basic_staff",
+      "maxDurability": 100,
+      "quality": "common"
+    },
+    "bamboo_stick": {
+      "id": "bamboo_stick",
+      "name": "打狗棒",
+      "type": "weapon",
+      "slot": "武器",
+      "desc": "碧绿竹棒，丐帮帮主信物。",
+      "stats": {
+        "atk": 82
+      },
+      "damage": 88,
+      "value": 15000,
+      "weaponType": "棍",
+      "grantsSkill": "dagou_bangfa",
+      "maxDurability": 500,
+      "quality": "legend"
+    },
+    "long_whip": {
+      "id": "long_whip",
+      "name": "长鞭",
+      "type": "weapon",
+      "slot": "武器",
+      "desc": "牛皮长鞭，可远攻近防。",
+      "stats": {
+        "atk": 14
+      },
+      "damage": 18,
+      "value": 180,
+      "weaponType": "鞭",
+      "grantsSkill": "basic_whip",
+      "maxDurability": 120,
+      "tags": [
+        "weapon"
+      ],
+      "quality": "common"
+    },
+    "cloth_hat": {
+      "id": "cloth_hat",
+      "name": "布巾",
+      "type": "helmet",
+      "slot": "头部",
+      "desc": "束发的布巾。",
+      "stats": {
+        "def": 1
+      },
+      "value": 10,
+      "quality": "worn"
+    },
+    "iron_helmet": {
+      "id": "iron_helmet",
+      "name": "铁盔",
+      "type": "helmet",
+      "slot": "头部",
+      "desc": "生铁打的头盔，压得脖子酸。",
+      "stats": {
+        "def": 10
+      },
+      "value": 300,
+      "quality": "fine"
+    },
+    "cloth_boots": {
+      "id": "cloth_boots",
+      "name": "布鞋",
+      "type": "boots",
+      "slot": "脚部",
+      "desc": "轻便布鞋，走远路还行。",
+      "stats": {
+        "dodge": 3
+      },
+      "value": 20,
+      "quality": "worn"
+    },
+    "light_boots": {
+      "id": "light_boots",
+      "name": "踏云靴",
+      "type": "boots",
+      "slot": "脚部",
+      "desc": "鞋底轻柔，着地无声。",
+      "stats": {
+        "dodge": 18,
+        "speed": 8
+      },
+      "value": 900,
+      "quality": "rare"
+    },
+    "jade_pendant": {
+      "id": "jade_pendant",
+      "name": "玉佩",
+      "type": "necklace",
+      "slot": "颈部",
+      "desc": "温润的古玉，佩戴可安神。",
+      "stats": {
+        "maxMp": 20
+      },
+      "attr": {
+        "定力": 1
+      },
+      "value": 500,
+      "tags": [
+        "jade",
+        "jewelry"
+      ],
+      "quality": "fine"
+    },
+    "gold_ring": {
+      "id": "gold_ring",
+      "name": "金戒指",
+      "type": "ring",
+      "slot": "戒指",
+      "desc": "俗气的金戒指，胜在值钱。",
+      "stats": {},
+      "value": 400,
+      "tags": [
+        "jewelry"
+      ],
+      "quality": "rare"
+    },
+    "buddha_bead": {
+      "id": "buddha_bead",
+      "name": "佛珠",
+      "type": "accessory",
+      "slot": "饰品",
+      "desc": "一百零八颗菩提子串成，可静心祛邪。",
+      "stats": {
+        "maxHp": 40,
+        "def": 5
+      },
+      "attr": {
+        "定力": 2
+      },
+      "value": 1200,
+      "tags": [
+        "jade"
+      ],
+      "quality": "rare"
+    },
+    "steamed_bun": {
+      "id": "steamed_bun",
+      "name": "馒头",
+      "type": "food",
+      "desc": "白胖的馒头，管饱。",
+      "healFood": 35,
+      "healHp": 10,
+      "value": 3,
+      "stackable": true,
+      "stackMax": 99,
+      "quality": "worn"
+    },
+    "water_gourd": {
+      "id": "water_gourd",
+      "name": "水葫芦",
+      "type": "food",
+      "desc": "装满了清水，能解渴。",
+      "healWater": 40,
+      "value": 3,
+      "stackable": true,
+      "stackMax": 99,
+      "consume": false,
+      "quality": "worn",
+      "tags": [
+        "container"
+      ]
+    },
+    "roast_meat": {
+      "id": "roast_meat",
+      "name": "烤肉",
+      "type": "food",
+      "desc": "油汪汪的烤肉，看着就香。",
+      "healFood": 60,
+      "healHp": 25,
+      "value": 15,
+      "stackable": true,
+      "stackMax": 99,
+      "tags": [
+        "food"
+      ],
+      "quality": "worn"
+    },
+    "jinchuang_yao": {
+      "id": "jinchuang_yao",
+      "name": "金创药",
+      "type": "consumable",
+      "desc": "外敷金创药，止血生肌。",
+      "healHp": 80,
+      "value": 30,
+      "stackable": true,
+      "stackMax": 99,
+      "use": [
+        {
+          "type": "+hp",
+          "args": [
+            80
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "你敷上金创药，伤口一阵清凉。"
+        }
+      ],
+      "tags": [
+        "herb",
+        "medicine"
+      ],
+      "quality": "fine"
+    },
+    "jiuhua_dan": {
+      "id": "jiuhua_dan",
+      "name": "九花玉露丸",
+      "type": "consumable",
+      "desc": "桃花岛秘制灵药，可解百毒、复气血。",
+      "healHp": 300,
+      "healMp": 150,
+      "value": 400,
+      "stackable": true,
+      "stackMax": 20,
+      "cure": true,
+      "use": [
+        {
+          "type": "+hp",
+          "args": [
+            300
+          ]
+        },
+        {
+          "type": "+mp",
+          "args": [
+            150
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "一股暖流自丹田升起，伤痛尽消。"
+        }
+      ],
+      "tags": [
+        "jade"
+      ],
+      "quality": "fine"
+    },
+    "xiaohuan_dan": {
+      "id": "xiaohuan_dan",
+      "name": "小还丹",
+      "type": "consumable",
+      "desc": "少林秘药，能大补气血、恢复内力。",
+      "healHp": 500,
+      "healMp": 300,
+      "value": 800,
+      "stackable": true,
+      "stackMax": 20,
+      "use": [
+        {
+          "type": "+hp",
+          "args": [
+            500
+          ]
+        },
+        {
+          "type": "+mp",
+          "args": [
+            300
+          ]
+        }
+      ],
+      "tags": [
+        "herb",
+        "medicine"
+      ],
+      "quality": "rare"
+    },
+    "dahuan_dan": {
+      "id": "dahuan_dan",
+      "name": "大还丹",
+      "type": "consumable",
+      "desc": "传说中的灵丹，可起死回生。",
+      "healHp": 9999,
+      "healMp": 9999,
+      "value": 5000,
+      "stackable": true,
+      "stackMax": 5,
+      "cure": true,
+      "tags": [
+        "herb",
+        "medicine"
+      ],
+      "quality": "epic"
+    },
+    "herb_lingshen": {
+      "id": "herb_lingshen",
+      "name": "灵芝",
+      "type": "herb",
+      "desc": "山间偶得的灵芝，可入药。",
+      "value": 60,
+      "stackable": true,
+      "stackMax": 99,
+      "tags": [
+        "herb",
+        "medicine"
+      ],
+      "quality": "common"
+    },
+    "herb_xuecao": {
+      "id": "herb_xuecao",
+      "name": "血参",
+      "type": "herb",
+      "desc": "血色的人参，补血极佳。",
+      "value": 120,
+      "stackable": true,
+      "stackMax": 99,
+      "tags": [
+        "herb",
+        "medicine"
+      ],
+      "quality": "common"
+    },
+    "herb_danggui": {
+      "id": "herb_danggui",
+      "name": "当归",
+      "type": "herb",
+      "desc": "寻常药材。",
+      "value": 20,
+      "stackable": true,
+      "stackMax": 99,
+      "quality": "worn"
+    },
+    "herb_hanshui": {
+      "id": "herb_hanshui",
+      "name": "寒水石",
+      "type": "herb",
+      "desc": "极寒之石，可用于驱毒。",
+      "value": 80,
+      "stackable": true,
+      "stackMax": 99,
+      "quality": "common"
+    },
+    "venom_sac": {
+      "id": "venom_sac",
+      "name": "蛇胆",
+      "type": "herb",
+      "desc": "毒蛇的胆，可入药亦可炼毒。",
+      "value": 50,
+      "stackable": true,
+      "stackMax": 99,
+      "quality": "common"
+    },
+    "silk_thread": {
+      "id": "silk_thread",
+      "name": "天蚕丝",
+      "type": "material",
+      "desc": "坚韧无比的天蚕丝，织衣可防刀剑。",
+      "value": 200,
+      "stackable": true,
+      "stackMax": 99,
+      "quality": "fine"
+    },
+    "iron_ore": {
+      "id": "iron_ore",
+      "name": "铁矿石",
+      "type": "material",
+      "desc": "打铁用的矿石。",
+      "value": 15,
+      "stackable": true,
+      "stackMax": 99,
+      "quality": "worn"
+    },
+    "wine_jar": {
+      "id": "wine_jar",
+      "name": "酒葫芦",
+      "type": "food",
+      "desc": "装满烈酒的葫芦，喝一口浑身发热。",
+      "healFood": 20,
+      "value": 10,
+      "stackable": true,
+      "stackMax": 30,
+      "use": [
+        {
+          "type": "+hp",
+          "args": [
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "烈酒入喉，一股热气直冲头顶。"
+        }
+      ],
+      "tags": [
+        "wine"
+      ],
+      "quality": "worn"
+    },
+    "token_huashan": {
+      "id": "token_huashan",
+      "name": "华山腰牌",
+      "type": "accessory",
+      "slot": "饰品",
+      "desc": "华山弟子的身份腰牌。",
+      "stats": {},
+      "value": 0,
+      "noSell": true,
+      "quality": "worn"
+    },
+    "token_shaolin": {
+      "id": "token_shaolin",
+      "name": "少林度牒",
+      "type": "accessory",
+      "slot": "饰品",
+      "desc": "少林弟子的度牒，可自由出入山门。",
+      "stats": {},
+      "value": 0,
+      "noSell": true,
+      "quality": "worn"
+    },
+    "letter_mystery": {
+      "id": "letter_mystery",
+      "name": "神秘信笺",
+      "type": "quest",
+      "desc": "一封没有署名的信，纸角画着奇怪的符号。",
+      "value": 0,
+      "noSell": true,
+      "quality": "worn"
+    },
+    "jade_key": {
+      "id": "jade_key",
+      "name": "玉钥匙",
+      "type": "quest",
+      "desc": "通体碧玉的钥匙，不知能开什么锁。",
+      "value": 0,
+      "noSell": true,
+      "tags": [
+        "jade"
+      ],
+      "quality": "worn"
+    },
+    "manuscript_page": {
+      "id": "manuscript_page",
+      "name": "武学残页",
+      "type": "quest",
+      "desc": "不知从哪本书上撕下的一页，上面画着人形与红线。",
+      "value": 300,
+      "stackable": false,
+      "quality": "fine"
+    },
+    "tiger_bone_wine": {
+      "id": "tiger_bone_wine",
+      "name": "虎骨酒",
+      "type": "consumable",
+      "desc": "以虎骨泡成的烈酒，饮之强筋壮骨。",
+      "value": 600,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "力量",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "酒液灼热，你感觉筋骨都在生长。"
+        }
+      ],
+      "tags": [
+        "wine"
+      ],
+      "quality": "fine"
+    },
+    "bear_gall": {
+      "id": "bear_gall",
+      "name": "熊胆",
+      "type": "consumable",
+      "desc": "黑熊的胆，极苦，却能明目强身。",
+      "value": 400,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "根骨",
+            1
+          ]
+        }
+      ],
+      "quality": "fine"
+    },
+    "elixir_wisdom": {
+      "id": "elixir_wisdom",
+      "name": "开窍丹",
+      "type": "consumable",
+      "desc": "传说中的仙丹，服之可增悟性。",
+      "value": 8000,
+      "stackable": true,
+      "stackMax": 3,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "悟性",
+            2
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "你只觉脑中一声轻响，思虑豁然通明。"
+        }
+      ],
+      "tags": [
+        "herb",
+        "medicine"
+      ],
+      "quality": "legend"
+    },
+    "elixir_luck": {
+      "id": "elixir_luck",
+      "name": "福缘果",
+      "type": "consumable",
+      "desc": "奇异的果实，服之福缘大增。",
+      "value": 8000,
+      "stackable": true,
+      "stackMax": 3,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "福缘",
+            2
+          ]
+        }
+      ],
+      "tags": [
+        "food"
+      ],
+      "quality": "legend"
+    },
+    "painting_landscape": {
+      "id": "painting_landscape",
+      "name": "山水长卷",
+      "type": "misc",
+      "value": 900,
+      "tags": [
+        "painting",
+        "art"
+      ],
+      "quality": "rare",
+      "desc": "一幅绢本山水，笔意苍润，落款已模糊不清。"
+    },
+    "painting_bird": {
+      "id": "painting_bird",
+      "name": "花鸟小品",
+      "type": "misc",
+      "value": 320,
+      "tags": [
+        "painting",
+        "art"
+      ],
+      "quality": "fine",
+      "desc": "绢上绘着一只栖枝的雀儿，工笔极细。"
+    },
+    "painting_court": {
+      "id": "painting_court",
+      "name": "宫廷仕女图",
+      "type": "misc",
+      "value": 2600,
+      "tags": [
+        "painting",
+        "art"
+      ],
+      "quality": "epic",
+      "desc": "内府流出之物，绢色犹新，画的是一位云鬓凤钗的女子。"
+    },
+    "scroll_famous": {
+      "id": "scroll_famous",
+      "name": "米氏云山卷",
+      "type": "misc",
+      "value": 8200,
+      "tags": [
+        "painting",
+        "art"
+      ],
+      "quality": "legend",
+      "desc": "前朝大家真迹，墨色如烟雨拢山，捧在手里都觉得沉。"
+    },
+    "porcelain_bowl": {
+      "id": "porcelain_bowl",
+      "name": "青花小碗",
+      "type": "misc",
+      "value": 120,
+      "tags": [
+        "porcelain"
+      ],
+      "quality": "common",
+      "desc": "胎薄釉润，碗心画着缠枝莲。"
+    },
+    "porcelain_vase": {
+      "id": "porcelain_vase",
+      "name": "汝窑梅瓶",
+      "type": "misc",
+      "value": 2200,
+      "tags": [
+        "porcelain"
+      ],
+      "quality": "epic",
+      "desc": "雨过天青色，叩之如磬，是窑口里的极品。"
+    },
+    "celadon_jar": {
+      "id": "celadon_jar",
+      "name": "龙泉青瓷罐",
+      "type": "misc",
+      "value": 640,
+      "tags": [
+        "porcelain"
+      ],
+      "quality": "fine",
+      "desc": "釉色肥润如一汪深潭，罐口描着一圈莲瓣。"
+    },
+    "porcelain_teaset": {
+      "id": "porcelain_teaset",
+      "name": "成化斗彩茶具",
+      "type": "misc",
+      "value": 3600,
+      "tags": [
+        "porcelain",
+        "tea"
+      ],
+      "quality": "epic",
+      "desc": "一壶四盏，五彩夺目，据说宫里也不过如此。"
+    },
+    "book_poem": {
+      "id": "book_poem",
+      "name": "诗集残卷",
+      "type": "book",
+      "value": 90,
+      "tags": [
+        "book"
+      ],
+      "quality": "common",
+      "desc": "缺了头的旧诗集，纸页发黄，字却写得极好。"
+    },
+    "book_classic": {
+      "id": "book_classic",
+      "name": "经史子集",
+      "type": "book",
+      "value": 380,
+      "tags": [
+        "book"
+      ],
+      "quality": "fine",
+      "desc": "一函四册，翻开来墨香扑鼻。"
+    },
+    "book_strategy": {
+      "id": "book_strategy",
+      "name": "兵法孤本",
+      "type": "book",
+      "value": 1800,
+      "tags": [
+        "book"
+      ],
+      "quality": "rare",
+      "desc": "批注密密麻麻，像是被人翻烂了。"
+    },
+    "book_rare": {
+      "id": "book_rare",
+      "name": "宋版古籍",
+      "type": "book",
+      "value": 5200,
+      "tags": [
+        "book"
+      ],
+      "quality": "epic",
+      "desc": "纸如蝉翼，字若星斗，藏书家见了要眼红。"
+    },
+    "jade_talisman": {
+      "id": "jade_talisman",
+      "name": "辟邪玉符",
+      "type": "misc",
+      "value": 420,
+      "tags": [
+        "jade"
+      ],
+      "quality": "fine",
+      "desc": "正面刻着一道云篆，据说能挡一次灾。"
+    },
+    "jade_ruyi": {
+      "id": "jade_ruyi",
+      "name": "白玉如意",
+      "type": "misc",
+      "value": 4800,
+      "tags": [
+        "jade",
+        "art"
+      ],
+      "quality": "epic",
+      "desc": "一整块和阗玉雕成，如意云头饱满圆润。"
+    },
+    "wine_bamboo": {
+      "id": "wine_bamboo",
+      "name": "竹叶青",
+      "type": "food",
+      "value": 150,
+      "tags": [
+        "wine",
+        "food"
+      ],
+      "quality": "fine",
+      "stackable": true,
+      "stackMax": 10,
+      "healFood": 12,
+      "use": {
+        "food": 12,
+        "water": 4
+      },
+      "desc": "酒色碧绿，入口微苦，回甘却长。"
+    },
+    "wine_song": {
+      "id": "wine_song",
+      "name": "女儿红",
+      "type": "food",
+      "value": 680,
+      "tags": [
+        "wine",
+        "food"
+      ],
+      "quality": "rare",
+      "stackable": true,
+      "stackMax": 5,
+      "healFood": 18,
+      "use": {
+        "food": 18,
+        "water": 6
+      },
+      "desc": "窖藏十八年的花雕，开坛香满一屋。"
+    },
+    "wine_imperial": {
+      "id": "wine_imperial",
+      "name": "宫中御酒",
+      "type": "food",
+      "value": 3000,
+      "tags": [
+        "wine",
+        "food"
+      ],
+      "quality": "epic",
+      "stackable": true,
+      "stackMax": 3,
+      "healFood": 30,
+      "use": {
+        "food": 30,
+        "water": 10,
+        "mp": 40
+      },
+      "desc": "琥珀色的酒液，杯壁上挂着一层蜜。"
+    },
+    "tea_longjing": {
+      "id": "tea_longjing",
+      "name": "雨前龙井",
+      "type": "food",
+      "value": 240,
+      "tags": [
+        "tea",
+        "food"
+      ],
+      "quality": "fine",
+      "stackable": true,
+      "stackMax": 10,
+      "healWater": 14,
+      "use": {
+        "water": 14
+      },
+      "desc": "一旗一枪，泡开来满盏春色。"
+    },
+    "tea_puer": {
+      "id": "tea_puer",
+      "name": "陈年普洱",
+      "type": "food",
+      "value": 520,
+      "tags": [
+        "tea",
+        "food"
+      ],
+      "quality": "rare",
+      "stackable": true,
+      "stackMax": 10,
+      "healWater": 20,
+      "healFood": 6,
+      "use": {
+        "water": 20,
+        "food": 6
+      },
+      "desc": "茶饼压得紧实，掰开来一股陈香。"
+    },
+    "silver_hairpin": {
+      "id": "silver_hairpin",
+      "name": "银步摇",
+      "type": "misc",
+      "value": 260,
+      "tags": [
+        "jewelry"
+      ],
+      "quality": "fine",
+      "desc": "走起路来细碎的银铃轻响，很惹眼。"
+    },
+    "gold_bangle": {
+      "id": "gold_bangle",
+      "name": "赤金镯子",
+      "type": "misc",
+      "value": 1400,
+      "tags": [
+        "jewelry"
+      ],
+      "quality": "rare",
+      "desc": "实心足金，沉甸甸地压手。"
+    },
+    "pearl_earring": {
+      "id": "pearl_earring",
+      "name": "南珠耳坠",
+      "type": "misc",
+      "value": 3400,
+      "tags": [
+        "jewelry"
+      ],
+      "quality": "epic",
+      "desc": "两颗珠子一般大小，在光下泛着粉。"
+    },
+    "incense_agarwood": {
+      "id": "incense_agarwood",
+      "name": "沉香一块",
+      "type": "misc",
+      "value": 760,
+      "tags": [
+        "incense"
+      ],
+      "quality": "fine",
+      "desc": "指甲盖大小，遇火便有一缕清远的烟。"
+    },
+    "sachet_silk": {
+      "id": "sachet_silk",
+      "name": "苏绣香囊",
+      "type": "misc",
+      "value": 130,
+      "tags": [
+        "incense",
+        "jewelry"
+      ],
+      "quality": "common",
+      "desc": "绣着一对并蒂莲，里头装了苏合香。"
+    },
+    "guqin": {
+      "id": "guqin",
+      "name": "焦尾古琴",
+      "type": "misc",
+      "value": 2800,
+      "tags": [
+        "music",
+        "art"
+      ],
+      "quality": "epic",
+      "desc": "琴身有一道火痕，七弦却清越异常。"
+    },
+    "jade_flute": {
+      "id": "jade_flute",
+      "name": "白玉箫",
+      "type": "misc",
+      "value": 900,
+      "tags": [
+        "music"
+      ],
+      "quality": "rare",
+      "desc": "通体无瑕，吹起来声音像隔着水。"
+    },
+    "pipa": {
+      "id": "pipa",
+      "name": "螺钿琵琶",
+      "type": "misc",
+      "value": 1150,
+      "tags": [
+        "music"
+      ],
+      "quality": "rare",
+      "desc": "背板嵌着贝壳花纹，弦一拨便如珠落玉盘。"
+    },
+    "rouge_box": {
+      "id": "rouge_box",
+      "name": "胭脂盒",
+      "type": "misc",
+      "value": 80,
+      "tags": [
+        "makeup"
+      ],
+      "quality": "common",
+      "desc": "小小一只银盒，胭脂的颜色很正。"
+    },
+    "face_powder": {
+      "id": "face_powder",
+      "name": "玉簪粉",
+      "type": "misc",
+      "value": 160,
+      "tags": [
+        "makeup"
+      ],
+      "quality": "fine",
+      "desc": "粉质细腻，敷在脸上像凝了层薄霜。"
+    },
+    "clay_figure": {
+      "id": "clay_figure",
+      "name": "泥人张",
+      "type": "misc",
+      "value": 25,
+      "tags": [
+        "toy"
+      ],
+      "quality": "worn",
+      "desc": "捏的是个扛着大刀的关公，眉眼居然有几分神气。"
+    },
+    "wood_whistle": {
+      "id": "wood_whistle",
+      "name": "木头哨子",
+      "type": "misc",
+      "value": 8,
+      "tags": [
+        "toy"
+      ],
+      "quality": "worn",
+      "desc": "随便削的，能吹出两个音。"
+    },
+    "kite_swallow": {
+      "id": "kite_swallow",
+      "name": "燕子风筝",
+      "type": "misc",
+      "value": 45,
+      "tags": [
+        "toy"
+      ],
+      "quality": "worn",
+      "desc": "竹骨糊纸，尾巴上还系了两条红飘带。"
+    },
+    "clay_jar": {
+      "id": "clay_jar",
+      "name": "陶罐",
+      "type": "container",
+      "value": 45,
+      "tags": [
+        "container"
+      ],
+      "quality": "worn",
+      "container": true,
+      "capacity": 6,
+      "desc": "粗陶烧的，能装不少水，就是重。"
+    },
+    "leather_waterskin": {
+      "id": "leather_waterskin",
+      "name": "皮水囊",
+      "type": "container",
+      "value": 120,
+      "tags": [
+        "container"
+      ],
+      "quality": "common",
+      "container": true,
+      "capacity": 8,
+      "desc": "牛皮缝的水囊，骑马赶路最合用。"
+    },
+    "jade_pot": {
+      "id": "jade_pot",
+      "name": "玉净瓶",
+      "type": "container",
+      "value": 2600,
+      "tags": [
+        "container",
+        "jade"
+      ],
+      "quality": "epic",
+      "container": true,
+      "capacity": 20,
+      "desc": "瓶身莹白，装的水似乎都比别处清甜。"
+    },
+    "butcher_knife": {
+      "id": "butcher_knife",
+      "name": "剔骨尖刀",
+      "type": "weapon",
+      "slot": "武器",
+      "weaponType": "刀",
+      "value": 90,
+      "tags": [
+        "tool",
+        "weapon"
+      ],
+      "quality": "common",
+      "damage": 15,
+      "sharp": true,
+      "desc": "屠户用的家什，锋利得能剃下薄如纸的肉片。"
+    },
+    "steel_blade": {
+      "id": "steel_blade",
+      "name": "雁翎刀",
+      "type": "weapon",
+      "slot": "武器",
+      "weaponType": "刀",
+      "value": 380,
+      "tags": [
+        "weapon"
+      ],
+      "quality": "fine",
+      "damage": 40,
+      "sharp": true,
+      "desc": "刀背厚实，一刀下去势大力沉。"
+    },
+    "iron_spear": {
+      "id": "iron_spear",
+      "name": "铁枪",
+      "type": "weapon",
+      "slot": "武器",
+      "weaponType": "枪",
+      "value": 300,
+      "tags": [
+        "weapon"
+      ],
+      "quality": "common",
+      "damage": 36,
+      "sharp": true,
+      "desc": "枪杆是白蜡木的，枪头寒光凛凛。"
+    },
+    "raw_meat": {
+      "id": "raw_meat",
+      "name": "生肉",
+      "type": "food",
+      "value": 6,
+      "tags": [
+        "food",
+        "raw"
+      ],
+      "quality": "worn",
+      "stackable": true,
+      "stackMax": 20,
+      "use": {
+        "food": 5,
+        "nausea": true
+      },
+      "desc": "血淋淋的一块，生吃下去怕是要翻胃。"
+    },
+    "raw_fish": {
+      "id": "raw_fish",
+      "name": "生鱼",
+      "type": "food",
+      "value": 5,
+      "tags": [
+        "food",
+        "raw"
+      ],
+      "quality": "worn",
+      "stackable": true,
+      "stackMax": 20,
+      "use": {
+        "food": 4,
+        "water": 6,
+        "nausea": true
+      },
+      "desc": "还在甩尾巴，鳞片滑腻腻的。"
+    },
+    "cooked_meat": {
+      "id": "cooked_meat",
+      "name": "烤肉",
+      "type": "food",
+      "value": 40,
+      "tags": [
+        "food"
+      ],
+      "quality": "common",
+      "stackable": true,
+      "stackMax": 10,
+      "healFood": 35,
+      "use": {
+        "food": 35,
+        "water": -3
+      },
+      "desc": "外焦里嫩，油还在往下滴。"
+    },
+    "cooked_fish": {
+      "id": "cooked_fish",
+      "name": "清蒸鱼",
+      "type": "food",
+      "value": 55,
+      "tags": [
+        "food"
+      ],
+      "quality": "common",
+      "stackable": true,
+      "stackMax": 10,
+      "healFood": 30,
+      "healWater": 8,
+      "use": {
+        "food": 30,
+        "water": 8
+      },
+      "desc": "葱丝姜片铺了一层，鲜得很。"
+    },
+    "animal_pelt": {
+      "id": "animal_pelt",
+      "name": "兽皮",
+      "type": "material",
+      "value": 60,
+      "tags": [
+        "material"
+      ],
+      "quality": "common",
+      "stackable": true,
+      "stackMax": 20,
+      "desc": "硝制过的皮子，可以卖给皮货商。"
+    },
+    "fine_pelt": {
+      "id": "fine_pelt",
+      "name": "上等貂皮",
+      "type": "material",
+      "value": 880,
+      "tags": [
+        "material"
+      ],
+      "quality": "rare",
+      "stackable": true,
+      "stackMax": 10,
+      "desc": "毛色油亮，摸上去像捧着一团暖云。"
+    },
+    "crop_rice": {
+      "id": "crop_rice",
+      "name": "稻谷",
+      "type": "material",
+      "value": 12,
+      "tags": [
+        "crop",
+        "food"
+      ],
+      "quality": "worn",
+      "stackable": true,
+      "stackMax": 50,
+      "desc": "刚割下来的稻穗，还带着露水。"
+    },
+    "crop_wheat": {
+      "id": "crop_wheat",
+      "name": "麦子",
+      "type": "material",
+      "value": 10,
+      "tags": [
+        "crop",
+        "food"
+      ],
+      "quality": "worn",
+      "stackable": true,
+      "stackMax": 50,
+      "desc": "颗粒饱满，晒干了就能磨面。"
+    },
+    "crop_vegetable": {
+      "id": "crop_vegetable",
+      "name": "青菜",
+      "type": "material",
+      "value": 8,
+      "tags": [
+        "crop",
+        "food"
+      ],
+      "quality": "worn",
+      "stackable": true,
+      "stackMax": 50,
+      "healFood": 10,
+      "use": {
+        "food": 10
+      },
+      "desc": "水灵灵的，还沾着泥。"
+    },
+    "seed_rice": {
+      "id": "seed_rice",
+      "name": "稻种",
+      "type": "material",
+      "value": 5,
+      "tags": [
+        "seed"
+      ],
+      "quality": "worn",
+      "stackable": true,
+      "stackMax": 50,
+      "desc": "一小袋谷种，撒到田里就能长。"
+    },
+    "seed_vegetable": {
+      "id": "seed_vegetable",
+      "name": "菜种",
+      "type": "material",
+      "value": 4,
+      "tags": [
+        "seed"
+      ],
+      "quality": "worn",
+      "stackable": true,
+      "stackMax": 50,
+      "desc": "一小包菜籽。"
+    },
+    "dish_braised_pork": {
+      "id": "dish_braised_pork",
+      "name": "红烧肉",
+      "type": "food",
+      "value": 80,
+      "tags": [
+        "food"
+      ],
+      "quality": "common",
+      "healFood": 40,
+      "use": {
+        "food": 40,
+        "water": -4
+      },
+      "desc": "肥而不腻，酱色红亮，下饭最好。"
+    },
+    "dish_sweet_sour": {
+      "id": "dish_sweet_sour",
+      "name": "糖醋鲤鱼",
+      "type": "food",
+      "value": 120,
+      "tags": [
+        "food"
+      ],
+      "quality": "fine",
+      "healFood": 45,
+      "healWater": 10,
+      "use": {
+        "food": 45,
+        "water": 10
+      },
+      "desc": "整条鱼翻成菊花状，浇上琥珀色的糖醋汁。"
+    },
+    "dish_noodles": {
+      "id": "dish_noodles",
+      "name": "阳春面",
+      "type": "food",
+      "value": 20,
+      "tags": [
+        "food"
+      ],
+      "quality": "worn",
+      "healFood": 25,
+      "healWater": 12,
+      "use": {
+        "food": 25,
+        "water": 12
+      },
+      "desc": "清汤寡水，但撒了葱花，香气扑鼻。"
+    },
+    "dish_dumpling": {
+      "id": "dish_dumpling",
+      "name": "一屉水饺",
+      "type": "food",
+      "value": 35,
+      "tags": [
+        "food"
+      ],
+      "quality": "common",
+      "healFood": 32,
+      "use": {
+        "food": 32
+      },
+      "desc": "皮薄馅大，蘸了醋更香。"
+    }
+  },
+  "recipes": {
+    "recipe_jinchuang": {
+      "id": "recipe_jinchuang",
+      "name": "金创药方",
+      "desc": "以当归、血参熬制金创药。",
+      "materials": [
+        {
+          "item": "herb_danggui",
+          "count": 2
+        },
+        {
+          "item": "herb_xuecao",
+          "count": 1
+        }
+      ],
+      "result": "jinchuang_yao",
+      "resultCount": 2,
+      "timeCost": 60,
+      "skill": "basic_force",
+      "skillLevel": 20
+    },
+    "recipe_jiuhua": {
+      "id": "recipe_jiuhua",
+      "name": "九花玉露丸方",
+      "desc": "桃花岛秘方，需灵芝与寒水石。",
+      "materials": [
+        {
+          "item": "herb_lingshen",
+          "count": 3
+        },
+        {
+          "item": "herb_hanshui",
+          "count": 2
+        }
+      ],
+      "result": "jiuhua_dan",
+      "resultCount": 1,
+      "timeCost": 180,
+      "skill": "basic_force",
+      "skillLevel": 100
+    },
+    "recipe_iron_sword": {
+      "id": "recipe_iron_sword",
+      "name": "铁剑锻造",
+      "desc": "以铁矿石打造铁剑。",
+      "materials": [
+        {
+          "item": "iron_ore",
+          "count": 5
+        }
+      ],
+      "result": "iron_sword_basic",
+      "resultCount": 1,
+      "timeCost": 240,
+      "skill": "basic_blade",
+      "skillLevel": 30
+    }
+  },
+  "shops": {
+    "shop_jiangnan_market": {
+      "id": "shop_jiangnan_market",
+      "name": "江南市集",
+      "goods": [
+        {
+          "item": "steamed_bun",
+          "price": 4
+        },
+        {
+          "item": "water_gourd",
+          "price": 5
+        },
+        {
+          "item": "roast_meat",
+          "price": 18
+        },
+        {
+          "item": "jinchuang_yao",
+          "price": 40
+        },
+        {
+          "item": "iron_sword_basic",
+          "price": 150
+        },
+        {
+          "item": "hunting_knife",
+          "price": 55
+        },
+        {
+          "item": "wood_staff",
+          "price": 80
+        },
+        {
+          "item": "cloth_boots",
+          "price": 30
+        },
+        {
+          "item": "cloth_hat",
+          "price": 15
+        },
+        {
+          "item": "leather_armor",
+          "price": 450
+        },
+        {
+          "item": "book_basic_sword",
+          "price": 180
+        },
+        {
+          "item": "book_basic_blade",
+          "price": 180
+        },
+        {
+          "item": "book_basic_force",
+          "price": 220
+        },
+        {
+          "item": "book_basic_dodge",
+          "price": 180
+        },
+        {
+          "item": "book_poem",
+          "price": 45
+        }
+      ]
+    },
+    "shop_huashan_supply": {
+      "id": "shop_huashan_supply",
+      "name": "华山药铺",
+      "goods": [
+        {
+          "item": "jinchuang_yao",
+          "price": 35
+        },
+        {
+          "item": "herb_danggui",
+          "price": 25
+        },
+        {
+          "item": "herb_xuecao",
+          "price": 150
+        },
+        {
+          "item": "herb_lingshen",
+          "price": 80
+        },
+        {
+          "item": "fine_sword",
+          "price": 900
+        },
+        {
+          "item": "light_boots",
+          "price": 1000
+        },
+        {
+          "item": "buddha_bead",
+          "price": 1400
+        }
+      ]
+    },
+    "shop_black_market": {
+      "id": "shop_black_market",
+      "name": "黑市",
+      "goods": [
+        {
+          "item": "xiaohuan_dan",
+          "price": 1200
+        },
+        {
+          "item": "jiuhua_dan",
+          "price": 600
+        },
+        {
+          "item": "venom_sac",
+          "price": 70
+        },
+        {
+          "item": "silk_thread",
+          "price": 260
+        },
+        {
+          "item": "blood_blade",
+          "price": 7000
+        },
+        {
+          "item": "wine_jar",
+          "price": 15
+        },
+        {
+          "item": "elixir_wisdom",
+          "price": 12000
+        },
+        {
+          "item": "elixir_luck",
+          "price": 12000
+        }
+      ]
+    }
+  }
+}

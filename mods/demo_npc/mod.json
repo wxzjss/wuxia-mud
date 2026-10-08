@@ -1,0 +1,67 @@
+{
+  "id": "demo_npc",
+  "name": "白发渔翁（NPC 示例）",
+  "version": "1.0.0",
+  "author": "武侠行官方",
+  "category": "综合",
+  "desc": "在江南渡口加一位白发渔翁，可以交谈、请教武学、打探消息，还会给你一条采药小差事。NPC Mod 的完整示例。",
+  "tags": ["NPC", "示例", "江南"],
+  "gameVersion": "1.0.0",
+  "npcs": [
+    {
+      "id": "fisher_old",
+      "name": "白发渔翁",
+      "title": "江上闲人",
+      "gender": "male",
+      "room": "jiangnan_qiao",
+      "level": 30,
+      "hp": 900,
+      "mp": 400,
+      "atk": 60,
+      "def": 40,
+      "dodge": 45,
+      "speed": 40,
+      "desc": "一个白头渔翁，坐在桥头垂钓。蓑衣破旧，鱼篓里却空空如也。他不时抬头看看天色，眼神里藏着些说不清的东西。",
+      "talk": [
+        "（渔翁头也不回）江上风大，阁下若要过桥，还请留神脚下。",
+        "（他提了提鱼竿）今日鱼儿不上钩，许是水太浑了。",
+        "（他忽然侧头）阁下身上……有股练武人的气。"
+      ],
+      "hostile": false,
+      "leavesCorpse": true,
+      "canTeach": true,
+      "teach": ["basic_fist", "basic_dodge"],
+      "ask": {
+        "武学": "老朽不过是会些强身的把式，不值一提。阁下若真想学，倒可以教两招。",
+        "江湖": "这江南看着太平，其实暗流不少。你往北走，进了密林，自会明白。",
+        "山贼": "（渔翁手一抖）……你问这个做什么？罢了，贼首就在官道北边的密林深处，身边跟着一伙人，你可要当心。",
+        "天气": "看这云脚，今夜怕是要落雨。",
+        "鱼": "钓的是心境，不是鱼。"
+      },
+      "askDefault": "（渔翁摇摇头）老朽孤陋，这些事说不清。",
+      "loot": ["jinchuang_yao"],
+      "expReward": 0,
+      "potReward": 0,
+      "moneyReward": 0,
+      "actions": [
+        {
+          "cmd": "帮助",
+          "cond": "level>=1",
+          "effects": ["say:（渔翁笑了）若阁下有心，帮老朽去采三株当归回来，如何？", "+pot:20"]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "fish_basket",
+      "name": "旧鱼篓",
+      "type": "quest",
+      "price": 0,
+      "weight": 1,
+      "desc": "一只编得粗糙的旧鱼篓，还沾着水草。",
+      "quest": true,
+      "stackable": false
+    }
+  ]
+}

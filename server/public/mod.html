@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mod 详情 · 武侠行</title>
+  <link rel="stylesheet" href="css/site.css">
+</head>
+
+<body>
+  <header id="site-head" class="site-head"></header>
+
+  <div class="wrap">
+    <div id="body">
+      <div class="loading">加载中…</div>
+    </div>
+  </div>
+
+  <footer id="site-foot" class="site-foot"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tencent-ai/workbuddy-cloud-sdk@dev/lib/index.global.js"></script>
+  <script src="js/cloud.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/localmods.js"></script>
+  <script>
+    (function () {
+      SITE.renderHead('list');
+      SITE.renderFoot();
+
+      const id = SITE.getQuery('id');
+      const box = document.getElementById('body');
+
+      if (!id) {
+        box.innerHTML = '<div class="empty">缺少 Mod 参数。请从 <a href="list.html">列表</a> 进入。</div>';
+        return;
+      }
+
+      async function load() {
+        let r;
+        try {
+          r = await SITE.fetchDetail(id);
+        } catch (e) {
+          box.innerHTML = '<div class="empty">⚠ 无法连接 Mod 站服务。<br>请运行 <code>node server/mod-site.js</code></div>';
+          return;
+        }
+        if (!r || !r.mod) { box.innerHTML = '<div class="empty">没有找到这个 Mod：<code>' + SITE.esc(id) + '</code><br><br><a class="btn" href="list.html">返回列表</a></div>'; return; }
+
+        const m = r.mod;
+        const isCloud = !!r.cloud;
+        const c = m.counts || {};
+        const counts = [];
+        const CN = { rooms: '房间', regions: '区域', npcs: '人物', items: '物品', skills: '武学', sects: '门派', quests: '任务', dialogues: '对话', rules: '规则' };
+        Object.keys(CN).forEach(k => { if (c[k]) counts.push('<span class="cnt">' + CN[k] + ' ' + c[k] + '</span>'); });
+
+        const content = m.json || {};
+        const keys = Object.keys(CN).filter(k => Array.isArray(content[k]) && content[k].length);
+        let preview = '';
+        if (keys.length) {
+          preview = '<h3 class="detail-sub">内容概览</h3><table><tr><th>类型</th><th>条目</th></tr>';
+          keys.forEach(k => {
+            const names = content[k].slice(0, 12).map(x =>
+              (x && (x.name || x.title)) || (typeof x === 'string' ? x : (x && x.id) || '?')
+            ).join('、');
+            const more = content[k].length > 12 ? ' 等 ' + content[k].length + ' 项' : '';
+            preview += '<tr><td>' + CN[k] + '</td><td>' + SITE.esc(names) + SITE.esc(more) + '</td></tr>';
+          });
+          preview += '</table>';
+        }
+
+        box.innerHTML =
+          '<p style="font-size:13px;margin-bottom:14px"><a href="list.html">← 返回列表</a></p>' +
+          '<div class="detail">' +
+          '<div class="detail-main">' +
+          '<div class="detail-name">' + SITE.esc(m.name || m.id) + '</div>' +
+          '<div class="detail-id">' + SITE.esc(m.id) + '</div>' +
+          '<div class="detail-tags">' +
+          '<span class="tag jade">' + SITE.esc(m.category || '综合') + '</span>' +
+          '<span class="tag">v' + SITE.esc(m.version || '1.0.0') + '</span>' +
+          '<span class="tag">适用 ' + SITE.esc(m.gameVersion || '1.0.0') + '</span>' +
+          (m.tags || []).map(t => '<span class="tag gold">' + SITE.esc(t) + '</span>').join('') +
+          '</div>' +
+          '<div class="detail-desc">' + SITE.esc(m.desc || '（这位作者很神秘，没有留下简介）') + '</div>' +
+          (m.note ? '<blockquote style="margin:14px 0;padding:12px 18px;background:rgba(168,132,44,.08);border-left:4px solid #a8842c;border-radius:0 6px 6px 0;font-size:14px;color:#4a443a">作者的话：' +
+            SITE.esc(m.note) + '</blockquote>' : '') +
+          (counts.length ? '<h3 class="detail-sub">内容规模</h3><div class="mc-counts">' + counts.join('') + '</div>' : '') +
+          preview +
+          (m.requires && m.requires.length ? '<h3 class="detail-sub">依赖</h3><p style="font-size:14px;color:#6f675a">' + m.requires.map(SITE.esc).join('、') + '</p>' : '') +
+          '<h3 class="detail-sub">完整 mod.json</h3>' +
+          '<pre class="ex-code" id="rawjson">' + SITE.esc(JSON.stringify(content, null, 2)) + '</pre>' +
+          '</div>' +
+
+          '<div class="detail-side">' +
+          '<div class="side-box">' +
+          '<div class="side-row"><span class="k">作者</span><span class="v">' + SITE.esc(m.author || '佚名') + '</span></div>' +
+          '<div class="side-row"><span class="k">版本</span><span class="v">' + SITE.esc(m.version || '1.0.0') + '</span></div>' +
+          '<div class="side-row"><span class="k">分类</span><span class="v">' + SITE.esc(m.category || '综合') + '</span></div>' +
+          '<div class="side-row"><span class="k">下载次数</span><span class="v">' + (m.downloads || 0) + '</span></div>' +
+          '<div class="side-row"><span class="k">文件大小</span><span class="v">' + SITE.fmtSize(m.size) + '</span></div>' +
+          '<div class="side-row"><span class="k">发布时间</span><span class="v">' + SITE.fmtTime(m.time) + '</span></div>' +
+          '<div class="side-row"><span class="k">最近更新</span><span class="v">' + SITE.fmtTime(m.updated) + '</span></div>' +
+          '</div>' +
+          '<div class="side-ops">' +
+          '<button class="btn red" id="dl-zip">⬇ 下载 ZIP 安装包</button>' +
+          '<button class="btn primary" id="copy-json">复制 mod.json</button>' +
+          '<button class="btn" id="copy-url">复制本页链接</button>' +
+          '<a class="btn" href="tutorial.html">不会安装？看教程</a>' +
+          '</div>' +
+          '<div class="side-box" style="margin-top:16px">' +
+          '<div style="font-size:13px;color:#6f675a;line-height:1.9">' +
+          '<b style="font-family:var(--font);color:#2b2721;display:block;margin-bottom:6px">怎么安装？</b>' +
+          '① 游戏里打开「MOD 管理器」<br>' +
+          '② 点「从文件安装」选这个 ZIP<br>' +
+          '③ 启用后点「重载全部」<br><br>' +
+          '或者直接在「在线 Mod 市场」里一键下载。' +
+          '</div></div>' +
+          '</div></div>';
+
+        document.getElementById('copy-json').onclick = () => {
+          navigator.clipboard.writeText(JSON.stringify(content, null, 2))
+            .then(() => SITE.toast('mod.json 已复制', 'ok'), () => SITE.toast('复制失败', 'err'));
+        };
+        document.getElementById('copy-url').onclick = () => {
+          navigator.clipboard.writeText(location.href)
+            .then(() => SITE.toast('链接已复制', 'ok'), () => SITE.toast('复制失败', 'err'));
+        };
+
+        /* 下载：优先写进「本地 Mod 文件夹」（已授权时），否则普通下载 */
+        document.getElementById('dl-zip').onclick = async function () {
+          const btn = this;
+          btn.disabled = true;
+          const old = btn.textContent;
+          btn.textContent = '正在准备…';
+          try {
+            const r = await SITE.saveModLocally(m);
+            if (isCloud) {
+              try { await global.WXCLOUD.db.bumpDownload(m.id); } catch (e) { }
+            }
+            if (r && r.mode === 'folder') {
+              btn.textContent = '✔ 已存进文件夹';
+              SITE.toast('已保存到本地文件夹：' + (r.path || ''), 'ok', 3400);
+            } else {
+              btn.textContent = '✔ 已下载';
+              SITE.toast('已下载到「下载」文件夹', 'ok', 3000);
+            }
+          } catch (e) {
+            SITE.toast('下载失败：' + (e.message || e), 'err', 3800);
+          } finally {
+            setTimeout(() => { btn.textContent = old; btn.disabled = false; }, 2200);
+          }
+        };
+      }
+
+      load();
+    })();
+  </script>
+</body>
+
+</html>
