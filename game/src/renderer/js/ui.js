@@ -266,10 +266,11 @@
       });
     }
 
-    /* ② 出口方向 */
+    /* ② 出口方向：按方向名长度降序替换，避免「北」误伤「东北」 */
     if (l.exits && l.exits.length) {
       const CN = { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下', ne: '东北', nw: '西北', se: '东南', sw: '西南', in: '内', out: '外' };
-      l.exits.forEach(d => {
+      const ordered = l.exits.slice().sort((a, b) => ((CN[b] || b).length - (CN[a] || a).length));
+      ordered.forEach(d => {
         const cn = CN[d] || d;
         if (raw.indexOf(cn) < 0) return;
         raw = raw.replace(cn, '<button class="exit-inline" data-dir="' + esc(d) + '" title="向' + cn + '走">' + cn + '</button>');
@@ -1420,19 +1421,16 @@
       });
     }
 
-    /* 关键节点自动存档：成亲 / 结拜 / 立契买房 / 成就 等 */
-    if (d.lines && d.lines.length) {
-      const important = d.lines.some(l =>
-        l.kind === 'achieve' ||
-        (l.kind === 'title' && /礼成|义结|立契|纳/.test(l.text || '')));
-      if (important) autoSave();
-    }
+    /* 一步一存档：每次指令执行后都落一次盘（走一步/输指令/点按钮/增减状态物品
+       都走 doCmd → afterAction，这里统一兜住） */
+    if (d.view) autoSave();
   }
 
   /* ============================================================
-   *  自动存档（按设备标识隔离槽位，定时 + 关键节点触发）
+   *  自动存档（一步一存：每次指令后落盘；槽位按设备标识隔离）
    * ============================================================ */
   let _autosaveTimer = null;
+  let _autosavePending = false;
   function autosaveId() {
     const dev = (global.WX && global.WX.S && global.WX.S.deviceId) || 'dev';
     return 'autosave_' + dev;
@@ -1440,12 +1438,31 @@
   function autoSave() {
     if (!S.settings.autosave) return;
     if (!S.view || !S.view.player) return;
-    api.save(autosaveId()).catch(() => { /* 静默，失败不打扰 */ });
+    if (_autosavePending) return;   /* 上一次还在写，跳过（防高频重复） */
+    _autosavePending = true;
+    const key = autosaveId();
+    api.save(key)
+      .then(d => cloudSave(key, d && d.data))
+      .catch(() => { /* 静默，失败不打扰 */ })
+      .finally(() => { _autosavePending = false; });
+  }
+
+  /* 登录态下把存档也落一份到云端（换设备接着玩） */
+  function cloudSave(key, data) {
+    const C = global.WXCLOUD;
+    if (!C || !C.available() || !data) return;
+    C.auth.user().then(user => {
+      if (!user) return;
+      const p = (S.view && S.view.player) || {};
+      C.saves.upsert(key, data, {
+        name: p.name, level: p.level, room: p.room, playTime: data.clockMinutes || 0
+      }).catch(() => { /* 云存失败静默，本地已有 */ });
+    }).catch(() => {});
   }
   function startAutoSave() {
+    /* 兜底：万一玩家挂机不动，也 5 分钟补一次（一步一存是主力） */
     if (_autosaveTimer) clearInterval(_autosaveTimer);
-    /* 每 3 分钟自动存一次 */
-    _autosaveTimer = setInterval(() => autoSave(), 3 * 60 * 1000);
+    _autosaveTimer = setInterval(() => autoSave(), 5 * 60 * 1000);
   }
 
   /* ============================================================
@@ -1820,7 +1837,7 @@
     appendLog, paintLog, clearLog, doCmd, panel, panelForCmd, openSaves, openSettings, applySettings,
     bindInput, bindHotkeys, bindSidebar, bindGuide,
     showModCenter, showModMaker, showMarket,
-    afterAction
+    afterAction, autoSave, autosaveId
   };
 
 })(window);

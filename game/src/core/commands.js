@@ -220,14 +220,19 @@ function buildCommands(world) {
     // 尸体
     const corpses = w.corpsesIn(p.room);
     if (corpses.length) lines.push({ kind: 'items', text: `地上躺着：${corpses.map(c => c.name).join('、')}。` });
-    // 出口
-    const dirs = Object.keys(room.exits || {}).map(d => {
+    // 出口：像北大侠客行那样，告诉玩家每个方向通往哪里
+    const exitNames = Object.keys(room.exits || {}).map(d => {
       const ex = room.exits[d];
       const tid = typeof ex === 'string' ? ex : ex.to;
       const tr = w.getRoom(tid);
-      return (DIR_CN[d] || d) + (ex && ex.locked ? '(locked)' : '');
+      const toName = tr ? tr.name : '未知';
+      return (DIR_CN[d] || d) + '·' + toName + (ex && ex.locked ? '（锁）' : '');
     });
-    lines.push({ kind: 'exits', text: `出口：${dirs.length ? dirs.join('、') : '无'}`, exits: Object.keys(room.exits || {}) });
+    lines.push({
+      kind: 'exits',
+      text: `出口：${exitNames.length ? exitNames.join('　') : '无'}${exitNames.length ? '。' : ''}`,
+      exits: Object.keys(room.exits || {}),
+    });
     // 房间自定义 look 效果
     if (room.onLook) {
       evalEffects(room.onLook, ctx).forEach(l => lines.push(l));

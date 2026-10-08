@@ -38,10 +38,138 @@
       }
       /* 本地有存档就亮出「继续游戏」 */
       await probeSaves();
+      /* 云服务：初始化 + 处理微信回调 + 刷新登录状态 */
+      await initCloud();
     } catch (e) {
       $('start-stats').innerHTML = '<span style="color:#9c2b25">' + esc('本地服务未启动：' + e.message) + '</span>';
       console.error(e);
     }
+  }
+
+  /* ============================================================
+   *  云服务：登录 + 云存档（极简登录：手机验证码 / 微信）
+   * ============================================================ */
+  let _cloudUser = null;
+
+  async function initCloud() {
+    const C = global.WXCLOUD;
+    if (!C) return;
+    try {
+      await C.init();
+      if (!C.available()) return;
+      /* 微信回调：每次启动无条件处理一次 */
+      try { await C.auth.handleWechatCallback(); } catch (e) { }
+      /* 刷新登录状态 */
+      _cloudUser = await C.auth.user();
+      paintLoginButton();
+      /* 登录后：把云存档拉到本地，换设备也能接着玩 */
+      if (_cloudUser) await pullCloudSaves();
+    } catch (e) { }
+  }
+
+  /* 登录后拉云存档 → 本地落盘（幂等覆盖），刷新「继续游戏」 */
+  async function pullCloudSaves() {
+    const C = global.WXCLOUD;
+    try {
+      const list = await C.saves.list();
+      if (!list || !list.length) return;
+      for (const s of list) {
+        if (!s.save_key || !s.data) continue;
+        try { await api.saveWrite(s.save_key, s.data); } catch (e) { }
+      }
+      await probeSaves();
+    } catch (e) { }
+  }
+
+  function paintLoginButton() {
+    const btn = $('btn-login');
+    if (!btn) return;
+    if (_cloudUser) {
+      const name = _cloudUser.email || _cloudUser.phone || _cloudUser.nickname || '已登录';
+      btn.textContent = '云存档 · ' + name;
+      btn.classList.add('logged');
+    } else {
+      btn.textContent = '登 录 · 云 存 档';
+      btn.classList.remove('logged');
+    }
+  }
+
+  function openLogin() {
+    const C = global.WXCLOUD;
+    if (!C) { U.toast('云服务未加载', 'warn'); return; }
+    C.init().then(ok => {
+      if (!ok || !C.available()) { U.toast('云端不可用（非 http 环境或 SDK 加载失败）', 'warn', 3600); return; }
+      paintLoginBody();
+    });
+  }
+
+  async function paintLoginBody() {
+    const C = global.WXCLOUD;
+    _cloudUser = await C.auth.user();
+
+    let body = '';
+    if (_cloudUser) {
+      const name = _cloudUser.email || _cloudUser.phone || _cloudUser.nickname || '侠客';
+      body = '<div class="modal-text" style="margin-bottom:12px">当前已登录：<b>' + esc(name) + '</b><br>' +
+        '<span class="dim">存档会自动同步到云端，换设备登录同一账号即可接着玩。</span></div>';
+      U.modal('云 存 档', body,
+        '<button class="btn-ink" onclick="WXUI.closeModal()">关 闭</button>' +
+        '<button class="btn-ink danger" id="lg-out">退 出 登 录</button>');
+      $('lg-out').onclick = async () => {
+        await C.auth.signOut();
+        _cloudUser = null;
+        paintLoginButton();
+        U.toast('已退出登录', 'ok');
+        paintLoginBody();
+      };
+      return;
+    }
+
+    body =
+      '<div class="modal-text" style="margin-bottom:10px">登录后存档自动上云，<b>换设备也能接着玩</b>。不登录也能正常玩（存档存本机）。</div>' +
+      '<div class="login-sec">' +
+      '<div class="ls-title">手机号验证码登录</div>' +
+      '<div class="login-row"><input id="lg-phone" class="modal-input" placeholder="输入 11 位手机号" maxlength="11">' +
+      '<button class="btn-mini" id="lg-send">获取验证码</button></div>' +
+      '<div class="login-row"><input id="lg-code" class="modal-input" placeholder="输入验证码" maxlength="6"></div>' +
+      '<div class="login-row"><button class="btn-ink primary" id="lg-go">登 录</button></div>' +
+      '</div>' +
+      '<div class="login-sec">' +
+      '<div class="ls-title">微信登录</div>' +
+      '<button class="btn-ink" id="lg-wechat">微信扫码登录</button>' +
+      '</div>';
+
+    U.modal('登 录 · 云 存 档', body,
+      '<button class="btn-ink" onclick="WXUI.closeModal()">取 消</button>');
+
+    let pending = null;
+    $('lg-send').onclick = async () => {
+      const phone = ($('lg-phone').value || '').trim();
+      if (!/^1\d{10}$/.test(phone)) { U.toast('请输入正确的 11 位手机号', 'warn'); return; }
+      const btn = $('lg-send');
+      btn.disabled = true;
+      const r = await C.auth.sendPhoneCode(phone);
+      btn.disabled = false;
+      if (r.error) { U.toast('发送失败：' + (r.error.message || '请重试'), 'error', 4000); return; }
+      pending = r.data;
+      U.toast('验证码已发送，请查收短信', 'ok', 3000);
+    };
+    $('lg-go').onclick = async () => {
+      const code = ($('lg-code').value || '').trim();
+      if (!pending) { U.toast('请先获取验证码', 'warn'); return; }
+      if (!code) { U.toast('请输入验证码', 'warn'); return; }
+      const r = await C.auth.verifyPhone(pending, code);
+      if (r.error) { U.toast('登录失败：' + (r.error.message || '验证码错误'), 'error', 4000); return; }
+      _cloudUser = r.data && r.data.user;
+      paintLoginButton();
+      U.toast('登录成功！存档将自动上云', 'ok', 3000);
+      U.closeModal();
+    };
+    $('lg-wechat').onclick = async () => {
+      const r = await C.auth.wechatUrl();
+      if (r.error) { U.toast('微信登录：' + (r.error.message || '未开启'), 'error', 4000); return; }
+      if (r.data && r.data.url) location.assign(r.data.url);
+    };
   }
 
   /* ============================================================
@@ -80,6 +208,7 @@
       if (a === 'newgame') b.onclick = () => openCreate();
       else if (a === 'continue') b.onclick = () => continueGame();
       else if (a === 'loadgame') b.onclick = () => U.openSaves('load');
+      else if (a === 'login') b.onclick = () => openLogin();
       else if (a === 'modcenter') b.onclick = () => U.showModCenter();
       else if (a === 'modmaker') b.onclick = () => U.showModMaker();
       else if (a === 'guidedoc') b.onclick = () => openDoc();
@@ -325,6 +454,8 @@
       if (d.log) U.appendLog(d.log);
       U.show('game');
       U.renderAll(S.view);
+      /* 创建完角色立即存档（一步一存档的第一份） */
+      if (U.autoSave) U.autoSave();
       setTimeout(() => $('cmd-input').focus(), 200);
       bus.emit('gamestart');
     } catch (e) {

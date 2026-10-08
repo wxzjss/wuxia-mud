@@ -670,7 +670,7 @@ class GameEngine {
     const data = w.serialize();
     // 额外记录任务 / 成就状态
     fs.writeFileSync(path.join(this.saveDir, sid + '.json'), JSON.stringify(data, null, 2), 'utf8');
-    return { ok: true, id: sid, msg: `已保存到存档「${sid}」。` };
+    return { ok: true, id: sid, msg: `已保存到存档「${sid}」。`, data };
   }
 
   readSave(id) {

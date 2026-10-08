@@ -260,6 +260,11 @@ async function handleApi(engine, req, res, pn, query, preset) {
         const r = engine.save(json_body && json_body.id);
         return json(res, 200, Object.assign({ lines: [{ kind: r.ok ? 'sys' : 'warn', text: r.msg }], view: engine.view() }, r));
       }
+      /* 云存档 → 本地落盘（前端从云拉下来后写进本地 saves/） */
+      case 'save/write': {
+        const r = engine.writeSave(json_body && json_body.id, json_body && json_body.data);
+        return json(res, 200, r);
+      }
       case 'load': {
         const r = engine.loadSave(json_body && json_body.id);
         return json(res, 200, Object.assign({ lines: [{ kind: r.ok ? 'sys' : 'warn', text: r.msg }], view: engine.view() }, r));

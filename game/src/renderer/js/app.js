@@ -170,6 +170,7 @@
     /* 存档 */
     async saves() { return await jfetch('/api/saves'); },
     async save(id) { const d = await jfetch('/api/save', { method: 'POST', body: JSON.stringify({ id }) }); return d; },
+    async saveWrite(id, data) { return await jfetch('/api/save/write', { method: 'POST', body: JSON.stringify({ id, data }) }); },
     async load(id) { const d = await jfetch('/api/load', { method: 'POST', body: JSON.stringify({ id }) }); if (d.view) S.view = d.view; return d; },
     async delSave(id) { return await jfetch('/api/deletesave', { method: 'POST', body: JSON.stringify({ id }) }); },
 

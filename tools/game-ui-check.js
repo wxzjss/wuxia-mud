@@ -137,7 +137,7 @@ section('① index.html 首屏结构');
   ok('版本戳统一 ' + verVal, verCount >= 6, '(' + verCount + ' 处)');
   const allVers = [...html.matchAll(/\?v=(20\d{6}[a-z])/g)].map(m => m[1]);
   ok('所有版本戳完全一致', new Set(allVers).size === 1, [...new Set(allVers)].join(','));
-  ok('不再加载 js/cloud.js', !/js\/cloud\.js/.test(html));
+  ok('加载 js/cloud.js（云存档 + 登录）', /js\/cloud\.js/.test(html));
 }
 
 section('② app.js 单机版导出');
@@ -242,14 +242,14 @@ section('⑧ 双份副本逐字节一致');
     const B = fs.readFileSync(path.join(ROOT, b), 'utf8');
     ok(name + ' 两份一致', A === B, '(' + A.length + ' bytes)');
   });
-  ok('游戏端 cloud.js 已删除', !fs.existsSync(path.join(RJS, 'cloud.js')));
+  ok('游戏端 cloud.js 存在（云存档 + 登录）', fs.existsSync(path.join(RJS, 'cloud.js')));
 }
 
-section('⑨ 服务端无账号/存档接口');
+section('⑨ 服务端存档接口');
 {
   const gs = fs.readFileSync(path.join(ROOT, 'server', 'game-server.js'), 'utf8');
   ok('已无 save/read 分支', !/case\s+'save\/read'/.test(gs));
-  ok('已无 save/write 分支', !/case\s+'save\/write'/.test(gs));
+  ok('有 save/write 分支（云存档落盘）', /case\s+'save\/write'/.test(gs));
   ok('query 仍当普通对象用', /query\s*&&\s*query\./.test(gs) || /\bquery\b/.test(gs));
   ok('没有误用 u.searchParams', !/\bu\.searchParams\b/.test(gs));
   const ms = fs.readFileSync(path.join(ROOT, 'server', 'mod-site.js'), 'utf8');
