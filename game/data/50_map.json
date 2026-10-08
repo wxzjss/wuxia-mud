@@ -31,7 +31,8 @@
         "ne": "jn_resident_3",
         "nw": "jn_yamen_gate",
         "se": "jn_pharmacy",
-        "sw": "jn_misc_shop"
+        "sw": "jn_misc_shop",
+        "u": "jiangnan_brothel"
       },
       "respawn": [
         {
@@ -7830,7 +7831,8 @@
         "nw": "luoyang_lane",
         "null": "fang_luoyang_8",
         "n": "fang_luoyang_9",
-        "se": "fang_luoyang_10"
+        "se": "fang_luoyang_10",
+        "u": "luoyang_brothel"
       },
       "name": "洛阳城·牡丹大街",
       "region": "luoyang",
@@ -7916,7 +7918,8 @@
         "nw": "changan_lane",
         "null": "fang_changan_8",
         "n": "fang_changan_9",
-        "se": "fang_changan_10"
+        "se": "fang_changan_10",
+        "u": "changan_brothel"
       },
       "name": "长安城·朱雀大街",
       "region": "changan",
@@ -8002,7 +8005,8 @@
         "nw": "chengdu_lane",
         "null": "fang_chengdu_8",
         "n": "fang_chengdu_9",
-        "se": "fang_chengdu_10"
+        "se": "fang_chengdu_10",
+        "u": "chengdu_brothel"
       },
       "name": "成都府·锦官大街",
       "region": "chengdu",
@@ -8088,7 +8092,8 @@
         "nw": "xiangyang_lane",
         "null": "fang_xiangyang_8",
         "n": "fang_xiangyang_9",
-        "se": "fang_xiangyang_10"
+        "se": "fang_xiangyang_10",
+        "u": "xiangyang_brothel"
       },
       "name": "襄阳城·北街",
       "region": "xiangyang",
@@ -8848,6 +8853,201 @@
       "exits": {
         "nw": "xiangyang_market"
       }
+    },
+    "jiangnan_brothel": {
+      "id": "jiangnan_brothel",
+      "name": "江南城·怡红院",
+      "region": "jiangnan",
+      "desc": "粉墙黛瓦的临水小楼，檐下悬着两串红灯笼，丝竹管弦声隔水传来。几个浓妆艳抹的女子倚着栏杆，摇着团扇朝街心娇笑。",
+      "exits": {
+        "d": "jiangnan_street"
+      },
+      "actions": [
+        {
+          "label": "卖身",
+          "cmd": "sellbody",
+          "keywords": [
+            "卖身",
+            "挂牌",
+            "画押"
+          ],
+          "desc": "卖身青楼，换一笔银钱（仅女子）"
+        },
+        {
+          "label": "接客",
+          "cmd": "serve",
+          "keywords": [
+            "接客",
+            "应酬"
+          ],
+          "desc": "应酬客人攒赎身钱（须卖身后）"
+        },
+        {
+          "label": "赎身",
+          "cmd": "redeem",
+          "keywords": [
+            "赎身",
+            "脱籍"
+          ],
+          "desc": "凑钱赎回身子（须卖身后）"
+        }
+      ]
+    },
+    "luoyang_brothel": {
+      "id": "luoyang_brothel",
+      "name": "洛阳城·牡丹阁",
+      "region": "luoyang",
+      "desc": "朱门绣户，金匾高悬「牡丹阁」三字。满园牡丹开得灼灼，进出的皆是锦衣华服的贵人，一派富贵风流气象。",
+      "exits": {
+        "d": "luoyang_street"
+      },
+      "actions": [
+        {
+          "label": "卖身",
+          "cmd": "sellbody",
+          "keywords": [
+            "卖身",
+            "挂牌",
+            "画押"
+          ],
+          "desc": "卖身青楼，换一笔银钱（仅女子）"
+        },
+        {
+          "label": "接客",
+          "cmd": "serve",
+          "keywords": [
+            "接客",
+            "应酬"
+          ],
+          "desc": "应酬客人攒赎身钱（须卖身后）"
+        },
+        {
+          "label": "赎身",
+          "cmd": "redeem",
+          "keywords": [
+            "赎身",
+            "脱籍"
+          ],
+          "desc": "凑钱赎回身子（须卖身后）"
+        }
+      ]
+    },
+    "changan_brothel": {
+      "id": "changan_brothel",
+      "name": "长安城·平康坊",
+      "region": "changan",
+      "desc": "天下第一等的风月场。坊中曲径通幽，楼阁参差，丝竹之声不绝，五陵年少、胡商胡姬混杂其间，纸醉金迷。",
+      "exits": {
+        "d": "changan_street"
+      },
+      "actions": [
+        {
+          "label": "卖身",
+          "cmd": "sellbody",
+          "keywords": [
+            "卖身",
+            "挂牌",
+            "画押"
+          ],
+          "desc": "卖身青楼，换一笔银钱（仅女子）"
+        },
+        {
+          "label": "接客",
+          "cmd": "serve",
+          "keywords": [
+            "接客",
+            "应酬"
+          ],
+          "desc": "应酬客人攒赎身钱（须卖身后）"
+        },
+        {
+          "label": "赎身",
+          "cmd": "redeem",
+          "keywords": [
+            "赎身",
+            "脱籍"
+          ],
+          "desc": "凑钱赎回身子（须卖身后）"
+        }
+      ]
+    },
+    "chengdu_brothel": {
+      "id": "chengdu_brothel",
+      "name": "成都府·翠云楼",
+      "region": "chengdu",
+      "desc": "竹影婆娑里一座两层小楼，挂着「翠云」的绿绸招子。堂中茶香与脂粉香混作一处，姑娘们软语轻声，闲适慵懒。",
+      "exits": {
+        "d": "chengdu_street"
+      },
+      "actions": [
+        {
+          "label": "卖身",
+          "cmd": "sellbody",
+          "keywords": [
+            "卖身",
+            "挂牌",
+            "画押"
+          ],
+          "desc": "卖身青楼，换一笔银钱（仅女子）"
+        },
+        {
+          "label": "接客",
+          "cmd": "serve",
+          "keywords": [
+            "接客",
+            "应酬"
+          ],
+          "desc": "应酬客人攒赎身钱（须卖身后）"
+        },
+        {
+          "label": "赎身",
+          "cmd": "redeem",
+          "keywords": [
+            "赎身",
+            "脱籍"
+          ],
+          "desc": "凑钱赎回身子（须卖身后）"
+        }
+      ]
+    },
+    "xiangyang_brothel": {
+      "id": "xiangyang_brothel",
+      "name": "襄阳城·凤来仪",
+      "region": "xiangyang",
+      "desc": "边城要塞里的温柔乡。楼名「凤来仪」，往来多是行伍中的将官与南来北往的客商，酒酣耳热，嗓门洪亮。",
+      "exits": {
+        "d": "xiangyang_street"
+      },
+      "actions": [
+        {
+          "label": "卖身",
+          "cmd": "sellbody",
+          "keywords": [
+            "卖身",
+            "挂牌",
+            "画押"
+          ],
+          "desc": "卖身青楼，换一笔银钱（仅女子）"
+        },
+        {
+          "label": "接客",
+          "cmd": "serve",
+          "keywords": [
+            "接客",
+            "应酬"
+          ],
+          "desc": "应酬客人攒赎身钱（须卖身后）"
+        },
+        {
+          "label": "赎身",
+          "cmd": "redeem",
+          "keywords": [
+            "赎身",
+            "脱籍"
+          ],
+          "desc": "凑钱赎回身子（须卖身后）"
+        }
+      ]
     }
   },
   "regions": {

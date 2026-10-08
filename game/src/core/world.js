@@ -917,6 +917,10 @@ class World extends EventEmitter {
       p.food = clamp(p.food - Math.floor(minutes / 12), 0, p.maxFood);
       p.water = clamp(p.water - Math.floor(minutes / 8), 0, p.maxWater);
     }
+    // 饥渴归零 → 每次推进时间都掉血（饿死/渴死由 engine.postProcess 判定并复活）
+    if ((p.food <= 0 || p.water <= 0) && !p.inCombat) {
+      p.hp = Math.max(0, p.hp - Math.max(1, Math.floor(minutes / 2)));
+    }
     // 随机天气
     if (this.rng.chance(0.004) && !this.isNight()) this.weather = this.rng.pick(WEATHERS);
     // NPC 游走 / 重生
@@ -941,6 +945,20 @@ class World extends EventEmitter {
         const tid = typeof ex === 'string' ? ex : ex.to;
         if (tid && this.data.rooms[tid]) n.room = tid;
       }
+    }
+    // 时间作息：昼夜轮换时，把 NPC 从工作地（day）挪回家（night），反之亦然。
+    // 玩家眼前的 NPC 不动，避免交互到一半人突然消失。
+    const night = this.isNight();
+    const playerRoom = this.player && this.player.room;
+    for (const id of Object.keys(this.instances.npcs)) {
+      const n = this.instances.npcs[id];
+      if (n.room === playerRoom) continue;
+      const def = this.data.npcs[n.defId];
+      if (!def || !def.schedule) continue;
+      const target = night
+        ? (def.schedule.night || def.schedule.day)
+        : (def.schedule.day || def.schedule.night);
+      if (target && target !== n.room && this.data.rooms[target]) n.room = target;
     }
     // 重生（房间 respawn 配置）
     for (const rid of Object.keys(this.data.rooms)) {
@@ -1057,6 +1075,8 @@ class World extends EventEmitter {
         kinship: p.kinship ? cleanInstance(p.kinship, 0) : null,
         home: p.home || null,
         homes: (p.homes || []).map(h => Object.assign({}, h)),
+        /* ---- 生存 / 打工 / 青楼（第三批）---- */
+        prostitution: p.prostitution ? Object.assign({}, p.prostitution) : null,
       },
       /* 玩家买/布置的宅子房间是运行期动态建的，不在 data 里，必须单独存 */
       playerHomes: this.serializePlayerHomes(),
@@ -1147,6 +1167,8 @@ class World extends EventEmitter {
       kinship: sd.kinship ? Object.assign({}, sd.kinship) : null,
       home: sd.home || null,
       homes: (sd.homes || []).map(h => Object.assign({}, h)),
+      /* ---- 生存 / 打工 / 青楼（第三批）---- */
+      prostitution: sd.prostitution ? Object.assign({}, sd.prostitution) : null,
     });
     // 恢复装备物品（装备在 equipmentUid 里，物品定义从 data 取）
     p.inventory = (sd.inventory || []).map(i => Object.assign({}, i));

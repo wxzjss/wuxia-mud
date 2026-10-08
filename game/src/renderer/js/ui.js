@@ -124,6 +124,31 @@
     }
     $('tb-money').textContent = p.moneyText || (p.money + ' 文');
     $('tb-time').textContent = (p.timeText || '');
+
+    /* 饱食 / 饮水（第三批：生存） */
+    const food = p.food || 0, foodMax = p.maxFood || 100;
+    const water = p.water || 0, waterMax = p.maxWater || 100;
+    const barFood = $('bar-food'), barWater = $('bar-water');
+    if (barFood) {
+      barFood.style.width = util.pct(food, foodMax) + '%';
+      barFood.className = 'fill' + (p.starving ? ' critical' : (food < 25 ? ' low' : ''));
+      $('txt-food').textContent = '饱食 ' + food + '/' + foodMax;
+    }
+    if (barWater) {
+      barWater.style.width = util.pct(water, waterMax) + '%';
+      barWater.className = 'fill' + (p.parched ? ' critical' : (water < 25 ? ' low' : ''));
+      $('txt-water').textContent = '饮水 ' + water + '/' + waterMax;
+    }
+    /* 青楼卖身标记 */
+    const soldEl = $('tb-sold');
+    if (soldEl) {
+      if (p.prostitution && p.prostitution.sold) {
+        soldEl.textContent = '【青楼中人】';
+        soldEl.style.display = '';
+      } else {
+        soldEl.style.display = 'none';
+      }
+    }
   }
 
   /* ============================================================
@@ -1239,6 +1264,13 @@
         '布置 <描述>　改自家陈设',
         '置办 <家具>　添置家当',
         '家宅　查看名下产业',
+      ]],
+      ['营生', [
+        '打工 / work　酒楼跑堂、药店抓药赚钱（费饱食/饮水）',
+        '卖身　卖身青楼换银钱（仅女子，去青楼）',
+        '接客　应酬攒赎身钱（卖身后）',
+        '赎身　凑钱脱籍',
+        '身世　查看营生 / 卖身状态',
       ]],
       ['系统', [
         'save / load　存读档（中文：存档 / 读档）',

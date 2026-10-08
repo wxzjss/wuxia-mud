@@ -221,6 +221,12 @@ body::before {
 .tb-bar.hp .fill { background: linear-gradient(90deg, #8c2a23, #c0413a); }
 .tb-bar.mp .fill { background: linear-gradient(90deg, #24557f, #3d84c4); }
 .tb-bar.exp .fill { background: linear-gradient(90deg, #6d6120, #b0a03a); }
+.tb-bar.food .fill { background: linear-gradient(90deg, #9a6a22, #d8a13c); }
+.tb-bar.water .fill { background: linear-gradient(90deg, #2c6d74, #4aa8b0); }
+.tb-bar .fill.low { filter: saturate(.6) brightness(1.15); }
+.tb-bar .fill.critical { background: #a0322c !important; animation: blink .8s infinite alternate; }
+@keyframes blink { from { opacity: 1; } to { opacity: .45; } }
+.tb-sold { font-size: 11px; color: #e6a8c0; font-weight: 600; letter-spacing: .05em; }
 .tb-bar span {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
   font-size: 10.5px; letter-spacing: .04em; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .6);

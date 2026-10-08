@@ -13,6 +13,7 @@ const social = require('./social');
 const marriage = require('./marriage');
 const kinship = require('./kinship');
 const homeMod = require('./home');
+const workMod = require('./work');
 
 /* 中文数字 → 阿拉伯 */
 const CN_NUM = { 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10, 壹: 1, 贰: 2, 叁: 3, 肆: 4, 伍: 5, 陆: 6, 柒: 7, 捌: 8, 玖: 9, 拾: 10 };
@@ -56,6 +57,7 @@ function buildCommands(world) {
       '战斗': ['kill / fight <目标> 攻击', 'flee 逃跑', 'auto 自动战斗'],
       '交互': ['talk <人> 交谈', 'ask <人> about <话题>', 'buy <物品> from <人>', 'sell <物品>', 'trade'],
       '门派': ['sect 门派信息', 'join <门派> 拜师', 'leave 脱离门派', 'promote 升职', 'contribute'],
+      '营生': ['work / 打工 打工赚钱（酒楼/药店）', '卖身 卖身青楼换银（仅女子）', '接客 应酬攒赎身钱（卖身后）', '赎身 凑钱脱籍', '身世 查看营生/卖身状态'],
       '任务': ['quest 任务列表', 'accept <任务>', 'abandon <任务>', 'report 交任务'],
       '系统': ['save 存档', 'load 读档', 'settings 设置', 'mods mod 管理', 'clear 清屏', 'nick <称号>'],
     };
@@ -97,6 +99,10 @@ function buildCommands(world) {
     if (ex && ex.exits && ex.exits.msg) { /* continue */ }
     // 移动消耗
     const cost = (ex && ex.cost) || 1;
+    // 青楼卖身者活动范围限制（离青楼太远会被老鸨盯住）
+    if (p.prostitution && p.prostitution.sold && !workMod.withinBrothelRange(w, target)) {
+      return { lines: [{ kind: 'warn', text: '你如今是青楼之人，老鸨盯得紧，不能擅离太远。' }] };
+    }
     p.advanceTime(cost);
     const r = w.movePlayerTo(p, target);
     const lines = [];
@@ -1016,6 +1022,51 @@ function buildCommands(world) {
       }
     }
     lines.push({ kind: 'hint', text: '「买宅」「卖宅」「回家」「布置 <描述>」「置办 <家具>」' });
+    return { lines };
+  });
+
+
+  /* ---------------- 生存：打工 / 青楼 ---------------- */
+
+  /** 打工：在酒楼/药店打零工赚钱 */
+  reg(['work', '打工', '干活', '做工'], (ctx) => {
+    const r = workMod.work(ctx.world);
+    return { lines: r.lines };
+  });
+
+  /** 卖身青楼（仅女玩家） */
+  reg(['sellbody', '卖身', '入青楼', '挂牌'], (ctx) => {
+    const r = workMod.sellBody(ctx.world);
+    return { lines: r.lines };
+  });
+
+  /** 接客攒钱（卖身后） */
+  reg(['serve', '接客', '接客攒钱'], (ctx) => {
+    const r = workMod.serveCustomer(ctx.world);
+    return { lines: r.lines };
+  });
+
+  /** 赎身 */
+  reg(['redeem', '赎身', '脱籍'], (ctx) => {
+    const r = workMod.redeem(ctx.world);
+    return { lines: r.lines };
+  });
+
+  /** 查看身世 / 卖身状态 */
+  reg(['prostitution', '身世', '卖身契', '青楼', '营生'], (ctx) => {
+    const p = ctx.player, w = ctx.world;
+    const lines = [{ kind: 'title', text: '【 营 生 】' }];
+    const ps = p.prostitution;
+    if (!ps || !ps.sold) {
+      lines.push({ kind: 'plain', text: '　你身家清白，不是风尘中人。' });
+      const c = workMod.canWork(w);
+      lines.push({ kind: c.ok ? 'sys' : 'plain', text: '　' + (c.ok ? `你可以在${(w.getRoom(p.room) || {}).name}「打工」赚钱。` : c.reason) });
+      if (p.gender === 'female') lines.push({ kind: 'hint', text: '　（女子若走投无路，可在青楼「卖身」换一笔银钱。）' });
+    } else {
+      lines.push({ kind: 'favor', text: `　你现是青楼之人，已接客 ${ps.served || 0} 回。` });
+      lines.push({ kind: 'plain', text: `　赎身还差 ${ps.debt} 文（你身上有 ${p.money} 文）。` });
+      lines.push({ kind: 'hint', text: '「接客」攒钱，「赎身」脱籍；有交情深的贵人，也肯替你赎身。' });
+    }
     return { lines };
   });
 

@@ -19,6 +19,8 @@ const social = require('./social');
 const marriage = require('./marriage');
 const kinship = require('./kinship');
 const homeMod = require('./home');
+const survival = require('./survival');
+const workMod = require('./work');
 
 /* 身份标签 → 中文（给 UI 用） */
 const TAG_NAMES = {
@@ -350,6 +352,12 @@ class GameEngine {
       equipment: this.equipmentList(),
       dead: p.dead, deathCount: p.deathCount || 0,
       reputation: p.reputation,
+      starving: p.food <= 0, parched: p.water <= 0,
+      prostitution: p.prostitution ? {
+        sold: !!p.prostitution.sold, debt: p.prostitution.debt || 0,
+        served: p.prostitution.served || 0, earnings: p.prostitution.earnings || 0,
+        redeemed: !!p.prostitution.redeemed,
+      } : null,
     };
   }
 
@@ -551,17 +559,30 @@ class GameEngine {
         }
       }
     }
-    // 死亡复活
+    // 饥渴致死：advanceTime 掉血到 0，但没走战斗的 playerDeath
+    if (p.hp <= 0 && !p.dead && (p.food <= 0 || p.water <= 0)) {
+      p.dead = true;
+      p.deathCount = (p.deathCount || 0) + 1;
+      merged.push({ kind: 'die', text: p.food <= 0 ? '你饿得眼冒金星，一头栽倒在地，人事不省……' : '你渴得喉咙冒烟，眼前一黑，栽倒在地……' });
+    }
+    // 死亡复活（战斗死 / 饿死 / 渴死 都落到这里）
+    // 青楼卖身者复活回青楼，其余复活到最近客栈
     if (p.dead) {
       p.dead = false;
-      const spawn = w.data.meta.startRoom;
+      const isSold = !!(p.prostitution && p.prostitution.sold);
+      const spawn = isSold
+        ? (workMod.brothelAnchor(w) || survival.nearestInn(w, p.room) || w.data.meta.startRoom)
+        : (survival.nearestInn(w, p.room) || w.data.meta.startRoom);
       const lost = Math.floor(p.money * 0.2);
       w.movePlayerTo(p, spawn);
       p.hp = Math.floor(p.maxHp * 0.4);
       p.mp = Math.floor(p.maxMp * 0.4);
+      p.food = Math.max(p.food, Math.floor(p.maxFood * 0.6));
+      p.water = Math.max(p.water, Math.floor(p.maxWater * 0.6));
       p.buffs = [];
       p.recalc();
-      merged.push({ kind: 'die', text: '你悠悠醒转，发现自己躺在江南大路上，身上少了些银钱……' });
+      const spawnName = (w.getRoom(spawn) || {}).name || '客栈';
+      merged.push({ kind: 'die', text: `你悠悠醒转，发现自己躺在${spawnName}里，身上少了些银钱……` });
       merged.push({ kind: 'sys', text: `你损失了 ${lost} 文钱。` });
     }
     // 支线自动检查

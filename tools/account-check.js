@@ -27,14 +27,14 @@ function group(t) { console.log('\n── ' + t + ' ──'); }
  * ══════════════════════════════════════════════════════════════ */
 group('① 账号 / 论坛 / 云存档 已彻底撤除');
 
-/* 文件级：三个页面 + 游戏端 cloud.js + 服务端账号模块 */
+/* 文件级：论坛/账号页面 + 服务端账号模块 已撤除（云存档已重新接入，见 game/src/renderer/js/cloud.js） */
 [
   'server/public/forum.html',
   'server/public/account.html',
   'server/public/mine.html',
-  'game/src/renderer/js/cloud.js',
   'server/account.js'
 ].forEach(f => ok(f + ' 已删除', !E(f)));
+ok('游戏端 cloud.js 已重建（云存档）', E('game/src/renderer/js/cloud.js'));
 
 /* 站点 cloud.js 只留 mods 表 */
 const CLOUD = R('server/public/js/cloud.js');
@@ -85,7 +85,7 @@ ok('modmaker 保留站点上传', /api\.siteUpload\(/.test(MM));
 const HTML = R('game/src/renderer/index.html');
 ok('index.html 无账号区容器', !/id="start-user"/.test(HTML));
 ok('index.html 保留继续游戏按钮', /id="btn-continue"/.test(HTML));
-ok('index.html 不再引用 js/cloud.js', !/js\/cloud\.js/.test(HTML));
+ok('index.html 引用 js/cloud.js（云存档）', /js\/cloud\.js/.test(HTML));
 const verM = HTML.match(/\?v=(20\d{6}[a-z])/);
 ok('版本号存在且统一', !!verM && (HTML.match(new RegExp('\\?v=' + verM[1], 'g')) || []).length >= 6, verM ? verM[1] : '未找到');
 ['20261008f', '20261008g', '20261008e'].forEach(v => {
@@ -114,7 +114,7 @@ ok('serveStatic 先查黑名单再查文件', (() => {
 
 const GS = R('server/game-server.js');
 ok('game-server 已无 save/read', !/case 'save\/read'/.test(GS));
-ok('game-server 已无 save/write', !/case 'save\/write'/.test(GS));
+ok('game-server 有 save/write（云存档落盘）', /case 'save\/write'/.test(GS));
 
 /* 样式也清干净 */
 const SCSS = R('server/public/css/site.css');
