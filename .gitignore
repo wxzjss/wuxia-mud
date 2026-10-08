@@ -9,3 +9,8 @@ server/_runtime_cache/
 .packtest/
 tools/_bak/
 *.log
+
+# 测试/运行期产物
+.mod-trash/
+mods-state.json
+mods/e2e_cross/
