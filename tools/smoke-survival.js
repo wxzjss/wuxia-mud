@@ -89,10 +89,14 @@ section('4. 青楼卖身/接客/赎身');
   e.exec('接客');
   ok('接客减债', p.prostitution.debt < d0, 'debt ' + d0 + '→' + p.prostitution.debt);
 
-  // 攒够钱赎身
-  p.money = p.prostitution.debt + 100;
+  // 债没还清时赎身应拒绝
+  const r1 = e.exec('赎身');
+  ok('债未清时赎身拒绝', !!(p.prostitution && p.prostitution.sold), (r1.lines || []).map(l => l.text).join(''));
+
+  // 还清债再赎身
+  p.prostitution.debt = 0;
   const r2 = e.exec('赎身');
-  ok('赎身成功', !p.prostitution.sold, JSON.stringify(p.prostitution));
+  ok('还清债后赎身成功', !p.prostitution.sold, JSON.stringify(p.prostitution));
   ok('赎身后自由', p.prostitution.redeemed === true);
 }
 

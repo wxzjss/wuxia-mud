@@ -79,7 +79,7 @@ function sellBody(world) {
   return {
     ok: true, lines: [
       { kind: 'story', text: `你咬咬牙，在${room.name}老鸨手里画了押，领了 ${SELL_PRICE} 文卖身银。从此便是风尘中人。` },
-      { kind: 'warn', text: `赎身需 ${debt} 文。每日可「接客」攒钱，攒够就能「赎身」脱籍；有交情深的贵人，也肯替你赎身。` },
+      { kind: 'warn', text: `你欠下赎身债 ${debt} 文。每日「接客」所得尽数抵债，还清即可「赎身」脱籍；有交情深的贵人，也肯替你赎身。` },
     ],
   };
 }
@@ -90,7 +90,7 @@ function serveCustomer(world) {
   if (!p.prostitution || !p.prostitution.sold) return { ok: false, lines: [{ kind: 'warn', text: '你又非青楼之人，接的什么客。' }] };
   if (!isBrothel(world, p.room)) return { ok: false, lines: [{ kind: 'warn', text: '你得回青楼里，才能接客。' }] };
   const earn = 40 + Math.floor((world.rng ? world.rng.next() : Math.random()) * 30); // 40~69 文
-  p.money += earn;
+  // 接客所得全部抵赎身债（老鸨抽成，到不了自己腰包），不再额外加玩家钱——否则「既得钱又减债」会翻倍
   p.prostitution.earnings = (p.prostitution.earnings || 0) + earn;
   p.prostitution.served = (p.prostitution.served || 0) + 1;
   p.prostitution.debt = Math.max(0, p.prostitution.debt - earn);
@@ -101,22 +101,21 @@ function serveCustomer(world) {
   return {
     ok: true, lines: [
       { kind: 'story', text: '你强颜欢笑，应酬了一夜的客人。' },
-      { kind: 'sys', text: `你赚了 ${earn} 文，赎身钱还差 ${p.prostitution.debt} 文。` },
+      { kind: 'sys', text: `你赚了 ${earn} 文，尽数抵了赎身债，还差 ${p.prostitution.debt} 文。` },
     ],
   };
 }
 
-/** 赎身 */
+/** 赎身（赎身债还清即可脱籍） */
 function redeem(world) {
   const p = world.player;
   if (!p.prostitution || !p.prostitution.sold) return { ok: false, lines: [{ kind: 'warn', text: '你又非青楼之人，赎的什么身。' }] };
   const debt = p.prostitution.debt || 0;
-  if (p.money < debt) return { ok: false, lines: [{ kind: 'warn', text: `赎身还需 ${debt} 文，你身上只有 ${p.money} 文。` }] };
-  p.money -= debt;
+  if (debt > 0) return { ok: false, lines: [{ kind: 'warn', text: `赎身债还没还清（还差 ${debt} 文），再「接客」攒一攒吧。` }] };
   p.prostitution = { sold: false, redeemed: true };
   return {
     ok: true, lines: [
-      { kind: 'story', text: '你凑齐了银钱，赎回自己的身子，脱了乐籍。' },
+      { kind: 'story', text: '你终于还清了赎身债，赎回自己的身子，脱了乐籍。' },
       { kind: 'sys', text: '从今往后，你又是自由之身了。' },
     ],
   };

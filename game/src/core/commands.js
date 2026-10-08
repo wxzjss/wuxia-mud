@@ -1064,8 +1064,8 @@ function buildCommands(world) {
       if (p.gender === 'female') lines.push({ kind: 'hint', text: '　（女子若走投无路，可在青楼「卖身」换一笔银钱。）' });
     } else {
       lines.push({ kind: 'favor', text: `　你现是青楼之人，已接客 ${ps.served || 0} 回。` });
-      lines.push({ kind: 'plain', text: `　赎身还差 ${ps.debt} 文（你身上有 ${p.money} 文）。` });
-      lines.push({ kind: 'hint', text: '「接客」攒钱，「赎身」脱籍；有交情深的贵人，也肯替你赎身。' });
+      lines.push({ kind: 'plain', text: `　赎身债还差 ${ps.debt} 文（「接客」所得尽数抵债）。` });
+      lines.push({ kind: 'hint', text: '「接客」还债，「赎身」脱籍；有交情深的贵人，也肯替你赎身。' });
     }
     return { lines };
   });
