@@ -9,107 +9,450 @@
     "startPotential": 0,
     "startHp": 20,
     "startMp": 10,
-    "startAttr": { "力量": 4, "根骨": 4, "身法": 4, "悟性": 6, "福缘": 5, "定力": 5 },
-    "startItems": ["cloth_robe", "wood_sword", "steamed_bun", "water_gourd", "map_rough"],
+    "startAttr": {
+      "力量": 4,
+      "根骨": 4,
+      "身法": 4,
+      "悟性": 6,
+      "福缘": 5,
+      "定力": 5
+    },
+    "startItems": [
+      "cloth_robe",
+      "wood_sword",
+      "steamed_bun",
+      "water_gourd",
+      "map_rough"
+    ],
     "startSkills": [],
     "startTraits": [],
-    "titles": ["初入江湖", "小有名气", "名动一方", "威震武林", "天下第一"],
+    "titles": [
+      "初入江湖",
+      "小有名气",
+      "名动一方",
+      "威震武林",
+      "天下第一"
+    ],
     "births": {
       "scholar": {
         "name": "书香门第",
         "desc": "你自幼饱读诗书，虽不曾习武，但悟性极高，举一反三。",
-        "attr": { "悟性": 4, "定力": 2 },
-        "items": ["book_poem"],
+        "attr": {
+          "悟性": 4,
+          "定力": 2
+        },
+        "items": [
+          "book_poem"
+        ],
         "money": 300,
         "skills": []
       },
       "hunter": {
         "name": "猎户之家",
         "desc": "你在山中长大，追逐野兽，练就一身矫健的身手。",
-        "attr": { "身法": 4, "力量": 2 },
-        "items": ["hunting_knife"],
-        "skills": ["basic_fist"]
+        "attr": {
+          "身法": 4,
+          "力量": 2
+        },
+        "items": [
+          "hunting_knife"
+        ],
+        "skills": [
+          "basic_fist"
+        ]
       },
       "merchant": {
         "name": "商贾之后",
         "desc": "你家世代经商，钱粮不缺，只是家中无人习武。",
-        "attr": { "福缘": 4 },
+        "attr": {
+          "福缘": 4
+        },
         "money": 1000,
-        "items": ["jade_pendant"]
+        "items": [
+          "jade_pendant"
+        ]
       },
       "orphan": {
         "name": "孤儿出身",
         "desc": "你自幼流落街头，尝尽人间冷暖，骨头比谁都硬。",
-        "attr": { "根骨": 4, "定力": 2 },
+        "attr": {
+          "根骨": 4,
+          "定力": 2
+        },
         "money": 20,
-        "items": ["tattered_cloak"],
-        "traits": ["hardened"]
+        "items": [
+          "tattered_cloak"
+        ],
+        "traits": [
+          "hardened"
+        ]
       },
       "wuxue": {
         "name": "武学世家",
         "desc": "你家中长辈皆是练家子，自幼耳濡目染，根基扎实。",
-        "attr": { "力量": 2, "根骨": 2, "身法": 2 },
-        "items": ["iron_sword_basic"],
-        "skills": ["basic_fist", "basic_sword"],
+        "attr": {
+          "力量": 2,
+          "根骨": 2,
+          "身法": 2
+        },
+        "items": [
+          "iron_sword_basic"
+        ],
+        "skills": [
+          "basic_fist",
+          "basic_sword"
+        ],
         "money": 150
       },
       "noble": {
         "name": "官宦子弟",
         "desc": "你出身官宦，衣食无忧，但江湖不认你家里的官印。",
-        "attr": { "定力": 3, "悟性": 2 },
+        "attr": {
+          "定力": 3,
+          "悟性": 2
+        },
         "money": 800,
-        "items": ["silk_robe"]
+        "items": [
+          "silk_robe"
+        ]
       }
     }
   },
   "regions": {
-    "jiangnan": { "id": "jiangnan", "name": "江南", "desc": "烟雨江南，小桥流水，商船往来如梭。此地富庶，也是江湖消息最灵通的地方。", "color": "#4a8db7" },
-    "huashan": { "id": "huashan", "name": "华山", "desc": "奇险天下第一，云海翻涌，山道上剑客往来。", "color": "#8b6f47" },
-    "shaolin": { "id": "shaolin", "name": "嵩山", "desc": "三十六峰耸立，少林古刹钟声悠远。", "color": "#a86b2c" },
-    "wudang": { "id": "wudang", "name": "武当", "desc": "七十二峰朝大顶，紫霄宫云气缭绕，道家清净之地。", "color": "#5d8a6b" },
-    "emei": { "id": "emei", "name": "峨眉", "desc": "峨眉天下秀，云鬟雾鬓，多为女侠出没。", "color": "#9b6b8e" },
-    "gaibang": { "id": "gaibang", "name": "中原", "desc": "中原大地，官道纵横，丐帮弟子遍布天下。", "color": "#8a7b52" },
-    "mojiao": { "id": "mojiao", "name": "黑木崖", "desc": "悬崖万仞，黑雾翻涌，魔教总坛隐秘于此。", "color": "#6b3f4f" },
-    "xiyu": { "id": "xiyu", "name": "西域", "desc": "黄沙漫天，驼铃阵阵，异域武学怪异难测。", "color": "#c08a3e" },
-    "haitan": { "id": "haitan", "name": "东海", "desc": "碧波万顷，岛屿星罗，海风带着咸腥。", "color": "#3f8fa0" },
-    "beijiang": { "id": "beijiang", "name": "北疆", "desc": "风雪连天，铁骑往来，边塞之地豪杰辈出。", "color": "#7a8a99" },
-    "miaojiang": { "id": "miaojiang", "name": "苗疆", "desc": "瘴气弥漫，蛊虫遍地，苗人巫术诡秘莫测。", "color": "#4f8a5f" },
-    "dali": { "id": "dali", "name": "大理", "desc": "苍山洱海，佛塔林立，段氏一阳指威震南疆。", "color": "#5f7fa8" },
-    "tangmen": { "id": "tangmen", "name": "蜀中", "desc": "巴山蜀水，唐门暗器天下无双，兼有峨眉青城。", "color": "#6f8a4f" },
-    "gusu": { "id": "gusu", "name": "姑苏", "desc": "姑苏城外寒山寺，燕子坞里藏机锋。", "color": "#578a8a" },
-    "taohuadao": { "id": "taohuadao", "name": "东海桃花岛", "desc": "桃花影落飞神剑，碧海潮生按玉箫。", "color": "#b07b8a" },
-    "xiake": { "id": "xiake", "name": "侠客岛", "desc": "海外仙山，赏善罚恶，太玄经刻于石壁。", "color": "#8a6b3f" },
-    "gumu": { "id": "gumu", "name": "终南山", "desc": "活死人墓，寒玉为床，玉女心经藏在石室深处。", "color": "#7a7a8a" },
-    "jinguo": { "id": "jinguo", "name": "金国故地", "desc": "昔日繁华，如今只剩断壁残垣与风沙。", "color": "#9a8a6a" },
-    "many": { "id": "many", "name": "塞外", "desc": "草原辽阔，牧歌悠扬，马背上的勇士骁勇善战。", "color": "#8a9a6a" },
-    "xixia": { "id": "xixia", "name": "西夏", "desc": "沙漠中的王国，神秘的西夏文字与冰窖绝学。", "color": "#b09a6a" },
-    "secret": { "id": "secret", "name": "秘境", "desc": "不为世人所知的地方，藏着机缘，也藏着死劫。", "color": "#8a5a9a" },
-    "wild": { "id": "wild", "name": "荒野", "desc": "荒郊野地，人迹罕至。", "color": "#7a7a6a" }
+    "jiangnan": {
+      "id": "jiangnan",
+      "name": "江南",
+      "desc": "烟雨江南，小桥流水，商船往来如梭。此地富庶，也是江湖消息最灵通的地方。",
+      "color": "#4a8db7"
+    },
+    "huashan": {
+      "id": "huashan",
+      "name": "华山",
+      "desc": "奇险天下第一，云海翻涌，山道上剑客往来。",
+      "color": "#8b6f47"
+    },
+    "shaolin": {
+      "id": "shaolin",
+      "name": "嵩山",
+      "desc": "三十六峰耸立，少林古刹钟声悠远。",
+      "color": "#a86b2c"
+    },
+    "wudang": {
+      "id": "wudang",
+      "name": "武当",
+      "desc": "七十二峰朝大顶，紫霄宫云气缭绕，道家清净之地。",
+      "color": "#5d8a6b"
+    },
+    "emei": {
+      "id": "emei",
+      "name": "峨眉",
+      "desc": "峨眉天下秀，云鬟雾鬓，多为女侠出没。",
+      "color": "#9b6b8e"
+    },
+    "gaibang": {
+      "id": "gaibang",
+      "name": "中原",
+      "desc": "中原大地，官道纵横，丐帮弟子遍布天下。",
+      "color": "#8a7b52"
+    },
+    "mojiao": {
+      "id": "mojiao",
+      "name": "黑木崖",
+      "desc": "悬崖万仞，黑雾翻涌，魔教总坛隐秘于此。",
+      "color": "#6b3f4f"
+    },
+    "xiyu": {
+      "id": "xiyu",
+      "name": "西域",
+      "desc": "黄沙漫天，驼铃阵阵，异域武学怪异难测。",
+      "color": "#c08a3e"
+    },
+    "haitan": {
+      "id": "haitan",
+      "name": "东海",
+      "desc": "碧波万顷，岛屿星罗，海风带着咸腥。",
+      "color": "#3f8fa0"
+    },
+    "beijiang": {
+      "id": "beijiang",
+      "name": "北疆",
+      "desc": "风雪连天，铁骑往来，边塞之地豪杰辈出。",
+      "color": "#7a8a99"
+    },
+    "miaojiang": {
+      "id": "miaojiang",
+      "name": "苗疆",
+      "desc": "瘴气弥漫，蛊虫遍地，苗人巫术诡秘莫测。",
+      "color": "#4f8a5f"
+    },
+    "dali": {
+      "id": "dali",
+      "name": "大理",
+      "desc": "苍山洱海，佛塔林立，段氏一阳指威震南疆。",
+      "color": "#5f7fa8"
+    },
+    "tangmen": {
+      "id": "tangmen",
+      "name": "蜀中",
+      "desc": "巴山蜀水，唐门暗器天下无双，兼有峨眉青城。",
+      "color": "#6f8a4f"
+    },
+    "gusu": {
+      "id": "gusu",
+      "name": "姑苏",
+      "desc": "姑苏城外寒山寺，燕子坞里藏机锋。",
+      "color": "#578a8a"
+    },
+    "taohuadao": {
+      "id": "taohuadao",
+      "name": "东海桃花岛",
+      "desc": "桃花影落飞神剑，碧海潮生按玉箫。",
+      "color": "#b07b8a"
+    },
+    "xiake": {
+      "id": "xiake",
+      "name": "侠客岛",
+      "desc": "海外仙山，赏善罚恶，太玄经刻于石壁。",
+      "color": "#8a6b3f"
+    },
+    "gumu": {
+      "id": "gumu",
+      "name": "终南山",
+      "desc": "活死人墓，寒玉为床，玉女心经藏在石室深处。",
+      "color": "#7a7a8a"
+    },
+    "jinguo": {
+      "id": "jinguo",
+      "name": "金国故地",
+      "desc": "昔日繁华，如今只剩断壁残垣与风沙。",
+      "color": "#9a8a6a"
+    },
+    "many": {
+      "id": "many",
+      "name": "塞外",
+      "desc": "草原辽阔，牧歌悠扬，马背上的勇士骁勇善战。",
+      "color": "#8a9a6a"
+    },
+    "xixia": {
+      "id": "xixia",
+      "name": "西夏",
+      "desc": "沙漠中的王国，神秘的西夏文字与冰窖绝学。",
+      "color": "#b09a6a"
+    },
+    "secret": {
+      "id": "secret",
+      "name": "秘境",
+      "desc": "不为世人所知的地方，藏着机缘，也藏着死劫。",
+      "color": "#8a5a9a"
+    },
+    "wild": {
+      "id": "wild",
+      "name": "荒野",
+      "desc": "荒郊野地，人迹罕至。",
+      "color": "#7a7a6a"
+    }
   },
   "attrs": {
-    "力量": { "id": "力量", "name": "力量", "desc": "影响攻击力与负重" },
-    "根骨": { "id": "根骨", "name": "根骨", "desc": "影响气血上限与防御" },
-    "身法": { "id": "身法", "name": "身法", "desc": "影响闪避与出手速度" },
-    "悟性": { "id": "悟性", "name": "悟性", "desc": "影响武学学习速度与内力上限" },
-    "福缘": { "id": "福缘", "name": "福缘", "desc": "影响奇遇、掉落与运气" },
-    "定力": { "id": "定力", "name": "定力", "desc": "影响抵抗异常状态与心境" }
+    "力量": {
+      "id": "力量",
+      "name": "力量",
+      "desc": "影响攻击力与负重"
+    },
+    "根骨": {
+      "id": "根骨",
+      "name": "根骨",
+      "desc": "影响气血上限与防御"
+    },
+    "身法": {
+      "id": "身法",
+      "name": "身法",
+      "desc": "影响闪避与出手速度"
+    },
+    "悟性": {
+      "id": "悟性",
+      "name": "悟性",
+      "desc": "影响武学学习速度与内力上限"
+    },
+    "福缘": {
+      "id": "福缘",
+      "name": "福缘",
+      "desc": "影响奇遇、掉落与运气"
+    },
+    "定力": {
+      "id": "定力",
+      "name": "定力",
+      "desc": "影响抵抗异常状态与心境"
+    }
   },
   "traits": {
-    "hardened": { "id": "hardened", "name": "苦命人", "desc": "自幼吃苦，气血增长快，但不易与人亲近。", "effects": [{ "type": "stat", "key": "maxHp", "value": 60 }] },
-    "genius": { "id": "genius", "name": "天资聪颖", "desc": "学武极快，潜能消耗减半。", "attr": { "悟性": 5 } },
-    "ironbone": { "id": "ironbone", "name": "铜皮铁骨", "desc": "天生神力，防御极高。", "attr": { "根骨": 4 }, "effects": [{ "type": "stat", "key": "def", "value": 15 }] },
-    "swift": { "id": "swift", "name": "身轻如燕", "desc": "身法极快，出手比常人快上一筹。", "attr": { "身法": 5 }, "effects": [{ "type": "stat", "key": "speed", "value": 12 }] },
-    "lucky": { "id": "lucky", "name": "福星高照", "desc": "福缘深厚，奇遇不断。", "attr": { "福缘": 6 } },
-    "poison_body": { "id": "poison_body", "name": "百毒不侵", "desc": "身怀异质，毒素难伤。", "effects": [{ "type": "stat", "key": "def", "value": 5 }] },
-    "sword_heart": { "id": "sword_heart", "name": "剑心通明", "desc": "于剑道有天生感悟，剑法伤害提升。", "effects": [{ "type": "stat", "key": "atk", "value": 12 }] },
-    "killer": { "id": "killer", "name": "杀伐果断", "desc": "出手狠辣，暴击率提升。", "effects": [{ "type": "stat", "key": "critRate", "value": 0.08 }] },
-    "merchant_born": { "id": "merchant_born", "name": "经商奇才", "desc": "买卖东西价格更优惠。", "effects": [] },
-    "wanderer": { "id": "wanderer", "name": "浪子情怀", "desc": "四处漂泊惯了，行走消耗更少。", "effects": [] },
-    "insect_master": { "id": "insect_master", "name": "蛊道天赋", "desc": "与蛊虫天生亲和。", "effects": [] }
+    "hardened": {
+      "id": "hardened",
+      "name": "苦命人",
+      "desc": "自幼吃苦，气血增长快，但不易与人亲近。",
+      "effects": [
+        {
+          "type": "stat",
+          "key": "maxHp",
+          "value": 60
+        }
+      ]
+    },
+    "genius": {
+      "id": "genius",
+      "name": "天资聪颖",
+      "desc": "学武极快，潜能消耗减半。",
+      "attr": {
+        "悟性": 5
+      }
+    },
+    "ironbone": {
+      "id": "ironbone",
+      "name": "铜皮铁骨",
+      "desc": "天生神力，防御极高。",
+      "attr": {
+        "根骨": 4
+      },
+      "effects": [
+        {
+          "type": "stat",
+          "key": "def",
+          "value": 15
+        }
+      ]
+    },
+    "swift": {
+      "id": "swift",
+      "name": "身法灵活",
+      "desc": "身法灵活自如，身法属性大增，闪避与出手速度远超常人。",
+      "attr": {
+        "身法": 6
+      },
+      "effects": [
+        {
+          "type": "stat",
+          "key": "speed",
+          "value": 12
+        }
+      ]
+    },
+    "lucky": {
+      "id": "lucky",
+      "name": "福星高照",
+      "desc": "福缘深厚，奇遇不断。",
+      "attr": {
+        "福缘": 6
+      }
+    },
+    "poison_body": {
+      "id": "poison_body",
+      "name": "百毒不侵",
+      "desc": "身怀异质，毒素难伤。",
+      "effects": [
+        {
+          "type": "stat",
+          "key": "def",
+          "value": 5
+        }
+      ]
+    },
+    "sword_heart": {
+      "id": "sword_heart",
+      "name": "剑心通明",
+      "desc": "于剑道有天生感悟，剑法伤害提升。",
+      "effects": [
+        {
+          "type": "stat",
+          "key": "atk",
+          "value": 12
+        }
+      ]
+    },
+    "killer": {
+      "id": "killer",
+      "name": "杀伐果断",
+      "desc": "出手狠辣，暴击率提升。",
+      "effects": [
+        {
+          "type": "stat",
+          "key": "critRate",
+          "value": 0.08
+        }
+      ]
+    },
+    "merchant_born": {
+      "id": "merchant_born",
+      "name": "经商奇才",
+      "desc": "买卖东西价格更优惠。",
+      "effects": []
+    },
+    "wanderer": {
+      "id": "wanderer",
+      "name": "浪子情怀",
+      "desc": "四处漂泊惯了，行走消耗更少。",
+      "effects": []
+    },
+    "insect_master": {
+      "id": "insect_master",
+      "name": "蛊道天赋",
+      "desc": "与蛊虫天生亲和。",
+      "effects": []
+    },
+    "martial_prodigy": {
+      "name": "习武奇才",
+      "trainMult": 1.6,
+      "desc": "习武奇才，修炼任何武技进度飞快，所得经验远胜常人。"
+    },
+    "iron_bone": {
+      "name": "筋骨强健",
+      "attr": {
+        "根骨": 5
+      },
+      "desc": "天生筋骨强健，根骨远胜常人，气血与防御更厚。"
+    },
+    "powerful": {
+      "name": "力大无穷",
+      "attr": {
+        "力量": 5
+      },
+      "desc": "天生神力，力量惊人，出手沉重，攻敌更狠。"
+    }
   },
   "insects": {
-    "golden_silkworm": { "id": "golden_silkworm", "name": "金蚕蛊", "desc": "苗疆至宝，可吞噬毒素化为己用。", "effects": [{ "type": "stat", "key": "def", "value": 20 }] },
-    "ice_silkworm": { "id": "ice_silkworm", "name": "冰蚕", "desc": "至寒之物，可练就冰蚕掌。", "effects": [{ "type": "stat", "key": "atk", "value": 15 }] },
-    "five_poison": { "id": "five_poison", "name": "五毒蛊", "desc": "五毒俱全，触之即伤。", "effects": [{ "type": "stat", "key": "atk", "value": 10 }] }
+    "golden_silkworm": {
+      "id": "golden_silkworm",
+      "name": "金蚕蛊",
+      "desc": "苗疆至宝，可吞噬毒素化为己用。",
+      "effects": [
+        {
+          "type": "stat",
+          "key": "def",
+          "value": 20
+        }
+      ]
+    },
+    "ice_silkworm": {
+      "id": "ice_silkworm",
+      "name": "冰蚕",
+      "desc": "至寒之物，可练就冰蚕掌。",
+      "effects": [
+        {
+          "type": "stat",
+          "key": "atk",
+          "value": 15
+        }
+      ]
+    },
+    "five_poison": {
+      "id": "five_poison",
+      "name": "五毒蛊",
+      "desc": "五毒俱全，触之即伤。",
+      "effects": [
+        {
+          "type": "stat",
+          "key": "atk",
+          "value": 10
+        }
+      ]
+    }
   }
 }

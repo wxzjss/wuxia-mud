@@ -379,6 +379,19 @@ function summary(world) {
       out.partnerHome = { id: d.home, name: r ? r.name : d.home, of: d.name };
     }
   }
+  /* 家园新地块（estate.js）+ 我资助建家的 NPC */
+  try {
+    const estate = require('./estate');
+    out.plots = estate.PLOTS.map(pl => ({
+      key: pl.key, name: pl.name, dir: pl.dir, cost: pl.cost,
+      reqHomeTier: pl.reqHomeTier, maxLevel: pl.maxLevel,
+      desc: (pl.desc && pl.desc(1)) || '', mats: pl.mats || {},
+      level: estate.plotLevel(p.estate, pl.key),
+      locked: out.hasHome ? estate.homeTierOrder(world) < (estate.TIER_ORDER[pl.reqHomeTier] || 9) : true,
+    }));
+    out.estateEffects = estate.estateEffects(world);
+    out.sponsored = estate.sponsoredList(world);
+  } catch (e) { out.plots = []; }
   return out;
 }
 

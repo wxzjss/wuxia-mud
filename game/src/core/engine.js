@@ -291,6 +291,7 @@ class GameEngine {
       marriage: marriage.summary(w),
       kinship: kinship.summary(w),
       home: homeMod.summary(w),
+      martial: this.martialList(),
       mods: this.modLoader.mods.map(m => ({ id: m.id, name: m.name, version: m.version, author: m.author, enabled: m.enabled, category: m.category, description: m.description, counts: m.counts })),
     };
   }
@@ -403,9 +404,71 @@ class GameEngine {
         exp: cur.exp, expNeed: p.skillExpNeed(cur.level), equipped: Object.values(p.equippedSkills).includes(id),
         desc: sd.desc, trainCost: p.trainCost(sd, cur.level), canTrain: p.skillLevel(id) < p.maxSkillLevelFor(sd),
         effects: (sd.effects || []).map(e => e.type),
+        /* 武学重制：功法五大类 + 熟练度分级（前端「武学修为」面板要用） */
+        category: sd.category || sd.type || '外功',
+        profTier: require('./character').profTierIndex(p.skillLevel(id), (sd.maxLevel || 300)),
+        weaponType: sd.weaponType || null,
+        damageMult: sd.damageMult != null ? sd.damageMult : null,
       });
     }
-    return out.sort((a, b) => a.type.localeCompare(b.type) || b.level - a.level);
+    return out.sort((a, b) => String(a.category).localeCompare(String(b.category)) || b.level - a.level);
+  }
+
+  /** 武学修为面板数据（武学重制）：奇经八脉 / 修炼诸途 / 师承 / 宗门 */
+  martialList() {
+    const p = this.world.player, w = this.world;
+    if (!p) return null;
+    const CR = require('./character');
+    const md = p.meridians || {};
+    const mnames = CR.MERIDIAN_NAMES || { 任: '任脉', 督: '督脉' };
+    const meridians = Object.keys(mnames).map(k => ({
+      key: k, name: mnames[k] || (k + '脉'), lv: md[k] || 0, max: CR.MERIDIAN_MAX || 8,
+    }));
+    const ap = p.attrTotal ? p.attrTotal('资质') : (p.attr['资质'] || 0);
+    /* 修炼诸途：每种途径当前可用度 */
+    const ways = [
+      { key: 'meditate', name: '打坐', desc: '恢复内力；已修内功者还能冲击奇经八脉' },
+      { key: 'train', name: '修炼', desc: '消耗内力精进功法（非内功）' },
+      { key: 'cuti', name: '淬体', desc: '外功根基：伤气血、耗体力，有生命危险，宜备丹药' },
+      { key: 'alchemy', name: '炼丹', desc: '丹房与丹炉齐备，炼回梦丹、理气丹等' },
+      { key: 'forge', name: '炼器', desc: '铁锤与精铁在手，锻兵修甲' },
+      { key: 'rune', name: '画符阵', desc: '朱砂符纸，画符布增益' },
+    ];
+    const recipes = (w.data.recipes && Object.values(w.data.recipes)) || [];
+    const byCat = {};
+    for (const r of recipes) {
+      if (!r || !r.category) continue;
+      byCat[r.category] = (byCat[r.category] || 0) + 1;
+    }
+    /* 弟子 */
+    const disciples = [];
+    for (const id of (p.disciples || [])) {
+      const n = w.instances.npcs && w.instances.npcs[id];
+      const d = w.data.npcs[id] || {};
+      const defId = n ? n.defId : id;
+      const dd = w.data.npcs[defId] || d;
+      const st = (n && n.pstate) || null;
+      disciples.push({
+        id, defId, name: (n && n.name) || dd.name || id,
+        level: (n && n.level) || dd.level || 1,
+        realm: this.realmName(n),
+        skillLv: (n && n.learned) ? Math.max.apply(null, Object.keys(n.learned).map(k => n.learned[k].level).concat([0])) : 0,
+        trust: st ? (st.trust || 0) : 0,
+        favor: n ? Math.round(n.favor || 0) : 0,
+      });
+    }
+    /* 自建宗门 */
+    const mySect = p.mySect ? {
+      name: p.mySect.name, style: p.mySect.style || '正派',
+      prestige: p.mySect.prestige || 0, members: (p.mySect.members || []).length,
+      hall: (w.getRoom(p.mySect.hall) || {}).name || p.mySect.hall || null,
+    } : null;
+    return {
+      meridians, aptitude: ap, ways,
+      recipes: byCat,
+      disciples, mySect,
+      maxLevelHint: '上限由资质与根骨决定（资质权重最高）',
+    };
   }
 
   inventoryList() {

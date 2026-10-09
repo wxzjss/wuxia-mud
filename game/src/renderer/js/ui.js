@@ -731,6 +731,12 @@
     } else if (name === 'home') {
       title = '我的家宅';
       html = homeHtml(v);
+    } else if (name === 'martial') {
+      title = '武学修为';
+      html = martialHtml(v);
+    } else if (name === 'found') {
+      title = '宗门 · 师承';
+      html = sectFounderHtml(v);
     } else if (name === 'guide') {
       title = '江湖指引';
       html = guideHtml(v);
@@ -909,7 +915,44 @@
         h += '<div class="love-chip tier">' + esc(t.name) + '<i>' + t.price + ' 文 · 可放 ' + t.capacity + ' 件</i></div>';
       });
     }
-    h += '<div class="modal-text" style="margin-top:8px">指令：「买宅」「卖宅」「回家」「布置 &lt;描述&gt;」「置办 &lt;家具&gt;」</div>';
+    /* ---- 家园新地块（开垦）---- */
+    if (hs && hs.plots && hs.plots.length) {
+      h += '<div class="panel-sec">家园地块</div>';
+      hs.plots.forEach(pl => {
+        if (pl.locked) {
+          h += '<div class="love-chip home" style="opacity:.45">' + esc(pl.name) +
+            '<i>需主院等级更高</i></div>';
+        } else if (pl.level > 0) {
+          h += '<div class="love-chip home"><b>' + esc(pl.name) + '</b> ' + pl.level + ' 级' +
+            (pl.level >= pl.maxLevel ? '（顶级）' : ' · 发「开垦 ' + esc(pl.name) + '」扩建') +
+            '<i>' + esc(pl.desc) + '</i></div>';
+        } else {
+          const mats = Object.keys(pl.mats || {}).map(k => esc(k) + '×' + pl.mats[k]).join('、');
+          h += '<div class="love-chip tier">○ ' + esc(pl.name) +
+            '<i>' + pl.cost + ' 文' + (mats ? ' · 需 ' + mats : '') + '</i></div>';
+        }
+      });
+      const ef = hs.estateEffects;
+      if (ef) {
+        const bits = [];
+        if (ef.trainMult > 0) bits.push('修炼快 ' + Math.round(ef.trainMult * 100) + '%');
+        if (ef.cutiRate > 0) bits.push('淬体易 ' + Math.round(ef.cutiRate * 100) + '%');
+        if (ef.wisdom > 0) bits.push('悟性 +' + Math.round(ef.wisdom));
+        if (ef.craftRate > 0) bits.push('炼制稳 ' + Math.round(ef.craftRate * 100) + '%');
+        if (ef.moodUp > 0) bits.push('心情 +' + Math.round(ef.moodUp));
+        if (ef.discipleCap > 0) bits.push('可容弟子 +' + ef.discipleCap);
+        if (bits.length) h += '<div class="modal-text">家园增益：' + esc(bits.join(' · ')) + '</div>';
+      }
+    }
+    /* ---- 我资助建过家的 NPC ---- */
+    if (hs && hs.sponsored && hs.sponsored.length) {
+      h += '<div class="panel-sec">受你资助的人</div>';
+      hs.sponsored.forEach(s => {
+        h += '<div class="love-chip spouse">' + esc(s.name) +
+          '<i>家：' + esc(s.roomName) + ' · ' + s.cost + ' 文</i></div>';
+      });
+    }
+    h += '<div class="modal-text" style="margin-top:8px">指令：「买宅」「卖宅」「回家」「布置 &lt;描述&gt;」「置办 &lt;家具&gt;」「地块」「开垦 &lt;地块&gt;」「资助 &lt;人名&gt;」</div>';
     return h;
   }
 
@@ -963,13 +1006,14 @@
   }
 
   function skillsHtml(v) {
-    const list = v.skills || [];
+    const list = (v.player && v.player.skills) || v.skills || [];
     if (!list.length) return '<div class="modal-text">尚未习得任何武学。</div>';
-    let h = '<table class="data-table"><thead><tr><th>武学</th><th>类型</th><th>等级</th><th>熟练度</th><th>威力</th></tr></thead><tbody>';
+    let h = '<table class="data-table"><thead><tr><th>武学</th><th>门类</th><th>类型</th><th>等级</th><th>熟练度</th><th>威力</th></tr></thead><tbody>';
     list.forEach(s => {
       const pctStr = s.level >= s.maxLevel ? '圆满' : util.pct(s.exp, s.expNeed) + '%';
-      h += '<tr><td class="td-name">' + esc(s.name) + (s.enabled ? ' <i class="tag-on">已启用</i>' : '') + '</td>' +
-        '<td>' + esc(s.typeName || s.type) + '</td>' +
+      h += '<tr><td class="td-name">' + esc(s.name) + (s.equipped || s.enabled ? ' <i class="tag-on">已启用</i>' : '') + '</td>' +
+        '<td>' + esc(s.category || s.typeName || s.type) + '</td>' +
+        '<td>' + esc(s.typeName || s.type) + (s.weaponType ? '（需' + esc(s.weaponType) + '）' : '') + '</td>' +
         '<td>' + s.level + ' / ' + s.maxLevel + '</td>' +
         '<td>' + pctStr + '</td>' +
         '<td>' + (s.power != null ? s.power : '—') + '</td></tr>';
@@ -977,6 +1021,92 @@
     h += '</tbody></table>';
     return h;
   }
+
+  /* ============================================================
+   * 武学修为面板（武学重制）：奇经八脉 / 修炼诸途 / 功法门类 / 弟子 / 宗门
+   * ============================================================ */
+  function martialHtml(v) {
+    const m = v.martial || {};
+    const pl = v.player || {};
+    let h = '';
+
+    /* 资质 + 奇经八脉 */
+    h += '<div class="panel-sec">资质 · 奇经八脉</div>';
+    h += '<div class="modal-text">资质 <b>' + (m.aptitude || 0) + '</b>　' +
+      esc(m.maxLevelHint || '') + '</div>';
+    const md = m.meridians || [];
+    if (md.length) {
+      h += '<table class="data-table"><thead><tr><th>经脉</th><th>进度</th><th>已通</th></tr></thead><tbody>';
+      md.forEach(x => {
+        const pctv = Math.round((x.lv / (x.max || 8)) * 100);
+        h += '<tr><td class="td-name">' + esc(x.name) + '</td>' +
+          '<td>' + x.lv + ' / ' + (x.max || 8) + '</td>' +
+          '<td>' + (x.lv >= (x.max || 8) ? '✔ 通' : pctv + '%') + '</td></tr>';
+      });
+      h += '</tbody></table>';
+      h += '<div class="modal-text">内功修炼时有机会冲击奇经八脉，通脉越多，内力上限、气血与招式越强。</div>';
+    }
+
+    /* 修炼诸途 */
+    const ways = m.ways || [];
+    if (ways.length) {
+      h += '<div class="panel-sec">修炼诸途</div>';
+      ways.forEach(w => {
+        h += '<div class="love-chip home">' + esc(w.name) + '<i>' + esc(w.desc) + '</i></div>';
+      });
+    }
+
+    /* 炼制配方统计 */
+    const rc = m.recipes || {};
+    const rcKeys = Object.keys(rc);
+    if (rcKeys.length) {
+      const CN = { alchemy: '炼丹', forge: '炼器', rune: '画符阵' };
+      h += '<div class="panel-sec">炼制配方</div>';
+      h += '<div class="modal-text">' + rcKeys.map(k => CN[k] || k + ' ' + rc[k] + ' 方').join('　') + '</div>';
+    }
+
+    /* 功法门类统计 */
+    const list = (pl.skills) || v.skills || [];
+    if (list.length) {
+      const byCat = {};
+      list.forEach(s => { const c = s.category || s.type || '外功'; byCat[c] = (byCat[c] || 0) + 1; });
+      h += '<div class="panel-sec">功法门类</div>';
+      h += '<div class="modal-text">' + Object.keys(byCat).map(k => k + ' ' + byCat[k] + ' 部').join('　') + '</div>';
+      /* 熟练度分级表 */
+      const TIERS = ['入门', '初成', '小成', '大成', '融会', '登峰造极'];
+      h += '<div class="modal-text" style="margin-top:6px">熟练度分级：' +
+        TIERS.map((t, i) => esc(t) + (i === 5 ? '' : ' ›')).join('　') + '</div>';
+    }
+
+    /* 弟子 */
+    const ds = m.disciples || [];
+    h += '<div class="panel-sec">弟子（' + ds.length + '）</div>';
+    if (!ds.length) {
+      h += '<div class="modal-text">尚未收徒。发「收徒 &lt;人名&gt;」可收有资质者为徒，「授艺 &lt;人名&gt; &lt;武学&gt;」传其武学。</div>';
+    } else {
+      ds.forEach(d => {
+        h += '<div class="love-chip spouse">' + esc(d.name) +
+          '<i>' + (d.realm || '—') + ' · 武学 ' + d.skillLv + ' 级 · 信任 ' + d.trust + ' · 好感 ' + d.favor + '</i></div>';
+      });
+    }
+
+    /* 自建宗门 */
+    h += '<div class="panel-sec">宗门</div>';
+    if (m.mySect) {
+      h += '<div class="love-card spouse"><div class="lc-name">' + esc(m.mySect.name) +
+        '</div><div class="lc-sub">' + esc(m.mySect.style || '') + ' · 门人 ' + m.mySect.members +
+        ' · 威望 ' + m.mySect.prestige + (m.mySect.hall ? ' · 山门 ' + esc(m.mySect.hall) : '') + '</div></div>';
+      h += '<div class="modal-text">指令：「招贤」「演武」「大比」「解散宗门」</div>';
+    } else {
+      h += '<div class="modal-text">你尚未自立门户。发「创宗 &lt;名字&gt;」自立山头，收门徒、办活动、参与门派大比。</div>';
+    }
+
+    h += '<div class="modal-text" style="margin-top:8px">指令：「修炼 &lt;武学&gt;」「打坐」「淬体 &lt;武学&gt;」「炼丹 &lt;方&gt;」「炼器 &lt;方&gt;」「画符 &lt;方&gt;」</div>';
+    return h;
+  }
+
+  /** 宗门/师承面板（跳到 martial 的宗门段，保留独立入口） */
+  function sectFounderHtml(v) { return martialHtml(v); }
 
   function questsHtml(v) {
     const src = questSrc(v);
@@ -1257,10 +1387,26 @@
       ['武学', [
         'skills　武学列表（中文：武学 / 武功）',
         'learn <人物> <武学>　请教（中文：学 / 学习）',
-        'lian / train <武学>　练功（中文：练 / 练功 / 打坐）',
+        'lian / train <武学>　修炼（耗内力；内功可冲奇经八脉）',
+        'lian / train　打坐（恢复内力）（中文：练 / 练功 / 打坐）',
+        'cuti <武学>　淬体（外功根基，伤气血耗体力，宜备丹药）',
+        '炼丹 <方> / 炼器 <方> / 画符 <方>　须有对应器具与材料',
         'enable <武学>　启用',
-        'perform / pf <招式>　出招',
+        'perform / pf <招式>　出招（刀枪棍剑类须持对应兵刃）',
         'forget <武学>　遗忘',
+      ]],
+      ['师承 · 宗门', [
+        '收徒 <人名>　收徒（须好感≥30 且你有武学）',
+        '弟子　列弟子',
+        '授艺 <人名> <武学>　传艺',
+        '逐出师门 <人名>　逐出弟子',
+        '创宗 <名字>　自立门户（中文：建宗 / 开宗立派）',
+        '招贤 <人名> / 演武 / 大比 / 解散宗门',
+      ]],
+      ['家园', [
+        '地块　看家园地块（中文：家园地块）',
+        '开垦 <地块>　在主院开垦或扩建（中文：拓地 / 开辟）',
+        '资助 <人名> [档位]　替 NPC 盖宅（中文：建家）',
       ]],
       ['门派', [
         'sect　门派信息（中文：门派）',
@@ -1406,7 +1552,14 @@
     guide: 'guide', 指引: 'guide', 新手教程: 'guide', 引导: 'guide',
     social: 'social', 社交: 'social', 人脉: 'social', 好感: 'social', 人际关系: 'social',
     love: 'love', 姻缘: 'love', 姻缘簿: 'love', 婚配: 'love', 义亲: 'love', 亲人: 'love',
-    home: 'home', 家宅: 'home', 房产: 'home', 我的家: 'home', 我的家宅: 'home',
+    home: 'home', 家宅: 'home', 房产: 'home', 我的家: 'home', 我的家宅: 'home', 家园: 'home',
+    地块: 'home', 家园地块: 'home', 开垦: 'home', 拓地: 'home', 开辟: 'home', plots: 'home', plot: 'home',
+    武馆: 'martial', martial: 'martial',
+    修炼: 'martial', 炼丹: 'martial', 炼器: 'martial', 画符: 'martial', 制符: 'martial', 布阵: 'martial',
+    符箓: 'martial', 淬体: 'martial', 打坐: 'martial',
+    sectfounder: 'found', 创宗: 'found', 招贤: 'found', 逐出师门: 'found', 演武: 'found', 大比: 'found', 解散宗门: 'found',
+    recruit: 'found', drill: 'found', contest: 'found', disciple: 'found', tutor: 'found', founded: 'found',
+    宗门: 'found',
     help: 'help', '?': 'help', 帮助: 'help', 指令: 'help', 指令帮助: 'help',
   };
 

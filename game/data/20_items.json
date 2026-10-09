@@ -1537,6 +1537,77 @@
       "stackable": true,
       "stackMax": 99,
       "quality": "worn"
+    },
+    "tiancai_rencan": {
+      "id": "tiancai_rencan",
+      "name": "天材人參",
+      "type": "treasure",
+      "category": "天材地果",
+      "desc": "天地灵气孕育的奇参，服之可大增资质与根骨。",
+      "value": 3000,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "资质",
+            4
+          ]
+        },
+        {
+          "type": "+attr",
+          "args": [
+            "根骨",
+            2
+          ]
+        }
+      ]
+    },
+    "wuji_guo": {
+      "id": "wuji_guo",
+      "name": "悟极果",
+      "type": "treasure",
+      "category": "天材地果",
+      "desc": "传说中的悟道仙果，服之可增悟性。",
+      "value": 3000,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "悟性",
+            4
+          ]
+        }
+      ]
+    },
+    "xuecan_hua": {
+      "id": "xuecan_hua",
+      "name": "血参花",
+      "type": "treasure",
+      "category": "天材地果",
+      "desc": "生于绝地的血参之花，服之气血与根骨皆增。",
+      "value": 1500,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "根骨",
+            3
+          ]
+        },
+        {
+          "type": "+attr",
+          "args": [
+            "力量",
+            2
+          ]
+        }
+      ]
     }
   },
   "recipes": {

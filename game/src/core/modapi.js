@@ -463,6 +463,10 @@ function evalEffect(eff, ctx) {
       if (!p.titles.includes(args[0])) { p.titles.push(args[0]); out.push({ kind: 'sys', text: `你获得了称号「${args[0]}」。` }); }
       break;
     }
+    case '+buff': case 'buff': case 'addbuff': {
+      if (args[0]) { p.addBuff(args[0]); out.push({ kind: 'sys', text: `你施下符箓，周身泛起灵光（${args[0].name || '增益'}）。` }); }
+      break;
+    }
 
     // 位置
     case 'goto': case 'move': {

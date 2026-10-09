@@ -317,6 +317,12 @@ class World extends EventEmitter {
   getSect(id) { return this.data.sects[id]; }
   getNpc(id) { return this.data.npcs[id]; }
   getTrait(id) { return this.data.traits[id] || this.data.attrs[id]; }
+  /** 家园地块效果汇总（练武场/书房/丹房… 给修炼、淬体、炼制、采药用） */
+  estateEffects() {
+    const est = this.player && this.player.estate;
+    if (!est || !Array.isArray(est.plots) || !est.plots.length) return null;
+    return require('./estate').estateEffects(this);
+  }
   getQuest(id) { return this.data.quests[id]; }
   getRegion(id) { return this.data.regions[id]; }
   season() {
@@ -455,6 +461,20 @@ class World extends EventEmitter {
       if (npc.portrait) npc.pstate.moodBias = portraitMoodBias(npc.portrait);
       /* 心情基线 = 模板心情 + 画像偏移（有心结/丧亲的人基线更低） */
       npc.mood = clamp((def.mood !== undefined ? def.mood : 50) + npc.pstate.moodBias, 0, 100);
+      /* ---- ENG-04：hp / maxHp 失同步 ----
+         构造时 hp 用 def.hp 定死，但 Character 构造末尾会 recalc()，
+         maxHp 会因内功/装备/奇经八脉加成变大，hp 却不动 →
+         NPC 一出生就带着 76%~81% 的残血（看着像刚被打过，实际数据没同步）。
+         现在统一「出生即满血」；
+         若将来要做「带伤出场」的 NPC，模板写 spawnHpRatio: 0.6 即可按比例落地。 */
+      if (typeof npc.maxHp === 'number' && npc.maxHp > 0) {
+        const ratio = (typeof def.spawnHpRatio === 'number') ? clamp(def.spawnHpRatio, 0.05, 1) : 1;
+        npc.hp = Math.max(1, Math.round(npc.maxHp * ratio));
+      }
+      if (typeof npc.maxMp === 'number' && npc.maxMp > 0) {
+        const mRatio = (typeof def.spawnMpRatio === 'number') ? clamp(def.spawnMpRatio, 0.05, 1) : 1;
+        npc.mp = Math.max(0, Math.round(npc.maxMp * mRatio));
+      }
       this.instances.npcs[npc.id] = npc;
       if (!first) first = npc;
       if (!silent) this.emit('npcspawn', { npc });
@@ -1285,6 +1305,9 @@ class World extends EventEmitter {
     p.tutorialFlags = cfg.tutorialFlags || [];
     p.titles = (cfg.titles || []);
     p.deathCount = 0;
+    p.disciples = [];   // 弟子（npc 实例 id 列表）
+    p.mySect = null;    // 自建宗门（玩家私有，随档走，不进全局 data.sects）
+    p.estate = { plots: [], sponsored: {} };   // 家园新地块 + 资助NPC建家
     // 起始物品
     for (const it of (meta.startItems || [])) this.giveItem(p, it, 1);
     this.player = p;
@@ -1355,6 +1378,13 @@ class World extends EventEmitter {
         prostitution: p.prostitution ? Object.assign({}, p.prostitution) : null,
         /* ---- 农田（第四批）---- */
         farm: p.farm ? Object.assign({}, p.farm) : null,
+        /* ---- 自建宗门（武学重制 S2）---- */
+        mySect: p.mySect ? Object.assign({}, p.mySect) : null,
+        /* ---- 家园地块 + 资助NPC建家 ---- */
+        estate: p.estate ? {
+          plots: (p.estate.plots || []).map(x => Object.assign({}, x)),
+          sponsored: Object.assign({}, p.estate.sponsored || {}),
+        } : null,
       },
       /* 玩家买/布置的宅子房间是运行期动态建的，不在 data 里，必须单独存 */
       playerHomes: this.serializePlayerHomes(),
@@ -1375,14 +1405,26 @@ class World extends EventEmitter {
   serializePlayerHomes() {
     const p = this.player;
     const out = [];
-    for (const h of (p && p.homes) || []) {
-      const room = this.getRoom(h.id);
+    /* ① 主宅（home.js 买的） */
+    const ids = [];
+    for (const h of (p && p.homes) || []) ids.push(h.id);
+    /* ② 家园地块（estate.js 开的）与 NPC 家（玩家资助盖的）——同样不在 data 里 */
+    const est = p && p.estate;
+    for (const rec of (est && est.plots) || []) if (rec && rec.roomId) ids.push(rec.roomId);
+    for (const sid of Object.keys((est && est.sponsored) || {})) {
+      const s = est.sponsored[sid];
+      if (s && s.roomId) ids.push(s.roomId);
+    }
+    for (const id of ids) {
+      const room = this.getRoom(id);
       if (!room) continue;
+      if (out.some(x => x.id === id)) continue;
       out.push({
         id: room.id, name: room.name, region: room.region, desc: room.desc,
         owner: room.owner, private: !!room.private,
         homeTier: room.homeTier || null, homeCapacity: room.homeCapacity || 0,
         furniture: (room.furniture || []).slice(),
+        plotKey: room.plotKey || null, plotLevel: room.plotLevel || 0,
         exits: cleanInstance(room.exits || {}, 0),
       });
     }
@@ -1399,6 +1441,7 @@ class World extends EventEmitter {
         owner: hr.owner, private: !!hr.private,
         homeTier: hr.homeTier || null, homeCapacity: hr.homeCapacity || 0,
         furniture: (hr.furniture || []).slice(),
+        plotKey: hr.plotKey || null, plotLevel: hr.plotLevel || 0,
         exits: hr.exits || {},
       };
       /* 反向补边：玩家宅的每个出口，给对端房间补一条「回来」的边 */
@@ -1451,6 +1494,13 @@ class World extends EventEmitter {
       prostitution: sd.prostitution ? Object.assign({}, sd.prostitution) : null,
       /* ---- 农田（第四批）---- */
       farm: sd.farm ? Object.assign({}, sd.farm) : null,
+      /* ---- 自建宗门（武学重制 S2）---- */
+      mySect: sd.mySect ? Object.assign({}, sd.mySect) : null,
+      /* ---- 家园地块 + 资助NPC建家 ---- */
+      estate: sd.estate ? {
+        plots: (sd.estate.plots || []).map(x => Object.assign({}, x)),
+        sponsored: Object.assign({}, sd.estate.sponsored || {}),
+      } : { plots: [], sponsored: {} },
     });
     // 恢复装备物品（装备在 equipmentUid 里，物品定义从 data 取）
     p.inventory = (sd.inventory || []).map(i => Object.assign({}, i));
@@ -1458,51 +1508,72 @@ class World extends EventEmitter {
     this.player = p;
     /* 重建玩家买的宅子房间（运行期动态建、不在 data 里） */
     this.restorePlayerHomes(save.playerHomes);
-    this.instances = save.instances || { npcs: {}, items: {}, corpses: {} };
-    // 复活所有实例的世界引用
-    for (const k of Object.keys(this.instances.npcs)) {
-      const n = this.instances.npcs[k];
-      n.world = this;
-      if (!n.attr) n.attr = {};
-      /* ⚠️ 原型补回（SPRINT1-ENG-03）：cleanInstance 把实例压成了纯数据对象，
-         Character.prototype 上的方法全丢了 —— recalc / attrTotal / addBuff / skillLevel 都是 undefined。
-         命中判定 hitRoll 第一句就是 `defender.attrTotal('身法')`，
-         所以**读档后一开打就抛 TypeError**（实测玩家→NPC、NPC→玩家 双向都崩），
-         武学特效里的 t.addBuff() 同理。必须先把原型补回来。 */
-      if (typeof n.recalc !== 'function') Object.setPrototypeOf(n, Character.prototype);
-      n.recalc && n.recalc();
-      /* 存档不存 npc.def（模板副本太大），按 defId 从 data 反查挂回。
-         判定必须用 typeof !== 'object'、不能只判 !n.def：
-         SPRINT1-ENG-02 之前 recalc() 会把 n.def 写成防御力数字，
-         那种**旧档**里 def 是个非零的数字，只判 !n.def 就挂不回模板了。
-         （现在 recalc() 改写 defFinal 了，但旧档仍然可能存在，这层兜底不能拆。） */
-      if (n.defId && (!n.def || typeof n.def !== 'object')) n.def = this.data.npcs[n.defId] || null;
-      /* 旧档拉平（SPRINT1-ENG-03 裁决）：缺 defFinal 的实例补算一次。
-         补的是**原型 + recalc()**，不是公式 —— recalc() 就是新开档走的那条派生路径，
-         所以旧档进来的 NPC 和新开档必然一致（岳不群都是 378，不是 180）。
-         绝不在这里手写 `defBase + 根骨×1.2` 之类的近似式：那等于派生出第二套公式，
-         以后改一次派生规则就要同步改两处 —— 正是 def 双义那个坑的复刻版。
-         上面那句 n.recalc() 已经覆盖了绝大多数情况，这里只兜「原型补不回来」的极端情形。 */
-      if (typeof n.defFinal !== 'number') {
-        if (typeof n.recalc === 'function') n.recalc();
-        else n.defFinal = n.defBase || 0;
-      }
-      /* portrait 是模板静态数据（只读），同样不入档，按模板 clone 回来；
-         玩家进度全在 pstate 里，pstate 是入档的。旧档若已有 portrait 则保留。 */
-      if (n.portrait === undefined && n.def && n.def.portrait) n.portrait = clone(n.def.portrait);
-      /* 画像运行期字段：旧档可能没有，补默认值，避免到处判空 */
-      if (!n.pstate) n.pstate = { trust: 0, revealed: [], hooks: {}, met: false, moodBias: 0, leaked: false };
-    }
+    this.reviveInstances(save.instances);
+    /* 玩家走的是 `new Character()` 重建（不经过 cleanInstance），本来就是真 Character。
+       这里只做一次核实 + 兜底，不假设 —— 万一将来有人把玩家也塞进 instances，
+       这一行会救场；正常情况下它是 no-op。 */
+    hydrateCharacter(this.player, this);
     this.rng = new RNG(save.seed || Date.now());
     this.deadNpcs = Object.assign({}, save.deadNpcs || {});
     this.jail = Object.assign({}, save.jail || {});
     this.emit('loaded', {});
     return p;
   }
+
+  /* ENG-03 根因修复：读档把 instances（NPC 实例）从 cleanInstance 压扁的 plain object
+     补回 Character 原型链。旧档里 def 是数字、没有 defFinal、原型被抹掉——
+     这里统一恢复，确保读档后能正常战斗/社交/用物/请教。 */
+  reviveInstances(instances) {
+    if (!instances) return;
+    this.instances = this.instances || { npcs: {}, squads: {} };
+    const map = instances.npcs || {};
+    for (const k of Object.keys(map)) {
+      const obj = map[k];
+      if (!obj) continue;
+      hydrateCharacter(obj, this);            // setPrototypeOf + 绑定 world
+      // 恢复 def 模板对象引用（新档 def 不进存档，靠 defId 重绑；旧档 def 被写成数字也在此纠正）
+      if (typeof obj.def !== 'object' && obj.defId) obj.def = this.data.npcs[obj.defId];
+      // 画像运行期状态 pstate：旧档缺失时补默认值（与 spawnNpc 保持一致），避免读档后访问崩
+      if (!obj.pstate || typeof obj.pstate !== 'object') {
+        obj.pstate = { trust: 0, revealed: [], hooks: {}, met: false, moodBias: 0, leaked: false };
+      } else {
+        obj.pstate.revealed = obj.pstate.revealed || [];
+        obj.pstate.hooks = obj.pstate.hooks || {};
+      }
+      if (typeof obj.recalc === 'function') obj.recalc();
+      this.instances.npcs[k] = obj;
+    }
+    if (instances.squads) {
+      this.instances.squads = Object.assign(this.instances.squads || {}, instances.squads);
+    }
+  }
 }
 
 function item_mp_check(p, sd) {
   return !sd.mpCost || p.mp >= sd.mpCost;
+}
+
+/**
+ * hydrateCharacter(obj, world) —— 把一个被 cleanInstance 压扁的实例补回 Character。
+ *
+ * ⚠️ 存在理由（SPRINT1-ENG-03，架构级）：
+ *   cleanInstance()/safeInstanceMap() 用 `const out = {}` 逐字段重建对象，
+ *   **原型链在序列化时被整个抹掉了**。读档回来后实例是纯 Object，
+ *   Character 的 34 个方法（attrTotal / addBuff / skillLevel / recalc / gainExp …）全是 undefined，
+ *   任何「对实例调方法」的路径都会 TypeError —— combat.js 的 hitRoll 第一句就是
+ *   `defender.attrTotal('身法')`，实测读档后双向攻击全崩，等于读档后打不了仗。
+ *
+ *   这是**基础设施问题**，不是 combat 的局部 bug：同样的崩法会出现在社交、请教、
+ *   用物品、结婚结拜、偷窃、Mod 钩子……任何对实例调方法的地方。
+ *   所以补原型只在这里做一次，别散到各模块去打补丁。
+ *
+ * 幂等：原型已经对的实例会直接跳过（typeof recalc === 'function' 即视为已 hydrated）。
+ */
+function hydrateCharacter(obj, world) {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (world) obj.world = world;
+  if (typeof obj.recalc !== 'function') Object.setPrototypeOf(obj, Character.prototype);
+  return obj;
 }
 
 module.exports = { World, SEASONS, SEASON_CN, WEATHERS };

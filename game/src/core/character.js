@@ -10,7 +10,45 @@
 
 const { clamp, uid, fmtTime, shichen } = require('./utils');
 
-const BASE_ATTRS = ['力量', '根骨', '身法', '悟性', '福缘', '定力'];
+const BASE_ATTRS = ['力量', '根骨', '身法', '悟性', '福缘', '定力', '资质'];
+
+/* ============================================================
+ * 武技熟练度分级（SPRINT2 武学重制）
+ *  level 归一化到 maxLevel 后映射到档位，每档效果不同
+ * ============================================================ */
+const PROF_TIERS = [
+  { name: '未入门', mult: 0.6, acc: 0 },
+  { name: '入门',   mult: 0.8, acc: 0 },
+  { name: '小成',   mult: 1.0, acc: 0 },
+  { name: '大成',   mult: 1.25, acc: 3 },
+  { name: '融会',   mult: 1.5, acc: 6 },
+  { name: '登峰造极', mult: 2.0, acc: 10 },
+];
+function profTierIndex(level, maxLevel) {
+  const max = maxLevel || 300;
+  const r = level / max;
+  if (r < 0.2) return 1;
+  if (r < 0.4) return 2;
+  if (r < 0.6) return 3;
+  if (r < 0.85) return 4;
+  return 5;
+}
+function profTierOf(u, skillId) {
+  const s = u.learned[skillId]; if (!s) return 0;
+  const sd = u.world.getSkill(skillId);
+  const max = sd ? (sd.maxLevel || 300) : 300;
+  return profTierIndex(s.level, max);
+}
+function profTierMult(tier) { return PROF_TIERS[clamp(tier, 0, 5)].mult; }
+function profTierAcc(tier) { return PROF_TIERS[clamp(tier, 0, 5)].acc; }
+function profTierName(tier) { return PROF_TIERS[clamp(tier, 0, 5)].name; }
+
+/* ============================================================
+ * 奇经八脉（内功冲击解锁）
+ * ============================================================ */
+const MERIDIAN_NAMES = { 任: '任脉', 督: '督脉', 冲: '冲脉', 带: '带脉', 阴跷: '阴跷脉', 阳跷: '阳跷脉', 阴维: '阴维脉', 阳维: '阳维脉' };
+const MERIDIAN_MAX = 8;
+function emptyMeridians() { return { 任: 0, 督: 0, 冲: 0, 带: 0, 阴跷: 0, 阳跷: 0, 阴维: 0, 阳维: 0 }; }
 
 class Character {
   constructor(world, def) {
@@ -29,7 +67,7 @@ class Character {
     this.mood = def.mood !== undefined ? def.mood : 50;  // 心情 0~100（第五批）
 
     // ---- 属性 ----
-    this.baseAttr = Object.assign({ 力量: 10, 根骨: 10, 身法: 10, 悟性: 10, 福缘: 10, 定力: 10 }, def.attr || {});
+    this.baseAttr = Object.assign({ 力量: 10, 根骨: 10, 身法: 10, 悟性: 10, 福缘: 10, 定力: 10, 资质: 10 }, def.attr || {});
     this.attrBonus = {};       // 装备/状态加成
     this.attr = {};            // 最终属性（recalc 计算）
 
@@ -89,6 +127,9 @@ class Character {
     this.insect = def.insect || null;
     this.qi = 0;             // 真气/内力修炼值
     this.age = def.age || 16;
+
+    // ---- 奇经八脉（内功冲击） ----
+    this.meridians = def.meridians ? Object.assign(emptyMeridians(), def.meridians) : emptyMeridians();
 
     // ---- 门派 ----
     this.sect = def.sect || null;
@@ -190,6 +231,17 @@ class Character {
         }
       }
     }
+
+    // 奇经八脉（内功冲击解锁，SPRINT2）
+    const md = this.meridians || emptyMeridians();
+    maxMp += (md.督 || 0) * 15 + (md.阳维 || 0) * 5;
+    maxHp += (md.任 || 0) * 12 + (md.阳跷 || 0) * 6;
+    armorPen += (md.冲 || 0) * 0.02 + (md.阴维 || 0) * 0.01;
+    critRate += (md.阴跷 || 0) * 0.01;
+
+    // 家园书房：书房等级越高，悟性越高（SPRINT2 家园地块）
+    const _eff = (this.world && typeof this.world.estateEffects === 'function') ? this.world.estateEffects() : null;
+    if (_eff && _eff.wisdom) a['悟性'] = (a['悟性'] || 0) + Math.round(_eff.wisdom);
 
     // 特质 / 天赋加成
     for (const t of this.traits.concat(this.perks)) {
@@ -298,7 +350,7 @@ class Character {
     return { ok: true, msg: `你学会了「${sd.name}」！` };
   }
 
-  /** 用潜能练级武学（练功） */
+  /** 修炼功法（SPRINT2）：消耗内力为第一资源，不靠打怪升级 */
   learnSkillByTrain(skillId) {
     const sd = this.world.getSkill(skillId);
     if (!sd) return { ok: false, msg: '（无此武学）' };
@@ -308,23 +360,60 @@ class Character {
     }
     const cur = this.learned[skillId];
     const maxLv = this.maxSkillLevelFor(sd);
-    if (cur.level >= maxLv) return { ok: false, msg: `你的${sd.name}已无法再靠练功提升（上限 ${maxLv} 级，需更高修为）。` };
-    const cost = this.trainCost(sd, cur.level);
-    if (this.potential < cost) return { ok: false, msg: `潜能不足，本次需要 ${cost} 点潜能，你只有 ${this.potential} 点。` };
+    if (cur.level >= maxLv) return { ok: false, msg: `你的${sd.name}已臻化境，须更高修为方能再进（上限 ${maxLv} 级）。` };
+    const isNeigong = sd.type === '内功';
+    const mpCost = Math.max(4, Math.floor((sd.trainMpCost || (isNeigong ? 14 : 7)) * Math.pow(1.05, cur.level - 1)));
+    if (this.mp < mpCost) return { ok: false, msg: `内力不足（需 ${mpCost}，你余 ${Math.floor(this.mp)}），先「打坐」恢复内力再练。` };
+    const apt = this.attrTotal('资质');
     const okRate = this.trainSuccessRate(sd, cur.level);
-    this.potential -= cost;
+    // 习武奇才等特性：修炼经验倍率（NPC/玩家特性可叠加）
+    let trainMult = 1;
+    for (const tk of this.traits) { const td = this.world.getTrait(tk); if (td && td.trainMult) trainMult *= td.trainMult; }
+    // 家园练武场：练武场等级越高，修炼越快（修武学重制）
+    const eff = (this.world && typeof this.world.estateEffects === 'function') ? this.world.estateEffects() : null;
+    if (eff && eff.trainMult) trainMult *= 1 + eff.trainMult;
+    this.mp -= mpCost;
+    const lines = [];
     if (this.world.rng.next() < okRate) {
-      this.gainSkillExp(skillId, this.skillExpNeed(cur.level));
-      return { ok: true, msg: `你潜心修炼${sd.name}，招式愈发纯熟！` };
+      const gain = Math.floor(this.skillExpNeed(cur.level) * (0.5 + apt * 0.03) * trainMult);
+      const g = this.gainSkillExp(skillId, gain);
+      lines.push(g.msg);
+    } else {
+      this.gainSkillExp(skillId, Math.floor(this.skillExpNeed(cur.level) * 0.15));
+      lines.push('你运功稍有滞涩，仅得些许体会。');
     }
-    this.gainSkillExp(skillId, Math.floor(this.skillExpNeed(cur.level) * 0.3));
-    return { ok: true, msg: `你温习了一遍${sd.name}，虽未突破，但略有心得。` };
+    // 内功修炼：冲击奇经八脉（type=内功 即内功心法，含魔功类内功）
+    if (isNeigong) {
+      const m = this.tryAssaultMeridian(sd);
+      if (m) lines.push(m);
+    }
+    return { ok: true, msg: lines.join('') };
+  }
+
+  /** 内功冲击奇经八脉（SPRINT2） */
+  tryAssaultMeridian(sd) {
+    const md = this.meridians || (this.meridians = emptyMeridians());
+    const open = Object.keys(MERIDIAN_NAMES).filter(k => (md[k] || 0) < MERIDIAN_MAX);
+    if (!open.length) return null;
+    const k = open[Math.floor(this.world.rng.next() * open.length)];
+    const wis = this.attrTotal('悟性');
+    const chance = clamp(0.12 + wis * 0.01, 0.05, 0.6);
+    if (this.world.rng.next() < chance) {
+      md[k] = (md[k] || 0) + 1;
+      this.recalc();
+      return `你内息流转，竟冲开了「${MERIDIAN_NAMES[k]}」一脉！`;
+    }
+    // 冲脉受挫，略损元气（有生命危险由外功淬体承担，这里只小损）
+    if (this.world.rng.next() < 0.2) {
+      this.hp = clamp(this.hp - Math.floor(this.maxHp * 0.03), 1, this.maxHp);
+      return '冲脉受挫，气血翻涌，略损元气。';
+    }
+    return null;
   }
 
   maxSkillLevelFor(sd) {
     const w = this.world;
-    // 上限 = 基础 + 悟性/等级 影响。
-    // 高自由度：优先用武学自定义公式（mod 的 "learnLimit" 字段或全局函数）
+    // 上限 = 基础 + 悟性/资质/等级 影响（SPRINT2：资质权重最高，弱化等级）
     if (sd.learnLimit) {
       try {
         const { evalTemplate } = require('./modapi');
@@ -334,9 +423,10 @@ class Character {
     }
     const doorLimit = sd.maxLevel || 500;
     const wis = this.attrTotal('悟性');
+    const apt = this.attrTotal('资质');
     const neigong = this.equippedSkills['内功'];
     const ngLv = neigong ? this.skillLevel(neigong) : 0;
-    const limit = Math.floor(this.level * 6 + wis * 4 + ngLv * 0.8);
+    const limit = Math.floor(this.level * 3 + wis * 4 + apt * 6 + ngLv * 0.8);
     return Math.min(doorLimit, Math.max(10, limit));
   }
 
@@ -347,8 +437,10 @@ class Character {
 
   trainSuccessRate(sd, level) {
     const wis = this.attrTotal('悟性');
+    const apt = this.attrTotal('资质');
     const dif = sd.difficulty || 1;
-    let r = 0.85 + wis * 0.01 - level * 0.004 * dif;
+    // 资质越高练武越快（SPRINT2）
+    let r = 0.8 + wis * 0.01 + apt * 0.008 - level * 0.004 * dif;
     return clamp(r, 0.05, 0.99);
   }
 
@@ -402,10 +494,33 @@ class Character {
 
   /* ---------------- 物品 ---------------- */
 
+  // 库存既可能是对象（{id,uid,count}）也可能是裸 id 字符串，统一归一化取 id
+  _itemId(it) { return (it && typeof it === 'object') ? it.id : it; }
   countItem(itemId) {
-    return (this.inventory || []).filter(i => i === itemId || (this.world.getItem(i) && this.world.getItem(i).stackKey === itemId)).length;
+    const inv = this.inventory || [];
+    let n = 0;
+    for (const i of inv) {
+      const id = this._itemId(i);
+      const cnt = (i && typeof i === 'object' && i.count) ? i.count : 1;
+      const d = this.world.getItem(id);
+      if (id === itemId || (d && d.stackKey === itemId)) n += cnt;
+    }
+    return n;
   }
   hasItem(itemId, n) { return this.countItem(itemId) >= (n || 1); }
+  removeItem(itemId, n) {
+    n = n || 1;
+    let removed = 0;
+    const inv = this.inventory || (this.inventory = []);
+    for (let i = inv.length - 1; i >= 0 && removed < n; i--) {
+      const id = this._itemId(inv[i]);
+      if (id === itemId || (this.world.getItem(id) && this.world.getItem(id).stackKey === itemId)) {
+        inv.splice(i, 1);
+        removed++;
+      }
+    }
+    return removed;
+  }
 
   /* ---------------- 标记 ---------------- */
 
@@ -517,4 +632,8 @@ class Character {
   }
 }
 
-module.exports = { Character, BASE_ATTRS };
+module.exports = {
+  Character, BASE_ATTRS,
+  PROF_TIERS, profTierIndex, profTierOf, profTierMult, profTierAcc, profTierName,
+  MERIDIAN_NAMES, MERIDIAN_MAX, emptyMeridians,
+};

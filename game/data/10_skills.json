@@ -1,424 +1,1504 @@
 {
   "skills": {
     "basic_fist": {
-      "id": "basic_fist", "name": "基本拳脚", "type": "拳", "maxLevel": 300, "difficulty": 0.6,
+      "id": "basic_fist",
+      "name": "基本拳脚",
+      "type": "拳",
+      "maxLevel": 300,
+      "difficulty": 0.6,
       "desc": "最粗浅的拳脚功夫，人人都会，却也最见根基。",
-      "damageMult": 1.0, "accuracy": 80, "mpCost": 0, "trainCost": 20,
-      "effects": []
+      "damageMult": 1,
+      "accuracy": 80,
+      "mpCost": 0,
+      "trainCost": 20,
+      "effects": [],
+      "category": "外功"
     },
     "basic_sword": {
-      "id": "basic_sword", "name": "基本剑法", "type": "剑", "maxLevel": 300, "difficulty": 0.7,
+      "id": "basic_sword",
+      "name": "基本剑法",
+      "type": "剑",
+      "maxLevel": 300,
+      "difficulty": 0.7,
       "desc": "刺、劈、撩、抹，剑法四要。",
-      "damageMult": 1.05, "accuracy": 85, "mpCost": 0, "trainCost": 25,
-      "effects": []
+      "damageMult": 1.05,
+      "accuracy": 85,
+      "mpCost": 0,
+      "trainCost": 25,
+      "effects": [],
+      "category": "外功"
     },
     "basic_blade": {
-      "id": "basic_blade", "name": "基本刀法", "type": "刀", "maxLevel": 300, "difficulty": 0.7,
+      "id": "basic_blade",
+      "name": "基本刀法",
+      "type": "刀",
+      "maxLevel": 300,
+      "difficulty": 0.7,
       "desc": "刀走刚猛，劈砍为主。",
-      "damageMult": 1.08, "accuracy": 82, "mpCost": 0, "trainCost": 25, "effects": []
+      "damageMult": 1.08,
+      "accuracy": 82,
+      "mpCost": 0,
+      "trainCost": 25,
+      "effects": [],
+      "category": "外功"
     },
     "basic_staff": {
-      "id": "basic_staff", "name": "基本棍法", "type": "棍", "maxLevel": 300, "difficulty": 0.7,
+      "id": "basic_staff",
+      "name": "基本棍法",
+      "type": "棍",
+      "maxLevel": 300,
+      "difficulty": 0.7,
       "desc": "棍扫一大片，攻守兼备。",
-      "damageMult": 1.06, "accuracy": 83, "mpCost": 0, "trainCost": 25, "effects": []
+      "damageMult": 1.06,
+      "accuracy": 83,
+      "mpCost": 0,
+      "trainCost": 25,
+      "effects": [],
+      "category": "外功"
     },
     "basic_whip": {
-      "id": "basic_whip", "name": "基本鞭法", "type": "鞭", "maxLevel": 300, "difficulty": 0.75,
+      "id": "basic_whip",
+      "name": "基本鞭法",
+      "type": "鞭",
+      "maxLevel": 300,
+      "difficulty": 0.75,
       "desc": "长鞭善远攻，变化多端。",
-      "damageMult": 1.04, "accuracy": 86, "mpCost": 0, "trainCost": 25, "effects": []
+      "damageMult": 1.04,
+      "accuracy": 86,
+      "mpCost": 0,
+      "trainCost": 25,
+      "effects": [],
+      "category": "外功"
     },
     "basic_dodge": {
-      "id": "basic_dodge", "name": "基本轻功", "type": "轻功", "maxLevel": 300, "difficulty": 0.7,
+      "id": "basic_dodge",
+      "name": "基本轻功",
+      "type": "轻功",
+      "maxLevel": 300,
+      "difficulty": 0.7,
       "desc": "奔跑跳跃的基本法门。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 25, "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 25,
+      "effects": [],
+      "category": "外功"
     },
     "basic_parry": {
-      "id": "basic_parry", "name": "基本招架", "type": "招架", "maxLevel": 300, "difficulty": 0.7,
+      "id": "basic_parry",
+      "name": "基本招架",
+      "type": "招架",
+      "maxLevel": 300,
+      "difficulty": 0.7,
       "desc": "格挡来招的基本手法。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 25, "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 25,
+      "effects": [],
+      "category": "外功"
     },
     "basic_force": {
-      "id": "basic_force", "name": "基本内功", "type": "内功", "maxLevel": 300, "difficulty": 0.8,
+      "id": "basic_force",
+      "name": "基本内功",
+      "type": "内功",
+      "maxLevel": 300,
+      "difficulty": 0.8,
       "desc": "吐纳导引之术，江湖入门根基。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 30, "mpBonus": 20, "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 30,
+      "mpBonus": 20,
+      "effects": [],
+      "category": "内功"
     },
-
     "huashan_sword": {
-      "id": "huashan_sword", "name": "华山剑法", "type": "剑", "maxLevel": 600, "difficulty": 1.1,
+      "id": "huashan_sword",
+      "name": "华山剑法",
+      "type": "剑",
+      "maxLevel": 600,
+      "difficulty": 1.1,
       "desc": "华山派正宗剑法，轻灵飘逸，后发先至。",
-      "damageMult": 1.35, "accuracy": 92, "mpCost": 8, "trainCost": 120,
-      "bonus": { "atk": 30 },
+      "damageMult": 1.35,
+      "accuracy": 92,
+      "mpCost": 8,
+      "trainCost": 120,
+      "bonus": {
+        "atk": 30
+      },
       "effects": [
-        { "type": "cond", "if": { "chance": 0.25 }, "then": [{ "type": "ignoreDef" }] },
-        { "type": "extraHit", "value": 0 }
-      ]
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.25
+          },
+          "then": [
+            {
+              "type": "ignoreDef"
+            }
+          ]
+        },
+        {
+          "type": "extraHit",
+          "value": 0
+        }
+      ],
+      "category": "外功"
     },
     "huashan_jianyi": {
-      "id": "huashan_jianyi", "name": "华山剑意", "type": "剑", "maxLevel": 500, "difficulty": 1.4,
+      "id": "huashan_jianyi",
+      "name": "华山剑意",
+      "type": "剑",
+      "maxLevel": 500,
+      "difficulty": 1.4,
       "desc": "剑意所至，无坚不摧。华山绝学之一。",
-      "damageMult": 1.7, "accuracy": 95, "mpCost": 25, "trainCost": 260,
-      "require": { "sect": "huashan", "skill": "huashan_sword", ">=": 120 },
+      "damageMult": 1.7,
+      "accuracy": 95,
+      "mpCost": 25,
+      "trainCost": 260,
+      "require": {
+        "sect": "huashan",
+        "skill": "huashan_sword",
+        ">=": 120
+      },
       "effects": [
-        { "type": "cond", "if": { "chance": 0.35 }, "then": [{ "type": "extraHit", "value": 1 }] },
-        { "type": "debuff", "name": "剑伤", "turns": 3, "mods": { "def": -20 } }
-      ]
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.35
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "type": "debuff",
+          "name": "剑伤",
+          "turns": 3,
+          "mods": {
+            "def": -20
+          }
+        }
+      ],
+      "category": "外功"
     },
     "zixia_gong": {
-      "id": "zixia_gong", "name": "紫霞神功", "type": "内功", "maxLevel": 700, "difficulty": 1.5,
+      "id": "zixia_gong",
+      "name": "紫霞神功",
+      "type": "内功",
+      "maxLevel": 700,
+      "difficulty": 1.5,
       "desc": "华山镇派内功，紫气东来，内力浑厚无匹。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 300, "mpBonus": 300,
-      "require": { "sect": "huashan" },
-      "bonus": { "maxMp": 200, "maxHp": 150 },
-      "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 300,
+      "mpBonus": 300,
+      "require": {
+        "sect": "huashan"
+      },
+      "bonus": {
+        "maxMp": 200,
+        "maxHp": 150
+      },
+      "effects": [],
+      "category": "内功"
     },
     "huashan_sword_art": {
-      "id": "huashan_sword_art", "name": "养吾剑法", "type": "剑", "maxLevel": 500, "difficulty": 1.2,
+      "id": "huashan_sword_art",
+      "name": "养吾剑法",
+      "type": "剑",
+      "maxLevel": 500,
+      "difficulty": 1.2,
       "desc": "君子剑法，养吾浩然之气。",
-      "damageMult": 1.45, "accuracy": 93, "mpCost": 12, "trainCost": 180,
-      "effects": [{ "type": "buff", "name": "浩然气", "turns": 3, "mods": { "def": 25 } }]
+      "damageMult": 1.45,
+      "accuracy": 93,
+      "mpCost": 12,
+      "trainCost": 180,
+      "effects": [
+        {
+          "type": "buff",
+          "name": "浩然气",
+          "turns": 3,
+          "mods": {
+            "def": 25
+          }
+        }
+      ],
+      "category": "外功"
     },
-
     "shaolin_changquan": {
-      "id": "shaolin_changquan", "name": "罗汉拳", "type": "拳", "maxLevel": 600, "difficulty": 1.0,
+      "id": "shaolin_changquan",
+      "name": "罗汉拳",
+      "type": "拳",
+      "maxLevel": 600,
+      "difficulty": 1,
       "desc": "少林入门拳法，扎实刚猛，一招一式皆是根基。",
-      "damageMult": 1.3, "accuracy": 90, "mpCost": 6, "trainCost": 100,
-      "bonus": { "atk": 25, "def": 10 },
-      "effects": [{ "type": "cond", "if": { "chance": 0.2 }, "then": [{ "type": "stun", "chance": 1, "turns": 1 }] }]
+      "damageMult": 1.3,
+      "accuracy": 90,
+      "mpCost": 6,
+      "trainCost": 100,
+      "bonus": {
+        "atk": 25,
+        "def": 10
+      },
+      "effects": [
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "stun",
+              "chance": 1,
+              "turns": 1
+            }
+          ]
+        }
+      ],
+      "category": "外功"
     },
     "yijinjing": {
-      "id": "yijinjing", "name": "易筋经", "type": "内功", "maxLevel": 800, "difficulty": 1.8,
+      "id": "yijinjing",
+      "name": "易筋经",
+      "type": "内功",
+      "maxLevel": 800,
+      "difficulty": 1.8,
       "desc": "少林至高内功，易筋锻骨，脱胎换骨。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 400, "mpBonus": 400,
-      "require": { "sect": "shaolin" },
-      "bonus": { "maxHp": 400, "maxMp": 250, "def": 60 },
-      "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 400,
+      "mpBonus": 400,
+      "require": {
+        "sect": "shaolin"
+      },
+      "bonus": {
+        "maxHp": 400,
+        "maxMp": 250,
+        "def": 60
+      },
+      "effects": [],
+      "category": "内功"
     },
     "weituo_zhang": {
-      "id": "weituo_zhang", "name": "韦陀掌", "type": "拳", "maxLevel": 550, "difficulty": 1.2,
+      "id": "weituo_zhang",
+      "name": "韦陀掌",
+      "type": "拳",
+      "maxLevel": 550,
+      "difficulty": 1.2,
       "desc": "少林掌法，刚正雄浑，专破邪功。",
-      "damageMult": 1.5, "accuracy": 91, "mpCost": 15, "trainCost": 200,
+      "damageMult": 1.5,
+      "accuracy": 91,
+      "mpCost": 15,
+      "trainCost": 200,
       "effects": [
-        { "type": "cond", "if": { "chance": 0.3 }, "then": [{ "type": "drain", "ratio": 0.3 }] }
-      ]
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.3
+          },
+          "then": [
+            {
+              "type": "drain",
+              "ratio": 0.3
+            }
+          ]
+        }
+      ],
+      "category": "魔功"
     },
     "damo_sword": {
-      "id": "damo_sword", "name": "达摩剑法", "type": "剑", "maxLevel": 600, "difficulty": 1.5,
+      "id": "damo_sword",
+      "name": "达摩剑法",
+      "type": "剑",
+      "maxLevel": 600,
+      "difficulty": 1.5,
       "desc": "达摩祖师所传剑法，剑势如禅，不可捉摸。",
-      "damageMult": 1.6, "accuracy": 94, "mpCost": 22, "trainCost": 280,
-      "require": { "sect": "shaolin", "skill": "shaolin_changquan", ">=": 100 },
+      "damageMult": 1.6,
+      "accuracy": 94,
+      "mpCost": 22,
+      "trainCost": 280,
+      "require": {
+        "sect": "shaolin",
+        "skill": "shaolin_changquan",
+        ">=": 100
+      },
       "effects": [
-        { "type": "cond", "if": { "chance": 0.3 }, "then": [{ "type": "extraHit", "value": 1 }] },
-        { "type": "ignoreDef" }
-      ]
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.3
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "type": "ignoreDef"
+        }
+      ],
+      "category": "外功"
     },
-
     "wudang_taiji": {
-      "id": "wudang_taiji", "name": "太极拳", "type": "拳", "maxLevel": 700, "difficulty": 1.4,
+      "id": "wudang_taiji",
+      "name": "太极拳",
+      "type": "拳",
+      "maxLevel": 700,
+      "difficulty": 1.4,
       "desc": "以柔克刚，四两拨千斤。武当开山绝学。",
-      "damageMult": 1.4, "accuracy": 93, "mpCost": 15, "trainCost": 240,
-      "require": { "sect": "wudang" },
-      "bonus": { "def": 40 },
+      "damageMult": 1.4,
+      "accuracy": 93,
+      "mpCost": 15,
+      "trainCost": 240,
+      "require": {
+        "sect": "wudang"
+      },
+      "bonus": {
+        "def": 40
+      },
       "effects": [
-        { "type": "debuff", "name": "缠劲", "turns": 2, "mods": { "speed": -20 } },
-        { "type": "cond", "if": { "chance": 0.25 }, "then": [{ "type": "stun", "chance": 1, "turns": 1 }] }
-      ]
+        {
+          "type": "debuff",
+          "name": "缠劲",
+          "turns": 2,
+          "mods": {
+            "speed": -20
+          }
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.25
+          },
+          "then": [
+            {
+              "type": "stun",
+              "chance": 1,
+              "turns": 1
+            }
+          ]
+        }
+      ],
+      "category": "外功"
     },
     "taiji_sword": {
-      "id": "taiji_sword", "name": "太极剑法", "type": "剑", "maxLevel": 700, "difficulty": 1.5,
+      "id": "taiji_sword",
+      "name": "太极剑法",
+      "type": "剑",
+      "maxLevel": 700,
+      "difficulty": 1.5,
       "desc": "剑走轻灵，绵绵不绝，神在剑先。",
-      "damageMult": 1.55, "accuracy": 95, "mpCost": 20, "trainCost": 260,
-      "require": { "sect": "wudang" },
+      "damageMult": 1.55,
+      "accuracy": 95,
+      "mpCost": 20,
+      "trainCost": 260,
+      "require": {
+        "sect": "wudang"
+      },
       "effects": [
-        { "type": "buff", "name": "太极", "turns": 3, "mods": { "dodge": 40, "parry": 40 } },
-        { "type": "cond", "if": { "chance": 0.3 }, "then": [{ "type": "extraHit", "value": 1 }] }
-      ]
+        {
+          "type": "buff",
+          "name": "太极",
+          "turns": 3,
+          "mods": {
+            "dodge": 40,
+            "parry": 40
+          }
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.3
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "category": "外功"
     },
     "chunyang_gong": {
-      "id": "chunyang_gong", "name": "纯阳无极功", "type": "内功", "maxLevel": 800, "difficulty": 1.7,
+      "id": "chunyang_gong",
+      "name": "纯阳无极功",
+      "type": "内功",
+      "maxLevel": 800,
+      "difficulty": 1.7,
       "desc": "武当内功正宗，纯阳之气，生生不息。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 380, "mpBonus": 380,
-      "require": { "sect": "wudang" },
-      "bonus": { "maxHp": 300, "maxMp": 300 },
-      "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 380,
+      "mpBonus": 380,
+      "require": {
+        "sect": "wudang"
+      },
+      "bonus": {
+        "maxHp": 300,
+        "maxMp": 300
+      },
+      "effects": [],
+      "category": "内功"
     },
     "tixu_zhang": {
-      "id": "tixu_zhang", "name": "梯云纵", "type": "轻功", "maxLevel": 600, "difficulty": 1.2,
+      "id": "tixu_zhang",
+      "name": "梯云纵",
+      "type": "轻功",
+      "maxLevel": 600,
+      "difficulty": 1.2,
       "desc": "武当轻功，纵身而起，如踏云梯。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 160,
-      "bonus": { "dodge": 60 },
-      "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 160,
+      "bonus": {
+        "dodge": 60
+      },
+      "effects": [],
+      "category": "外功"
     },
-
     "emei_sword": {
-      "id": "emei_sword", "name": "峨眉剑法", "type": "剑", "maxLevel": 600, "difficulty": 1.2,
+      "id": "emei_sword",
+      "name": "峨眉剑法",
+      "type": "剑",
+      "maxLevel": 600,
+      "difficulty": 1.2,
       "desc": "峨眉剑法轻灵刁钻，女子习之更显曼妙。",
-      "damageMult": 1.45, "accuracy": 94, "mpCost": 12, "trainCost": 180,
+      "damageMult": 1.45,
+      "accuracy": 94,
+      "mpCost": 12,
+      "trainCost": 180,
       "effects": [
-        { "type": "cond", "if": { "chance": 0.25 }, "then": [{ "type": "extraHit", "value": 1 }] }
-      ]
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.25
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "category": "外功"
     },
     "emei_ci": {
-      "id": "emei_ci", "name": "峨眉刺法", "type": "暗器", "maxLevel": 550, "difficulty": 1.3,
+      "id": "emei_ci",
+      "name": "峨眉刺法",
+      "type": "暗器",
+      "maxLevel": 550,
+      "difficulty": 1.3,
       "desc": "峨眉刺短小精悍，近身肉搏之利器。",
-      "damageMult": 1.5, "accuracy": 96, "mpCost": 10, "trainCost": 190,
-      "effects": [{ "type": "dot", "name": "刺伤", "turns": 3, "value": 18 }]
+      "damageMult": 1.5,
+      "accuracy": 96,
+      "mpCost": 10,
+      "trainCost": 190,
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刺伤",
+          "turns": 3,
+          "value": 18
+        }
+      ],
+      "category": "奇门"
     },
     "foguang_gong": {
-      "id": "foguang_gong", "name": "佛光普照", "type": "内功", "maxLevel": 700, "difficulty": 1.5,
+      "id": "foguang_gong",
+      "name": "佛光普照",
+      "type": "内功",
+      "maxLevel": 700,
+      "difficulty": 1.5,
       "desc": "峨眉内功，慈悲为怀，可疗伤祛毒。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 300, "mpBonus": 320,
-      "bonus": { "maxHp": 200, "maxMp": 200 },
-      "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 300,
+      "mpBonus": 320,
+      "bonus": {
+        "maxHp": 200,
+        "maxMp": 200
+      },
+      "effects": [],
+      "category": "歪门"
     },
-
     "dagou_bangfa": {
-      "id": "dagou_bangfa", "name": "打狗棒法", "type": "棍", "maxLevel": 700, "difficulty": 1.5,
+      "id": "dagou_bangfa",
+      "name": "打狗棒法",
+      "type": "棍",
+      "maxLevel": 700,
+      "difficulty": 1.5,
       "desc": "丐帮帮主嫡传，棒法中藏天下至理。",
-      "damageMult": 1.6, "accuracy": 94, "mpCost": 20, "trainCost": 260,
-      "require": { "sect": "gaibang" },
+      "damageMult": 1.6,
+      "accuracy": 94,
+      "mpCost": 20,
+      "trainCost": 260,
+      "require": {
+        "sect": "gaibang"
+      },
       "effects": [
-        { "type": "cond", "if": { "chance": 0.3 }, "then": [{ "type": "stun", "chance": 1, "turns": 1 }] },
-        { "type": "cond", "if": { "chance": 0.25 }, "then": [{ "type": "extraHit", "value": 1 }] }
-      ]
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.3
+          },
+          "then": [
+            {
+              "type": "stun",
+              "chance": 1,
+              "turns": 1
+            }
+          ]
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.25
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "category": "外功"
     },
     "xianglong_zhang": {
-      "id": "xianglong_zhang", "name": "降龙十八掌", "type": "拳", "maxLevel": 900, "difficulty": 2.0,
+      "id": "xianglong_zhang",
+      "name": "降龙十八掌",
+      "type": "拳",
+      "maxLevel": 900,
+      "difficulty": 2,
       "desc": "天下至刚至猛的掌法，一掌出而龙吟九天。",
-      "damageMult": 2.2, "accuracy": 92, "mpCost": 45, "trainCost": 500,
-      "require": { "sect": "gaibang", "skill": "dagou_bangfa", ">=": 200 },
-      "bonus": { "atk": 120 },
+      "damageMult": 2.2,
+      "accuracy": 92,
+      "mpCost": 45,
+      "trainCost": 500,
+      "require": {
+        "sect": "gaibang",
+        "skill": "dagou_bangfa",
+        ">=": 200
+      },
+      "bonus": {
+        "atk": 120
+      },
       "effects": [
-        { "type": "cond", "if": { "chance": 0.4 }, "then": [{ "type": "extraHit", "value": 1 }, { "type": "debuff", "name": "掌伤", "turns": 3, "mods": { "def": -40 } }] },
-        { "type": "cond", "if": { "chance": 0.2 }, "then": [{ "type": "stun", "chance": 1, "turns": 2 }] }
-      ]
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.4
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            },
+            {
+              "type": "debuff",
+              "name": "掌伤",
+              "turns": 3,
+              "mods": {
+                "def": -40
+              }
+            }
+          ]
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "stun",
+              "chance": 1,
+              "turns": 2
+            }
+          ]
+        }
+      ],
+      "category": "外功"
     },
     "beggar_qinggong": {
-      "id": "beggar_qinggong", "name": "逍遥游", "type": "轻功", "maxLevel": 600, "difficulty": 1.3,
+      "id": "beggar_qinggong",
+      "name": "逍遥游",
+      "type": "轻功",
+      "maxLevel": 600,
+      "difficulty": 1.3,
       "desc": "丐帮轻功，飘忽不定，来去无踪。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 180,
-      "bonus": { "dodge": 70 },
-      "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 180,
+      "bonus": {
+        "dodge": 70
+      },
+      "effects": [],
+      "category": "外功"
     },
-
     "kuangfeng_daofa": {
-      "id": "kuangfeng_daofa", "name": "狂风快刀", "type": "刀", "maxLevel": 650, "difficulty": 1.4,
+      "id": "kuangfeng_daofa",
+      "name": "狂风快刀",
+      "type": "刀",
+      "maxLevel": 650,
+      "difficulty": 1.4,
       "desc": "刀如狂风，连绵不绝，一刀快过一刀。",
-      "damageMult": 1.65, "accuracy": 91, "mpCost": 18, "trainCost": 240,
+      "damageMult": 1.65,
+      "accuracy": 91,
+      "mpCost": 18,
+      "trainCost": 240,
       "effects": [
-        { "type": "cond", "if": { "chance": 0.4 }, "then": [{ "type": "extraHit", "value": 1 }] },
-        { "type": "cond", "if": { "chance": 0.2 }, "then": [{ "type": "extraHit", "value": 2 }] }
-      ]
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.4
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 2
+            }
+          ]
+        }
+      ],
+      "category": "外功"
     },
     "hujia_daofa": {
-      "id": "hujia_daofa", "name": "胡家刀法", "type": "刀", "maxLevel": 700, "difficulty": 1.6,
+      "id": "hujia_daofa",
+      "name": "胡家刀法",
+      "type": "刀",
+      "maxLevel": 700,
+      "difficulty": 1.6,
       "desc": "辽东胡家绝技，刀势厚重，一往无前。",
-      "damageMult": 1.8, "accuracy": 92, "mpCost": 25, "trainCost": 300,
+      "damageMult": 1.8,
+      "accuracy": 92,
+      "mpCost": 25,
+      "trainCost": 300,
       "effects": [
-        { "type": "buff", "name": "刀势", "turns": 3, "mods": { "atk": 40 } },
-        { "type": "cond", "if": { "chance": 0.3 }, "then": [{ "type": "dot", "name": "刀创", "turns": 3, "value": 30 }] }
-      ]
+        {
+          "type": "buff",
+          "name": "刀势",
+          "turns": 3,
+          "mods": {
+            "atk": 40
+          }
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.3
+          },
+          "then": [
+            {
+              "type": "dot",
+              "name": "刀创",
+              "turns": 3,
+              "value": 30
+            }
+          ]
+        }
+      ],
+      "category": "外功"
     },
     "xuantie_jianfa": {
-      "id": "xuantie_jianfa", "name": "玄铁剑法", "type": "剑", "maxLevel": 900, "difficulty": 2.1,
+      "id": "xuantie_jianfa",
+      "name": "玄铁剑法",
+      "type": "剑",
+      "maxLevel": 900,
+      "difficulty": 2.1,
       "desc": "重剑无锋，大巧不工。以玄铁重剑使出，威力无俦。",
-      "damageMult": 2.1, "accuracy": 90, "mpCost": 40, "trainCost": 480,
-      "require": { "skill": "basic_sword", ">=": 150 },
-      "bonus": { "atk": 100 },
+      "damageMult": 2.1,
+      "accuracy": 90,
+      "mpCost": 40,
+      "trainCost": 480,
+      "require": {
+        "skill": "basic_sword",
+        ">=": 150
+      },
+      "bonus": {
+        "atk": 100
+      },
       "effects": [
-        { "type": "ignoreDef" },
-        { "type": "cond", "if": { "chance": 0.35 }, "then": [{ "type": "extraHit", "value": 1 }] }
-      ]
+        {
+          "type": "ignoreDef"
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.35
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "category": "外功"
     },
     "dugu_jiujian": {
-      "id": "dugu_jiujian", "name": "独孤九剑", "type": "剑", "maxLevel": 1000, "difficulty": 2.4,
+      "id": "dugu_jiujian",
+      "name": "独孤九剑",
+      "type": "剑",
+      "maxLevel": 1000,
+      "difficulty": 2.4,
       "desc": "无招胜有招，料敌机先，破尽天下武学。",
-      "damageMult": 2.5, "accuracy": 98, "mpCost": 50, "trainCost": 600,
-      "require": { "skill": "xuantie_jianfa", ">=": 200 },
-      "bonus": { "atk": 180, "critRate": 0.15 },
+      "damageMult": 2.5,
+      "accuracy": 98,
+      "mpCost": 50,
+      "trainCost": 600,
+      "require": {
+        "skill": "xuantie_jianfa",
+        ">=": 200
+      },
+      "bonus": {
+        "atk": 180,
+        "critRate": 0.15
+      },
       "effects": [
-        { "type": "ignoreDef" },
-        { "type": "cond", "if": { "chance": 0.5 }, "then": [{ "type": "extraHit", "value": 2 }] },
-        { "type": "cond", "if": { "chance": 0.3 }, "then": [{ "type": "stun", "chance": 1, "turns": 1 }] }
-      ]
+        {
+          "type": "ignoreDef"
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.5
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.3
+          },
+          "then": [
+            {
+              "type": "stun",
+              "chance": 1,
+              "turns": 1
+            }
+          ]
+        }
+      ],
+      "category": "外功"
     },
     "jiuyang_shengong": {
-      "id": "jiuyang_shengong", "name": "九阳神功", "type": "内功", "maxLevel": 1000, "difficulty": 2.3,
+      "id": "jiuyang_shengong",
+      "name": "九阳神功",
+      "type": "内功",
+      "maxLevel": 1000,
+      "difficulty": 2.3,
       "desc": "至阳至刚的内功，练成后百毒不侵，真气自生。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 700, "mpBonus": 600,
-      "bonus": { "maxHp": 600, "maxMp": 500, "def": 100 },
-      "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 700,
+      "mpBonus": 600,
+      "bonus": {
+        "maxHp": 600,
+        "maxMp": 500,
+        "def": 100
+      },
+      "effects": [],
+      "category": "歪门"
     },
     "jiuyin_zhenjing": {
-      "id": "jiuyin_zhenjing", "name": "九阴真经", "type": "内功", "maxLevel": 1000, "difficulty": 2.5,
+      "id": "jiuyin_zhenjing",
+      "name": "九阴真经",
+      "type": "内功",
+      "maxLevel": 1000,
+      "difficulty": 2.5,
       "desc": "天下武学总纲，包罗万象，玄奥无穷。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 800, "mpBonus": 700,
-      "bonus": { "maxHp": 500, "maxMp": 700, "atk": 60, "critRate": 0.1 },
-      "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 800,
+      "mpBonus": 700,
+      "bonus": {
+        "maxHp": 500,
+        "maxMp": 700,
+        "atk": 60,
+        "critRate": 0.1
+      },
+      "effects": [],
+      "category": "内功"
     },
     "jiuyin_baiguzhao": {
-      "id": "jiuyin_baiguzhao", "name": "九阴白骨爪", "type": "拳", "maxLevel": 800, "difficulty": 1.9,
+      "id": "jiuyin_baiguzhao",
+      "name": "九阴白骨爪",
+      "type": "拳",
+      "maxLevel": 800,
+      "difficulty": 1.9,
       "desc": "阴毒爪法，五指插入天灵盖，狠辣无比。",
-      "damageMult": 1.95, "accuracy": 93, "mpCost": 30, "trainCost": 400,
+      "damageMult": 1.95,
+      "accuracy": 93,
+      "mpCost": 30,
+      "trainCost": 400,
       "effects": [
-        { "type": "dot", "name": "阴毒", "turns": 4, "value": 45 },
-        { "type": "cond", "if": { "chance": 0.3 }, "then": [{ "type": "ignoreDef" }] }
-      ]
+        {
+          "type": "dot",
+          "name": "阴毒",
+          "turns": 4,
+          "value": 45
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.3
+          },
+          "then": [
+            {
+              "type": "ignoreDef"
+            }
+          ]
+        }
+      ],
+      "category": "魔功"
     },
     "cuixin_zhang": {
-      "id": "cuixin_zhang", "name": "摧心掌", "type": "拳", "maxLevel": 700, "difficulty": 1.7,
+      "id": "cuixin_zhang",
+      "name": "摧心掌",
+      "type": "拳",
+      "maxLevel": 700,
+      "difficulty": 1.7,
       "desc": "掌力阴柔，伤及内腑，外表无痕。",
-      "damageMult": 1.75, "accuracy": 92, "mpCost": 28, "trainCost": 340,
-      "effects": [{ "type": "dot", "name": "内伤", "turns": 4, "value": 35 }]
+      "damageMult": 1.75,
+      "accuracy": 92,
+      "mpCost": 28,
+      "trainCost": 340,
+      "effects": [
+        {
+          "type": "dot",
+          "name": "内伤",
+          "turns": 4,
+          "value": 35
+        }
+      ],
+      "category": "外功"
     },
     "sunflower_manual": {
-      "id": "sunflower_manual", "name": "葵花宝典", "type": "内功", "maxLevel": 1200, "difficulty": 3.0,
+      "id": "sunflower_manual",
+      "name": "葵花宝典",
+      "type": "内功",
+      "maxLevel": 1200,
+      "difficulty": 3,
       "desc": "诡异绝伦的武学，练成者身法快如鬼魅，然需付极大代价。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 1000, "mpBonus": 800,
-      "bonus": { "maxMp": 900, "speed": 150, "critRate": 0.2 },
-      "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 1000,
+      "mpBonus": 800,
+      "bonus": {
+        "maxMp": 900,
+        "speed": 150,
+        "critRate": 0.2
+      },
+      "effects": [],
+      "category": "魔功"
     },
     "pixie_jianfa": {
-      "id": "pixie_jianfa", "name": "辟邪剑法", "type": "剑", "maxLevel": 900, "difficulty": 2.2,
+      "id": "pixie_jianfa",
+      "name": "辟邪剑法",
+      "type": "剑",
+      "maxLevel": 900,
+      "difficulty": 2.2,
       "desc": "剑法诡谲，快得匪夷所思，出手即分生死。",
-      "damageMult": 2.3, "accuracy": 97, "mpCost": 35, "trainCost": 520,
+      "damageMult": 2.3,
+      "accuracy": 97,
+      "mpCost": 35,
+      "trainCost": 520,
       "effects": [
-        { "type": "cond", "if": { "chance": 0.6 }, "then": [{ "type": "extraHit", "value": 2 }] },
-        { "type": "ignoreDef" }
-      ]
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.6
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "type": "ignoreDef"
+        }
+      ],
+      "category": "魔功"
     },
-
     "yiyang_zhi": {
-      "id": "yiyang_zhi", "name": "一阳指", "type": "拳", "maxLevel": 800, "difficulty": 1.9,
+      "id": "yiyang_zhi",
+      "name": "一阳指",
+      "type": "拳",
+      "maxLevel": 800,
+      "difficulty": 1.9,
       "desc": "大理段氏绝学，指力点穴，可伤人于无形。",
-      "damageMult": 1.9, "accuracy": 95, "mpCost": 35, "trainCost": 420,
-      "bonus": { "atk": 80 },
+      "damageMult": 1.9,
+      "accuracy": 95,
+      "mpCost": 35,
+      "trainCost": 420,
+      "bonus": {
+        "atk": 80
+      },
       "effects": [
-        { "type": "cond", "if": { "chance": 0.35 }, "then": [{ "type": "stun", "chance": 1, "turns": 2 }] },
-        { "type": "debuff", "name": "封穴", "turns": 2, "mods": { "speed": -30, "parry": -30 } }
-      ]
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.35
+          },
+          "then": [
+            {
+              "type": "stun",
+              "chance": 1,
+              "turns": 2
+            }
+          ]
+        },
+        {
+          "type": "debuff",
+          "name": "封穴",
+          "turns": 2,
+          "mods": {
+            "speed": -30,
+            "parry": -30
+          }
+        }
+      ],
+      "category": "外功"
     },
     "liumai_shenjian": {
-      "id": "liumai_shenjian", "name": "六脉神剑", "type": "剑", "maxLevel": 1000, "difficulty": 2.6,
+      "id": "liumai_shenjian",
+      "name": "六脉神剑",
+      "type": "剑",
+      "maxLevel": 1000,
+      "difficulty": 2.6,
       "desc": "以真气凝成无形剑气，六脉齐发，无坚不摧。",
-      "damageMult": 2.6, "accuracy": 96, "mpCost": 60, "trainCost": 700,
-      "require": { "skill": "yiyang_zhi", ">=": 200 },
-      "bonus": { "atk": 200 },
+      "damageMult": 2.6,
+      "accuracy": 96,
+      "mpCost": 60,
+      "trainCost": 700,
+      "require": {
+        "skill": "yiyang_zhi",
+        ">=": 200
+      },
+      "bonus": {
+        "atk": 200
+      },
       "effects": [
-        { "type": "ignoreDef" },
-        { "type": "cond", "if": { "chance": 0.45 }, "then": [{ "type": "extraHit", "value": 2 }] }
-      ]
+        {
+          "type": "ignoreDef"
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.45
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 2
+            }
+          ]
+        }
+      ],
+      "category": "外功"
     },
     "beiming_shengong": {
-      "id": "beiming_shengong", "name": "北冥神功", "type": "内功", "maxLevel": 1000, "difficulty": 2.4,
+      "id": "beiming_shengong",
+      "name": "北冥神功",
+      "type": "内功",
+      "maxLevel": 1000,
+      "difficulty": 2.4,
       "desc": "可吸取他人内力为己用，天下第一等内功。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 750, "mpBonus": 650,
-      "bonus": { "maxMp": 800, "maxHp": 300 },
-      "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 750,
+      "mpBonus": 650,
+      "bonus": {
+        "maxMp": 800,
+        "maxHp": 300
+      },
+      "effects": [],
+      "category": "内功"
     },
     "lingbo_weibu": {
-      "id": "lingbo_weibu", "name": "凌波微步", "type": "轻功", "maxLevel": 900, "difficulty": 2.2,
+      "id": "lingbo_weibu",
+      "name": "凌波微步",
+      "type": "轻功",
+      "maxLevel": 900,
+      "difficulty": 2.2,
       "desc": "天下第一轻功，踏遍天下无人能及。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 500,
-      "bonus": { "dodge": 180, "speed": 60 },
-      "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 500,
+      "bonus": {
+        "dodge": 180,
+        "speed": 60
+      },
+      "effects": [],
+      "category": "外功"
     },
-
     "tangmen_anqi": {
-      "id": "tangmen_anqi", "name": "满天花雨", "type": "暗器", "maxLevel": 800, "difficulty": 1.9,
+      "id": "tangmen_anqi",
+      "name": "满天花雨",
+      "type": "暗器",
+      "maxLevel": 800,
+      "difficulty": 1.9,
       "desc": "唐门暗器绝技，漫天暗器如雨，无孔不入。",
-      "damageMult": 1.85, "accuracy": 97, "mpCost": 30, "trainCost": 400,
+      "damageMult": 1.85,
+      "accuracy": 97,
+      "mpCost": 30,
+      "trainCost": 400,
       "effects": [
-        { "type": "dot", "name": "喂毒", "turns": 4, "value": 50 },
-        { "type": "cond", "if": { "chance": 0.4 }, "then": [{ "type": "extraHit", "value": 1 }] }
-      ]
+        {
+          "type": "dot",
+          "name": "喂毒",
+          "turns": 4,
+          "value": 50
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.4
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "category": "奇门"
     },
     "tangmen_du": {
-      "id": "tangmen_du", "name": "唐门毒术", "type": "暗器", "maxLevel": 700, "difficulty": 1.8,
+      "id": "tangmen_du",
+      "name": "唐门毒术",
+      "type": "暗器",
+      "maxLevel": 700,
+      "difficulty": 1.8,
       "desc": "唐门用毒之法，见血封喉。",
-      "damageMult": 1.3, "accuracy": 96, "mpCost": 25, "trainCost": 360,
-      "effects": [{ "type": "dot", "name": "剧毒", "turns": 5, "value": 70 }]
-    },
-
-    "miao_gu": {
-      "id": "miao_gu", "name": "苗疆蛊术", "type": "暗器", "maxLevel": 800, "difficulty": 2.0,
-      "desc": "驱蛊御虫之术，诡秘难防。",
-      "damageMult": 1.6, "accuracy": 94, "mpCost": 35, "trainCost": 420,
+      "damageMult": 1.3,
+      "accuracy": 96,
+      "mpCost": 25,
+      "trainCost": 360,
       "effects": [
-        { "type": "dot", "name": "蛊毒", "turns": 5, "value": 60 },
-        { "type": "debuff", "name": "蛊噬", "turns": 3, "mods": { "atk": -30 } }
-      ]
+        {
+          "type": "dot",
+          "name": "剧毒",
+          "turns": 5,
+          "value": 70
+        }
+      ],
+      "category": "歪门"
+    },
+    "miao_gu": {
+      "id": "miao_gu",
+      "name": "苗疆蛊术",
+      "type": "暗器",
+      "maxLevel": 800,
+      "difficulty": 2,
+      "desc": "驱蛊御虫之术，诡秘难防。",
+      "damageMult": 1.6,
+      "accuracy": 94,
+      "mpCost": 35,
+      "trainCost": 420,
+      "effects": [
+        {
+          "type": "dot",
+          "name": "蛊毒",
+          "turns": 5,
+          "value": 60
+        },
+        {
+          "type": "debuff",
+          "name": "蛊噬",
+          "turns": 3,
+          "mods": {
+            "atk": -30
+          }
+        }
+      ],
+      "category": "歪门"
     },
     "ice_silk_zhang": {
-      "id": "ice_silk_zhang", "name": "冰蚕掌", "type": "拳", "maxLevel": 800, "difficulty": 2.0,
+      "id": "ice_silk_zhang",
+      "name": "冰蚕掌",
+      "type": "拳",
+      "maxLevel": 800,
+      "difficulty": 2,
       "desc": "以至寒冰蚕练成，掌力所及，寒气入骨。",
-      "damageMult": 1.9, "accuracy": 92, "mpCost": 32, "trainCost": 420,
+      "damageMult": 1.9,
+      "accuracy": 92,
+      "mpCost": 32,
+      "trainCost": 420,
       "effects": [
-        { "type": "debuff", "name": "冰寒", "turns": 3, "mods": { "speed": -40, "atk": -25 } },
-        { "type": "cond", "if": { "chance": 0.3 }, "then": [{ "type": "stun", "chance": 1, "turns": 1 }] }
-      ]
+        {
+          "type": "debuff",
+          "name": "冰寒",
+          "turns": 3,
+          "mods": {
+            "speed": -40,
+            "atk": -25
+          }
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.3
+          },
+          "then": [
+            {
+              "type": "stun",
+              "chance": 1,
+              "turns": 1
+            }
+          ]
+        }
+      ],
+      "category": "外功"
     },
-
     "xixing_dafa": {
-      "id": "xixing_dafa", "name": "吸星大法", "type": "内功", "maxLevel": 900, "difficulty": 2.2,
+      "id": "xixing_dafa",
+      "name": "吸星大法",
+      "type": "内功",
+      "maxLevel": 900,
+      "difficulty": 2.2,
       "desc": "吸取旁人内力，霸道无比，然有反噬之险。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 600, "mpBonus": 550,
-      "require": { "sect": "mojiao" },
-      "bonus": { "maxMp": 700, "lifesteal": 0.15 },
-      "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 600,
+      "mpBonus": 550,
+      "require": {
+        "sect": "mojiao"
+      },
+      "bonus": {
+        "maxMp": 700,
+        "lifesteal": 0.15
+      },
+      "effects": [],
+      "category": "魔功"
     },
     "heimu_zhang": {
-      "id": "heimu_zhang", "name": "黑幕掌", "type": "拳", "maxLevel": 700, "difficulty": 1.8,
+      "id": "heimu_zhang",
+      "name": "黑幕掌",
+      "type": "拳",
+      "maxLevel": 700,
+      "difficulty": 1.8,
       "desc": "魔教掌法，阴狠毒辣，专袭要害。",
-      "damageMult": 1.85, "accuracy": 93, "mpCost": 30, "trainCost": 380,
+      "damageMult": 1.85,
+      "accuracy": 93,
+      "mpCost": 30,
+      "trainCost": 380,
       "effects": [
-        { "type": "cond", "if": { "chance": 0.35 }, "then": [{ "type": "ignoreDef" }, { "type": "dot", "name": "掌毒", "turns": 3, "value": 40 }] }
-      ]
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.35
+          },
+          "then": [
+            {
+              "type": "ignoreDef"
+            },
+            {
+              "type": "dot",
+              "name": "掌毒",
+              "turns": 3,
+              "value": 40
+            }
+          ]
+        }
+      ],
+      "category": "魔功"
     },
     "xuedao": {
-      "id": "xuedao", "name": "血刀刀法", "type": "刀", "maxLevel": 800, "difficulty": 2.0,
+      "id": "xuedao",
+      "name": "血刀刀法",
+      "type": "刀",
+      "maxLevel": 800,
+      "difficulty": 2,
       "desc": "血刀门绝学，刀刀见血，越战越勇。",
-      "damageMult": 2.0, "accuracy": 92, "mpCost": 30, "trainCost": 430,
-      "bonus": { "lifesteal": 0.2 },
+      "damageMult": 2,
+      "accuracy": 92,
+      "mpCost": 30,
+      "trainCost": 430,
+      "bonus": {
+        "lifesteal": 0.2
+      },
       "effects": [
-        { "type": "buff", "name": "血勇", "turns": 3, "mods": { "atk": 50, "lifesteal": 0.1 } },
-        { "type": "cond", "if": { "chance": 0.3 }, "then": [{ "type": "extraHit", "value": 1 }] }
-      ]
+        {
+          "type": "buff",
+          "name": "血勇",
+          "turns": 3,
+          "mods": {
+            "atk": 50,
+            "lifesteal": 0.1
+          }
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.3
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "category": "魔功"
     },
-
     "dugu_sword_aura": {
-      "id": "dugu_sword_aura", "name": "剑罡", "type": "内功", "maxLevel": 800, "difficulty": 2.1,
+      "id": "dugu_sword_aura",
+      "name": "剑罡",
+      "type": "内功",
+      "maxLevel": 800,
+      "difficulty": 2.1,
       "desc": "以内力化剑罡护体，攻守兼备。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 520, "mpBonus": 420,
-      "bonus": { "def": 120, "atk": 60 },
-      "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 520,
+      "mpBonus": 420,
+      "bonus": {
+        "def": 120,
+        "atk": 60
+      },
+      "effects": [],
+      "category": "内功"
     },
     "huashan_qinggong": {
-      "id": "huashan_qinggong", "name": "攀云乘龙", "type": "轻功", "maxLevel": 600, "difficulty": 1.3,
+      "id": "huashan_qinggong",
+      "name": "攀云乘龙",
+      "type": "轻功",
+      "maxLevel": 600,
+      "difficulty": 1.3,
       "desc": "华山轻功，攀崖越岭如履平地。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 180,
-      "bonus": { "dodge": 80 },
-      "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 180,
+      "bonus": {
+        "dodge": 80
+      },
+      "effects": [],
+      "category": "外功"
     },
     "shaolin_bu": {
-      "id": "shaolin_bu", "name": "如影随形", "type": "轻功", "maxLevel": 600, "difficulty": 1.3,
+      "id": "shaolin_bu",
+      "name": "如影随形",
+      "type": "轻功",
+      "maxLevel": 600,
+      "difficulty": 1.3,
       "desc": "少林身法，动如脱兔，静如处子。",
-      "damageMult": 0, "accuracy": 0, "mpCost": 0, "trainCost": 180,
-      "bonus": { "dodge": 75 },
-      "effects": []
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "trainCost": 180,
+      "bonus": {
+        "dodge": 75
+      },
+      "effects": [],
+      "category": "外功"
     }
   },
   "books": {
-    "book_poem": { "id": "book_poem", "name": "唐诗选", "type": "book", "desc": "一本旧诗集，闲暇时读读，可静心养性。", "value": 30, "consume": false, "use": [{ "type": "incvar", "args": ["静心", 1] }, { "type": "say", "raw": "你读了几首诗，心境平和了些。" }] },
-    "book_basic_sword": { "id": "book_basic_sword", "name": "《基本剑法入门》", "type": "book", "desc": "剑法入门的图谱，图文并茂。", "teach": "basic_sword", "cost": 80, "timeCost": 60, "value": 120 },
-    "book_basic_blade": { "id": "book_basic_blade", "name": "《刀法初解》", "type": "book", "desc": "讲解刀法基本功的册子。", "teach": "basic_blade", "cost": 80, "timeCost": 60, "value": 120 },
-    "book_basic_force": { "id": "book_basic_force", "name": "《内功导引图》", "type": "book", "desc": "导引吐纳的基础图录。", "teach": "basic_force", "cost": 100, "timeCost": 90, "value": 150 },
-    "book_basic_dodge": { "id": "book_basic_dodge", "name": "《轻功要诀》", "type": "book", "desc": "轻功入门的口诀。", "teach": "basic_dodge", "cost": 80, "timeCost": 60, "value": 120 },
-    "book_zixia": { "id": "book_zixia", "name": "《紫霞神功》残卷", "type": "book", "desc": "华山镇派内功的残卷，字迹斑驳。", "teach": "zixia_gong", "cost": 500, "timeCost": 240, "value": 3000, "require": { "skill": "basic_force", ">=": 80 } },
-    "book_yijinjing": { "id": "book_yijinjing", "name": "《易筋经》", "type": "book", "desc": "少林至宝，梵文写成，需极深修为方能参透。", "teach": "yijinjing", "cost": 800, "timeCost": 360, "value": 8000, "require": { "skill": "basic_force", ">=": 150 } },
-    "book_jiuyang": { "id": "book_jiuyang", "name": "《九阳真经》", "type": "book", "desc": "藏在白猿腹中的绝世内功心法。", "teach": "jiuyang_shengong", "cost": 1000, "timeCost": 480, "value": 12000, "require": { "skill": "basic_force", ">=": 200 } },
-    "book_xuantie": { "id": "book_xuantie", "name": "《玄铁剑法》", "type": "book", "desc": "刻在石壁上的重剑剑法。", "teach": "xuantie_jianfa", "cost": 700, "timeCost": 300, "value": 9000, "require": { "skill": "basic_sword", ">=": 150 } },
-    "book_dugu": { "id": "book_dugu", "name": "《独孤九剑》", "type": "book", "desc": "剑魔独孤求败所遗剑谱。", "teach": "dugu_jiujian", "cost": 1500, "timeCost": 600, "value": 20000, "require": { "skill": "basic_sword", ">=": 250 } },
-    "book_xixing": { "id": "book_xixing", "name": "《吸星大法》", "type": "book", "desc": "魔教秘法，吸人内力。", "teach": "xixing_dafa", "cost": 1200, "timeCost": 480, "value": 15000, "require": { "skill": "basic_force", ">=": 200 } },
-    "book_lingbo": { "id": "book_lingbo", "name": "《凌波微步》", "type": "book", "desc": "逍遥派轻功秘笈。", "teach": "lingbo_weibu", "cost": 900, "timeCost": 360, "value": 10000, "require": { "skill": "basic_dodge", ">=": 150 } }
+    "book_poem": {
+      "id": "book_poem",
+      "name": "唐诗选",
+      "type": "book",
+      "desc": "一本旧诗集，闲暇时读读，可静心养性。",
+      "value": 30,
+      "consume": false,
+      "use": [
+        {
+          "type": "incvar",
+          "args": [
+            "静心",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "你读了几首诗，心境平和了些。"
+        }
+      ]
+    },
+    "book_basic_sword": {
+      "id": "book_basic_sword",
+      "name": "《基本剑法入门》",
+      "type": "book",
+      "desc": "剑法入门的图谱，图文并茂。",
+      "teach": "basic_sword",
+      "cost": 80,
+      "timeCost": 60,
+      "value": 120
+    },
+    "book_basic_blade": {
+      "id": "book_basic_blade",
+      "name": "《刀法初解》",
+      "type": "book",
+      "desc": "讲解刀法基本功的册子。",
+      "teach": "basic_blade",
+      "cost": 80,
+      "timeCost": 60,
+      "value": 120
+    },
+    "book_basic_force": {
+      "id": "book_basic_force",
+      "name": "《内功导引图》",
+      "type": "book",
+      "desc": "导引吐纳的基础图录。",
+      "teach": "basic_force",
+      "cost": 100,
+      "timeCost": 90,
+      "value": 150
+    },
+    "book_basic_dodge": {
+      "id": "book_basic_dodge",
+      "name": "《轻功要诀》",
+      "type": "book",
+      "desc": "轻功入门的口诀。",
+      "teach": "basic_dodge",
+      "cost": 80,
+      "timeCost": 60,
+      "value": 120
+    },
+    "book_zixia": {
+      "id": "book_zixia",
+      "name": "《紫霞神功》残卷",
+      "type": "book",
+      "desc": "华山镇派内功的残卷，字迹斑驳。",
+      "teach": "zixia_gong",
+      "cost": 500,
+      "timeCost": 240,
+      "value": 3000,
+      "require": {
+        "skill": "basic_force",
+        ">=": 80
+      }
+    },
+    "book_yijinjing": {
+      "id": "book_yijinjing",
+      "name": "《易筋经》",
+      "type": "book",
+      "desc": "少林至宝，梵文写成，需极深修为方能参透。",
+      "teach": "yijinjing",
+      "cost": 800,
+      "timeCost": 360,
+      "value": 8000,
+      "require": {
+        "skill": "basic_force",
+        ">=": 150
+      }
+    },
+    "book_jiuyang": {
+      "id": "book_jiuyang",
+      "name": "《九阳真经》",
+      "type": "book",
+      "desc": "藏在白猿腹中的绝世内功心法。",
+      "teach": "jiuyang_shengong",
+      "cost": 1000,
+      "timeCost": 480,
+      "value": 12000,
+      "require": {
+        "skill": "basic_force",
+        ">=": 200
+      }
+    },
+    "book_xuantie": {
+      "id": "book_xuantie",
+      "name": "《玄铁剑法》",
+      "type": "book",
+      "desc": "刻在石壁上的重剑剑法。",
+      "teach": "xuantie_jianfa",
+      "cost": 700,
+      "timeCost": 300,
+      "value": 9000,
+      "require": {
+        "skill": "basic_sword",
+        ">=": 150
+      }
+    },
+    "book_dugu": {
+      "id": "book_dugu",
+      "name": "《独孤九剑》",
+      "type": "book",
+      "desc": "剑魔独孤求败所遗剑谱。",
+      "teach": "dugu_jiujian",
+      "cost": 1500,
+      "timeCost": 600,
+      "value": 20000,
+      "require": {
+        "skill": "basic_sword",
+        ">=": 250
+      }
+    },
+    "book_xixing": {
+      "id": "book_xixing",
+      "name": "《吸星大法》",
+      "type": "book",
+      "desc": "魔教秘法，吸人内力。",
+      "teach": "xixing_dafa",
+      "cost": 1200,
+      "timeCost": 480,
+      "value": 15000,
+      "require": {
+        "skill": "basic_force",
+        ">=": 200
+      }
+    },
+    "book_lingbo": {
+      "id": "book_lingbo",
+      "name": "《凌波微步》",
+      "type": "book",
+      "desc": "逍遥派轻功秘笈。",
+      "teach": "lingbo_weibu",
+      "cost": 900,
+      "timeCost": 360,
+      "value": 10000,
+      "require": {
+        "skill": "basic_dodge",
+        ">=": 150
+      }
+    }
   }
 }

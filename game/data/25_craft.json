@@ -1,0 +1,40 @@
+{
+  "items": {
+    "herb_qing": { "id": "herb_qing", "name": "青灵草", "type": "herb", "category": "药材", "desc": "生于幽谷的青色灵草，炼丹常用底药。", "value": 18, "stackable": true, "stackMax": 99 },
+    "herb_red": { "id": "herb_red", "name": "赤血草", "type": "herb", "category": "药材", "desc": "赤红如血的草药，大补气血。", "value": 42, "stackable": true, "stackMax": 99 },
+    "ore_iron": { "id": "ore_iron", "name": "精铁", "type": "material", "category": "矿石", "desc": "寻常精铁，锻器之基。", "value": 30, "stackable": true, "stackMax": 99 },
+    "ore_cold": { "id": "ore_cold", "name": "寒铁", "type": "material", "category": "矿石", "desc": "千年寒泉淬出的铁母，质地奇寒。", "value": 90, "stackable": true, "stackMax": 99 },
+    "rune_paper": { "id": "rune_paper", "name": "符纸", "type": "material", "category": "符材", "desc": "浸过桐油的黄符纸，绘符所用。", "value": 15, "stackable": true, "stackMax": 99 },
+    "cinnabar": { "id": "cinnabar", "name": "朱砂", "type": "material", "category": "符材", "desc": "赤红朱砂，画符引灵之墨。", "value": 25, "stackable": true, "stackMax": 99 },
+    "spirit_sand": { "id": "spirit_sand", "name": "灵砂", "type": "material", "category": "灵材", "desc": "蕴含灵气的细砂，高阶丹符少不了它。", "value": 120, "stackable": true, "stackMax": 99 },
+    "danlu": { "id": "danlu", "name": "丹炉", "type": "tool", "category": "器具", "desc": "炼丹必备的青铜丹炉，可反复使用。", "value": 200, "stackable": false },
+    "hammer": { "id": "hammer", "name": "铁锤", "type": "tool", "category": "器具", "desc": "铁匠锻器用的重锤，可反复使用。", "value": 150, "stackable": false },
+
+    "huimeng_dan": { "id": "huimeng_dan", "name": "回梦丹", "type": "consumable", "category": "丹药", "desc": "服之恢复气血与内力。", "value": 260, "stackable": true, "stackMax": 9, "use": [{ "type": "+hp", "args": [60] }, { "type": "+mp", "args": [40] }] },
+    "liqi_dan": { "id": "liqi_dan", "name": "理气丹", "type": "consumable", "category": "丹药", "desc": "大补内力，修炼后服用最佳。", "value": 240, "stackable": true, "stackMax": 9, "use": [{ "type": "+mp", "args": [80] }] },
+    "jingshen_dan": { "id": "jingshen_dan", "name": "凝神丹", "type": "consumable", "category": "丹药", "desc": "短时内显著提升暴击。", "value": 360, "stackable": true, "stackMax": 9, "use": [{ "type": "+buff", "args": [{ "name": "凝神", "turns": 30, "mods": { "critRate": 0.06 }, "tag": "rune" }] }] },
+
+    "iron_sword": { "id": "iron_sword", "name": "精铁剑", "type": "weapon", "category": "兵刃", "slot": "兵刃", "desc": "凡铁锻成的利剑，初入江湖者可用。", "value": 200, "stats": { "atk": 18 }, "weaponType": "剑" },
+    "iron_armor": { "id": "iron_armor", "name": "精铁甲", "type": "armor", "category": "护甲", "slot": "身体", "desc": "精铁打造的护甲，能挡寻常刀剑。", "value": 220, "stats": { "def": 14 } },
+    "cold_blade": { "id": "cold_blade", "name": "寒铁刀", "type": "weapon", "category": "兵刃", "slot": "兵刃", "desc": "寒铁淬炼的宝刀，寒气逼人。", "value": 420, "stats": { "atk": 26 }, "weaponType": "刀" },
+
+    "talisman_shield": { "id": "talisman_shield", "name": "护身符", "type": "consumable", "category": "符箓", "desc": "绘就护身之符，短时大增防御。", "value": 120, "stackable": true, "stackMax": 9, "use": [{ "type": "+buff", "args": [{ "name": "护身", "turns": 20, "mods": { "def": 20 }, "tag": "rune" }] }] },
+    "talisman_speed": { "id": "talisman_speed", "name": "神行符", "type": "consumable", "category": "符箓", "desc": "神行符，短时大增闪避与身法。", "value": 140, "stackable": true, "stackMax": 9, "use": [{ "type": "+buff", "args": [{ "name": "神行", "turns": 15, "mods": { "dodge": 18, "speed": 10 }, "tag": "rune" }] }] },
+    "talisman_power": { "id": "talisman_power", "name": "破敌符", "type": "consumable", "category": "符箓", "desc": "破敌符，短时大增攻击。", "value": 160, "stackable": true, "stackMax": 9, "use": [{ "type": "+buff", "args": [{ "name": "破敌", "turns": 15, "mods": { "atk": 25 }, "tag": "rune" }] }] }
+  },
+
+  "recipes": {
+    "rec_jinchuang": { "category": "alchemy", "name": "金创药", "out": "jinchuang_yao", "outCount": 2, "mat": { "herb_qing": 2 }, "time": 20, "base": 0.9, "needTool": "danlu", "desc": "以青灵草炼制的疗伤药。" },
+    "rec_huimeng": { "category": "alchemy", "name": "回梦丹", "out": "huimeng_dan", "outCount": 1, "mat": { "herb_qing": 2, "herb_red": 1 }, "time": 30, "base": 0.8, "needTool": "danlu", "desc": "恢复气血内力的灵丹。" },
+    "rec_liqi": { "category": "alchemy", "name": "理气丹", "out": "liqi_dan", "outCount": 1, "mat": { "herb_red": 2 }, "time": 30, "base": 0.8, "needTool": "danlu", "desc": "大补内力。" },
+    "rec_jingshen": { "category": "alchemy", "name": "凝神丹", "out": "jingshen_dan", "outCount": 1, "mat": { "herb_red": 1, "spirit_sand": 1 }, "time": 40, "base": 0.7, "needTool": "danlu", "desc": "以灵砂入药，短时提升暴击。" },
+
+    "rec_iron_sword": { "category": "forge", "name": "精铁剑", "out": "iron_sword", "outCount": 1, "mat": { "ore_iron": 3 }, "time": 40, "base": 0.8, "needTool": "hammer", "desc": "凡铁锻成的利剑。" },
+    "rec_iron_armor": { "category": "forge", "name": "精铁甲", "out": "iron_armor", "outCount": 1, "mat": { "ore_iron": 4 }, "time": 40, "base": 0.8, "needTool": "hammer", "desc": "精铁打造的护甲。" },
+    "rec_cold_blade": { "category": "forge", "name": "寒铁刀", "out": "cold_blade", "outCount": 1, "mat": { "ore_cold": 3, "spirit_sand": 1 }, "time": 60, "base": 0.65, "needTool": "hammer", "desc": "寒铁淬炼的宝刀。" },
+
+    "rec_talisman_shield": { "category": "rune", "name": "护身符", "out": "talisman_shield", "outCount": 2, "mat": { "rune_paper": 1, "cinnabar": 1 }, "time": 15, "base": 0.9, "desc": "绘就护身之符，短时增防。" },
+    "rec_talisman_speed": { "category": "rune", "name": "神行符", "out": "talisman_speed", "outCount": 2, "mat": { "rune_paper": 1, "cinnabar": 1, "spirit_sand": 1 }, "time": 20, "base": 0.85, "desc": "神行符，短时增闪避身法。" },
+    "rec_talisman_power": { "category": "rune", "name": "破敌符", "out": "talisman_power", "outCount": 1, "mat": { "rune_paper": 2, "cinnabar": 2, "spirit_sand": 1 }, "time": 25, "base": 0.8, "desc": "破敌符，短时增攻击。" }
+  }
+}

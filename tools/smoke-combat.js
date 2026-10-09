@@ -193,6 +193,39 @@ section('⑤ 一次攻击后 npc.hp 严格递减且不是 NaN');
 }
 
 /* ============================================================ */
+section('⑥a ENG-04：NPC 出生满血（hp 与 maxHp 同步）');
+{
+  const e2 = new GameEngine({ seed: 20261009 });
+  e2.boot();
+  e2.newGame({ name: '验血', gender: 'male', birth: 'wuxue' });
+  const npcs = Object.values(e2.world.instances.npcs || {});
+  ok('有NPC 可验', npcs.length > 0, 'n=' + npcs.length);
+  const notFull = npcs.filter(n => n.hp !== n.maxHp);
+  ok('全部 NPC 出生即满血', notFull.length === 0,
+    notFull.slice(0, 3).map(n => `${n.name} ${n.hp}/${n.maxHp}`).join(','));
+  /* 大范围拉一遍所有模板，避免只验到起始房间的两个 */
+  let bad = 0, checked = 0;
+  for (const id of Object.keys(e2.world.data.npcs)) {
+    const d = e2.world.data.npcs[id];
+    if (!d.room) continue;
+    const n = e2.world.spawnNpc(id, d.room, 1, true);
+    if (!n) continue;
+    checked++;
+    if (n.hp !== n.maxHp) bad++;
+  }
+  ok('全部 320 个模板逐个 spawn 都是满血', bad === 0, `checked=${checked} bad=${bad}`);
+  /* 显式带伤开关仍然可用 */
+  const someRoom = e2.world.player.room;
+  e2.world.data.npcs.__hurt = { id: '__hurt', name: '伤者', room: someRoom, level: 5, hp: 100, mp: 50 };
+  const hurt = e2.world.spawnNpc('__hurt', someRoom, 1, true);
+  ok('未写 spawnHpRatio → 仍满血', hurt.hp === hurt.maxHp, `${hurt.hp}/${hurt.maxHp}`);
+  e2.world.data.npcs.__hurt.spawnHpRatio = 0.6;
+  const hurt2 = e2.world.spawnNpc('__hurt', someRoom, 1, true);
+  ok('写 spawnHpRatio:0.6 → 按比例带伤出生',
+    hurt2.maxHp > 0 && Math.abs(hurt2.hp / hurt2.maxHp - 0.6) < 0.02, `${hurt2.hp}/${hurt2.maxHp}`);
+}
+
+/* ============================================================ */
 section('⑥ 旧存档（无 defFinal）读进来后伤害依然正常');
 {
   /* 造一份「旧档」：NPC 实例上 def 是**数字**（旧 recalc 写脏的），且没有 defFinal */

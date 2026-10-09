@@ -9,6 +9,7 @@
 'use strict';
 
 const { clamp } = require('./utils');
+const { profTierOf, profTierMult, profTierAcc } = require('./character');
 
 /**
  * defenseOf(u) —— 取一个战斗单位的**防御力数值**（唯一入口，别再直接读 u.def）。
@@ -25,11 +26,25 @@ const { clamp } = require('./utils');
  *   ① defFinal（新档 / 新代码）  ② 数字形态的 def（旧档）  ③ defBase（模板原始防御力）
  * 绝不返回 undefined / NaN / 对象。
  */
-function defenseOf(u) {
-  if (!u) return 0;
+function defenseOf(u) {  if (!u) return 0;
   if (typeof u.defFinal === 'number') return Number.isFinite(u.defFinal) ? u.defFinal : 0;
   if (typeof u.def === 'number') return Number.isFinite(u.def) ? u.def : 0;
   return typeof u.defBase === 'number' && Number.isFinite(u.defBase) ? u.defBase : 0;
+}
+
+/**
+ * 武器绑定（SPRINT2）：刀/枪/棍/剑/鞭/暗器/音波 须装备对应兵刃，否则威力大打折扣。
+ * 拳脚无需武器。返回 { mult, acc, note }。
+ */
+const WEAPON_REQUIRED = { 剑: true, 刀: true, 棍: true, 鞭: true, 暗器: true, 音波: true };
+function weaponPenalty(u, skill) {
+  if (!skill || !WEAPON_REQUIRED[skill.type]) return { mult: 1, acc: 0, note: null };
+  const wpn = u.equipment && u.equipment['武器'];
+  const item = wpn ? u.world.getItem(wpn) : null;
+  const reqType = skill.type === '音波' ? '音波' : skill.type;
+  const ok = item && (item.weaponType === reqType || (reqType === '音波' && item.category === '乐器'));
+  if (ok) return { mult: 1, acc: 0, note: null };
+  return { mult: 0.45, acc: -25, note: `手中无${skill.type}类兵刃，威力大减` };
 }
 
 const DEFAULT_HOOKS = {
@@ -190,6 +205,7 @@ class CombatEngine {
     const w = this.world;
     const sName = skill ? skill.name : '普通攻击';
     const lv = skill ? u.skillLevel(skill.id) : 0;
+    const tier = skill ? profTierOf(u, skill.id) : 0;
 
     // 内力消耗
     if (skill && skill.mpCost) {
@@ -203,12 +219,19 @@ class CombatEngine {
     const ctx = {
       world: w,
       skill,
-      acc: skill ? (skill.accuracy || 80) + Math.floor(lv * 0.5) : 85,
-      mult: skill ? (skill.damageMult || 1) * (1 + lv * 0.012) : 1,
+      // 去等级化（SPRINT2）：命中/伤害由「熟练度档位」而非角色等级驱动
+      acc: skill ? (skill.accuracy || 80) + profTierAcc(tier) : 85,
+      mult: skill ? (skill.damageMult || 1) * profTierMult(tier) : 1,
       armorPen: u.armorPen,
       critRate: u.critRate + (skill ? (skill.critBonus || 0) : 0),
       critDmg: u.critDmg + (skill ? (skill.critDmgBonus || 0) : 0),
     };
+    // 武器绑定：无对应兵刃则威力打折
+    const pen = weaponPenalty(u, skill);
+    if (pen.mult !== 1 || pen.acc) {
+      ctx.mult *= pen.mult;
+      ctx.acc += pen.acc;
+    }
     if (w.combatHooks.hitRoll) {
       const hitFn = w.combatHooks.hitRoll;
       if (!hitFn(u, t, skill, ctx)) {
@@ -216,9 +239,10 @@ class CombatEngine {
       }
     }
 
-    let base = u.atk * (skill ? (1 + lv * 0.02) : 1);
-    let dmg = w.combatHooks.damage ? w.combatHooks.damage(u, t, base, ctx) : ctx.mult * base;
-    dmg = Math.max(1, Math.floor(dmg * (ctx.mult || 1)));
+    // 去等级化：基础 = 攻击力（已含属性派生）；不再叠加任何等级放大项
+    const base = u.atk;
+    const dmgRaw = w.combatHooks.damage ? w.combatHooks.damage(u, t, base, ctx) : base * (ctx.mult || 1);
+    let dmg = Math.max(1, Math.floor(dmgRaw));
 
     // 暴击
     let crit = false;
@@ -260,7 +284,15 @@ class CombatEngine {
     let text = `${name}${skill ? '使出一招「' + skill.name + '」' : '挥拳'}，击中${tname}`;
     if (crit) text += `，正中要害（暴击）`;
     text += `，造成 ${dmg} 点伤害。`;
+    if (pen.note && idx === 0) text += `（${pen.note}）`;
     if (extraText) text += extraText;
+
+    // 对练/生死战提升最大（SPRINT2）：玩家用武技命中即获熟练度
+    if (u.isPlayer && skill) {
+      u.gainSkillExp(skill.id, 2 + tier);
+      if (t.hp <= 0) u.gainSkillExp(skill.id, 20 + tier * 4);
+    }
+
     if (t.hp <= 0) text += ` ${tname}${t.isPlayer ? '' : '闷哼一声，'}倒地不起！`;
     return { kind: 'combat', text };
   }
@@ -337,7 +369,7 @@ class CombatEngine {
     for (const b of u.buffs) {
       if (b.dot) {
         const src = this.findChar(battle, b.dot.source);
-        const dmg = Math.floor((b.dot.value || 3) * (1 + (u.level || 1) * 0.05));
+        const dmg = Math.floor((b.dot.value || 3));
         u.hp = clamp(u.hp - dmg, 0, u.maxHp);
         lines.push({ kind: 'combat', text: `${u.name}因${b.name}受损 ${dmg} 点。` });
         if (u.hp <= 0) { lines.push({ kind: 'combat', text: `${u.name}不支倒地！` }); continue; }
@@ -379,4 +411,4 @@ class CombatEngine {
   }
 }
 
-module.exports = { CombatEngine, DEFAULT_HOOKS, defenseOf };
+module.exports = { CombatEngine, DEFAULT_HOOKS, defenseOf, weaponPenalty };

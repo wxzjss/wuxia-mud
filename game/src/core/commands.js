@@ -17,6 +17,8 @@ const workMod = require('./work');
 const gather = require('./gather');
 const farm = require('./farm');
 const personality = require('./personality');
+const sectFounder = require('./sectFounder');
+const estateMod = require('./estate');
 
 /* 中文数字 → 阿拉伯 */
 const CN_NUM = { 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10, 壹: 1, 贰: 2, 叁: 3, 肆: 4, 伍: 5, 陆: 6, 柒: 7, 捌: 8, 玖: 9, 拾: 10 };
@@ -591,7 +593,7 @@ function buildCommands(world) {
     if (!args.length) return { lines: [{ kind: 'warn', text: '你想丢什么？' }] };
     const kw = args.join(' ');
     const w = ctx.world, p = ctx.player;
-    const hit = fuzzyFind(p.inventory || [], kw, i => (w.getItem(i.id) || { name: i.id }).name);
+    const hit = fuzzyFind(p.inventory || [], kw, i => { const id = (typeof i === 'object' && i) ? i.id : i; const d = w.getItem(id); return (d && d.name) || id; });
     if (!hit) return { lines: [{ kind: 'warn', text: `你身上没有「${kw}」。` }] };
     const r = w.dropItem(p, hit.uid);
     return { lines: [{ kind: r.ok ? 'sys' : 'warn', text: r.msg }] };
@@ -601,7 +603,7 @@ function buildCommands(world) {
     if (!args.length) return { lines: [{ kind: 'warn', text: '你想用什么？' }] };
     const kw = args.join(' ');
     const w = ctx.world, p = ctx.player;
-    const hit = fuzzyFind(p.inventory || [], kw, i => (w.getItem(i.id) || { name: i.id }).name);
+    const hit = fuzzyFind(p.inventory || [], kw, i => { const id = (typeof i === 'object' && i) ? i.id : i; const d = w.getItem(id); return (d && d.name) || id; });
     if (!hit) return { lines: [{ kind: 'warn', text: `你身上没有「${kw}」。` }] };
     const r = w.useItem(p, hit.uid);
     return { lines: (r.lines || []).concat([{ kind: r.ok ? 'sys' : 'warn', text: r.msg }]) };
@@ -611,7 +613,7 @@ function buildCommands(world) {
     if (!args.length) return { lines: [{ kind: 'warn', text: '你想装备什么？' }] };
     const kw = args.join(' ');
     const w = ctx.world, p = ctx.player;
-    const hit = fuzzyFind(p.inventory || [], kw, i => (w.getItem(i.id) || { name: i.id }).name);
+    const hit = fuzzyFind(p.inventory || [], kw, i => { const id = (typeof i === 'object' && i) ? i.id : i; const d = w.getItem(id); return (d && d.name) || id; });
     if (!hit) return { lines: [{ kind: 'warn', text: `你身上没有「${kw}」。` }] };
     const r = w.equipItem(p, hit.uid);
     return { lines: [{ kind: r.ok ? 'sys' : 'warn', text: r.msg }] };
@@ -639,7 +641,7 @@ function buildCommands(world) {
     if (a.length < 2) return { lines: [{ kind: 'warn', text: '用法：give <物品> to <人名>（或「送 <人> <物品>」）' }] };
     const w = ctx.world, p = ctx.player;
     const itemKw = a[0].trim(), npcKw = a[1].trim();
-    const hit = fuzzyFind(p.inventory || [], itemKw, i => (w.getItem(i.id) || { name: i.id }).name);
+    const hit = fuzzyFind(p.inventory || [], itemKw, i => { const id = (typeof i === 'object' && i) ? i.id : i; const d = w.getItem(id); return (d && d.name) || id; });
     if (!hit) return { lines: [{ kind: 'warn', text: `你身上没有「${itemKw}」。` }] };
     const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), npcKw, n => n.name);
     if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${npcKw}」。` }] };
@@ -1607,7 +1609,7 @@ function buildCommands(world) {
     if (!args.length) return { lines: [{ kind: 'warn', text: '你想卖什么？' }] };
     const shopNpc = w.npcsIncludingTemplates(p.room).find(n => n.shop || (n.def && n.def.goods));
     if (!shopNpc) return { lines: [{ kind: 'warn', text: '这里没有商贩。' }] };
-    const hit = fuzzyFind(p.inventory || [], args.join(' '), i => (w.getItem(i.id) || { name: i.id }).name);
+    const hit = fuzzyFind(p.inventory || [], args.join(' '), i => { const id = (typeof i === 'object' && i) ? i.id : i; const d = w.getItem(id); return (d && d.name) || id; });
     if (!hit) return { lines: [{ kind: 'warn', text: `你身上没有「${args.join(' ')}」。` }] };
     const d = w.getItem(hit.id);
     const price = Math.floor((d.value || 5) * 0.6 * (hit.count || 1));
@@ -1621,6 +1623,17 @@ function buildCommands(world) {
   reg(['sect', '门派'], (ctx, args) => {
     const p = ctx.player, w = ctx.world;
     if (!args.length) {
+      if (p.mySect) {
+        const info = sectFounder.sectInfo(w);
+        const lines = [{ kind: 'title', text: `【 ${info.name} 】（你的宗门）` }];
+        lines.push({ kind: 'plain', text: `宗主：${info.founder}　威望：${info.prestige}　演武 ${info.drills} 次　战绩 ${info.wins} 胜 ${info.losses} 负` });
+        lines.push({ kind: 'subtitle', text: `门下弟子（${info.members.length} 人）` });
+        if (!info.members.length) lines.push({ kind: 'plain', text: '　（尚无人投奔，发「招贤 <人名>」广纳贤才）' });
+        for (const m of info.members) lines.push({ kind: 'plain', text: `　${m.name}　战力 ${m.power}` });
+        if (info.base) lines.push({ kind: 'hint', text: `驻地：${(w.getRoom(info.base) || {}).name || info.base}` });
+        lines.push({ kind: 'hint', text: '发「招贤 <人名>」纳贤、「演武」聚徒习武、「大比」约战群雄、「解散宗门」遣散。' });
+        return { lines };
+      }
       if (p.sect) {
         const sd = w.getSect(p.sect);
         const lines = [{ kind: 'title', text: `【 ${sd ? sd.name : p.sect} 】` }];
@@ -1696,6 +1709,49 @@ function buildCommands(world) {
     p.money -= n;
     p.sectContribution += Math.floor(n / 10);
     return { lines: [{ kind: 'sys', text: `你捐了 ${n} 文钱，门派贡献 +${Math.floor(n / 10)}（现 ${p.sectContribution}）。` }] };
+  });
+
+  /* ---------------- 自建宗门（武学重制 S2） ---------------- */
+  reg(['创宗', '建宗', '开宗立派', 'createSect'], (ctx, args) => {
+    return { lines: sectFounder.createSect(ctx.world, args.join(' ')).lines };
+  });
+  reg(['招贤', '纳贤', 'recruit'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    if (!p.mySect) return { lines: [{ kind: 'warn', text: '你尚未创立宗门。' }] };
+    const kw = args.join(' ');
+    if (!kw) return { lines: [{ kind: 'warn', text: '用法：招贤 <人名>　例如「招贤 李捕快」' }] };
+    const npc = w.npcsIncludingTemplates(p.room).find(n => !n.isPlayer && (n.name === kw || n.name.includes(kw) || kw.includes(n.name)));
+    if (!npc) return { lines: [{ kind: 'warn', text: `此处没有「${kw}」这号人物。` }] };
+    return { lines: sectFounder.recruit(w, npc).lines };
+  });
+  reg(['逐出', '逐出宗门', 'expel'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    if (!p.mySect) return { lines: [{ kind: 'warn', text: '你尚未创立宗门。' }] };
+    const kw = args.join(' ');
+    if (!kw) return { lines: [{ kind: 'warn', text: '用法：逐出 <人名>' }] };
+    const npc = w.npcsIncludingTemplates(p.room).find(n => !n.isPlayer && (n.name === kw || n.name.includes(kw) || kw.includes(n.name)));
+    if (!npc) return { lines: [{ kind: 'warn', text: `此处没有「${kw}」这号人物。` }] };
+    return { lines: sectFounder.expel(w, npc).lines };
+  });
+  reg(['演武', 'drill'], (ctx) => ({ lines: sectFounder.drill(ctx.world).lines }));
+  reg(['大比', '门派大比', 'contest'], (ctx) => ({ lines: sectFounder.contest(ctx.world).lines }));
+  reg(['解散宗门', '遣散', 'disband'], (ctx) => ({ lines: sectFounder.disband(ctx.world).lines }));
+
+  /* ---------------- 家园地块 / 资助NPC建家（SPRINT2）---------------- */
+  reg(['地块', '家园地块', 'plots'], (ctx) => ({ lines: estateMod.listPlots(ctx.world).lines }));
+  reg(['开垦', '拓地', '开辟', 'plot'], (ctx, args) => {
+    const r = estateMod.buildPlot(ctx.world, args.join(' '));
+    return { lines: r.lines, moved: r.moved || null };
+  });
+  reg(['资助', '建家', 'sponsor'], (ctx, args) => {
+    const a = args.slice();
+    /* 支持「资助 范清 一间茅屋」：末段若是档位名则拆出来 */
+    let tierKw = null;
+    if (a.length > 1 && estateMod.NPC_TIERS.some(t => t.name === a[a.length - 1] || t.id === a[a.length - 1])) {
+      tierKw = a.pop();
+    }
+    const r = estateMod.sponsorNpcHome(ctx.world, a.join(' '), tierKw);
+    return { lines: r.lines, moved: r.moved || null };
   });
 
   reg(['quests', 'quest', '任务'], (ctx, args) => {
@@ -1828,16 +1884,188 @@ function buildCommands(world) {
     const p = ctx.player;
     const neigong = p.equippedSkills['内功'];
     const gain = 5 + Math.floor(p.attrTotal('悟性') / 2);
-    if (neigong && p.learned[neigong]) {
-      p.gainSkillExp(neigong, gain);
-      p.mp = p.maxMp;
-      p.advanceTime(20);
-      const sd = ctx.world.getSkill(neigong);
-      return { lines: [{ kind: 'story', text: `你盘膝而坐，运起${sd ? sd.name : '内功'}心法…` }, { kind: 'sys', text: `你感觉内力充盈，${sd ? sd.name : '内功'}修为精进。` }] };
-    }
     p.mp = p.maxMp;
     p.advanceTime(20);
-    return { lines: [{ kind: 'story', text: '你盘膝打坐，调息运气。' }, { kind: 'sys', text: '你的内力恢复了。' }] };
+    const lines = [{ kind: 'story', text: '你盘膝而坐，调息运气。' }];
+    if (neigong && p.learned[neigong]) {
+      p.gainSkillExp(neigong, gain);
+      const sd = ctx.world.getSkill(neigong);
+      lines.push({ kind: 'sys', text: `你运起${sd ? sd.name : '内功'}心法，内力充盈，修为精进。` });
+      // 内功修炼：打坐冲击奇经八脉
+      const m = p.tryAssaultMeridian(sd);
+      if (m) lines.push({ kind: 'sys', text: m });
+    } else {
+      lines.push({ kind: 'sys', text: '你的内力恢复了。' });
+    }
+    return { lines };
+  });
+
+  /* ---------------- 外功淬体（淬炼肉身，需血量与药物，有生命危险） ---------------- */
+  reg(['淬体', 'cuti', '淬炼', '炼体'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    let sd = null;
+    if (args.length) {
+      sd = fuzzyFind(Object.values(w.data.skills), args.join(' '), s => s.name);
+    } else {
+      const ids = Object.keys(p.learned).filter(id => { const d = w.getSkill(id); return d && d.type !== '内功'; });
+      if (ids.length) sd = w.getSkill(ids[0]);
+    }
+    if (!sd) return { lines: [{ kind: 'warn', text: '你还没有可淬炼的外功武学（先去学一门拳脚刀剑）。' }] };
+    if (sd.type === '内功') return { lines: [{ kind: 'warn', text: '内功靠打坐冲击奇经八脉，无需淬体。' }] };
+    const cur = p.learned[sd.id];
+    const lv = cur ? cur.level : 0;
+    const apt = p.attrTotal('资质');
+    // 越往后越难练；家园练武场会降低难度、提高成功率
+    const _eff = (w && typeof w.estateEffects === 'function') ? w.estateEffects() : null;
+    const successRate = clamp(0.75 + apt * 0.004 - lv * 0.004 + (_eff ? _eff.cutiRate : 0), 0.1, 0.98);
+    const riskRate = clamp(0.05 + lv * 0.012, 0.05, 0.7);
+    // 药物支撑：背包有疗伤丹药则大幅降低风险并消耗一枚
+    const healItem = (p.inventory || []).map(it => w.getItem(typeof it === 'object' ? it.id : it)).find(it => it && it.healHp);
+    let usedMed = null;
+    if (healItem) { p.removeItem(healItem.id, 1); usedMed = healItem.name; }
+    const effRisk = usedMed ? riskRate * 0.3 : riskRate;
+    // 消耗体力与部分气血
+    const hpCost = Math.floor(p.maxHp * (0.08 + lv * 0.004));
+    p.hp = clamp(p.hp - hpCost, 1, p.maxHp);
+    p.stamina = clamp(p.stamina - 25, 0, p.maxStamina);
+    p.advanceTime(30);
+    const lines = [{ kind: 'story', text: `你运起${sd.name}心法，捶打筋骨，淬炼肉身……` }];
+    if (usedMed) lines.push({ kind: 'sys', text: `你服下${usedMed}以防不测。` });
+    if (p.world.rng.next() < successRate) {
+      const gain = Math.floor(p.skillExpNeed(lv) * 0.4);
+      const g = p.gainSkillExp(sd.id, gain);
+      lines.push({ kind: 'sys', text: g.msg + '（淬体有成）' });
+    } else {
+      lines.push({ kind: 'warn', text: '淬体未能精进，仅觉筋骨酸胀。' });
+    }
+    // 生命危险判定（无药物则更凶险）
+    if (p.world.rng.next() < effRisk) {
+      const dmg = Math.floor(p.maxHp * (usedMed ? 0.15 : 0.35));
+      p.hp = clamp(p.hp - dmg, 0, p.maxHp);
+      if (p.hp <= 0) {
+        p.hp = 1;
+        lines.push({ kind: 'warn', text: '淬体失当，气血逆行，险些丧命！（被人救起，仅余一息）' });
+      } else {
+        lines.push({ kind: 'warn', text: '淬体失当，气血翻涌，险象环生！' });
+      }
+    }
+    return { lines };
+  });
+
+  /* ---------------- 炼丹 / 炼器 / 符文阵法（SPRINT2-B） ---------------- */
+
+  const CRAFT_CAT = {
+    alchemy: { label: '丹药', verb: '炼丹' },
+    forge: { label: '兵刃防具', verb: '炼器' },
+    rune: { label: '符箓', verb: '画符' },
+  };
+
+  function doCraft(ctx, category, recipeKw) {
+    const p = ctx.player, w = ctx.world;
+    const cat = CRAFT_CAT[category] || { label: '物品', verb: '炼制' };
+    const recipes = Object.values(w.data.recipes || {}).filter(r => r.category === category);
+    if (!recipeKw) {
+      const names = recipes.map(r => r.name).join('、');
+      return { lines: [{ kind: 'sys', text: `可${cat.verb}的${cat.label}：${names || '（暂无）'}` }] };
+    }
+    const rec = fuzzyFind(recipes, recipeKw, r => r.name);
+    if (!rec) return { lines: [{ kind: 'warn', text: `没有名为「${recipeKw}」的${cat.label}配方。` }] };
+    // 器具
+    if (rec.needTool && !p.hasItem(rec.needTool)) {
+      const td = w.getItem(rec.needTool);
+      return { lines: [{ kind: 'warn', text: `${cat.verb}需要「${td ? td.name : rec.needTool}」。` }] };
+    }
+    // 材料
+    const miss = [];
+    for (const mid in rec.mat) {
+      const need = rec.mat[mid];
+      if (p.countItem(mid) < need) miss.push(`${(w.getItem(mid) || { name: mid }).name}(${p.countItem(mid)}/${need})`);
+    }
+    if (miss.length) return { lines: [{ kind: 'warn', text: `材料不足：${miss.join('、')}` }] };
+    // 消耗材料
+    for (const mid in rec.mat) p.removeItem(mid, rec.mat[mid]);
+    // 成功率（悟性/资质越高越稳）
+    const wis = p.attrTotal('悟性'), apt = p.attrTotal('资质');
+    const _eff = (w && typeof w.estateEffects === 'function') ? w.estateEffects() : null;
+    const rate = clamp((rec.base || 0.8) + wis * 0.004 + apt * 0.003 + (_eff ? _eff.craftRate : 0), 0.1, 0.98);
+    p.stamina = clamp(p.stamina - 15, 0, p.maxStamina);
+    p.advanceTime(rec.time || 20);
+    const lines = [{ kind: 'story', text: `你着手${cat.verb}「${rec.name}」……` }];
+    if (p.world.rng.next() < rate) {
+      w.giveItem(p, rec.out, rec.outCount || 1);
+      lines.push({ kind: 'sys', text: `炼制成功！获得 ${rec.outCount || 1} 个${w.getItem(rec.out).name}。` });
+    } else {
+      lines.push({ kind: 'warn', text: '炼制失败，材料尽毁，只余一缕焦烟。' });
+    }
+    return { lines };
+  }
+
+  reg(['炼丹', 'alchemy', 'liandan'], (ctx, args) => doCraft(ctx, 'alchemy', args.join(' ')));
+  reg(['炼器', 'forge', 'lianqi'], (ctx, args) => doCraft(ctx, 'forge', args.join(' ')));
+  reg(['画符', '制符', '布阵', '符箓', 'rune', 'lianfu'], (ctx, args) => doCraft(ctx, 'rune', args.join(' ')));
+
+  /* ---------------- 收徒系统（SPRINT2 任务70） ---------------- */
+
+  reg(['收徒', 'shoutu', '收弟子'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    if (!args.length) return { lines: [{ kind: 'warn', text: '你想收谁为徒？' }] };
+    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), args.join(' '), n => n.name);
+    if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${args.join(' ')}」。` }] };
+    if (!npc.isNpc) return { lines: [{ kind: 'warn', text: '那可不是能收的徒儿。' }] };
+    if (npc.def && npc.def.hostile) return { lines: [{ kind: 'warn', text: '对方杀机毕露，岂能收为弟子。' }] };
+    p.disciples = p.disciples || [];
+    if (p.disciples.includes(npc.id)) return { lines: [{ kind: 'warn', text: `${npc.name}已是你的弟子。` }] };
+    if (p.disciples.length >= 10) return { lines: [{ kind: 'warn', text: '你门下弟子已满（上限十人）。' }] };
+    if (!Object.keys(p.learned || {}).length) return { lines: [{ kind: 'warn', text: '你自身尚无一技之长，如何为人师？' }] };
+    p.disciples.push(npc.id);
+    if (!npc.pstate) npc.pstate = {};
+    npc.pstate.master = p.id;
+    npc.master = p.id;
+    const { addFavor } = require('./social');
+    addFavor(w, npc, 30, '拜师');
+    return { lines: [{ kind: 'sys', text: `${npc.name}向你磕头行礼，正式拜入你门下！` }] };
+  });
+
+  reg(['逐出师门', '弃徒', 'expel'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    if (!args.length) return { lines: [{ kind: 'warn', text: '你想逐出哪个弟子？' }] };
+    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), args.join(' '), n => n.name);
+    if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${args.join(' ')}」。` }] };
+    p.disciples = p.disciples || [];
+    if (!p.disciples.includes(npc.id)) return { lines: [{ kind: 'warn', text: `${npc.name}并非你的弟子。` }] };
+    p.disciples = p.disciples.filter(id => id !== npc.id);
+    if (npc.pstate) npc.pstate.master = null;
+    npc.master = null;
+    return { lines: [{ kind: 'sys', text: `你已将${npc.name}逐出师门。` }] };
+  });
+
+  reg(['弟子', '徒弟', 'disciples'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    p.disciples = p.disciples || [];
+    if (!p.disciples.length) return { lines: [{ kind: 'sys', text: '你门下尚无弟子。' }] };
+    const names = p.disciples.map(id => { const n = w.getNpc(id); return n ? n.name : id; });
+    return { lines: [{ kind: 'sys', text: '门下弟子：' + names.join('、') }] };
+  });
+
+  reg(['授艺', '传艺', 'teach', 'shouyi'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    if (args.length < 2) return { lines: [{ kind: 'warn', text: '用法：授艺 <武学> <弟子>' }] };
+    const skillKw = args.slice(0, -1).join(' ');
+    const disKw = args[args.length - 1];
+    const sid = Object.keys(p.learned || {}).find(id => { const d = w.getSkill(id); return d && (d.name === skillKw || d.name.indexOf(skillKw) >= 0); });
+    if (!sid) return { lines: [{ kind: 'warn', text: `你并未习得「${skillKw}」，无从传授。` }] };
+    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), disKw, n => n.name);
+    if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${disKw}」。` }] };
+    p.disciples = p.disciples || [];
+    if (!p.disciples.includes(npc.id)) return { lines: [{ kind: 'warn', text: `${npc.name}并非你的弟子。` }] };
+    const pLevel = (p.learned[sid] || {}).level || 1;
+    const give = Math.max(1, Math.floor(pLevel * 0.6));
+    npc.learned = npc.learned || {};
+    const cur = npc.learned[sid] || { exp: 0, level: 0 };
+    cur.level = Math.max(cur.level, give);
+    npc.learned[sid] = cur;
+    if (npc.recalc) npc.recalc();
+    return { lines: [{ kind: 'sys', text: `你将${w.getSkill(sid).name}传授给${npc.name}（至 ${give} 级）。` }] };
   });
 
   /* ---------------- 扩展：房间自定义指令 ---------------- */
