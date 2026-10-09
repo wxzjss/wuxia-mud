@@ -991,6 +991,16 @@ body::before {
   .tb-left { min-width: auto; }
   .tb-right { min-width: auto; }
   .tb-title { display: none; }
+  /* 手机 HUD：顶栏换成两行 —— 第一行名字/钱/时间，第二行 5 条状态条占满 */
+  #topbar { flex-wrap: wrap; gap: 6px 10px; padding: 6px 10px; }
+  .tb-left { flex: 1 1 auto; min-width: 0; }
+  .tb-right { flex: 0 0 auto; gap: 10px; }
+  .tb-bars { flex: 1 1 100%; order: 3; gap: 6px; }
+  .tb-bar { height: 14px; }
+  .tb-bar span { font-size: 9.5px; }
+  .tb-name { font-size: 16px; }
+  .tb-money { font-size: 12px; }
+  .tb-time { font-size: 11px; }
 }
 body.narrow .log-line { margin-bottom: 1px; line-height: 1.55; font-size: 13px; }
 body.narrow #sidebar { flex: 0 0 140px; }

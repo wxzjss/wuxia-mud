@@ -1227,6 +1227,10 @@ class World extends EventEmitter {
     this.buildIndexes();
     // 起始武学
     for (const s of (meta.startSkills || [])) p.learnSkill(s);
+    // 自动接主线任务（type === '主线'），让「任务」面板开局就有主线可看
+    for (const qid of Object.keys(this.data.quests || {})) {
+      if (this.data.quests[qid].type === '主线') p.setQuestStage(qid, 0);
+    }
     // 性格/出身加成
     this.applyBirth(cfg, p);
     p.recalc();
