@@ -66,6 +66,36 @@ function sayVerb(npc) {
   return per ? per.say : '道';
 }
 
+/** 画像腔调 → 说话动词覆盖表（规格书 §4.2）
+ *  职责切分：personality 管「怎么开口」，voice.tone 管「说什么话」，二者正交。
+ *  只有 敬 / 泼 / 酸 三种 tone 会顶掉 personality 的动词。 */
+const TONE_SAY = { 敬: '躬身道', 泼: '叉腰道', 酸: '阴阳怪气道' };
+
+/** 带画像腔调的说话动词。
+ *  心情 ≤ 20 时心情覆盖一切 —— 直接走原 sayVerb（有气无力道 / 万念俱灰，喃喃道），
+ *  现有 sayVerb 的行为一个字都没改。 */
+function sayVerbToned(npc) {
+  const mood = npc && npc.mood !== undefined ? npc.mood : 50;
+  if (mood <= 20) return sayVerb(npc);
+  const tone = npc && npc.portrait && npc.portrait.voice && npc.portrait.voice.tone;
+  if (tone && TONE_SAY[tone]) return TONE_SAY[tone];
+  return sayVerb(npc);
+}
+
+/** 画像口头禅露出概率（规格书 §3.4 L1）：A 层 30%，B 层 15%，C 层不露 */
+function catchphraseRate(npc) {
+  const tier = npc && npc.portrait && npc.portrait.tier;
+  if (tier === 'A') return 0.3;
+  if (tier === 'B') return 0.15;
+  return 0;
+}
+
+/** 取画像口头禅（没有画像或没写口头禅则返回 null） */
+function catchphraseOf(npc) {
+  const v = npc && npc.portrait && npc.portrait.voice;
+  return v && v.catchphrase ? v.catchphrase : null;
+}
+
 /** 改心情（0~100），返回变化后的档位 */
 function addMood(npc, delta) {
   npc.mood = Math.max(0, Math.min(100, (npc.mood === undefined ? 50 : npc.mood) + delta));
@@ -78,6 +108,7 @@ function isDepressed(npc) {
 }
 
 module.exports = {
-  PERSONALITIES, TAG_PERSONALITY, MOOD_TIERS,
-  moodTier, personalityOf, personalityForTag, sayVerb, addMood, isDepressed,
+  PERSONALITIES, TAG_PERSONALITY, MOOD_TIERS, TONE_SAY,
+  moodTier, personalityOf, personalityForTag, sayVerb, sayVerbToned,
+  catchphraseRate, catchphraseOf, addMood, isDepressed,
 };

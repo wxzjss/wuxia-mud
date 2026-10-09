@@ -310,6 +310,8 @@ body::before {
 .log-line.subtitle { font-size: 13px; letter-spacing: .16em; text-align: center; color: var(--ink-4); margin-bottom: 14px; }
 .log-line.roomname { font-size: 17px; color: var(--ink); font-weight: 600; margin-top: 4px; }
 .log-line.npcs, .log-line.items { color: var(--ink-3); font-size: 13.5px; }
+/* 画像 L0：有画像的 NPC「此刻正在做什么」，跟着「这里有：」那条走 */
+.log-line.npcsact { color: var(--ink-3); font-size: 13.5px; padding-left: 10px; border-left: 2px solid var(--line); }
 .log-line.exits { color: var(--ink-4); font-size: 13px; }
 .log-line.action { color: #2c6b4d; font-size: 13.5px; }
 .log-line.die { color: var(--red); font-weight: 600; }

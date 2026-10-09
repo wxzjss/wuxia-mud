@@ -28,7 +28,10 @@ const WEATHERS = ['晴', '阴', '雨', '雪', '风', '雾'];
 
 /* 把运行时实例（Character / 物品）压成纯数据，剥掉 world / 循环引用，
    存档才能 JSON.stringify。恢复时由 deserialize 重新挂回 world。 */
-const INSTANCE_DROP = new Set(['world', '_events', '_eventsCount', 'bus', 'engine', 'cmds']);
+/* 'def' 也必须丢：npc.def 指向 data.npcs[defId] 的模板对象，
+   每个实例都存一份 = 320 份模板副本进存档（实测 30 个 NPC 就占 105KB）。
+   模板不随档变，deserialize 时按 defId 从 data 反查挂回即可。 */
+const INSTANCE_DROP = new Set(['world', '_events', '_eventsCount', 'bus', 'engine', 'cmds', 'def', 'portrait']);
 function cleanInstance(v, depth) {
   depth = depth || 0;
   if (v === null || v === undefined) return v;
@@ -51,6 +54,17 @@ function cleanInstance(v, depth) {
   }
   return undefined;
 }
+/** 画像 → 心情基线偏移（规格书 §4.3）：心结 −5、丧亲 −8、新婚/得子 +10，合计 clamp 到 −20~+20 */
+function portraitMoodBias(p) {
+  if (!p) return 0;
+  let b = 0;
+  if (p.obsession) b -= 5;
+  const marks = p.marks || [];
+  if (marks.indexOf('丧亲') >= 0) b -= 8;
+  if (marks.indexOf('新婚') >= 0 || marks.indexOf('得子') >= 0) b += 10;
+  return Math.max(-20, Math.min(20, b));
+}
+
 function safeInstanceMap(map) {
   const out = {};
   if (!map) return out;
@@ -427,7 +441,19 @@ class World extends EventEmitter {
          心情是会变的状态，必须 clone；性格按 def.personality，没有就按身份 tag 默认。 */
       const personalityMod = require('./personality');
       npc.personality = def.personality || personalityMod.personalityForTag(def.tag);
-      npc.mood = def.mood !== undefined ? def.mood : 50;
+      /* ---- 人物画像（第六批）----
+         portrait 是模板静态数据，pstate 是随档走的运行期状态。
+         两者都必须 clone / 新建：
+           · portrait 直接赋引用 → 解锁一个秘密会写进模板，全地图同名 NPC 一起变（
+             与 social.js 的 spouse/rel 同一个坑，不能第二次踩）；
+           · pstate 若共用同一个对象字面量 → 320 个实例共享一份 trust/revealed。
+         favor（喜欢你）与 trust（信得过你）是两条独立轴：
+         送礼只涨 favor，办成事才涨 trust，secret 门槛一律用 trust 判。 */
+      npc.portrait = def.portrait ? clone(def.portrait) : null;
+      npc.pstate = { trust: 0, revealed: [], hooks: {}, met: false, moodBias: 0, leaked: false };
+      if (npc.portrait) npc.pstate.moodBias = portraitMoodBias(npc.portrait);
+      /* 心情基线 = 模板心情 + 画像偏移（有心结/丧亲的人基线更低） */
+      npc.mood = clamp((def.mood !== undefined ? def.mood : 50) + npc.pstate.moodBias, 0, 100);
       this.instances.npcs[npc.id] = npc;
       if (!first) first = npc;
       if (!silent) this.emit('npcspawn', { npc });
@@ -1438,6 +1464,15 @@ class World extends EventEmitter {
       n.world = this;
       if (!n.attr) n.attr = {};
       n.recalc && n.recalc();
+      /* 存档不存 npc.def（模板副本太大），按 defId 从 data 反查挂回。
+         必须在 recalc() 之后 —— recalc() 会把 n.def 写成防御力数字，
+         所以判定用 typeof !== 'object'，不能只判 !n.def。 */
+      if (n.defId && (!n.def || typeof n.def !== 'object')) n.def = this.data.npcs[n.defId] || null;
+      /* portrait 是模板静态数据（只读），同样不入档，按模板 clone 回来；
+         玩家进度全在 pstate 里，pstate 是入档的。旧档若已有 portrait 则保留。 */
+      if (n.portrait === undefined && n.def && n.def.portrait) n.portrait = clone(n.def.portrait);
+      /* 画像运行期字段：旧档可能没有，补默认值，避免到处判空 */
+      if (!n.pstate) n.pstate = { trust: 0, revealed: [], hooks: {}, met: false, moodBias: 0, leaked: false };
     }
     this.rng = new RNG(save.seed || Date.now());
     this.deadNpcs = Object.assign({}, save.deadNpcs || {});

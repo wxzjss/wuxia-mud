@@ -159,6 +159,28 @@ function buildCommands(world) {
 
   /* ---------------- 观察 ---------------- */
 
+  /** 时刻 → 画像 routine 的 at 键（规格书 §1.2：day / night / dawn / dusk / meal） */
+  function timeSlot(minutes) {
+    const m = ((minutes % 1440) + 1440) % 1440;
+    if (m < 300) return 'night';    // 子～寅 0:00-5:00
+    if (m < 480) return 'dawn';     // 卯～辰 5:00-8:00
+    if (m < 660) return 'day';      // 巳～午前 8:00-11:00
+    if (m < 780) return 'meal';     // 午 饭点 11:00-13:00
+    if (m < 1020) return 'day';     // 未～申 13:00-17:00
+    if (m < 1140) return 'dusk';    // 酉 17:00-19:00
+    return 'night';                 // 戌～亥 19:00-24:00
+  }
+
+  /** 取 NPC 当前时段正在做的那件事；没有 routine 就返回 null（呈现层完全不露） */
+  function routineNow(npc, minutes) {
+    const r = npc && npc.portrait && npc.portrait.routine;
+    if (!r || !r.length) return null;
+    const slot = timeSlot(minutes);
+    const hit = r.find(x => x.at === slot) || r.find(x => x.at === 'day') || r[0];
+    if (!hit || !hit.act) return null;
+    return String(hit.act).replace(/[。.]+$/, '');   // 句号由调用方统一补
+  }
+
   function lookRoom(ctx) {
     const p = ctx.player, w = ctx.world;
     const room = w.getRoom(p.room);
@@ -194,6 +216,16 @@ function buildCommands(world) {
         return { text: k, type: 'npc', actions };
       });
       lines.push({ kind: 'npcs', text: `这里有：${out.join('、')}。`, hl });
+      /* ---- 画像 L0 看见 ----
+         有画像的 NPC 额外给一句「此刻正在做什么」（routine 按当前时段取），
+         而不是千篇一律的名字 + 身份。没画像的 NPC 完全保持原样。 */
+      const acts = [];
+      for (const n of npcs) {
+        if (!n.portrait) continue;
+        const act = routineNow(n, p.timeMinutes);
+        if (act) acts.push(`${n.name}${act}`);
+      }
+      if (acts.length) lines.push({ kind: 'npcsact', text: acts.join('；') + '。' });
     }
     // 地面物品
     const items = w.itemsIn(p.room);
@@ -321,6 +353,9 @@ function buildCommands(world) {
       }).filter(Boolean);
       if (ss.length) lines.push({ kind: 'plain', text: `他习有：${ss.join('，')}。` });
     }
+    /* ---- 画像 L0 看见（单人细看也给一句当下动作）---- */
+    const act = routineNow(npc, ctx.player.timeMinutes);
+    if (act) lines.push({ kind: 'plain', text: `${npc.name}${act}。` });
     if (def.descAdd) lines.push({ kind: 'plain', text: def.descAdd });
     if (def.lookEffects) evalEffects(def.lookEffects, ctx).forEach(l => lines.push(l));
     return lines;
@@ -1448,7 +1483,14 @@ function buildCommands(world) {
     } else if (def.dialogTree) {
       lines.push(...runDialogTree(ctx, npc, def.dialogTree));
     } else if (npc.talk) {
-      lines.push({ kind: 'say', text: `${npc.name}${personality.sayVerb(npc)}：「${evalTemplate(w.rng.pick([].concat(npc.talk)), ctx)}」` });
+      /* ---- 画像 L1 听见 ----
+         说话动词：personality 管，voice.tone 只在 敬/泼/酸 时顶掉（心情极低时一切让位）。
+         口头禅：按画像层级 A 30% / B 15% / C 不露，前缀在台词之前。 */
+      const verb = personality.sayVerbToned(npc);
+      const cp = personality.catchphraseOf(npc);
+      const rate = personality.catchphraseRate(npc);
+      const prefix = (cp && rate && w.rng.next() < rate) ? cp : '';
+      lines.push({ kind: 'say', text: `${npc.name}${verb}：「${prefix}${evalTemplate(w.rng.pick([].concat(npc.talk)), ctx)}」` });
     } else {
       lines.push({ kind: 'say', text: `${npc.name}看了你一眼，没有说话。` });
     }
@@ -1475,6 +1517,42 @@ function buildCommands(world) {
           if (a.effects) evalEffects(a.effects, { player: p, world: w, npc }).forEach(l => lines.push(l));
           break;
         }
+      }
+    }
+    /* ---- 画像 L2 问出 ----
+       来历（trust≥0）/ 近况（trust≥20）/ 欲望（trust≥50）/ 惧怕（trust≥70）。
+       门槛一律用 trust（信得过你），不用 favor（喜欢你）—— 送礼只涨 favor，
+       办成事才涨 trust，两条轴不能混。没有画像的 NPC 完全走原逻辑。 */
+    if (!found && npc.portrait) {
+      const pt = npc.portrait;
+      const trust = (npc.pstate && npc.pstate.trust) || 0;
+      const KEYS = {
+        origin: ['来历', '出身', '哪里人', '你是谁', '家乡', npc.name],
+        now: ['近况', '最近', '如今', '怎么了', '忙什么', '在忙'],
+        want: ['欲望', '想头', '指望', '想要', '图什么', '求什么', '心愿'],
+        fear: ['怕什么', '惧怕', '害怕', '隐忧'],
+      };
+      const NEED = { origin: 0, now: 20, want: 50, fear: 70 };
+      const NAME = { origin: '来历', now: '近况', want: '想头', fear: '惧怕' };
+      for (const k of ['origin', 'now', 'want', 'fear']) {
+        if (!pt[k]) continue;
+        if (!KEYS[k].some(x => x && topic.includes(x))) continue;
+        found = true;
+        const verb = personality.sayVerbToned(npc);
+        if (trust >= NEED[k]) {
+          lines.push({ kind: 'say', text: `${npc.name}${verb}：「${evalTemplate(pt[k], ctx)}」` });
+        } else {
+          /* 交情不够：不撒谎，也不白给——把门槛说出来，玩家才知道要去做事而不是送礼 */
+          lines.push({ kind: 'say', text: `${npc.name}${verb}：「${NAME[k]}么……你还问不着。」（信不过你，办成几件事再说）` });
+        }
+        break;
+      }
+      /* 禁忌话题：踩到 voice.taboo 掉好感（−5~−15，按层级加权） */
+      const taboo = pt.voice && pt.voice.taboo;
+      if (taboo && taboo.some(x => x && topic.includes(x))) {
+        const d = -5 - (pt.tier === 'A' ? 10 : pt.tier === 'B' ? 5 : 0);
+        npc.favor = (npc.favor || 0) + d;
+        lines.push({ kind: 'sys', text: `（${npc.name}的脸沉了一下，好感 ${d}）` });
       }
     }
     if (!found) {
