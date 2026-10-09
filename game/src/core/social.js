@@ -437,6 +437,7 @@ function trySteal(world, npc, which) {
   lines.push({ kind: 'warn', text: `你刚碰到${npc.name}的衣角，就被他一把攥住了手腕！` });
   const r = addFavor(world, npc, -25, '偷窃被抓');
   lines.push(...r.lines);
+  require('./personality').addMood(npc, -20); // 被偷窃 → 恼怒
   world.emitStealCaught(npc);
   return { ok: false, caught: true, chance, loot: [], lines };
 }

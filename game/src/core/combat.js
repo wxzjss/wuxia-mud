@@ -337,8 +337,15 @@ class CombatEngine {
       lines.push({ kind: 'combat', text: '你眼前一黑，倒了下去……' });
       return;
     }
-    lines.push({ kind: 'combat', text: `${t.name}喷出一口鲜血，就此气绝。` });
-    w.onNpcKilled(t, battle);
+    /* 第五批生死规则：普通 NPC 被打倒 → 晕厥（不致死）；野兽或「晕倒后再补刀」才真死 */
+    const beast = /狼|虎|熊|蛇|豹|兽|野猪|豺|鹰|蟒|鳄/.test(t.name || '');
+    if (!beast && !t.knockedOut) {
+      lines.push({ kind: 'combat', text: `${t.name}闷哼一声，昏倒在地，不省人事。` });
+      w.onNpcDown(t, battle);
+    } else {
+      lines.push({ kind: 'combat', text: `${t.name}喷出一口鲜血，就此气绝。` });
+      w.onNpcKilled(t, battle);
+    }
     if (w.combatHooks.onDeath) w.combatHooks.onDeath(t, battle);
   }
 }

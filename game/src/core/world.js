@@ -95,6 +95,7 @@ class World extends EventEmitter {
     this.mods = [];
     this.modLog = [];
     this.instances = { npcs: {}, items: {}, corpses: {} };
+    this.deadNpcs = {};   // 第五批：真死的 NPC（defId → 死亡时间），10 天后复活
     this.combatHooks = Object.assign({}, DEFAULT_HOOKS);
     this.effectFns = {};
     this.condFns = {};
@@ -387,6 +388,11 @@ class World extends EventEmitter {
       npc.bonded = !!def.bonded;
       npc.knows_player_of = def.knows_player_of || null;
       npc.age = def.age || null;
+      /* ---- 性格 / 心情（第五批）----
+         心情是会变的状态，必须 clone；性格按 def.personality，没有就按身份 tag 默认。 */
+      const personalityMod = require('./personality');
+      npc.personality = def.personality || personalityMod.personalityForTag(def.tag);
+      npc.mood = def.mood !== undefined ? def.mood : 50;
       this.instances.npcs[npc.id] = npc;
       if (!first) first = npc;
       if (!silent) this.emit('npcspawn', { npc });
@@ -402,6 +408,15 @@ class World extends EventEmitter {
   }
 
   getNpc(id) { return this.instances.npcs[id] || null; }
+
+  /** 第五批生死规则：普通 NPC 被打倒 → 晕厥（不致死，留在原地，玩家补刀才真死） */
+  onNpcDown(npc, battle) {
+    npc.knockedOut = true;
+    npc.dead = true;   // 战斗层面算「倒下」，战斗结束
+    npc.hp = 0;
+    this.emit('npcdown', { npc });
+    this.witnessReaction(npc);
+  }
 
   onNpcKilled(npc, battle) {
     const p = this.player;
@@ -437,10 +452,78 @@ class World extends EventEmitter {
         this.instances.items[uid('gi')] = { itemId: it, room: npc.room, count: 1 };
       }
     }
+    /* 第五批：非野兽的 NPC 真死后，10 天后（游戏时间）复活（以死前状态重新 spawn） */
+    const beast = /狼|虎|熊|蛇|豹|兽|野猪|豺|鹰|蟒|鳄/.test(npc.name || '');
+    if (!beast && npc.defId) this.deadNpcs[npc.defId] = this.clockMinutes;
     delete this.instances.npcs[npc.id];
     this.emit('npckilled', { npc, loot });
     // 击杀触发 mod 事件
     this.fireEvent('onKill', { npc });
+    // 目击反应（第五批）：房间里其他人看到杀人，按性格/武力/身份反应
+    this.witnessReaction(npc);
+  }
+
+  /** 某 NPC 是否有武力（有武学 / 战斗类身份） */
+  npcHasMartialArts(npc) {
+    if (!npc) return false;
+    const def = npc.def || {};
+    if (def.skills && Object.keys(def.skills).length) return true;
+    if (npc.learned && Object.keys(npc.learned).length) return true;
+    return ['swordsman', 'constable', 'escort', 'hunter', 'monk', 'taoist', 'nun', 'thief'].includes(npc.tag || def.tag);
+  }
+
+  /** 目击反应：房间里的 NPC 看到玩家杀人后的反应（跑/呼救/报官/怒视/帮人） */
+  witnessReaction(victim) {
+    const p = this.player;
+    if (!p) return;
+    const room = victim.room;
+    const personalityMod = require('./personality');
+    const witnesses = this.npcsIn(room).filter(n => n.id !== victim.id && !n.dead && !(n.def || {}).hostile);
+    for (const w of witnesses) {
+      const per = personalityMod.personalityOf(w);
+      const hasMartial = this.npcHasMartialArts(w);
+      const tag = w.tag || (w.def || {}).tag || '';
+      const official = ['constable', 'official', 'escort'].includes(tag);
+      let text = null, kind = 'plain';
+
+      if (official) {
+        // 官府目击：缉凶，通缉度 +1
+        p.wanted = (p.wanted || 0) + 1;
+        kind = 'warn';
+        text = `${w.name}厉喝：「光天化日，竟敢行凶！来人，给我拿下！」（你被官府通缉，通缉度 +1）`;
+      } else if (per && (per.id === 'xiayi' || per.id === 'haoshuang') && hasMartial) {
+        // 侠义有武力：挺身制止
+        kind = 'warn';
+        text = `${w.name}怒目圆睁，挺身上前：「好个恶贼，休得伤人！」`;
+      } else if (per && per.id === 'qienuo') {
+        // 怯懦：吓得逃跑
+        text = `${w.name}吓得魂飞魄散，连滚带爬地逃走了。`;
+        this.fleeNpc(w);
+      } else if (hasMartial) {
+        text = `${w.name}面色一沉，手按兵刃，警惕地盯着你。`;
+      } else {
+        text = `${w.name}惊呼：「杀人啦！出人命啦！」`;
+      }
+      // 目睹惨案，心情大跌
+      const mood = personalityMod.addMood(w, -25);
+      if (mood.tier.name === '万念俱灰') {
+        text += `（${w.name}吓得失魂落魄）`;
+      }
+      this.emit('storyline', { line: { kind, text } });
+    }
+  }
+
+  /** NPC 逃跑：离开当前房间（挪到相邻出口，没有就 despawn） */
+  fleeNpc(npc) {
+    const room = this.getRoom(npc.room);
+    if (!room) { delete this.instances.npcs[npc.id]; return; }
+    const dirs = Object.keys(room.exits || {});
+    if (!dirs.length) { delete this.instances.npcs[npc.id]; return; }
+    const d = this.rng.pick(dirs);
+    const ex = room.exits[d];
+    const tid = typeof ex === 'string' ? ex : ex.to;
+    if (tid && this.data.rooms[tid]) npc.room = tid;
+    else delete this.instances.npcs[npc.id];
   }
 
   inPlayerParty(npc, battle) {
@@ -993,6 +1076,18 @@ class World extends EventEmitter {
         }
       }
     }
+    // 第五批：真死的 NPC 10 天后复活（以死前状态重新 spawn）
+    for (const defId of Object.keys(this.deadNpcs)) {
+      const diedAt = this.deadNpcs[defId];
+      if (this.clockMinutes - diedAt >= 14400) { // 10 天
+        delete this.deadNpcs[defId];
+        const def = this.data.npcs[defId];
+        if (def) {
+          const room = (def.schedule && def.schedule.day) || def.room || (this.data.meta && this.data.meta.startRoom);
+          this.spawnNpc(defId, room, 1, true);
+        }
+      }
+    }
     this.fireEvent('onTick', {});
   }
 
@@ -1025,6 +1120,7 @@ class World extends EventEmitter {
     });
     p.isPlayer = true;
     p.isNpc = false;
+    p.personality = cfg.personality || 'haoshuang';
     p.room = meta.startRoom || 'road_1';
     p.inventory = [];
     p.equipmentUid = {};
@@ -1112,6 +1208,7 @@ class World extends EventEmitter {
         corpses: safeInstanceMap(this.instances.corpses),
       },
       seed: this.rng.seed,
+      deadNpcs: Object.assign({}, this.deadNpcs),
     };
   }
 
@@ -1211,6 +1308,7 @@ class World extends EventEmitter {
       n.recalc && n.recalc();
     }
     this.rng = new RNG(save.seed || Date.now());
+    this.deadNpcs = Object.assign({}, save.deadNpcs || {});
     this.emit('loaded', {});
     return p;
   }

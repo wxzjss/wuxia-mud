@@ -16,6 +16,7 @@ const homeMod = require('./home');
 const workMod = require('./work');
 const gather = require('./gather');
 const farm = require('./farm');
+const personality = require('./personality');
 
 /* 中文数字 → 阿拉伯 */
 const CN_NUM = { 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10, 壹: 1, 贰: 2, 叁: 3, 肆: 4, 伍: 5, 陆: 6, 柒: 7, 捌: 8, 玖: 9, 拾: 10 };
@@ -606,6 +607,7 @@ function buildCommands(world) {
     /* ---- 通用送礼判定（喜爱类型 + 品质）---- */
     const gv = social.giftValue(w, npc, hit.id);
     const r = social.addFavor(w, npc, gv.favor, '赠礼');
+    personality.addMood(npc, gv.favor >= 0 ? 10 : -8); // 受赏高兴 / 收到不喜之物不快
 
     const lines = [
       { kind: 'sys', text: `你把${d ? d.name : hit.id}交给了${npc.name}。` },
@@ -1313,6 +1315,11 @@ function buildCommands(world) {
     const kw = args.join(' ');
     const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), kw, n => n.name);
     if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${kw}」。` }] };
+    /* 第五批：晕倒的 NPC 再被补刀才会真死 */
+    if (npc.knockedOut && !(npc.def || {}).hostile) {
+      w.onNpcKilled(npc, null);
+      return { lines: [{ kind: 'combat', text: `你手起刀落，将昏倒在地的${npc.name}结果了性命。` }] };
+    }
     const r = w.startCombat(p, npc);
     if (!r.ok) return { lines: [{ kind: 'warn', text: r.msg }] };
     const lines = [{ kind: 'combat', text: `你向${npc.name}发起了攻击！` }];
@@ -1354,7 +1361,7 @@ function buildCommands(world) {
     } else if (def.dialogTree) {
       lines.push(...runDialogTree(ctx, npc, def.dialogTree));
     } else if (npc.talk) {
-      lines.push({ kind: 'say', text: `${npc.name}道：「${evalTemplate(w.rng.pick([].concat(npc.talk)), ctx)}」` });
+      lines.push({ kind: 'say', text: `${npc.name}${personality.sayVerb(npc)}：「${evalTemplate(w.rng.pick([].concat(npc.talk)), ctx)}」` });
     } else {
       lines.push({ kind: 'say', text: `${npc.name}看了你一眼，没有说话。` });
     }

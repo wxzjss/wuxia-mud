@@ -25,6 +25,8 @@ class Character {
     this.race = def.race || 'human';
     this.desc = def.desc || '';
     this.title = def.title || '';
+    this.personality = def.personality || null;   // 性格（第五批）
+    this.mood = def.mood !== undefined ? def.mood : 50;  // 心情 0~100（第五批）
 
     // ---- 属性 ----
     this.baseAttr = Object.assign({ 力量: 10, 根骨: 10, 身法: 10, 悟性: 10, 福缘: 10, 定力: 10 }, def.attr || {});
