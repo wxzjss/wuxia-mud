@@ -275,6 +275,43 @@ sec('⑩ NPC 作息夜归');
   }
 }
 
+/*=== 守卫：PLOTS 里声明的每个 bonus 字段，必须在 estateEffects 里有同名输出且非零 ===*/
+sec('地块 bonus 字段覆盖守卫');
+{
+  const estate = require(path.join(__dirname, '..', 'game', 'src', 'core', 'estate.js'));
+  const e2 = boot(778899);
+  withHome(e2, 'mansion');
+  const est2 = e2.world.player.estate;
+  /* 把所有地块直接顶到满级，纯粹为了算效果（plots 是 {key,level} 数组） */
+  for (const pl of estate.PLOTS) {
+    const rec = est2.plots.find(x => x.key === pl.key);
+    if (rec) rec.level = pl.maxLevel;
+    else est2.plots.push({ key: pl.key, level: pl.maxLevel });
+  }
+  const fx = estate.estateEffects(e2.world);
+  const missing = [], zero = [];
+  for (const pl of estate.PLOTS) {
+    for (const f of Object.keys(pl.bonus || {})) {
+      if (!(f in fx)) { missing.push(pl.key + '.' + f); continue; }
+      const v = fx[f];
+      if (typeof v !== 'number') { zero.push(pl.key + '.' + f + '(非数字:' + typeof v + ')'); continue; }
+      if (v <= 0) zero.push(pl.key + '.' + f + '(汇总=0)');
+    }
+  }
+  ok('地块 bonus 字段无拼写遗漏', missing.length === 0, missing.join(', '));
+  ok('地块 bonus 汇总均非零', zero.length === 0, zero.join(', '));
+  /* 反向：fx 里的字段也都要被至少一个地块声明，避免写了却没人产 */
+  const declared = new Set();
+  for (const pl of estate.PLOTS) for (const f of Object.keys(pl.bonus || {})) declared.add(f);
+  const orphan = Object.keys(fx).filter(k => !declared.has(k));
+  ok('estateEffects 无「无人产出」的孤儿字段', orphan.length === 0, orphan.join(', '));
+  /* 地牢单独确认 */
+  ok('地牢效果 = captiveCap/tortureRate/sparExp',
+    fx.captiveCap > 0 && fx.tortureRate > 0 && fx.sparExp > 0,
+    JSON.stringify({ c: fx.captiveCap, t: fx.tortureRate, s: fx.sparExp }));
+  ok('书房悟性生效（wisdom 拼写回归锁）', fx.wisdom > 0, 'wisdom=' + fx.wisdom);
+}
+
 console.log('\n' + '='.repeat(48));
 console.log(`  家园 smoke: ${pass} 通过 / ${fail} 失败`);
 console.log('='.repeat(48));

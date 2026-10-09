@@ -187,7 +187,13 @@ section('① view 数据齐备（面板的数据源）');
   ok('自建宗门已透出', !!view.martial.mySect && view.martial.mySect.name === '凌霄阁');
   ok('skills 带功法门类', view.player.skills.every(s => !!s.category));
   ok('skills 带熟练度分级', view.player.skills.every(s => typeof s.profTier === 'number'));
-  ok('home.plots 7 类地块', (view.home.plots || []).length === 7, 'n=' + ((view.home.plots || []).length));
+  /* ⚠️ 别写死数量 —— 地块会随需求增删（10-09 加了「地牢」）。
+     该断言的是「地块表非空且每项字段齐全」，数量交给 smoke-estate。 */
+  const _plots = view.home.plots || [];
+  ok('home.plots 地块表非空且字段齐全', _plots.length >= 7 &&
+    _plots.every(pl => pl && pl.key && pl.name && typeof pl.level === 'number'),
+    'n=' + _plots.length);
+  ok('home.plots 含地牢', _plots.some(pl => pl.key === 'dungeon'), 'keys=' + _plots.map(p => p.key).join(','));
   ok('home 有地块效果汇总', !!view.home.estateEffects);
   ok('home 有赞助 NPC 记录', Array.isArray(view.home.sponsored) && view.home.sponsored.length >= 1, JSON.stringify(view.home.sponsored));
 }

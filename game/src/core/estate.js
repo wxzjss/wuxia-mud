@@ -106,6 +106,19 @@ const PLOTS = [
     ][Math.min(lv - 1, 3)],
   },
   {
+    key: 'dungeon', name: '地牢', dir: 'se', reqHomeTier: 'courtyard',
+    cost: 3200, mats: { 'iron_ore': 16, 'silk_thread': 2 }, maxLevel: 4,
+    grow: 0.25,
+    /* 功效接掳人系统：关押名额（麻袋之外多关几个）+ 逼供更顺 + 陪练涨熟练度 */
+    bonus: { captiveCap: 1, tortureRate: 0.1, sparExp: 0.2 },
+    desc: lv => [
+      '在院角挖了个土坑，勉强能蹲下一个人。',
+      '往下凿了三尺，垫了石板，壁上抹了粗泥。',
+      '砖砌了甬道，铁栅加了锁，里头再跑不掉谁。',
+      '壁上挂了灯，照得通亮，地上洗得出血色都看得清。',
+    ][Math.min(lv - 1, 3)],
+  },
+  {
     key: 'guest', name: '客卿院', dir: 'nw', reqHomeTier: 'mansion',
     cost: 5000, mats: { 'crop_wheat': 16, 'iron_ore': 8 }, maxLevel: 3,
     grow: 1,
@@ -175,9 +188,11 @@ function plotEffect(est, key, field) {
   if (!pl || lv <= 0) return 0;
   const base = pl.bonus && pl.bonus[field];
   if (!base) return 0;
-  return pl.key === 'garden_rock' || pl.key === 'guest'
-    ? base * lv                      // 离散型（每级 +1 容量 / +5 心情）
-    : base + pl.grow * (lv - 1);     // 连续型（每级加一点比例）
+  /* 离散型地块：效果按「每级整块加」算（每级 +1 容量 / +5 心情 / +1 关押名额），
+     连续型则按比例逐级递增（练武场每级 +25% 训练速度之类）。 */
+  return pl.key === 'garden_rock' || pl.key === 'guest' || pl.key === 'dungeon'
+    ? base * lv                      // 离散型
+    : base + pl.grow * (lv - 1);     // 连续型
 }
 
 /** 全家园效果汇总（给其他系统读） */
@@ -185,7 +200,7 @@ function estateEffects(world) {
   const p = world.player;
   if (!p) return null;
   const est = p.estate;
-  if (!est) return { trainMult: 0, cutiRate: 0, wisdom: 0, craftRate: 0, herbYield: 0, moodUp: 0, moneyCap: 0, discipleCap: 0, favorRate: 0 };
+  if (!est) return { trainMult: 0, cutiRate: 0, wisdom: 0, craftRate: 0, herbYield: 0, moodUp: 0, moneyCap: 0, discipleCap: 0, favorRate: 0, captiveCap: 0, tortureRate: 0, sparExp: 0 };
   const sum = f => (est.plots || []).reduce((acc, x) => acc + plotEffect(est, x.key, f), 0);
   return {
     trainMult: sum('trainMult'),
@@ -197,6 +212,9 @@ function estateEffects(world) {
     moneyCap: sum('moneyCap'),
     discipleCap: sum('discipleCap'),
     favorRate: sum('favorRate'),
+    captiveCap: sum('captiveCap'),
+    tortureRate: sum('tortureRate'),
+    sparExp: sum('sparExp'),
   };
 }
 

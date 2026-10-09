@@ -330,6 +330,21 @@ function buildCommands(world) {
     const p = ctx.player, w = ctx.world;
     const kw = args.join(' ');
     if (!kw) return lookRoom(ctx);
+    /* ⚠️ 先试房间交互物件（告示/井/床/柜…）。
+       主人报：客栈「此地可做」列着「看告示」，点下去却说「这里没有「看告示」」。
+       真凶是 normalizeCmd 的「看X」口语规则 —— 它把 action 的 cmd「看告示」
+       改写成了 `look 告示`，房间 actions 的 cmd 匹配（严格相等）就废了，
+       于是落到这里报「这里没有」。按钮发的是 a.cmd，不是玩家手输的口语，
+       所以这条路径必须能认 action 的 cmd / keyword。 */
+    const roomNow = w.getRoom(p.room);
+    for (const a of (roomNow && roomNow.actions) || []) {
+      const hit = a.cmd === kw || (a.keywords || []).some(k => k && (kw === k || kw.includes(k)));
+      if (!hit) continue;
+      if (a.cond && !evalCond(a.cond, ctx)) {
+        return { lines: [{ kind: 'warn', text: a.failMsg || '现在做不了这个。' }] };
+      }
+      return { lines: evalEffects(a.effects || [], ctx) };
+    }
     // NPC
     const npcs = w.npcsIncludingTemplates(p.room);
     const npc = fuzzyFind(npcs, kw, n => n.name);
@@ -366,19 +381,108 @@ function buildCommands(world) {
       const r = npc.hp / npc.maxHp;
       lines.push({ kind: 'plain', text: `${npc.name}似乎${r < 0.3 ? '已受重伤' : r < 0.6 ? '受了些伤' : '略有疲态'}。` });
     }
+
+    /* ---- 装备：穿戴中的兵刃衣裳（主人要求：能看到 NPC 装备了什么）---- */
+    if (def.showEquip !== false && npc.equipment) {
+      const worn = [];
+      for (const slot of Object.keys(npc.equipment)) {
+        const iid = npc.equipment[slot];
+        if (!iid) continue;
+        const d = w.getItem(iid);
+        worn.push(`${slot}·${d ? d.name : iid}`);
+      }
+      if (worn.length) lines.push({ kind: 'plain', text: `身上穿着：${worn.join('，')}。` });
+    }
+
+    /* ---- 随身物品：腰间钱袋 + 带在身上的家伙（主人要求）---- */
+    if (def.showCarry !== false) {
+      const carry = npc.carry || def.carry || null;
+      const bag = [];
+      const items = (carry && carry.items) || def.items || [];
+      for (const x of [].concat(items || [])) {
+        const iid = typeof x === 'string' ? x : (x && (x.id || x.itemId));
+        if (!iid) continue;
+        const d = w.getItem(iid);
+        const cnt = typeof x === 'object' && x.count ? '×' + x.count : '';
+        bag.push((d ? d.name : iid) + cnt);
+      }
+      const money = (carry && carry.money !== undefined) ? carry.money : def.money;
+      if (money) bag.push(`${money} 文`);
+      if (bag.length) lines.push({ kind: 'plain', text: `随身带着：${bag.join('，')}。` });
+    }
+
+    /* ---- 武学：装在身上的哪一门 + **练到第几层**（主人要求）----
+       ⚠️ 看人也是有讲究的：交情不够只能看出「他会武」，看不明白练到什么
+       程度。层级按好感/信任给（favor≥40 或 trust≥30 才给真话），
+       否则只报「深不可测」。否则你摸一下岳不群的门派就全知道了。 */
+    const insight = npcInsight(npc);
     if (def.showSkill !== false && npc.equippedSkills) {
       const ss = Object.keys(npc.equippedSkills).filter(k => npc.equippedSkills[k]).map(k => {
-        const sd = w.getSkill(npc.equippedSkills[k]);
-        return sd ? `${k}:${sd.name}` : null;
+        const sid = npc.equippedSkills[k];
+        const sd = w.getSkill(sid);
+        if (!sd) return null;
+        const lv = npc.learned && npc.learned[sid] ? (npc.learned[sid].level || 0) : 0;
+        const tail = insight.deep ? `${sd.name}（${skillTierCN(lv)}）` : sd.name;
+        return `${k}:${tail}`;
       }).filter(Boolean);
-      if (ss.length) lines.push({ kind: 'plain', text: `他习有：${ss.join('，')}。` });
+      if (ss.length) {
+        lines.push({
+          kind: 'plain',
+          text: `他习有：${ss.join('，')}。` +
+            (insight.deep ? '' : `　（${insight.hint}）`),
+        });
+      }
     }
+
+    /* 其余会的武学（没装备但会）——让「深藏不露」的人也能看出底细 */
+    if (def.showAllSkills === true && npc.learned) {
+      const eq = new Set(Object.keys(npc.equippedSkills || {}).map(k => npc.equippedSkills[k]));
+      const more = Object.keys(npc.learned).filter(sid => !eq.has(sid)).map(sid => {
+        const sd = w.getSkill(sid);
+        const lv = npc.learned[sid] ? (npc.learned[sid].level || 0) : 0;
+        return sd ? `${sd.name}${lv ? `（${skillTierCN(lv)}）` : ''}` : null;
+      }).filter(Boolean);
+      if (more.length) lines.push({ kind: 'plain', text: `此外还习得：${more.join('，')}。` });
+    }
+
+    /* ---- 门下弟子（他有传人，说明本事不小）---- */
+    if (Array.isArray(npc.disciples) && npc.disciples.length) {
+      const names = npc.disciples.map(id => {
+        const d = w.getNpc(id);
+        return d ? d.name : id;
+      }).filter(Boolean);
+      if (names.length) lines.push({ kind: 'plain', text: `门下弟子：${names.join('、')}。` });
+    }
+
     /* ---- 画像 L0 看见（单人细看也给一句当下动作）---- */
     const act = routineNow(npc, ctx.player.timeMinutes);
     if (act) lines.push({ kind: 'plain', text: `${npc.name}${act}。` });
     if (def.descAdd) lines.push({ kind: 'plain', text: def.descAdd });
     if (def.lookEffects) evalEffects(def.lookEffects, ctx).forEach(l => lines.push(l));
     return lines;
+  }
+
+  /* 看透别人武功到第几层：要靠交情。陌生人是看不出来的。 */
+  function npcInsight(npc) {
+    const favor = npc.favor || 0;
+    const trust = (npc.pstate && npc.pstate.trust) || 0;
+    /* 打过交道、交情好、或揪住过他的把柄，才谈得上「看得出深浅」 */
+    if (favor >= 40 || trust >= 30) return { deep: true, hint: '' };
+    if (favor >= 15 || trust >= 10) return { deep: false, hint: '交情尚浅，看不透他的火候' };
+    return { deep: false, hint: '你们素不相识，看不出他究竟练到了哪一步' };
+  }
+
+  /* 熟练度分级名（0~9 层 → 入门/小成/…/登峰造极），与功法体系一致 */
+  const SKILL_TIERS = ['初学', '入门', '小成', '熟练', '精通', '化境', '登峰'];
+  function skillTierCN(lv) {
+    if (!lv || lv <= 0) return '未入门';
+    if (lv >= 900) return '登峰造极';
+    if (lv >= 700) return '化境';
+    if (lv >= 500) return '精通';
+    if (lv >= 300) return '熟练';
+    if (lv >= 150) return '小成';
+    if (lv >= 60) return '入门';
+    return SKILL_TIERS[0];
   }
 
   function describeItem(ctx, itemId, inst) {

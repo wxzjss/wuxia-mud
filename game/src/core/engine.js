@@ -392,7 +392,9 @@ class GameEngine {
     const out = [];
     for (const a of room.actions) {
       const kws = a.keywords || [];
-      const name = a.label || kws[0] || a.cmd || room.name;
+      /* 显示名优先用 cmd：主人报「此地可做」显示「告示」，点下去发的是
+         「看告示」，两边不一致看着别扭。cmd 才是玩家实际会看到/输入的东西。 */
+      const name = a.label || a.cmd || kws[0] || room.name;
       const cmd = a.cmd || kws[0] || '';
       if (!cmd) continue;
       let ok = true, reason = '';

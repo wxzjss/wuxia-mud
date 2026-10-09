@@ -301,6 +301,31 @@ section('⑦ 画像字段与信任轴');
   ok('mood = 模板心情 + moodBias（落在 0~100）', n.mood >= 0 && n.mood <= 100, 'mood=' + n.mood);
 }
 
+section('⑥ 外貌描述不出戏（主人报 bug）');
+/* 主人报：「看某些 npc 时会显示一条『说到xx就xx』的模板语句太出戏了」。
+   那批 desc 是按 slot 拼出来的，尾巴一律「说到A就B，说到C就D」——
+   读着像写作备注，不像看见一个人。已批量改写成具体动作，这里锁死。 */
+{
+  const NPCs = require(path.join(__dirname, '..', 'game', 'data', '40_npcs.json'));
+  const table = NPCs.npcs || NPCs;
+  const all = Object.entries(table).filter(([, v]) => v && typeof v === 'object');
+  const descs = all.map(([k, v]) => [k, v.name || k, v.desc || '']);
+
+  const templated = descs.filter(([, , d]) => /说到.{1,6}就/.test(d));
+  ok('没有 NPC 描述残留「说到X就Y」模板句', templated.length === 0,
+    templated.slice(0, 3).map(([k, n]) => n + ':' + k).join(' '));
+
+  const dupPunct = descs.filter(([, , d]) => /([。，、；])\1/.test(d));
+  ok('没有连续重复标点（「。。」）', dupPunct.length === 0,
+    dupPunct.slice(0, 3).map(([, n]) => n).join(' '));
+
+  const halfBaked = descs.filter(([, , d]) => /[，,]$|。\s*$/.test(d) && d.length > 40 && !/[。．]$/.test(d));
+  ok('长描述不以逗号结尾', halfBaked.length === 0,
+    halfBaked.slice(0, 3).map(([, n]) => n).join(' '));
+
+  ok('descs 总数合理（应覆盖全库）', descs.length >= 300, '共 ' + descs.length);
+}
+
 console.log('\n' + '='.repeat(44));
 console.log('  通过 ' + pass + ' 项，失败 ' + fail + ' 项');
 console.log('='.repeat(44));
