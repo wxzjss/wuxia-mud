@@ -52,7 +52,7 @@ function buildCommands(world) {
     const lines = [];
     lines.push({ kind: 'title', text: '【 指令一览 】' });
     const groups = {
-      '移动': ['n/s/e/w/u/d/ne/nw/se/sw（或 北/南/东/西/上/下）', 'look / l 看', 'go <方向|房间名>', 'map 查看地图', 'where 定位'],
+      '移动': ['n/s/e/w/u/d/ne/nw/se/sw（或 北/南/东/西/上/下）', 'look / l 看', 'go <方向|房间名>', 'map 查看地图', 'where 定位', '爬山坡 / 跳崖 / 渡河（看四周时提示的互动出口）'],
       '查看': ['look <目标> 观察', 'score / sc 查看自身', 'skills 武学', 'attr 属性', 'inventory / i 背包', 'equipment / eq 装备', 'quests 任务', 'affects 状态', 'time 时间'],
       '行动': ['say <话> 说话', 'me <动作> 动作', 'shout <话> 喊话', 'tell <人> <话> 密语', 'emote'],
       '物品': ['get <物品> 拾取', 'drop <物品> 丢弃', 'use <物品> 使用', 'wear/wield <物品> 装备', 'remove <部位> 卸下', 'give <物品> to <人>'],
@@ -230,19 +230,43 @@ function buildCommands(world) {
     // 尸体
     const corpses = w.corpsesIn(p.room);
     if (corpses.length) lines.push({ kind: 'items', text: `地上躺着：${corpses.map(c => c.name).join('、')}。` });
-    // 出口：像北大侠客行那样，告诉玩家每个方向通往哪里
-    const exitNames = Object.keys(room.exits || {}).map(d => {
+    // 出口：结构化（普通出口 → 方位图；互动出口 → 可点击互动）
+    const exitMap = {};
+    const viaExits = [];
+    for (const d of Object.keys(room.exits || {})) {
       const ex = room.exits[d];
       const tid = typeof ex === 'string' ? ex : ex.to;
       const tr = w.getRoom(tid);
       const toName = tr ? tr.name : '未知';
-      return (DIR_CN[d] || d) + '·' + toName + (ex && ex.locked ? '（锁）' : '');
-    });
+      const locked = !!(ex && typeof ex === 'object' && ex.locked);
+      if (ex && typeof ex === 'object' && (ex.via || ex.hint)) {
+        // 互动出口：需互动（爬山坡 / 渡河…）才能通过，点击互动词触发
+        viaExits.push({
+          dir: d, dirCN: DIR_CN[d] || d,
+          via: ex.via || ex.hint || '障碍',
+          hint: ex.hint || ex.via || d,
+          desc: ex.desc || '隐隐通向外界',
+        });
+      } else {
+        exitMap[d] = { dir: d, to: tid, name: toName, locked };
+      }
+    }
     lines.push({
       kind: 'exits',
-      text: `出口：${exitNames.length ? exitNames.join('　') : '无'}${exitNames.length ? '。' : ''}`,
+      text: `出口：${Object.keys(exitMap).map(d => (DIR_CN[d] || d) + '·' + exitMap[d].name).join('　') || '无'}。`,
       exits: Object.keys(room.exits || {}),
+      exitMap,
+      roomName: room.name,
     });
+    // 互动出口：单独描述，互动词可点击
+    for (const v of viaExits) {
+      const dirWord = v.dir === 'u' ? '上方' : v.dir === 'd' ? '下方' : v.dir === 'in' ? '里面' : v.dir === 'out' ? '外面' : (v.dirCN + '边');
+      lines.push({
+        kind: 'via-exit',
+        text: `${dirWord}有${v.via}，${v.desc}。`,
+        hl: [{ text: v.via, type: 'via-exit', actions: [{ label: v.hint || ('向' + v.dirCN + '走'), cmd: v.hint || v.dir, hint: v.desc || '' }] }],
+      });
+    }
     // 房间自定义 look 效果
     if (room.onLook) {
       evalEffects(room.onLook, ctx).forEach(l => lines.push(l));
@@ -1810,6 +1834,19 @@ function buildCommands(world) {
         const tid = typeof ex === 'string' ? ex : ex.to;
         const tr = w.getRoom(tid);
         if (tr && (tr.name === cmd0 || tr.name.includes(cmd0))) return doMove(ctx, d);
+      }
+      // 7.5) 互动出口（爬山坡 / 跳崖 / 渡河…）：输入 via/hint 触发移动
+      const full = (cmd0 + args.join('')).trim();
+      if (full) {
+        for (const d of Object.keys(room.exits || {})) {
+          const ex = room.exits[d];
+          if (!ex || typeof ex !== 'object') continue;
+          const via = ex.via || '', hint = ex.hint || '';
+          if (!via && !hint) continue;
+          if (full === via || full === hint || via.includes(full) || full.includes(via) || hint.includes(full) || full.includes(hint)) {
+            return doMove(ctx, d);
+          }
+        }
       }
     }
 

@@ -265,9 +265,38 @@
     if (scroll !== false) el.scrollTop = el.scrollHeight;
   }
 
+  /* 出口 ASCII 方位图：横向 = 东西、纵向 = 南北，房间名可点击直接前往；
+     斜向 / 上下 / 内外 用补充行。北大侠客行风格。 */
+  function exitMapHtml(exitMap, roomName) {
+    const CN = { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下', ne: '东北', nw: '西北', se: '东南', sw: '西南', in: '内', out: '外' };
+    const g = d => exitMap[d] || null;
+    const n = g('n'), s = g('s'), e = g('e'), w = g('w');
+    const btn = (dir, name) =>
+      '<button class="exit-inline" data-dir="' + esc(dir) + '" title="向' + (CN[dir] || dir) + '走，前往「' + esc(name) + '」">' + (CN[dir] || dir) + '·' + esc(name) + '</button>';
+
+    const rows = [];
+    if (n) { rows.push('　　　' + btn('n', n.name)); rows.push('　　　↑'); }
+    let mid = '';
+    if (w) mid += btn('w', w.name) + ' ── ';
+    mid += '<b class="cur">' + esc(roomName || '这里') + '</b>';
+    if (e) mid += ' ── ' + btn('e', e.name);
+    rows.push(mid);
+    if (s) { rows.push('　　　↓'); rows.push('　　　' + btn('s', s.name)); }
+
+    const extra = [];
+    for (const d of ['ne', 'nw', 'se', 'sw', 'u', 'd', 'in', 'out']) {
+      const m = g(d);
+      if (m) extra.push(btn(d, m.name));
+    }
+    if (extra.length) rows.push(extra.join('　'));
+
+    return '<span class="exit-map">' + rows.map(r => '<span class="er">' + r + '</span>').join('') + '</span>';
+  }
+
   /* 日志文本渲染：
      - l.hl = [{text, type, actions:[{label, cmd, hint}]}] → 名词高亮，点击弹菜单
-     - l.exits = [dir,...] → 把「北/南…」方向文字变成可点按钮
+     - l.exitMap = {dir:{dir,to,name}} → 出口 ASCII 方位图（可点击前往）
+     - l.exits = [dir,...] → 把「北/南…」方向文字变成可点按钮（保底）
      reg 是 hl 注册表（传进来，好让测试能独立调用） */
   function renderLogText(l, reg) {
     let raw = esc(l.text || '');
@@ -287,7 +316,12 @@
       });
     }
 
-    /* ② 出口方向：按方向名长度降序替换，避免「北」误伤「东北」 */
+    /* ② 出口：有 exitMap 就渲染 ASCII 方位图（替代文字列表） */
+    if (l.exitMap && Object.keys(l.exitMap).length) {
+      return '出口：' + exitMapHtml(l.exitMap, l.roomName);
+    }
+
+    /* ③ 出口方向（无 exitMap 时的保底）：按方向名长度降序替换，避免「北」误伤「东北」 */
     if (l.exits && l.exits.length) {
       const CN = { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下', ne: '东北', nw: '西北', se: '东南', sw: '西南', in: '内', out: '外' };
       const ordered = l.exits.slice().sort((a, b) => ((CN[b] || b).length - (CN[a] || a).length));
@@ -1193,6 +1227,7 @@
         'go <方向|房间名>　（中文：去 / 前往 / 走）',
         'look / l　查看四周（中文：看 / 观察 / 周围）',
         'look <人物|物品>　细看',
+        '爬山坡 / 跳崖 / 渡河　互动出口（看四周时会提示）',
       ]],
       ['交流', [
         'say <内容>　说话（中文：说）',
