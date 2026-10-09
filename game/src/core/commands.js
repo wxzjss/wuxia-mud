@@ -14,6 +14,8 @@ const marriage = require('./marriage');
 const kinship = require('./kinship');
 const homeMod = require('./home');
 const workMod = require('./work');
+const gather = require('./gather');
+const farm = require('./farm');
 
 /* 中文数字 → 阿拉伯 */
 const CN_NUM = { 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10, 壹: 1, 贰: 2, 叁: 3, 肆: 4, 伍: 5, 陆: 6, 柒: 7, 捌: 8, 玖: 9, 拾: 10 };
@@ -58,6 +60,7 @@ function buildCommands(world) {
       '交互': ['talk <人> 交谈', 'ask <人> about <话题>', 'buy <物品> from <人>', 'sell <物品>', 'trade'],
       '门派': ['sect 门派信息', 'join <门派> 拜师', 'leave 脱离门派', 'promote 升职', 'contribute'],
       '营生': ['work / 打工 打工赚钱（酒楼/药店）', '卖身 卖身青楼换银（仅女子）', '接客 应酬攒赎身钱（卖身后）', '赎身 凑钱脱籍', '身世 查看营生/卖身状态'],
+      '采集/农事': ['打水 水源边打水解渴（需容器）', '切割 切野兽尸体取肉皮（需利器）', '加工 客栈/酒楼把生肉做熟', '买地 田头佃户家置田', '种植 <稻种|菜种>', '收割 收成熟庄稼', '偷庄稼 偷别人田（会被通缉）'],
       '任务': ['quest 任务列表', 'accept <任务>', 'abandon <任务>', 'report 交任务'],
       '系统': ['save 存档', 'load 读档', 'settings 设置', 'mods mod 管理', 'clear 清屏', 'nick <称号>'],
     };
@@ -1066,6 +1069,87 @@ function buildCommands(world) {
       lines.push({ kind: 'favor', text: `　你现是青楼之人，已接客 ${ps.served || 0} 回。` });
       lines.push({ kind: 'plain', text: `　赎身债还差 ${ps.debt} 文（「接客」所得尽数抵债）。` });
       lines.push({ kind: 'hint', text: '「接客」还债，「赎身」脱籍；有交情深的贵人，也肯替你赎身。' });
+    }
+    return { lines };
+  });
+
+
+  /* ---------------- 采集 / 农田（第 4 批） ---------------- */
+
+  /** 打水（需容器） */
+  reg(['drawwater', '打水', '取水', '盛水'], (ctx) => {
+    const r = gather.drawWater(ctx.world);
+    return { lines: r.lines };
+  });
+
+  /** 切割尸体（需利器，只能切野兽） */
+  reg(['butcher', '切割', '切肉', '剥皮', '剖尸'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    // 找当前房间的尸体
+    const corpses = w.corpsesIn(p.room);
+    if (!corpses.length) return { lines: [{ kind: 'warn', text: '这里没有尸体可切割。' }] };
+    const kw = args.join(' ');
+    let target = corpses[0];
+    if (kw) target = corpses.find(c => c.name.includes(kw)) || corpses[0];
+    const r = gather.butcher(w, target.id);
+    return { lines: r.lines };
+  });
+
+  /** 生肉加工（客栈/酒楼） */
+  reg(['cook', '加工', '烹制', '做熟'], (ctx) => {
+    const r = gather.cook(ctx.world);
+    return { lines: r.lines };
+  });
+
+  /** 买地 */
+  reg(['buyland', '买地', '买田', '置田'], (ctx) => {
+    const r = farm.buyLand(ctx.world);
+    return { lines: r.lines };
+  });
+
+  /** 种植 */
+  reg(['plant', '种植', '播种', '种地'], (ctx, args) => {
+    const p = ctx.player;
+    let seedId = args.join(' ');
+    const map = { 稻种: 'seed_rice', 稻: 'seed_rice', 菜种: 'seed_vegetable', 菜: 'seed_vegetable', 蔬菜: 'seed_vegetable' };
+    seedId = map[seedId] || (seedId === 'seed_rice' || seedId === 'seed_vegetable' ? seedId : null);
+    if (!seedId) return { lines: [{ kind: 'warn', text: '用法：种植 <稻种|菜种>（身上得有种子）' }] };
+    const r = farm.plant(ctx.world, seedId);
+    return { lines: r.lines };
+  });
+
+  /** 收割 */
+  reg(['harvest', '收割', '收成', '收获'], (ctx) => {
+    const r = farm.harvest(ctx.world);
+    return { lines: r.lines };
+  });
+
+  /** 偷庄稼 */
+  reg(['stealcrop', '偷庄稼', '偷菜', '摸庄稼'], (ctx) => {
+    const r = farm.stealCrop(ctx.world);
+    return { lines: r.lines };
+  });
+
+  /** 查看田地 */
+  reg(['farmland', '田地', '我的田', '庄稼'], (ctx) => {
+    const p = ctx.player;
+    const lines = [{ kind: 'title', text: '【 田 地 】' }];
+    const f = p.farm;
+    if (!f || !f.plot) {
+      lines.push({ kind: 'plain', text: '　你尚无田地。可去田头佃户家「买地」。' });
+    } else {
+      const roomName = (ctx.world.getRoom(f.plot) || {}).name || f.plot;
+      lines.push({ kind: 'favor', text: `　你在${roomName}有一块田。` });
+      if (f.seedId) {
+        const grow = farm.GROW_MIN[f.seedId] || 0;
+        const elapsed = ctx.world.clockMinutes - (f.plantedAt || 0);
+        const remain = Math.max(0, grow - elapsed);
+        const remainDays = Math.round(remain / 1440 * 10) / 10;
+        const seedName = (ctx.world.getItem(f.seedId) || {}).name || f.seedId;
+        lines.push({ kind: 'plain', text: `　田里种着${seedName}，${remainDays > 0 ? `还需约 ${remainDays} 天长成` : '已经成熟，可「收割」了'}。` });
+      } else {
+        lines.push({ kind: 'plain', text: '　田里空着，可「种植 <稻种|菜种>」。' });
+      }
     }
     return { lines };
   });

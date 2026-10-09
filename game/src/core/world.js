@@ -429,7 +429,9 @@ class World extends EventEmitter {
     if (npc.money > 0) { /* money 掉落走 moneyReward */ }
     if (npc.leavesCorpse) {
       const cid = uid('corpse');
-      this.instances.corpses[cid] = { id: cid, name: npc.name + '的尸体', room: npc.room, loot, owner: p.name, desc: `${npc.name}的尸身静卧于地，随身之物散落一旁。` };
+      /* 野兽尸体才能切割取肉，人的尸身不能（kind 区分） */
+      const beast = /狼|虎|熊|蛇|豹|兽|野猪|豺|鹰|蟒|鳄/.test(npc.name || '');
+      this.instances.corpses[cid] = { id: cid, name: npc.name + '的尸体', room: npc.room, loot, owner: p.name, kind: beast ? 'beast' : 'human', desc: `${npc.name}的尸身静卧于地，随身之物散落一旁。` };
     } else {
       for (const it of loot) {
         this.instances.items[uid('gi')] = { itemId: it, room: npc.room, count: 1 };
@@ -596,9 +598,29 @@ class World extends EventEmitter {
     // 消耗品
     if (def.use) {
       const lines = [];
-      const { evalEffects } = require('./modapi');
-      const effs = evalEffects(def.use, { player: ch, world: this });
-      effs.forEach(e => lines.push(e));
+      /* 简化对象形式：{ food, water, hp, mp, nausea } —— 食物/生肉专用
+         （evalEffects 只认 {type,args} 数组，这种 key=数值 的对象会静默失效） */
+      if (!Array.isArray(def.use) && typeof def.use === 'object' && !def.use.type && def.use.if === undefined) {
+        const u = def.use;
+        if (u.nausea) {
+          // 生食：恶心呕吐，只顶三成饱，还伤身
+          lines.push({ kind: 'warn', text: `你生嚼${def.name}，一股腥气直冲脑门，恶心欲呕……` });
+          ch.food = clamp(ch.food + Math.floor((u.food || 0) * 0.3), 0, ch.maxFood);
+          if (u.water) ch.water = clamp(ch.water + u.water, 0, ch.maxWater);
+          ch.hp = Math.max(1, ch.hp - 8);
+          lines.push({ kind: 'sys', text: '这生食腥臊难咽，你几乎没吃下多少，还闹得胃里翻江倒海。' });
+        } else {
+          if (u.food) { ch.food = clamp(ch.food + u.food, 0, ch.maxFood); lines.push({ kind: 'sys', text: '你觉得饱了些。' }); }
+          if (u.water) { ch.water = clamp(ch.water + u.water, 0, ch.maxWater); lines.push({ kind: 'sys', text: u.water > 0 ? '你觉得解渴了。' : '这吃食有些燥。' }); }
+          if (u.hp) ch.hp = clamp(ch.hp + u.hp, 0, ch.maxHp);
+          if (u.mp) ch.mp = clamp(ch.mp + u.mp, 0, ch.maxMp);
+          if (!u.food && !u.water && !u.hp && !u.mp) lines.push({ kind: 'sys', text: `你用了${def.name}，却没什么特别的感觉。` });
+        }
+      } else {
+        const { evalEffects } = require('./modapi');
+        const effs = evalEffects(def.use, { player: ch, world: this });
+        effs.forEach(e => lines.push(e));
+      }
       if (def.equipAfter) { /* noop */ }
       if (def.consume !== false) this.removeItem(ch, it.id, 1);
       ch.recalc();
@@ -1077,6 +1099,8 @@ class World extends EventEmitter {
         homes: (p.homes || []).map(h => Object.assign({}, h)),
         /* ---- 生存 / 打工 / 青楼（第三批）---- */
         prostitution: p.prostitution ? Object.assign({}, p.prostitution) : null,
+        /* ---- 农田（第四批）---- */
+        farm: p.farm ? Object.assign({}, p.farm) : null,
       },
       /* 玩家买/布置的宅子房间是运行期动态建的，不在 data 里，必须单独存 */
       playerHomes: this.serializePlayerHomes(),
@@ -1169,6 +1193,8 @@ class World extends EventEmitter {
       homes: (sd.homes || []).map(h => Object.assign({}, h)),
       /* ---- 生存 / 打工 / 青楼（第三批）---- */
       prostitution: sd.prostitution ? Object.assign({}, sd.prostitution) : null,
+      /* ---- 农田（第四批）---- */
+      farm: sd.farm ? Object.assign({}, sd.farm) : null,
     });
     // 恢复装备物品（装备在 equipmentUid 里，物品定义从 data 取）
     p.inventory = (sd.inventory || []).map(i => Object.assign({}, i));

@@ -1515,6 +1515,28 @@
         "food": 32
       },
       "desc": "皮薄馅大，蘸了醋更香。"
+    },
+    "rice": {
+      "id": "rice",
+      "name": "稻米",
+      "type": "food",
+      "desc": "新收的稻米，颗颗饱满。",
+      "healFood": 20,
+      "value": 8,
+      "stackable": true,
+      "stackMax": 99,
+      "quality": "worn"
+    },
+    "vegetable": {
+      "id": "vegetable",
+      "name": "青菜",
+      "type": "food",
+      "desc": "水灵灵的青菜，炒一炒便是一道下饭好菜。",
+      "healFood": 15,
+      "value": 5,
+      "stackable": true,
+      "stackMax": 99,
+      "quality": "worn"
     }
   },
   "recipes": {
