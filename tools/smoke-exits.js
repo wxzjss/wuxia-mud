@@ -108,6 +108,32 @@ console.log('③ 前端方位图渲染（3×3 Grid，非 ASCII 画）');
     !/　{2,}/.test(body), (body.match(/　{2,}/g) || [])[0] || '');
   ok('已不用 ↑↓ 箭头对齐', !/[↑↓]/.test(body));
   ok('已不用 ── 连线', !/──/.test(body));
+  /* 🩸 前缀守卫：按钮上**不许**再出现「东·」「西北·」这类方向前缀，只留地名。
+     方向信息仍在 title 与 data-dir 里，所以不会丢。 */
+  const labels = (full.match(/<button[^>]*>([^<]*)<\/button>/g) || [])
+    .map(s => s.replace(/<button[^>]*>/, '').replace(/<\/button>/, '').trim());
+  ok('方位图按钮只剩地名（无「北·」「西北·」前缀）',
+    labels.length > 0 && labels.every(t => !/^[东南西北上下内外]{1,2}[·・]/ .test(t)),
+    labels.join(' | '));
+  ok('方位图按钮地名都还在',
+    ['山谷北坡', '青云巷', '乱葬岗'].every(n => labels.includes(n)), labels.join(' | '));
+  ok('方向信息仍在 title 里',
+    /title="向北走，前往「山谷北坡」"/.test(full)
+    && /title="向西北走，前往「乱葬岗」"/.test(full),
+    (full.match(/title="[^"]*"/g) || []).join(' | '));
+  ok('data-dir 未被误删',
+    ['n', 'e', 'nw'].every(d => full.includes('data-dir="' + d + '"')));
+
+  /* 方向按钮排同样只显示地名 */
+  const rowM = UI.match(/function exitBtnRowHtml[\s\S]*?\n  \}/);
+  ok('方向按钮排源码存在', !!rowM);
+  if (rowM) {
+    ok('方向按钮排不再把方向名拼进可见文本（只剩 title 里用 b.name）',
+      !/esc\(b\.name\)\s*('|<)/.test(rowM[0]) && !/<i>/.test(rowM[0]),
+      (rowM[0].match(/esc\(b\.name\)[\s\S]{0,40}/) || [])[0] || '');
+    ok('方向按钮排只渲染 toName', /esc\(b\.toName\)\s*\+\s*'<\/button>'/.test(rowM[0]));
+  }
+
   /* CSS 侧也要真的声明了九宫格 */
   const CSS = fs.readFileSync('game/src/renderer/css/main.css', 'utf8');
   ok('CSS 声明了 3 列 grid', /\.em-grid[\s\S]{0,200}grid-template-columns/.test(CSS));

@@ -285,7 +285,7 @@
     const CN = { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下', ne: '东北', nw: '西北', se: '东南', sw: '西南', in: '内', out: '外' };
     const g = d => exitMap[d] || null;
     const btn = (dir, name) =>
-      '<button class="exit-inline em-' + dir + '" data-dir="' + esc(dir) + '" title="向' + (CN[dir] || dir) + '走，前往「' + esc(name) + '」">' + (CN[dir] || dir) + '·' + esc(name) + '</button>';
+      '<button class="exit-inline em-' + dir + '" data-dir="' + esc(dir) + '" title="向' + (CN[dir] || dir) + '走，前往「' + esc(name) + '」">' + esc(name) + '</button>';
 
     /* 九宫格：nw n ne ／ w 中心 e ／ sw s se */
     const slot = dir => {
@@ -311,14 +311,14 @@
       '</span>';
   }
 
-  /* 方向按钮排（跟着日志的「出口」行走）：东南西北 + 目标地名，一点就走 */
+  /* 方向按钮排（跟着日志的「出口」行走）：**只显示地名**，方向只留在 title 里（主人要求去掉东南西北前缀） */
   function exitBtnRowHtml(btns) {
     return '<span class="exit-btns">' + btns.map(b =>
       '<button class="exit-btn' + (b.locked ? ' locked' : '') + '" data-dir="' + esc(b.dir) +
       '" title="' + (b.locked
         ? '通往「' + esc(b.toName) + '」（尚未满足条件）'
         : '向' + esc(b.name) + '走，前往「' + esc(b.toName) + '」') + '">' +
-      esc(b.name) + '<i>' + esc(b.toName) + '</i></button>'
+      esc(b.toName) + '</button>'
     ).join('') + '</span>';
   }
 
