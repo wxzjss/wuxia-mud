@@ -344,6 +344,12 @@ class Character {
       if (!evalCond(sd.require, ctx)) return { ok: false, msg: `${sd.name}的传授条件你尚未满足。` };
     }
     this.learned[skillId] = { exp: 0, level: 1 };
+    /* 🩸 记 learned_<skillId> flag：主线末段「集齐绝顶武学」靠这个判定。
+       以前只有 learned 这个字典、没有 flag → flagsAny 永远 false → 主线走不完。
+       ⚠️ flag 用**真 skillId**（learned_jiuyang_shengong），数据里写条件时
+       必须对上，别再写 learned_jiuyang 这种简称（对不上就是又一个卡死点）。 */
+    this.setFlag('learned_' + skillId, true);
+    this.setFlag('learned_skill', skillId);   // 最近学会的那门，剧情用
     // 自动装备到空槽
     if (sd.type && !this.equippedSkills[sd.type]) this.equippedSkills[sd.type] = skillId;
     this.recalc();
@@ -426,7 +432,11 @@ class Character {
     const apt = this.attrTotal('资质');
     const neigong = this.equippedSkills['内功'];
     const ngLv = neigong ? this.skillLevel(neigong) : 0;
-    const limit = Math.floor(this.level * 3 + wis * 4 + apt * 6 + ngLv * 0.8);
+    /* 🩸 这里原来有 `this.level * 3`（等级制残留）。等级已删、`this.level` 只剩个
+       恒定小值，开局裸人算出来上限 ≈87 —— **任何武学都到不了 100 级**，
+       于是主线阶段1 的 `anySkill100` 和成就 `anySkill500` 永远 false，主线卡死。
+       改成纯武学维度：悟性 + 资质 + 内功修为（这三项才是「练到登峰造极」的真依据）。 */
+    const limit = Math.floor(wis * 6 + apt * 9 + ngLv * 0.8);
     return Math.min(doorLimit, Math.max(10, limit));
   }
 

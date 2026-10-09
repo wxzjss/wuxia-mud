@@ -621,7 +621,8 @@
         "tixu_zhang"
       ],
       "quests": [
-        "q_wudang_entry"
+        "q_wudang_entry",
+        "q_main_jianghu"
       ],
       "talk": [
         "道法自然，何必争强。",

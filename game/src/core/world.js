@@ -583,6 +583,14 @@ class World extends EventEmitter {
     npc.knockedOut = true;
     npc.dead = true;   // 战斗层面算「倒下」，战斗结束
     npc.hp = 0;
+    /* 🩸 记 killed_<defId>：主线阶段3 的 defeatLegend 条件靠它判定「打倒过哪个名宿」。
+       以前这里什么都不记 → 那个条件永远 false → 主线100%走不完、总纲说的「卡死」。
+       任何 NPC 被打倒都记，不只是名人（省得名单一改就又断）。 */
+    const p = this.player;
+    if (p && npc.defId) {
+      p.setFlag('killed_' + npc.defId, true);
+      p.kills = (p.kills || 0) + 1;
+    }
     this.emit('npcdown', { npc });
     this.witnessReaction(npc);
     // 犯人类 NPC 晕倒 → 官府抓进牢（若有官差在场）

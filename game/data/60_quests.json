@@ -1119,10 +1119,10 @@
           "desc": "习得一门绝顶内功（九阳神功 / 九阴真经 / 易筋经 / 葵花宝典）",
           "cond": {
             "flagsAny": [
-              "learned_jiuyang",
-              "learned_jiuyin",
-              "learned_yijin",
-              "learned_kuihua"
+              "learned_jiuyang_shengong",
+              "learned_jiuyin_zhenjing",
+              "learned_yijinjing",
+              "learned_sunflower_manual"
             ]
           },
           "next": 5
