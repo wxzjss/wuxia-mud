@@ -1127,6 +1127,21 @@ class World extends EventEmitter {
         if (eatery && eatery !== n.room) n.room = eatery;
       }
     }
+    // 学堂学生偷懒：白天的书院学子有概率溜到城里玩耍
+    if (!night) {
+      const PLAY_ROOMS = ['jiangnan_market', 'jn_teahouse', 'jn_resident_1', 'jiangnan_street'].filter(r => this.data.rooms[r]);
+      for (const id of Object.keys(this.instances.npcs)) {
+        const n = this.instances.npcs[id];
+        if (n.room === playerRoom) continue;
+        const def = this.data.npcs[n.defId];
+        if (!def || def.tag !== 'scholar') continue;
+        const room = this.getRoom(n.room);
+        if (!room || room.region !== 'shuyuan') continue; // 只有书院里的才「逃学」
+        if (this.rng.chance(0.03) && PLAY_ROOMS.length) {
+          n.room = PLAY_ROOMS[Math.floor(this.rng.next() * PLAY_ROOMS.length)];
+        }
+      }
+    }
     // 重生（房间 respawn 配置）
     for (const rid of Object.keys(this.data.rooms)) {
       const room = this.data.rooms[rid];
