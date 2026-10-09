@@ -114,14 +114,10 @@
     $('txt-hp').textContent = '气血 ' + hp + '/' + hpMax;
     $('txt-mp').textContent = '内力 ' + mp + '/' + mpMax;
 
-    const ex = p.exp || 0, exNeed = p.expNeed || 0;
-    if (exNeed > 0) {
-      $('bar-exp').style.width = util.pct(ex, exNeed) + '%';
-      $('txt-exp').textContent = '经验 ' + ex + '/' + exNeed + '（' + (p.level || 1) + '级）';
-    } else {
-      $('bar-exp').style.width = '100%';
-      $('txt-exp').textContent = '经验 ' + ex + '（' + (p.level || 1) + '级）';
-    }
+    /* 删等级系统后，经验条改为显示「武学境界」（玩家强弱只看武学功法等级） */
+    const realm = p.realm || '不通武艺';
+    $('bar-exp').style.width = '100%';
+    $('txt-exp').textContent = '境界 · ' + realm;
     $('tb-money').textContent = p.moneyText || (p.money + ' 文');
     $('tb-time').textContent = (p.timeText || '');
 

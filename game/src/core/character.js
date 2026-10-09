@@ -138,10 +138,10 @@ class Character {
     // 基础值派生
     const st = this.attrTotal('根骨'), str = this.attrTotal('力量'), agi = this.attrTotal('身法'), wis = this.attrTotal('悟性');
 
-    let maxHp = this.maxHpBase + st * 12 + this.level * 10;
-    let maxMp = this.maxMpBase + wis * 6 + this.level * 4;
-    let atk = this.atkBase + Math.floor(str * 1.5) + this.level * 2;
-    let def = this.defBase + Math.floor(st * 1.2) + this.level;
+    let maxHp = this.maxHpBase + st * 12;
+    let maxMp = this.maxMpBase + wis * 6;
+    let atk = this.atkBase + Math.floor(str * 1.5);
+    let def = this.defBase + Math.floor(st * 1.2);
     let dodge = this.dodgeBase + Math.floor(agi * 1.2);
     let parry = this.parryBase + Math.floor((agi + st) * 0.6);
     let speed = this.speedBase + Math.floor(agi * 0.8);

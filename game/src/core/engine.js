@@ -332,10 +332,22 @@ class GameEngine {
     return parts.join('，');
   }
 
+  /** 武学境界（删等级后，玩家强弱只看武学功法等级之和） */
+  realmName(p) {
+    let sum = 0;
+    for (const k of Object.keys(p.learned || {})) sum += (p.learned[k] && p.learned[k].level) || 0;
+    if (sum <= 0) return '不通武艺';
+    if (sum < 30) return '初窥门径';
+    if (sum < 100) return '小有所成';
+    if (sum < 300) return '登堂入室';
+    if (sum < 800) return '炉火纯青';
+    return '登峰造极';
+  }
+
   playerBrief() {
     const p = this.world.player, w = this.world;
     return {
-      name: p.name, gender: p.gender, level: p.level, exp: p.exp, expNext: p.expNeed(p.level),
+      name: p.name, gender: p.gender, realm: this.realmName(p),
       hp: p.hp, maxHp: p.maxHp, mp: p.mp, maxMp: p.maxMp,
       food: p.food, water: p.water, maxFood: p.maxFood, maxWater: p.maxWater,
       money: p.money, gold: p.goldText(), karma: p.karma, kills: p.kills,
