@@ -1157,6 +1157,69 @@ function buildCommands(world) {
   });
 
 
+  /* ---------------- 官府 / 牢狱 / 通缉（第 5 批） ---------------- */
+
+  /** 赎人：在衙门大牢里交赎金保释被抓的 NPC */
+  reg(['bail', '赎人', '保释'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const room = w.getRoom(p.room);
+    if (!room || !/监狱|大牢|牢/.test(room.name || '')) {
+      return { lines: [{ kind: 'warn', text: '你得去衙门大牢，才能赎人。' }] };
+    }
+    const jailed = Object.keys(w.jail || {});
+    if (!args.length) {
+      if (!jailed.length) return { lines: [{ kind: 'plain', text: '牢里空荡荡的，没有关着什么人。' }] };
+      const lines = [{ kind: 'title', text: '【 牢 房 】' }];
+      for (const defId of jailed) {
+        const j = w.jail[defId];
+        lines.push({ kind: 'plain', text: `　${j.name}　（赎金 ${j.ransom} 文）` });
+      }
+      lines.push({ kind: 'hint', text: '「赎人 <人名>」交赎金保释，赎出后对方必对你感激涕零。' });
+      return { lines };
+    }
+    const kw = args.join(' ');
+    const defId = jailed.find(id => (w.jail[id].name || '').includes(kw) || kw.includes(w.jail[id].name));
+    if (!defId) return { lines: [{ kind: 'warn', text: '牢里没有关着这个人。' }] };
+    const j = w.jail[defId];
+    if (p.money < j.ransom) return { lines: [{ kind: 'warn', text: `赎金需 ${j.ransom} 文，你身上只有 ${p.money} 文。` }] };
+    p.money -= j.ransom;
+    delete w.jail[defId];
+    const inst = w.spawnNpc(defId, p.room, 1, true);
+    if (inst) social.addFavorTo(w, defId, 50, '赎身搭救');
+    return {
+      lines: [
+        { kind: 'story', text: `你替${j.name}交了 ${j.ransom} 文赎金，差役开了枷锁。` },
+        { kind: 'sys', text: `${j.name}重见天日，对你千恩万谢（好感大增）。` },
+      ],
+    };
+  });
+
+  /** 通缉告示：官府/衙门看通缉要犯 + 接悬赏 */
+  reg(['bounty', '通缉', '悬赏', '接悬赏'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const room = w.getRoom(p.room);
+    if (!room || !/衙门|签押|告示|官/.test(room.name || '')) {
+      return { lines: [{ kind: 'warn', text: '通缉告示贴在官府 / 衙门，去那儿看。' }] };
+    }
+    // 通缉犯 = 盗贼/赌徒类 NPC
+    const wanted = Object.values(w.data.npcs).filter(d => (d.tag === 'thief' || d.tag === 'gambler'));
+    if (args.length) {
+      const kw = args.join(' ');
+      const t = wanted.find(d => d.name.includes(kw) || kw.includes(d.name));
+      if (!t) return { lines: [{ kind: 'warn', text: '告示上没有这个通缉犯。' }] };
+      p.bounty = t.id;
+      return { lines: [{ kind: 'story', text: `你揭下缉拿${t.name}的告示。擒获此人（打晕或击杀），即可回衙门领赏。` }] };
+    }
+    if (!wanted.length) return { lines: [{ kind: 'plain', text: '告示栏上空空如也。' }] };
+    const lines = [{ kind: 'title', text: '【 通 缉 告 示 】' }];
+    for (const d of wanted.slice(0, 4)) {
+      lines.push({ kind: 'plain', text: `　通缉要犯：${d.name}　悬赏 150 文` });
+    }
+    lines.push({ kind: 'hint', text: '「接悬赏 <人名>」领取缉拿任务，擒获该犯可得赏金。' });
+    return { lines };
+  });
+
+
   /* ---------------- 武学 ---------------- */
 
   reg(['learn', '学', '学习'], (ctx, args) => {

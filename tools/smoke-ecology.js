@@ -128,6 +128,74 @@ section('7. 目击反应');
   ok('目击者心情大跌', wit1.mood < 50, 'mood=' + wit1.mood);
 }
 
+/* ============ 8. 饭点吃饭 ============ */
+section('8. 饭点吃饭');
+{
+  const e = new GameEngine({ seed: 20261010 });
+  e.boot();
+  e.newGame({ name: '试剑', gender: 'male' });
+  const w = e.world;
+  w.clockMinutes = 12 * 60;
+  ok('午时是饭点', w.isMealTime());
+  w.clockMinutes = 15 * 60;
+  ok('申时不是饭点', !w.isMealTime());
+  ok('能找到最近客栈', !!w.nearestEatery('jn_farm_1'), w.nearestEatery('jn_farm_1'));
+}
+
+/* ============ 9. 官府抓犯人 ============ */
+section('9. 官府抓犯人');
+{
+  const e = new GameEngine({ seed: 20261010 });
+  e.boot();
+  e.newGame({ name: '试剑', gender: 'male' });
+  const w = e.world, p = w.player;
+  p.room = 'jn_yamen_gate';
+  const thief = Object.values(w.data.npcs).find(d => d.tag === 'thief');
+  const off = Object.values(w.data.npcs).find(d => d.tag === 'constable');
+  const t = w.spawnNpc(thief.id, 'jn_yamen_gate', 1, true);
+  w.spawnNpc(off.id, 'jn_yamen_gate', 1, true);
+  w.onNpcDown(t, null);
+  ok('犯人被抓进牢', !!w.jail[thief.id], JSON.stringify(w.jail));
+  ok('犯人从原地消失', !w.instances.npcs[t.id]);
+}
+
+/* ============ 10. 赎人 ============ */
+section('10. 牢里赎人');
+{
+  const e = new GameEngine({ seed: 20261010 });
+  e.boot();
+  e.newGame({ name: '试剑', gender: 'male' });
+  const w = e.world, p = w.player;
+  p.money = 99999;
+  const thief = Object.values(w.data.npcs).find(d => d.tag === 'thief');
+  w.jail[thief.id] = { name: thief.name, ransom: 200, since: 0 };
+  p.room = 'jn_yamen_prison';
+  e.exec('赎人 ' + thief.name);
+  ok('赎人后牢房清空', !w.jail[thief.id]);
+  ok('赎出的 NPC 好感大增', social_add_favor_check(w, thief.id) > 0);
+}
+
+function social_add_favor_check(w, defId) {
+  const def = w.data.npcs[defId];
+  return def ? (def.favor || 0) : 0;
+}
+
+/* ============ 11. 通缉 ============ */
+section('11. 通缉告示');
+{
+  const e = new GameEngine({ seed: 20261010 });
+  e.boot();
+  e.newGame({ name: '试剑', gender: 'male' });
+  const w = e.world, p = w.player;
+  p.room = 'jn_yamen_office';
+  const r = e.exec('通缉');
+  ok('通缉告示列出要犯', (r.lines || []).some(l => /通缉要犯/.test(l.text || '')), (r.lines || []).map(l => l.text).join(''));
+  // 接悬赏
+  const thief = Object.values(w.data.npcs).find(d => d.tag === 'thief');
+  e.exec('接悬赏 ' + thief.name);
+  ok('接悬赏后记录目标', p.bounty === thief.id, p.bounty);
+}
+
 console.log('\n' + '='.repeat(42));
 console.log(fail === 0 ? '✅ 全部通过' : '❌ 失败 ' + fail + ' 项');
 process.exitCode = fail === 0 ? 0 : 1;

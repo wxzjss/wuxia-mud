@@ -96,6 +96,7 @@ class World extends EventEmitter {
     this.modLog = [];
     this.instances = { npcs: {}, items: {}, corpses: {} };
     this.deadNpcs = {};   // 第五批：真死的 NPC（defId → 死亡时间），10 天后复活
+    this.jail = {};       // 第五批：被官府抓进牢的 NPC（defId → 赎金）
     this.combatHooks = Object.assign({}, DEFAULT_HOOKS);
     this.effectFns = {};
     this.condFns = {};
@@ -302,6 +303,32 @@ class World extends EventEmitter {
   }
   seasonCN() { return SEASON_CN[this.season()]; }
   isNight() { const m = this.clockMinutes % 1440; return m < 300 || m >= 1140; }
+  /** 是否饭点（午时 11-13 点 / 酉时 17-19 点） */
+  isMealTime() {
+    const m = this.clockMinutes % 1440;
+    return (m >= 660 && m <= 780) || (m >= 1020 && m <= 1140);
+  }
+  /** BFS 找离 fromRoom 最近的酒楼/客栈 */
+  nearestEatery(fromRoom) {
+    if (!fromRoom) return null;
+    const seen = new Set([fromRoom]);
+    const q = [fromRoom];
+    while (q.length) {
+      const id = q.shift();
+      const room = this.getRoom(id);
+      if (!room) continue;
+      for (const d of Object.keys(room.exits || {})) {
+        const ex = room.exits[d];
+        const t = typeof ex === 'string' ? ex : ex.to;
+        if (t && this.getRoom(t) && !seen.has(t)) {
+          if (/(tavern|wine|inn|酒楼|客栈|酒家|饭庄)/.test((this.getRoom(t).name || ''))) return t;
+          seen.add(t);
+          q.push(t);
+        }
+      }
+    }
+    return null;
+  }
 
   /** 房间内可见 NPC 实例 */
   npcsIn(roomId) {
@@ -416,6 +443,30 @@ class World extends EventEmitter {
     npc.hp = 0;
     this.emit('npcdown', { npc });
     this.witnessReaction(npc);
+    // 犯人类 NPC 晕倒 → 官府抓进牢（若有官差在场）
+    const tag = npc.tag || (npc.def || {}).tag || '';
+    const criminal = /thief|gambler|贼|盗|匪/.test(tag + npc.name);
+    if (criminal) this.arrestCriminal(npc);
+  }
+
+  /** 官府抓犯人：犯人在场且有官差，就抓进牢（玩家见义勇为得赏金） */
+  arrestCriminal(npc) {
+    const p = this.player;
+    const room = npc.room;
+    const officials = this.npcsIn(room).filter(n => !n.dead && ['constable', 'official', 'escort'].includes(n.tag || (n.def || {}).tag));
+    if (!officials.length) return;
+    const ransom = 200 + Math.floor((npc.level || 1) * 10);
+    this.jail[npc.defId] = { name: npc.name, ransom, since: this.clockMinutes };
+    delete this.instances.npcs[npc.id];
+    if (p) { p.money += 100; p.karma += 2; }
+    /* 若玩家接了该犯的悬赏，额外领赏 */
+    let bountyText = '';
+    if (p && p.bounty === npc.defId) {
+      p.money += 150;
+      p.bounty = null;
+      bountyText = '（你领了缉拿此犯的 150 文悬赏！）';
+    }
+    this.emit('storyline', { line: { kind: 'story', text: `${officials[0].name}带着几个差役上前，把昏倒在地的${npc.name}锁了，押回衙门大牢。${p ? `（你见义勇为，得了 100 文赏钱）${bountyText}` : ''}` } });
   }
 
   onNpcKilled(npc, battle) {
@@ -1065,6 +1116,17 @@ class World extends EventEmitter {
         : (def.schedule.day || def.schedule.night);
       if (target && target !== n.room && this.data.rooms[target]) n.room = target;
     }
+    // 饭点（午时/酉时）：有作息的 NPC 去最近的酒楼/客栈用饭（玩家眼前的除外）
+    if (this.isMealTime()) {
+      for (const id of Object.keys(this.instances.npcs)) {
+        const n = this.instances.npcs[id];
+        if (n.room === playerRoom) continue;
+        const def = this.data.npcs[n.defId];
+        if (!def || !def.schedule) continue;
+        const eatery = this.nearestEatery(n.room);
+        if (eatery && eatery !== n.room) n.room = eatery;
+      }
+    }
     // 重生（房间 respawn 配置）
     for (const rid of Object.keys(this.data.rooms)) {
       const room = this.data.rooms[rid];
@@ -1209,6 +1271,7 @@ class World extends EventEmitter {
       },
       seed: this.rng.seed,
       deadNpcs: Object.assign({}, this.deadNpcs),
+      jail: Object.assign({}, this.jail),
     };
   }
 
@@ -1309,6 +1372,7 @@ class World extends EventEmitter {
     }
     this.rng = new RNG(save.seed || Date.now());
     this.deadNpcs = Object.assign({}, save.deadNpcs || {});
+    this.jail = Object.assign({}, save.jail || {});
     this.emit('loaded', {});
     return p;
   }
