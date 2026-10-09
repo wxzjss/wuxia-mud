@@ -277,32 +277,38 @@
     if (scroll !== false) el.scrollTop = el.scrollHeight;
   }
 
-  /* 出口 ASCII 方位图：横向 = 东西、纵向 = 南北，房间名可点击直接前往；
-     斜向 / 上下 / 内外 用补充行。北大侠客行风格。 */
+  /* 出口方位图：**3×3 CSS Grid**，不再用手工全角空格做ASCII 对齐。
+     ⚠️ 旧写法是 ASCII 画（`　　　` + `──` + `↑↓`），可中心房间名长度不固定，
+       于是「北/南」永远跟中心点对不齐；斜角（ne/nw/se/sw）更只是拼在最后一行，
+       压根没落在四角。改成 grid 后中心格固定居中，八个方向各占一格，天生对齐。 */
   function exitMapHtml(exitMap, roomName) {
     const CN = { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下', ne: '东北', nw: '西北', se: '东南', sw: '西南', in: '内', out: '外' };
     const g = d => exitMap[d] || null;
-    const n = g('n'), s = g('s'), e = g('e'), w = g('w');
     const btn = (dir, name) =>
-      '<button class="exit-inline" data-dir="' + esc(dir) + '" title="向' + (CN[dir] || dir) + '走，前往「' + esc(name) + '」">' + (CN[dir] || dir) + '·' + esc(name) + '</button>';
+      '<button class="exit-inline em-' + dir + '" data-dir="' + esc(dir) + '" title="向' + (CN[dir] || dir) + '走，前往「' + esc(name) + '」">' + (CN[dir] || dir) + '·' + esc(name) + '</button>';
 
-    const rows = [];
-    if (n) { rows.push('　　　' + btn('n', n.name)); rows.push('　　　↑'); }
-    let mid = '';
-    if (w) mid += btn('w', w.name) + ' ── ';
-    mid += '<b class="cur">' + esc(roomName || '这里') + '</b>';
-    if (e) mid += ' ── ' + btn('e', e.name);
-    rows.push(mid);
-    if (s) { rows.push('　　　↓'); rows.push('　　　' + btn('s', s.name)); }
+    /* 九宫格：nw n ne ／ w 中心 e ／ sw s se */
+    const slot = dir => {
+      const m = g(dir);
+      return '<span class="ec">' + (m ? btn(dir, m.name) : '') + '</span>';
+    };
+    const cells = slot('nw') + slot('n') + slot('ne')
+      + slot('w')
+      + '<span class="ec em-core"><b class="cur">' + esc(roomName || '这里') + '</b></span>'
+      + slot('e')
+      + slot('sw') + slot('s') + slot('se');
 
-    const extra = [];
-    for (const d of ['ne', 'nw', 'se', 'sw', 'u', 'd', 'in', 'out']) {
+    /* 上/下/内/外 不是八方位，单独一行附在下面（不占九宫格） */
+    const vert = [];
+    for (const d of ['u', 'd', 'in', 'out']) {
       const m = g(d);
-      if (m) extra.push(btn(d, m.name));
+      if (m) vert.push(btn(d, m.name));
     }
-    if (extra.length) rows.push(extra.join('　'));
 
-    return '<span class="exit-map">' + rows.map(r => '<span class="er">' + r + '</span>').join('') + '</span>';
+    return '<span class="exit-map">' +
+      '<span class="em-grid">' + cells + '</span>' +
+      (vert.length ? '<span class="em-vert">' + vert.join('') + '</span>' : '') +
+      '</span>';
   }
 
   /* 方向按钮排（跟着日志的「出口」行走）：东南西北 + 目标地名，一点就走 */

@@ -47,21 +47,72 @@ console.log('② 互动出口（跳崖 / 爬上去）');
   ok('「爬上去」回到舍身崖', p.room === 'emei_she_ru', (w.getRoom(p.room) || {}).name);
 }
 
-console.log('③ 前端 ASCII 方位图渲染');
+console.log('③ 前端方位图渲染（3×3 Grid，非 ASCII 画）');
 {
   const UI = fs.readFileSync('game/src/renderer/js/ui.js', 'utf8');
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const m = UI.match(/function exitMapHtml[\s\S]*?\n  \}/);
   const fn = new Function('esc', m[0] + '\nreturn exitMapHtml;')(esc);
-  const html = fn({
+  const full = fn({
     n: { dir: 'n', name: '山谷北坡' }, s: { dir: 's', name: '青石桥' },
     e: { dir: 'e', name: '乱石阵' }, w: { dir: 'w', name: '树林' },
+    ne: { dir: 'ne', name: '青云巷' }, nw: { dir: 'nw', name: '乱葬岗' },
+    se: { dir: 'se', name: '河埠头' }, sw: { dir: 'sw', name: '西市' },
   }, '未明谷');
-  ok('ASCII 图含可点击房间名', /exit-inline/.test(html));
-  ok('ASCII 图含当前房间高亮', /class="cur"/.test(html));
-  ok('ASCII 图含四方方向', ['n', 's', 'e', 'w'].every(d => html.includes('data-dir="' + d + '"')));
-  ok('ASCII 图含横向连线', /──/.test(html));
-  ok('ASCII 图含纵向箭头', /↑/.test(html) && /↓/.test(html));
+  ok('方位图含可点击房间名', /exit-inline/.test(full));
+  ok('方位图含当前房间高亮', /class="cur"/.test(full));
+  ok('方位图含四方方向', ['n', 's', 'e', 'w'].every(d => full.includes('data-dir="' + d + '"')));
+  ok('方位图含四角斜向', ['ne', 'nw', 'se', 'sw'].every(d => full.includes('data-dir="' + d + '"')));
+  ok('用的是 3×3 grid 容器（不是 ASCII 画）', /class="em-grid"/.test(full));
+  ok('九宫格正好 9 个格子', (full.match(/class="ec[ "]/g) || []).length === 9,
+    'n=' + (full.match(/class="ec[ "]/g) || []).length);
+  ok('中心格只有 1 个且是当前房间',
+    (full.match(/em-core/g) || []).length === 1 && /em-core[^>]*><b class="cur">/.test(full));
+  ok('中心格在正中间（第 5 格）',
+    (full.match(/class="ec[^"]*"/g) || []).indexOf('class="ec em-core"') === 4,
+    'idx=' + (full.match(/class="ec[^"]*"/g) || []).indexOf('class="ec em-core"'));
+
+  /* 🩸 顺序守卫：网格的物理位置必须跟方向对应。
+     顺序错位是最容易犯的错（写 HTML 时看串行），所以按 DOM 顺序断言。 */
+  const order = (full.match(/data-dir="([a-z]+)"/g) || [])
+    .map(s => s.slice(10, -1));
+  ok('DOM 顺序 = 西北·北·东北 · 西·中心·东 · 西南·南·东南',
+    order.join(',') === 'nw,n,ne,w,e,sw,s,se', order.join(','));
+
+  /* 缺方向时也必须占位，不能塌掉位置 */
+  const onlyNS = fn({ n: { dir: 'n', name: '甲' }, s: { dir: 's', name: '乙' } }, '某处');
+  ok('缺方向时仍占满 9 格（位置不塌）',
+    (onlyNS.match(/class="ec[ "]/g) || []).length === 9,
+    'n=' + (onlyNS.match(/class="ec[ "]/g) || []).length);
+  ok('中心格不受房间名长度影响（仍在第 5 格）',
+    (() => {
+      const h = fn({ n: { dir: 'n', name: '甲' } }, '很长很长很长很长很长很长的房间名字');
+      const list = h.match(/class="ec[^"]*"/g) || [];
+      return list.indexOf('class="ec em-core"') === 4;
+    })());
+
+  /* 上下 / 内外 不占九宫格，另起一行 */
+  const vert = fn({ u: { dir: 'u', name: '二楼' }, d: { dir: 'd', name: '地窖' },
+    in: { dir: 'in', name: '内室' }, out: { dir: 'out', name: '后院' }, n: { dir: 'n', name: '甲' } }, '某处');
+  ok('上/下/内/外 走单独一行（不进九宫格）', /class="em-vert"/.test(vert));
+  ok('上/下/内/外 都渲染出来',
+    ['u', 'd', 'in', 'out'].every(d => vert.includes('data-dir="' + d + '"')));
+
+  /* 一个出口都没有也不该崩，且仍显示中心名 */
+  const none = fn({}, ' nowhere ');
+  ok('无出口时不崩且仍显示中心名', /em-core/.test(none) && /nowhere/.test(none));
+
+  /* 🩸 静态守卫：别把 ASCII 对齐画回来（全角空格 + ↑↓ + ──） */
+  const body = m[0];
+  ok('已不用全角空格手写对齐（没有连续的全角空格缩进）',
+    !/　{2,}/.test(body), (body.match(/　{2,}/g) || [])[0] || '');
+  ok('已不用 ↑↓ 箭头对齐', !/[↑↓]/.test(body));
+  ok('已不用 ── 连线', !/──/.test(body));
+  /* CSS 侧也要真的声明了九宫格 */
+  const CSS = fs.readFileSync('game/src/renderer/css/main.css', 'utf8');
+  ok('CSS 声明了 3 列 grid', /\.em-grid[\s\S]{0,200}grid-template-columns/.test(CSS));
+  ok('CSS 给八个方向各写了 grid-area', ['em-nw', 'em-n', 'em-ne', 'em-w', 'em-e', 'em-sw', 'em-s', 'em-se']
+    .every(d => new RegExp('\\.' + d + '\\s*\\{[^}]*grid-area').test(CSS)));
 }
 
 console.log('\n' + '='.repeat(42));
