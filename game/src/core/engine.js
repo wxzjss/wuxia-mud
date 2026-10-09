@@ -605,7 +605,10 @@ class GameEngine {
 
     /* --- 布局：区域装箱，每个区域内部按出口方向排布 --- */
     if (!this._mapLayout || this._mapLayoutFor !== allRooms) {
-      this._mapLayout = mapLayout.layoutAll(allRooms, w.data.regions, room.id);
+      this._mapLayout = mapLayout.layoutAll(
+        allRooms, w.data.regions, room.id, w.data.terrain || {}
+      );
+      this._mapLayoutFor = allRooms;
       this._mapLayoutFor = allRooms;
     }
     const layout = this._mapLayout;
@@ -651,6 +654,7 @@ class GameEngine {
       cells: layout.cells,
       regionBoxes: layout.regionBoxes || {},
       bounds: layout.bounds,
+      terrain: layout.terrain || {},
       explore: { visited: visitedCount, total: Object.keys(allRooms).length },
     };
   }

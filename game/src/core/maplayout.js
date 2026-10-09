@@ -210,22 +210,35 @@ function dirLabel(dir) {
  * @param {string} currentRoomId
  * @returns {{ cells, regionBoxes, bounds }}
  */
-function layoutAll(rooms, regions, currentRoomId) {
+function layoutAll(rooms, regions, currentRoomId, terrain) {
   const byRegion = {};
   Object.values(rooms).forEach(r => {
     const reg = r.region || 'wild';
     (byRegion[reg] = byRegion[reg] || []).push(r);
   });
-  return packRegions(rooms, regions, byRegion, currentRoomId);
+  return packRegions(rooms, regions, byRegion, currentRoomId, terrain);
 }
 
 /**
  * 区域装箱：把每个区域当成一个矩形块，按行排列（类似文字流），
  * 保证同区域房间聚块、区域间不重叠。
  */
-function packRegions(rooms, regions, byRegion, currentRoomId) {
+/**
+ * 区域装箱：把每个区域当成一个矩形块，按行排列（类似文字流），
+ * 保证同区域房间聚块、区域间不重叠。
+ *
+ * @param {Object} terrain  可选。{ regionId: [{x,y,type,n}] } —— 区域**内相对坐标**的装饰格。
+ *        它有两个作用，都很关键（design/09 §6 步骤 3）：
+ *          ① 把区域的 box 撑到 regions[regId].minW/minH —— 面积不够时用旷野/山林填，
+ *             **不用造假房间**（造假房间就是刚拆掉的那 354 间填充物的病根）；
+ *          ② 前端按 terrain 画底纹，让玩家看得见「这一片是山林不是空」。
+ *        因为 box 坐标是布局完才知道的，所以 terrain 存的是区域内相对坐标，
+ *        由 packTerrain() 在这里翻译成实际全局坐标。
+ */
+function packRegions(rooms, regions, byRegion, currentRoomId, terrain) {
   const cells = {};
   const regionBoxes = {};
+  const tOut = {};      /* 翻译后的全局 terrain，供前端画 */
 
   const regIds = Object.keys(byRegion).sort((a, b) => {
     const aHas = byRegion[a].some(r => r.id === currentRoomId);
@@ -234,10 +247,56 @@ function packRegions(rooms, regions, byRegion, currentRoomId) {
     return byRegion[b].length - byRegion[a].length;
   });
 
-  const MAX_ROW_W = 34;
+  /* 排版参数（design/09 §6 步骤 3）：
+   * 原来 MAX_ROW_W 写死 34，是给「房间撑出来的小 box」用的。
+   * 现在 box 被 terrain 撑到 minW（最大 14），行宽不够就全往下面堆——
+   * 实测 bounds 高度从 46 暴涨到 120，地图变成一条长卷。
+   *
+   * 踩过的坑：先试了「按面积降序 + 贪心放行」，
+   * 结果 28×130 —— 方块（8×8）在 28 宽的篮子里只能并排放 3 个，
+   * 剩下全掉到下一行，**面积降序对近似方形的块几乎没有帮助**。
+   *
+   * 改成**货架装箱（shelf packing）**：先把 box 按高度分成若干「层」，
+   * 每层高度 = 该层里最高的 box，层内横向能放几个放几个。
+   * 这才是矩形装箱的标准做法，对方块最省空间。
+   */
+  const GAP = 2;   /* 区域之间留的空白格 */
+
+  /* 先算出每个区域的 box 尺寸（后面排序和装箱都要用） */
+  const boxOf = {};
+  for (const id of regIds) {
+    const lst = byRegion[id];
+    const sub2 = {};
+    lst.forEach(r => { sub2[r.id] = r; });
+    const lb = layoutRooms(sub2, lst.some(r => r.id === currentRoomId) ? currentRoomId : lst[0].id).bounds;
+    const sp = (regions && regions[id]) || {};
+    boxOf[id] = {
+      w: Math.max(lb.w, sp.minW || 0, 3),
+      h: Math.max(lb.h, sp.minH || 0, 2),
+      hasCurrent: lst.some(r => r.id === currentRoomId),
+      n: lst.length,
+    };
+  }
+
+  /* 目标总宽：让地图接近正方形。
+   * 装箱宽度 W 满足 W ≈ sqrt(总面积)（加上 gap 的损耗放宽一点），
+   * 这样 bounds 宽高比接近 1，不会变成长条。 */
+  const totalArea = Object.values(boxOf).reduce((a, b) => a + b.w * b.h, 0);
+  const nReg = regIds.length || 1;
+  const idealW = Math.round(Math.sqrt(totalArea * (1 + GAP * 0.35)));
+  const MAX_ROW_W = Math.max(20, Math.min(72, idealW));
+
+  /* 排序：当前区域第一，其余按**高度**降序（同层里高的先放，层高才不会被撑爆） */
+  const ordered = regIds.slice().sort((a, b) => {
+    if (boxOf[a].hasCurrent !== boxOf[b].hasCurrent) return boxOf[a].hasCurrent ? -1 : 1;
+    if (boxOf[b].h !== boxOf[a].h) return boxOf[b].h - boxOf[a].h;
+    if (boxOf[b].n !== boxOf[a].n) return boxOf[b].n - boxOf[a].n;
+    return a < b ? -1 : 1;
+  });
+
   let curX = 0, curY = 0, rowH = 0;
 
-  for (const regId of regIds) {
+  for (const regId of ordered) {
     const list = byRegion[regId];
     const sub = {};
     list.forEach(r => { sub[r.id] = r; });
@@ -245,7 +304,13 @@ function packRegions(rooms, regions, byRegion, currentRoomId) {
     const start = list.some(r => r.id === currentRoomId) ? currentRoomId : list[0].id;
     const subLayout = layoutRooms(sub, start);
     const b = subLayout.bounds;
-    const blockW = Math.max(b.w, 3), blockH = Math.max(b.h, 2);
+
+    /* 房间只撑这么宽高 —— 面积不够就用 terrain 撑（见规格 §2） */
+    const rawW = Math.max(b.w, 3), rawH = Math.max(b.h, 2);
+    const spec = (regions && regions[regId]) || {};
+    const minW = spec.minW || 0, minH = spec.minH || 0;
+    const blockW = Math.max(rawW, minW);
+    const blockH = Math.max(rawH, minH);
 
     /* 换行判定 */
     if (curX > 0 && curX + blockW > MAX_ROW_W) {
@@ -264,10 +329,34 @@ function packRegions(rooms, regions, byRegion, currentRoomId) {
 
     regionBoxes[regId] = {
       x: curX, y: curY, w: blockW, h: blockH,
+      roomW: rawW, roomH: rawH,           /* 房间实际占的尺寸（前端可用来区分） */
       name: (regions[regId] && regions[regId].name) || regId,
       color: (regions[regId] && regions[regId].color) || '#8a8a8a',
+      tier: spec.tier || '',
       count: list.length,
     };
+
+    /* terrain：区域内相对坐标 → 全局坐标。
+     * ⚠️ 必须跳过房间实际占用的格子，否则装饰会盖在房间上。 */
+    const tlist = terrain && terrain[regId];
+    if (tlist && tlist.length) {
+      const taken = new Set();
+      for (const id in subLayout.cells) {
+        const c = subLayout.cells[id];
+        taken.add((c.x + offX) + ',' + (c.y + offY));
+      }
+      const out = [];
+      for (const t of tlist) {
+        const gx = curX + t.x;
+        const gy = curY + t.y;
+        /* 越界或压在房间上 → 丢 */
+        if (gx < curX || gy < curY || gx >= curX + blockW || gy >= curY + blockH) continue;
+        if (taken.has(gx + ',' + gy)) continue;
+        out.push({ x: gx, y: gy, type: t.type, n: t.n || 1 });
+        taken.add(gx + ',' + gy);
+      }
+      if (out.length) tOut[regId] = out;
+    }
 
     curX += blockW + 2;
     rowH = Math.max(rowH, blockH);
@@ -283,15 +372,28 @@ function packRegions(rooms, regions, byRegion, currentRoomId) {
     occupied.add(x + ',' + y);
   });
 
+  /* 总边界：以 regionBox 为准（box 已被 terrain 撑大，房间只占其中一部分）。
+   * ⚠️ 若只按房间算 bounds，terrain 撑出来的边框会被裁掉，
+   *   前端画区域底色时右边/下边会缺一条。 */
   let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-  Object.values(cells).forEach(c => {
-    minX = Math.min(minX, c.x); maxX = Math.max(maxX, c.x);
-    minY = Math.min(minY, c.y); maxY = Math.max(maxY, c.y);
-  });
+  for (const k in regionBoxes) {
+    const bx = regionBoxes[k];
+    minX = Math.min(minX, bx.x);
+    minY = Math.min(minY, bx.y);
+    maxX = Math.max(maxX, bx.x + bx.w - 1);
+    maxY = Math.max(maxY, bx.y + bx.h - 1);
+  }
+  if (!isFinite(minX)) {
+    Object.values(cells).forEach(c => {
+      minX = Math.min(minX, c.x); maxX = Math.max(maxX, c.x);
+      minY = Math.min(minY, c.y); maxY = Math.max(maxY, c.y);
+    });
+  }
 
   return {
     cells,
     regionBoxes,
+    terrain: tOut,
     bounds: { minX, maxX, minY, maxY, w: maxX - minX + 1, h: maxY - minY + 1 },
   };
 }

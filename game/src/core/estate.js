@@ -436,9 +436,13 @@ function sponsorNpcHome(world, kw, tierKw) {
 
   /* 写回：实例 + 模板（模板决定作息夜归） */
   target.home = hmId;
-  if (def) { def.home = hmId; }
+  if (def) { def.home = hmId; def.schedule = def.schedule || {}; }
+  /* 注意：NPC 模板的 schedule.night 常已指向原来的常驻房（不是真实住宅），
+     这里必须覆盖写，不能只在空时写，否则夜归回不去新家 */
+  if (def) { def.schedule.night = hmId; }
   if (!target.def.schedule) target.def.schedule = {};
-  if (!target.def.schedule.night) target.def.schedule.night = hmId;
+  target.def.schedule.night = hmId;
+  target.room = hmId;
 
   /* 好感涨：有家的人心里踏实，也记你的好 */
   const social = require('./social');

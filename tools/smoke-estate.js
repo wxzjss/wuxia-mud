@@ -210,10 +210,13 @@ sec('⑨ 资助NPC建家');
   p.money = 100000;
   /* 找一个同房、无家的 NPC */
   const npcs = Object.values(e.world.instances.npcs || {});
+  /* C/B 层 NPC 现在都带 house:'house:<id>' 虚拟标记，
+     资助盖房只对「没有真实房间」的人生效，所以按真实房间筛 */
+  const realHome = v => v && !String(v).startsWith('house:') && e.world.data.rooms[v];
   let target = null;
   for (const n of npcs) {
     const d = e.world.data.npcs[n.defId] || {};
-    if (!n.home && !d.home) { target = n; break; }
+    if (!realHome(n.home) && !realHome(d.home)) { target = n; break; }
   }
   if (!target) {
     ok('找到无家NPC（数据问题：本局无房NPC）', false);
@@ -249,10 +252,13 @@ sec('⑩ NPC 作息夜归');
   const p = e.world.player;
   p.money = 100000;
   const npcs = Object.values(e.world.instances.npcs || {});
+  /* C/B 层 NPC 现在都带 house:'house:<id>' 虚拟标记，
+     资助盖房只对「没有真实房间」的人生效，所以按真实房间筛 */
+  const realHome = v => v && !String(v).startsWith('house:') && e.world.data.rooms[v];
   let target = null;
   for (const n of npcs) {
     const d = e.world.data.npcs[n.defId] || {};
-    if (!n.home && !d.home) { target = n; break; }
+    if (!realHome(n.home) && !realHome(d.home)) { target = n; break; }
   }
   if (target) {
     p.room = target.room;

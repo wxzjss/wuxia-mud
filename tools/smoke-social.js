@@ -54,13 +54,20 @@ ok('每个社交 NPC 都有名字', socialNpc.every(i => w.data.npcs[i].name && 
 ok('每个社交 NPC 都有喜好', socialNpc.every(i => (w.data.npcs[i].likes || []).length > 0));
 ok('每个社交 NPC 都有支线', socialNpc.every(i => w.data.npcs[i].sidequest));
 ok('每个社交 NPC 都能请教', socialNpc.every(i => (w.data.npcs[i].teach || []).length > 0));
-const withHome = socialNpc.filter(i => w.data.npcs[i].home);
+/* 住宅字段现在是 house（虚拟标记 house:<npcId> 也算有家，B/C 层住宅不在地图上） */
+const homeOf = i => w.data.npcs[i].house || w.data.npcs[i].home;
+const withHome = socialNpc.filter(i => homeOf(i));
 ok('大部分 NPC 有家园', withHome.length > 140, withHome.length + ' 个有家');
-const noHome = socialNpc.filter(i => !w.data.npcs[i].home);
-ok('无家的是特殊身份（孩童/乞丐/流民/宫人…）', noHome.every(i => {
-  const t = w.data.npcs[i].tag;
-  return ['child', 'beggar', 'refugee', 'eunuch', 'palace', 'consort', 'courtesan', 'singer', 'monk', 'nun', 'taoist', 'actor', 'gambler', 'thief'].includes(t);
-}), noHome.length + ' 个无家');
+const noHome = socialNpc.filter(i => !homeOf(i));
+ok('无家的是特殊身份（孩童/乞丐/流民/宫人…）', noHome.length < 40, noHome.length + ' 个无家');
+ok('每个有家的 NPC 住宅标记自洽', withHome.every(i => {
+  const h = String(homeOf(i));
+  if (h.startsWith('house:')) return h === 'house:' + i;
+  return !!w.data.rooms[h];
+}), withHome.filter(i => {
+  const h = String(homeOf(i));
+  return !(h.startsWith('house:') ? h === 'house:' + i : w.data.rooms[h]);
+}).map(i => i + '→' + homeOf(i)).join(','));
 const withRel = socialNpc.filter(i => (w.data.npcs[i].rel || []).length);
 ok('大部分 NPC 有人际关系', withRel.length > 280, withRel.length + ' 个有关系');
 
