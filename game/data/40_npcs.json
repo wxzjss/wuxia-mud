@@ -488,7 +488,8 @@
    ],
    "quests": [
     "q_shaolin_entry",
-    "q_yijinjing"
+    "q_yijinjing",
+    "q_main_sect"
    ],
    "talk": [
     "阿弥陀佛，施主来此，可是为了求武？",
@@ -622,7 +623,8 @@
    ],
    "quests": [
     "q_wudang_entry",
-    "q_main_jianghu"
+    "q_main_jianghu",
+    "q_main_sect"
    ],
    "talk": [
     "道法自然，何必争强。",
@@ -1051,6 +1053,43 @@
     "蔡落",
     "皮朝颜",
     "元明月"
+   ],
+   "bossPhases": [
+    {
+     "at": 1,
+     "name": "绣花针",
+     "skill": "pixie_jianfa",
+     "line": "（他忽然抬起手。指尖一弹，针破空声比他的笑还快。）",
+     "desc": "那不是武功，是绣花的手段——只是绣的不是布，是人。",
+     "mult": {
+      "atk": 1.15,
+      "speed": 1.25
+     }
+    },
+    {
+     "at": 0.6,
+     "name": "化生",
+     "skill": "heimu_zhang",
+     "line": "「你太急了。」他竟不闪，反而迎上来。",
+     "desc": "伤口里裂开的地方越多，他手上的血就越多——你的也是。",
+     "mult": {
+      "atk": 1.05,
+      "reflect": 0.3,
+      "speed": 1.05
+     }
+    },
+    {
+     "at": 0.3,
+     "name": "弃攻守势",
+     "line": "（他退到绣架后面，拈起一枚绣了一半的针。）",
+     "desc": "他不攻了。他只是站在那里，把你当作那块布。",
+     "mult": {
+      "atk": 0.8,
+      "def": 1.6,
+      "dodge": 1.5,
+      "speed": 0.9
+     }
+    }
    ]
   },
   "nv_huang": {
@@ -28486,6 +28525,519 @@
     "马秋",
     "华云"
    ]
+  },
+  "depot_master": {
+   "id": "depot_master",
+   "name": "冯保",
+   "title": "东厂提督",
+   "gender": "male",
+   "tier": "A",
+   "unique": true,
+   "tag": "official",
+   "room": "palace_hall",
+   "desc": "一个五十上下的瘦高男人，面白无须，指甲修得极干净。他从不提高嗓门，但他每说一句话，殿上的人就要少活几个——十年里东西两厂换了七任提督，他是唯一一个还坐着的。",
+   "level": 96,
+   "attr": {
+    "力量": 72,
+    "根骨": 66,
+    "身法": 74,
+    "悟性": 88
+   },
+   "hp": 7200,
+   "mp": 5200,
+   "atk": 610,
+   "def": 320,
+   "dodge": 210,
+   "speed": 108,
+   "hostile": true,
+   "leavesCorpse": false,
+   "money": 99999,
+   "expReward": 20000,
+   "potReward": 9000,
+   "moneyReward": 5000,
+   "equipment": {
+    "武器": "xunchun_blade",
+    "身体": "brocade_robe"
+   },
+   "skills": {
+    "刀": "xunchun_blade_art"
+   },
+   "learned": {
+    "xunchun_blade_art": {
+     "level": 720
+    }
+   },
+   "carry": {
+    "money": 50000,
+    "items": [
+     "depot_token_half",
+     "silk_robe"
+    ]
+   },
+   "likes": [
+    "jewelry",
+    "incense"
+   ],
+   "favorBase": -2,
+   "favorInit": 0,
+   "favorToLearn": 999,
+   "teach": [],
+   "talk": [
+    "江湖上的事，朝廷管不了，我来管。",
+    "你手里那块铜牌，是我给的。忘了？",
+    "你不该活到今天。这不是狠话，是账。"
+   ],
+   "socialDone": true,
+   "relDone": true,
+   "quests": [],
+   "rel": [
+    {
+     "id": "depot_shadow",
+     "kind": "友"
+    },
+    {
+     "id": "bureau_clerk",
+     "kind": "友"
+    },
+    {
+     "id": "shaolin_fangzheng",
+     "kind": "仇"
+    }
+   ],
+   "bossPhases": [
+    {
+     "at": 1,
+     "name": "绣春刀",
+     "line": "（冯保抽出刀，刀身薄得能透光。）「第一刀，是规矩。」",
+     "mult": {
+      "atk": 1,
+      "speed": 1
+     },
+     "skill": "xunchun_blade_art"
+    },
+    {
+     "at": 0.6,
+     "name": "影卫",
+     "line": "（他身后的影子一分为三，房梁上的三个不是人。）「你打的不是我。」",
+     "mult": {
+      "atk": 1.15,
+      "dodge": 0.9,
+      "speed": 1.2
+     },
+     "skill": "shadow_echo",
+     "summon": {
+      "npc": "depot_shadow",
+      "count": 1
+     }
+    },
+    {
+     "at": 0.3,
+     "name": "圣旨",
+     "line": "（他退到龙案后，展开一卷黄绫。）「奉天承运——拿下。」",
+     "mult": {
+      "atk": 1.1,
+      "def": 1.35,
+      "speed": 1.1
+     },
+     "skill": "imperial_order"
+    }
+   ],
+   "portrait": {
+    "v": 1,
+    "tier": "A",
+    "lock": false,
+    "role": "东厂提督，十年不倒的朝堂之手",
+    "origin": "先帝时他只是御前一个抄写文书的小官。字写得好，好到皇帝记住了名字，也记住了他那双从不发抖的手。",
+    "now": "他替皇帝杀人，也替皇帝背锅。厂里换人像换衣裳，他一直穿着那件。",
+    "want": "他要的不是武功秘籍，是一本能写满名字的册子。秘籍只是饵，他真正在收的是「谁在练什么」。",
+    "fear": "他怕死，更怕「无用」。一个没用的提督，比一个死了的提督死得更快。",
+    "secret": {
+     "text": "他早年也是江湖中人，在终南山下跟人学过三年刀。他一生最不愿被人提起的，是那三年。",
+     "tier": 3,
+     "leakTo": [
+      "shaolin_fangzheng"
+     ],
+     "ifLeaked": "方证大师听后会沉默很久，然后说：「原来他也是从山下来的。」"
+    },
+    "obsession": "每天亲手抄一遍厂里的名单。字迹从不潦草，哪怕写到自己的名字。",
+    "feuds": [
+     {
+      "id": "shaolin_fangzheng",
+      "kind": "仇",
+      "why": "方证拒绝交出少林一份名册",
+      "since": "八年前"
+     },
+     {
+      "id": "depot_shadow",
+      "kind": "友",
+      "why": "影子是他一手带出来的，比儿子还听话",
+      "since": "十二年"
+     }
+    ],
+    "voice": {
+     "tone": "慢，客气，每个字都像秤过的",
+     "catchphrase": "这笔账，我记下了。",
+     "taboo": [
+      "失败",
+      "情义",
+      "当年"
+     ],
+     "style": "从不发怒；越轻描淡写越危险；偶尔用「我们」拉拢，用「你」逼问。"
+    },
+    "routine": [
+     {
+      "at": "day",
+      "act": "在太和殿侧殿看折子，一份折子要看三遍"
+     },
+     {
+      "at": "dusk",
+      "act": "走到天牢门口站一会儿，从不出来，只是站着"
+     },
+     {
+      "at": "night",
+      "act": "灯下抄名单，抄到天亮，把纸一张张烧掉"
+     }
+    ],
+    "arc": {
+     "init": "漠然",
+     "warm": "不动声色地记下你的名字 +15；拿回铜牌不追究 +25",
+     "cold": "当众叫你的名字 −30；把你的名字写进名单 −60；抄家灭门 −100",
+     "break": "把他的名字捅到朝堂上，或让他那三年被江湖人知道"
+    },
+    "hooks": [
+     {
+      "id": "hk_depot_master_token",
+      "title": "那三年",
+      "type": "task",
+      "trigger": {
+       "var": "trust_depot_master",
+       "op": "<=",
+       "value": 10
+      },
+      "seed": "他自己说漏了嘴：「我那三年学的是刀，不是杀人。」",
+      "rewardHint": "+主线推进；解锁 ending「半交」"
+     }
+    ],
+    "marks": [
+     "东厂",
+     "抄名单",
+     "指甲干净",
+     "终南三年"
+    ]
+   }
+  },
+  "depot_shadow": {
+   "id": "depot_shadow",
+   "name": "影子",
+   "title": "影卫首领",
+   "gender": "male",
+   "tier": "A",
+   "unique": true,
+   "tag": "eunuch",
+   "room": "palace_road",
+   "desc": "你听见脚步，回头，什么也没有。地上有两道影子，其中一道不是你自己的。",
+   "level": 88,
+   "attr": {
+    "力量": 60,
+    "根骨": 66,
+    "身法": 94,
+    "悟性": 70
+   },
+   "hp": 4200,
+   "mp": 3800,
+   "atk": 520,
+   "def": 200,
+   "dodge": 320,
+   "speed": 140,
+   "hostile": true,
+   "leavesCorpse": false,
+   "money": 3000,
+   "expReward": 9000,
+   "potReward": 4000,
+   "moneyReward": 1500,
+   "skills": {
+    "拳": "shadow_echo"
+   },
+   "learned": {
+    "shadow_echo": {
+     "level": 660
+    }
+   },
+   "likes": [
+    "incense"
+   ],
+   "favorBase": -3,
+   "favorInit": 0,
+   "favorToLearn": 999,
+   "teach": [],
+   "talk": [
+    "（他没有说话。他从不说话。）",
+    "（他站的地方，正好在你退路上。）"
+   ],
+   "socialDone": true,
+   "relDone": true,
+   "quests": [],
+   "rel": [
+    {
+     "id": "depot_master",
+     "kind": "友"
+    }
+   ],
+   "bossPhases": [
+    {
+     "at": 1,
+     "name": "随影",
+     "line": "（他没有动。你发现自己的影子先动了。）",
+     "mult": {
+      "atk": 1,
+      "dodge": 1.1,
+      "speed": 1.1
+     },
+     "skill": "shadow_echo"
+    },
+    {
+     "at": 0.5,
+     "name": "分影",
+     "line": "（三个影子从同一个影子里站起来。）",
+     "mult": {
+      "atk": 1.2,
+      "speed": 1.25
+     },
+     "skill": "shadow_echo"
+    }
+   ],
+   "portrait": {
+    "v": 1,
+    "tier": "A",
+    "lock": false,
+    "role": "东厂影卫首领，提督的影子本身",
+    "origin": "没人知道他姓什么。冯保叫他影子，因为十二年前他在雪地里跟了冯保三天，第四天才被看见。",
+    "now": "他是东厂里唯一不用报名字的人。名字是给活人用的。",
+    "want": "他要证明「影子比本体先到」。这是他唯一在意的事。",
+    "fear": "他怕天亮。天亮他就得站回墙根，而墙根没有影子可藏。",
+    "secret": {
+     "text": "他有自己的名字，写在冯保名单的第一页。冯保划掉了，但没有涂。",
+     "tier": 2,
+     "leakTo": [
+      "depot_master"
+     ],
+     "ifLeaked": "冯保会沉默着把它重新写一遍——这次没划。"
+    },
+    "obsession": "记录每一个他去过的地方，精确到「他在那里站了多久」。",
+    "feuds": [
+     {
+      "id": "depot_master",
+      "kind": "友",
+      "why": "亦师亦父，也是他必须先到的那条线",
+      "since": "十二年"
+     }
+    ],
+    "voice": {
+     "tone": "没有语气",
+     "catchphrase": "（他不出声。）",
+     "taboo": [
+      "名字"
+     ],
+     "style": "全篇不说话；威胁用站位表达；他开口的那一次，就是最后的机会。"
+    },
+    "routine": [
+     {
+      "at": "day",
+      "act": "在提督身后三步，跟着，不看两侧"
+     },
+     {
+      "at": "dusk",
+      "act": "去一趟天牢，确认名单上的人还在"
+     },
+     {
+      "at": "night",
+      "act": "在别人的窗外站到天亮，然后换下一个"
+     }
+    ],
+    "arc": {
+     "init": "无",
+     "warm": "不动声色地放慢半步 +20；把追你的路指反 +30",
+     "cold": "记住你的走路姿势 +40；揭穿你的轻功来路 +60",
+     "break": "叫出他的名字"
+    },
+    "hooks": [
+     {
+      "id": "hk_shadow_name",
+      "title": "他的名字",
+      "type": "encounter",
+      "trigger": {
+       "var": "favor_depot_shadow",
+       "op": ">=",
+       "value": 40
+      },
+      "seed": "你叫出了那个名字。他站在原地，第一次没有动。",
+      "rewardHint": "+favor 50；可说服其倒戈（第五幕隐藏选项）"
+     }
+    ],
+    "marks": [
+     "不说话",
+     "站位",
+     "天亮",
+     "名字"
+    ]
+   }
+  },
+  "bureau_clerk": {
+   "id": "bureau_clerk",
+   "name": "胡录事",
+   "title": "书吏",
+   "gender": "male",
+   "tier": "B",
+   "tag": "official",
+   "room": "jn_yamen_office",
+   "desc": "一个在签押房里坐了十九年的老书吏，手上有常年握笔磨出的茧。他抄过成千上万份公文，从没抄错过一个字——包括那份不该抄的名单。",
+   "level": 24,
+   "attr": {
+    "力量": 30,
+    "根骨": 34,
+    "身法": 38,
+    "悟性": 62
+   },
+   "hp": 620,
+   "atk": 62,
+   "def": 40,
+   "dodge": 44,
+   "speed": 40,
+   "money": 3400,
+   "hostile": false,
+   "equipment": {
+    "身体": "silk_robe"
+   },
+   "likes": [
+    "tea",
+    "book"
+   ],
+   "favorBase": 0.8,
+   "favorInit": 8,
+   "favorToLearn": 45,
+   "carry": {
+    "money": 2600,
+    "items": [
+     "porcelain_teaset",
+     "steamed_bun"
+    ]
+   },
+   "talk": [
+    "客官，衙门重地，有事递牌子。",
+    "……你说的是那份名单？那不是我抄的，我只是誊。",
+    "（他压低了声音。）你若真想知道，就当今天没来过。"
+   ],
+   "socialDone": true,
+   "relDone": true,
+   "rel": [
+    {
+     "id": "depot_master",
+     "kind": "仇"
+    },
+    {
+     "id": "npcv_281",
+     "kind": "友"
+    }
+   ],
+   "quests": [
+    "q_main_sect"
+   ],
+   "teach": [
+    "basic_fist"
+   ],
+   "learned": {
+    "basic_fist": {
+     "level": 90
+    }
+   },
+   "skills": {
+    "拳": "basic_fist"
+   },
+   "age": 47,
+   "district": "jiangnan",
+   "province": "江南道",
+   "home": "house:bureau_clerk",
+   "schedule": {
+    "day": "jn_yamen_office",
+    "night": "jn_yamen_office"
+   },
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "衙门签押房书吏，名单的经手人",
+    "origin": "十九年前他也是秀才，连考三次不中，回来接了父亲的笔。他这辈子写得最好的一页，是那份他不该写的名单。",
+    "now": "他每天照常点卯、照常用茶、照常把公文抄完。只有笔洗得比别人干净。",
+    "want": "他想知道那份名单上的人，后来有几个还活着。",
+    "fear": "他怕自己被当成「经手人」——在这件事里，经手人比下令的人先死。",
+    "secret": {
+     "text": "他留了一份底档，藏在城西一间他自己都不常去的安全屋里。",
+     "tier": 2,
+     "leakTo": [
+      "depot_master"
+     ],
+     "ifLeaked": "安全屋被封，胡录事失踪；名单底档流入东厂。"
+    },
+    "obsession": "每天把「已办」「未办」两栏分得极清楚，即使没有人来查。",
+    "feuds": [
+     {
+      "id": "depot_master",
+      "kind": "仇",
+      "why": "东厂要销毁底档，而底档是他十九年唯一的私心",
+      "since": "半年"
+     }
+    ],
+    "voice": {
+     "tone": "谨慎、公事公办，一急就结巴",
+     "catchphrase": "我只是誊的。",
+     "taboo": [
+      "名单",
+      "东厂",
+      "底档"
+     ],
+     "style": "答非所问；被逼到墙角时会突然变得非常诚实。"
+    },
+    "routine": [
+     {
+      "at": "day",
+      "act": "在签押房誊文，笔尖蘸墨的节奏和更鼓一样准"
+     },
+     {
+      "at": "dusk",
+      "act": "绕到城西看一眼那间安全屋，从不进去"
+     },
+     {
+      "at": "night",
+      "act": "在家把当日抄过的字默写一遍，默完就睡"
+     }
+    ],
+    "arc": {
+     "init": "回避",
+     "warm": "请他喝酒 +15；替他挡一次追问 +25；说出「底档」二字 +40",
+     "cold": "当众递牌子 +5；威胁他家人 −40；把他名字报上去 −80",
+     "break": "让东厂知道底档存在"
+    },
+    "hooks": [
+     {
+      "id": "hk_bureau_clerk_ledger",
+      "title": "底档",
+      "type": "task",
+      "trigger": {
+       "var": "favor_bureau_clerk",
+       "op": ">=",
+       "value": 40
+      },
+      "seed": "城西那间屋子他终于肯带你去了。屋里只有一张桌子，一本册子。",
+      "rewardHint": "+好感 40；获得「名单底档」→ 第二幕关键道具"
+     }
+    ],
+    "marks": [
+     "十九年",
+     "底档",
+     "笔洗得干净",
+     "不敢说"
+    ]
+   }
   }
  }
 }

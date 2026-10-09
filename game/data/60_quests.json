@@ -1161,6 +1161,30 @@
         {
           "type": "say",
           "raw": "你立于山巅，回望来路。江湖依旧，而你已经不再是当初那个无名少年。"
+        },
+        {
+          "type": "flag",
+          "args": [
+            "know_east_depot"
+          ]
+        },
+        {
+          "type": "narrate",
+          "raw": "那名将死之人塞给你的半块铜牌，还带着他掌心的汗。"
+        },
+        {
+          "type": "+item",
+          "args": [
+            "depot_token_half",
+            1
+          ]
+        },
+        {
+          "type": "quest",
+          "args": [
+            "q_main_sect",
+            0
+          ]
         }
       ]
     },
@@ -18618,6 +18642,117 @@
         {
           "type": "say",
           "raw": "尹伯点点头：「多谢你了。」"
+        }
+      ]
+    },
+    "q_main_sect": {
+      "id": "q_main_sect",
+      "name": "【主线】门派之疑",
+      "level": 30,
+      "type": "主线",
+      "giver": "wudang_chongxu",
+      "desc": "一个将死之人塞给你的半块铜牌，一个认得这标记的老道士。东厂要抓人，为什么没人拦？——这一问，比打得过谁都难。",
+      "stages": [
+        {
+          "desc": "把半块东厂铜牌带回武当，交给冲虚道长过目",
+          "cond": {
+            "flag": "know_east_depot"
+          },
+          "next": 1
+        },
+        {
+          "desc": "查清铜牌的来路：江南衙门签押房经手过这份名单",
+          "cond": {
+            "flag": "clerk_met"
+          },
+          "next": 2
+        },
+        {
+          "desc": "回武当复命，听冲虚分派：少林问方证大师，华山探门派内鬼",
+          "cond": {
+            "flag": "clerk_met"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "「两处。」冲虚伸出两根手指，「少林问方证——他代表朝廷与武林的默契。华山你自己去看。」"
+            },
+            {
+              "type": "say",
+              "raw": "「记住：看，不要问。」他说，「你若问出口，便再没有回头路。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "chongxu_split_task"
+              ]
+            }
+          ],
+          "next": 3
+        },
+        {
+          "desc": "少林大雄宝殿，问方证大师「朝廷与武林的默契」",
+          "cond": {
+            "flag": "fangzheng_admitted"
+          },
+          "next": 4
+        },
+        {
+          "desc": "华山撞见岳不群密会一个官服的人",
+          "cond": {
+            "flag": "sect_inner_traitor"
+          },
+          "next": 5
+        },
+        {
+          "desc": "抉择：把这事告诉冲虚，还是烂在肚子里",
+          "cond": {
+            "flag": "choice_made"
+          },
+          "next": 6
+        },
+        {
+          "desc": "北疆的消息：那批「犯人与行李」最后去了雪谷",
+          "cond": {
+            "flag": "know_xuemao"
+          },
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            8000
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            4000
+          ]
+        },
+        {
+          "type": "+title",
+          "args": [
+            "风闻者"
+          ]
+        },
+        {
+          "type": "flag",
+          "args": [
+            "act2_done"
+          ]
+        },
+        {
+          "type": "flag",
+          "args": [
+            "sect_ashamed"
+          ]
+        },
+        {
+          "type": "narrate",
+          "raw": "江湖很大，大得容得下两把刀。你学会了往哪一边站，也学会了代价是什么。"
         }
       ]
     }

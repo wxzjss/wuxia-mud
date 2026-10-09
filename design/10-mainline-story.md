@@ -215,9 +215,30 @@
 ## 6. 实施顺序（照着做，每步都能测）
 
 1. **✅ 已完成** —— 旧主线四个断点修复，0→99 可跑通
-2. 新增 3 个 NPC（冯保/影子/胡录事）+ 守卫断言
-3. 第二幕 `q_main_sect`：8 节点，复用 `sq_*` 支线机制
-4. Boss 三阶段机制落地（`combat.js` 加 `bossPhases`），先给东方不败做样板
+2. **✅ 已完成（2026-10-10）** —— 新增 3 个 NPC（`depot_master` 冯保 / `depot_shadow` 影子 /
+   `bureau_clerk` 胡录事），各带完整 portrait；冯保与影子带 `bossPhases`。
+   守门断言在 `tools/smoke-act2.js` ⑧ + `tools/smoke-boss.js` ⑧（全库 bossPhases 体检）。
+3. **✅ 已完成（2026-10-10）** —— 第二幕 `q_main_sect`。**8 节点压缩成 7 段**
+   （故事书的「查铜牌来路」与「回武当复命」共用同一个 flag 门，合成一段），
+   另加 6 个房间 action 作玩家入口：衙门签押房「翻名录」/ 少林大雄宝殿「问方证」/
+   华山正气堂「撞见密会」+「禀报冲虚」/「按下不提」/ 塞外「追囚车」。
+   ⚠️ 落地时踩到的两件事（已写进注释，别再踩）：
+   - `交任务` 遍历的是 `npc.def.quests`，**委托人自己也必须挂上任务**——
+     冲虚一开始没挂，第一段「交铜牌」永远交不掉。
+   - 第一幕奖励必须落 `know_east_depot` + 铜牌 + `{type:'quest',args:['q_main_sect',0]}`，
+     否则第二幕第 0 段永远 false。
+   专项测试：`tools/smoke-act2.js`（143 项，真跑通 0→99，含真存读档往返）。
+4. **✅ 已完成（2026-10-10）** —— Boss 三阶段机制：`combat.js` 新增
+   `tickBossPhase()` + `statOf()` + `pickSkill()` 的阶段招分支。
+   **东方不败**（`mojiao_dongfang` / 黑木崖·绣阁）样板：
+   100% 绣花针（`pixie_jianfa`·atk×1.15 speed×1.25）→ 60% 化生（`heimu_zhang`·reflect 0.3）
+   → 30% 弃攻守势（不换招·atk×0.8 def×1.6 dodge×1.5 speed×0.9）。
+   两条实现铁律：
+   - 倍率必须走 `statOf()` 读值（`def` 要经 `defenseOf()`）——
+     直接 `Number(u.def)` 拿到模板对象 → NaN → **倍率静默不生效**。
+   - 阶段状态挂**实例**，且战斗结束（`finishCombat`）与读档（`reviveInstances`）都要复位，
+     否则打输从门口重来时 boss 开场就放三阶段。
+   专项测试：`tools/smoke-boss.js`（66 项）。
 5. 第三/四/五幕任务 + 前哨卡房间
 6. 三个结局 flag 分支 + 结局尾声文本
 

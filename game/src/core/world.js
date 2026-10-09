@@ -1135,6 +1135,9 @@ class World extends EventEmitter {
       if (e.hp <= 0 || e.dead) continue;
       if (p.hp <= 0) break;
       this.combat.tickBuffs(e, lines, battle);
+      /* Boss 三阶段：敌人侧走 stepEnemyOnly，不经过 combat.step()，
+         所以这里必须单独挂一次，否则 Boss 永远停在第一阶段（SPRINT-C）。 */
+      this.combat.tickBossPhase(e, lines, battle);
       const sk = this.combat.pickSkill(e, p);
       const n = this.combat.pickSkill(e, p) && sk && sk.hits ? sk.hits : this.combat.baseAttackCount(e, p);
       for (let i = 0; i < n; i++) {
@@ -1156,6 +1159,20 @@ class World extends EventEmitter {
     if (!b) return { lines, over: true };
     this.player.inCombat = false;
     for (const d of [].concat(b.defenders, b.attackers)) { for (const u of (d && d.members ? d.members : [d])) { if (u) u.inCombat = false; } }
+    /* Boss 阶段状态复位：打输从门口重来时必须回到第一阶段。
+       不清的话实例上的 bossPhaseIdx / bossSkill / bossphase buff 会跟着进下一场，
+       玩家会发现「刚出门的 boss 一开场就放三阶段」。 */
+    for (const d of [].concat(b.defenders, b.attackers)) {
+      for (const u of (d && d.members ? d.members : [d])) {
+        if (!u) continue;
+        if (u.bossPhaseIdx !== undefined || u.bossSkill !== undefined) {
+          u.bossPhaseIdx = 0;
+          u.bossSkill = null;
+          u.buffs = (u.buffs || []).filter(x => x.tag !== 'bossphase');
+          u.recalc && u.recalc();
+        }
+      }
+    }
     if (b.winner === 'attackers') {
       this.player.combatTarget = null;
       if (this.combatHooks.onEnd) {
@@ -1718,6 +1735,14 @@ class World extends EventEmitter {
         obj.pstate.hooks = obj.pstate.hooks || {};
       }
       if (typeof obj.recalc === 'function') obj.recalc();
+      /* Boss 阶段状态复位：存档是在战斗外生成的，正常已经是 0/null；
+         但旧档或中途存档可能带着半截阶段，读档后要保证回到第一阶段。 */
+      if (obj.bossPhaseIdx !== undefined || obj.bossSkill !== undefined) {
+        obj.bossPhaseIdx = 0;
+        obj.bossSkill = null;
+        obj.buffs = (obj.buffs || []).filter(x => x.tag !== 'bossphase');
+        if (typeof obj.recalc === 'function') obj.recalc();
+      }
       this.instances.npcs[k] = obj;
     }
     if (instances.squads) {

@@ -1623,6 +1623,57 @@
           ]
         }
       ]
+    },
+    "xunchun_blade": {
+      "id": "xunchun_blade",
+      "name": "绣春刀",
+      "type": "weapon",
+      "slot": "武器",
+      "desc": "东厂制式佩刀，刀身薄得能透光。刀鞘上原有一块铜牌，被人生生削去了半边。",
+      "stats": {
+        "atk": 88,
+        "speed": 6
+      },
+      "damage": 96,
+      "value": 9000,
+      "weaponType": "刀",
+      "maxDurability": 500,
+      "tags": [
+        "weapon",
+        "tool"
+      ],
+      "quality": "legend"
+    },
+    "brocade_robe": {
+      "id": "brocade_robe",
+      "name": "织金蟒袍",
+      "type": "armor",
+      "slot": "身体",
+      "desc": "暗红织金，绣着五爪云龙。穿这身的人不用自己动手。",
+      "stats": {
+        "def": 18
+      },
+      "attr": {
+        "定力": 3
+      },
+      "value": 8000,
+      "maxDurability": 160,
+      "quality": "legend"
+    },
+    "depot_token_half": {
+      "id": "depot_token_half",
+      "name": "半块东厂铜牌",
+      "type": "accessory",
+      "slot": "饰品",
+      "desc": "断口是新的，像是被人一掌劈开。牌上有个「查」字，字底压着一道极细的暗纹——那是厂里人才认得的记号。",
+      "stats": {},
+      "value": 0,
+      "noSell": true,
+      "tags": [
+        "mainline",
+        "clue"
+      ],
+      "quality": "legend"
     }
   },
   "recipes": {

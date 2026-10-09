@@ -715,6 +715,128 @@
           "count": 1,
           "chance": 1
         }
+      ],
+      "actions": [
+        {
+          "cmd": "撞见密会",
+          "label": "绕到偏殿去看一眼",
+          "keywords": [
+            "撞见密会",
+            "偏殿",
+            "密会",
+            "偷看",
+            "窥探"
+          ],
+          "cond": {
+            "flag": "chongxu_split_task",
+            "notFlag": "sect_inner_traitor"
+          },
+          "failMsg": "你现在没有非要去华山看什么不可的理由。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你绕到偏殿。门缝里透出的不是烛光，是一盏官灯。"
+            },
+            {
+              "type": "narrate",
+              "raw": "岳不群的声音压得很低，听不清字句——但那人的官靴，看得清清楚楚。"
+            },
+            {
+              "type": "narrate",
+              "raw": "你退开三步，脚下的砖响了。殿里的话声立刻停了。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "sect_inner_traitor"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "saw_yue_meet_official"
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "禀报冲虚",
+          "label": "回武当，把密会的事告诉冲虚",
+          "keywords": [
+            "禀报冲虚",
+            "告诉冲虚",
+            "告发",
+            "上报"
+          ],
+          "cond": {
+            "flag": "sect_inner_traitor",
+            "notFlag": "choice_made"
+          },
+          "failMsg": "你还没见到什么可禀报的事。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你把偏殿的官灯、官靴、一字不落地说了。冲虚听完，很久没有出声。"
+            },
+            {
+              "type": "say",
+              "raw": "「你告诉我这件事，从今往后，华山派的事你不要再插手。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "——你换来的，是一句「不要再插手」。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "choice_tell_chongxu"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "choice_made"
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "按下不提",
+          "label": "回武当，把这事烂在肚子里",
+          "keywords": [
+            "按下不提",
+            "闭嘴",
+            "不说",
+            "保密"
+          ],
+          "cond": {
+            "flag": "sect_inner_traitor",
+            "notFlag": "choice_made"
+          },
+          "failMsg": "你还没见到什么需要瞒的事。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你把偏殿的事咽了回去。冲虚看你的眼神和从前一样，看不出多一分，也看不出少一分。"
+            },
+            {
+              "type": "narrate",
+              "raw": "——你保住了「自己人」这三个字，也丢掉了它。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "choice_keep_silent"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "choice_made"
+              ]
+            }
+          ]
+        }
       ]
     },
     "huashan_houshan": {
@@ -965,6 +1087,53 @@
           "npc": "shaolin_fangzheng",
           "count": 1,
           "chance": 1
+        }
+      ],
+      "actions": [
+        {
+          "cmd": "问方证",
+          "label": "问方证大师「朝廷与武林的默契」",
+          "keywords": [
+            "问方证",
+            "方证",
+            "问默契",
+            "默契"
+          ],
+          "cond": {
+            "flag": "chongxu_split_task",
+            "notFlag": "fangzheng_admitted"
+          },
+          "failMsg": "你连冲虚让你去问什么都不清楚，就先去问人，未免太急。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "方证大师合掌，让你在下首第一位——那是留给「有资格问话的人」的位子。"
+            },
+            {
+              "type": "say",
+              "raw": "「确有此事。」他说得很慢，「但老衲不能告诉你为何确有此事。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "你追问。他只是笑。然后他忽然问了一句不相干的：「少侠可曾听说，终南山下有人学过三年刀？」"
+            },
+            {
+              "type": "narrate",
+              "raw": "你一时没答上来。他也不追问，只说了句「阿弥陀佛」，便低头念起了经。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "fangzheng_admitted"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "heard_term_nan_ties"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1917,7 +2086,48 @@
           "mob_assassin",
           "mob_bandit_chief"
         ]
-      }
+      },
+      "actions": [
+        {
+          "cmd": "追囚车",
+          "label": "追那辆往北去的囚车",
+          "keywords": [
+            "追囚车",
+            "囚车",
+            "追车",
+            "北上"
+          ],
+          "cond": {
+            "flag": "choice_made",
+            "notFlag": "know_xuemao"
+          },
+          "failMsg": "你还不知道该往哪里追。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你追上那辆车的时候，车夫正在路边生火煮东西。他不拦你，只是看着你。"
+            },
+            {
+              "type": "narrate",
+              "raw": "「你不是官差。」他说，「官差不会追到这种地方。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "「那批人……没往北都城走。」他往西北指了指，「雪谷。新起了一座石堡。」"
+            },
+            {
+              "type": "say",
+              "raw": "「前几日有个被押的人半路跑了。他让我带句话给你——他说他欠你一条命。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "know_xuemao"
+              ]
+            }
+          ]
+        }
+      ]
     },
     "beijiang_xuedao": {
       "id": "beijiang_xuedao",
@@ -3193,7 +3403,50 @@
         "e": "jn_yamen_store",
         "n": "jn_yamen_side",
         "s": "jn_yamen_arch"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "翻名录",
+          "label": "翻那份名录",
+          "keywords": [
+            "翻名录",
+            "名录",
+            "翻档案",
+            "查名录"
+          ],
+          "cond": {
+            "flag": "know_east_depot",
+            "notFlag": "clerk_met"
+          },
+          "failMsg": "你连那份名录长什么样都不知道，先弄清铜牌的来路。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "架子上那叠未销的公文，最上面一份纸边有新裁的毛口——像是从更长的东西上裁下来的。"
+            },
+            {
+              "type": "narrate",
+              "raw": "「客官，衙门重地。」一个老书吏挡在你和公文之间。他手上有常年握笔磨出的茧。"
+            },
+            {
+              "type": "say",
+              "raw": "「……你说的是那份名单？那不是我抄的，我只是誊。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "clerk_met"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "met_bureau_clerk"
+              ]
+            }
+          ]
+        }
+      ]
     },
     "jn_yamen_store": {
       "id": "jn_yamen_store",

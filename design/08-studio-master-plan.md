@@ -262,11 +262,30 @@ SPRINT-A 地图重做 ──┬──→ SPRINT-B 动态世界 ──┐
 
 1. ~~**写 `design/10-mainline-story.md`**~~ ✅ **已完成（2026-10-10）**
    —— 五幕主线故事书已写定；旧主线的四个断点也已修完，实测 0→99 可跑通。
-   **接下来是按故事书实施**：新增 3 个 NPC（冯保/影子/胡录事）→ 第二幕 `q_main_sect`
-   → Boss 三阶段机制（先拿东方不败做样板）。
+   ~~**接下来是按故事书实施**：新增 3 个 NPC（冯保/影子/胡录事）→ 第二幕 `q_main_sect`
+   → Boss 三阶段机制（先拿东方不败做样板）。~~
+   ✅ **SPRINT-C 第一批已落地（2026-10-10，提交见 git log）**：
+   - **3 个 NPC**：`depot_master`（冯保·东厂提督·A层·带 portrait + bossPhases）、
+     `depot_shadow`（影子·影卫首领）、`bureau_clerk`（胡录事·书吏·B层）；
+     顺带 3 物品（绣春刀/织金蟒袍/半块东厂铜牌）+ 3 功法（绣春刀法/影分身/圣旨纶音）。
+   - **第二幕 `q_main_sect`**（7 段）：交铜牌 → 翻名录 → 复命受分派 → 少林问方证 →
+     华山撞见密会 → 抉择（禀报/按下不提及，互斥，共 `choice_made`）→ 追囚车。
+     玩家入口做成 **6 个房间 action**（铁律 1：一切新系统必须能被玩家看见）；
+     第一幕 `q_main_jianghu` 奖励补 `know_east_depot` + 铜牌 + 接第二幕（否则第二幕第 0 段永远 false）。
+   - **Boss 三阶段机制**：`combat.js` 新增 `tickBossPhase()`，按 `hp/maxHp` 在
+     `at`（必须递减）阈值切阶段——台词演出 + 换招（`bossSkill` → `pickSkill`）+ 数值倍率
+     （落 `bossphase` tag 的 buff）+ 召唤（`summon`）。**东方不败**（黑木崖·绣阁）做样板：
+     100% 绣花针（辟邪剑法·快攻）→ 60% 化生（黑幕掌·反伤 0.3）→ 30% 弃攻守势（要塞）。
+     战斗结束 / 读档后阶段状态复位（打输从门口重来必须是第一阶段）。
+   - **新增两套回归**：`tools/smoke-act2.js`（143 项，真跑通 0→99 + 真存读档往返）、
+     `tools/smoke-boss.js`（66 项，阈值/换招/倍率/召唤/复位）。全量 21 套回归全绿。
+   - ⚠️ 顺手修数据：`wudang_chongxu` 挂上 `q_main_sect`（`交任务` 遍历的是 `npc.def.quests`，
+     他没挂 = 第一段永远没人接）；4 个 NPC 的 `rank` 归 0 基。
 2. **SPRINT-A 地图重做开工** —— 补齐 31 个 region 定义（最脏最急的部分），
    改 `packRegions` 让名字不再 fallback 成英文
-3. **`design/05-balance-spec.md` 九品梯度表** —— 主线和制度线的数值底盘，越早定越省事
+3. **SPRINT-C 第二批** —— 第三~五幕（`q_main_empire` 锦绣宫 → `q_main_reveal` 真相 → 终局），
+   以及故事书 §5 里剩余待补的 NPC 与秘境/奇遇
+4. **`design/05-balance-spec.md` 九品梯度表** —— 主线和制度线的数值底盘，越早定越省事
 
 ---
 

@@ -122,6 +122,9 @@ class CombatEngine {
 
       // buff 结算
       this.tickBuffs(u, lines, battle);
+      /* Boss 阶段：血掉到阈值就切（必须在行动前、buff 之后——
+         buff 的 turns 会被 tickBuffs 减一，阶段 buff 是 9999 回合的常驻不受影响） */
+      this.tickBossPhase(u, lines, battle);
 
       const enemies = this.enemiesOf(all, ent);
       if (!enemies.length) continue;
@@ -163,6 +166,129 @@ class CombatEngine {
     if (c.isSquad) return c.members.every(m => m.hp <= 0 || m.dead);
     return c.hp <= 0 || c.dead;
   }
+
+  /* ================================================================
+   * Boss 三阶段（SPRINT-C）
+   *
+   * 数据写在 NPC 模板的 `bossPhases` 上：
+   *   [{ at: 1,    name: '第一阶段', line: '台词', mult: {atk:1.15}, skill: 'xx' }, ...]
+   * `at` 是「血量比例阈值」，必须**递减**（1 → 0.6 → 0.3）。
+   *
+   * 三条铁律：
+   *  ① 阶段状态挂在**实例**上（bossPhaseIdx / bossSkill），模板只当只读配置。
+   *     挂模板 = 打输一次再从门口重来，还带着上一场的阶段倍率（历史坑位同款）。
+   *  ② 倍率通过 buff 的 mods 落地（recalc 会重算，buff 本身不会被 recalc 冲掉）。
+   *     m<1 的键（如 dodge:0.9）产出负增量 = 真的变慢，不是「没生效」。
+   *  ③ 阶段切换**不打断战斗**：只插台词 + 换招 + 加倍率，回合继续走。
+   *     所以不需要 resume 逻辑，输了下次重来就是从第一阶段开始。
+   * ================================================================ */
+
+  /** 取一个单位的阶段配置；没有就返回 null（普通 NPC 一律走这里） */
+  bossPhasesOf(u) {
+    const def = u && u.def;
+    const arr = (def && def.bossPhases) || u.bossPhases;
+    return Array.isArray(arr) && arr.length ? arr : null;
+  }
+
+  /** 当前所处阶段序号（实例上没有就是 0） */
+  bossPhaseIdx(u) {
+    return typeof u.bossPhaseIdx === 'number' ? u.bossPhaseIdx : 0;
+  }
+
+  /**
+   * 取「可乘倍率的当前数值」。
+   * ⚠️ `def` 必须走 defenseOf()：实例上的 `.def` 是**模板对象引用**（SPRINT1-ENG-02），
+   *    直接 Number(u.def) 会得到 NaN，被 isFinite 挡掉 → 阶段倍率静默不生效。
+   * 返回 null 表示这个键不支持倍率。
+   */
+  statOf(u, k) {
+    if (k === 'def') return defenseOf(u);
+    const v = u[k];
+    if (typeof v !== 'number' || !Number.isFinite(v)) return null;
+    return v;
+  }
+
+  /**
+   * 血量掉到下一阶段阈值就切。
+   * 必须在**每次该单位行动前**调（step 里已接），不然玩家连打 3 下才切一次。
+   * @returns 本回合新增的演出行
+   */
+  tickBossPhase(u, lines, battle) {
+    const phases = this.bossPhasesOf(u);
+    if (!phases) return;
+    /* 死了就别再「变招」——尸体发表演台词很出戏。
+       ⚠️ 判据是 def.hp 还是 hp？用 hp：实例被打到 0 但 def 里还写着满血值。 */
+    if ((u.hp !== undefined ? u.hp : 1) <= 0 || u.dead) return;
+    const ratio = u.maxHp > 0 ? u.hp / u.maxHp : 1;
+    let idx = this.bossPhaseIdx(u);
+    /* 只往前切，且一步只切一级（跨过多级时先演最近的那一级，别一口气刷三段台词） */
+    if (idx + 1 < phases.length && ratio <= phases[idx + 1].at) idx++;
+    else return;
+    const ph = phases[idx];
+    if (!ph) return;
+    u.bossPhaseIdx = idx;
+
+    /* ① 台词 + 演出（先出字，再上倍率，顺序上玩家先看到「他要变了」） */
+    lines.push({ kind: 'combat', text: `【${u.name} · ${ph.name || ('第 ' + (idx + 1) + ' 阶段')}】` });
+    if (ph.line) lines.push({ kind: 'combat', text: ph.line });
+    if (ph.desc) lines.push({ kind: 'combat', text: ph.desc });
+
+    /* ② 换招（下一回合的 pickSkill 会优先用它）
+       at:1 的首阶段永远不触发「切换」，所以开场就把它的 skill 挂上——
+       否则第一档指定的招式（如东方不败的辟邪剑法）从头到尾都用不出来。 */
+    if (idx === 0 && !u.bossSkill && phases[0] && phases[0].skill
+        && this.world.getSkill(phases[0].skill)) {
+      u.bossSkill = phases[0].skill;
+    }
+    if (ph.skill && this.world.getSkill(ph.skill)) u.bossSkill = ph.skill;
+    else if (ph.skill) u.bossSkill = null;
+
+    /* ③ 数值倍率：换成 buff 的 mods 落地 */
+    if (ph.mult && typeof ph.mult === 'object') {
+      /* 同 tag 的旧 buff 先摘掉，否则倍率逐阶段累乘，第二阶段就爆表 */
+      u.buffs = (u.buffs || []).filter(b => b.tag !== 'bossphase');
+      const mods = {};
+      for (const k of Object.keys(ph.mult)) {
+        const m = Number(ph.mult[k]);
+        if (!Number.isFinite(m) || m === 1) continue;
+        const cur = this.statOf(u, k);
+        if (cur === null) continue;
+        /* 天生为 0 的派生字段（reflect / lifesteal / armorPen / critRate）走倍率没意义
+           ——0×2 还是 0。这类字段的 mult 值当**绝对值**用：
+           「反伤三成」写成 { reflect: 0.3 } 就成立。 */
+        const ZERO_BASE = ['reflect', 'lifesteal', 'armorPen', 'critRate'];
+        let d;
+        if (ZERO_BASE.indexOf(k) >= 0) d = Math.round(m * 100) / 100;
+        else d = Math.round(cur * (m - 1));
+        if (d) mods[k] = (mods[k] || 0) + d;
+      }
+      if (Object.keys(mods).length) {
+        u.addBuff({ name: ph.name || ('Boss 第 ' + (idx + 1) + ' 阶段'), turns: 9999, mods, tag: 'bossphase' });
+        const desc = Object.keys(mods).map(k => {
+          const sign = mods[k] > 0 ? '+' : '';
+          return k + ' ' + sign + mods[k];
+        }).join('　');
+        lines.push({ kind: 'combat', text: `${u.name}的架势一变（${desc}）。` });
+      }
+    }
+
+    /* ④ 召唤（如冯保放出影卫） */
+    if (ph.summon && ph.summon.npc && battle) {
+      const n = Math.max(1, Math.min(5, ph.summon.count || 1));
+      const room = u.room || (battle.room);
+      const made = [];
+      for (let i = 0; i < n; i++) {
+        const s = this.world.spawnNpc(ph.summon.npc, room, 1, true);
+        if (s && s.id !== u.id) made.push(s);
+      }
+      if (made.length) {
+        const side = [].concat(battle.attackers).indexOf(u) >= 0 ? 'attackers' : 'defenders';
+        for (const s of made) { s.inCombat = true; battle[side] = [].concat(battle[side], s); }
+        lines.push({ kind: 'combat', text: `${made.map(s => s.name).join('、')}从暗处现身，加入战局！` });
+      }
+    }
+  }
+
   enemiesOf(all, ent) {
     return all.filter(x => x.side !== ent.side && x.u.hp > 0 && !x.u.dead);
   }
@@ -187,6 +313,24 @@ class CombatEngine {
     return n;
   }
   pickSkill(u, t) {
+    /* Boss 阶段招优先（bossSkill 由 tickBossPhase 在阶段切换时写上实例）。
+       at:1 的首阶段永远不触发「切换」，所以这里再兜一层：
+       没有 bossSkill 就按当前阶段号取配置，否则第一档指定的招式永远放不出来。 */
+    let wantBoss = u.bossSkill || null;
+    if (!wantBoss) {
+      const phases = this.bossPhasesOf(u);
+      if (phases) {
+        const ph = phases[this.bossPhaseIdx(u)];
+        if (ph && ph.skill && this.world.getSkill(ph.skill)) wantBoss = ph.skill;
+      }
+    }
+    if (wantBoss) {
+      const bsd = this.world.getSkill(wantBoss);
+      if (bsd) {
+        /* 没内力时别硬用，退回常规武学，避免 boss 一直在「内力不济」里空转 */
+        if (!bsd.mpCost || u.mp >= bsd.mpCost) return bsd;
+      }
+    }
     // 选择已装备的武器武学；若无，用拳法
     const slots = ['剑', '刀', '棍', '鞭', '暗器', '拳'];
     for (const s of slots) {
