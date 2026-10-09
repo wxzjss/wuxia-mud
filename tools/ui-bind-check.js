@@ -327,6 +327,55 @@ function ok(name, cond, extra) {
   ok('显示境界而非等级', /境界/.test(mb2) && /初窥门径/.test(mb2) && !/等级/.test(mb2));
   ok('显示饱食饮水（生存）', /饱食/.test(mb2) && /80 \/ 100/.test(mb2) && /饮水/.test(mb2));
 
+  /* ⑤ 布局去重：屏幕只能有一处「此地可做」，方向按钮归「出口」
+       背景：主人报「屏幕上有两个『此地可做』，第一个上面还有一排东南西北方向按钮」。
+       改法：房间面板删掉 #exits / #room-actions，方向按钮排跟日志的「出口」行走。
+       ⚠️ 本 stub 的 getElementById 会自动造元素，所以真 HTML 里删没删必须查源码。 */
+  console.log('\n⑤ 布局去重（此地可做唯一 + 出口按钮归位）。');
+  ok('index.html 已删掉房间面板的 #exits 块', !/id="exits"/.test(HTML));
+  ok('index.html 已删掉房间面板的 #room-actions 块', !/id="room-actions"/.test(HTML));
+  ok('index.html 仍保留 #log（出口行走这里）', /id="log"/.test(HTML));
+  /* 不许再有「临时造一个 room-actions 块插进 DOM」的旧逻辑 —— 那正是第二处的来源 */
+  ok('renderRoomActions 缺 DOM 时直接 return，不再动态造块',
+    /function renderRoomActions[\s\S]{0,200}if \(!box\) return;/.test(UI)
+    && !/box\.id = 'room-actions'/.test(UI));
+  ok('方向按钮排由 exitBtnRowHtml 渲染（跟着出口走）',
+    /function exitBtnRowHtml/.test(UI) && /exit-btns/.test(UI));
+  ok('appendLog 把 exitBtns / exitMap 传给渲染层',
+    /item\.exitBtns = l\.exitBtns/.test(UI) && /item\.exitMap = l\.exitMap/.test(UI));
+  ok('paintLog 给 .exit-btns 绑了点击', /\.exit-btns \.exit-btn/.test(UI));
+  /* 真跑一遍渲染，确认按钮排真的出来了且带 data-dir */
+  const logBox = els['log'];
+  const prevDoCmd2 = U.doCmd;
+  U.doCmd = () => { };
+  const lines = [
+    { kind: 'action', text: '此地可做：住店、告示。' },
+    {
+      kind: 'exits', text: '出口：西·江南城·长街　北·任停的家。',
+      exits: ['w', 'n'],
+      exitMap: { w: { dir: 'w', name: '江南城·长街' }, n: { dir: 'n', name: '任停的家' } },
+      exitBtns: [
+        { dir: 'w', name: '西', toName: '江南城·长街', locked: false },
+        { dir: 'n', name: '北', toName: '任停的家', locked: false },
+        { dir: 'e', name: '东', toName: '竹林', locked: true },
+      ],
+      roomName: '悦来客栈',
+    },
+  ];
+  U.appendLog(lines);
+  U.doCmd = prevDoCmd2;
+  const lb2 = logBox.innerHTML;
+  ok('日志「出口」行下面渲染出方向按钮排', /exit-btns/.test(lb2), lb2.slice(-260));
+  ok('按钮带 data-dir（能直接发方向指令）',
+    /data-dir="w"/.test(lb2) && /data-dir="n"/.test(lb2), lb2.slice(-260));
+  ok('按钮上写得出目标地名', /江南城·长街/.test(lb2));
+  ok('锁住的出口带 locked 类', /exit-btn locked/.test(lb2));
+  ok('房间面板不再无条件画这两块（只在 DOM 还在时兜底）',
+    /if \(\$\('exits'\)\) renderExitButtons/.test(UI)
+    && /if \(\$\('room-actions'\)\) renderRoomActions/.test(UI));
+  ok('全局只有一处「此地可做」标签（room-actions 块已从 HTML 移除）',
+    !/id="room-actions"/.test(HTML) && !/insertBefore\(box, exits\.nextSibling\)/.test(UI));
+
   console.log('\n' + '='.repeat(42));
   console.log('  通过 ' + pass + ' 项，失败 ' + fail + ' 项');
   console.log('='.repeat(42));

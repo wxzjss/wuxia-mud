@@ -308,6 +308,21 @@ function buildCommands(world) {
       text: `出口：${Object.keys(exitMap).map(d => (DIR_CN[d] || d) + '·' + exitMap[d].name).join('　') || '无'}。`,
       exits: Object.keys(room.exits || {}),
       exitMap,
+      /* 方向按钮排：以前这些按钮放在房间面板里（#exits），压在「此处可做」上面，
+         跟日志里已经有的「出口」行功能重复。主人报「屏幕上有两个此地可做」，
+         要求把方向按钮收到出口那块去 → 改成跟着「出口」行走（UI：ui.js renderLogText）。
+         这里传全量出口数据（含 locked），比只给 dir 数组强。 */
+      exitBtns: Object.keys(room.exits || {}).map(d => {
+        const ex = room.exits[d];
+        const tid = typeof ex === 'string' ? ex : (ex && ex.to);
+        const tr = w.getRoom(tid);
+        return {
+          dir: d,
+          name: DIR_CN[d] || d,
+          toName: tr ? tr.name : '未知',
+          locked: !!(ex && typeof ex === 'object' && ex.locked),
+        };
+      }),
       roomName: room.name,
     });
     // 互动出口：单独描述，互动词可点击

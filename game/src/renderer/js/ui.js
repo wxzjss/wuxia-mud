@@ -160,8 +160,21 @@
     let desc = room.desc || '';
     $('room-desc').innerHTML = esc(desc).replace(/\n/g, '<br>');
 
-    /* 出口：后端字段是顶层 v.exits（不是 room.exits —— room 里没有 exits），
-       每项 { dir, name(中文方位), to, toName, locked }。两处都兜一下，老存档视图也能渲染。 */
+    /* ⚠️ 出口按钮 + 「此地可做」按钮**不再**画在房间面板里了。
+       以前这两块（#exits / #room-actions）挤在房间描述下面，跟日志流里
+       已经有的「出口：…」行、「此地可做：…」行完全重复——主人报「屏幕上有
+       两个『此地可做』」。现在统一：
+         · 方向按钮排 → 跟日志的「出口」行走（renderLogText 里的 exitBtns）
+         · 可做的事   → 日志的「此地可做」行（本来就是可点的 hl 高亮）
+       这里只保留「最近一次的」两个块做兜底（万一有人跑老 HTML / 老 view 结构），
+       DOM 里没有就整体跳过，绝不再插 DOM 造成第二处。 */
+    if ($('exits')) renderExitButtons(v);
+    if ($('room-actions')) renderRoomActions(v);
+  }
+
+  /* 出口方向按钮（保底路径：只在 HTML 里仍有 #exits 时才画） */
+  function renderExitButtons(v) {
+    const room = v.room || {};
     const ex = (v && v.exits) || (room && room.exits) || [];
     const box = $('exits');
     box.innerHTML = '';
@@ -175,23 +188,12 @@
       box.appendChild(b);
     });
     if (!ex.length) box.innerHTML = '<span class="no-exit">此处无路可走</span>';
-
-    /* 此地可做的事（房间 actions）—— 用不同颜色标出来，点了直接执行 */
-    renderRoomActions(v);
   }
 
-  /* 房间交互物：视觉上与普通文字区分，点击弹出「做什么」或灰色提示 */
+  /* 「此地可做」按钮（保底路径：只在 HTML 里仍有 #room-actions 时才画） */
   function renderRoomActions(v) {
     let box = $('room-actions');
-    if (!box) {
-      /* DOM 里没有就临时插到出口下面（保证老 HTML 也能用） */
-      const exits = $('exits');
-      if (!exits || !exits.parentNode) return;
-      box = document.createElement('div');
-      box.id = 'room-actions';
-      box.className = 'room-actions';
-      exits.parentNode.insertBefore(box, exits.nextSibling);
-    }
+    if (!box) return;   /* DOM 里没有就什么都不做 —— 绝不临时插一个新块 */
     const acts = v.roomActions || [];
     if (!acts.length) { box.innerHTML = ''; box.style.display = 'none'; return; }
     box.style.display = '';
@@ -237,6 +239,10 @@
       const item = { type, text };
       if (l.hl && l.hl.length) item.hl = l.hl;
       if (l.exits) item.exits = l.exits;
+      /* exitMap / exitBtns：出口行的方向按钮排（跟着「出口」行走） */
+      if (l.exitMap) item.exitMap = l.exitMap;
+      if (l.exitBtns && l.exitBtns.length) item.exitBtns = l.exitBtns;
+      if (l.roomName) item.roomName = l.roomName;
       logLines.push(item);
     });
     if (logLines.length > MAX_LOG) logLines = logLines.slice(logLines.length - MAX_LOG);
@@ -262,6 +268,10 @@
     });
     /* 出口方向可点击：点「北」就走一格 */
     el.querySelectorAll('.exit-inline').forEach(b => {
+      b.onclick = () => doCmd(b.getAttribute('data-dir'), { fromButton: true });
+    });
+    /* 「出口」行下方那排方向按钮（东南西北+地名），同上 */
+    el.querySelectorAll('.exit-btns .exit-btn').forEach(b => {
       b.onclick = () => doCmd(b.getAttribute('data-dir'), { fromButton: true });
     });
     if (scroll !== false) el.scrollTop = el.scrollHeight;
@@ -295,6 +305,17 @@
     return '<span class="exit-map">' + rows.map(r => '<span class="er">' + r + '</span>').join('') + '</span>';
   }
 
+  /* 方向按钮排（跟着日志的「出口」行走）：东南西北 + 目标地名，一点就走 */
+  function exitBtnRowHtml(btns) {
+    return '<span class="exit-btns">' + btns.map(b =>
+      '<button class="exit-btn' + (b.locked ? ' locked' : '') + '" data-dir="' + esc(b.dir) +
+      '" title="' + (b.locked
+        ? '通往「' + esc(b.toName) + '」（尚未满足条件）'
+        : '向' + esc(b.name) + '走，前往「' + esc(b.toName) + '」') + '">' +
+      esc(b.name) + '<i>' + esc(b.toName) + '</i></button>'
+    ).join('') + '</span>';
+  }
+
   /* 日志文本渲染：
      - l.hl = [{text, type, actions:[{label, cmd, hint}]}] → 名词高亮，点击弹菜单
      - l.exitMap = {dir:{dir,to,name}} → 出口 ASCII 方位图（可点击前往）
@@ -318,9 +339,14 @@
       });
     }
 
-    /* ② 出口：有 exitMap 就渲染 ASCII 方位图（替代文字列表） */
+    /* ② 出口：有 exitMap 就渲染 ASCII 方位图（替代文字列表）
+          + 方向按钮排 exitBtns（主人要求：把方向按钮收到「出口」这里。
+            以前这些按钮在房间面板里，压在「此处可做」上方，跟日志里已有的
+            「出口」行功能重复，还让屏幕出现两个「此处可做」）。 */
     if (l.exitMap && Object.keys(l.exitMap).length) {
-      return '出口：' + exitMapHtml(l.exitMap, l.roomName);
+      let out = '出口：' + exitMapHtml(l.exitMap, l.roomName);
+      if (l.exitBtns && l.exitBtns.length) out += exitBtnRowHtml(l.exitBtns);
+      return out;
     }
 
     /* ③ 出口方向（无 exitMap 时的保底）：按方向名长度降序替换，避免「北」误伤「东北」 */
@@ -2389,10 +2415,17 @@
       const tag = (e.target.tagName || '').toLowerCase();
       if (tag === 'input' || tag === 'textarea') return;
 
-      /* 数字键 1-9 = 方向/快捷 */
+      /* 数字键 1-9 = 方向/快捷。
+         方向按钮排现在跟着日志的「出口」行走（#exits 那个块已从房间面板移除）。
+         ⚠️ 日志里堆着历史房间的出口行，必须只取**最后一个** .exit-btns，
+         否则数字键会走到上一个房间去。 */
       if (e.key >= '1' && e.key <= '9') {
         const idx = +e.key - 1;
-        const btns = document.querySelectorAll('#exits .exit-btn');
+        const rows = document.querySelectorAll('.exit-btns');
+        const host = rows.length ? rows[rows.length - 1] : null;
+        const btns = host
+          ? host.querySelectorAll('.exit-btn')
+          : document.querySelectorAll('#exits .exit-btn');
         if (btns[idx]) { e.preventDefault(); btns[idx].click(); }
         return;
       }
