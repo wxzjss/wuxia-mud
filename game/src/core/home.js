@@ -196,20 +196,36 @@ function buy(world, tierId) {
   ] };
 }
 
-/** 找一个能挂玩家宅子的里弄（同区域，方向有空） */
+/** 找一个能挂玩家宅子的落脚房间（同区域，方向有空）
+ *
+ *  ⚠️ fang_*「巷陌」已在 SPRINT-A 步骤 2 全部删除（那是凑数填充物，
+ *     还把不同门派掌门串在一家客栈巷子里）。这里改成挂**普通房间**。
+ *     排除项：
+ *       - hm_* NPC 住宅（那是别人的家，玩家宅不能混进去，否则「房屋不连片」白做）
+ *       - 玩家已有的家
+ *       - 衙门/铺子这类不宜加建的房间（respawn 有 NPC 常驻的也不动）
+ */
 function findHostFang(world, hmId) {
   const DIRS = ['n', 's', 'ne', 'nw', 'se', 'sw', 'e', 'w'];
   const BACK = { n: 's', s: 'n', e: 'w', w: 'e', ne: 'sw', sw: 'ne', nw: 'se', se: 'nw' };
   /* 优先挂江南（玩家出生地附近） */
   const prefer = ['jiangnan', 'market', 'cunzhen', 'gusu', 'yamen'];
   const order = prefer.concat(Object.keys(world.data.regions || {}));
+  const seen = new Set();
   for (const region of order) {
+    if (seen.has(region)) continue;
+    seen.add(region);
     for (const id of Object.keys(world.data.rooms)) {
       const r = world.data.rooms[id];
-      if (!id.startsWith('fang_') || r.region !== region) continue;
+      if (r.region !== region) continue;
+      if (id === hmId) continue;
+      /* 别挂到别人家里去 */
+      if (id.startsWith('hm_')) continue;
+      /* 有 NPC 常驻的房间也不动（加个出口等于把人家后院开了个门） */
+      if (r.respawn && r.respawn.length) continue;
       for (const dir of DIRS) {
         if (r.exits && r.exits[dir]) continue;
-        if (BACK[dir] && r.exits[BACK[dir]]) continue;
+        if (BACK[dir] && r.exits && r.exits[BACK[dir]]) continue;
         return { fang: id, dir, region };
       }
     }

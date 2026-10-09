@@ -16,12 +16,19 @@ const JOBS = [
   { key: 'herbalist', name: '抓药', wage: 20, timeCost: 30, foodCost: 10, waterCost: 8, roomRe: /(pharmacy|药铺|医馆|药房|杏林|回春堂|药)/ },
 ];
 
-/** 青楼房间识别 */
-const BROTHEL_RE = /青楼|勾栏|教坊|花楼|妓院|怡红|平康|翠云|凤来|天香阁/;
+/** 青楼房间识别
+ *  ⚠️ 两处判定曾经分叉过（work.js 认「怡红/翠云/凤来」但漏 region；
+ *     kidnap.js 认 region 但漏「怡红院/牡丹阁/翠云楼/凤来仪」），
+ *     结果是玩家在江南以外的城市赎身会静默走进兜底分支。
+ *     现在统一成同一份正则 + 一条 region 捷径，谁都别再单独改。
+ *  ⚠️ 只加明确带妓业意味的词，不加裸「楼/阁」——带楼阁的普通建筑太多。*/
+const BROTHEL_RE = /青楼|勾栏|教坊|花楼|妓院|妓|窑子|清倌|丽人院|醉春楼|楚馆|平康坊|宜春院|怡红院|牡丹阁|翠云楼|凤来仪|绮罗院|春香阁|听雨楼|望江阁|天香阁/;
 
 function isBrothel(world, roomId) {
   const r = world.getRoom(roomId);
-  return !!r && BROTHEL_RE.test(r.name || '');
+  if (!r) return false;
+  if (r.region === 'qinglou') return true;   /* 醉春楼那几间在数据里标了 region */
+  return BROTHEL_RE.test(r.name || '');
 }
 
 /** 当前房间能不能打工 */

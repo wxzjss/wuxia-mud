@@ -394,7 +394,12 @@ function sponsorNpcHome(world, kw, tierKw) {
   }
   const def = world.data.npcs[target.defId] || {};
   const npcName = target.name || def.name || target.defId;
-  if (target.home || def.home) {
+  /* 「已有住处」只看**真实房间**。
+   * ⚠️ SPRINT-A 步骤 2 起，C 层 NPC 的 home 是虚拟标记 `house:<npcId>`
+   *    （家不上地图，靠拜访才进），那不算有房——否则人人都「已有住处」，
+   *    资助盖房这个功能会对所有人失效。 */
+  const hasRealHome = (h) => !!(h && !String(h).startsWith('house:') && world.data.rooms[h]);
+  if (hasRealHome(target.home) || hasRealHome(def.home)) {
     return { ok: false, lines: [{ kind: 'warn', text: `${npcName}已有住处，不必你操心。` }] };
   }
   if (est.sponsored[target.defId]) {
