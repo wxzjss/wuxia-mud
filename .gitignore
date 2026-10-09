@@ -14,3 +14,7 @@ tools/_bak/
 .mod-trash/
 mods-state.json
 mods/e2e_cross/
+# tools/smoke-test.js 跑完落下的遗留，不是真 Mod
+mods/test_mod/
+# NPC 数据核对用的临时表
+_tmp_npc_table.txt

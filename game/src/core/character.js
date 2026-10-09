@@ -56,7 +56,11 @@ class Character {
     this.parryBase = def.parry || 5;
     this.speedBase = def.speed || 10;
 
-    this.atk = 0; this.def = 0; this.dodge = 0; this.parry = 0; this.speed = 0;
+    /* ⚠️ 字段语义裁决：`.def` 是 **NPC 模板对象引用**（由 world.spawnNpc 写入），
+       Character 绝不写它 —— 防御力数值一律写 `defFinal`。
+       历史上 recalc() 会把 this.def 写成数字，把模板引用冲掉，
+       导致 combat.js 的伤害公式拿对象做乘法 → NaN（SPRINT1-ENG-02）。 */
+    this.atk = 0; this.defFinal = 0; this.dodge = 0; this.parry = 0; this.speed = 0;
     this.critRate = 0.05; this.critDmg = 1.6;
     this.armorPen = 0; this.lifesteal = 0; this.reflect = 0;
 
@@ -241,7 +245,8 @@ class Character {
     this.maxHp = Math.floor(maxHp);
     this.maxMp = Math.floor(maxMp);
     this.atk = Math.floor(atk);
-    this.def = Math.floor(def);
+    /* 防御力数值 → defFinal（def 留给模板对象引用，见本文件 constructor 注释） */
+    this.defFinal = Math.floor(def);
     this.dodge = Math.floor(dodge);
     this.parry = Math.floor(parry);
     this.speed = Math.floor(speed);

@@ -10,6 +10,28 @@
 
 const { clamp } = require('./utils');
 
+/**
+ * defenseOf(u) —— 取一个战斗单位的**防御力数值**（唯一入口，别再直接读 u.def）。
+ *
+ * 背景（SPRINT1-ENG-02，P0）：`def` 这个字段名撞了两次——
+ *   · world.spawnNpc() 把 NPC 实例上的 def 写成模板对象（data.npcs[defId]）；
+ *   · 旧版 Character.recalc() 又把同一个 def 写成防御力数字。
+ * 于是伤害公式里「100 / (100 + 防御力 × (1 − 破防))」这一段，
+ * 防御力取到的是模板对象，做乘法直接变 NaN；
+ * `Math.max(1, Math.floor(NaN))` 仍是 NaN，最后写回 hp → 玩家打谁都不掉血。
+ *
+ * 裁决：**`def` 只保留一个含义 = 模板对象引用；防御力数值改由 `defFinal` 承载。**
+ * 三层兜底是为了兼容旧存档（旧档里 def 被序列化成了数字，且没有 defFinal）：
+ *   ① defFinal（新档 / 新代码）  ② 数字形态的 def（旧档）  ③ defBase（模板原始防御力）
+ * 绝不返回 undefined / NaN / 对象。
+ */
+function defenseOf(u) {
+  if (!u) return 0;
+  if (typeof u.defFinal === 'number') return Number.isFinite(u.defFinal) ? u.defFinal : 0;
+  if (typeof u.def === 'number') return Number.isFinite(u.def) ? u.def : 0;
+  return typeof u.defBase === 'number' && Number.isFinite(u.defBase) ? u.defBase : 0;
+}
+
 const DEFAULT_HOOKS = {
   // 命中判定：返回 bool
   hitRoll(attacker, defender, skill, ctx) {
@@ -22,7 +44,8 @@ const DEFAULT_HOOKS = {
   damage(attacker, defender, base, ctx) {
     const pen = ctx.armorPen || 0;
     let d = base * (ctx.mult || 1);
-    d = d * (100 / (100 + defender.def * (1 - Math.min(0.7, pen))));
+    /* 走 defenseOf()，别直接读 defender 上的 def —— 那是 NPC 模板对象，乘出来是 NaN */
+    d = d * (100 / (100 + defenseOf(defender) * (1 - Math.min(0.7, pen))));
     // 随机浮动
     d *= 0.85 + ctx.world.rng.next() * 0.3;
     return Math.max(1, Math.floor(d));
@@ -356,4 +379,4 @@ class CombatEngine {
   }
 }
 
-module.exports = { CombatEngine, DEFAULT_HOOKS };
+module.exports = { CombatEngine, DEFAULT_HOOKS, defenseOf };

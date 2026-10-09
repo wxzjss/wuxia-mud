@@ -370,7 +370,9 @@ class GameEngine {
       potential: p.potential, title: p.title, titles: p.titles,
       sect: p.sect, sectName: p.sect ? (w.getSect(p.sect) || {}).name : null,
       rank: p.rank, rankName: p.sect && w.getSect(p.sect) && w.getSect(p.sect).ranks ? w.getSect(p.sect).ranks[p.rank] : null,
-      attr: p.attr, atk: p.atk, def: p.def, dodge: p.dodge, parry: p.parry, speed: p.speed,
+      /* def 的键名是 UI 契约，保持不变；值取玩家的 defFinal（防御力数值）。
+         def 这个名字已被 NPC 模板对象占用，不能当数字读。 */
+      attr: p.attr, atk: p.atk, def: p.defFinal, dodge: p.dodge, parry: p.parry, speed: p.speed,
       critRate: p.critRate, age: p.age,
       buffs: p.buffs.map(b => ({ name: b.name, turns: b.turns })),
       traits: p.traits.map(t => { const td = w.getTrait(t); return { id: t, name: td ? td.name : t, desc: td ? td.desc : '' }; }),

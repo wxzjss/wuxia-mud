@@ -406,7 +406,8 @@ function buildCommands(world) {
     lines.push({ kind: 'bar', text: '饮水', cur: p.water, max: p.maxWater, color: 'water' });
     lines.push({ kind: 'plain', text: `银钱：${p.goldText()}` });
     lines.push({ kind: 'plain', text: `正邪：${p.karma > 50 ? '正道侠士' : p.karma < -50 ? '邪道中人' : '亦正亦邪'}（${p.karma}）　击杀：${p.kills}` });
-    lines.push({ kind: 'plain', text: `攻 ${p.atk}　防 ${p.def}　闪避 ${p.dodge}　招架 ${p.parry}　身速 ${p.speed}　暴击 ${(p.critRate * 100).toFixed(0)}%` });
+    /* 防 = 玩家的 defFinal。def 这个名字已被 NPC 模板对象占用，玩家侧不读它 */
+    lines.push({ kind: 'plain', text: `攻 ${p.atk}　防 ${p.defFinal}　闪避 ${p.dodge}　招架 ${p.parry}　身速 ${p.speed}　暴击 ${(p.critRate * 100).toFixed(0)}%` });
     if (p.insect) {
       const ins = w.data.insects ? w.data.insects[p.insect] : null;
       lines.push({ kind: 'plain', text: `蛊：${ins ? ins.name : p.insect}` });

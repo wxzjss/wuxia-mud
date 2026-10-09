@@ -30,7 +30,8 @@ const WEATHERS = ['晴', '阴', '雨', '雪', '风', '雾'];
    存档才能 JSON.stringify。恢复时由 deserialize 重新挂回 world。 */
 /* 'def' 也必须丢：npc.def 指向 data.npcs[defId] 的模板对象，
    每个实例都存一份 = 320 份模板副本进存档（实测 30 个 NPC 就占 105KB）。
-   模板不随档变，deserialize 时按 defId 从 data 反查挂回即可。 */
+   模板不随档变，deserialize 时按 defId 从 data 反查挂回即可。
+   ⚠️ 注意 defFinal（防御力数值）**不能丢** —— 它是运行期算出来的，必须随档走。 */
 const INSTANCE_DROP = new Set(['world', '_events', '_eventsCount', 'bus', 'engine', 'cmds', 'def', 'portrait']);
 function cleanInstance(v, depth) {
   depth = depth || 0;
@@ -1465,9 +1466,13 @@ class World extends EventEmitter {
       if (!n.attr) n.attr = {};
       n.recalc && n.recalc();
       /* 存档不存 npc.def（模板副本太大），按 defId 从 data 反查挂回。
-         必须在 recalc() 之后 —— recalc() 会把 n.def 写成防御力数字，
-         所以判定用 typeof !== 'object'，不能只判 !n.def。 */
+         判定必须用 typeof !== 'object'、不能只判 !n.def：
+         SPRINT1-ENG-02 之前 recalc() 会把 n.def 写成防御力数字，
+         那种**旧档**里 def 是个非零的数字，只判 !n.def 就挂不回模板了。
+         （现在 recalc() 改写 defFinal 了，但旧档仍然可能存在，这层兜底不能拆。） */
       if (n.defId && (!n.def || typeof n.def !== 'object')) n.def = this.data.npcs[n.defId] || null;
+      /* 旧档补偿：旧档没有 defFinal（那时叫 def），伤害公式靠 combat.defenseOf()
+         的二/三层兜底读，这里不动它 —— 动了就会把「旧档防御力」抹成 0。 */
       /* portrait 是模板静态数据（只读），同样不入档，按模板 clone 回来；
          玩家进度全在 pstate 里，pstate 是入档的。旧档若已有 portrait 则保留。 */
       if (n.portrait === undefined && n.def && n.def.portrait) n.portrait = clone(n.def.portrait);

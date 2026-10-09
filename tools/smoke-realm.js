@@ -40,12 +40,13 @@ section('3. 等级不再加属性');
   e.boot();
   e.newGame({ name: '凡人', gender: 'male' });
   const w = e.world, p = w.player;
-  const a0 = p.atk, h0 = p.maxHp, d0 = p.def;
+  /* 防御力数值读 defFinal —— def 是 NPC 模板对象的字段名（SPRINT1-ENG-02） */
+  const a0 = p.atk, h0 = p.maxHp, d0 = p.defFinal;
   p.level = 99; // 直接把等级拉满
   p.recalc();
   ok('等级拉满不加攻击', p.atk === a0, 'atk ' + a0 + '→' + p.atk);
   ok('等级拉满不加气血', p.maxHp === h0, 'hp ' + h0 + '→' + p.maxHp);
-  ok('等级拉满不加防御', p.def === d0, 'def ' + d0 + '→' + p.def);
+  ok('等级拉满不加防御', p.defFinal === d0, 'defFinal ' + d0 + '→' + p.defFinal);
 }
 
 /* ============ 4. 练武变强 ============ */
