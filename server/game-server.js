@@ -243,6 +243,15 @@ async function handleApi(engine, req, res, pn, query, preset) {
         return json(res, 200, { ok: true, lines: r.lines, view: r.view });
       }
 
+      /* --- 新手教程标记上报 ---
+         面板类指令（i/score/attr）在前端被拦成面板，不走 exec，
+         后端收不到动作，所以前端显式补报。只接受白名单里的 flag。 */
+      case 'guide/mark': {
+        const flag = json_body && json_body.flag;
+        const ok = engine.markTutorialFlag(flag);
+        return json(res, 200, { ok: !!ok, view: engine.view() });
+      }
+
       /* --- 战斗 --- */
       case 'combat': {
         const r = engine.combatAction((json_body && json_body.action) || 'attack', json_body || {});

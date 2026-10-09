@@ -712,6 +712,20 @@ class GameEngine {
     }
   }
 
+  /* 新手引导：前端显式上报一个标记（面板类指令不进 exec，只能走这里）
+   * 白名单校验：flag 必须是 CMD_FLAGS 的**值**之一，防止前端传脏数据。 */
+  markTutorialFlag(flag) {
+    const p = this.world.player;
+    if (!p || !flag) return false;
+    const valid = Object.keys(tutorial.CMD_FLAGS).some(k => tutorial.CMD_FLAGS[k] === flag);
+    if (!valid) return false;
+    if (!p.tutorialFlags) p.tutorialFlags = [];
+    if (p.tutorialFlags.indexOf(flag) >= 0) return true;
+    p.tutorialFlags.push(flag);
+    p.setFlag('tut_' + flag, true);
+    return true;
+  }
+
   postProcess(lines, beforeRoom, opts) {
     const w = this.world, p = w.player;
     if (!p) return;

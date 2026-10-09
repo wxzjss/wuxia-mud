@@ -136,6 +136,19 @@
       return d;
     },
 
+    /* 新手教程标记上报：面板类指令不进 exec，后端收不到动作，
+       由前端在这里补报（详见 ui.js doCmd 的面板分支） */
+    async markGuide(flag) {
+      try {
+        const d = await jfetch('/api/guide/mark', { method: 'POST', body: JSON.stringify({ flag }) });
+        if (d.view) S.view = d.view;
+        return d;
+      } catch (e) {
+        /* 上报失败不该影响玩家看面板，静默忽略 */
+        return null;
+      }
+    },
+
     /* 弹窗中的选项（对话树 / 商店 / 出厂菜单等） */
     async menu(payload) {
       const d = await jfetch('/api/menu', { method: 'POST', body: JSON.stringify(payload) });

@@ -446,6 +446,10 @@ body::before {
 .gp-step { display: flex; gap: 10px; padding: 9px 11px; border-radius: 6px; background: #faf8f3; border: 1px solid var(--line-2); }
 .gp-step.done { background: #f3f8f5; border-color: #d3e5da; }
 .gp-step.cur { background: #fffdf4; border-color: #e6d9b6; box-shadow: 0 0 0 2px rgba(200, 170, 90, .12); }
+/* locked：前置步骤没完成，这步锁着（灰掉，不给假希望） */
+.gp-step.locked { opacity: .5; background: #f7f6f3; }
+.gp-step.locked .gps-goal { color: var(--ink-4); }
+.gp-step.locked .gps-hint { display: none; }
 .gps-idx { flex: 0 0 21px; height: 21px; line-height: 21px; text-align: center; border-radius: 50%; font-size: 11.5px; background: var(--line-2); color: var(--ink-3); }
 .gp-step.done .gps-idx { background: var(--jade); color: #fff; }
 .gp-step.cur .gps-idx { background: var(--gold); color: #fff; font-weight: 700; }
@@ -558,7 +562,10 @@ body::before {
 .dot-unknown { background: var(--line); }
 
 /* 连续大地图：网格底纸 + 粗走廊 + 密排方块，看起来是一整张图 */
-.map-canvas { position: relative; background: #fbfaf6; border: 1px solid var(--line); border-radius: 7px; overflow: auto; max-height: 54vh; margin-bottom: 12px; }
+.map-canvas { position: relative; background: #fbfaf6; border: 1px solid var(--line); border-radius: 7px; overflow: auto; max-height: 54vh; margin-bottom: 12px;
+  /* 斜向平移：自己处理手势，禁掉浏览器一次只走一个轴的原生滚动 */
+  touch-action: none; cursor: grab; -webkit-overflow-scrolling: auto; }
+.map-canvas.panning { cursor: grabbing; user-select: none; -webkit-user-select: none; }
 .map-grid-bg { position: absolute; z-index: 0; pointer-events: none;
   background-image: linear-gradient(rgba(190,180,155,.16) 1px, transparent 1px),
                     linear-gradient(90deg, rgba(190,180,155,.16) 1px, transparent 1px);
@@ -608,8 +615,18 @@ body::before {
 .mq-btn:hover { background: var(--gold); color: #fff; border-color: var(--gold); }
 
 .map-regions-overview { display: flex; flex-wrap: wrap; gap: 6px 14px; padding-top: 10px; border-top: 1px dashed var(--line-2); }
-.mro-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink-3); }
+.mro-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink-3);
+  padding: 2px 5px; border-radius: 4px; cursor: pointer; }
+.mro-item:hover { background: rgba(0,0,0,.04); }
 .mro-item.cur { color: var(--red); font-weight: 600; }
+
+/* 视野切换栏：当前区域 / 天下全图 */
+.map-scope { display: flex; align-items: center; gap: 7px; margin-bottom: 9px; flex-wrap: wrap; }
+.ms-btn { padding: 4px 13px; border-radius: 15px; border: 1px solid var(--line-2);
+  background: #faf8f3; color: var(--ink-3); font-size: 12.5px; cursor: pointer; font-family: var(--font); }
+.ms-btn:hover { background: #fff; }
+.ms-btn.on { background: var(--jade); border-color: var(--jade); color: #fff; font-weight: 600; }
+.ms-where { font-size: 12px; color: var(--ink-4); margin-left: 3px; }
 .mro-dot { width: 8px; height: 8px; border-radius: 2px; }
 .mro-num { color: var(--ink-4); font-size: 11px; }
 

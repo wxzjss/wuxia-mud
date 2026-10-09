@@ -309,7 +309,9 @@ function ok(name, cond, extra) {
     name: '试剑', title: '少侠', gender: 'male', realm: '初窥门径',
     sectName: '华山派', rankName: '弟子', age: 22, kills: 5,
     hp: 50, maxHp: 68, mp: 10, maxMp: 20, food: 80, maxFood: 100, water: 70, maxWater: 100,
-    potential: 200, money: 150, karma: 0, reputation: 30,
+    potential: 200, money: 150, karma: 0,
+    /* 真实结构是「键→数值」对象（门派名/恶名等动态键），不是数字 */
+    reputation: { '华山派': 30, '恶名': 5 },
   } };
   const prevView6 = api.view;
   api.view = async () => ({ view: SCORE_VIEW });
@@ -320,7 +322,8 @@ function ok(name, cond, extra) {
   ok('状态面板标题为「状态一览」', els['modal-title'].textContent === '状态一览');
   ok('气血显示正确数值', /气血/.test(mb2) && /50 \/ 68/.test(mb2));
   ok('内力显示正确数值', /内力/.test(mb2) && /10 \/ 20/.test(mb2));
-  ok('声望显示数值', /声望/.test(mb2) && />30</.test(mb2));
+  ok('声望渲染成可读文本（不是 [object Object]）',
+    /声望/.test(mb2) && !/object Object/.test(mb2) && /华山派 30/.test(mb2), mb2.match(/声望[^<]*<[^>]*>([^<]*)</)?.[1]);
   ok('显示境界而非等级', /境界/.test(mb2) && /初窥门径/.test(mb2) && !/等级/.test(mb2));
   ok('显示饱食饮水（生存）', /饱食/.test(mb2) && /80 \/ 100/.test(mb2) && /饮水/.test(mb2));
 

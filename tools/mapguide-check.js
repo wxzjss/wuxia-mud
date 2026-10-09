@@ -17,9 +17,9 @@ function esc(s) {
 const MAP_CELL = 30, MAP_NODE = 26, MAP_PAD = 34;
 const DIR_CN = { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下' };
 const DIR_OFF = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0], u: [0, -1], d: [0, 1] };
-const built = new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF',
+const built = new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF', 'mapScope',
   grab('mapHtml') + '\n' + grab('shortName') + '\n' + grab('guideHtml') + '\nreturn { mapHtml, guideHtml, shortName };')(
-    esc, MAP_CELL, MAP_NODE, MAP_PAD, DIR_CN, DIR_OFF);
+    esc, MAP_CELL, MAP_NODE, MAP_PAD, DIR_CN, DIR_OFF, 'region');
 
 let pass = 0, fail = 0;
 function ok(name, cond, extra) {
@@ -57,28 +57,42 @@ function ok(name, cond, extra) {
   ok('含区域底色块', mh.includes('map-region-box'));
   ok('含房间节点', mh.includes('map-node'));
   ok('含图例', mh.includes('map-legend'));
-  ok('含探索进度', mh.includes('江湖探索'));
+  ok('含探索进度', mh.includes('本范围') && mh.includes('全江湖'));
   ok('含相邻房间快捷', mh.includes('一步可达'));
 
   /* —— 地形装饰层 —— */
   console.log('\n── 地形装饰 ──');
   const terr = v.map && v.map.terrain;
-  const terrCount = terr ? Object.keys(terr).reduce((s, k) => s + terr[k].length, 0) : 0;
-  ok('后端 mapView 返回 terrain', !!terr && terrCount > 0, 'terrain 格数=' + terrCount);
+  ok('后端 mapView 返回 terrain', !!terr && Object.keys(terr).length > 0,
+    'terrain 区域数=' + (terr ? Object.keys(terr).length : 0));
   ok('地图上渲染出地形装饰', mh.includes('map-terrain-layer') && mh.includes('map-terrain '));
-  const terrCells = (mh.match(/class="map-terrain /g) || []).length;
-  ok('地形格数与后端一致（不因渲染丢失）', terrCells > 0 && terrCells <= terrCount,
-    '渲染 ' + terrCells + ' / 后端 ' + terrCount);
-  /* 坐标必须是全局的：装饰格的 px 应落在画布内，不能全挤在左上 */
-  const tpos = [...mh.matchAll(/class="map-terrain [^"]*"\s+style="left:(-?\d+)px;top:(-?\d+)px"/g)]
-    .map(m => [parseInt(m[1], 10), parseInt(m[2], 10)]);
   /* ⚠️ 必须查 NaN：cx/cy 传错字段名时坐标全是 NaN，但格子数量仍然对，
      只断言「数量一致」会假绿（真踩过一次）。 */
   ok('地形坐标无 NaN', !/style="left:NaN|top:NaN/.test(mh),
     (mh.match(/top:NaN/g) || []).length + ' 个 NaN 坐标');
-  ok('地形坐标分布在整张图（全局坐标，未再减 box 偏移）', tpos.length > 50 &&
-    tpos.some(p => p[0] > 200) && tpos.some(p => p[1] > 200),
-    '最远 x=' + Math.max(...tpos.map(p => p[0])) + ' y=' + Math.max(...tpos.map(p => p[1])));
+
+  /* —— 两级地图视野（默认只看当前区域）—— */
+  console.log('\n── 两级地图视野 ──');
+  const curRoom = m.rooms.find(r => r.current);
+  const curTerr = (terr && curRoom && terr[curRoom.region] || []).length;
+  const terrCells = (mh.match(/class="map-terrain /g) || []).length;
+  ok('默认只渲染当前区域的地形', terrCells > 0 && terrCells <= curTerr,
+    '渲染 ' + terrCells + ' / 当前区域共 ' + curTerr);
+  ok('有视野切换栏', mh.includes('data-scope="region"') && mh.includes('data-scope="world"'));
+  const cb = (m.regionBoxes || {})[curRoom.region];
+  const cw = (cb.w * 30 + 68) + 'px', chh = (cb.h * 30 + 68) + 'px';
+  ok('region 模式画布=当前区域大小（不是全图）',
+    mh.includes('width:' + cw + ';height:' + chh),
+    '区域 ' + curRoom.region + ' ' + cb.w + 'x' + cb.h + ' → 期望 ' + cw + 'x' + chh);
+  const shownNodes = (mh.match(/class="map-node/g) || []).length;
+  const scopeRooms = m.rooms.filter(r => r.region === curRoom.region).length;
+  ok('region 模式只渲染本区域房间', shownNodes === scopeRooms,
+    '渲染 ' + shownNodes + ' / 本区域 ' + scopeRooms);
+  ok('region 模式只画本区域底色块', (mh.match(/map-region-box/g) || []).length === 1,
+    '底色块 ' + (mh.match(/map-region-box/g) || []).length);
+  ok('画布远小于全图（不会一打开就看老远）',
+    parseInt(cw, 10) < 900, '画布宽 ' + cw + '（全图约 2178px）');
+  ok('探索度分开显示（本范围 + 全江湖）', mh.includes('本范围') && mh.includes('全江湖'));
 
   /* —— 连续大地图断言（本轮修复「被分割成很多房间」）—— */
   console.log('\n── 连续大地图 ──');
@@ -203,6 +217,78 @@ function ok(name, cond, extra) {
   ok('lookRoom 日志带可点名词', !!hlLine, hlLine ? hlLine.text.slice(0, 30) : '无');
   if (hlLine) {
     ok('可点名词带 actions（中文操作菜单）', hlLine.hl.every(h => h.actions && h.actions.length), hlLine.hl.map(h => h.text + '→' + (h.actions || []).map(a => a.label).join('/')).join(' '));
+  }
+
+  /* 7) 斜向平移：真跑 bindMapPan 的手势逻辑（主人报的 bug） */
+  {
+    const CFG = fs.readFileSync(path.join(ROOT, 'game/src/renderer/css/main.css'), 'utf8');
+    ok('地图禁掉浏览器单轴原生滚动（touch-action:none）',
+      /\.map-canvas[\s\S]{0,400}touch-action:\s*none/.test(CFG));
+    ok('拖拽中有 panning 光标态', /\.map-canvas\.panning/.test(CFG));
+
+    const PAN = grab('bindMapPan');
+    ok('bindMapPan 可抠出', PAN.indexOf('function bindMapPan') >= 0, PAN.slice(0, 40));
+
+    /* 造一个假画布 + 假 window，把函数真跑一遍 */
+    const listeners = {};
+    const winL = {};
+    const canvas = {
+      scrollLeft: 0, scrollTop: 0, scrollWidth: 2000, clientWidth: 500,
+      classList: { _s: {}, add(c) { this._s[c] = 1; }, remove(c) { delete this._s[c]; } },
+      addEventListener(t, f) { (listeners[t] = listeners[t] || []).push(f); },
+      removeEventListener() {},
+    };
+    const fakeWin = {
+      addEventListener(t, f) { (winL[t] = winL[t] || []).push(f); },
+      setTimeout: (f) => f(),
+    };
+    let captured = null;
+    canvas.addEventListener = function (t, f, cap) {
+      if (t === 'click' && cap) { captured = f; return; }
+      (listeners[t] = listeners[t] || []).push(f);
+    };
+    const fire = (t, e) => (listeners[t] || []).forEach(f => f(e));
+    const fireWin = (t, e) => (winL[t] || []).forEach(f => f(e));
+    const ev = (x, y) => ({ clientX: x, clientY: y, button: 0, cancelable: true,
+      preventDefault() { this.defaulted = true; }, stopPropagation() { this.stopped = true; } });
+
+    new Function('document', 'window', PAN + '\nreturn bindMapPan;')(
+      { querySelector: () => canvas }, fakeWin)();
+
+    ok('已绑定 mousedown/touchstart', !!(listeners.mousedown && listeners.touchstart));
+
+    /* 从 (100,100) 拖到 (60,70) = 左上斜向 40/30 */
+    fire('mousedown', ev(100, 100));
+    ok('按下后进入 panning 态', !!canvas.classList._s.panning);
+    fireWin('mousemove', ev(60, 70));
+    ok('拖到左上 → scrollLeft 增大 40', canvas.scrollLeft === 40, 'scrollLeft=' + canvas.scrollLeft);
+    ok('拖到左上 → scrollTop 增大 30', canvas.scrollTop === 30, 'scrollTop=' + canvas.scrollTop);
+    ok('斜向拖动两轴同时变化（不是单轴）',
+      canvas.scrollLeft > 0 && canvas.scrollTop > 0);
+
+    fireWin('mouseup', ev(60, 70));
+    ok('松手后退出 panning 态', !canvas.classList._s.panning);
+    ok('拖动后装上捕获期 click 拦截（防误触走路）', typeof captured === 'function');
+
+    /* 拖过之后点房间：应被吞掉 */
+    let reached = false;
+    const swallowed = captured && captured({ preventDefault() { reached = false; }, stopPropagation() { reached = false; } });
+    ok('拦截函数让点击不落到房间按钮', swallowed === undefined && reached === false);
+
+    /* 没拖动的纯点击不该被拦 —— 重跑一次干净手势 */
+    listeners.mousedown = []; winL.mousemove = []; winL.mouseup = []; captured = null;
+    canvas.scrollLeft = 0; canvas.scrollTop = 0;
+    fire('mousedown', ev(100, 100));
+    fireWin('mousemove', ev(103, 102));   /* 位移 5 < 阈值 4+1 的边界，取更小 */
+    fireWin('mouseup', ev(103, 102));
+    ok('轻点（未超阈值）不装 click 拦截', captured === null);
+
+    /* 滚轮：竖轮补横向 */
+    let wheelDefaulted = false;
+    listeners.wheel.forEach(f => f({ deltaY: 120, deltaX: 0, cancelable: true,
+      preventDefault() { wheelDefaulted = true; } }));
+    ok('竖向滚轮在宽图上补横向滚动', canvas.scrollLeft === 120 && wheelDefaulted,
+      'scrollLeft=' + canvas.scrollLeft);
   }
 
   console.log('\n' + '='.repeat(42));

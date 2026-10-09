@@ -464,9 +464,10 @@
       (g.finished ? '<span class="gp-finish">　✓ 全部完成</span>' : '') + '</div>';
     h += '<div class="gp-steps">';
     g.steps.forEach((s, i) => {
-      const cls = s.done ? 'done' : (g.current && g.current.id === s.id ? 'cur' : 'todo');
+      const cls = s.done ? 'done'
+        : (s.locked ? 'locked' : (g.current && g.current.id === s.id ? 'cur' : 'todo'));
       h += '<div class="gp-step ' + cls + '">' +
-        '<span class="gps-idx">' + (s.done ? '✓' : (i + 1)) + '</span>' +
+        '<span class="gps-idx">' + (s.done ? '✓' : (s.locked ? '🔒' : (i + 1))) + '</span>' +
         '<div class="gps-body">' +
         '<div class="gps-title">' + esc(s.title) + '</div>' +
         '<div class="gps-goal">' + esc(s.goal) + '</div>' +
@@ -723,6 +724,15 @@
     } catch (e) { /* 用缓存 */ }
     if (!v) return;
     const p = v.player || {};
+
+    /* 新手教程：面板类指令不进后端，打开面板等于「玩家做了这一步」。
+       集中在这里上报，任何入口（命令/侧栏按钮/快捷键）都不会漏。
+       后端 markTutorialFlag 幂等，重复上报无副作用。 */
+    const gf = panelGuideFlag(name);
+    if (gf && api.markGuide) {
+      await api.markGuide(gf);
+      v = S.view || v;
+    }
 
     let title = '', html = '';
 
@@ -1010,10 +1020,22 @@
     h += kv('潜能', p.potential);
     h += kv('银两', p.money + ' 文');
     h += kv('杀气', p.karma);
-    h += kv('声望', p.reputation);
+    /* 声望是「键→ 数值」的对象（门派名/恶名等动态键），直接丢给 kv 会变 [object Object] */
+    h += kv('声望', repText(p.reputation));
     h += '</div></div>';
     if (p.timeText) h += '<div class="panel-note">' + esc(p.timeText) + '</div>';
     return h;
+  }
+
+  /** 声望对象 → 可读文本：取数值最高的 3 项 */
+  function repText(rep) {
+    if (rep == null) return '—';
+    if (typeof rep === 'number' || typeof rep === 'string') return String(rep);
+    const keys = Object.keys(rep).filter(k => rep[k]);
+    if (!keys.length) return '—';
+    keys.sort((a, b) => (rep[b] || 0) - (rep[a] || 0));
+    const top = keys.slice(0, 3).map(k => k + ' ' + rep[k]).join(' · ');
+    return keys.length > 3 ? top + ' …' : top;
   }
 
   function attrHtml(v) {
@@ -1398,14 +1420,41 @@
   const DIR_CN = { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下' };
   const DIR_OFF = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0], u: [0, -1], d: [0, 1] };
 
+  /* ---- 地图视野范围（两级）：默认只看当前区域，可切世界地图 ----
+     主人明确要求：打开地图默认显示**当前区域**，另有开关看全部区域。
+     用模块级变量记住选择，重开面板时保持。 */
+  let mapScope = 'region';   // 'region' | 'world'
+
   function mapHtml(v) {
     const m = v.map || {};
-    const rooms = m.rooms || [];
-    if (!rooms.length) return '<div class="modal-text">地图数据不可用。</div>';
+    const allRooms = m.rooms || [];
+    if (!allRooms.length) return '<div class="modal-text">地图数据不可用。</div>';
 
-    const b = m.bounds || { minX: 0, minY: 0, w: 1, h: 1 };
-    const ex = m.explore || { visited: 0, total: rooms.length };
-    const here = rooms.find(r => r.current);
+    /* 当前区域 = 有 current 标记的房间所属区域 */
+    const here = allRooms.find(r => r.current);
+    const curRegion = here ? here.region : null;
+    if (mapScope === 'region' && !curRegion) mapScope = 'world';
+
+    const boxes = m.regionBoxes || {};
+    /* region 模式：只留当前区域这块 box；world 模式：全图 */
+    const scopeBox = (mapScope === 'region' && boxes[curRegion]) ? boxes[curRegion] : null;
+
+    const rooms = (mapScope === 'region' && curRegion)
+      ? allRooms.filter(r => r.region === curRegion)
+      : allRooms;
+    if (!rooms.length) return '<div class="modal-text">此区域暂无地图数据。</div>';
+
+    /* 视野裁到本区域 box（多留 1 格余量，房间别贴边） */
+    const b0 = m.bounds || { minX: 0, minY: 0, w: 1, h: 1 };
+    const b = scopeBox
+      ? {
+        minX: scopeBox.x, minY: scopeBox.y,
+        w: scopeBox.w, h: scopeBox.h,
+      }
+      : b0;
+    const ex = m.explore || { visited: 0, total: allRooms.length };
+    const scopeCount = rooms.length;
+    const scopeVisited = rooms.filter(r => r.visited).length;
 
     /* 坐标换算：格心 */
     const cx = r => (r.x - b.minX) * MAP_CELL + MAP_PAD + MAP_CELL / 2;
@@ -1420,10 +1469,22 @@
       h += '　出口：' + here.exits.map(d => DIR_CN[d] || d).join(' / ');
     }
     h += '</div>';
-    const pct = ex.total ? Math.round(ex.visited / ex.total * 100) : 0;
-    h += '<div class="map-progress" title="已探索 ' + ex.visited + '/' + ex.total + '">' +
+    /* --- 视野切换：当前区域 / 天下全图 --- */
+    h += '<div class="map-scope">';
+    h += '<button class="ms-btn' + (mapScope === 'region' ? ' on' : '') + '" data-scope="region">当前区域</button>';
+    h += '<button class="ms-btn' + (mapScope === 'world' ? ' on' : '') + '" data-scope="world">天下全图</button>';
+    h += '<span class="ms-where">' +
+      (mapScope === 'region'
+        ? '只显示你脚下这一片：' + esc(((m.regions || []).find(x => x.id === curRegion) || {}).name || '—')
+        : '天下三十四州，尽收眼底') +
+      '</span></div>';
+
+    const pct = scopeCount ? Math.round(scopeVisited / scopeCount * 100) : 0;
+    h += '<div class="map-progress" title="本范围已探索 ' + scopeVisited + '/' + scopeCount +
+      '；全江湖 ' + ex.visited + '/' + ex.total + '">' +
       '<span class="mp-bar"><i style="width:' + pct + '%"></i></span>' +
-      '<span class="mp-txt">江湖探索 ' + ex.visited + '/' + ex.total + '（' + pct + '%）</span></div>';
+      '<span class="mp-txt">本范围 ' + scopeVisited + '/' + scopeCount +
+      '　全江湖 ' + ex.visited + '/' + ex.total + '</span></div>';
     h += '</div>';
 
     /* --- 图例 --- */
@@ -1443,9 +1504,9 @@
     h += '<div class="map-grid-bg" style="width:' + (b.w * MAP_CELL) + 'px;height:' + (b.h * MAP_CELL) + 'px;' +
       'left:' + MAP_PAD + 'px;top:' + MAP_PAD + 'px"></div>';
 
-    /* 2) 区域底色块（铺满区域包围盒） */
-    const boxes = m.regionBoxes || {};
-    Object.keys(boxes).forEach(k => {
+    /* 2) 区域底色块（铺满区域包围盒）—— region 模式只画当前区域 */
+    const boxes2 = scopeBox ? { [curRegion]: scopeBox } : boxes;
+    Object.keys(boxes2).forEach(k => {
       const box = boxes[k];
       const left = (box.x - b.minX) * MAP_CELL + MAP_PAD;
       const top = (box.y - b.minY) * MAP_CELL + MAP_PAD;
@@ -1470,8 +1531,9 @@
       farm: 'tr-farm', cloud: 'tr-cloud',
     };
     const terrain = m.terrain || {};
+    const terrRegions = (mapScope === 'region' && curRegion) ? [curRegion] : Object.keys(terrain);
     let terrainHtml = '';
-    Object.keys(terrain).forEach(rid => {
+    terrRegions.forEach(rid => {
       (terrain[rid] || []).forEach(t => {
         const gx = cx({ x: t.x });
         const gy = cy({ y: t.y });
@@ -1707,6 +1769,30 @@
           doCmd('go ' + room.name, { fromButton: true });
         };
       });
+
+      /* 视野切换：当前区域 / 天下全图 */
+      document.querySelectorAll('#modal-body [data-scope]').forEach(b => {
+        b.onclick = () => {
+          mapScope = b.getAttribute('data-scope') || 'region';
+          closeModal();
+          panel('map');
+        };
+      });
+
+      /* 区域总览：点某个区域 -> 切到世界地图看全图 */
+      document.querySelectorAll('#modal-body .mro-item[data-region]').forEach(b => {
+        b.onclick = () => {
+          mapScope = 'world';
+          closeModal();
+          panel('map');
+        };
+      });
+
+      /* 斜向平移（主人报的 bug：只能上下/左右滑，滑不出斜角）
+         浏览器原生触摸滚动一次只沿一个轴，这里自己接管 pointer 手势：
+         按下 → 记起点；移动 → 同时改 scrollLeft 和 scrollTop（真斜向）；
+         松开 → 若位移超过阈值则吞掉这次点击，避免拖完误触「走过去」。 */
+      bindMapPan();
     }
     /* 社交面板：点某人 → 看详情 */
     if (name === 'social') {
@@ -1769,6 +1855,62 @@
     return PANEL_CMDS[c] || null;
   }
 
+  /* 面板 → 新手教程标记。用函数声明而非 const，避免 panel() 在 719 行
+     提前访问它时的 TDZ 报错（panel 早于 const 声明但调用发生在加载后，
+     仍然用函数更稳妥）。 */
+  function panelGuideFlag(name) {
+    return { inventory: 'did_bag', score: 'did_score', attr: 'did_score' }[name] || null;
+  }
+
+  /* 地图画布双轴（斜向）拖拽平移 */
+  function bindMapPan() {
+    const el = document.querySelector('#modal-body .map-canvas');
+    if (!el || el.__panBound) return;
+    el.__panBound = true;
+    const sx = { x: 0, y: 0, l: 0, t: 0, on: false, moved: 0 };
+    const down = e => {
+      if (e.button != null && e.button !== 0) return;
+      sx.on = true; sx.moved = 0;
+      sx.x = e.clientX; sx.y = e.clientY;
+      sx.l = el.scrollLeft; sx.t = el.scrollTop;
+      el.classList.add('panning');
+    };
+    const move = e => {
+      if (!sx.on) return;
+      const dx = e.clientX - sx.x, dy = e.clientY - sx.y;
+      sx.moved = Math.max(sx.moved, Math.abs(dx) + Math.abs(dy));
+      el.scrollLeft = sx.l - dx;
+      el.scrollTop = sx.t - dy;
+      if (sx.moved > 4 && e.cancelable) e.preventDefault();
+    };
+    const up = () => {
+      if (!sx.on) return;
+      sx.on = false;
+      el.classList.remove('panning');
+      /* 拖过就别让 click 生效（否则拖完一下会误走路） */
+      if (sx.moved > 4) {
+        /* 捕获阶段拦，房间格子上挂的 onclick 就不会触发 */
+        const swallow = e => { e.preventDefault(); e.stopPropagation(); };
+        el.addEventListener('click', swallow, true);
+        setTimeout(() => el.removeEventListener('click', swallow, true), 0);
+      }
+    };
+    el.addEventListener('mousedown', down);
+    el.addEventListener('touchstart', down, { passive: true });
+    window.addEventListener('mousemove', move);
+    window.addEventListener('touchmove', move, { passive: false });
+    window.addEventListener('mouseup', up);
+    window.addEventListener('touchend', up);
+    /* 滚轮：横向滚动条在桌面端才看得到，这里补一条竖轮→横移 */
+    el.addEventListener('wheel', e => {
+      if (e.shiftKey) return;
+      if (e.deltaY && !e.deltaX && el.scrollWidth > el.clientWidth) {
+        el.scrollLeft += e.deltaY;
+        if (e.cancelable) e.preventDefault();
+      }
+    }, { passive: false });
+  }
+
   let cmdHistory = [];
   let histIdx = -1;
 
@@ -1824,7 +1966,8 @@
     const fromButton = !!(opts && opts.fromButton);
     if (S.busy) { toast('上一道指令还在执行…', 'warn', 1200); return; }
 
-    /* 面板类指令：本地开面板，不打扰后端 */
+    /* 面板类指令：本地开面板，不打扰后端。
+       新手教程标记由 panel() 内部统一上报，这里不再重复上报。 */
     const pn = panelForCmd(cmd);
     if (pn) {
       pushHistory(cmd);
