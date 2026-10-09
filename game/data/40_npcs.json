@@ -2116,12 +2116,12 @@
         "棍": "basic_staff"
       },
       "favorToLearn": 41,
+      "home": "house:wen_jiangnan",
       "schedule": {
         "day": "jiangnan_market",
         "night": "jiangnan_market"
       },
       "age": 38,
-      "house": "house:wen_jiangnan",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -2199,6 +2199,7 @@
       },
       "favorToLearn": 61,
       "moneyToLearn": 1120,
+      "home": "house:wen_black",
       "schedule": {
         "day": "secret_black_market",
         "night": "secret_black_market"
@@ -2208,7 +2209,6 @@
         "武器": "iron_sword_basic",
         "身体": "leather_armor"
       },
-      "house": "house:wen_black",
       "tier": "B",
       "district": "secret",
       "unlock": {
@@ -2501,7 +2501,7 @@
       "tier": "C",
       "district": "jiangnan",
       "province": "江南东道",
-      "house": "house:beggar_info",
+      "home": "house:beggar_info",
       "unlock": {
         "favor": 30
       },
@@ -2581,12 +2581,12 @@
         "内功": "basic_force"
       },
       "favorToLearn": 44,
+      "home": "house:old_herbalist",
       "schedule": {
         "day": "jiangnan_hill",
         "night": "jiangnan_hill"
       },
       "age": 62,
-      "house": "house:old_herbalist",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -2683,7 +2683,7 @@
       "tier": "C",
       "district": "jiangnan",
       "province": "江南东道",
-      "house": "house:beggar_boy",
+      "home": "house:beggar_boy",
       "unlock": {
         "favor": 30
       },
@@ -2749,6 +2749,7 @@
       },
       "favorToLearn": 52,
       "moneyToLearn": 650,
+      "home": "house:guard_city",
       "schedule": {
         "day": "jiangnan_gate",
         "night": "jiangnan_gate"
@@ -2758,7 +2759,6 @@
         "武器": "fine_sword",
         "身体": "leather_armor"
       },
-      "house": "house:guard_city",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -2845,6 +2845,7 @@
       ],
       "relDone": true,
       "sidequest": "sq_swordman_wander",
+      "home": "house:swordman_wander",
       "schedule": {
         "day": "jiangnan_inn",
         "night": "jiangnan_inn"
@@ -2854,7 +2855,6 @@
         "武器": "xuantie_sword",
         "身体": "leather_armor"
       },
-      "house": "house:swordman_wander",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -2974,6 +2974,7 @@
         "招架": "basic_parry"
       },
       "favorToLearn": 165,
+      "home": "house:shenni",
       "schedule": {
         "day": "shaolin_cangjing",
         "night": "shaolin_cangjing"
@@ -2983,7 +2984,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:shenni",
       "tier": "B",
       "district": "shaolin",
       "unlock": {
@@ -3007,6 +3007,7 @@
       "tag": "commoner",
       "desc": "一身粗布衣裳，袖口磨得起了毛边，手掌粗糙，掌心一层硬皮，把手在衣襟上擦了擦才伸出来。",
       "room": "jiangnan_market",
+      "home": "house:npcv_001",
       "level": 14,
       "hp": 256,
       "atk": 32,
@@ -3074,7 +3075,6 @@
       },
       "favorToLearn": 40,
       "age": 31,
-      "house": "house:npcv_001",
       "tier": "C",
       "district": "jiangnan",
       "unlock": {
@@ -3097,6 +3097,7 @@
       "tag": "vendor",
       "desc": "手里举着个拨浪鼓，时不时摇两下，肩上被扁担压出一道深印，价钱报得快，砍价也挡得快。",
       "room": "jiangnan_market",
+      "home": "house:npcv_002",
       "level": 29,
       "hp": 466,
       "atk": 62,
@@ -3166,7 +3167,6 @@
       },
       "favorToLearn": 52,
       "age": 44,
-      "house": "house:npcv_002",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -3190,6 +3190,7 @@
       "tag": "scholar",
       "desc": "袖子里鼓鼓囊囊，不知塞着什么，指节细长，指甲修得干干净净，走路都在默诵，嘴唇动个不停。",
       "room": "shaolin_cangjing",
+      "home": "house:npcv_003",
       "level": 25,
       "hp": 410,
       "atk": 54,
@@ -3257,7 +3258,6 @@
       },
       "favorToLearn": 50,
       "age": 30,
-      "house": "house:npcv_003",
       "tier": "B",
       "district": "shaolin",
       "unlock": {
@@ -3281,6 +3281,7 @@
       "tag": "farmer",
       "desc": "手里拎着个竹篮，篮里是半篮菜，身板结实，臂上一条条硬肉，说到收成就叹气，说到天就抬头。",
       "room": "jn_farm_1",
+      "home": "house:npcv_004",
       "level": 44,
       "hp": 676,
       "atk": 92,
@@ -3333,7 +3334,6 @@
       },
       "favorToLearn": 61,
       "age": 44,
-      "house": "house:npcv_004",
       "tier": "B",
       "district": "farmland",
       "unlock": {
@@ -3357,6 +3357,7 @@
       "tag": "smith",
       "desc": "围裙口袋里插着两三根铁钉，满脸炭黑，只有眼白是白的，见人进来只抬一下眼。",
       "room": "shaolin_lianwu",
+      "home": "house:npcv_005",
       "level": 37,
       "hp": 578,
       "atk": 78,
@@ -3434,7 +3435,6 @@
       "favorToLearn": 56,
       "moneyToLearn": 1110,
       "age": 25,
-      "house": "house:npcv_005",
       "tier": "B",
       "district": "shaolin",
       "unlock": {
@@ -3458,6 +3458,7 @@
       "tag": "doctor",
       "desc": "挎着的布袋鼓鼓的，露出几截草根，手背上有几颗浅浅的烫疤，答话简短，不肯把话说满。",
       "room": "jiangnan_market",
+      "home": "house:npcv_006",
       "level": 21,
       "hp": 354,
       "atk": 46,
@@ -3524,7 +3525,6 @@
       },
       "favorToLearn": 56,
       "age": 46,
-      "house": "house:npcv_006",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -3549,6 +3549,7 @@
       "tag": "innkeeper",
       "desc": "柜台后站着，围裙上全是油点，梳着双鬟，鬓角抿得齐整，说到价钱就笑，说到欠账就沉脸。",
       "room": "jiangnan_inn",
+      "home": "house:npcv_007",
       "level": 9,
       "hp": 186,
       "atk": 22,
@@ -3619,7 +3620,6 @@
       },
       "favorToLearn": 47,
       "age": 55,
-      "house": "house:npcv_007",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -3644,6 +3644,7 @@
       "tag": "waiter",
       "desc": "手里托着个木盘，盘上摞着碗，肩膀一高一低，是常年端盘子压的，答话先应一声「来了」。",
       "room": "jiangnan_inn",
+      "home": "house:npcv_008",
       "level": 26,
       "hp": 424,
       "atk": 56,
@@ -3719,7 +3720,6 @@
       },
       "favorToLearn": 38,
       "age": 36,
-      "house": "house:npcv_008",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -3743,6 +3743,7 @@
       "tag": "merchant",
       "desc": "手里摇着把折扇，扇面题着字，肩上披着件半旧的帔子，价钱上寸步不让，脸上还是笑。",
       "room": "jiangnan_market",
+      "home": "house:npcv_009",
       "level": 19,
       "hp": 326,
       "atk": 42,
@@ -3806,7 +3807,6 @@
       },
       "favorToLearn": 57,
       "age": 41,
-      "house": "house:npcv_009",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -3830,6 +3830,7 @@
       "tag": "richman",
       "desc": "手上戴着扳指，指头却细，面色白净，手上没做过活，从不先开口，等人先说。",
       "room": "jn_market_west",
+      "home": "house:npcv_010",
       "level": 22,
       "hp": 368,
       "atk": 48,
@@ -3894,7 +3895,6 @@
       },
       "favorToLearn": 56,
       "age": 43,
-      "house": "house:npcv_010",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -3919,6 +3919,7 @@
       "tag": "groom",
       "desc": "脚上是草鞋，鞋底钉着铁掌，眉眼生得清淡，看人时先垂一下眼，听见有人走近立刻睁眼。",
       "room": "jiangnan_market",
+      "home": "house:npcv_011",
       "level": 43,
       "hp": 662,
       "atk": 90,
@@ -3989,7 +3990,6 @@
       },
       "favorToLearn": 86,
       "age": 52,
-      "house": "house:npcv_011",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -4013,7 +4013,7 @@
       "tag": "child",
       "desc": "一个总角小孩，扎着两个冲天辫，膝盖上结着痂，说话奶声奶气，说快了打结。",
       "room": "jiangnan_market",
-      "home": null,
+      "home": "house:npcv_012",
       "level": 1,
       "hp": 74,
       "atk": 6,
@@ -4078,7 +4078,6 @@
       "title": "孩童",
       "district": "jiangnan",
       "province": "江南东道",
-      "house": "house:npcv_012",
       "unlock": {
         "favor": 30
       },
@@ -4333,7 +4332,7 @@
       "title": "流民",
       "district": "shaolin",
       "province": "江湖",
-      "house": "house:npcv_014",
+      "home": "house:npcv_014",
       "unlock": {
         "favor": 30
       },
@@ -4351,6 +4350,7 @@
       "tag": "escort",
       "desc": "肩上背着个包袱，包得方方正正，耳上坠着一对小小的珠子，从不背对着门口坐。",
       "room": "jn_market_south",
+      "home": "house:npcv_015",
       "level": 7,
       "hp": 158,
       "atk": 18,
@@ -4434,7 +4434,6 @@
         "武器": "steel_blade",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_015",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -4459,6 +4458,7 @@
       "tag": "constable",
       "desc": "头上戴顶官帽，帽翅歪了一边，指节细长，指甲修得干干净净，开口先问你姓什么。",
       "room": "road_tangmen_2",
+      "home": "house:npcv_016",
       "level": 38,
       "hp": 592,
       "atk": 80,
@@ -4529,7 +4529,6 @@
         "身体": "chain_armor",
         "头部": "iron_helmet"
       },
-      "house": "house:npcv_016",
       "tier": "B",
       "district": "tangmen",
       "unlock": {
@@ -4553,6 +4552,7 @@
       "tag": "official",
       "desc": "头上乌纱帽，帽翅端正，梳着双鬟，鬓角抿得齐整，笑不露齿。",
       "room": "road_haibin_1",
+      "home": "house:npcv_017",
       "level": 11,
       "hp": 214,
       "atk": 26,
@@ -4633,7 +4633,6 @@
         "武器": "fine_sword",
         "身体": "silk_robe"
       },
-      "house": "house:npcv_017",
       "tier": "B",
       "district": "haitan",
       "unlock": {
@@ -4721,7 +4720,7 @@
       "title": "内侍",
       "district": "palace",
       "province": "京畿道",
-      "house": "house:npcv_018",
+      "home": "house:npcv_018",
       "unlock": {
         "favor": 30
       },
@@ -4796,7 +4795,7 @@
       "title": "宫中内人",
       "district": "palace",
       "province": "京畿道",
-      "house": "house:npcv_019",
+      "home": "house:npcv_019",
       "unlock": {
         "favor": 30
       },
@@ -4871,7 +4870,7 @@
       "title": "嫔妃",
       "district": "palace",
       "province": "京畿道",
-      "house": "house:npcv_020",
+      "home": "house:npcv_020",
       "unlock": {
         "favor": 30
       },
@@ -4949,7 +4948,7 @@
       "title": "青楼女子",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_021",
+      "home": "house:npcv_021",
       "unlock": {
         "favor": 30
       },
@@ -4969,6 +4968,7 @@
       "greed": 84,
       "desc": "一身绛紫的袄，头上插着根金钗，耳坠是金的，开口就叫「爷」。",
       "room": "jn_wine_room",
+      "home": "house:npcv_022",
       "level": 3,
       "hp": 102,
       "atk": 10,
@@ -5039,7 +5039,6 @@
       },
       "favorToLearn": 49,
       "age": 49,
-      "house": "house:npcv_022",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -5126,7 +5125,7 @@
       "title": "歌伎",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_023",
+      "home": "house:npcv_023",
       "unlock": {
         "favor": 30
       },
@@ -5384,6 +5383,7 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 45,
+      "home": "house:npcv_025",
       "schedule": {
         "day": "wudang_shanmen",
         "night": "wudang_shanmen"
@@ -5393,7 +5393,6 @@
         "武器": "butcher_knife",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_025",
       "tier": "B",
       "district": "wudang",
       "unlock": {
@@ -5417,6 +5416,7 @@
       "tag": "hunter",
       "desc": "肩上背着张弓，弓弦上着蜡，肩上披着件半旧的帔子，笑起来露出白牙。",
       "room": "jn_farm_1",
+      "home": "house:npcv_026",
       "level": 36,
       "hp": 564,
       "atk": 76,
@@ -5476,7 +5476,6 @@
         "武器": "hunting_knife",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_026",
       "tier": "B",
       "district": "farmland",
       "unlock": {
@@ -5758,6 +5757,7 @@
         "拳": "basic_fist"
       },
       "favorToLearn": 65,
+      "home": "house:npcv_028",
       "schedule": {
         "day": "gaibang_po_miao",
         "night": "gaibang_po_miao"
@@ -5767,7 +5767,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_028",
       "tier": "B",
       "district": "gaibang",
       "unlock": {
@@ -5853,6 +5852,7 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 50,
+      "home": "house:npcv_029",
       "schedule": {
         "day": "jiangnan_temple",
         "night": "jiangnan_temple"
@@ -5862,7 +5862,6 @@
         "武器": "iron_sword_basic",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_029",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -5940,12 +5939,12 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 80,
+      "home": "house:npcv_030",
       "schedule": {
         "day": "jn_brothel_room",
         "night": "jn_brothel_room"
       },
       "age": 19,
-      "house": "house:npcv_030",
       "tier": "B",
       "district": "qinglou",
       "unlock": {
@@ -5969,6 +5968,7 @@
       "tag": "boatman",
       "desc": "头上戴着斗笠，斗笠上有个洞，一条辫子垂在胸前，辫梢系着旧红绳，说到天气就抬头。",
       "room": "haitan_boat",
+      "home": "house:npcv_031",
       "level": 5,
       "hp": 130,
       "atk": 14,
@@ -6022,7 +6022,6 @@
       },
       "favorToLearn": 43,
       "age": 27,
-      "house": "house:npcv_031",
       "tier": "B",
       "district": "haitan",
       "unlock": {
@@ -6107,12 +6106,12 @@
         "拳": "basic_fist"
       },
       "favorToLearn": 56,
+      "home": "house:npcv_032",
       "schedule": {
         "day": "jiangnan_inn",
         "night": "jiangnan_inn"
       },
       "age": 39,
-      "house": "house:npcv_032",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -6136,6 +6135,7 @@
       "tag": "waiter2",
       "desc": "袖子挽了一半，身形单薄，笑起来有点傻。",
       "room": "jiangnan_inn",
+      "home": "house:npcv_033",
       "level": 12,
       "hp": 228,
       "atk": 28,
@@ -6206,7 +6206,6 @@
       },
       "favorToLearn": 50,
       "age": 29,
-      "house": "house:npcv_033",
       "tier": "C",
       "district": "jiangnan",
       "unlock": {
@@ -6228,6 +6227,7 @@
       "tag": "commoner",
       "desc": "一身粗布衣裳，袖口磨得起了毛边，腰身束得细，走路时裙摆几乎不动，说话前先看看四周。",
       "room": "wudang_jinding",
+      "home": "house:npcv_034",
       "level": 24,
       "hp": 396,
       "atk": 52,
@@ -6287,7 +6287,6 @@
       },
       "favorToLearn": 55,
       "age": 54,
-      "house": "house:npcv_034",
       "tier": "C",
       "district": "wudang",
       "unlock": {
@@ -6310,6 +6309,7 @@
       "tag": "vendor",
       "desc": "守着个小摊，摊布上摆着零碎东西，眉眼生得清淡，看人时先垂一下眼，见人走近立刻换上笑。",
       "room": "emei_shanmen",
+      "home": "house:npcv_035",
       "level": 24,
       "hp": 396,
       "atk": 52,
@@ -6365,7 +6365,6 @@
       },
       "favorToLearn": 62,
       "age": 22,
-      "house": "house:npcv_035",
       "tier": "B",
       "district": "emei",
       "unlock": {
@@ -6389,6 +6388,7 @@
       "tag": "scholar",
       "desc": "手里总攥着半卷书，书角卷了边，一条辫子垂在胸前，辫梢系着旧红绳，走路都在默诵，嘴唇动个不停。",
       "room": "jn_study_1",
+      "home": "house:npcv_036",
       "level": 14,
       "hp": 256,
       "atk": 32,
@@ -6451,7 +6451,6 @@
       },
       "favorToLearn": 45,
       "age": 34,
-      "house": "house:npcv_036",
       "tier": "B",
       "district": "shuyuan",
       "unlock": {
@@ -6599,6 +6598,7 @@
       "tag": "smith",
       "desc": "脖子上搭着条毛巾，黑得看不出底色，耳上坠着一对小小的珠子，开口像敲铁，一句一个实字。",
       "room": "shaolin_lianwu",
+      "home": "house:npcv_038",
       "level": 43,
       "hp": 662,
       "atk": 90,
@@ -6662,7 +6662,6 @@
       "favorToLearn": 59,
       "moneyToLearn": 1250,
       "age": 50,
-      "house": "house:npcv_038",
       "tier": "B",
       "district": "shaolin",
       "unlock": {
@@ -6686,6 +6685,7 @@
       "tag": "doctor",
       "desc": "袖口沾着些褐色的药渍，指节修长，一闻就是常年捣药的手，开口先问哪里不舒服。",
       "room": "tangmen_gate",
+      "home": "house:npcv_039",
       "level": 37,
       "hp": 578,
       "atk": 78,
@@ -6739,7 +6739,6 @@
       },
       "favorToLearn": 65,
       "age": 59,
-      "house": "house:npcv_039",
       "tier": "B",
       "district": "tangmen",
       "unlock": {
@@ -6764,6 +6763,7 @@
       "tag": "innkeeper",
       "desc": "手里攥着块抹布，走到哪儿擦到哪儿，脖子后面一道横褶，眼睛始终盯着大堂，谁进来都知道。",
       "room": "jiangnan_inn",
+      "home": "house:npcv_040",
       "level": 30,
       "hp": 480,
       "atk": 64,
@@ -6842,7 +6842,6 @@
       },
       "favorToLearn": 68,
       "age": 51,
-      "house": "house:npcv_040",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -6867,6 +6866,7 @@
       "tag": "waiter",
       "desc": "围裙系得紧，腰上别着块抹布，眼尖，谁举手都先看见，一边说话一边擦桌子。",
       "room": "jiangnan_inn",
+      "home": "house:npcv_041",
       "level": 33,
       "hp": 522,
       "atk": 70,
@@ -6935,7 +6935,6 @@
       },
       "favorToLearn": 62,
       "age": 38,
-      "house": "house:npcv_041",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -6959,6 +6958,7 @@
       "tag": "merchant",
       "desc": "腰上挂着玉佩，玉是好玉，袖口绣着一圈细小的缠枝纹，价钱上寸步不让，脸上还是笑。",
       "room": "tangmen_poison",
+      "home": "house:npcv_042",
       "level": 42,
       "hp": 648,
       "atk": 88,
@@ -7023,7 +7023,6 @@
       },
       "favorToLearn": 69,
       "age": 59,
-      "house": "house:npcv_042",
       "tier": "B",
       "district": "tangmen",
       "unlock": {
@@ -7047,6 +7046,7 @@
       "tag": "richman",
       "desc": "外头罩着件貂氅，天不冷也穿着，梳着双鬟，鬓角抿得齐整，从不先开口，等人先说。",
       "room": "jn_rich_house",
+      "home": "house:npcv_043",
       "level": 10,
       "hp": 200,
       "atk": 24,
@@ -7108,7 +7108,6 @@
       },
       "favorToLearn": 53,
       "age": 46,
-      "house": "house:npcv_043",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -7133,6 +7132,7 @@
       "tag": "groom",
       "desc": "肩上搭着块擦车的旧布，皮肤黑红，脖子更黑，打盹时也竖着一只耳朵。",
       "room": "xiyu_xingxiu",
+      "home": "house:npcv_044",
       "level": 36,
       "hp": 564,
       "atk": 76,
@@ -7195,7 +7195,6 @@
       },
       "favorToLearn": 74,
       "age": 41,
-      "house": "house:npcv_044",
       "tier": "B",
       "district": "xiyu",
       "unlock": {
@@ -7219,7 +7218,7 @@
       "tag": "child",
       "desc": "手里攥着个木雕的小玩意，看见生人也不怕，睁着圆眼睛打量你，说话奶声奶气，说快了打结。",
       "room": "miaojiang_sheng",
-      "home": null,
+      "home": "house:npcv_045",
       "level": 2,
       "hp": 88,
       "atk": 8,
@@ -7278,7 +7277,6 @@
       "title": "孩童",
       "district": "miaojiang",
       "province": "江湖",
-      "house": "house:npcv_045",
       "unlock": {
         "favor": 30
       },
@@ -7350,7 +7348,7 @@
       "tier": "C",
       "district": "taohuadao",
       "province": "江湖",
-      "house": "house:npcv_046",
+      "home": "house:npcv_046",
       "unlock": {
         "favor": 30
       },
@@ -7426,7 +7424,7 @@
       "title": "流民",
       "district": "taohuadao",
       "province": "江湖",
-      "house": "house:npcv_047",
+      "home": "house:npcv_047",
       "unlock": {
         "favor": 30
       },
@@ -7444,6 +7442,7 @@
       "tag": "escort",
       "desc": "腰间别着面小旗，旗上写着镖号，肩膀宽，背上能扛两百斤，笑起来很慢，像是好久没笑过。",
       "room": "jiangnan_street",
+      "home": "house:npcv_048",
       "level": 32,
       "hp": 508,
       "atk": 68,
@@ -7520,7 +7519,6 @@
         "武器": "iron_blade",
         "身体": "chain_armor"
       },
-      "house": "house:npcv_048",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -7545,6 +7543,7 @@
       "tag": "constable",
       "desc": "腰间挂着牌子，牌上写着「捕」，发间只簪一根素银簪，说到案子就压低声音。",
       "room": "road_xixia_1",
+      "home": "house:npcv_049",
       "level": 45,
       "hp": 690,
       "atk": 94,
@@ -7618,7 +7617,6 @@
         "身体": "chain_armor",
         "头部": "iron_helmet"
       },
-      "house": "house:npcv_049",
       "tier": "B",
       "district": "xixia",
       "unlock": {
@@ -7641,6 +7639,7 @@
       "tag": "official",
       "desc": "头上乌纱帽，帽翅端正，指节细白，答话前先端起茶碗。",
       "room": "jn_yamen_prison",
+      "home": "house:npcv_050",
       "level": 26,
       "hp": 424,
       "atk": 56,
@@ -7709,7 +7708,6 @@
         "武器": "fine_sword",
         "身体": "silk_robe"
       },
-      "house": "house:npcv_050",
       "tier": "B",
       "district": "yamen",
       "unlock": {
@@ -7801,7 +7799,7 @@
       "title": "内侍",
       "district": "shaolin",
       "province": "江湖",
-      "house": "house:npcv_051",
+      "home": "house:npcv_051",
       "unlock": {
         "favor": 30
       },
@@ -7884,7 +7882,7 @@
       "title": "宫中内人",
       "district": "wudang",
       "province": "江湖",
-      "house": "house:npcv_052",
+      "home": "house:npcv_052",
       "unlock": {
         "favor": 30
       },
@@ -7960,7 +7958,7 @@
       "title": "嫔妃",
       "district": "mojiao",
       "province": "江湖",
-      "house": "house:npcv_053",
+      "home": "house:npcv_053",
       "unlock": {
         "favor": 30
       },
@@ -8040,7 +8038,7 @@
       "title": "青楼女子",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_054",
+      "home": "house:npcv_054",
       "unlock": {
         "favor": 30
       },
@@ -8060,6 +8058,7 @@
       "greed": 85,
       "desc": "腰上系着串钥匙，指上戴着两枚戒指，一边说话一边打量你的衣裳。",
       "room": "jn_wine_room",
+      "home": "house:npcv_055",
       "level": 44,
       "hp": 676,
       "atk": 92,
@@ -8125,7 +8124,6 @@
       },
       "favorToLearn": 79,
       "age": 57,
-      "house": "house:npcv_055",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -8211,7 +8209,7 @@
       "title": "歌伎",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_056",
+      "home": "house:npcv_056",
       "unlock": {
         "favor": 30
       },
@@ -8229,6 +8227,7 @@
       "tag": "swordsman",
       "desc": "一柄剑斜挎在背上，剑鞘磨得发亮，虎口与指节都结着厚茧，站着不动，也像随时要走。",
       "room": "shaolin_lianwu",
+      "home": "house:npcv_057",
       "level": 20,
       "hp": 340,
       "atk": 44,
@@ -8304,7 +8303,6 @@
         "武器": "iron_sword_basic",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_057",
       "tier": "B",
       "district": "shaolin",
       "unlock": {
@@ -8383,6 +8381,7 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 45,
+      "home": "house:npcv_058",
       "schedule": {
         "day": "road_nan_1",
         "night": "road_nan_1"
@@ -8392,7 +8391,6 @@
         "武器": "butcher_knife",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_058",
       "tier": "B",
       "district": "gaibang",
       "unlock": {
@@ -8416,6 +8414,7 @@
       "tag": "hunter",
       "desc": "肩上背着张弓，弓弦上着蜡，梳着双鬟，鬓角抿得齐整，笑起来露出白牙。",
       "room": "cunzhen_street",
+      "home": "house:npcv_059",
       "level": 6,
       "hp": 144,
       "atk": 16,
@@ -8477,7 +8476,6 @@
         "武器": "hunting_knife",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_059",
       "tier": "B",
       "district": "cunzhen",
       "unlock": {
@@ -8551,6 +8549,7 @@
         "内功": "basic_force"
       },
       "favorToLearn": 64,
+      "home": "house:npcv_060",
       "schedule": {
         "day": "gaibang_po_miao",
         "night": "gaibang_po_miao"
@@ -8560,7 +8559,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_060",
       "tier": "B",
       "district": "gaibang",
       "unlock": {
@@ -8636,6 +8634,7 @@
         "拳": "basic_fist"
       },
       "favorToLearn": 76,
+      "home": "house:npcv_061",
       "schedule": {
         "day": "jiangnan_temple",
         "night": "jiangnan_temple"
@@ -8645,7 +8644,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_061",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -8902,12 +8900,12 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 59,
+      "home": "house:npcv_063",
       "schedule": {
         "day": "jn_brothel_room",
         "night": "jn_brothel_room"
       },
       "age": 22,
-      "house": "house:npcv_063",
       "tier": "B",
       "district": "qinglou",
       "unlock": {
@@ -8931,6 +8929,7 @@
       "tag": "boatman",
       "desc": "肩上搭着件蓑衣，脸上被江风吹得红，答话离不开水路的词。",
       "room": "jn_resident_2",
+      "home": "house:npcv_064",
       "level": 22,
       "hp": 368,
       "atk": 48,
@@ -8984,7 +8983,6 @@
       },
       "favorToLearn": 54,
       "age": 56,
-      "house": "house:npcv_064",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -9060,12 +9058,12 @@
         "拳": "basic_fist"
       },
       "favorToLearn": 41,
+      "home": "house:npcv_065",
       "schedule": {
         "day": "jn_teahouse",
         "night": "jn_teahouse"
       },
       "age": 55,
-      "house": "house:npcv_065",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -9089,6 +9087,7 @@
       "tag": "waiter2",
       "desc": "手里攥着块抹布，眉眼生得清淡，看人时先垂一下眼，被喊一声就小跑。",
       "room": "jn_teahouse",
+      "home": "house:npcv_066",
       "level": 39,
       "hp": 606,
       "atk": 82,
@@ -9151,7 +9150,6 @@
       },
       "favorToLearn": 81,
       "age": 31,
-      "house": "house:npcv_066",
       "tier": "C",
       "district": "market",
       "unlock": {
@@ -9173,6 +9171,7 @@
       "tag": "commoner",
       "desc": "腰间别着个旱烟袋，烟杆裂了，指节细长，指甲修得干干净净，说话前先看看四周。",
       "room": "beijiang_xuedao",
+      "home": "house:npcv_067",
       "level": 26,
       "hp": 424,
       "atk": 56,
@@ -9230,7 +9229,6 @@
       },
       "favorToLearn": 50,
       "age": 36,
-      "house": "house:npcv_067",
       "tier": "C",
       "district": "beijiang",
       "unlock": {
@@ -9253,6 +9251,7 @@
       "tag": "vendor",
       "desc": "手里举着个拨浪鼓，时不时摇两下，一只耳朵上夹着根记账的炭笔，价钱报得快，砍价也挡得快。",
       "room": "road_xiyu_1",
+      "home": "house:npcv_068",
       "level": 44,
       "hp": 676,
       "atk": 92,
@@ -9308,7 +9307,6 @@
       },
       "favorToLearn": 82,
       "age": 46,
-      "house": "house:npcv_068",
       "tier": "B",
       "district": "xiyu",
       "unlock": {
@@ -9332,6 +9330,7 @@
       "tag": "scholar",
       "desc": "袖子里鼓鼓囊囊，不知塞着什么，袖口绣着一圈细小的缠枝纹，答话慢，字斟句酌。",
       "room": "shaolin_cangjing",
+      "home": "house:npcv_069",
       "level": 22,
       "hp": 368,
       "atk": 48,
@@ -9399,7 +9398,6 @@
       },
       "favorToLearn": 60,
       "age": 37,
-      "house": "house:npcv_069",
       "tier": "B",
       "district": "shaolin",
       "unlock": {
@@ -9423,6 +9421,7 @@
       "tag": "farmer",
       "desc": "头上扣着顶草帽，帽檐破了个口，腰身束得细，走路时裙摆几乎不动，说话憨，一句一个「俺」。",
       "room": "cunzhen_pond",
+      "home": "house:npcv_070",
       "level": 23,
       "hp": 382,
       "atk": 50,
@@ -9476,7 +9475,6 @@
       },
       "favorToLearn": 53,
       "age": 56,
-      "house": "house:npcv_070",
       "tier": "B",
       "district": "cunzhen",
       "unlock": {
@@ -9500,6 +9498,7 @@
       "tag": "smith",
       "desc": "赤着上身，腰上系条围裙，全是火星烫的洞，耳上坠着一对小小的珠子，见人进来只抬一下眼。",
       "room": "xixia_ice",
+      "home": "house:npcv_071",
       "level": 41,
       "hp": 634,
       "atk": 86,
@@ -9568,7 +9567,6 @@
       "favorToLearn": 84,
       "moneyToLearn": 2430,
       "age": 30,
-      "house": "house:npcv_071",
       "tier": "B",
       "district": "xixia",
       "unlock": {
@@ -9591,6 +9589,7 @@
       "tag": "doctor",
       "desc": "手里捻着一根银针，针尾缠着线，耳上坠着一对小小的珠子，答话简短，不肯把话说满。",
       "room": "gusu_yanzi",
+      "home": "house:npcv_072",
       "level": 5,
       "hp": 130,
       "atk": 14,
@@ -9644,7 +9643,6 @@
       },
       "favorToLearn": 42,
       "age": 44,
-      "house": "house:npcv_072",
       "tier": "B",
       "district": "gusu",
       "unlock": {
@@ -9881,6 +9879,7 @@
       "tag": "waiter",
       "desc": "袖子挽得高，小臂上烫着疤，手指上有烫疤，一层压一层，脚不停，说话时也在挪。",
       "room": "jn_teahouse",
+      "home": "house:npcv_074",
       "level": 39,
       "hp": 606,
       "atk": 82,
@@ -9950,7 +9949,6 @@
       },
       "favorToLearn": 54,
       "age": 21,
-      "house": "house:npcv_074",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -9974,6 +9972,7 @@
       "tag": "merchant",
       "desc": "手指上套着枚大金戒，梳着双鬟，鬓角抿得齐整，说到货就滔滔不绝。",
       "room": "gumu_mu",
+      "home": "house:npcv_075",
       "level": 3,
       "hp": 102,
       "atk": 10,
@@ -10029,7 +10028,6 @@
       },
       "favorToLearn": 41,
       "age": 45,
-      "house": "house:npcv_075",
       "tier": "B",
       "district": "gumu",
       "unlock": {
@@ -10051,6 +10049,7 @@
       "tag": "richman",
       "desc": "衣料考究，腰上别块好玉，一条辫子垂在胸前，辫梢系着旧红绳，从不先开口，等人先说。",
       "room": "jn_rich_hall",
+      "home": "house:npcv_076",
       "level": 3,
       "hp": 102,
       "atk": 10,
@@ -10120,7 +10119,6 @@
       },
       "favorToLearn": 47,
       "age": 44,
-      "house": "house:npcv_076",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -10145,6 +10143,7 @@
       "tag": "groom",
       "desc": "腰上系着粗布腰带，别着个酒葫芦，手掌全是缰绳勒出的沟，听见有人走近立刻睁眼。",
       "room": "jn_harbor",
+      "home": "house:npcv_077",
       "level": 19,
       "hp": 326,
       "atk": 42,
@@ -10202,7 +10201,6 @@
       },
       "favorToLearn": 59,
       "age": 39,
-      "house": "house:npcv_077",
       "tier": "B",
       "district": "harbor",
       "unlock": {
@@ -10226,7 +10224,7 @@
       "tag": "child",
       "desc": "光着脚，脚趾头全是泥，一条辫子垂在胸前，辫梢系着旧红绳，说话奶声奶气，说快了打结。",
       "room": "secret_xiake",
-      "home": null,
+      "home": "house:npcv_078",
       "level": 3,
       "hp": 102,
       "atk": 10,
@@ -10292,7 +10290,6 @@
       "title": "孩童",
       "district": "xiake",
       "province": "海外",
-      "house": "house:npcv_078",
       "unlock": {
         "favor": 30
       },
@@ -10360,7 +10357,7 @@
       "tier": "C",
       "district": "jinguo",
       "province": "北疆",
-      "house": "house:npcv_079",
+      "home": "house:npcv_079",
       "unlock": {
         "favor": 30
       },
@@ -10434,7 +10431,7 @@
       "title": "流民",
       "district": "xiake",
       "province": "海外",
-      "house": "house:npcv_080",
+      "home": "house:npcv_080",
       "unlock": {
         "favor": 30
       },
@@ -10652,6 +10649,7 @@
       "tag": "constable",
       "desc": "袖口束着，靴子踩得噔噔响，走路带着三分官气，说话时手不离腰。",
       "room": "palace_prison",
+      "home": "house:npcv_082",
       "level": 14,
       "hp": 256,
       "atk": 32,
@@ -10710,7 +10708,6 @@
         "身体": "chain_armor",
         "头部": "iron_helmet"
       },
-      "house": "house:npcv_082",
       "tier": "B",
       "district": "palace",
       "unlock": {
@@ -10734,6 +10731,7 @@
       "tag": "official",
       "desc": "手里拿着个鼻烟壶，身形端方，坐有坐相，笑不露齿。",
       "room": "jn_yamen_arch",
+      "home": "house:npcv_083",
       "level": 30,
       "hp": 480,
       "atk": 64,
@@ -10801,7 +10799,6 @@
         "武器": "fine_sword",
         "身体": "silk_robe"
       },
-      "house": "house:npcv_083",
       "tier": "B",
       "district": "yamen",
       "unlock": {
@@ -10893,7 +10890,7 @@
       "title": "内侍",
       "district": "palace",
       "province": "京畿道",
-      "house": "house:npcv_084",
+      "home": "house:npcv_084",
       "unlock": {
         "favor": 30
       },
@@ -10966,7 +10963,7 @@
       "title": "宫中内人",
       "district": "palace",
       "province": "京畿道",
-      "house": "house:npcv_085",
+      "home": "house:npcv_085",
       "unlock": {
         "favor": 30
       },
@@ -11046,7 +11043,7 @@
       "title": "嫔妃",
       "district": "palace",
       "province": "京畿道",
-      "house": "house:npcv_086",
+      "home": "house:npcv_086",
       "unlock": {
         "favor": 30
       },
@@ -11121,7 +11118,7 @@
       "title": "青楼女子",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_087",
+      "home": "house:npcv_087",
       "unlock": {
         "favor": 30
       },
@@ -11141,6 +11138,7 @@
       "greed": 86,
       "desc": "腰上系着串钥匙，指上戴着两枚戒指，答话快，不留缝。",
       "room": "jn_wine_room",
+      "home": "house:npcv_088",
       "level": 28,
       "hp": 452,
       "atk": 60,
@@ -11211,7 +11209,6 @@
       },
       "favorToLearn": 74,
       "age": 34,
-      "house": "house:npcv_088",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -11292,7 +11289,7 @@
       "title": "歌伎",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_089",
+      "home": "house:npcv_089",
       "unlock": {
         "favor": 30
       },
@@ -11310,6 +11307,7 @@
       "tag": "swordsman",
       "desc": "腰间悬着剑，剑穗旧得起了毛，手掌宽大，指节粗得像竹节，站着不动，也像随时要走。",
       "room": "jn_fruit_stall",
+      "home": "house:npcv_090",
       "level": 16,
       "hp": 284,
       "atk": 36,
@@ -11385,7 +11383,6 @@
         "武器": "xuantie_sword",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_090",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -11464,6 +11461,7 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 47,
+      "home": "house:npcv_091",
       "schedule": {
         "day": "jn_pawnshop",
         "night": "jn_pawnshop"
@@ -11473,7 +11471,6 @@
         "武器": "butcher_knife",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_091",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -11497,6 +11494,7 @@
       "tag": "hunter",
       "desc": "脚上是鹿皮靴，身形精悍，动作快，笑起来露出白牙。",
       "room": "jn_farm_3",
+      "home": "house:npcv_092",
       "level": 20,
       "hp": 340,
       "atk": 44,
@@ -11561,7 +11559,6 @@
         "武器": "hunting_knife",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_092",
       "tier": "B",
       "district": "farmland",
       "unlock": {
@@ -11642,6 +11639,7 @@
         "内功": "basic_force"
       },
       "favorToLearn": 76,
+      "home": "house:npcv_093",
       "schedule": {
         "day": "jiangnan_temple",
         "night": "jiangnan_temple"
@@ -11651,7 +11649,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_093",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -11725,6 +11722,7 @@
         "拳": "basic_fist"
       },
       "favorToLearn": 55,
+      "home": "house:npcv_094",
       "schedule": {
         "day": "gaibang_po_miao",
         "night": "gaibang_po_miao"
@@ -11734,7 +11732,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_094",
       "tier": "B",
       "district": "gaibang",
       "unlock": {
@@ -11806,6 +11803,7 @@
         "内功": "basic_force"
       },
       "favorToLearn": 57,
+      "home": "house:npcv_095",
       "schedule": {
         "day": "jiangnan_temple",
         "night": "jiangnan_temple"
@@ -11815,7 +11813,6 @@
         "武器": "iron_sword_basic",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_095",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -11894,12 +11891,12 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 46,
+      "home": "house:npcv_096",
       "schedule": {
         "day": "jn_brothel_room",
         "night": "jn_brothel_room"
       },
       "age": 24,
-      "house": "house:npcv_096",
       "tier": "B",
       "district": "qinglou",
       "unlock": {
@@ -11923,6 +11920,7 @@
       "tag": "boatman",
       "desc": "手里握着根竹篙，篙头包着铁，眉眼生得清淡，看人时先垂一下眼，手不离篙。",
       "room": "jn_boat",
+      "home": "house:npcv_097",
       "level": 14,
       "hp": 256,
       "atk": 32,
@@ -11979,7 +11977,6 @@
       },
       "favorToLearn": 48,
       "age": 30,
-      "house": "house:npcv_097",
       "tier": "B",
       "district": "harbor",
       "unlock": {
@@ -12062,12 +12059,12 @@
         "拳": "basic_fist"
       },
       "favorToLearn": 43,
+      "home": "house:npcv_098",
       "schedule": {
         "day": "jn_teahouse",
         "night": "jn_teahouse"
       },
       "age": 24,
-      "house": "house:npcv_098",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -12091,6 +12088,7 @@
       "tag": "waiter2",
       "desc": "肩上的白巾还算干净，是新来的，眉眼生得清淡，看人时先垂一下眼，被喊一声就小跑。",
       "room": "palace_gate",
+      "home": "house:npcv_099",
       "level": 4,
       "hp": 116,
       "atk": 12,
@@ -12148,7 +12146,6 @@
       },
       "favorToLearn": 42,
       "age": 24,
-      "house": "house:npcv_099",
       "tier": "C",
       "district": "palace",
       "unlock": {
@@ -12170,6 +12167,7 @@
       "tag": "commoner",
       "desc": "肩上挎着个蓝布包袱，包得四四方方，眉眼生得清淡，看人时先垂一下眼，把手在衣襟上擦了擦才伸出来。",
       "room": "palace_court4",
+      "home": "house:npcv_100",
       "level": 8,
       "hp": 172,
       "atk": 20,
@@ -12236,7 +12234,6 @@
       },
       "favorToLearn": 37,
       "age": 29,
-      "house": "house:npcv_100",
       "tier": "C",
       "district": "palace",
       "unlock": {
@@ -12259,6 +12256,7 @@
       "tag": "vendor",
       "desc": "摊前插着个幌子，字已经看不清了，一条辫子垂在胸前，辫梢系着旧红绳，没人时就蹲着打盹，有人立刻醒。",
       "room": "jn_market_north",
+      "home": "house:npcv_101",
       "level": 21,
       "hp": 354,
       "atk": 46,
@@ -12314,7 +12312,6 @@
       },
       "favorToLearn": 56,
       "age": 47,
-      "house": "house:npcv_101",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -12547,6 +12544,7 @@
       "tag": "farmer",
       "desc": "腰里别着把镰刀，刀把油光发亮，手掌粗糙开裂，裂纹里嵌着泥，见人先停下手的活，直起腰。",
       "room": "jn_farm_5",
+      "home": "house:npcv_103",
       "level": 44,
       "hp": 676,
       "atk": 92,
@@ -12605,7 +12603,6 @@
       },
       "favorToLearn": 66,
       "age": 23,
-      "house": "house:npcv_103",
       "tier": "B",
       "district": "farmland",
       "unlock": {
@@ -12629,6 +12626,7 @@
       "tag": "smith",
       "desc": "围裙口袋里插着两三根铁钉，一条辫子垂在胸前，辫梢系着旧红绳，说话时手不停，边说边敲。",
       "room": "jn_market_west",
+      "home": "house:npcv_104",
       "level": 11,
       "hp": 214,
       "atk": 26,
@@ -12689,7 +12687,6 @@
       "favorToLearn": 46,
       "moneyToLearn": 620,
       "age": 33,
-      "house": "house:npcv_104",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -12713,6 +12710,7 @@
       "tag": "doctor",
       "desc": "挎着的布袋鼓鼓的，露出几截草根，眉眼生得清淡，看人时先垂一下眼，答话简短，不肯把话说满。",
       "room": "jn_weaver",
+      "home": "house:npcv_105",
       "level": 34,
       "hp": 536,
       "atk": 72,
@@ -12780,7 +12778,6 @@
       },
       "favorToLearn": 76,
       "age": 34,
-      "house": "house:npcv_105",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -12805,6 +12802,7 @@
       "tag": "innkeeper",
       "desc": "腰间一串钥匙，走起来哗啦响，脖子后面一道横褶，见人就招呼，熟客叫得出名字。",
       "room": "jn_tavern",
+      "home": "house:npcv_106",
       "level": 21,
       "hp": 354,
       "atk": 46,
@@ -12859,7 +12857,6 @@
       },
       "favorToLearn": 48,
       "age": 49,
-      "house": "house:npcv_106",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -12884,6 +12881,7 @@
       "tag": "waiter",
       "desc": "围裙系得紧，腰上别着块抹布，耳上坠着一对小小的珠子，脚不停，说话时也在挪。",
       "room": "road_huashan_1",
+      "home": "house:npcv_107",
       "level": 32,
       "hp": 508,
       "atk": 68,
@@ -12940,7 +12938,6 @@
       },
       "favorToLearn": 61,
       "age": 15,
-      "house": "house:npcv_107",
       "tier": "B",
       "district": "huashan",
       "unlock": {
@@ -12964,6 +12961,7 @@
       "tag": "merchant",
       "desc": "腰上挂着玉佩，玉是好玉，算账时眼珠转得飞快，见人穿得差就爱搭不理。",
       "room": "huashan_qingke",
+      "home": "house:npcv_108",
       "level": 11,
       "hp": 214,
       "atk": 26,
@@ -13016,7 +13014,6 @@
       },
       "favorToLearn": 44,
       "age": 44,
-      "house": "house:npcv_108",
       "tier": "B",
       "district": "huashan",
       "unlock": {
@@ -13237,6 +13234,7 @@
       "tag": "groom",
       "desc": "肩上搭着块擦车的旧布，耳上坠着一对小小的珠子，说话爱带牲口的行话。",
       "room": "jn_misc_shop",
+      "home": "house:npcv_110",
       "level": 22,
       "hp": 368,
       "atk": 48,
@@ -13290,7 +13288,6 @@
       },
       "favorToLearn": 51,
       "age": 35,
-      "house": "house:npcv_110",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -13314,7 +13311,7 @@
       "tag": "child",
       "desc": "一个总角小孩，扎着两个冲天辫，眉眼生得清淡，看人时先垂一下眼，说话奶声奶气，说快了打结。",
       "room": "huashan_bei",
-      "home": null,
+      "home": "house:npcv_111",
       "level": 1,
       "hp": 74,
       "atk": 6,
@@ -13381,7 +13378,6 @@
       "title": "孩童",
       "district": "huashan",
       "province": "江湖",
-      "house": "house:npcv_111",
       "unlock": {
         "favor": 30
       },
@@ -13454,7 +13450,7 @@
       "tier": "C",
       "district": "huashan",
       "province": "江湖",
-      "house": "house:npcv_112",
+      "home": "house:npcv_112",
       "unlock": {
         "favor": 30
       },
@@ -13532,7 +13528,7 @@
       "title": "流民",
       "district": "huashan",
       "province": "江湖",
-      "house": "house:npcv_113",
+      "home": "house:npcv_113",
       "unlock": {
         "favor": 30
       },
@@ -13550,6 +13546,7 @@
       "tag": "escort",
       "desc": "肩上背着个包袱，包得方方正正，脸上一道风霜色，看不出年纪，笑起来很慢，像是好久没笑过。",
       "room": "jiangnan_east_road",
+      "home": "house:npcv_114",
       "level": 25,
       "hp": 410,
       "atk": 54,
@@ -13615,7 +13612,6 @@
         "武器": "steel_blade",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_114",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -13640,6 +13636,7 @@
       "tag": "constable",
       "desc": "身着皂衣，腰悬铁尺，脸上没什么表情，开口先问你姓什么。",
       "room": "road_tangmen_1",
+      "home": "house:npcv_115",
       "level": 20,
       "hp": 340,
       "atk": 44,
@@ -13704,7 +13701,6 @@
         "身体": "leather_armor",
         "头部": "iron_helmet"
       },
-      "house": "house:npcv_115",
       "tier": "B",
       "district": "tangmen",
       "unlock": {
@@ -13728,6 +13724,7 @@
       "tag": "official",
       "desc": "一身官服，补子洗得有点旧，手背上有几颗浅浅的烫疤，说话慢条斯理，一句三顿。",
       "room": "road_dali_1",
+      "home": "house:npcv_116",
       "level": 37,
       "hp": 578,
       "atk": 78,
@@ -13784,7 +13781,6 @@
         "武器": "fine_sword",
         "身体": "silk_robe"
       },
-      "house": "house:npcv_116",
       "tier": "B",
       "district": "dali",
       "unlock": {
@@ -13873,7 +13869,7 @@
       "title": "内侍",
       "district": "shaolin",
       "province": "江湖",
-      "house": "house:npcv_117",
+      "home": "house:npcv_117",
       "unlock": {
         "favor": 30
       },
@@ -13950,7 +13946,7 @@
       "title": "宫中内人",
       "district": "wudang",
       "province": "江湖",
-      "house": "house:npcv_118",
+      "home": "house:npcv_118",
       "unlock": {
         "favor": 30
       },
@@ -14022,7 +14018,7 @@
       "title": "嫔妃",
       "district": "mojiao",
       "province": "江湖",
-      "house": "house:npcv_119",
+      "home": "house:npcv_119",
       "unlock": {
         "favor": 30
       },
@@ -14105,7 +14101,7 @@
       "title": "青楼女子",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_120",
+      "home": "house:npcv_120",
       "unlock": {
         "favor": 30
       },
@@ -14125,6 +14121,7 @@
       "greed": 77,
       "desc": "袖口宽，手藏在里头，唇上点着红，一边说话一边打量你的衣裳。",
       "room": "jn_wine_room",
+      "home": "house:npcv_121",
       "level": 37,
       "hp": 578,
       "atk": 78,
@@ -14187,7 +14184,6 @@
       },
       "favorToLearn": 65,
       "age": 42,
-      "house": "house:npcv_121",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -14269,7 +14265,7 @@
       "title": "歌伎",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_122",
+      "home": "house:npcv_122",
       "unlock": {
         "favor": 30
       },
@@ -14287,6 +14283,7 @@
       "tag": "swordsman",
       "desc": "腰间悬着剑，剑穗旧得起了毛，眉骨上一道细疤，被胭脂盖过一半，站着不动，也像随时要走。",
       "room": "shaolin_shanmen",
+      "home": "house:npcv_123",
       "level": 31,
       "hp": 494,
       "atk": 66,
@@ -14354,7 +14351,6 @@
         "武器": "iron_sword_basic",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_123",
       "tier": "B",
       "district": "shaolin",
       "unlock": {
@@ -14435,6 +14431,7 @@
         "轻功": "shaolin_bu"
       },
       "favorToLearn": 48,
+      "home": "house:npcv_124",
       "schedule": {
         "day": "road_wudang_1",
         "night": "road_wudang_1"
@@ -14444,7 +14441,6 @@
         "武器": "butcher_knife",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_124",
       "tier": "B",
       "district": "wudang",
       "unlock": {
@@ -14468,6 +14464,7 @@
       "tag": "hunter",
       "desc": "腰上别着把猎刀，发间只簪一根素银簪，答话时手在磨刀。",
       "room": "jn_farm_7",
+      "home": "house:npcv_125",
       "level": 42,
       "hp": 648,
       "atk": 88,
@@ -14540,7 +14537,6 @@
         "武器": "iron_blade",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_125",
       "tier": "B",
       "district": "farmland",
       "unlock": {
@@ -14629,6 +14625,7 @@
         "内功": "basic_force"
       },
       "favorToLearn": 55,
+      "home": "house:npcv_126",
       "schedule": {
         "day": "gaibang_po_miao",
         "night": "gaibang_po_miao"
@@ -14638,7 +14635,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_126",
       "tier": "B",
       "district": "gaibang",
       "unlock": {
@@ -14713,6 +14709,7 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 58,
+      "home": "house:npcv_127",
       "schedule": {
         "day": "jiangnan_temple",
         "night": "jiangnan_temple"
@@ -14722,7 +14719,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_127",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -14805,6 +14801,7 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 66,
+      "home": "house:npcv_128",
       "schedule": {
         "day": "gaibang_po_miao",
         "night": "gaibang_po_miao"
@@ -14814,7 +14811,6 @@
         "武器": "iron_sword_basic",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_128",
       "tier": "B",
       "district": "gaibang",
       "unlock": {
@@ -14901,12 +14897,12 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 51,
+      "home": "house:npcv_129",
       "schedule": {
         "day": "jn_brothel_room",
         "night": "jn_brothel_room"
       },
       "age": 37,
-      "house": "house:npcv_129",
       "tier": "B",
       "district": "qinglou",
       "unlock": {
@@ -14930,6 +14926,7 @@
       "tag": "boatman",
       "desc": "手里握着根竹篙，篙头包着铁，皮肤被水泡得发白，说到天气就抬头。",
       "room": "jn_carriage",
+      "home": "house:npcv_130",
       "level": 30,
       "hp": 480,
       "atk": 64,
@@ -14992,7 +14989,6 @@
       },
       "favorToLearn": 60,
       "age": 23,
-      "house": "house:npcv_130",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -15066,12 +15062,12 @@
         "拳": "basic_fist"
       },
       "favorToLearn": 55,
+      "home": "house:npcv_131",
       "schedule": {
         "day": "wudang_lianwu",
         "night": "wudang_lianwu"
       },
       "age": 31,
-      "house": "house:npcv_131",
       "tier": "B",
       "district": "wudang",
       "unlock": {
@@ -15095,6 +15091,7 @@
       "tag": "waiter2",
       "desc": "端着个空托盘，站在角落，手指上有新烫的水泡，被喊一声就小跑。",
       "room": "road_emei_1",
+      "home": "house:npcv_132",
       "level": 32,
       "hp": 508,
       "atk": 68,
@@ -15149,7 +15146,6 @@
       },
       "favorToLearn": 54,
       "age": 19,
-      "house": "house:npcv_132",
       "tier": "C",
       "district": "emei",
       "unlock": {
@@ -15171,6 +15167,7 @@
       "tag": "commoner",
       "desc": "头上一顶旧毡帽，帽檐塌了一半，一条辫子垂在胸前，辫梢系着旧红绳，把手在衣襟上擦了擦才伸出来。",
       "room": "emei_jinding",
+      "home": "house:npcv_133",
       "level": 23,
       "hp": 382,
       "atk": 50,
@@ -15236,7 +15233,6 @@
       },
       "favorToLearn": 42,
       "age": 21,
-      "house": "house:npcv_133",
       "tier": "C",
       "district": "emei",
       "unlock": {
@@ -15259,6 +15255,7 @@
       "tag": "vendor",
       "desc": "腰上围着个钱袋，鼓鼓的，耳上坠着一对小小的珠子，一边招呼客人一边瞟着街面。",
       "room": "tangmen_hall",
+      "home": "house:npcv_134",
       "level": 19,
       "hp": 326,
       "atk": 42,
@@ -15321,7 +15318,6 @@
       },
       "favorToLearn": 49,
       "age": 26,
-      "house": "house:npcv_134",
       "tier": "B",
       "district": "tangmen",
       "unlock": {
@@ -15345,6 +15341,7 @@
       "tag": "scholar",
       "desc": "手里总攥着半卷书，书角卷了边，肩上披着件半旧的帔子，说到功名就低头，说到文章就抬头。",
       "room": "shaolin_cangjing",
+      "home": "house:npcv_135",
       "level": 12,
       "hp": 228,
       "atk": 28,
@@ -15414,7 +15411,6 @@
       },
       "favorToLearn": 47,
       "age": 27,
-      "house": "house:npcv_135",
       "tier": "B",
       "district": "shaolin",
       "unlock": {
@@ -15438,6 +15434,7 @@
       "tag": "farmer",
       "desc": "裤脚卷到膝上，腿上全是泥点，肩上的扁担压出了深深的印子，说话憨，一句一个「俺」。",
       "room": "cunzhen_farm",
+      "home": "house:npcv_136",
       "level": 43,
       "hp": 662,
       "atk": 90,
@@ -15500,7 +15497,6 @@
       },
       "favorToLearn": 54,
       "age": 52,
-      "house": "house:npcv_136",
       "tier": "B",
       "district": "cunzhen",
       "unlock": {
@@ -15524,6 +15520,7 @@
       "tag": "smith",
       "desc": "围裙口袋里插着两三根铁钉，臂上青筋暴起，像爬着蚯蚓，见人进来只抬一下眼。",
       "room": "road_miao_1",
+      "home": "house:npcv_137",
       "level": 38,
       "hp": 592,
       "atk": 80,
@@ -15588,7 +15585,6 @@
       "favorToLearn": 61,
       "moneyToLearn": 1360,
       "age": 55,
-      "house": "house:npcv_137",
       "tier": "B",
       "district": "miaojiang",
       "unlock": {
@@ -15612,6 +15608,7 @@
       "tag": "doctor",
       "desc": "背着个旧药箱，箱角磨圆了，肩上披着件半旧的帔子，说到病情就压低声音。",
       "room": "miaojiang_gu",
+      "home": "house:npcv_138",
       "level": 39,
       "hp": 606,
       "atk": 82,
@@ -15674,7 +15671,6 @@
       },
       "favorToLearn": 81,
       "age": 36,
-      "house": "house:npcv_138",
       "tier": "B",
       "district": "miaojiang",
       "unlock": {
@@ -15699,6 +15695,7 @@
       "tag": "innkeeper",
       "desc": "腰间一串钥匙，走起来哗啦响，腰身束得细，走路时裙摆几乎不动，眼睛始终盯着大堂，谁进来都知道。",
       "room": "taohuadao_she",
+      "home": "house:npcv_139",
       "level": 16,
       "hp": 284,
       "atk": 36,
@@ -15754,7 +15751,6 @@
       },
       "favorToLearn": 56,
       "age": 51,
-      "house": "house:npcv_139",
       "tier": "B",
       "district": "taohuadao",
       "unlock": {
@@ -15779,6 +15775,7 @@
       "tag": "waiter",
       "desc": "手里托着个木盘，盘上摞着碗，耳上坠着一对小小的珠子，笑得快，收得也快。",
       "room": "taohuadao_zhu",
+      "home": "house:npcv_140",
       "level": 14,
       "hp": 256,
       "atk": 32,
@@ -15837,7 +15834,6 @@
       },
       "favorToLearn": 34,
       "age": 31,
-      "house": "house:npcv_140",
       "tier": "B",
       "district": "taohuadao",
       "unlock": {
@@ -15861,6 +15857,7 @@
       "tag": "merchant",
       "desc": "肩上披着件锦袄，袄边镶着毛，发间只簪一根素银簪，见人穿得差就爱搭不理。",
       "room": "road_beijiang_1",
+      "home": "house:npcv_141",
       "level": 27,
       "hp": 438,
       "atk": 58,
@@ -15920,7 +15917,6 @@
       },
       "favorToLearn": 61,
       "age": 26,
-      "house": "house:npcv_141",
       "tier": "B",
       "district": "beijiang",
       "unlock": {
@@ -15944,6 +15940,7 @@
       "tag": "richman",
       "desc": "衣料考究，腰上别块好玉，身形清瘦，衣服却做得宽，说到银钱就皱眉，说到门路就来神。",
       "room": "jn_market_north",
+      "home": "house:npcv_142",
       "level": 45,
       "hp": 690,
       "atk": 94,
@@ -16010,7 +16007,6 @@
       },
       "favorToLearn": 96,
       "age": 50,
-      "house": "house:npcv_142",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -16035,6 +16031,7 @@
       "tag": "groom",
       "desc": "腰上系着粗布腰带，别着个酒葫芦，指节细长，指甲修得干干净净，答话简短，多半是「嗯」「不走」。",
       "room": "jn_harbor_wharf",
+      "home": "house:npcv_143",
       "level": 27,
       "hp": 438,
       "atk": 58,
@@ -16104,7 +16101,6 @@
       },
       "favorToLearn": 54,
       "age": 43,
-      "house": "house:npcv_143",
       "tier": "B",
       "district": "harbor",
       "unlock": {
@@ -16128,7 +16124,7 @@
       "tag": "child",
       "desc": "手里攥着个木雕的小玩意，手背上有几颗浅浅的烫疤，问什么都答，答完就跑。",
       "room": "road_many_1",
-      "home": null,
+      "home": "house:npcv_144",
       "level": 3,
       "hp": 102,
       "atk": 10,
@@ -16187,7 +16183,6 @@
       "title": "孩童",
       "district": "many",
       "province": "南疆",
-      "house": "house:npcv_144",
       "unlock": {
         "favor": 30
       },
@@ -16251,7 +16246,7 @@
       "tier": "C",
       "district": "xiyu",
       "province": "西域",
-      "house": "house:npcv_145",
+      "home": "house:npcv_145",
       "unlock": {
         "favor": 30
       },
@@ -16323,7 +16318,7 @@
       "title": "流民",
       "district": "gusu",
       "province": "江南西道",
-      "house": "house:npcv_146",
+      "home": "house:npcv_146",
       "unlock": {
         "favor": 30
       },
@@ -16340,6 +16335,7 @@
       "tag": "escort",
       "desc": "脚上是快靴，靴筒磨得发毛，腰身束得细，走路时裙摆几乎不动，答话先「嗯」一声，再说话。",
       "room": "jn_harbor_wharf",
+      "home": "house:npcv_147",
       "level": 15,
       "hp": 270,
       "atk": 34,
@@ -16397,7 +16393,6 @@
         "武器": "steel_blade",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_147",
       "tier": "B",
       "district": "harbor",
       "unlock": {
@@ -16422,6 +16417,7 @@
       "tag": "constable",
       "desc": "腰间挂着牌子，牌上写着「捕」，腰身束得细，走路时裙摆几乎不动，答话短，不肯多说一个字。",
       "room": "road_gaibang_1",
+      "home": "house:npcv_148",
       "level": 44,
       "hp": 676,
       "atk": 92,
@@ -16491,7 +16487,6 @@
         "身体": "chain_armor",
         "头部": "iron_helmet"
       },
-      "house": "house:npcv_148",
       "tier": "B",
       "district": "gaibang",
       "unlock": {
@@ -16780,7 +16775,7 @@
       "title": "内侍",
       "district": "palace",
       "province": "京畿道",
-      "house": "house:npcv_150",
+      "home": "house:npcv_150",
       "unlock": {
         "favor": 30
       },
@@ -16856,7 +16851,7 @@
       "title": "宫中内人",
       "district": "palace",
       "province": "京畿道",
-      "house": "house:npcv_151",
+      "home": "house:npcv_151",
       "unlock": {
         "favor": 30
       },
@@ -16931,7 +16926,7 @@
       "title": "嫔妃",
       "district": "palace",
       "province": "京畿道",
-      "house": "house:npcv_152",
+      "home": "house:npcv_152",
       "unlock": {
         "favor": 30
       },
@@ -17002,7 +16997,7 @@
       "title": "青楼女子",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_153",
+      "home": "house:npcv_153",
       "unlock": {
         "favor": 30
       },
@@ -17022,6 +17017,7 @@
       "greed": 78,
       "desc": "脸上敷着粉，粉有点厚，眉画得又黑又直，说到价钱就笑，说到赎身就沉脸。",
       "room": "jn_wine_room",
+      "home": "house:npcv_154",
       "level": 38,
       "hp": 592,
       "atk": 80,
@@ -17084,7 +17080,6 @@
       },
       "favorToLearn": 84,
       "age": 47,
-      "house": "house:npcv_154",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -17166,7 +17161,7 @@
       "title": "歌伎",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_155",
+      "home": "house:npcv_155",
       "unlock": {
         "favor": 30
       },
@@ -17184,6 +17179,7 @@
       "tag": "swordsman",
       "desc": "一柄剑斜挎在背上，剑鞘磨得发亮，肩背笔直，站多久也不松，开口前先看一眼对方的腰。",
       "room": "gumu_shi",
+      "home": "house:npcv_156",
       "level": 16,
       "hp": 284,
       "atk": 36,
@@ -17240,7 +17236,6 @@
         "武器": "xuantie_sword",
         "身体": "silk_robe"
       },
-      "house": "house:npcv_156",
       "tier": "B",
       "district": "gumu",
       "unlock": {
@@ -17315,6 +17310,7 @@
         "拳": "basic_fist"
       },
       "favorToLearn": 81,
+      "home": "house:npcv_157",
       "schedule": {
         "day": "jinguo_ruin",
         "night": "jinguo_ruin"
@@ -17324,7 +17320,6 @@
         "武器": "butcher_knife",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_157",
       "tier": "B",
       "district": "jinguo",
       "unlock": {
@@ -17346,6 +17341,7 @@
       "tag": "hunter",
       "desc": "脚上是鹿皮靴，发间只簪一根素银簪，看人时先看身后。",
       "room": "gusu_canhe",
+      "home": "house:npcv_158",
       "level": 37,
       "hp": 578,
       "atk": 78,
@@ -17410,7 +17406,6 @@
         "武器": "hunting_knife",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_158",
       "tier": "B",
       "district": "gusu",
       "unlock": {
@@ -17494,6 +17489,7 @@
         "招架": "basic_parry"
       },
       "favorToLearn": 49,
+      "home": "house:npcv_159",
       "schedule": {
         "day": "dali_tianlong",
         "night": "dali_tianlong"
@@ -17503,7 +17499,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_159",
       "tier": "B",
       "district": "dali",
       "unlock": {
@@ -17584,6 +17579,7 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 74,
+      "home": "house:npcv_160",
       "schedule": {
         "day": "cunzhen_temple",
         "night": "cunzhen_temple"
@@ -17593,7 +17589,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_160",
       "tier": "B",
       "district": "cunzhen",
       "unlock": {
@@ -17680,6 +17675,7 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 73,
+      "home": "house:npcv_161",
       "schedule": {
         "day": "dali_tianlong",
         "night": "dali_tianlong"
@@ -17689,7 +17685,6 @@
         "武器": "iron_sword_basic",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_161",
       "tier": "B",
       "district": "dali",
       "unlock": {
@@ -17772,12 +17767,12 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 55,
+      "home": "house:npcv_162",
       "schedule": {
         "day": "jn_brothel_room",
         "night": "jn_brothel_room"
       },
       "age": 33,
-      "house": "house:npcv_162",
       "tier": "B",
       "district": "qinglou",
       "unlock": {
@@ -17801,6 +17796,7 @@
       "tag": "boatman",
       "desc": "腰上系着条草绳，脸上被江风吹得红，手不离篙。",
       "room": "jiangnan_gate",
+      "home": "house:npcv_163",
       "level": 44,
       "hp": 676,
       "atk": 92,
@@ -17871,7 +17867,6 @@
       },
       "favorToLearn": 87,
       "age": 52,
-      "house": "house:npcv_163",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -17946,12 +17941,12 @@
         "拳": "basic_fist"
       },
       "favorToLearn": 42,
+      "home": "house:npcv_164",
       "schedule": {
         "day": "mojiao_shanmen",
         "night": "mojiao_shanmen"
       },
       "age": 51,
-      "house": "house:npcv_164",
       "tier": "B",
       "district": "mojiao",
       "unlock": {
@@ -17975,6 +17970,7 @@
       "tag": "waiter2",
       "desc": "袖子挽了一半，记性差，要回头问，笑起来有点傻。",
       "room": "jn_market_main",
+      "home": "house:npcv_165",
       "level": 30,
       "hp": 480,
       "atk": 64,
@@ -18029,7 +18025,6 @@
       },
       "favorToLearn": 71,
       "age": 39,
-      "house": "house:npcv_165",
       "tier": "C",
       "district": "market",
       "unlock": {
@@ -18051,6 +18046,7 @@
       "tag": "commoner",
       "desc": "一身粗布衣裳，袖口磨得起了毛边，袖口绣着一圈细小的缠枝纹，答话爱说「是是」，然后才说正题。",
       "room": "jn_fortune",
+      "home": "house:npcv_166",
       "level": 33,
       "hp": 522,
       "atk": 70,
@@ -18110,7 +18106,6 @@
       },
       "favorToLearn": 65,
       "age": 18,
-      "house": "house:npcv_166",
       "tier": "C",
       "district": "market",
       "unlock": {
@@ -18133,6 +18128,7 @@
       "tag": "vendor",
       "desc": "腰上围着个钱袋，鼓鼓的，手指灵活，找钱从来不用看，一边招呼客人一边瞟着街面。",
       "room": "jn_toy_stall",
+      "home": "house:npcv_167",
       "level": 18,
       "hp": 312,
       "atk": 40,
@@ -18180,7 +18176,6 @@
       },
       "favorToLearn": 51,
       "age": 21,
-      "house": "house:npcv_167",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -18204,6 +18199,7 @@
       "tag": "scholar",
       "desc": "一袭青衫，洗得看不出原来的颜色，眼睛近视，看人要凑近，走路都在默诵，嘴唇动个不停。",
       "room": "jn_study_1",
+      "home": "house:npcv_168",
       "level": 5,
       "hp": 130,
       "atk": 14,
@@ -18269,7 +18265,6 @@
       },
       "favorToLearn": 41,
       "age": 32,
-      "house": "house:npcv_168",
       "tier": "B",
       "district": "shuyuan",
       "unlock": {
@@ -18292,6 +18287,7 @@
       "tag": "farmer",
       "desc": "腰里别着把镰刀，刀把油光发亮，手掌粗糙开裂，裂纹里嵌着泥，手总在裤腿上蹭。",
       "room": "jn_farm_road",
+      "home": "house:npcv_169",
       "level": 30,
       "hp": 480,
       "atk": 64,
@@ -18349,7 +18345,6 @@
       },
       "favorToLearn": 54,
       "age": 32,
-      "house": "house:npcv_169",
       "tier": "B",
       "district": "farmland",
       "unlock": {
@@ -18373,6 +18368,7 @@
       "tag": "smith",
       "desc": "脖子上搭着条毛巾，黑得看不出底色，手掌厚得像块铁板，见人进来只抬一下眼。",
       "room": "palace_court3",
+      "home": "house:npcv_170",
       "level": 18,
       "hp": 312,
       "atk": 40,
@@ -18428,7 +18424,6 @@
       "favorToLearn": 58,
       "moneyToLearn": 1190,
       "age": 42,
-      "house": "house:npcv_170",
       "tier": "B",
       "district": "palace",
       "unlock": {
@@ -18452,6 +18447,7 @@
       "tag": "doctor",
       "desc": "腰上挂着几只小瓷瓶，走起来叮当响，说话时拇指总在摩挲食指，答话简短，不肯把话说满。",
       "room": "palace_court6",
+      "home": "house:npcv_171",
       "level": 7,
       "hp": 158,
       "atk": 18,
@@ -18509,7 +18505,6 @@
       },
       "favorToLearn": 41,
       "age": 50,
-      "house": "house:npcv_171",
       "tier": "B",
       "district": "palace",
       "unlock": {
@@ -18534,6 +18529,7 @@
       "tag": "innkeeper",
       "desc": "肩上搭着条毛巾，巾角已经发硬，脸盘圆，笑起来眼睛就剩两条缝，一边说话一边算账，两不耽误。",
       "room": "jn_market_south",
+      "home": "house:npcv_172",
       "level": 14,
       "hp": 256,
       "atk": 32,
@@ -18581,7 +18577,6 @@
       },
       "favorToLearn": 48,
       "age": 50,
-      "house": "house:npcv_172",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -18606,6 +18601,7 @@
       "tag": "waiter",
       "desc": "脚上一双软底鞋，走起来没声，袖口绣着一圈细小的缠枝纹，一边说话一边擦桌子。",
       "room": "jn_market_east",
+      "home": "house:npcv_173",
       "level": 35,
       "hp": 550,
       "atk": 74,
@@ -18664,7 +18660,6 @@
       },
       "favorToLearn": 51,
       "age": 17,
-      "house": "house:npcv_173",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -18688,6 +18683,7 @@
       "tag": "merchant",
       "desc": "绫罗绸缎裹着个圆滚滚的身板，身板富态，走路有点晃，见人穿得差就爱搭不理。",
       "room": "jn_pottery",
+      "home": "house:npcv_174",
       "level": 13,
       "hp": 242,
       "atk": 30,
@@ -18750,7 +18746,6 @@
       },
       "favorToLearn": 49,
       "age": 58,
-      "house": "house:npcv_174",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -18774,6 +18769,7 @@
       "tag": "richman",
       "desc": "靴子是新的，走一步响一声，手背上有几颗浅浅的烫疤，说到银钱就皱眉，说到门路就来神。",
       "room": "jn_market_east",
+      "home": "house:npcv_175",
       "level": 7,
       "hp": 158,
       "atk": 18,
@@ -18837,7 +18833,6 @@
       },
       "favorToLearn": 49,
       "age": 65,
-      "house": "house:npcv_175",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -18862,6 +18857,7 @@
       "tag": "groom",
       "desc": "肩上搭着块擦车的旧布，身上有股牲口味，一边说话一边摸牲口的鼻子。",
       "room": "jiangnan_smithy",
+      "home": "house:npcv_176",
       "level": 21,
       "hp": 354,
       "atk": 46,
@@ -18915,7 +18911,6 @@
       },
       "favorToLearn": 56,
       "age": 49,
-      "house": "house:npcv_176",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -18939,7 +18934,7 @@
       "tag": "child",
       "desc": "穿着件大人的旧衣裳改的小褂，看见生人也不怕，睁着圆眼睛打量你，被人一吓就躲到大人身后。",
       "room": "jiangnan_west_road",
-      "home": null,
+      "home": "house:npcv_177",
       "level": 3,
       "hp": 102,
       "atk": 10,
@@ -18997,7 +18992,6 @@
       "title": "孩童",
       "district": "jiangnan",
       "province": "江南东道",
-      "house": "house:npcv_177",
       "unlock": {
         "favor": 30
       },
@@ -19078,7 +19072,7 @@
       "tier": "C",
       "district": "huashan",
       "province": "江湖",
-      "house": "house:npcv_178",
+      "home": "house:npcv_178",
       "unlock": {
         "favor": 30
       },
@@ -19148,7 +19142,7 @@
       "title": "流民",
       "district": "huashan",
       "province": "江湖",
-      "house": "house:npcv_179",
+      "home": "house:npcv_179",
       "unlock": {
         "favor": 30
       },
@@ -19166,6 +19160,7 @@
       "tag": "escort",
       "desc": "身上是镖行的号衣，号衣上补过，耳上坠着一对小小的珠子，从不背对着门口坐。",
       "room": "jn_market_main",
+      "home": "house:npcv_180",
       "level": 30,
       "hp": 480,
       "atk": 64,
@@ -19229,7 +19224,6 @@
         "武器": "steel_blade",
         "身体": "chain_armor"
       },
-      "house": "house:npcv_180",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -19451,6 +19445,7 @@
       "tag": "official",
       "desc": "腰间玉带，玉带扣松了一格，腰身束得细，走路时裙摆几乎不动，笑不露齿。",
       "room": "jn_yamen_side",
+      "home": "house:npcv_182",
       "level": 11,
       "hp": 214,
       "atk": 26,
@@ -19523,7 +19518,6 @@
         "武器": "fine_sword",
         "身体": "silk_robe"
       },
-      "house": "house:npcv_182",
       "tier": "B",
       "district": "yamen",
       "unlock": {
@@ -19608,7 +19602,7 @@
       "title": "内侍",
       "district": "shaolin",
       "province": "江湖",
-      "house": "house:npcv_183",
+      "home": "house:npcv_183",
       "unlock": {
         "favor": 30
       },
@@ -19683,7 +19677,7 @@
       "title": "宫中内人",
       "district": "wudang",
       "province": "江湖",
-      "house": "house:npcv_184",
+      "home": "house:npcv_184",
       "unlock": {
         "favor": 30
       },
@@ -19759,7 +19753,7 @@
       "title": "嫔妃",
       "district": "mojiao",
       "province": "江湖",
-      "house": "house:npcv_185",
+      "home": "house:npcv_185",
       "unlock": {
         "favor": 30
       },
@@ -19835,7 +19829,7 @@
       "title": "青楼女子",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_186",
+      "home": "house:npcv_186",
       "unlock": {
         "favor": 30
       },
@@ -19855,6 +19849,7 @@
       "greed": 79,
       "desc": "袖口宽，手藏在里头，发髻梳得紧，一根乱发也没有，笑时眼睛不笑。",
       "room": "jn_wine_room",
+      "home": "house:npcv_187",
       "level": 8,
       "hp": 172,
       "atk": 20,
@@ -19918,7 +19913,6 @@
       },
       "favorToLearn": 50,
       "age": 36,
-      "house": "house:npcv_187",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -20004,7 +19998,7 @@
       "title": "歌伎",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_188",
+      "home": "house:npcv_188",
       "unlock": {
         "favor": 30
       },
@@ -20022,6 +20016,7 @@
       "tag": "swordsman",
       "desc": "一身青布短打，袖口束得紧紧的，虎口与指节都结着厚茧，开口前先看一眼对方的腰。",
       "room": "huashan_yunu",
+      "home": "house:npcv_189",
       "level": 10,
       "hp": 200,
       "atk": 24,
@@ -20085,7 +20080,6 @@
         "武器": "fine_sword",
         "身体": "silk_robe"
       },
-      "house": "house:npcv_189",
       "tier": "B",
       "district": "huashan",
       "unlock": {
@@ -20173,6 +20167,7 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 56,
+      "home": "house:npcv_190",
       "schedule": {
         "day": "huashan_siguoya",
         "night": "huashan_siguoya"
@@ -20182,7 +20177,6 @@
         "武器": "butcher_knife",
         "身体": "tattered_cloak"
       },
-      "house": "house:npcv_190",
       "tier": "B",
       "district": "huashan",
       "unlock": {
@@ -20206,6 +20200,7 @@
       "tag": "hunter",
       "desc": "腰间挂着箭囊，箭羽是雕翎，腰身束得细，走路时裙摆几乎不动，笑起来露出白牙。",
       "room": "jn_farm_2",
+      "home": "house:npcv_191",
       "level": 25,
       "hp": 410,
       "atk": 54,
@@ -20266,7 +20261,6 @@
         "武器": "iron_blade",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_191",
       "tier": "B",
       "district": "farmland",
       "unlock": {
@@ -20339,6 +20333,7 @@
         "拳": "basic_fist"
       },
       "favorToLearn": 66,
+      "home": "house:npcv_192",
       "schedule": {
         "day": "cunzhen_temple",
         "night": "cunzhen_temple"
@@ -20348,7 +20343,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_192",
       "tier": "B",
       "district": "cunzhen",
       "unlock": {
@@ -20437,6 +20431,7 @@
         "内功": "basic_force"
       },
       "favorToLearn": 48,
+      "home": "house:npcv_193",
       "schedule": {
         "day": "dali_tianlong",
         "night": "dali_tianlong"
@@ -20446,7 +20441,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_193",
       "tier": "B",
       "district": "dali",
       "unlock": {
@@ -20520,6 +20514,7 @@
         "内功": "basic_force"
       },
       "favorToLearn": 55,
+      "home": "house:npcv_194",
       "schedule": {
         "day": "cunzhen_temple",
         "night": "cunzhen_temple"
@@ -20529,7 +20524,6 @@
         "武器": "iron_sword_basic",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_194",
       "tier": "B",
       "district": "cunzhen",
       "unlock": {
@@ -20609,12 +20603,12 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 49,
+      "home": "house:npcv_195",
       "schedule": {
         "day": "jn_brothel_room",
         "night": "jn_brothel_room"
       },
       "age": 20,
-      "house": "house:npcv_195",
       "tier": "B",
       "district": "qinglou",
       "unlock": {
@@ -20638,6 +20632,7 @@
       "tag": "boatman",
       "desc": "手里握着根竹篙，篙头包着铁，腰身束得细，走路时裙摆几乎不动，说到天气就抬头。",
       "room": "road_jiangnan_1",
+      "home": "house:npcv_196",
       "level": 23,
       "hp": 382,
       "atk": 50,
@@ -20692,7 +20687,6 @@
       },
       "favorToLearn": 49,
       "age": 57,
-      "house": "house:npcv_196",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -20766,12 +20760,12 @@
         "拳": "basic_fist"
       },
       "favorToLearn": 62,
+      "home": "house:npcv_197",
       "schedule": {
         "day": "road_shaolin_1",
         "night": "road_shaolin_1"
       },
       "age": 29,
-      "house": "house:npcv_197",
       "tier": "B",
       "district": "shaolin",
       "unlock": {
@@ -20795,6 +20789,7 @@
       "tag": "waiter2",
       "desc": "端着个空托盘，站在角落，发间只簪一根素银簪，被喊一声就小跑。",
       "room": "shaolin_ta",
+      "home": "house:npcv_198",
       "level": 28,
       "hp": 452,
       "atk": 60,
@@ -20853,7 +20848,6 @@
       },
       "favorToLearn": 59,
       "age": 24,
-      "house": "house:npcv_198",
       "tier": "C",
       "district": "shaolin",
       "unlock": {
@@ -20875,6 +20869,7 @@
       "tag": "commoner",
       "desc": "脚上是布鞋，鞋面上落着灰，眼角有块胎记，说话前先看看四周。",
       "room": "wudang_shanmen",
+      "home": "house:npcv_199",
       "level": 23,
       "hp": 382,
       "atk": 50,
@@ -20934,7 +20929,6 @@
       },
       "favorToLearn": 51,
       "age": 51,
-      "house": "house:npcv_199",
       "tier": "C",
       "district": "wudang",
       "unlock": {
@@ -20957,6 +20951,7 @@
       "tag": "vendor",
       "desc": "腰上围着个钱袋，鼓鼓的，一条辫子垂在胸前，辫梢系着旧红绳，一边招呼客人一边瞟着街面。",
       "room": "wudang_jinding",
+      "home": "house:npcv_200",
       "level": 16,
       "hp": 284,
       "atk": 36,
@@ -21018,7 +21013,6 @@
       },
       "favorToLearn": 50,
       "age": 42,
-      "house": "house:npcv_200",
       "tier": "B",
       "district": "wudang",
       "unlock": {
@@ -21042,6 +21036,7 @@
       "tag": "scholar",
       "desc": "背上是个书箱，箱上刻着歪字，发间只簪一根素银簪，说到功名就低头，说到文章就抬头。",
       "room": "shaolin_cangjing",
+      "home": "house:npcv_201",
       "level": 15,
       "hp": 270,
       "atk": 34,
@@ -21108,7 +21103,6 @@
       },
       "favorToLearn": 54,
       "age": 18,
-      "house": "house:npcv_201",
       "tier": "B",
       "district": "shaolin",
       "unlock": {
@@ -21132,6 +21126,7 @@
       "tag": "farmer",
       "desc": "肩上扛着把锄头，锄刃磨得雪亮，梳着双鬟，鬓角抿得齐整，答话慢半拍，像要先想清楚。",
       "room": "cunzhen_gate",
+      "home": "house:npcv_202",
       "level": 33,
       "hp": 522,
       "atk": 70,
@@ -21194,7 +21189,6 @@
       },
       "favorToLearn": 61,
       "age": 47,
-      "house": "house:npcv_202",
       "tier": "B",
       "district": "cunzhen",
       "unlock": {
@@ -21218,6 +21212,7 @@
       "tag": "smith",
       "desc": "胳膊上烫着几处旧疤，指节细长，指甲修得干干净净，说到好钢就来劲，说到价钱就沉默。",
       "room": "emei_shanmen",
+      "home": "house:npcv_203",
       "level": 25,
       "hp": 410,
       "atk": 54,
@@ -21282,7 +21277,6 @@
       "favorToLearn": 53,
       "moneyToLearn": 970,
       "age": 32,
-      "house": "house:npcv_203",
       "tier": "B",
       "district": "emei",
       "unlock": {
@@ -21306,6 +21300,7 @@
       "tag": "doctor",
       "desc": "背着个旧药箱，箱角磨圆了，一条辫子垂在胸前，辫梢系着旧红绳，答话简短，不肯把话说满。",
       "room": "tangmen_gate",
+      "home": "house:npcv_204",
       "level": 33,
       "hp": 522,
       "atk": 70,
@@ -21368,7 +21363,6 @@
       },
       "favorToLearn": 62,
       "age": 56,
-      "house": "house:npcv_204",
       "tier": "B",
       "district": "tangmen",
       "unlock": {
@@ -21393,6 +21387,7 @@
       "tag": "innkeeper",
       "desc": "柜台后站着，围裙上全是油点，梳着双鬟，鬓角抿得齐整，眼睛始终盯着大堂，谁进来都知道。",
       "room": "tangmen_poison",
+      "home": "house:npcv_205",
       "level": 17,
       "hp": 298,
       "atk": 38,
@@ -21447,7 +21442,6 @@
       },
       "favorToLearn": 48,
       "age": 57,
-      "house": "house:npcv_205",
       "tier": "B",
       "district": "tangmen",
       "unlock": {
@@ -21472,6 +21466,7 @@
       "tag": "waiter",
       "desc": "肩上搭着条白巾，巾角已经发灰，腰身束得细，走路时裙摆几乎不动，笑得快，收得也快。",
       "room": "miaojiang_sheng",
+      "home": "house:npcv_206",
       "level": 16,
       "hp": 284,
       "atk": 36,
@@ -21538,7 +21533,6 @@
       },
       "favorToLearn": 43,
       "age": 17,
-      "house": "house:npcv_206",
       "tier": "B",
       "district": "miaojiang",
       "unlock": {
@@ -21562,6 +21556,7 @@
       "tag": "merchant",
       "desc": "手指上套着枚大金戒，发间只簪一根素银簪，说到货就滔滔不绝。",
       "room": "taohuadao_forest",
+      "home": "house:npcv_207",
       "level": 16,
       "hp": 284,
       "atk": 36,
@@ -21624,7 +21619,6 @@
       },
       "favorToLearn": 48,
       "age": 57,
-      "house": "house:npcv_207",
       "tier": "B",
       "district": "taohuadao",
       "unlock": {
@@ -21648,6 +21642,7 @@
       "tag": "richman",
       "desc": "一身杭绸，袖口滚着暗边，发间只簪一根素银簪，说话慢，说一句歇一句。",
       "room": "jn_harbor_shed",
+      "home": "house:npcv_208",
       "level": 7,
       "hp": 158,
       "atk": 18,
@@ -21707,7 +21702,6 @@
       },
       "favorToLearn": 50,
       "age": 44,
-      "house": "house:npcv_208",
       "tier": "B",
       "district": "harbor",
       "unlock": {
@@ -21732,6 +21726,7 @@
       "tag": "groom",
       "desc": "脚上是草鞋，鞋底钉着铁掌，一条辫子垂在胸前，辫梢系着旧红绳，答话简短，多半是「嗯」「不走」。",
       "room": "haitan_dock",
+      "home": "house:npcv_209",
       "level": 23,
       "hp": 382,
       "atk": 50,
@@ -21786,7 +21781,6 @@
       },
       "favorToLearn": 61,
       "age": 28,
-      "house": "house:npcv_209",
       "tier": "B",
       "district": "haitan",
       "unlock": {
@@ -21809,7 +21803,7 @@
       "tag": "child",
       "desc": "鼻涕快过河了也不知道擦，腰身束得细，走路时裙摆几乎不动，一边说一边跳。",
       "room": "taohuadao_qingyin",
-      "home": null,
+      "home": "house:npcv_210",
       "level": 1,
       "hp": 74,
       "atk": 6,
@@ -21884,7 +21878,6 @@
       "title": "孩童",
       "district": "taohuadao",
       "province": "江湖",
-      "house": "house:npcv_210",
       "unlock": {
         "favor": 30
       },
@@ -21957,7 +21950,7 @@
       "tier": "C",
       "district": "gaibang",
       "province": "江湖",
-      "house": "house:npcv_211",
+      "home": "house:npcv_211",
       "unlock": {
         "favor": 30
       },
@@ -22033,7 +22026,7 @@
       "title": "流民",
       "district": "beijiang",
       "province": "边塞道",
-      "house": "house:npcv_212",
+      "home": "house:npcv_212",
       "unlock": {
         "favor": 30
       },
@@ -22051,6 +22044,7 @@
       "tag": "escort",
       "desc": "身上是镖行的号衣，号衣上补过，脸上一道风霜色，看不出年纪，从不背对着门口坐。",
       "room": "road_xiyu_1",
+      "home": "house:npcv_213",
       "level": 4,
       "hp": 116,
       "atk": 12,
@@ -22119,7 +22113,6 @@
         "武器": "iron_blade",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_213",
       "tier": "B",
       "district": "xiyu",
       "unlock": {
@@ -22144,6 +22137,7 @@
       "tag": "constable",
       "desc": "头上戴顶官帽，帽翅歪了一边，眼神利，看人先看手，说到案子就压低声音。",
       "room": "jiangnan_east_road",
+      "home": "house:npcv_214",
       "level": 39,
       "hp": 606,
       "atk": 82,
@@ -22204,7 +22198,6 @@
         "身体": "leather_armor",
         "头部": "iron_helmet"
       },
-      "house": "house:npcv_214",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -22228,6 +22221,7 @@
       "tag": "official",
       "desc": "一身官服，补子洗得有点旧，梳着双鬟，鬓角抿得齐整，说话慢条斯理，一句三顿。",
       "room": "road_tangmen_2",
+      "home": "house:npcv_215",
       "level": 5,
       "hp": 130,
       "atk": 14,
@@ -22303,7 +22297,6 @@
         "武器": "fine_sword",
         "身体": "silk_robe"
       },
-      "house": "house:npcv_215",
       "tier": "B",
       "district": "tangmen",
       "unlock": {
@@ -22392,7 +22385,7 @@
       "title": "内侍",
       "district": "palace",
       "province": "京畿道",
-      "house": "house:npcv_216",
+      "home": "house:npcv_216",
       "unlock": {
         "favor": 30
       },
@@ -22470,7 +22463,7 @@
       "title": "宫中内人",
       "district": "palace",
       "province": "京畿道",
-      "house": "house:npcv_217",
+      "home": "house:npcv_217",
       "unlock": {
         "favor": 30
       },
@@ -22543,7 +22536,7 @@
       "title": "嫔妃",
       "district": "palace",
       "province": "京畿道",
-      "house": "house:npcv_218",
+      "home": "house:npcv_218",
       "unlock": {
         "favor": 30
       },
@@ -22737,6 +22730,7 @@
       "greed": 87,
       "desc": "脸上敷着粉，粉有点厚，指上戴着两枚戒指，一边说话一边打量你的衣裳。",
       "room": "jn_brothel_gate",
+      "home": "house:npcv_220",
       "level": 18,
       "hp": 312,
       "atk": 40,
@@ -22802,7 +22796,6 @@
       },
       "favorToLearn": 62,
       "age": 43,
-      "house": "house:npcv_220",
       "tier": "B",
       "district": "qinglou",
       "unlock": {
@@ -22885,7 +22878,7 @@
       "title": "歌伎",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_221",
+      "home": "house:npcv_221",
       "unlock": {
         "favor": 30
       },
@@ -22903,6 +22896,7 @@
       "tag": "swordsman",
       "desc": "一身青布短打，袖口束得紧紧的，手上有茧，虎口那一块最厚，站着不动，也像随时要走。",
       "room": "xixia_ice",
+      "home": "house:npcv_222",
       "level": 23,
       "hp": 382,
       "atk": 50,
@@ -22965,7 +22959,6 @@
         "武器": "iron_sword_basic",
         "身体": "silk_robe"
       },
-      "house": "house:npcv_222",
       "tier": "B",
       "district": "xixia",
       "unlock": {
@@ -23038,6 +23031,7 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 48,
+      "home": "house:npcv_223",
       "schedule": {
         "day": "gusu_yanzi",
         "night": "gusu_yanzi"
@@ -23047,7 +23041,6 @@
         "武器": "butcher_knife",
         "身体": "tattered_cloak"
       },
-      "house": "house:npcv_223",
       "tier": "B",
       "district": "gusu",
       "unlock": {
@@ -23070,6 +23063,7 @@
       "tag": "hunter",
       "desc": "腰上别着把猎刀，腰身束得细，走路时裙摆几乎不动，答话时手在磨刀。",
       "room": "cunzhen_inn",
+      "home": "house:npcv_224",
       "level": 19,
       "hp": 326,
       "atk": 42,
@@ -23138,7 +23132,6 @@
         "武器": "iron_blade",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_224",
       "tier": "B",
       "district": "cunzhen",
       "unlock": {
@@ -23220,6 +23213,7 @@
         "拳": "basic_fist"
       },
       "favorToLearn": 50,
+      "home": "house:npcv_225",
       "schedule": {
         "day": "dali_tianlong",
         "night": "dali_tianlong"
@@ -23229,7 +23223,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_225",
       "tier": "B",
       "district": "dali",
       "unlock": {
@@ -23311,6 +23304,7 @@
         "拳": "basic_fist"
       },
       "favorToLearn": 74,
+      "home": "house:npcv_226",
       "schedule": {
         "day": "cunzhen_temple",
         "night": "cunzhen_temple"
@@ -23320,7 +23314,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_226",
       "tier": "B",
       "district": "cunzhen",
       "unlock": {
@@ -23402,6 +23395,7 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 60,
+      "home": "house:npcv_227",
       "schedule": {
         "day": "dali_tianlong",
         "night": "dali_tianlong"
@@ -23411,7 +23405,6 @@
         "武器": "iron_sword_basic",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_227",
       "tier": "B",
       "district": "dali",
       "unlock": {
@@ -23483,12 +23476,12 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 61,
+      "home": "house:npcv_228",
       "schedule": {
         "day": "jn_brothel_kitchen",
         "night": "jn_brothel_kitchen"
       },
       "age": 17,
-      "house": "house:npcv_228",
       "tier": "B",
       "district": "qinglou",
       "unlock": {
@@ -23512,6 +23505,7 @@
       "tag": "boatman",
       "desc": "赤着脚站在船头，裤脚卷到腿根，肩上披着件半旧的帔子，手不离篙。",
       "room": "taohuadao_dock",
+      "home": "house:npcv_229",
       "level": 13,
       "hp": 242,
       "atk": 30,
@@ -23569,7 +23563,6 @@
       },
       "favorToLearn": 52,
       "age": 48,
-      "house": "house:npcv_229",
       "tier": "B",
       "district": "taohuadao",
       "unlock": {
@@ -23643,12 +23636,12 @@
         "拳": "basic_fist"
       },
       "favorToLearn": 66,
+      "home": "house:npcv_230",
       "schedule": {
         "day": "gumu_mu",
         "night": "gumu_mu"
       },
       "age": 55,
-      "house": "house:npcv_230",
       "tier": "B",
       "district": "gumu",
       "unlock": {
@@ -23670,6 +23663,7 @@
       "tag": "waiter2",
       "desc": "围裙系得歪，身形单薄，说话小声。",
       "room": "secret_xiake",
+      "home": "house:npcv_231",
       "level": 4,
       "hp": 116,
       "atk": 12,
@@ -23723,7 +23717,6 @@
       },
       "favorToLearn": 42,
       "age": 28,
-      "house": "house:npcv_231",
       "tier": "C",
       "district": "xiake",
       "unlock": {
@@ -23744,6 +23737,7 @@
       "tag": "commoner",
       "desc": "脚上是布鞋，鞋面上落着灰，手掌粗糙，掌心一层硬皮，说话前先看看四周。",
       "room": "jinguo_ruin_d",
+      "home": "house:npcv_232",
       "level": 3,
       "hp": 102,
       "atk": 10,
@@ -23798,7 +23792,6 @@
       },
       "favorToLearn": 31,
       "age": 41,
-      "house": "house:npcv_232",
       "tier": "C",
       "district": "jinguo",
       "unlock": {
@@ -23819,6 +23812,7 @@
       "tag": "vendor",
       "desc": "摊前插着个幌子，字已经看不清了，眼角有笑纹，一说话就出来，没人时就蹲着打盹，有人立刻醒。",
       "room": "xiake_neike",
+      "home": "house:npcv_233",
       "level": 31,
       "hp": 494,
       "atk": 66,
@@ -23881,7 +23875,6 @@
       },
       "favorToLearn": 69,
       "age": 46,
-      "house": "house:npcv_233",
       "tier": "B",
       "district": "xiake",
       "unlock": {
@@ -23904,6 +23897,7 @@
       "tag": "scholar",
       "desc": "袖子里鼓鼓囊囊，不知塞着什么，腰身束得细，走路时裙摆几乎不动，走路都在默诵，嘴唇动个不停。",
       "room": "jn_study_1",
+      "home": "house:npcv_234",
       "level": 8,
       "hp": 172,
       "atk": 20,
@@ -23962,7 +23956,6 @@
       },
       "favorToLearn": 46,
       "age": 41,
-      "house": "house:npcv_234",
       "tier": "B",
       "district": "shuyuan",
       "unlock": {
@@ -23985,6 +23978,7 @@
       "tag": "farmer",
       "desc": "手里拎着个竹篮，篮里是半篮菜，肩上的扁担压出了深深的印子，说到收成就叹气，说到天就抬头。",
       "room": "cunzhen_farm",
+      "home": "house:npcv_235",
       "level": 42,
       "hp": 648,
       "atk": 88,
@@ -24051,7 +24045,6 @@
       },
       "favorToLearn": 64,
       "age": 56,
-      "house": "house:npcv_235",
       "tier": "B",
       "district": "cunzhen",
       "unlock": {
@@ -24075,6 +24068,7 @@
       "tag": "smith",
       "desc": "手里拎着把铁锤，锤把磨得发亮，腰身束得细，走路时裙摆几乎不动，见人进来只抬一下眼。",
       "room": "jn_fruit_stall",
+      "home": "house:npcv_236",
       "level": 44,
       "hp": 676,
       "atk": 92,
@@ -24127,7 +24121,6 @@
       "favorToLearn": 60,
       "moneyToLearn": 1280,
       "age": 30,
-      "house": "house:npcv_236",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -24151,6 +24144,7 @@
       "tag": "doctor",
       "desc": "背着个旧药箱，箱角磨圆了，指节修长，一闻就是常年捣药的手，看人先看脸色再看衣裳。",
       "room": "jn_pawnshop",
+      "home": "house:npcv_237",
       "level": 41,
       "hp": 634,
       "atk": 86,
@@ -24206,7 +24200,6 @@
       },
       "favorToLearn": 73,
       "age": 54,
-      "house": "house:npcv_237",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -24231,6 +24224,7 @@
       "tag": "innkeeper",
       "desc": "腰间一串钥匙，走起来哗啦响，脖子后面一道横褶，说到价钱就笑，说到欠账就沉脸。",
       "room": "palace_gate",
+      "home": "house:npcv_238",
       "level": 5,
       "hp": 130,
       "atk": 14,
@@ -24289,7 +24283,6 @@
       },
       "favorToLearn": 43,
       "age": 56,
-      "house": "house:npcv_238",
       "tier": "B",
       "district": "palace",
       "unlock": {
@@ -24314,6 +24307,7 @@
       "tag": "waiter",
       "desc": "手里托着个木盘，盘上摞着碗，记性好，谁点了什么从不出错，说到掌柜就压低声音。",
       "room": "palace_court4",
+      "home": "house:npcv_239",
       "level": 16,
       "hp": 284,
       "atk": 36,
@@ -24376,7 +24370,6 @@
       },
       "favorToLearn": 35,
       "age": 16,
-      "house": "house:npcv_239",
       "tier": "B",
       "district": "palace",
       "unlock": {
@@ -24401,6 +24394,7 @@
       "tag": "merchant",
       "desc": "绫罗绸缎裹着个圆滚滚的身板，下巴两层，说话时一颤一颤，说到货就滔滔不绝。",
       "room": "jn_market_north",
+      "home": "house:npcv_240",
       "level": 28,
       "hp": 452,
       "atk": 60,
@@ -24454,7 +24448,6 @@
       },
       "favorToLearn": 52,
       "age": 57,
-      "house": "house:npcv_240",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -24478,6 +24471,7 @@
       "tag": "richman",
       "desc": "外头罩着件貂氅，天不冷也穿着，浑身上下都写着「不缺钱」三个字，从不先开口，等人先说。",
       "room": "jn_market_south",
+      "home": "house:npcv_241",
       "level": 5,
       "hp": 130,
       "atk": 14,
@@ -24545,7 +24539,6 @@
       },
       "favorToLearn": 51,
       "age": 60,
-      "house": "house:npcv_241",
       "tier": "B",
       "district": "market",
       "unlock": {
@@ -24570,6 +24563,7 @@
       "tag": "groom",
       "desc": "脚上是草鞋，鞋底钉着铁掌，腿有点罗圈，是常年骑出来的，说话爱带牲口的行话。",
       "room": "jn_resident_1",
+      "home": "house:npcv_242",
       "level": 18,
       "hp": 312,
       "atk": 40,
@@ -24623,7 +24617,6 @@
       },
       "favorToLearn": 51,
       "age": 38,
-      "house": "house:npcv_242",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -24647,7 +24640,7 @@
       "tag": "child",
       "desc": "穿着件大人的旧衣裳改的小褂，手指头短，攥东西攥得紧，问什么都答，答完就跑。",
       "room": "jn_market_west",
-      "home": null,
+      "home": "house:npcv_243",
       "level": 3,
       "hp": 102,
       "atk": 10,
@@ -24709,7 +24702,6 @@
       "title": "孩童",
       "district": "market",
       "province": "江南东道",
-      "house": "house:npcv_243",
       "unlock": {
         "favor": 30
       },
@@ -24782,7 +24774,7 @@
       "tier": "C",
       "district": "market",
       "province": "江南东道",
-      "house": "house:npcv_244",
+      "home": "house:npcv_244",
       "unlock": {
         "favor": 30
       },
@@ -24860,7 +24852,7 @@
       "title": "流民",
       "district": "market",
       "province": "江南东道",
-      "house": "house:npcv_245",
+      "home": "house:npcv_245",
       "unlock": {
         "favor": 30
       },
@@ -24878,6 +24870,7 @@
       "tag": "escort",
       "desc": "身上是镖行的号衣，号衣上补过，虎口有厚茧，是常年握刀握出来的，答话先「嗯」一声，再说话。",
       "room": "road_huashan_1",
+      "home": "house:npcv_246",
       "level": 42,
       "hp": 648,
       "atk": 88,
@@ -24946,7 +24939,6 @@
         "武器": "iron_blade",
         "身体": "chain_armor"
       },
-      "house": "house:npcv_246",
       "tier": "B",
       "district": "huashan",
       "unlock": {
@@ -24971,6 +24963,7 @@
       "tag": "constable",
       "desc": "腰间挂着牌子，牌上写着「捕」，手背上有几颗浅浅的烫疤，开口先问你姓什么。",
       "room": "road_haibin_1",
+      "home": "house:npcv_247",
       "level": 20,
       "hp": 340,
       "atk": 44,
@@ -25041,7 +25034,6 @@
         "身体": "leather_armor",
         "头部": "iron_helmet"
       },
-      "house": "house:npcv_247",
       "tier": "B",
       "district": "haitan",
       "unlock": {
@@ -25064,6 +25056,7 @@
       "tag": "official",
       "desc": "袖口宽大，说话时甩一甩，指节细长，指甲修得干干净净，答话前先端起茶碗。",
       "room": "road_xixia_1",
+      "home": "house:npcv_248",
       "level": 43,
       "hp": 662,
       "atk": 90,
@@ -25126,7 +25119,6 @@
         "武器": "fine_sword",
         "身体": "silk_robe"
       },
-      "house": "house:npcv_248",
       "tier": "B",
       "district": "xixia",
       "unlock": {
@@ -25213,7 +25205,7 @@
       "title": "内侍",
       "district": "shaolin",
       "province": "江湖",
-      "house": "house:npcv_249",
+      "home": "house:npcv_249",
       "unlock": {
         "favor": 30
       },
@@ -25295,7 +25287,7 @@
       "title": "宫中内人",
       "district": "wudang",
       "province": "江湖",
-      "house": "house:npcv_250",
+      "home": "house:npcv_250",
       "unlock": {
         "favor": 30
       },
@@ -25365,7 +25357,7 @@
       "title": "嫔妃",
       "district": "mojiao",
       "province": "江湖",
-      "house": "house:npcv_251",
+      "home": "house:npcv_251",
       "unlock": {
         "favor": 30
       },
@@ -25441,7 +25433,7 @@
       "title": "青楼女子",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_252",
+      "home": "house:npcv_252",
       "unlock": {
         "favor": 30
       },
@@ -25461,6 +25453,7 @@
       "greed": 88,
       "desc": "手里捏着块帕子，帕上有香，指上戴着两枚戒指，一边说话一边打量你的衣裳。",
       "room": "jn_brothel_gate",
+      "home": "house:npcv_253",
       "level": 30,
       "hp": 480,
       "atk": 64,
@@ -25527,7 +25520,6 @@
       },
       "favorToLearn": 69,
       "age": 51,
-      "house": "house:npcv_253",
       "tier": "B",
       "district": "qinglou",
       "unlock": {
@@ -25604,7 +25596,7 @@
       "title": "歌伎",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_254",
+      "home": "house:npcv_254",
       "unlock": {
         "favor": 30
       },
@@ -25622,6 +25614,7 @@
       "tag": "swordsman",
       "desc": "腰间悬着剑，剑穗旧得起了毛，发束得高，额角留着汗，见人只点一下头，不多话。",
       "room": "huashan_qingke",
+      "home": "house:npcv_255",
       "level": 7,
       "hp": 158,
       "atk": 18,
@@ -25685,7 +25678,6 @@
         "武器": "fine_sword",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_255",
       "tier": "B",
       "district": "huashan",
       "unlock": {
@@ -25760,6 +25752,7 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 71,
+      "home": "house:npcv_256",
       "schedule": {
         "day": "huashan_bei",
         "night": "huashan_bei"
@@ -25769,7 +25762,6 @@
         "武器": "butcher_knife",
         "身体": "tattered_cloak"
       },
-      "house": "house:npcv_256",
       "tier": "B",
       "district": "huashan",
       "unlock": {
@@ -25793,6 +25785,7 @@
       "tag": "hunter",
       "desc": "腰上别着把猎刀，身形精悍，动作快，看人时先看身后。",
       "room": "jn_farm_4",
+      "home": "house:npcv_257",
       "level": 26,
       "hp": 424,
       "atk": 56,
@@ -25866,7 +25859,6 @@
         "武器": "iron_blade",
         "身体": "leather_armor"
       },
-      "house": "house:npcv_257",
       "tier": "B",
       "district": "farmland",
       "unlock": {
@@ -25941,6 +25933,7 @@
         "招架": "basic_parry"
       },
       "favorToLearn": 84,
+      "home": "house:npcv_258",
       "schedule": {
         "day": "cunzhen_temple",
         "night": "cunzhen_temple"
@@ -25950,7 +25943,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_258",
       "tier": "B",
       "district": "cunzhen",
       "unlock": {
@@ -26027,6 +26019,7 @@
         "内功": "basic_force"
       },
       "favorToLearn": 67,
+      "home": "house:npcv_259",
       "schedule": {
         "day": "dali_tianlong",
         "night": "dali_tianlong"
@@ -26036,7 +26029,6 @@
         "武器": "wood_staff",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_259",
       "tier": "B",
       "district": "dali",
       "unlock": {
@@ -26120,6 +26112,7 @@
         "内功": "basic_force"
       },
       "favorToLearn": 55,
+      "home": "house:npcv_260",
       "schedule": {
         "day": "cunzhen_temple",
         "night": "cunzhen_temple"
@@ -26129,7 +26122,6 @@
         "武器": "iron_sword_basic",
         "身体": "cloth_robe"
       },
-      "house": "house:npcv_260",
       "tier": "B",
       "district": "cunzhen",
       "unlock": {
@@ -26203,12 +26195,12 @@
         "轻功": "basic_dodge"
       },
       "favorToLearn": 57,
+      "home": "house:npcv_261",
       "schedule": {
         "day": "jn_brothel_kitchen",
         "night": "jn_brothel_kitchen"
       },
       "age": 29,
-      "house": "house:npcv_261",
       "tier": "B",
       "district": "qinglou",
       "unlock": {
@@ -26232,6 +26224,7 @@
       "tag": "boatman",
       "desc": "手里握着根竹篙，篙头包着铁，身形矮壮，站得稳，说到天气就抬头。",
       "room": "jn_resident_3",
+      "home": "house:npcv_262",
       "level": 37,
       "hp": 578,
       "atk": 78,
@@ -26294,7 +26287,6 @@
       },
       "favorToLearn": 61,
       "age": 37,
-      "house": "house:npcv_262",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -26375,12 +26367,12 @@
         "拳": "basic_fist"
       },
       "favorToLearn": 74,
+      "home": "house:npcv_263",
       "schedule": {
         "day": "huashan_houshan",
         "night": "huashan_houshan"
       },
       "age": 31,
-      "house": "house:npcv_263",
       "tier": "B",
       "district": "huashan",
       "unlock": {
@@ -26404,6 +26396,7 @@
       "tag": "waiter2",
       "desc": "袖子挽了一半，手指上有新烫的水泡，答话先应「哎」。",
       "room": "huashan_lianhua",
+      "home": "house:npcv_264",
       "level": 37,
       "hp": 578,
       "atk": 78,
@@ -26461,7 +26454,6 @@
       },
       "favorToLearn": 56,
       "age": 34,
-      "house": "house:npcv_264",
       "tier": "C",
       "district": "huashan",
       "unlock": {
@@ -26483,6 +26475,7 @@
       "tag": "commoner",
       "desc": "头上一顶旧毡帽，帽檐塌了一半，身板矮壮，走路有点外八，答话爱说「是是」，然后才说正题。",
       "room": "huashan_houdong",
+      "home": "house:npcv_265",
       "level": 22,
       "hp": 368,
       "atk": 48,
@@ -26540,7 +26533,6 @@
       },
       "favorToLearn": 52,
       "age": 40,
-      "house": "house:npcv_265",
       "tier": "C",
       "district": "huashan",
       "unlock": {
@@ -26563,6 +26555,7 @@
       "tag": "vendor",
       "desc": "手里举着个拨浪鼓，时不时摇两下，手指灵活，找钱从来不用看，没人时就蹲着打盹，有人立刻醒。",
       "room": "shaolin_shanmen",
+      "home": "house:npcv_266",
       "level": 16,
       "hp": 284,
       "atk": 36,
@@ -26618,7 +26611,6 @@
       },
       "favorToLearn": 46,
       "age": 31,
-      "house": "house:npcv_266",
       "tier": "B",
       "district": "shaolin",
       "unlock": {
@@ -26642,6 +26634,7 @@
       "tag": "scholar",
       "desc": "手里总攥着半卷书，书角卷了边，说话时下巴上那撮胡子一翘一翘，走路都在默诵，嘴唇动个不停。",
       "room": "shaolin_cangjing",
+      "home": "house:npcv_267",
       "level": 19,
       "hp": 326,
       "atk": 42,
@@ -26716,7 +26709,6 @@
       },
       "favorToLearn": 57,
       "age": 22,
-      "house": "house:npcv_267",
       "tier": "B",
       "district": "shaolin",
       "unlock": {
@@ -26740,6 +26732,7 @@
       "tag": "farmer",
       "desc": "头上扣着顶草帽，帽檐破了个口，指节细长，指甲修得干干净净，手总在裤腿上蹭。",
       "room": "jn_farm_6",
+      "home": "house:npcv_268",
       "level": 45,
       "hp": 690,
       "atk": 94,
@@ -26801,7 +26794,6 @@
       },
       "favorToLearn": 56,
       "age": 44,
-      "house": "house:npcv_268",
       "tier": "B",
       "district": "farmland",
       "unlock": {
@@ -26825,6 +26817,7 @@
       "tag": "smith",
       "desc": "赤着上身，腰上系条围裙，全是火星烫的洞，一条辫子垂在胸前，辫梢系着旧红绳，笑起来声音从胸腔里出来。",
       "room": "road_wudang_1",
+      "home": "house:npcv_269",
       "level": 31,
       "hp": 494,
       "atk": 66,
@@ -26894,7 +26887,6 @@
       "favorToLearn": 53,
       "moneyToLearn": 960,
       "age": 54,
-      "house": "house:npcv_269",
       "tier": "B",
       "district": "wudang",
       "unlock": {
@@ -26918,6 +26910,7 @@
       "tag": "doctor",
       "desc": "背着个旧药箱，箱角磨圆了，手背上有几处烫伤的旧痕，常伸手要替人摸脉，又缩回去。",
       "room": "wudang_lianwu",
+      "home": "house:npcv_270",
       "level": 23,
       "hp": 382,
       "atk": 50,
@@ -26977,7 +26970,6 @@
       },
       "favorToLearn": 49,
       "age": 32,
-      "house": "house:npcv_270",
       "tier": "B",
       "district": "wudang",
       "unlock": {
@@ -27002,6 +26994,7 @@
       "tag": "innkeeper",
       "desc": "袖子挽到肘上，小臂上一层黑汗，腰身束得细，走路时裙摆几乎不动，递茶时顺手把茶碗顿在桌上。",
       "room": "road_emei_1",
+      "home": "house:npcv_271",
       "level": 31,
       "hp": 494,
       "atk": 66,
@@ -27074,7 +27067,6 @@
       },
       "favorToLearn": 72,
       "age": 55,
-      "house": "house:npcv_271",
       "tier": "B",
       "district": "emei",
       "unlock": {
@@ -27099,6 +27091,7 @@
       "tag": "waiter",
       "desc": "手里托着个木盘，盘上摞着碗，眼尖，谁举手都先看见，脚不停，说话时也在挪。",
       "room": "emei_jinding",
+      "home": "house:npcv_272",
       "level": 10,
       "hp": 200,
       "atk": 24,
@@ -27160,7 +27153,6 @@
       },
       "favorToLearn": 34,
       "age": 28,
-      "house": "house:npcv_272",
       "tier": "B",
       "district": "emei",
       "unlock": {
@@ -27184,6 +27176,7 @@
       "tag": "merchant",
       "desc": "腰上挂着玉佩，玉是好玉，身板富态，走路有点晃，见人穿得差就爱搭不理。",
       "room": "tangmen_hall",
+      "home": "house:npcv_273",
       "level": 19,
       "hp": 326,
       "atk": 42,
@@ -27248,7 +27241,6 @@
       },
       "favorToLearn": 54,
       "age": 29,
-      "house": "house:npcv_273",
       "tier": "B",
       "district": "tangmen",
       "unlock": {
@@ -27272,6 +27264,7 @@
       "tag": "richman",
       "desc": "靴子是新的，走一步响一声，面色白净，手上没做过活，答话前先看一眼随从。",
       "room": "jn_rich_garden",
+      "home": "house:npcv_274",
       "level": 12,
       "hp": 228,
       "atk": 28,
@@ -27328,7 +27321,6 @@
       },
       "favorToLearn": 56,
       "age": 51,
-      "house": "house:npcv_274",
       "tier": "B",
       "district": "jiangnan",
       "unlock": {
@@ -27353,6 +27345,7 @@
       "tag": "groom",
       "desc": "脚上是草鞋，鞋底钉着铁掌，手背上有几颗浅浅的烫疤，一边说话一边摸牲口的鼻子。",
       "room": "jn_harbor_shed",
+      "home": "house:npcv_275",
       "level": 10,
       "hp": 200,
       "atk": 24,
@@ -27407,7 +27400,6 @@
       },
       "favorToLearn": 43,
       "age": 42,
-      "house": "house:npcv_275",
       "tier": "B",
       "district": "harbor",
       "unlock": {
@@ -27431,7 +27423,7 @@
       "tag": "child",
       "desc": "手里攥着个木雕的小玩意，个子矮，说话要仰着头，一边说一边跳。",
       "room": "road_miao_1",
-      "home": null,
+      "home": "house:npcv_276",
       "level": 1,
       "hp": 74,
       "atk": 6,
@@ -27500,7 +27492,6 @@
       "title": "孩童",
       "district": "miaojiang",
       "province": "江湖",
-      "house": "house:npcv_276",
       "unlock": {
         "favor": 30
       },
@@ -27574,7 +27565,7 @@
       "tier": "C",
       "district": "miaojiang",
       "province": "江湖",
-      "house": "house:npcv_277",
+      "home": "house:npcv_277",
       "unlock": {
         "favor": 30
       },
@@ -27648,7 +27639,7 @@
       "title": "流民",
       "district": "taohuadao",
       "province": "江湖",
-      "house": "house:npcv_278",
+      "home": "house:npcv_278",
       "unlock": {
         "favor": 30
       },
@@ -27666,6 +27657,7 @@
       "tag": "escort",
       "desc": "脚上是快靴，靴筒磨得发毛，耳上坠着一对小小的珠子，答话先「嗯」一声，再说话。",
       "room": "jn_harbor",
+      "home": "house:npcv_279",
       "level": 17,
       "hp": 298,
       "atk": 38,
@@ -27733,7 +27725,6 @@
         "武器": "steel_blade",
         "身体": "chain_armor"
       },
-      "house": "house:npcv_279",
       "tier": "B",
       "district": "harbor",
       "unlock": {
@@ -27758,6 +27749,7 @@
       "tag": "constable",
       "desc": "头上戴顶官帽，帽翅歪了一边，腰身束得细，走路时裙摆几乎不动，说到案子就压低声音。",
       "room": "jn_yamen_prison",
+      "home": "house:npcv_280",
       "level": 37,
       "hp": 578,
       "atk": 78,
@@ -27836,7 +27828,6 @@
         "身体": "chain_armor",
         "头部": "iron_helmet"
       },
-      "house": "house:npcv_280",
       "tier": "B",
       "district": "yamen",
       "unlock": {
@@ -27860,6 +27851,7 @@
       "tag": "official",
       "desc": "袖口宽大，说话时甩一甩，眉间一道竖纹，是常年皱眉皱出来的，说话慢条斯理，一句三顿。",
       "room": "palace_prison",
+      "home": "house:npcv_281",
       "level": 28,
       "hp": 452,
       "atk": 60,
@@ -27924,7 +27916,6 @@
         "武器": "fine_sword",
         "身体": "silk_robe"
       },
-      "house": "house:npcv_281",
       "tier": "B",
       "district": "palace",
       "unlock": {
@@ -28009,7 +28000,7 @@
       "title": "内侍",
       "district": "palace",
       "province": "京畿道",
-      "house": "house:npcv_282",
+      "home": "house:npcv_282",
       "unlock": {
         "favor": 30
       },
@@ -28087,7 +28078,7 @@
       "title": "宫中内人",
       "district": "palace",
       "province": "京畿道",
-      "house": "house:npcv_283",
+      "home": "house:npcv_283",
       "unlock": {
         "favor": 30
       },
@@ -28167,7 +28158,7 @@
       "title": "嫔妃",
       "district": "palace",
       "province": "京畿道",
-      "house": "house:npcv_284",
+      "home": "house:npcv_284",
       "unlock": {
         "favor": 30
       },
@@ -28239,7 +28230,7 @@
       "title": "青楼女子",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_285",
+      "home": "house:npcv_285",
       "unlock": {
         "favor": 30
       },
@@ -28259,6 +28250,7 @@
       "greed": 89,
       "desc": "手里捏着块帕子，帕上有香，唇上点着红，答话快，不留缝。",
       "room": "jn_brothel_gate",
+      "home": "house:npcv_286",
       "level": 45,
       "hp": 690,
       "atk": 94,
@@ -28318,7 +28310,6 @@
       },
       "favorToLearn": 74,
       "age": 57,
-      "house": "house:npcv_286",
       "tier": "B",
       "district": "qinglou",
       "unlock": {
@@ -28397,7 +28388,7 @@
       "title": "歌伎",
       "district": "qinglou",
       "province": "江南东道",
-      "house": "house:npcv_287",
+      "home": "house:npcv_287",
       "unlock": {
         "favor": 30
       },
@@ -28415,6 +28406,7 @@
       "tag": "swordsman",
       "desc": "斗笠压得低，遮住半张脸，肩背笔直，站多久也不松，开口前先看一眼对方的腰。",
       "room": "road_beijiang_1",
+      "home": "house:npcv_288",
       "level": 44,
       "hp": 676,
       "atk": 92,
@@ -28478,7 +28470,6 @@
         "武器": "fine_sword",
         "身体": "silk_robe"
       },
-      "house": "house:npcv_288",
       "tier": "B",
       "district": "beijiang",
       "unlock": {

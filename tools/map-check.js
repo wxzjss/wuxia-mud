@@ -127,10 +127,12 @@ section('5 住宅 owner 真实存在', () => {
     const byName = Object.keys(NPCS).some(k => (NPCS[k].name || '') === owner);
     ok(!!byId || byName, '住宅 ' + id + '(' + r.name + ') 的 owner 「' + owner + '」不是已知 NPC');
   });
+  /* 只认引擎真读的字段：全项目代码读的是 home，不是 house */
   Object.keys(NPCS).forEach(id => {
     const n = NPCS[id];
     if (!n) return;
-    const h = n.house || n.home;
+    ok(!n.house, 'NPC ' + id + ' 仍在用 house 字段（引擎只读 home，会读不到家）');
+    const h = n.home;
     if (typeof h === 'string' && h.startsWith('house:')) {
       virt++;
       ok(h === 'house:' + id, 'NPC ' + id + ' 的虚拟住宅标记应为 house:' + id + '，实为 ' + h);

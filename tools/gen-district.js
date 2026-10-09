@@ -168,7 +168,7 @@ for (const nid of virtualized) {
   if (!def) continue;
   const oldHome = def.home;
   const oldHomeIsDropped = oldHome && drop.has(oldHome);
-  def.house = 'house:' + nid;
+  def.home = 'house:' + nid;
   if (!def.tier) def.tier = 'C';
   if (!def.district) def.district = (def.room && rooms[def.room]) ? rooms[def.room].region : 'jiangnan';
   if (!def.unlock) def.unlock = { favor: 30 };

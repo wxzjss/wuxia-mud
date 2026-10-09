@@ -144,22 +144,21 @@ Object.keys(N).forEach(id => {
     n.province = map.regions[reg].province || map.regions[reg].name;
   }
 
-  /* 住宅：A 层留真房间；B/C 层用虚拟住宅标记 */
-  if (tier === 'A') {
-    const home = n.house || n.home;
-    if (typeof home === 'string' && home.startsWith('house:') && R[home]) {
-      n.house = home;
-      delete n.home;
+  /* 住宅字段全项目只读 home（world.js/engine.js/marriage.js/estate.js 都用 def.home），
+     这里也写 home。虚拟住宅的值是 house:<npcId>，靠前缀区分，不另开字段。 */
+  {
+    const home = n.home;
+    if (tier === 'A') {
+      if (typeof home === 'string' && home.startsWith('house:') && R[home]) n.home = home;
+    } else {
+      const real = home && R[home];
+      if (!real) {
+        n.home = 'house:' + id;
+      } else if (home && !R[home]) {
+        n.home = real;
+      }
     }
-  } else {
-    const real = (n.house && R[n.house]) || (n.home && R[n.home]);
-    if (!real) {
-      n.house = 'house:' + id;
-      if (n.home) delete n.home;
-    } else if (n.house && !R[n.house]) {
-      n.house = real;
-      delete n.home;
-    }
+    delete n.house;
   }
 
   /* 拜访门槛 */

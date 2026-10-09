@@ -23,6 +23,9 @@ const { CombatEngine, DEFAULT_HOOKS } = require('./combat');
 const { evalCond, evalEffects, evalTemplate } = require('./modapi');
 
 const SEASONS = ['spring', 'summer', 'autumn', 'winter'];
+
+/* 单间客栈饭点最多容纳多少人，超出的 NPC 留在原处（饭点只是一部分人去吃饭） */
+const EATERY_CAP = 24;
 const SEASON_CN = { spring: '春', summer: '夏', autumn: '秋', winter: '冬' };
 const WEATHERS = ['晴', '阴', '雨', '雪', '风', '雾'];
 
@@ -172,6 +175,20 @@ class World extends EventEmitter {
     const arrayMode = (mod.arrayMode || 'replace');
     for (const k of Object.keys(json)) {
       if (k === '_mod' || k === 'meta') continue;
+      /* terrain 是「区域 id → 装饰格数组」的双层结构，
+         值是数组不是 entry 对象，走通用 merge 会被当成单条记录揉坏，
+         所以整块替换（基础数据只此一份，Mod 也按整块覆盖处理）。 */
+      if (k === 'terrain') {
+        const src = json[k] || {};
+        this.data.terrain = {};
+        for (const rid of Object.keys(src)) {
+          const list = Array.isArray(src[rid]) ? src[rid] : [];
+          this.data.terrain[rid] = list
+            .filter(t => t && typeof t.x === 'number' && typeof t.y === 'number')
+            .map(t => ({ x: t.x, y: t.y, type: t.type || 'grass', n: t.n || 1 }));
+        }
+        continue;
+      }
       if (!this.data[k]) this.data[k] = {};
       if (collections.includes(k) || (typeof json[k] === 'object' && !Array.isArray(json[k]))) {
         if (Array.isArray(json[k])) {
@@ -338,23 +355,40 @@ class World extends EventEmitter {
     const m = this.clockMinutes % 1440;
     return (m >= 660 && m <= 780) || (m >= 1020 && m <= 1140);
   }
-  /** BFS 找离 fromRoom 最近的酒楼/客栈 */
+  /** BFS 找离 fromRoom 最近的酒楼/客栈
+   *  必须限深：删掉 300 多间填充房后地图连通性大增，
+   *  无深度上限时全城 800+ NPC 会涌进同一间客栈（实测 277 人）。
+   *  同区域优先，找不到再逐层放宽。 */
   nearestEatery(fromRoom) {
     if (!fromRoom) return null;
-    const seen = new Set([fromRoom]);
-    const q = [fromRoom];
-    while (q.length) {
-      const id = q.shift();
-      const room = this.getRoom(id);
-      if (!room) continue;
-      for (const d of Object.keys(room.exits || {})) {
-        const ex = room.exits[d];
-        const t = typeof ex === 'string' ? ex : ex.to;
-        if (t && this.getRoom(t) && !seen.has(t)) {
-          if (/(tavern|wine|inn|酒楼|客栈|酒家|饭庄)/.test((this.getRoom(t).name || ''))) return t;
-          seen.add(t);
-          q.push(t);
+    const start = this.getRoom(fromRoom);
+    const homeRegion = start ? start.region : null;
+    const isEatery = id => {
+      const r = this.getRoom(id);
+      return !!r && /(tavern|wine|inn|酒楼|客栈|酒家|饭庄)/.test(r.name || '');
+    };
+    /* 第 1~3 步只认同区域；4~6 步放宽到邻区；7 步以内全局兜底 */
+    for (const [maxDepth, sameOnly] of [[3, true], [6, false], [8, false]]) {
+      const seen = new Set([fromRoom]);
+      let q = [{ id: fromRoom, d: 0 }];
+      while (q.length) {
+        const next = [];
+        for (const cur of q) {
+          const room = this.getRoom(cur.id);
+          if (!room) continue;
+          for (const dir of Object.keys(room.exits || {})) {
+            const ex = room.exits[dir];
+            const t = typeof ex === 'string' ? ex : ex.to;
+            if (!t || seen.has(t)) continue;
+            const tr = this.getRoom(t);
+            if (!tr) continue;
+            seen.add(t);
+            if (isEatery(t) && (!sameOnly || tr.region === homeRegion)) return t;
+            next.push({ id: t, d: cur.d + 1 });
+          }
         }
+        if (q[0] && q[0].d + 1 >= maxDepth) break;
+        q = next;
       }
     }
     return null;
@@ -1194,7 +1228,8 @@ class World extends EventEmitter {
         const def = this.data.npcs[n.defId];
         if (!def || !def.schedule) continue;
         const eatery = this.nearestEatery(n.room);
-        if (eatery && eatery !== n.room) n.room = eatery;
+        /* 客栈容量：挤爆一间不如分摊到别处（删房后地图连通性大增，不设限会 150+ 人一屋） */
+        if (eatery && eatery !== n.room && this.npcsIn(eatery).length < EATERY_CAP) n.room = eatery;
       }
     }
     // 学堂学生偷懒：白天的书院学子有概率溜到城里玩耍
@@ -1216,10 +1251,23 @@ class World extends EventEmitter {
     for (const rid of Object.keys(this.data.rooms)) {
       const room = this.data.rooms[rid];
       if (!room.respawn) continue;
+      /* 兜底：同一 defId 全图实例上限（含 mob），防止任何路径导致无限累积 */
+      const defCounts = {};
+      for (const n of Object.values(this.instances.npcs)) {
+        defCounts[n.defId] = (defCounts[n.defId] || 0) + 1;
+      }
       for (const rs of [].concat(room.respawn)) {
-        const alive = this.npcsIn(rid).filter(n => n.defId === rs.npc).length;
-        if (alive < (rs.count || 1) && this.rng.chance(rs.chance === undefined ? 0.5 : rs.chance)) {
-          this.spawnNpc(rs.npc, rid, (rs.count || 1) - alive);
+        /* ⚠️ npcsIn 过滤 dead，而 onNpcDown 把「打倒未杀」的人同时标 dead，
+           导致这里 alive 永远是 0 → 山贼无限刷到 300 只。
+           必须把 knockedOut 一起算作「还在场」，否则 respawn 无上限。 */
+        const alive = Object.values(this.instances.npcs)
+          .filter(n => n.room === rid && n.defId === rs.npc && !n.dead).length;
+        const downed = this.downedIn(rid).filter(n => n.defId === rs.npc).length;
+        if (alive + downed < (rs.count || 1) && this.rng.chance(rs.chance === undefined ? 0.5 : rs.chance)) {
+          const total = defCounts[rs.npc] != null ? defCounts[rs.npc] : 0;
+          const hardCap = /^mob_/.test(rs.npc) ? 8 : 3;
+          if (total >= hardCap) continue;
+          this.spawnNpc(rs.npc, rid, (rs.count || 1) - alive - downed);
         }
       }
     }

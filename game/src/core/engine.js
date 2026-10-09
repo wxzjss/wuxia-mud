@@ -241,6 +241,9 @@ class GameEngine {
         const lt = social.LIKE_TYPES.find(y => y.id === x);
         return lt ? { id: lt.id, name: lt.cn } : null;
       }).filter(Boolean),
+      /* 虚拟住宅 house:<npcId> 也算有家（B/C 层私宅不在地图上，靠拜访进去） */
+      homeOf: (n.def && n.def.home) || null,
+      virtualHome: !!(n.def && String(n.def.home || '').startsWith('house:')),
       hasHome: !!(n.def && n.def.home),
       homeName: (n.def && n.def.home && w.getRoom(n.def.home)) ? w.getRoom(n.def.home).name : null,
       /* ---- 婚姻扩展（第二批）---- */

@@ -60,6 +60,26 @@ function ok(name, cond, extra) {
   ok('含探索进度', mh.includes('江湖探索'));
   ok('含相邻房间快捷', mh.includes('一步可达'));
 
+  /* —— 地形装饰层 —— */
+  console.log('\n── 地形装饰 ──');
+  const terr = v.map && v.map.terrain;
+  const terrCount = terr ? Object.keys(terr).reduce((s, k) => s + terr[k].length, 0) : 0;
+  ok('后端 mapView 返回 terrain', !!terr && terrCount > 0, 'terrain 格数=' + terrCount);
+  ok('地图上渲染出地形装饰', mh.includes('map-terrain-layer') && mh.includes('map-terrain '));
+  const terrCells = (mh.match(/class="map-terrain /g) || []).length;
+  ok('地形格数与后端一致（不因渲染丢失）', terrCells > 0 && terrCells <= terrCount,
+    '渲染 ' + terrCells + ' / 后端 ' + terrCount);
+  /* 坐标必须是全局的：装饰格的 px 应落在画布内，不能全挤在左上 */
+  const tpos = [...mh.matchAll(/class="map-terrain [^"]*"\s+style="left:(-?\d+)px;top:(-?\d+)px"/g)]
+    .map(m => [parseInt(m[1], 10), parseInt(m[2], 10)]);
+  /* ⚠️ 必须查 NaN：cx/cy 传错字段名时坐标全是 NaN，但格子数量仍然对，
+     只断言「数量一致」会假绿（真踩过一次）。 */
+  ok('地形坐标无 NaN', !/style="left:NaN|top:NaN/.test(mh),
+    (mh.match(/top:NaN/g) || []).length + ' 个 NaN 坐标');
+  ok('地形坐标分布在整张图（全局坐标，未再减 box 偏移）', tpos.length > 50 &&
+    tpos.some(p => p[0] > 200) && tpos.some(p => p[1] > 200),
+    '最远 x=' + Math.max(...tpos.map(p => p[0])) + ' y=' + Math.max(...tpos.map(p => p[1])));
+
   /* —— 连续大地图断言（本轮修复「被分割成很多房间」）—— */
   console.log('\n── 连续大地图 ──');
   ok('有整张网格底纸', mh.includes('map-grid-bg'));

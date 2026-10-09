@@ -1456,7 +1456,33 @@
         '<span class="mrb-label" style="color:' + esc(box.color) + '">' + esc(box.name) + '</span></div>';
     });
 
-    /* 3) 走廊：一条 path 画完所有连通线（相邻房间连成一片） */
+    /* 3) 地形装饰（树石山水…）
+       注意：后端 maplayout 已把区域内相对坐标翻译成全局布局坐标，
+       这里和 rooms 用同一套 cx()/cy() 换算，**不要再减 box.x/box.y**。
+       层级放在区域底色之后、走廊之前，才会被房间格与走廊压住。 */
+    const TERRAIN_GLYPH = {
+      tree: '♣', rock: '▲', grass: '⁛', water: '≈', sand: '·',
+      snow: '❄', road: '▬', wall: '▓', farm: '⌗', cloud: '☁',
+    };
+    const TERRAIN_CLS = {
+      tree: 'tr-tree', rock: 'tr-rock', grass: 'tr-grass', water: 'tr-water',
+      sand: 'tr-sand', snow: 'tr-snow', road: 'tr-road', wall: 'tr-wall',
+      farm: 'tr-farm', cloud: 'tr-cloud',
+    };
+    const terrain = m.terrain || {};
+    let terrainHtml = '';
+    Object.keys(terrain).forEach(rid => {
+      (terrain[rid] || []).forEach(t => {
+        const gx = cx({ x: t.x });
+        const gy = cy({ y: t.y });
+        terrainHtml += '<i class="map-terrain ' + (TERRAIN_CLS[t.type] || 'tr-grass') +
+          '" style="left:' + gx + 'px;top:' + gy + 'px" title="' + esc(t.type) + '">' +
+          (TERRAIN_GLYPH[t.type] || '⁛') + '</i>';
+      });
+    });
+    h += '<div class="map-terrain-layer">' + terrainHtml + '</div>';
+
+    /* 4) 走廊：一条 path 画完所有连通线（相邻房间连成一片） */
     const posOf = {};
     rooms.forEach(r => { posOf[r.id] = r; });
     let paths = '';

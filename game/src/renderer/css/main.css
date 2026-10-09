@@ -574,6 +574,16 @@ body::before {
 .map-region-box { position: absolute; border: 1.5px solid; border-radius: 8px; z-index: 0; pointer-events: none; }
 .mrb-label { position: absolute; left: 6px; top: -9px; font-size: 11px; font-family: var(--font); background: #fbfaf6; padding: 0 4px; letter-spacing: .5px; white-space: nowrap; }
 
+/* 地形装饰：树石山水。z-index 1 压在区域底色(0)之上、房间(2)之下 */
+.map-terrain-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.map-terrain { position: absolute; font-size: 15px; line-height: 30px; width: 30px; height: 30px;
+  text-align: center; font-style: normal; opacity: .5; transform: translate(-50%, -50%); }
+.tr-tree { color: #4a7a45; }  .tr-rock { color: #8b8578; }
+.tr-grass { color: #9cb46a; } .tr-water { color: #6b9bb5; }
+.tr-sand { color: #cbb489; } .tr-snow { color: #b8c4cc; }
+.tr-road { color: #c4b391; } .tr-wall { color: #a8a094; }
+.tr-farm { color: #b3a24e; } .tr-cloud { color: #c6cad0; }
+
 /* 房间方块：26px 密排，缝只有 4px —— 连起来就是一片大陆 */
 .map-node { position: absolute; width: 26px; height: 26px; padding: 0; box-sizing: border-box;
   border: 1px solid var(--line-2); border-top: 3px solid var(--stripe, #999); border-radius: 4px;

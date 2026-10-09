@@ -457,7 +457,7 @@ function sponsorNpcHome(world, kw, tierKw) {
 
   return { ok: true, lines: [
     { kind: 'title', text: '【 起 屋 】' },
-    { kind: 'story', text: `你出了 ${tier.cost} 文，替${npcName}在${host.region}寻了块地，盖起一间${tier.name}。` },
+    { kind: 'story', text: `你出了 ${tier.cost} 文，替${npcName}在${(world.data.regions[host.region] || {}).name || host.region}寻了块地，盖起一座${tier.name}。` },
     { kind: 'plain', text: `　${world.data.rooms[hmId].desc}` },
   ].concat(favorLines).concat([
     { kind: 'sys', text: `　${npcName}夜里便回自己的家了。` },
