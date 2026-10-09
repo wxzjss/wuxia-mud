@@ -482,7 +482,16 @@
     if (Array.isArray(v)) return v;
     if (Array.isArray(v.active)) return v.active;
     if (Array.isArray(v.quests)) return v.quests;
+    /* 传进来的可能是整个 view（panel() 就是这么传的）→ 再剥一层 */
+    if (v.quests && typeof v.quests === 'object') return questArr(v.quests);
     return [];
+  }
+
+  /** 任务数据来源归一化：可能是 view 本身，也可能是 view.quests */
+  function questSrc(v) {
+    if (!v || Array.isArray(v)) return v;
+    if (v.quests && typeof v.quests === 'object' && !Array.isArray(v.quests)) return v.quests;
+    return v;
   }
 
   /* 点击 NPC 的小菜单 */
@@ -970,8 +979,9 @@
   }
 
   function questsHtml(v) {
-    const list = questArr(v);
-    const done = (v && !Array.isArray(v) && Array.isArray(v.done)) ? v.done : [];
+    const src = questSrc(v);
+    const list = questArr(src);
+    const done = (src && !Array.isArray(src) && Array.isArray(src.done)) ? src.done : [];
     if (!list.length && !done.length) return '<div class="modal-text">暂无进行中的任务。</div>';
     let h = '';
     list.forEach(q => {

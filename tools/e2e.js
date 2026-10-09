@@ -319,10 +319,12 @@ function ok(name, cond, extra) {
         return m ? m[0] : null;
       };
       const fnQuestArr = grab('questArr');
+      const fnQuestSrc = grab('questSrc');
       const fnQuestHtml = grab('questsHtml');
       const fnMapHtml = grab('mapHtml');
       const fnGuideHtml = grab('guideHtml');
       ok('ui.js 含 questArr 归一化', !!fnQuestArr);
+      ok('ui.js 含 questSrc 归一化', !!fnQuestSrc);
       ok('ui.js 含 questsHtml', !!fnQuestHtml);
       ok('ui.js 含 mapHtml', !!fnMapHtml);
       ok('ui.js 含 guideHtml', !!fnGuideHtml);
@@ -330,13 +332,22 @@ function ok(name, cond, extra) {
       if (fnQuestArr && fnQuestHtml) {
         const escFn = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) =>
           ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-        const built = new Function('esc', fnQuestArr + '\n' + fnQuestHtml + '\nreturn { questArr, questsHtml };')(escFn);
+        const built = new Function('esc', (fnQuestSrc || '') + '\n' + fnQuestArr + '\n' + fnQuestHtml +
+          '\nreturn { questArr, questsHtml };')(escFn);
 
         /* 用真实的 view.quests 走一遍前端渲染路径 */
         let html = '', crashed = null;
         try { html = built.questsHtml(view.quests); } catch (e) { crashed = e.message; }
         ok('questsHtml(真实view) 不抛异常', !crashed, crashed || ('len=' + html.length));
         ok('questsHtml 渲染出主线任务', /江湖路远/.test(html), '');
+
+        /* ⚠️ 真实调用路径：panel() 传的是「整个 view」，不是 view.quests。
+           历史 bug：questArr(整view) 拿不到 active → 任务面板永远空白，
+           而旧断言只喂 view.quests，完美绕过了真实路径。这里必须两条都测。 */
+        let html2 = '', crashed2 = null;
+        try { html2 = built.questsHtml(view); } catch (e) { crashed2 = e.message; }
+        ok('questsHtml(panel 真实入参=整view) 不抛异常', !crashed2, crashed2 || ('len=' + html2.length));
+        ok('任务面板(整view) 渲染出主线任务', /江湖路远/.test(html2), html2.slice(0, 80));
 
         /* 各类畸形输入都不能炸（Mod / 旧存档 / 空档） */
         const shapes = [
