@@ -772,8 +772,7 @@
       "region": "huashan",
       "desc": "玉女峰上风大，云雾在脚边翻涌。峰顶一块巨石，形如少女伫立远望。",
       "exits": {
-        "s": "huashan_houshan",
-        "n": "jn_study_1"
+        "s": "huashan_houshan"
       },
       "actions": [
         {
@@ -1085,9 +1084,7 @@
       "desc": "一座古朴的道观山门，上书「武当山」。门前两个年轻道士正在推手。",
       "exits": {
         "s": "road_wudang_1",
-        "n": "wudang_taihe",
-        "e": "jn_school_room1",
-        "w": "palace_court2"
+        "n": "wudang_taihe"
       }
     },
     "wudang_taihe": {
@@ -1161,8 +1158,7 @@
       "region": "wudang",
       "desc": "金顶之上云海翻腾，一座铜铸金殿在阳光下熠熠生辉。此处是武当最高处。",
       "exits": {
-        "s": "wudang_lianwu",
-        "n": "jn_school"
+        "s": "wudang_lianwu"
       },
       "actions": [
         {
@@ -2664,8 +2660,7 @@
         }
       ],
       "exits": {
-        "e": "jn_market_main",
-        "n": "palace_hall"
+        "e": "jn_market_main"
       }
     },
     "jn_teahouse": {
@@ -2973,8 +2968,7 @@
       "region": "jiangnan",
       "desc": "蒋宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
       "exits": {
-        "nw": "jn_resident_1",
-        "n": "jn_school_hall"
+        "nw": "jn_resident_1"
       }
     },
     "jn_home_14": {
@@ -3014,7 +3008,6 @@
       "desc": "朱宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
       "exits": {
         "ne": "jn_resident_2",
-        "n": "palace_garden",
         "s": "jn_home_25"
       }
     },
@@ -3206,8 +3199,7 @@
       ],
       "exits": {
         "e": "jn_yamen_court",
-        "n": "jn_yamen_wt",
-        "s": "palace_harem"
+        "n": "jn_yamen_wt"
       }
     },
     "jn_yamen_back": {
@@ -3261,7 +3253,6 @@
         }
       ],
       "exits": {
-        "s": "jn_resident_1",
         "n": "jn_school_lib",
         "e": "jn_school_yard",
         "w": "jn_school_room1",
@@ -4165,8 +4156,7 @@
       "exits": {
         "e": "jn_woods_1",
         "n": "jn_temple_2",
-        "s": "jn_temple_3",
-        "w": "palace_gate"
+        "s": "jn_temple_3"
       }
     },
     "jn_cave": {

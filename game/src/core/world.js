@@ -1150,6 +1150,18 @@ class World extends EventEmitter {
         }
       }
     }
+    // 第五批：心情极低（万念俱灰）的 NPC 有概率抑郁轻生
+    for (const id of Object.keys(this.instances.npcs)) {
+      const n = this.instances.npcs[id];
+      if (n.room === playerRoom) continue;
+      if (n.knockedOut || n.dead) continue;
+      if ((n.def || {}).hostile) continue;
+      if (n.mood !== undefined && n.mood <= 5 && this.rng.chance(0.04)) {
+        const name = n.name;
+        delete this.instances.npcs[id];
+        this.emit('storyline', { line: { kind: 'warn', text: `噩耗传来：${name}因万念俱灰，竟寻了短见，悬梁自尽了……` } });
+      }
+    }
     this.fireEvent('onTick', {});
   }
 
