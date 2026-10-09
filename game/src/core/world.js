@@ -1464,6 +1464,12 @@ class World extends EventEmitter {
       const n = this.instances.npcs[k];
       n.world = this;
       if (!n.attr) n.attr = {};
+      /* ⚠️ 原型补回（SPRINT1-ENG-03）：cleanInstance 把实例压成了纯数据对象，
+         Character.prototype 上的方法全丢了 —— recalc / attrTotal / addBuff / skillLevel 都是 undefined。
+         命中判定 hitRoll 第一句就是 `defender.attrTotal('身法')`，
+         所以**读档后一开打就抛 TypeError**（实测玩家→NPC、NPC→玩家 双向都崩），
+         武学特效里的 t.addBuff() 同理。必须先把原型补回来。 */
+      if (typeof n.recalc !== 'function') Object.setPrototypeOf(n, Character.prototype);
       n.recalc && n.recalc();
       /* 存档不存 npc.def（模板副本太大），按 defId 从 data 反查挂回。
          判定必须用 typeof !== 'object'、不能只判 !n.def：
@@ -1471,8 +1477,16 @@ class World extends EventEmitter {
          那种**旧档**里 def 是个非零的数字，只判 !n.def 就挂不回模板了。
          （现在 recalc() 改写 defFinal 了，但旧档仍然可能存在，这层兜底不能拆。） */
       if (n.defId && (!n.def || typeof n.def !== 'object')) n.def = this.data.npcs[n.defId] || null;
-      /* 旧档补偿：旧档没有 defFinal（那时叫 def），伤害公式靠 combat.defenseOf()
-         的二/三层兜底读，这里不动它 —— 动了就会把「旧档防御力」抹成 0。 */
+      /* 旧档拉平（SPRINT1-ENG-03 裁决）：缺 defFinal 的实例补算一次。
+         补的是**原型 + recalc()**，不是公式 —— recalc() 就是新开档走的那条派生路径，
+         所以旧档进来的 NPC 和新开档必然一致（岳不群都是 378，不是 180）。
+         绝不在这里手写 `defBase + 根骨×1.2` 之类的近似式：那等于派生出第二套公式，
+         以后改一次派生规则就要同步改两处 —— 正是 def 双义那个坑的复刻版。
+         上面那句 n.recalc() 已经覆盖了绝大多数情况，这里只兜「原型补不回来」的极端情形。 */
+      if (typeof n.defFinal !== 'number') {
+        if (typeof n.recalc === 'function') n.recalc();
+        else n.defFinal = n.defBase || 0;
+      }
       /* portrait 是模板静态数据（只读），同样不入档，按模板 clone 回来；
          玩家进度全在 pstate 里，pstate 是入档的。旧档若已有 portrait 则保留。 */
       if (n.portrait === undefined && n.def && n.def.portrait) n.portrait = clone(n.def.portrait);

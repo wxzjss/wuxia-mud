@@ -15,10 +15,17 @@ const ROOT = path.join(__dirname, '..');
 const R = p => fs.readFileSync(path.join(ROOT, p), 'utf8');
 const E = p => fs.existsSync(path.join(ROOT, p));
 
-let pass = 0, fail = 0;
+/* 三元组口径：pass / fail / skip。
+   skip 单列，既不并进 pass 也不并进 fail —— 这样「fail 必须为 0」能当硬门槛，
+   又不会让离线开发因为线上不可达而误报红。
+   （之前唯一一条网络断言在离线时被静默丢掉，总数就在 122/123 之间抖。） */
+let pass = 0, fail = 0, skip = 0;
 function ok(name, cond, extra) {
   if (cond) { pass++; console.log('  ✔ ' + name + (extra ? '  ' + extra : '')); }
   else { fail++; console.log('  ✘ ' + name + (extra ? '  ' + extra : '')); }
+}
+function skipped(name, why) {
+  skip++; console.log('  ⚠ SKIP ' + name + (why ? '  ' + why : ''));
 }
 function group(t) { console.log('\n── ' + t + ' ──'); }
 
@@ -203,7 +210,7 @@ function online(method, p, body) {
 
   const r1 = await online('GET', '/.cloud/database/rest/mods?select=mod_key&limit=1');
   if (r1.code) ok('匿名读 mods 仍开放', r1.code === 200 && Array.isArray(r1.j), 'HTTP ' + r1.code);
-  else console.log('  ⚠ 线上不可达，跳过（离线环境）');
+  else skipped('匿名读 mods 仍开放', '线上不可达（离线环境）；本条是全套唯一的网络断言');
 
   /* 账号相关的表即便还在云上，页面也不该再访问它们 */
   const CLOUD2 = R('server/public/js/cloud.js');
@@ -212,7 +219,8 @@ function online(method, p, body) {
   });
 
   console.log('\n' + '='.repeat(46));
-  console.log('  通过 ' + pass + ' 项，失败 ' + fail + ' 项');
+  console.log('  通过 ' + pass + ' 项，失败 ' + fail + ' 项，跳过 ' + skip + ' 项');
   console.log('='.repeat(46));
+  /* 门槛只看 fail：skip 不算通过也不算失败 */
   process.exit(fail ? 1 : 0);
 })();

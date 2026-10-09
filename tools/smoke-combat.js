@@ -242,6 +242,55 @@ section('⑥ 旧存档（无 defFinal）读进来后伤害依然正常');
   const withFinal = Object.keys(s2.instances.npcs).filter(k => typeof s2.instances.npcs[k].defFinal === 'number');
   ok('新档把 defFinal 存进去了（随档走）', withFinal.length === Object.keys(s2.instances.npcs).length,
     `${withFinal.length}/${Object.keys(s2.instances.npcs).length}`);
+
+  /* ── SPRINT1-ENG-03 裁决：旧档用 recalc() 拉平，数值必须和新开档完全一致 ──
+     不许退化成 defBase（180），必须是派生后的 378。这条是常驻断言，不是一次性的。 */
+  const freshYue = w.spawnNpc('master_yue', w.data.npcs.master_yue.room, 1, true);
+  const oldYue = Object.values(w2.instances.npcs).find(n => n.defId === 'master_yue');
+  ok('旧档样本里确实有岳不群', !!oldYue);
+  ok('旧档岳不群 defFinal === 新开档岳不群 defFinal（用 recalc 拉平，不是 defBase）',
+    oldYue && oldYue.defFinal === freshYue.defFinal,
+    `旧档 ${oldYue && oldYue.defFinal} / 新开档 ${freshYue.defFinal} / 模板 defBase ${freshYue.defBase}`);
+  ok('旧档岳不群的 defFinal 不是退化的 defBase',
+    oldYue && oldYue.defFinal !== oldYue.defBase, `${oldYue && oldYue.defFinal} ≠ ${oldYue && oldYue.defBase}`);
+  ok('旧档全部实例的 defFinal 都补上了', inst.every(k => typeof w2.instances.npcs[k].defFinal === 'number'),
+    `${inst.length} 个`);
+  w.despawnNpc('master_yue', w.data.npcs.master_yue.room);
+}
+
+/* ============================================================ */
+section('⑥b 读档后实例必须是 Character（原型补回，否则一开打就崩）');
+{
+  /* 背景：cleanInstance 把实例压成纯数据对象，Character.prototype 上的方法全丢。
+     hitRoll 第一句就是 defender.attrTotal('身法')，实测读档后双向攻击都抛 TypeError。 */
+  const ids = Object.keys(w.data.npcs).filter(id => w.data.npcs[id].room).slice(0, 20);
+  for (const id of ids) w.spawnNpc(id, w.data.npcs[id].room, 1, true);
+  const e3 = new GameEngine({ seed: SEED });
+  e3.boot();
+  e3.world.deserialize(JSON.parse(JSON.stringify(JSON.parse(JSON.stringify(w.serialize())))), []);
+  const w3 = e3.world, p3 = w3.player;
+  const list = Object.values(w3.instances.npcs);
+  ok('读档后实例数量一致', list.length > 0, list.length + ' 个');
+  ok('读档后实例是 Character（构造函数名不是 Object）',
+    list.every(n => n.constructor && n.constructor.name === 'Character'),
+    (list[0] && list[0].constructor && list[0].constructor.name) || '(无)');
+  ok('读档后实例有 recalc / attrTotal / addBuff / skillLevel',
+    list.every(n => typeof n.recalc === 'function' && typeof n.attrTotal === 'function' &&
+      typeof n.addBuff === 'function' && typeof n.skillLevel === 'function'));
+  /* 端到端：读档后真打，两个方向都不许抛异常 */
+  let crash = 0, crashMsg = '';
+  for (const n of list.slice(0, 12)) {
+    try {
+      p3.hp = p3.maxHp; n.hp = n.maxHp;
+      w3.combat.oneAttack(p3, n, null, BATTLE, 0);
+      w3.combat.oneAttack(n, p3, null, BATTLE, 0);
+    } catch (err) { crash++; crashMsg = err.message; }
+  }
+  ok('读档后玩家→NPC / NPC→玩家 双向攻击都不抛异常', crash === 0,
+    crash ? crash + ' 次崩溃：' + crashMsg : `${Math.min(12, list.length)} 个实例 × 双向`);
+  ok('读档后 def 仍是模板对象（recalc 没把它冲掉）',
+    list.every(n => !n.defId || typeof n.def !== 'number'),
+    list.filter(n => typeof n.def === 'number').slice(0, 3).map(n => n.name).join(',') || '无残留');
 }
 
 /* ============================================================ */
