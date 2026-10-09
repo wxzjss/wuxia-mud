@@ -107,8 +107,8 @@
     $('tb-sect').textContent = p.sectName ? ('【' + p.sectName + (p.rankName ? ' · ' + p.rankName : '') + '】') : '【无门无派】';
     $('tb-title').textContent = p.title ? ('「' + p.title + '」') : '';
 
-    const hp = p.hp || 0, hpMax = p.hpMax || 1;
-    const mp = p.mp || 0, mpMax = p.mpMax || 1;
+    const hp = p.hp || 0, hpMax = p.maxHp || 1;
+    const mp = p.mp || 0, mpMax = p.maxMp || 1;
     $('bar-hp').style.width = util.pct(hp, hpMax) + '%';
     $('bar-mp').style.width = util.pct(mp, mpMax) + '%';
     $('txt-hp').textContent = '气血 ' + hp + '/' + hpMax;
@@ -613,8 +613,8 @@
       d.className = 'ce-card' + (e.dead ? ' dead' : '') + (e.targeted ? ' targeted' : '');
       d.innerHTML =
         '<div class="ce-name">' + esc(e.name) + (e.level ? ' <i>' + e.level + '级</i>' : '') + '</div>' +
-        '<div class="ce-hp"><div class="fill" style="width:' + util.pct(e.hp, e.hpMax) + '%"></div>' +
-        '<span>' + e.hp + '/' + e.hpMax + '</span></div>' +
+        '<div class="ce-hp"><div class="fill" style="width:' + util.pct(e.hp, e.maxHp) + '%"></div>' +
+        '<span>' + e.hp + '/' + e.maxHp + '</span></div>' +
         (e.buffs && e.buffs.length ? '<div class="ce-buffs">' + e.buffs.map(b => esc(b)).join(' · ') + '</div>' : '');
       d.onclick = () => combatAct('target', e.uid);
       box.appendChild(d);
@@ -877,20 +877,20 @@
     h += kv('姓名', p.name);
     h += kv('称号', p.title || '—');
     h += kv('性别', p.gender === 'female' ? '女' : '男');
-    h += kv('出身', p.birthName || '—');
+    h += kv('境界', p.realm || '不通武艺');
     h += kv('门派', p.sectName || '无门无派');
     h += kv('职位', p.rankName || '—');
-    h += kv('等级', p.level);
     h += kv('年龄', p.age ? p.age + ' 岁' : '—');
+    h += kv('战绩', (p.kills || 0) + ' 杀');
     h += '</div><div class="pc-col">';
-    h += kv('气血', p.hp + ' / ' + p.hpMax);
-    h += kv('内力', p.mp + ' / ' + p.mpMax);
-    h += kv('经验', p.exp + ' / ' + p.expNeed);
+    h += kv('气血', p.hp + ' / ' + p.maxHp);
+    h += kv('内力', p.mp + ' / ' + p.maxMp);
+    h += kv('饱食', p.food + ' / ' + p.maxFood);
+    h += kv('饮水', p.water + ' / ' + p.maxWater);
     h += kv('潜能', p.potential);
-    h += kv('银两', p.moneyText || p.money + ' 文');
+    h += kv('银两', p.money + ' 文');
     h += kv('杀气', p.karma);
     h += kv('声望', p.reputation);
-    h += kv('战绩', (p.kills || 0) + ' 杀');
     h += '</div></div>';
     if (p.timeText) h += '<div class="panel-note">' + esc(p.timeText) + '</div>';
     return h;

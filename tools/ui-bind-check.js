@@ -301,6 +301,29 @@ function ok(name, cond, extra) {
   ok('已结拜 → 不再显示「结拜」', !/与 TA 结拜/.test(cl.innerHTML));
   ok('菜单头部显示「你的义父」', /你的义父/.test(cl.innerHTML));
 
+  /* ⑥ 状态面板：字段名错配回归。
+        ⚠ 属性重制后 playerBrief 字段改成 maxHp/maxMp/realm（删了 level/exp/expNeed），
+        scoreHtml 一度还读旧字段名（hpMax/mpMax/expNeed/birthName）→ 整排 undefined 乱码。 */
+  console.log('\n⑥ 状态面板字段');
+  const SCORE_VIEW = { player: {
+    name: '试剑', title: '少侠', gender: 'male', realm: '初窥门径',
+    sectName: '华山派', rankName: '弟子', age: 22, kills: 5,
+    hp: 50, maxHp: 68, mp: 10, maxMp: 20, food: 80, maxFood: 100, water: 70, maxWater: 100,
+    potential: 200, money: 150, karma: 0, reputation: 30,
+  } };
+  const prevView6 = api.view;
+  api.view = async () => ({ view: SCORE_VIEW });
+  await U.panel('score');
+  api.view = prevView6;
+  const mb2 = els['modal-body'].innerHTML;
+  ok('状态面板不出现 undefined', !/undefined/.test(mb2), mb2.slice(0, 140));
+  ok('状态面板标题为「状态一览」', els['modal-title'].textContent === '状态一览');
+  ok('气血显示正确数值', /气血/.test(mb2) && /50 \/ 68/.test(mb2));
+  ok('内力显示正确数值', /内力/.test(mb2) && /10 \/ 20/.test(mb2));
+  ok('声望显示数值', /声望/.test(mb2) && />30</.test(mb2));
+  ok('显示境界而非等级', /境界/.test(mb2) && /初窥门径/.test(mb2) && !/等级/.test(mb2));
+  ok('显示饱食饮水（生存）', /饱食/.test(mb2) && /80 \/ 100/.test(mb2) && /饮水/.test(mb2));
+
   console.log('\n' + '='.repeat(42));
   console.log('  通过 ' + pass + ' 项，失败 ' + fail + ' 项');
   console.log('='.repeat(42));
