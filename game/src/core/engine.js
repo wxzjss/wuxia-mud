@@ -51,6 +51,22 @@ function registerBuiltinFns(world) {
   };
   world.condFns.visited50 = ({ }, ctx) => Object.keys(ctx.player.flags).filter(k => k.startsWith('visited_')).length >= 50;
   world.condFns.hasItemCount = (args, ctx) => ctx.player.countItem(args.item) >= (args.count || 1);
+  // 完成 N 条支线（主线靠支线推进：认识江湖朋友、打探消息）
+  world.condFns.sideQuestsDone = (args, ctx) => {
+    const p = ctx.player;
+    const need = args.count || args.n || 5;
+    const done = Object.keys(p.quests || {}).filter(id =>
+      /^sq_/.test(id) && p.quests[id] >= 99).length;
+    return done >= need;
+  };
+  // 认识某 NPC（有交情：好感偏离初始值，或完成过其支线）
+  world.condFns.knowsNpc = (args, ctx) => {
+    const p = ctx.player;
+    const id = args.npc || args.id;
+    const def = ctx.world.data.npcs[id];
+    if (!def) return false;
+    return (def.favor !== undefined && def.favor !== def.favorInit) || p.hasFlag('sq_' + id + '_done');
+  };
 
   world.effectFns.sayHi = ({ }, ctx) => [`你好，${ctx.player.name}。`];
   world.effectFns.rollDice = ({ args }, ctx) => {

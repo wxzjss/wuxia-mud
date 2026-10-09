@@ -155,9 +155,9 @@ const REL_KINDS = ['亲', '友', '仇', '师', '生', '夫妻'];
 /* ---------------- 支线任务池（生成用） ---------------- */
 /* 每个 NPC 一条支线：结构 = { id, name, level, type:'支线', giver, desc, stages, rewards } */
 const SIDE_TPL = [
-  { key: 'errand', cn: '送信', desc: '托你把一封信送到城里的熟人手上。', stages: ['把信送到%s手上', '回去复命'] },
-  { key: 'find', cn: '寻人', desc: '让你帮忙找一位久未联系的旧识。', stages: ['在%s一带打听消息', '找到%s，把话带到'] },
-  { key: 'fetch', cn: '采买', desc: '要你替他去买一件东西。', stages: ['弄到一份%s', '把东西交回给%s'] },
+  { key: 'errand', cn: '送信', desc: '托你把一封信送到%s手上。', stages: ['把信送到%s手上', '回去复命'] },
+  { key: 'find', cn: '寻人', desc: '让你帮忙找一位久未联系的旧识%s。', stages: ['在%s一带打听消息', '找到%s，把话带到'] },
+  { key: 'fetch', cn: '采买', desc: '要你替他跑腿买些日用杂货。', stages: ['去集市买些日用杂货', '把东西交回给%s'] },
   { key: 'herb', cn: '采药', desc: '家里有人病了，缺一味药。', stages: ['去山里采三株%s', '把药材交回'] },
   { key: 'beast', cn: '除害', desc: '近来有野兽作乱，请你出手。', stages: ['杀掉%s', '回去报信'] },
   { key: 'debt', cn: '讨债', desc: '有笔旧账要不回来，想请你出面。', stages: ['找到欠债的%s', '把债讨回来'] },
@@ -606,7 +606,7 @@ for (const id of socialIds) {
     level: Math.max(1, Math.floor((d.level || 5) * 0.8)),
     type: '支线',
     giver: id,
-    desc: otherName + tpl.desc,
+    desc: d.name + tpl.desc.replace('%s', otherName),
     stages: [
       {
         desc: stage0,
