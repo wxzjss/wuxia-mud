@@ -97,6 +97,7 @@ class World extends EventEmitter {
     this.instances = { npcs: {}, items: {}, corpses: {} };
     this.deadNpcs = {};   // 第五批：真死的 NPC（defId → 死亡时间），10 天后复活
     this.jail = {};       // 第五批：被官府抓进牢的 NPC（defId → 赎金）
+    this.activeRules = []; // 功能 Mod 的「规则」（multiply / additive / onEvent），loadMods 时收集
     this.combatHooks = Object.assign({}, DEFAULT_HOOKS);
     this.effectFns = {};
     this.condFns = {};
@@ -177,6 +178,12 @@ class World extends EventEmitter {
     if (json.meta) {
       this.data.meta = deepMerge(this.data.meta, json.meta, { arrayMode: 'replace' });
     }
+    // 功能 Mod 的「规则」（multiply / additive / onEvent / macro）
+    if (json.rules) {
+      for (const r of [].concat(json.rules)) {
+        if (r && r.kind) this.activeRules.push(Object.assign({}, r, { __mod: mod.id || mod.name }));
+      }
+    }
     // 局外声明（mod 优先级）
     if (json._mod) {
       this.mods.push(Object.assign({ id: mod.id || 'unknown', name: mod.name, version: mod.version || '1.0.0', priority: mod.priority || 0, source: mod.source }, json._mod));
@@ -195,6 +202,7 @@ class World extends EventEmitter {
     // modList: [{dir, enabled, priority, id, name, version}]  已由 modloader 决定顺序
     this.mods = [];
     this.modLog = [];
+    this.activeRules = [];
     for (const m of modList) {
       if (!m.enabled) continue;
       for (const fname of (m.files || ['mod.json'])) {
@@ -472,11 +480,11 @@ class World extends EventEmitter {
   onNpcKilled(npc, battle) {
     const p = this.player;
     const def = npc.def || {};
-    // 给玩家奖励
+    // 给玩家奖励（经验/潜能的倍率规则已由 gainExp/gainPotential 内部应用）
     if (this.inPlayerParty(npc, battle)) {
       p.gainExp(Math.floor(npc.expReward * (def.expMult || 1)));
       p.gainPotential(npc.potReward);
-      p.money += npc.moneyReward;
+      p.money += Math.floor(npc.moneyReward * this.ruleMult('money'));
       p.kills++;
       p.karma += (def.karmaGain !== undefined ? def.karmaGain : (def.good ? 5 : -2));
       if (def.repGain) for (const k of Object.keys(def.repGain)) p.reputation[k] = (p.reputation[k] || 0) + def.repGain[k];
@@ -1180,11 +1188,41 @@ class World extends EventEmitter {
     this.fireEvent('onTick', {});
   }
 
+  /* 功能 Mod 规则：取某字段的总倍率（multiply 规则） */
+  ruleMult(target) {
+    let m = 1;
+    for (const r of this.activeRules) {
+      if (r.kind !== 'multiply' || r.target !== target) continue;
+      if (r.cond && !evalCond(r.cond, { player: this.player, world: this })) continue;
+      m *= (r.value || 1);
+    }
+    return m;
+  }
+
+  /* 功能 Mod 规则：取某字段的总增减（additive 规则） */
+  ruleAdd(target) {
+    let s = 0;
+    for (const r of this.activeRules) {
+      if (r.kind !== 'additive' || r.target !== target) continue;
+      if (r.cond && !evalCond(r.cond, { player: this.player, world: this })) continue;
+      s += (r.value || 0);
+    }
+    return s;
+  }
+
   fireEvent(name, payload) {
     const handlers = this.data.events[name] || [];
     for (const h of [].concat(handlers)) {
       if (h.cond && !evalCond(h.cond, { player: this.player, world: this })) continue;
       evalEffects(h.effects, { player: this.player, world: this, event: payload }).forEach(l => this.emit('storyline', { line: l }));
+    }
+    // 功能 Mod 的 onEvent 规则（kind=onEvent, target=事件名）
+    for (const r of this.activeRules) {
+      if (r.kind !== 'onEvent' || r.target !== name) continue;
+      if (r.cond && !evalCond(r.cond, { player: this.player, world: this })) continue;
+      const eff = r.effect || r.effects;
+      if (!eff) continue;
+      evalEffects(eff, { player: this.player, world: this, event: payload }).forEach(l => this.emit('storyline', { line: l }));
     }
   }
 

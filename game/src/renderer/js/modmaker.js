@@ -372,7 +372,7 @@
         field('内力消耗', input('skills.' + i + '.mpCost', sk.mpCost != null ? sk.mpCost : 0, '', 'number')) +
         '</div>' +
         field('武学描述', area('skills.' + i + '.desc', sk.desc, '这一招的来历、路数…', 2)) +
-        field('学习条件', input('skills.' + i + '.require', sk.require, '例如：level>=10 或 悟性>=20'), '不填则无门槛') +
+        field('学习条件', input('skills.' + i + '.require', sk.require, '例如：realm>=2 或 悟性>=20'), '不填则无门槛（realm=境界：0不通武艺~5登峰造极）') +
         '<div class="mm-sub-title">招式效果（战斗中触发）</div>' +
         '<div class="mm-effects" data-skidx="' + i + '">' + (exHtml || '<div class="mm-empty-sm">暂无效果</div>') + '</div>' +
         '<button class="mm-add sm" data-add-effect="' + i + '">＋ 添加效果</button>' +
@@ -418,7 +418,7 @@
         field('门派 ID *', input('sects.' + i + '.id', sc.id, '例如：tianji_ge')) +
         field('所在区域', select('sects.' + i + '.region', sc.region, regions.map(x => ({ value: x.id, label: x.name })), '（可选）')) +
         field('阵营', select('sects.' + i + '.align', sc.align || '正', [{ value: '正', label: '正派' }, { value: '邪', label: '邪派' }, { value: '中', label: '中立' }])) +
-        field('加入条件', input('sects.' + i + '.require', sc.require, '例如：level>=5')) +
+        field('加入条件', input('sects.' + i + '.require', sc.require, '例如：realm>=1')) +
         '</div>' +
         field('门派描述', area('sects.' + i + '.desc', sc.desc, '这个门派什么来头？', 2)) +
         '<div class="mm-sub-title">门派武学（逗号分隔 ID）</div>' +
@@ -509,7 +509,7 @@
         field('绑定人物（NPC ID）', input('dialogues.' + i + '.npc', d.npc, '留空则任意人可触发')) +
         field('起始节点 ID', input('dialogues.' + i + '.start', d.start, '例如：n1')) +
         '</div>' +
-        field('触发条件', input('dialogues.' + i + '.cond', d.cond, '例如：level>=10，留空=总是')) +
+        field('触发条件', input('dialogues.' + i + '.cond', d.cond, '例如：realm>=2，留空=总是')) +
         '<div class="mm-sub-title">对话节点</div><div class="mm-nodes">' + (nodesHtml || '<div class="mm-empty-sm">还没有节点</div>') + '</div>' +
         '<button class="mm-add sm" data-add-node="' + i + '">＋ 添加节点</button>';
       return row(d.name || ('对话 ' + (i + 1)), d.id, i, 'dialogues', body);
@@ -555,10 +555,10 @@
           { value: 'macro', label: '宏指令（一条指令=多条）' }])) +
         '</div>' +
         '<div class="mm-form-grid">' +
-        field('作用目标', input('rules.' + i + '.target', r.target, 'exp / money / hp / damage / 或事件名 onKill'), '倍率类填字段名') +
+        field('作用目标', input('rules.' + i + '.target', r.target, 'pot / money / hp / damage / 或事件名 onKill'), '倍率类填字段名') +
         field('数值', input('rules.' + i + '.value', r.value != null ? r.value : '', '例如：2 表示两倍', 'text')) +
         '</div>' +
-        field('条件', input('rules.' + i + '.cond', r.cond, '留空=总是生效；如 level>=10')) +
+        field('条件', input('rules.' + i + '.cond', r.cond, '留空=总是生效；如 realm>=1')) +
         field('效果 / 触发', input('rules.' + i + '.effect', r.effect, 'onEvent 时填效果，如 +money:10'));
       return row(r.name || ('规则 ' + (i + 1)), r.kind, i, 'rules', body);
     }).join('') || empty('还没有规则');
@@ -568,7 +568,7 @@
 
     /* 常用功能预设 */
     h += '<div class="mm-section"><h3>常用预设（点一下就加）</h3><div class="mm-presets">' +
-      '<button class="mm-add sm" data-preset="exp2">双倍经验</button>' +
+      '<button class="mm-add sm" data-preset="exp2">双倍潜能</button>' +
       '<button class="mm-add sm" data-preset="money2">双倍金钱</button>' +
       '<button class="mm-add sm" data-preset="autopick">自动拾取</button>' +
       '<button class="mm-add sm" data-preset="hpRegen">脱战回血</button>' +
@@ -860,7 +860,7 @@
   function applyPreset(key) {
     if (!S.spec.rules) S.spec.rules = [];
     const P = {
-      exp2: { name: '双倍经验', kind: 'multiply', target: 'exp', value: 2, cond: '', effect: '' },
+      exp2: { name: '双倍潜能', kind: 'multiply', target: 'pot', value: 2, cond: '', effect: '' },
       money2: { name: '双倍金钱', kind: 'multiply', target: 'money', value: 2, cond: '', effect: '' },
       autopick: { name: '自动拾取', kind: 'macro', target: 'getAll', value: 1, cond: 'room.items>0', effect: 'get all' },
       hpRegen: { name: '脱战回血', kind: 'onEvent', target: 'onTick', value: 1, cond: '!combat', effect: '+hp:5' },

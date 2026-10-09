@@ -28,7 +28,7 @@
             level: 1,
             type: '支线',
             desc: '江南官道上有个游侠，说附近山贼猖狂，愿出钱请人除去贼首。',
-            rewards: { exp: 300, pot: 60, money: 200, items: ['jinchuang_yao'] },
+            rewards: [{ type: '+pot', args: [160] }, { type: '+money', args: [200] }, { type: '+item', args: ['jinchuang_yao', 1] }],
             stages: [
               { desc: '答应游侠的请求', kind: 'flag', key: 'q_demo_start', count: 1 },
               { desc: '击杀山贼头目', kind: 'kill', key: 'mob_bandit_chief', count: 1 },
@@ -58,7 +58,7 @@
         npcs: [
           {
             id: 'swordman_wander', name: '游侠', title: '江湖浪客', gender: 'male',
-            room: 'road_jiangnan_1', level: 12, hp: 400, atk: 30, def: 15,
+            room: 'road_jiangnan_1', hp: 400, atk: 30, def: 15,
             desc: '一个背着长剑的年轻游侠，眉宇间有几分正气。',
             talk: ['江湖路远，侠士珍重。', '听说北边林子不太平。'],
             canTeach: true, teach: ['basic_sword'], quests: ['q_demo_bandit']
@@ -113,8 +113,8 @@
     func: {
       key: 'func', badge: '功能',
       title: '功能 Mod 示例 · 轻松江湖',
-      desc: '不改内容，只改规则：双倍经验、双倍金钱、脱战自动回血、击杀额外潜能。适合想轻松体验剧情的玩家。',
-      tips: '要点：<code>kind</code> 是规则类型。<code>multiply</code> 是倍数调整，<code>target</code> 填字段名（exp / money），<code>value</code> 填倍数。<code>onEvent</code> 是事件触发，<code>target</code> 填事件名（onKill / onTick），<code>effect</code> 填要执行的效果。',
+      desc: '不改内容，只改规则：双倍潜能、双倍金钱、脱战自动回血、击杀额外潜能。适合想轻松体验剧情的玩家。',
+      tips: '要点：<code>kind</code> 是规则类型。<code>multiply</code> 是倍数调整，<code>target</code> 填字段名（pot / money），<code>value</code> 填倍数。<code>onEvent</code> 是事件触发，<code>target</code> 填事件名（onKill / onTick），<code>effect</code> 填要执行的效果。',
       json: {
         id: 'demo_func',
         name: '轻松江湖',
@@ -124,7 +124,7 @@
         desc: '降低肝度：双倍收益 + 自动回血。',
         tags: ['功能', '便利'],
         rules: [
-          { name: '双倍经验', kind: 'multiply', target: 'exp', value: 2, cond: '', effect: '' },
+          { name: '双倍潜能', kind: 'multiply', target: 'pot', value: 2, cond: '', effect: '' },
           { name: '双倍金钱', kind: 'multiply', target: 'money', value: 2, cond: '', effect: '' },
           { name: '脱战回血', kind: 'onEvent', target: 'onTick', value: 1, cond: '!combat', effect: '+hp:8' },
           { name: '击杀额外潜能', kind: 'onEvent', target: 'onKill', value: 1, cond: '', effect: '+pot:15' }
@@ -156,7 +156,7 @@
             accuracy: 25,
             mpCost: 30,
             desc: '剑走太虚，意在剑先。一出手便如云海翻涌，绵绵不绝。',
-            require: 'level>=30',
+            require: 'realm>=2',
             effects: [
               { type: 'extraHit', value: 0.35, chance: 0.4, name: '剑影分光' },
               { type: 'ignoreDef', value: 0.4, chance: 0.25, name: '无相' },
@@ -173,7 +173,7 @@
             mpCost: 0,
             mpBonus: 8,
             desc: '太虚剑意的内功根基，修之可扩经脉、增内力。',
-            require: 'level>=25',
+            require: 'realm>=2',
             bonus: { hp: 6, mp: 10 },
             effects: []
           }
@@ -212,12 +212,12 @@
           },
           {
             id: 'wugou_jian', name: '无垢剑', type: 'weapon', slot: 'weapon',
-            price: 2400, weight: 3, level: 15, atk: 45, dodge: 5,
+            price: 2400, weight: 3, atk: 45, dodge: 5,
             desc: '一柄通体莹白的软剑，出鞘无声。'
           },
           {
             id: 'qingyun_pao', name: '青云袍', type: 'armor', slot: 'body',
-            price: 1800, weight: 2, level: 12, def: 32, hp: 80,
+            price: 1800, weight: 2, def: 32, hp: 80,
             desc: '青缎裁成，轻软透气，内衬软甲。'
           }
         ]
@@ -244,7 +244,7 @@
             region: 'jiangnan',
             align: '中',
             desc: '阁中弟子精于机关巧术，善用暗器，行事亦正亦邪。',
-            require: 'level>=8',
+            require: 'realm>=1',
             ranks: ['记名弟子', '入门弟子', '机巧师', '掌机使', '阁主'],
             rankCost: [0, 200, 800, 2500, 8000],
             skills: ['basic_fist', 'basic_dodge', 'tangmen_anqi'],

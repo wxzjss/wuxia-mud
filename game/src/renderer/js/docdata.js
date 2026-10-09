@@ -52,7 +52,7 @@
     <ul>
       <li><b>姓名 / ID</b>：比如「白发渔翁」/ <code>fisher_old</code>。</li>
       <li><b>所在房间</b>：下拉选你刚建的那个房间。</li>
-      <li><b>等级 / 气血 / 攻击</b>：新手村的 NPC 建议 1~5 级，气血 60~150。</li>
+      <li><b>气血 / 攻击</b>：新手村的 NPC 建议气血 60~150、攻击 10~20。</li>
       <li><b>打招呼</b>：玩家输入 <code>talk 白发渔翁</code> 时他说的话，每行一句。</li>
     </ul>
     <div class="tut-tip">💡 勾上「可请教武学」，玩家就能 <code>learn 白发渔翁</code> 学武功了。</div>
@@ -93,7 +93,7 @@
 <tr><td><code>+hp:100</code></td><td>恢复 100 点气血（负数则扣血）</td></tr>
 <tr><td><code>+mp:50</code> / <code>-mp:20</code></td><td>内力增减</td></tr>
 <tr><td><code>+money:500</code></td><td>给 500 文钱</td></tr>
-<tr><td><code>+exp:200</code> / <code>+pot:50</code></td><td>经验 / 潜能</td></tr>
+<tr><td><code>+pot:50</code></td><td>潜能（请教武学用）</td></tr>
 <tr><td><code>+item:长剑:2</code></td><td>获得 2 把长剑</td></tr>
 <tr><td><code>-item:长剑:1</code></td><td>拿走 1 把长剑</td></tr>
 <tr><td><code>learn:basic_sword</code></td><td>学会一门武学</td></tr>
@@ -111,7 +111,7 @@
 <p class="mm-tip">条件用来判断「什么时候才触发」，写在「触发条件」「学习条件」等框里。</p>
 <table class="tut-table">
 <tr><th>写法</th><th>含义</th></tr>
-<tr><td><code>level&gt;=10</code></td><td>等级 ≥ 10</td></tr>
+<tr><td><code>realm&gt;=2</code></td><td>境界 ≥ 小有所成（0 不通武艺 / 1 初窥门径 / 2 小有所成 / 3 登堂入室 / 4 炉火纯青 / 5 登峰造极）</td></tr>
 <tr><td><code>attr.悟性&gt;=20</code></td><td>悟性属性 ≥ 20</td></tr>
 <tr><td><code>skill.basic_sword&gt;=50</code></td><td>基础剑法 ≥ 50 级</td></tr>
 <tr><td><code>money&gt;=1000</code></td><td>身上钱 ≥ 1000 文</td></tr>
@@ -120,7 +120,7 @@
 <tr><td><code>sect:华山派</code></td><td>属于某门派</td></tr>
 <tr><td><code>kills&gt;=100</code></td><td>杀敌数 ≥ 100</td></tr>
 <tr><td><code>chance:0.3</code></td><td>30% 概率通过</td></tr>
-<tr><td><code>and(level&gt;=10, hasitem:长剑)</code></td><td>同时满足</td></tr>
+<tr><td><code>and(realm&gt;=1, hasitem:长剑)</code></td><td>同时满足</td></tr>
 <tr><td><code>or(sect:华山派, sect:武当派)</code></td><td>满足其一</td></tr>
 <tr><td><code>not(flag:got_letter)</code></td><td>取反</td></tr>
 </table>
@@ -137,7 +137,7 @@
   </div>
   <div class="tut-card">
     <b>⚙ 功能 Mod</b>
-    <p>用「⑩ 功能 Mod」。想调经验倍率就选「倍数调整」，目标填 exp，数值填 2。常用预设一键添加。</p>
+    <p>用「⑩ 功能 Mod」。想调金钱 / 潜能倍率就选「倍数调整」，目标填 money / pot，数值填 2。想「脱战回血」就选「事件触发效果」，目标填 onTick，效果填 +hp:5。常用预设一键添加。</p>
   </div>
   <div class="tut-card">
     <b>🥋 功法 Mod</b>
@@ -222,7 +222,7 @@
   <h3>四、核心玩法</h3>
   <div class="doc-grid">
     <div class="doc-card"><b>行走</b><p>点房间下方的方向按钮，或输入 <code>n</code> <code>s</code> <code>e</code> <code>w</code>，也可以用中文「往北走」。键盘 QEZC = 四斜角，WASD = 四方。</p></div>
-    <div class="doc-card"><b>成长</b><p>杀敌得经验与潜能。经验够了自动升级，属性点自己加；潜能用来跟师父<b>请教</b>武学。</p></div>
+    <div class="doc-card"><b>成长</b><p>杀敌得潜能，潜能用来跟师父<b>请教</b>武学。你的强弱只看武学功法等级——练成绝学，<b>境界</b>自升。</p></div>
     <div class="doc-card"><b>武学</b><p>武学分拳脚、剑法、刀法、内功、轻功等。等级越高威力越大。<code>lian 武学名</code> 可以自己练功涨熟练度。</p></div>
     <div class="doc-card"><b>战斗</b><p><code>kill 目标</code> 出手。战斗面板选「普通攻击 / 全力一击 / 防御 / 逃跑」，也能用 <code>perform 招式名</code> 发绝招。</p></div>
     <div class="doc-card"><b>门派</b><p>找到门派山门，<code>join 门派名</code> 拜师。做门派贡献可以晋升职位，解锁更高级武学。</p></div>
@@ -308,7 +308,7 @@
             level: 1,
             type: '支线',
             desc: '江南官道上有个游侠，说附近山贼猖狂，愿出钱请人除去贼首。',
-            rewards: { exp: 300, pot: 60, money: 200, items: ['jinchuang_yao'] },
+            rewards: [{ type: '+pot', args: [160] }, { type: '+money', args: [200] }, { type: '+item', args: ['jinchuang_yao', 1] }],
             stages: [
               { desc: '答应游侠的请求', kind: 'flag', key: 'q_demo_start', count: 1 },
               { desc: '击杀山贼头目', kind: 'kill', key: 'mob_bandit_chief', count: 1 },
@@ -338,7 +338,7 @@
         npcs: [
           {
             id: 'swordman_wander', name: '游侠', title: '江湖浪客', gender: 'male',
-            room: 'road_jiangnan_1', level: 12, hp: 400, atk: 30, def: 15,
+            room: 'road_jiangnan_1', hp: 400, atk: 30, def: 15,
             desc: '一个背着长剑的年轻游侠，眉宇间有几分正气。',
             talk: ['江湖路远，侠士珍重。', '听说北边林子不太平。'],
             canTeach: true, teach: ['basic_sword'], quests: ['q_demo_bandit']
@@ -390,7 +390,7 @@
 
     func: {
       title: '功能 Mod 示例 · 轻松江湖',
-      desc: '双倍经验、双倍金钱、脱战自动回血。适合想轻松体验剧情的玩家。',
+      desc: '双倍潜能、双倍金钱、脱战自动回血。适合想轻松体验剧情的玩家。',
       json: {
         id: 'demo_func',
         name: '轻松江湖',
@@ -400,7 +400,7 @@
         desc: '降低肝度：双倍收益 + 自动回血。',
         tags: ['功能', '便利'],
         rules: [
-          { name: '双倍经验', kind: 'multiply', target: 'exp', value: 2, cond: '', effect: '' },
+          { name: '双倍潜能', kind: 'multiply', target: 'pot', value: 2, cond: '', effect: '' },
           { name: '双倍金钱', kind: 'multiply', target: 'money', value: 2, cond: '', effect: '' },
           { name: '脱战回血', kind: 'onEvent', target: 'onTick', value: 1, cond: '!combat', effect: '+hp:8' },
           { name: '击杀额外潜能', kind: 'onEvent', target: 'onKill', value: 1, cond: '', effect: '+pot:15' }
@@ -430,7 +430,7 @@
             accuracy: 25,
             mpCost: 30,
             desc: '剑走太虚，意在剑先。一出手便如云海翻涌，绵绵不绝。',
-            require: 'level>=30',
+            require: 'realm>=2',
             effects: [
               { type: 'extraHit', value: 0.35, chance: 0.4, name: '剑影分光' },
               { type: 'ignoreDef', value: 0.4, chance: 0.25, name: '无相' },
@@ -447,7 +447,7 @@
             mpCost: 0,
             mpBonus: 8,
             desc: '太虚剑意的内功根基，修之可扩经脉、增内力。',
-            require: 'level>=25',
+            require: 'realm>=2',
             bonus: { hp: 6, mp: 10 },
             effects: []
           }
@@ -484,12 +484,12 @@
           },
           {
             id: 'wugou_jian', name: '无垢剑', type: 'weapon', slot: 'weapon',
-            price: 2400, weight: 3, level: 15, atk: 45, dodge: 5,
+            price: 2400, weight: 3, atk: 45, dodge: 5,
             desc: '一柄通体莹白的软剑，出鞘无声。'
           },
           {
             id: 'qingyun_pao', name: '青云袍', type: 'armor', slot: 'body',
-            price: 1800, weight: 2, level: 12, def: 32, hp: 80,
+            price: 1800, weight: 2, def: 32, hp: 80,
             desc: '青缎裁成，轻软透气，内衬软甲。'
           }
         ]

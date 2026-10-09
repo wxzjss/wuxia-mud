@@ -5,7 +5,12 @@
   "author": "武侠行官方",
   "category": "剧情",
   "desc": "一个完整的三阶段剧情：在官道游侠处接任务 → 北上密林杀山贼头目 → 回来复命领赏。演示了任务阶段（flag / kill）、对话树、NPC 与奖励的完整串联。",
-  "tags": ["剧情", "任务", "示例", "江南"],
+  "tags": [
+    "剧情",
+    "任务",
+    "示例",
+    "江南"
+  ],
   "gameVersion": "1.0.0",
   "quests": [
     {
@@ -15,12 +20,34 @@
       "level": 1,
       "type": "支线",
       "desc": "江南官道上有个游侠，说附近山贼猖狂，愿出钱请人除去贼首。贼首盘踞在官道往北的密林深处。",
-      "rewards": {
-        "exp": 400,
-        "pot": 80,
-        "money": 300,
-        "items": ["jinchuang_yao", "wugou_jian"]
-      },
+      "rewards": [
+        {
+          "type": "+pot",
+          "args": [
+            200
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            300
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "jinchuang_yao",
+            1
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "wugou_jian",
+            1
+          ]
+        }
+      ],
       "stages": [
         {
           "desc": "答应游侠的请求",
@@ -53,16 +80,25 @@
       "name": "游侠的托付",
       "npc": "demo_swordman",
       "start": "n1",
-      "cond": "level>=1",
       "nodes": [
         {
           "id": "n1",
           "who": "",
           "text": "这位侠士，且慢行。近日官道旁山贼出没，商旅遭殃。我看阁下步履沉稳，是练过的人——可愿出手相助？",
           "options": [
-            { "label": "愿往，这便去除了那贼首", "next": "n2", "effect": "quest:q_demo_bandit:2" },
-            { "label": "与我无关", "next": "n3" },
-            { "label": "山贼有多少人？", "next": "n4" }
+            {
+              "label": "愿往，这便去除了那贼首",
+              "next": "n2",
+              "effect": "quest:q_demo_bandit:2"
+            },
+            {
+              "label": "与我无关",
+              "next": "n3"
+            },
+            {
+              "label": "山贼有多少人？",
+              "next": "n4"
+            }
           ]
         },
         {
@@ -70,7 +106,10 @@
           "who": "",
           "text": "多谢！贼首就在官道往北的密林深处，身边跟着十几号人，你要当心。",
           "options": [
-            { "label": "（转身离去）", "next": "" }
+            {
+              "label": "（转身离去）",
+              "next": ""
+            }
           ]
         },
         {
@@ -78,8 +117,15 @@
           "who": "",
           "text": "（游侠愣了一下，随即苦笑）唉……罢了，人各有志。终归是我强人所难。",
           "options": [
-            { "label": "（离去）", "next": "" },
-            { "label": "等等——我去", "next": "n2", "effect": "quest:q_demo_bandit:2" }
+            {
+              "label": "（离去）",
+              "next": ""
+            },
+            {
+              "label": "等等——我去",
+              "next": "n2",
+              "effect": "quest:q_demo_bandit:2"
+            }
           ]
         },
         {
@@ -87,8 +133,15 @@
           "who": "",
           "text": "少说也有十五六个，贼首绰号「黑风」，使一对铁鞭，手上有不少人命。你若去，最好先练练功夫。",
           "options": [
-            { "label": "我明白了，这就去", "next": "n2", "effect": "quest:q_demo_bandit:2" },
-            { "label": "容我再想想", "next": "" }
+            {
+              "label": "我明白了，这就去",
+              "next": "n2",
+              "effect": "quest:q_demo_bandit:2"
+            },
+            {
+              "label": "容我再想想",
+              "next": ""
+            }
           ]
         }
       ]
@@ -114,15 +167,22 @@
         "（他望了望北边）听说那片林子里不太平，你若要过，多加小心。"
       ],
       "canTeach": true,
-      "teach": ["basic_sword", "basic_parry"],
-      "quests": ["q_demo_bandit"],
+      "teach": [
+        "basic_sword",
+        "basic_parry"
+      ],
+      "quests": [
+        "q_demo_bandit"
+      ],
       "ask": {
         "任务": "（他指了指北边）黑风那伙贼，盘踞在密林深处。你若愿意，替我去会会他。",
         "武学": "我这点剑法，不值一提。倒是可以教你几式基础的。",
         "江湖": "我走南闯北这些年，见过太多不平事。能管一件是一件。"
       },
       "askDefault": "（游侠摇头）这个……我不太清楚。",
-      "loot": ["iron_sword_basic"],
+      "loot": [
+        "iron_sword_basic"
+      ],
       "actions": [
         {
           "cmd": "复命",

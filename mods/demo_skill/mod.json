@@ -18,7 +18,7 @@
       "accuracy": 25,
       "mpCost": 30,
       "desc": "剑走太虚，意在剑先。一出手便如云海翻涌，绵绵不绝。剑势本无定式，全在一念之间。",
-      "require": "level>=30",
+      "require": "realm>=2",
       "trainCost": 12,
       "effects": [
         { "type": "extraHit", "value": 0.35, "chance": 0.4, "turns": 1, "name": "剑影分光" },
@@ -36,7 +36,7 @@
       "mpCost": 0,
       "mpBonus": 8,
       "desc": "太虚剑意的内功根基。修之可扩经脉、增内力，与太虚剑意相配，威力更增。",
-      "require": "level>=25",
+      "require": "realm>=2",
       "bonus": { "hp": 6, "mp": 10 },
       "effects": []
     },
@@ -51,7 +51,7 @@
       "mpBonus": 3,
       "dodgeBonus": 10,
       "desc": "身形如烟，飘忽不定。修至深处，可于剑网之中来去自如。",
-      "require": "level>=20",
+      "require": "realm>=1",
       "bonus": { "dodge": 8 },
       "effects": []
     }
@@ -111,7 +111,7 @@
       "actions": [
         {
           "cmd": "请教",
-          "cond": "level>=30",
+          "cond": "realm>=2",
           "effects": ["say:（老者终于睁眼）你的根基，勉强够了。", "learn:taixu_xinfa"]
         }
       ]

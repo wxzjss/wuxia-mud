@@ -4,14 +4,14 @@
   "version": "1.0.0",
   "author": "武侠行官方",
   "category": "功能",
-  "desc": "不改内容，只改规则：双倍经验、双倍金钱、脱战自动回血、击杀额外潜能、自动拾取。功能类 Mod 的写法示例，适合新手研究。",
+  "desc": "不改内容，只改规则：双倍潜能、双倍金钱、脱战自动回血、击杀额外潜能、自动拾取。功能类 Mod 的写法示例，适合新手研究。",
   "tags": ["功能", "便利", "示例"],
   "gameVersion": "1.0.0",
   "rules": [
     {
-      "name": "双倍经验",
+      "name": "双倍潜能",
       "kind": "multiply",
-      "target": "exp",
+      "target": "pot",
       "value": 2,
       "cond": "",
       "effect": ""
@@ -41,11 +41,11 @@
       "effect": "+pot:15"
     },
     {
-      "name": "新手保护（10级以下减伤）",
+      "name": "新手保护（初窥门径以下减伤）",
       "kind": "additive",
       "target": "damageTaken",
       "value": -5,
-      "cond": "level<=10",
+      "cond": "realm<=1",
       "effect": ""
     }
   ],

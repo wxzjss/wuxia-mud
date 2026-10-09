@@ -55,7 +55,21 @@ const { clamp, fuzzyFind } = require('./utils');
 
 /* 可直接比较的数值字段 */
 const NUM_FIELDS = ['level', 'money', 'exp', 'pot', 'potential', 'hp', 'maxHp', 'mp', 'maxMp',
-  'karma', 'kills', 'age', 'rank', 'sectContribution', 'day', 'time'];
+  'karma', 'kills', 'age', 'rank', 'sectContribution', 'day', 'time', 'realm'];
+
+/* 武学境界档位（删等级后，衡量玩家进度的统一标准）。
+   与 engine.realmName 同一套分档，这里返回数值档位供条件比较：
+   0 不通武艺 / 1 初窥门径 / 2 小有所成 / 3 登堂入室 / 4 炉火纯青 / 5 登峰造极 */
+function realmLevel(p) {
+  let sum = 0;
+  for (const k of Object.keys(p.learned || {})) sum += (p.learned[k] && p.learned[k].level) || 0;
+  if (sum <= 0) return 0;
+  if (sum < 30) return 1;
+  if (sum < 100) return 2;
+  if (sum < 300) return 3;
+  if (sum < 800) return 4;
+  return 5;
+}
 
 function fieldValue(p, w, key, cond) {
   switch (key) {
@@ -74,6 +88,7 @@ function fieldValue(p, w, key, cond) {
     case 'sectContribution': return p.sectContribution || 0;
     case 'day': return Math.floor(p.timeMinutes / 1440) + 1;
     case 'time': return p.timeMinutes % 1440;
+    case 'realm': return realmLevel(p);
     case 'attr': return p.attrTotal(cond.attr || cond.key || '力量');
     case 'skill': return p.skillLevel(cond.skill || cond.key || '');
     case 'rep': return p.reputation[cond.rep || cond.key || '*'] || 0;
@@ -115,6 +130,12 @@ function evalCond(cond, ctx) {
     // 简写 "flag:xxx" / "money>=100"
     const m = String(cond).match(/^([a-zA-Z_]+)\s*(>=|<=|==|!=|>|<)\s*(.+)$/);
     if (m) return evalCond({ [m[1]]: `${m[2]}${m[3]}` }, ctx);
+    // "!combat" / "!某flag" 简写
+    const n = String(cond).match(/^!([a-zA-Z_]+)$/);
+    if (n) {
+      if (n[1] === 'combat') return evalCond({ notCombat: true }, ctx);
+      return evalCond({ notFlag: n[1] }, ctx);
+    }
     return evalCond({ flag: cond }, ctx);
   }
   if (Array.isArray(cond)) return cond.every(c => evalCond(c, ctx));
@@ -130,6 +151,9 @@ function evalCond(cond, ctx) {
   // 标记
   if (cond.flag && !p.hasFlag(cond.flag)) return false;
   if (cond.notFlag && p.hasFlag(cond.notFlag)) return false;
+  // 战斗状态（功能 Mod「脱战回血」等用）
+  if (cond.notCombat && (w.battle || p.inCombat)) return false;
+  if (cond.combat && !(w.battle || p.inCombat)) return false;
   // 多标记
   if (cond.flagsAll) { for (const f of [].concat(cond.flagsAll)) if (!p.hasFlag(f)) return false; }
   if (cond.flagsAny) { if (![].concat(cond.flagsAny).some(f => p.hasFlag(f))) return false; }
@@ -324,14 +348,15 @@ function evalEffect(eff, ctx) {
   // 纯条件（用于剧情节点判断）——忽略
   if (eff && typeof eff === 'object' && eff.type === 'cond') return [];
 
-  let type, args;
+  let type, args, rawVal = '';
   if (typeof eff === 'string') {
     const pe = parseEffectString(eff);
-    type = pe.type; args = pe.args; eff.raw = pe.raw;
+    type = pe.type; args = pe.args; rawVal = pe.raw;
   } else {
     type = eff.type; args = eff.args || [];
+    rawVal = eff.raw;
   }
-  const raw = eff.raw || (typeof eff === 'object' ? args.join(':') : '');
+  const raw = rawVal || (typeof eff === 'object' ? args.join(':') : '');
 
   const num = (i, d) => { const n = parseFloat(args[i]); return isNaN(n) ? (d || 0) : n; };
 

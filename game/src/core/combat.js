@@ -213,6 +213,12 @@ class CombatEngine {
       }
     }
 
+    // 功能 Mod 规则：玩家受击增减（additive damageTaken，负值=减伤）
+    if (t.isPlayer) {
+      const adj = w.ruleAdd('damageTaken');
+      if (adj) dmg = Math.max(0, dmg + adj);
+    }
+
     t.hp = clamp(t.hp - dmg, 0, t.maxHp);
 
     // 吸血

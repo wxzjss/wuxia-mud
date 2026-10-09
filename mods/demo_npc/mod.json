@@ -5,7 +5,11 @@
   "author": "武侠行官方",
   "category": "综合",
   "desc": "在江南渡口加一位白发渔翁，可以交谈、请教武学、打探消息，还会给你一条采药小差事。NPC Mod 的完整示例。",
-  "tags": ["NPC", "示例", "江南"],
+  "tags": [
+    "NPC",
+    "示例",
+    "江南"
+  ],
   "gameVersion": "1.0.0",
   "npcs": [
     {
@@ -30,7 +34,10 @@
       "hostile": false,
       "leavesCorpse": true,
       "canTeach": true,
-      "teach": ["basic_fist", "basic_dodge"],
+      "teach": [
+        "basic_fist",
+        "basic_dodge"
+      ],
       "ask": {
         "武学": "老朽不过是会些强身的把式，不值一提。阁下若真想学，倒可以教两招。",
         "江湖": "这江南看着太平，其实暗流不少。你往北走，进了密林，自会明白。",
@@ -39,15 +46,19 @@
         "鱼": "钓的是心境，不是鱼。"
       },
       "askDefault": "（渔翁摇摇头）老朽孤陋，这些事说不清。",
-      "loot": ["jinchuang_yao"],
+      "loot": [
+        "jinchuang_yao"
+      ],
       "expReward": 0,
       "potReward": 0,
       "moneyReward": 0,
       "actions": [
         {
           "cmd": "帮助",
-          "cond": "level>=1",
-          "effects": ["say:（渔翁笑了）若阁下有心，帮老朽去采三株当归回来，如何？", "+pot:20"]
+          "effects": [
+            "say:（渔翁笑了）若阁下有心，帮老朽去采三株当归回来，如何？",
+            "+pot:20"
+          ]
         }
       ]
     }

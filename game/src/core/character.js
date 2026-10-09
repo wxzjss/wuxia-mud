@@ -373,6 +373,8 @@ class Character {
   /* ---------------- 等级 ---------------- */
 
   gainExp(exp) {
+    // 功能 Mod 规则：经验倍率
+    if (this.world && this.world.ruleMult) exp = Math.floor(exp * this.world.ruleMult('exp'));
     this.exp += exp;
     let up = 0;
     while (this.exp >= this.expNeed(this.level)) {
@@ -387,7 +389,11 @@ class Character {
     this.recalc();
     return up;
   }
-  gainPotential(p) { this.potential += p; }
+  gainPotential(p) {
+    // 功能 Mod 规则：潜能倍率
+    if (this.world && this.world.ruleMult) p = Math.floor(p * this.world.ruleMult('pot'));
+    this.potential += p;
+  }
 
   /* ---------------- 物品 ---------------- */
 
