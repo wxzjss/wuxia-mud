@@ -1,6 +1,6 @@
 /**
  * patch-skills-category.js — 给 10_skills.json 的每个武学补 category 字段
- * （外功 / 内功 / 奇门 / 歪门 / 魔功），并给乐器类武器补 weaponType:'音波'。
+ * （外功 / 内功 / 奇门 / 旁门 / 魔功），并给乐器类武器补 weaponType:'音波'。
  * 幂等：已带 category 的不覆盖（除非被关键字重新归类），可反复跑。
  */
 'use strict';
@@ -15,9 +15,9 @@ const WEAPON_SKILL_TYPES = ['剑', '刀', '棍', '鞭', '暗器'];
 
 function inferCategory(s) {
   const text = (s.name || '') + ' ' + (s.desc || '');
-  // 关键字优先（魔功/歪门），可覆盖 type 默认分类
+  // 关键字优先（魔功/旁门），可覆盖 type 默认分类
   if (/魔功|血刀|噬魂|幽冥|阴风|邪功|葵花|吸星|化功|辟邪|血影|魔教|白骨|噬/.test(text)) return '魔功';
-  if (/毒|蛊|采补|媚|春|销魂|星宿/.test(text)) return '歪门';
+  if (/毒|蛊|采补|媚|春|销魂|星宿/.test(text)) return '旁门';
   const t = s.type;
   if (t === '内功') return '内功';
   if (t === '音波') return '奇门';

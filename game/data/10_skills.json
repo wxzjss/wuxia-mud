@@ -533,7 +533,7 @@
         "maxMp": 200
       },
       "effects": [],
-      "category": "歪门"
+      "category": "旁门"
     },
     "dagou_bangfa": {
       "id": "dagou_bangfa",
@@ -833,7 +833,7 @@
         "def": 100
       },
       "effects": [],
-      "category": "歪门"
+      "category": "旁门"
     },
     "jiuyin_zhenjing": {
       "id": "jiuyin_zhenjing",
@@ -1125,7 +1125,7 @@
           "value": 70
         }
       ],
-      "category": "歪门"
+      "category": "旁门"
     },
     "miao_gu": {
       "id": "miao_gu",
@@ -1154,7 +1154,7 @@
           }
         }
       ],
-      "category": "歪门"
+      "category": "旁门"
     },
     "ice_silk_zhang": {
       "id": "ice_silk_zhang",

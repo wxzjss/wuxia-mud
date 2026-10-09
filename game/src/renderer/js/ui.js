@@ -160,16 +160,18 @@
     let desc = room.desc || '';
     $('room-desc').innerHTML = esc(desc).replace(/\n/g, '<br>');
 
-    /* 出口：后端字段是 { dir, name(中文方位), to, toName } */
-    const ex = room.exits || [];
+    /* 出口：后端字段是顶层 v.exits（不是 room.exits —— room 里没有 exits），
+       每项 { dir, name(中文方位), to, toName, locked }。两处都兜一下，老存档视图也能渲染。 */
+    const ex = (v && v.exits) || (room && room.exits) || [];
     const box = $('exits');
     box.innerHTML = '';
     ex.forEach(e => {
       const b = document.createElement('button');
       b.className = 'exit-btn' + (e.locked ? ' locked' : '');
+      b.setAttribute('data-dir', e.dir || '');
       b.innerHTML = esc(e.name || e.dir) + (e.toName ? '<i>' + esc(e.toName) + '</i>' : '');
       b.title = e.locked ? ('通往 ' + e.toName + '（尚未满足条件）') : ('前往 ' + e.toName);
-      b.onclick = () => doCmd(e.dir);
+      b.onclick = () => doCmd(e.dir, { fromButton: true });
       box.appendChild(b);
     });
     if (!ex.length) box.innerHTML = '<span class="no-exit">此处无路可走</span>';
@@ -210,7 +212,7 @@
           if (hint) hint.textContent = '「' + a.name + '」' + (a.reason ? '：' + a.reason : '现在做不了');
           return;
         }
-        doCmd(a.cmd);
+        doCmd(a.cmd, { fromButton: true });
       };
     });
   }
@@ -260,7 +262,7 @@
     });
     /* 出口方向可点击：点「北」就走一格 */
     el.querySelectorAll('.exit-inline').forEach(b => {
-      b.onclick = () => doCmd(b.getAttribute('data-dir'));
+      b.onclick = () => doCmd(b.getAttribute('data-dir'), { fromButton: true });
     });
     if (scroll !== false) el.scrollTop = el.scrollHeight;
   }
@@ -341,7 +343,7 @@
     if (!acts.length) return;
     /* 只有一个动作就直接执行，别弹窗 */
     if (acts.length === 1) {
-      doCmd(acts[0].cmd);
+      doCmd(acts[0].cmd, { fromButton: true });
       return;
     }
     choices('对「' + name + '」做什么', acts.map(a => ({
@@ -349,7 +351,7 @@
       hint: a.hint || '',
       cmd: a.cmd,
     })), it => {
-      if (it.cmd) doCmd(it.cmd);
+      if (it.cmd) doCmd(it.cmd, { fromButton: true });
     });
   }
 
@@ -384,16 +386,18 @@
 
     const itemBox = $('scene-items');
     itemBox.innerHTML = '';
-    (v.items || []).forEach(it => {
+    /* 后端字段是顶层 v.groundItems（{ uid, itemId, name, count }），不是 v.items */
+    const groundList = (v && v.groundItems) || (v && v.items) || [];
+    groundList.forEach(it => {
       const d = document.createElement('button');
       d.className = 'scene-item item';
       d.innerHTML =
         '<span class="si-name">' + esc(it.name) + (it.count > 1 ? ' <i class="tag-count">×' + it.count + '</i>' : '') + '</span>' +
-        '<span class="si-sub">' + esc(it.typeName || '') + '</span>';
-      d.onclick = () => doCmd('get ' + it.name);
+        '<span class="si-sub">' + esc(it.typeName || (it.itemId ? '物品' : '')) + '</span>';
+      d.onclick = () => doCmd('get ' + (it.name || it.itemId), { fromButton: true });
       itemBox.appendChild(d);
     });
-    if (!(v.items || []).length) itemBox.innerHTML = '<div class="scene-empty">地上空无一物</div>';
+    if (!groundList.length) itemBox.innerHTML = '<div class="scene-empty">地上空无一物</div>';
 
     const qBox = $('scene-quests');
     qBox.innerHTML = '';
@@ -539,22 +543,23 @@
       n.canSteal ? { label: '伺机偷窃 (steal)', action: 'steal', hint: '失手会被通缉' } : null,
       { label: '动手厮杀 (kill)', action: 'kill', hint: '可能致死，谨慎' }
     ].filter(Boolean), it => {
-      if (it.action === 'look') doCmd('look ' + n.name);
-      else if (it.action === 'talk') doCmd('talk ' + n.name);
+      const BTN = { fromButton: true };
+      if (it.action === 'look') doCmd('look ' + n.name, BTN);
+      else if (it.action === 'talk') doCmd('talk ' + n.name, BTN);
       else if (it.action === 'ask') { askNpc(n); }
-      else if (it.action === 'guanxi') doCmd('guanxi ' + n.name);
-      else if (it.action === 'favor') doCmd('favor ' + n.name);
+      else if (it.action === 'guanxi') doCmd('guanxi ' + n.name, BTN);
+      else if (it.action === 'favor') doCmd('favor ' + n.name, BTN);
       else if (it.action === 'give') giveNpc(n);
       else if (it.action === 'givemoney') giveMoneyNpc(n);
-      else if (it.action === 'qingjiao') doCmd('qingjiao ' + n.name);
-      else if (it.action === 'qiecuo') doCmd('qiecuo ' + n.name);
+      else if (it.action === 'qingjiao') doCmd('qingjiao ' + n.name, BTN);
+      else if (it.action === 'qiecuo') doCmd('qiecuo ' + n.name, BTN);
       else if (it.action === 'propose') proposeNpc(n);
-      else if (it.action === 'bond') doCmd('结缘 ' + n.name);
-      else if (it.action === 'concubine') doCmd('纳妾 ' + n.name);
-      else if (it.action === 'swear') doCmd('结拜 ' + n.name);
-      else if (it.action === 'sever') doCmd('断义 ' + n.name);
+      else if (it.action === 'bond') doCmd('结缘 ' + n.name, BTN);
+      else if (it.action === 'concubine') doCmd('纳妾 ' + n.name, BTN);
+      else if (it.action === 'swear') doCmd('结拜 ' + n.name, BTN);
+      else if (it.action === 'sever') doCmd('断义 ' + n.name, BTN);
       else if (it.action === 'steal') stealNpc(n);
-      else if (it.action === 'kill') doCmd('kill ' + n.name);
+      else if (it.action === 'kill') doCmd('kill ' + n.name, BTN);
     }, head);
   }
 
@@ -564,7 +569,7 @@
       { label: '酒楼办席 (propose ' + n.name + ' 酒楼)', action: 'hall', hint: '花费 2000 文，宾客可至 24 人，好感加成足' },
       { label: '家中办席 (propose ' + n.name + ' 家中)', action: 'home', hint: '花费 300 文，宾客至多 10 人，好感加成减半' }
     ], it => {
-      doCmd('提亲 ' + n.name + ' ' + (it.action === 'hall' ? '酒楼' : '家中'));
+      doCmd('提亲 ' + n.name + ' ' + (it.action === 'hall' ? '酒楼' : '家中'), { fromButton: true });
     });
   }
 
@@ -584,7 +589,7 @@
       '<div class="pick-list">' + rows + '</div>',
       '<button class="btn-ink" onclick="WXUI.closeModal()">取 消</button>');
     document.querySelectorAll('.pick-row').forEach(b => {
-      b.onclick = () => { const id = b.getAttribute('data-item'); closeModal(); doCmd('give ' + id + ' to ' + n.name); };
+      b.onclick = () => { const id = b.getAttribute('data-item'); closeModal(); doCmd('give ' + id + ' to ' + n.name, { fromButton: true }); };
     });
   }
 
@@ -598,7 +603,7 @@
       '<input id="money-input" class="modal-input" placeholder="或自填数额（文）">',
       '<button class="btn-ink" onclick="WXUI.closeModal()">取 消</button>');
     document.querySelectorAll('.pick-row[data-amt]').forEach(b => {
-      b.onclick = () => { const v = b.getAttribute('data-amt'); closeModal(); doCmd('give_money ' + v + ' to ' + n.name); };
+      b.onclick = () => { const v = b.getAttribute('data-amt'); closeModal(); doCmd('give_money ' + v + ' to ' + n.name, { fromButton: true }); };
     });
     const inp = $('money-input');
     if (inp) inp.onkeydown = e => {
@@ -612,8 +617,8 @@
       { label: '摸他的钱袋', action: 'money' },
       { label: '偷他身上的物件', action: 'item' }
     ], it => {
-      if (it.action === 'money') doCmd('steal money from ' + n.name);
-      else doCmd('steal ' + n.name);
+      if (it.action === 'money') doCmd('steal money from ' + n.name, { fromButton: true });
+      else doCmd('steal ' + n.name, { fromButton: true });
     });
   }
 
@@ -634,7 +639,7 @@
       };
     }
     document.querySelectorAll('.mini-tag').forEach(b => {
-      b.onclick = () => { const v = b.getAttribute('data-topic'); closeModal(); doCmd('ask ' + n.name + ' about ' + v); };
+      b.onclick = () => { const v = b.getAttribute('data-topic'); closeModal(); doCmd('ask ' + n.name + ' about ' + v, { fromButton: true }); };
     });
   }
 
@@ -1492,7 +1497,7 @@
       b.onclick = () => {
         const c = b.getAttribute('data-cmd');
         closeModal();
-        if (c) doCmd(c);
+        if (c) doCmd(c, { fromButton: true });
       };
     });
 
@@ -1505,7 +1510,7 @@
           if (!room) return;
           closeModal();
           /* 优先用方向走（引擎的方向指令最可靠），否则用房间名 */
-          doCmd('go ' + room.name);
+          doCmd('go ' + room.name, { fromButton: true });
         };
       });
     }
@@ -1515,7 +1520,7 @@
         b.onclick = () => {
           const nm = b.getAttribute('data-npc');
           closeModal();
-          doCmd('favor ' + nm);
+          doCmd('favor ' + nm, { fromButton: true });
         };
       });
     }
@@ -1527,7 +1532,7 @@
           const n = ((S.view && S.view.npcs) || []).find(x => x.name === nm);
           closeModal();
           if (n) openNpcMenu(n);
-          else doCmd('favor ' + nm);
+          else doCmd('favor ' + nm, { fromButton: true });
         };
       });
     }
@@ -1572,9 +1577,56 @@
   let cmdHistory = [];
   let histIdx = -1;
 
-  async function doCmd(cmd) {
+  /* ============================================================
+   *  手机端输入法防弹（主人报的 bug）
+   *
+   *  症状：在手机上点屏幕上的可交互按钮（出口「北」、NPC 菜单里的「查看/交谈」…），
+   *        那一瞬间输入法会弹出来，正好把刚更新的内容遮住，得手动点掉。
+   *
+   *  根因：doCmd() 结束时无条件 `inp.focus()`。
+   *        点按钮 → onclick 调 doCmd → focus 抢回输入框 → 移动端浏览器认为
+   *        「用户要输入」，于是拉起软键盘。iOS Safari 尤其明显：
+   *        在 input 之外的按钮上点击，有时还会连带把 input 置为激活态。
+   *
+   *  修法（三条一起，缺一不可）：
+   *    1. 只在「本次指令是用户**主动在输入框里敲回车**」时才把焦点还给输入框；
+   *       从按钮/面板点进来的绝不抢。
+   *    2. 按钮点击时先主动 blur 输入框，断掉移动端那条「点击即激活」的隐式链。
+   *    3. 记录「命令是哪儿来的」（fromButton / fromInput），
+   *       据此决定结束要不要 refocus。
+   * ============================================================ */
+
+  /** 判断是不是触屏设备（用于决定要不要折腾输入法的行为） */
+  function isTouchDevice() {
+    try {
+      if (typeof navigator === 'undefined') return false;
+      if (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) return true;
+      if ('ontouchstart' in global) return true;
+      return /Android|iPhone|iPad|iPod|Mobile|Win Phone/i.test((navigator.userAgent || ''));
+    } catch (e) { return false; }
+  }
+
+  /** 主动把输入框的焦点与激活态都断掉（治 iOS「点了按钮输入框反而亮了」） */
+  function blurCmdInput() {
+    const inp = $('cmd-input');
+    if (!inp) return;
+    try { if (typeof inp.blur === 'function') inp.blur(); } catch (e) { /* 老浏览器 stub 没这方法 */ }
+    try { inp.classList.remove('focused'); } catch (e) { /* noop */ }
+    /* 触屏机型：再补一刀 readonly —— 部分 Android 浏览器即使 blur 了，
+       只要 input 处于「可编辑」状态，下一次 touchend 仍会拉起软键盘。
+       下一帧再放开，防某些机型忽略 blur。桌面端不做这层，避免影响正常输入。 */
+    if (!isTouchDevice()) return;
+    try { inp.setAttribute('readonly', 'readonly'); } catch (e) { /* noop */ }
+    setTimeout(() => {
+      try { inp.removeAttribute('readonly'); } catch (e) { /* noop */ }
+    }, 80);
+  }
+
+  async function doCmd(cmd, opts) {
     cmd = String(cmd || '').trim();
     if (!cmd) return;
+    /* 记来源：默认当作「用户主动敲的」（老调用点全部保持原行为，不破坏任何既有逻辑） */
+    const fromButton = !!(opts && opts.fromButton);
     if (S.busy) { toast('上一道指令还在执行…', 'warn', 1200); return; }
 
     /* 面板类指令：本地开面板，不打扰后端 */
@@ -1582,11 +1634,15 @@
     if (pn) {
       pushHistory(cmd);
       appendLog([{ type: 'cmd', text: '> ' + cmd }]);
+      if (fromButton) blurCmdInput();
       return panel(pn);
     }
 
     pushHistory(cmd);
     appendLog([{ type: 'cmd', text: '> ' + cmd }]);
+
+    /* 按钮点进来的：先把输入框的焦点/激活态断掉，别在指令执行期间就把键盘拉起来 */
+    if (fromButton) blurCmdInput();
 
     S.busy = true;
     setCmdEnabled(false);
@@ -1600,7 +1656,9 @@
       S.busy = false;
       setCmdEnabled(true);
       const inp = $('cmd-input');
-      if (inp) inp.focus();
+      /* 只在「本来就是从输入框敲回车来的」时才把焦点还回去。
+         按钮来的绝不在这里 focus，否则手机键盘又弹出来（就是主人报的这个 bug）。 */
+      if (inp && !fromButton) inp.focus();
     }
   }
 
@@ -1634,7 +1692,7 @@
     /* 需要弹选择框 */
     if (d.choices) {
       choices(d.choicesTitle || '请选择', d.choices, it => {
-        if (it.cmd) doCmd(it.cmd);
+        if (it.cmd) doCmd(it.cmd, { fromButton: true });
         else if (it.action) api.menu({ action: it.action, key: it.key, uid: it.uid }).then(afterAction).catch(e => toast(e.message, 'error'));
       });
     }
@@ -1650,7 +1708,7 @@
         { label: '重新开始江湖', action: 'restart' },
         { label: '返回主菜单', action: 'menu' }
       ], it => {
-        if (it.action === 'restart') doCmd('rebirth');
+        if (it.action === 'restart') doCmd('rebirth', { fromButton: true });
         else show('start');
       });
     }
@@ -1765,7 +1823,7 @@
       '<button class="qb-btn" data-cmd="' + esc(it.cmd) + '">' + esc(it.label) + '</button>').join('') +
       (inCombat ? '' : '<button class="qb-btn qb-edit" id="qb-edit" title="编辑快捷键">⚙ 编辑</button>');
     box.querySelectorAll('.qb-btn[data-cmd]').forEach(b => {
-      b.onclick = () => doCmd(b.getAttribute('data-cmd'));
+      b.onclick = () => doCmd(b.getAttribute('data-cmd'), { fromButton: true });
     });
     const edit = $('qb-edit');
     if (edit) edit.onclick = openQuickbarEditor;

@@ -2,7 +2,7 @@
  * smoke-martial.js — 武学体系重制（SPRINT2）回归测试
  *
  * 覆盖重制核心：
- *  ① 功法五大类（外功/内功/奇门/歪门/魔功）齐全
+ *  ① 功法五大类（外功/内功/奇门/旁门/魔功）齐全
  *  ② 去等级化：伤害不再二次爆炸
  *  ③ 武器绑定：无对应兵刃威力大打折扣
  *  ④ 修炼功法消耗内力（不打怪升级）
@@ -29,13 +29,13 @@ const SEED = 20261008;
 function boot() { const e = new GameEngine({ seed: SEED }); e.boot(); e.newGame({ name: '试剑', gender: 'male', birth: 'wuxue' }); return e; }
 
 /* ============================================================ */
-section('① 功法五大类齐全（外功/内功/奇门/歪门/魔功）');
+section('① 功法五大类齐全（外功/内功/奇门/旁门/魔功）');
 {
   const cats = {};
   for (const k in skillsData.skills) { const c = skillsData.skills[k].category || '未分类'; cats[c] = (cats[c] || 0) + 1; }
-  ok('五类都至少 1 个', ['外功', '内功', '奇门', '歪门', '魔功'].every(c => cats[c] > 0), JSON.stringify(cats));
+  ok('五类都至少 1 个', ['外功', '内功', '奇门', '旁门', '魔功'].every(c => cats[c] > 0), JSON.stringify(cats));
   ok('魔功含血刀/葵花/吸星', ['xuedao', 'sunflower_manual', 'xixing_dafa'].every(id => skillsData.skills[id] && skillsData.skills[id].category === '魔功'));
-  ok('歪门含唐门毒术', !!(skillsData.skills.tangmen_du && skillsData.skills.tangmen_du.category === '歪门'));
+  ok('旁门含唐门毒术', !!(skillsData.skills.tangmen_du && skillsData.skills.tangmen_du.category === '旁门'));
 }
 
 /* ============================================================ */
