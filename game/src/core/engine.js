@@ -1048,7 +1048,7 @@ class GameEngine {
         return { id: k, name: t.name || k, desc: t.desc || '', attr: t.attr || null, effects: t.effects || [] };
       }),
       effects: Object.keys(w.data.events || {}),
-      statCN: { atk: '攻击', def: '防御', dodge: '闪避', parry: '招架', speed: '身法', maxHp: '气血', maxMp: '内力', critRate: '暴击率', lifesteal: '吸血', reflect: '反伤', armorPen: '破防' },
+      statCN: { atk: '攻击', def: '防御', dodge: '闪避', parry: '招架', speed: '速度', maxHp: '气血', maxMp: '内力', critRate: '暴击率', lifesteal: '吸血', reflect: '反伤', armorPen: '破防' },
       itemTypeCN: { weapon: '武器', armor: '防具', helmet: '头饰', boots: '鞋履', gloves: '手套', necklace: '颈饰', ring: '戒指', cloak: '披风', shield: '副手', accessory: '饰品', consumable: '丹药', food: '食物', herb: '药材', material: '材料', book: '书籍', quest: '任务物品', misc: '杂物' },
     };
   }

@@ -283,12 +283,18 @@
 
   function renderBirths() {
     const box = $('c-births');
-    box.innerHTML = BIRTHS.map(b =>
-      '<button class="birth-card" data-birth="' + esc(b.id) + '">' +
-      '<div class="bc-name">' + esc(b.name) + '</div>' +
-      '<div class="bc-desc">' + esc(b.desc || '') + '</div>' +
-      '<div class="bc-bonus">' + (b.attr ? Object.keys(b.attr).map(k => k + '+' + b.attr[k]).join('  ') : '') +
-      (b.items ? '　赠：' + b.items.slice(0, 3).join('、') : '') + '</div></button>').join('');
+    box.innerHTML = BIRTHS.map(b => {
+      const parts = [];
+      if (b.attr) parts.push(Object.keys(b.attr).map(k => k + '+' + b.attr[k]).join('　'));
+      if (b.money != null) parts.push('银两 ' + b.money + ' 文');
+      if (b.items && b.items.length) parts.push('赠：' + b.items.slice(0, 3).join('、'));
+      if (b.skills && b.skills.length) parts.push('武学：' + b.skills.join('、'));
+      if (b.traits && b.traits.length) parts.push('天赋：' + b.traits.join('、'));
+      return '<button class="birth-card" data-birth="' + esc(b.id) + '">' +
+        '<div class="bc-name">' + esc(b.name) + '</div>' +
+        '<div class="bc-desc">' + esc(b.desc || '') + '</div>' +
+        '<div class="bc-bonus">' + parts.join('　') + '</div></button>';
+    }).join('');
     box.querySelectorAll('.birth-card').forEach(c => {
       c.onclick = () => {
         curBirth = c.getAttribute('data-birth');
@@ -331,11 +337,18 @@
         bits.push(k + (v > 0 ? '+' + v : v));
       });
     }
-    const STAT_CN = { atk: '攻击', def: '防御', dodge: '闪避', parry: '招架', speed: '身法', maxHp: '气血上限', maxMp: '内力上限', critRate: '暴击率', lifesteal: '吸血', reflect: '反伤', armorPen: '破防' };
+    const STAT_CN = { atk: '攻击', def: '防御', dodge: '闪避', parry: '招架', speed: '速度', maxHp: '气血上限', maxMp: '内力上限', critRate: '暴击率', lifesteal: '吸血', reflect: '反伤', armorPen: '破防' };
+    /* 百分比类属性：critRate/lifesteal/reflect/armorPen 是 0~1 小数，要 ×100 转成 % */
+    const PERCENT = { critRate: true, lifesteal: true, reflect: true, armorPen: true };
     (p.effects || []).forEach(e => {
       if (e && e.type === 'stat' && e.key) {
         const v = e.value || 0;
-        bits.push((STAT_CN[e.key] || e.key) + (v > 0 ? '+' + v : v));
+        const cn = STAT_CN[e.key] || e.key;
+        if (PERCENT[e.key]) {
+          bits.push(cn + (v > 0 ? '+' : '') + Math.round(v * 100) + '%');
+        } else {
+          bits.push(cn + (v > 0 ? '+' + v : v));
+        }
       }
     });
     return bits;

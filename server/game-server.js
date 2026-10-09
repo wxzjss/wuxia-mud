@@ -206,6 +206,15 @@ async function handleApi(engine, req, res, pn, query, preset) {
         const traitsList = Array.isArray(traits)
           ? traits
           : Object.keys(traits).map(id => Object.assign({ id }, traits[id]));
+        /* 把赠品/起始武学/天赋的英文 id 转成中文名，前端直接展示 */
+        const itemsData = engine.world.data.items || {};
+        const skillsData = engine.world.data.skills || {};
+        const traitsData = engine.world.data.traits || {};
+        list.forEach(b => {
+          if (Array.isArray(b.items)) b.items = b.items.map(id => (itemsData[id] && itemsData[id].name) || id);
+          if (Array.isArray(b.skills)) b.skills = b.skills.map(id => (skillsData[id] && skillsData[id].name) || id);
+          if (Array.isArray(b.traits)) b.traits = b.traits.map(id => (traitsData[id] && traitsData[id].name) || id);
+        });
         return json(res, 200, {
           ok: true,
           births: list,
