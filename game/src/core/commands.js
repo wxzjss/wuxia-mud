@@ -388,7 +388,13 @@ function buildCommands(world) {
 
   function lookNpc(ctx, npc) {
     const w = ctx.world;
-    const lines = [{ kind: 'subtitle', text: `${npc.name}（${npc.title || '江湖中人'}）` }];
+    /* 括号里写**身份**（门派职位/捕快/郎中/寻常百姓…），不再写「江湖中人」 */
+    const id0 = npcIdentity(w, npc);
+    const lines = [{ kind: 'subtitle', text: `${npc.name}（${id0}）` }];
+    /* 名人的称号另起一行，别跟身份混为一谈 */
+    if (npc.title && npc.title !== id0 && npc.title.length > 3) {
+      lines.push({ kind: 'plain', text: `江湖上人称他「${npc.title}」。` });
+    }
     lines.push({ kind: 'desc', text: npc.desc || '看不出什么特别之处。' });
     const def = npc.def || {};
     if (def.showLevel !== false) lines.push({ kind: 'plain', text: `看起来约 ${npc.level} 层修为。` });
@@ -838,7 +844,7 @@ function buildCommands(world) {
         const t = social.favorTier(n.favor);
         lines.push({
           kind: 'favor',
-          text: `${n.name}　${t.name}（${n.favor || 0}）　${t.cn}`,
+          text: `${n.name}（${npcIdentity(w, n)}）　${t.name}（${n.favor || 0}）　${t.cn}`,
           color: t.color, favor: n.favor || 0, tier: t.name, npcId: n.id,
         });
       }
@@ -864,8 +870,9 @@ function buildCommands(world) {
       const o = w.data.npcs[r.id];
       if (!o) continue;
       const color = { 亲: '#c07a4a', 友: '#2f7a4a', 仇: '#a03030', 师: '#1f6f9a', 生: '#8a5ac2', 夫妻: '#c0306a' }[r.kind] || '#666';
-      const where = o.home ? '（住' + (w.getRoom(o.home) ? w.getRoom(o.home).name : o.home) + '）' : '';
-      lines.push({ kind: 'plain', text: `　${r.kind}　${o.name}${where}`, color, relId: r.id, relKind: r.kind });
+      /* 括号里写**身份**，不写住处（主人：什么NPC都住本地，写了等于没写） */
+      const who = npcIdentity(w, o);
+      lines.push({ kind: 'plain', text: `　${relKindCN(r.kind)}　${o.name}（${who}）`, color, relId: r.id, relKind: r.kind });
     }
     /* 他自己的好感 */
     const t = social.favorTier(npc.favor);
@@ -2714,7 +2721,7 @@ function favorDetail(w, npc) {
   const t = social.favorTier(npc.favor);
   const lines = [
     { kind: 'title', text: `【 ${npc.name} 】` },
-    { kind: 'plain', text: `　${npc.title ? npc.title + '　' : ''}${def.tag ? tagCN(def.tag) : ''}　${npc.gender === 'female' ? '女' : '男'}　${npc.level || 1} 级` },
+    { kind: 'plain', text: `　身份：${npcIdentity(w, npc)}　${npc.gender === 'female' ? '女' : '男'}　${npc.level || 1} 级` },
     { kind: 'favor', text: `　好感：${npc.favor || 0}（${t.name}）—— ${t.cn}`, color: t.color, favor: npc.favor || 0, tier: t.name },
   ];
 
@@ -2762,7 +2769,7 @@ function favorDetail(w, npc) {
     for (const r of rel.slice(0, 5)) {
       const o = w.data.npcs[r.id];
       if (!o) continue;
-      lines.push({ kind: 'plain', text: `　${r.kind}　${o.name}`, relId: r.id, relKind: r.kind });
+      lines.push({ kind: 'plain', text: `　${relKindCN(r.kind)}　${o.name}（${npcIdentity(w, o)}）`, relId: r.id, relKind: r.kind });
     }
     lines.push({ kind: 'hint', text: `　用「guanxi ${npc.name}」看全部关系。` });
   }
@@ -2779,6 +2786,85 @@ const TAG_CN = {
   boatman: '船夫', gambler: '赌徒', waiter2: '茶博士',
 };
 function tagCN(t) { return TAG_CN[t] || t; }
+
+/* ============================================================
+ *  NPC 身份（主人 20261010h 要求）
+ *  以前看人写「江湖中人」、看关系写「（住江南城·长街）」——都是废话，
+ *  住处人人一个样（大多就在本城），身份才是一个人在这江湖里的位置。
+ *  优先级：门派职位 > title（捕快/郎中/富户…）> job > tag > 按名字猜 > 江湖散人。
+ *  ⚠️ 名人（君子剑、九指神丐…）的 title 是**称号**不是身份，
+ *     但他们都有 sect，所以门派那条先走 —— 岳不群显示「华山派掌门」而不是「君子剑」。
+ * ============================================================ */
+const JOB_CN = {
+  swordsman: '刀客', doctor: '郎中', innkeeper: '客栈掌柜', monk: '僧人',
+  constable: '捕快', taoist: '道人', nun: '尼姑', vendor: '货郎', scholar: '书生',
+  farmer: '农人', smith: '铁匠', merchant: '行商', richman: '富户', groom: '马夫',
+  escort: '镖师', official: '官吏', madam: '鸨母', waiter: '店伙', thief: '盗贼',
+  hunter: '猎户', actor: '戏子', boatman: '艄公', gambler: '赌徒',
+};
+
+/** 关系单字 → 双字词（主人：别写「友」「仇」，写「友人」「仇人」） */
+const REL_KIND_CN = {
+  亲: '亲人', 友: '友人', 仇: '仇人', 师: '师长', 生: '门生',
+  夫妻: '夫妻', 妾: '姬妾', 义: '义兄弟', 结缘: '结缘人',
+};
+
+/** 「友」→「友人」；不认识的关系词原样返回（宁可原样也不瞎编） */
+function relKindCN(k) {
+  if (!k) return '熟人';
+  if (REL_KIND_CN[k]) return REL_KIND_CN[k];
+  /* ⚠️ 已经是词（如「义兄」「结拜兄弟」）就原样返回，别再补「人」变成「义兄人」 */
+  if (k.length >= 2) return k;
+  return k + '人';
+}
+
+/**
+ * 这个 NPC 是什么身份。
+ * @param {object} w world
+ * @param {object} npc 实例或模板都可
+ */
+function npcIdentity(w, npc) {
+  const d = npc.def || npc || {};
+  const sectId = npc.sect || d.sect;
+  const rank = npc.rank || d.rank;
+
+  /* ① 门派职位：华山派 + ranks[5] → 「华山派掌门」
+     ⚠️ `rank` 是 **0 基下标**（玩家升级走 `ranks[p.rank]`，见 character.js:585），
+        所以直接下标取，**不要 -1**。数据里掌门写 rank:5 对应 ranks 数组第 6 项。 */
+  if (sectId) {
+    const s = (w.data.sects || {})[sectId];
+    if (s) {
+      const rk = Number.isFinite(rank) ? rank : 0;
+      const rn = (s.ranks || [])[rk];
+      if (rn) return s.name + rn;
+      /* 下标越界（数据写错）→ 至少把门派名报出来，别吞成「江湖中人」 */
+      return s.name + '中人';
+    }
+    return '江湖门派中人';
+  }
+
+  /* ② title：捕快 / 郎中 / 寻常百姓 / 青楼女子……（已是身份词） */
+  const title = npc.title || d.title;
+  if (title && title.length <= 6) return title;
+
+  /* ③ job */
+  const job = npc.job || d.job;
+  if (job && JOB_CN[job]) return JOB_CN[job];
+
+  /* ④ tag：B 层 NPC（npcv_*）没 title，靠 tag */
+  const tag = npc.tag || d.tag;
+  if (tag && TAG_CN[tag]) return TAG_CN[tag];
+
+  /* ⑤ 按名字猜（野兽/贼众这类没任何标记的） */
+  const nm = npc.name || '';
+  if (/狼|虎|熊|蛇|豹|兽|野猪|豺|鹰|蟒|鳄/.test(nm)) return '山中猛兽';
+  if (/山贼|贼众|强盗/.test(nm)) return '山贼';
+  if (/兵丁|官兵|士兵/.test(nm)) return '官兵';
+  if (/刺客|黑衣人/.test(nm)) return '来路不明的刺客';
+  if (/流民|叫花|乞丐/.test(nm)) return '流民';
+
+  return '江湖散人';
+}
 
 /* 简易寻路（BFS） */
 function findPath(world, from, to) {
@@ -2804,4 +2890,8 @@ function findPath(world, from, to) {
   return null;
 }
 
-module.exports = { buildCommands, findPath, cnNum, DIRECTIONS, DIR_CN };
+module.exports = {
+  buildCommands, findPath, cnNum, DIRECTIONS, DIR_CN,
+  /* 身份标签 / 关系称谓：导出给测试与其它模块用（见 tools/identity-check.js） */
+  __api: { npcIdentity, relKindCN, tagCN, JOB_CN, TAG_CN, REL_KIND_CN },
+};
