@@ -270,10 +270,7 @@
     el.querySelectorAll('.exit-inline').forEach(b => {
       b.onclick = () => doCmd(b.getAttribute('data-dir'), { fromButton: true });
     });
-    /* 「出口」行下方那排方向按钮（东南西北+地名），同上 */
-    el.querySelectorAll('.exit-btns .exit-btn').forEach(b => {
-      b.onclick = () => doCmd(b.getAttribute('data-dir'), { fromButton: true });
-    });
+    /* 「出口」行下方那排按钮**已删**（主人要求：九宫格就是全部，别再 redundancy） */
     if (scroll !== false) el.scrollTop = el.scrollHeight;
   }
 
@@ -311,17 +308,6 @@
       '</span>';
   }
 
-  /* 方向按钮排（跟着日志的「出口」行走）：**只显示地名**，方向只留在 title 里（主人要求去掉东南西北前缀） */
-  function exitBtnRowHtml(btns) {
-    return '<span class="exit-btns">' + btns.map(b =>
-      '<button class="exit-btn' + (b.locked ? ' locked' : '') + '" data-dir="' + esc(b.dir) +
-      '" title="' + (b.locked
-        ? '通往「' + esc(b.toName) + '」（尚未满足条件）'
-        : '向' + esc(b.name) + '走，前往「' + esc(b.toName) + '」') + '">' +
-      esc(b.toName) + '</button>'
-    ).join('') + '</span>';
-  }
-
   /* 日志文本渲染：
      - l.hl = [{text, type, actions:[{label, cmd, hint}]}] → 名词高亮，点击弹菜单
      - l.exitMap = {dir:{dir,to,name}} → 出口 ASCII 方位图（可点击前往）
@@ -345,14 +331,11 @@
       });
     }
 
-    /* ② 出口：有 exitMap 就渲染 ASCII 方位图（替代文字列表）
-          + 方向按钮排 exitBtns（主人要求：把方向按钮收到「出口」这里。
-            以前这些按钮在房间面板里，压在「此处可做」上方，跟日志里已有的
-            「出口」行功能重复，还让屏幕出现两个「此处可做」）。 */
+    /* ② 出口：有 exitMap 就只渲染九宫格方位图。
+          ⚠️ 主人口令：① 不要「出口：」前缀文本 ② 不要九宫格下面那排重复按钮。
+          以前这两样都在，是同一批出口显示两遍。 */
     if (l.exitMap && Object.keys(l.exitMap).length) {
-      let out = '出口：' + exitMapHtml(l.exitMap, l.roomName);
-      if (l.exitBtns && l.exitBtns.length) out += exitBtnRowHtml(l.exitBtns);
-      return out;
+      return exitMapHtml(l.exitMap, l.roomName);
     }
 
     /* ③ 出口方向（无 exitMap 时的保底）：按方向名长度降序替换，避免「北」误伤「东北」 */
@@ -2422,15 +2405,15 @@
       if (tag === 'input' || tag === 'textarea') return;
 
       /* 数字键 1-9 = 方向/快捷。
-         方向按钮排现在跟着日志的「出口」行走（#exits 那个块已从房间面板移除）。
-         ⚠️ 日志里堆着历史房间的出口行，必须只取**最后一个** .exit-btns，
+         方向按钮只剩九宫格（.exit-map）里了。
+         ⚠️ 日志里堆着历史房间的出口图，必须只取**最后一个** .exit-map，
          否则数字键会走到上一个房间去。 */
       if (e.key >= '1' && e.key <= '9') {
         const idx = +e.key - 1;
-        const rows = document.querySelectorAll('.exit-btns');
+        const rows = document.querySelectorAll('.exit-map');
         const host = rows.length ? rows[rows.length - 1] : null;
         const btns = host
-          ? host.querySelectorAll('.exit-btn')
+          ? host.querySelectorAll('.exit-inline')
           : document.querySelectorAll('#exits .exit-btn');
         if (btns[idx]) { e.preventDefault(); btns[idx].click(); }
         return;

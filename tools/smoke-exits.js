@@ -123,16 +123,27 @@ console.log('③ 前端方位图渲染（3×3 Grid，非 ASCII 画）');
     (full.match(/title="[^"]*"/g) || []).join(' | '));
   ok('data-dir 未被误删',
     ['n', 'e', 'nw'].every(d => full.includes('data-dir="' + d + '"')));
+  ok('🩸 九宫格本身不再带「出口：」前缀',
+    !/^出口：/.test(full), full.slice(0, 40));
+  ok('🩸 renderLogText 出口分支不再拼「出口：」也不调exitBtnRowHtml',
+    /if \(l\.exitMap[\s\S]{0,200}return exitMapHtml\(l\.exitMap/.test(UI)
+    && !/let out = '出口：'/.test(UI));
 
-  /* 方向按钮排同样只显示地名 */
-  const rowM = UI.match(/function exitBtnRowHtml[\s\S]*?\n  \}/);
-  ok('方向按钮排源码存在', !!rowM);
-  if (rowM) {
-    ok('方向按钮排不再把方向名拼进可见文本（只剩 title 里用 b.name）',
-      !/esc\(b\.name\)\s*('|<)/.test(rowM[0]) && !/<i>/.test(rowM[0]),
-      (rowM[0].match(/esc\(b\.name\)[\s\S]{0,40}/) || [])[0] || '');
-    ok('方向按钮排只渲染 toName', /esc\(b\.toName\)\s*\+\s*'<\/button>'/.test(rowM[0]));
-  }
+  /* 🩸 按钮排已删（主人：九宫格就是全部）；CSS 侧也必须真的居中 + 白字描边 */
+  ok('🩸 exitBtnRowHtml 已删除（不再有第二排按钮）',
+    !/function exitBtnRowHtml/.test(UI) && !/exit-btns/.test(UI));
+  const CSS2 = fs.readFileSync('game/src/renderer/css/main.css', 'utf8');
+  const mapCss = (CSS2.match(/\.log-line \.exit-map \{[\s\S]*?\}/) || [''])[0];
+  ok('🩸 九宫格水平居中（margin 左右 auto）',
+    /margin:[^;]*auto/.test(mapCss), mapCss);
+  ok('🩸 九宫格收缩到内容宽度（否则 margin auto 无效）',
+    /width:\s*fit-content/.test(mapCss), mapCss);
+  const btnCss = (CSS2.match(/\.log-line \.exit-map \.exit-inline \{[\s\S]*?\}/) || [''])[0];
+  ok('🩸 地名按钮亮白字', /color:\s*#fff/.test(btnCss), btnCss);
+  ok('🩸 地名按钮有描边框', /border:\s*1px solid/.test(btnCss), btnCss);
+  ok('🩸 地名按钮不再是虚线底', !/border-bottom:\s*1px dashed/.test(btnCss), btnCss);
+  ok('🩸 CSS 里 .exit-btns 规则已清掉',
+    !/\.exit-btns\s*\{/.test(CSS2) && !/\.exit-btns \.exit-btn/.test(CSS2));
 
   /* CSS 侧也要真的声明了九宫格 */
   const CSS = fs.readFileSync('game/src/renderer/css/main.css', 'utf8');
