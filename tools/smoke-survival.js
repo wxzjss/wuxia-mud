@@ -182,6 +182,73 @@ section('9. 存档往返（卖身状态）');
   ok('卖身状态随档恢复', JSON.stringify(p2.prostitution) === before, JSON.stringify(p2.prostitution));
 }
 
+/* ============ 打坐 / 疗伤 的资源约束 ============
+   主人报：「运功疗伤消耗内力逐渐疗伤逐渐消耗，还有打坐是瞬间恢复全部内力，
+   有些离谱了」。两条都改成有代价的渐进式。 */
+section('打坐不是瞬间满蓝（主人报 bug）');
+{
+  const e = new GameEngine({ seed: 20261010 });
+  e.boot();
+  e.newGame({ name: '云生', gender: 'male', birth: 'wuxue' });
+  const p = e.world.player;
+  p.mp = 0;
+  e.exec('打坐');
+  ok('打坐一次不回满内力', p.mp > 0 && p.mp < p.maxMp, 'mp=' + p.mp + '/' + p.maxMp);
+  const oneRound = p.mp;
+  ok('单次回复有上限（<40% 上限）', oneRound / p.maxMp < 0.4,
+    '回复占比 ' + Math.round(oneRound / p.maxMp * 100) + '%');
+  ok('内力已满时打坐不刷回复', (() => {
+    p.mp = p.maxMp;
+    const r = e.exec('打坐');
+    return /充盈|徒然/.test(r.lines.map(l => l.text).join(''));
+  })(), '应提示内力已足');
+}
+
+section('运功疗伤要耗内力（主人报 bug）');
+{
+  const e = new GameEngine({ seed: 20261010 });
+  e.boot();
+  e.newGame({ name: '云生', gender: 'male', birth: 'wuxue' });
+  const w = e.world, p = w.player;
+  const nei = Object.values(w.data.skills).find(s => s.type === '内功');
+  if (nei) { p.learned[nei.id] = { level: 30, exp: 0 }; p.equippedSkills['内功'] = nei.id; p.recalc(); }
+
+  ok('heal 指令已注册（快捷键不再「未知指令」）',
+    typeof e.exec === 'function' && /内力/.test(e.exec('heal').lines.map(l => l.text).join('')),
+    '疗伤文案里应提到内力');
+
+  p.mp = p.maxMp; p.hp = 1;
+  const mp0 = p.mp;
+  const r1 = e.exec('heal');
+  ok('疗伤真的扣内力', p.mp < mp0, 'mp ' + mp0 + '→' + p.mp);
+  ok('疗伤真的回气血', p.hp > 1, 'hp=' + p.hp);
+  ok('文案同时报两项（气血+内力）',
+    /气血/.test(r1.lines.map(l => l.text).join('')) && /内力/.test(r1.lines.map(l => l.text).join('')));
+
+  p.mp = 0; p.hp = 1;
+  const r0 = e.exec('heal');
+  ok('内力为零则寸步难行（拒绝疗伤）',
+    /丹田空空|一丝内力/.test(r0.lines.map(l => l.text).join('')), '应有拒绝提示');
+
+  p.hp = p.maxHp;
+  ok('无伤时疗伤直接拒绝', /没有伤/.test(e.exec('heal').lines.map(l => l.text).join('')));
+
+  /* 暗伤：内力见空还硬撑，三次减气血上限。
+     注意用「内力只剩一点」（够付半次代价），不是 mp=0 ——
+     mp=0 会被直接拒绝疗伤，那是设计好的，不是暗伤路径。 */
+  const cap = p.maxHp;
+  let scarMsg = '';
+  p.scar = 0;
+  for (let i = 0; i < 3; i++) {
+    p.mp = 1; p.hp = Math.max(1, p.maxHp - 10);
+    const rr = e.exec('heal');
+    scarMsg = rr.lines.map(l => l.text).join('');
+    ok('内力见底的那回合仍能疗一点（不是白嫖）', p.hp > Math.max(1, p.maxHp - 10) || /丹田空空/.test(scarMsg), 'hp=' + p.hp);
+  }
+  ok('三次掏空丹田硬撑 → 气血上限下降', p.maxHp < cap, cap + '→' + p.maxHp);
+  ok('暗伤有明确文案', /暗积/.test(scarMsg), scarMsg.slice(0, 40));
+}
+
 console.log('\n' + '='.repeat(42));
 console.log(fail === 0 ? '✅ 全部通过' : '❌ 失败 ' + fail + ' 项');
 process.exitCode = fail === 0 ? 0 : 1;

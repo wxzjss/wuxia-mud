@@ -111,11 +111,21 @@ ok('pstate 往返后仍是对象', inst2.every(k => {
 section('③ 改一个实例的 pstate 不污染模板 / 其他实例');
 /* 用一局干净的 world，免得后面 ④ 的 fuzzyFind 撞上这里留下的同名实例 */
 const w3 = buildWorld(0);
+/* ⚠️ 名人（tier==='A' / unique）全图只允许一个实例（主人报过「客栈里三个
+   岳不群」），而画像名单全是 A 层 —— 直接 spawn 两次会拿到同一个实例，
+   测出来「portrait 没 clone」全是假红。
+   这里把模板的 tier 临时降成 B 造一个等价探针，测完还原 ——
+   验证的是 clone 逻辑，与他是不是名人无关。 */
 const probeDef = PORTRAIT_IDS.find(id => w3.data.npcs[id]);
-const a1 = w3.spawnNpc(probeDef, w3.data.npcs[probeDef].room, 1, true);
-const a2 = w3.spawnNpc(probeDef, w3.data.npcs[probeDef].room, 1, true);
-ok('同模板两个实例都拿到了画像', !!(a1.portrait && a2.portrait), probeDef);
+const probeTpl = w3.data.npcs[probeDef];
+const origTier = probeTpl.tier;
+probeTpl.tier = 'B';
+const a1 = w3.spawnNpc(probeDef, probeTpl.room, 1, true);
+const a2 = w3.spawnNpc(probeDef, probeTpl.room, 1, true);
+ok('确实拿到两个独立实例（探针已从名人降级）', a1 !== a2, `${probeDef} tier ${origTier}→B`);
+ok('两个实例都拿到了画像', !!(a1.portrait && a2.portrait), probeDef);
 ok('两个实例的 portrait 不是同一个对象（clone 过）', a1.portrait !== a2.portrait);
+probeTpl.tier = origTier;
 ok('portrait 也不是模板对象本身（没有赋引用）', a1.portrait !== w.data.npcs[probeDef].portrait);
 a1.pstate.trust = 90;
 a1.pstate.revealed.push('secret');
@@ -281,8 +291,11 @@ section('⑦ 画像字段与信任轴');
     JSON.stringify(n.pstate));
   ok('pstate.trust 与 npc.favor 是两条独立的轴', n.pstate.trust !== n.favor || true,
     `trust=${n.pstate.trust} favor=${n.favor}`);
+  /* 同上：名人只有一个实例，测两个实例的 pstate 隔离要先把 tier 降下来 */
+  const t0 = def.tier; def.tier = 'B';
   const n2 = w.spawnNpc(id, def.room, 1, true);
-  ok('同模板两个实例的 pstate 不是同一个对象', n.pstate !== n2.pstate);
+  def.tier = t0;
+  ok('同模板两个实例的 pstate 不是同一个对象', n !== n2 && n.pstate !== n2.pstate);
   ok('moodBias 按画像推导（有心结 −5 / 丧亲 −8）', typeof n.pstate.moodBias === 'number',
     'moodBias=' + n.pstate.moodBias);
   ok('mood = 模板心情 + moodBias（落在 0~100）', n.mood >= 0 && n.mood <= 100, 'mood=' + n.mood);

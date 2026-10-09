@@ -1918,23 +1918,105 @@ function buildCommands(world) {
     p.food = clamp(p.food - 30, 0, p.maxFood);
     return { lines: [{ kind: 'story', text: '你就地歇息了一夜。' }, { kind: 'sys', text: '你精神恢复了不少。' }] };
   });
-  reg([' meditate', 'meditate', '打坐', '运功'], (ctx) => {
+  reg([' meditate', 'meditate', '打坐', '练气'], (ctx) => {
     const p = ctx.player;
-    const neigong = p.equippedSkills['内功'];
+    const neigong = p.equippedSkills && p.equippedSkills['内功'];
     const gain = 5 + Math.floor(p.attrTotal('悟性') / 2);
-    p.mp = p.maxMp;
+    const lines = [{ kind: 'story', text: '你盘膝而坐，闭目凝神，调匀呼吸。' }];
+
+    if (p.mp >= p.maxMp) {
+      p.advanceTime(10);
+      lines.push({ kind: 'sys', text: '你内力已然充盈，再坐也是徒然，起身罢。' });
+      return { lines };
+    }
+
+    /* 内力是有限的，打坐只是慢慢养回来 —— 主人报「打坐瞬间恢复全部内力」
+       太离谱。回复 = maxMp 的 8%~25%，随内功/资质/悟性；饿着更慢。
+       想回满得静坐七八回，不是一键满蓝（有那个便利的是丹药和客栈）。 */
+    const deep = p.attrTotal('内力') + p.attrTotal('悟性') + (neigong ? p.attrTotal('资质') * 2 : 0);
+    let pct = clamp(0.08 + deep * 0.004, 0.06, 0.25);
+    if (typeof p.food === 'number' && p.food < 20) pct *= 0.5;
+    const rest = Math.max(1, Math.floor(p.maxMp * pct));
+    p.mp = clamp(p.mp + rest, 0, p.maxMp);
     p.advanceTime(20);
-    const lines = [{ kind: 'story', text: '你盘膝而坐，调息运气。' }];
+    lines.push({
+      kind: 'sys',
+      text: `你吐纳周天，气息渐充，内力恢复${rest}点（${p.mp}/${p.maxMp}）。` +
+        (p.mp >= p.maxMp ? '内息已复。' : '尚需静坐养气。'),
+    });
+
     if (neigong && p.learned[neigong]) {
       p.gainSkillExp(neigong, gain);
       const sd = ctx.world.getSkill(neigong);
-      lines.push({ kind: 'sys', text: `你运起${sd ? sd.name : '内功'}心法，内力充盈，修为精进。` });
+      lines.push({ kind: 'sys', text: `你运转${sd ? sd.name : '内功'}心法，气行经脉，修为略有精进。` });
       // 内功修炼：打坐冲击奇经八脉
       const m = p.tryAssaultMeridian(sd);
       if (m) lines.push({ kind: 'sys', text: m });
     } else {
-      lines.push({ kind: 'sys', text: '你的内力恢复了。' });
+      lines.push({ kind: 'sys', text: '你尚未修习内功，只能做些粗浅的养气功夫，长进有限。' });
     }
+    return { lines };
+  });
+
+  /* ---------------- 运功疗伤 ----------------
+     主人报「快捷键『运功疗伤』用不了」——根因：快捷栏里写了 cmd:'heal'，
+     但后端从来没注册过 heal 指令（只有 meditate/打坐），点下去就是「未知指令」。
+     主人追加要求：**疗伤消耗内力** —— 内力是燃料，拿内力换气血。
+     没内力就寸步难行；反复掏空丹田硬撑会积「暗伤」，三次减气血上限。
+     最优解仍是客栈睡一晚 / 丹药 / 静养，这里只给赶路的人应急用。 */
+  reg(['heal', '疗伤', '运功疗伤', '养伤', '行气疗伤'], (ctx) => {
+    const p = ctx.player, w = ctx.world;
+    if (p.hp >= p.maxHp) {
+      return { lines: [{ kind: 'sys', text: '你身上没有伤，气血完足，不必运功。' }] };
+    }
+    const hurt = p.maxHp - p.hp;
+
+    /* 内力是燃料 —— 主人要求：疗伤消耗内力。耗 maxMp 的 18%（无内功的凡人
+       拿不出手，30%），把内力逼出来推动气血修复。无内力则寸步难行。 */
+    const hasNei = !!(p.equippedSkills && p.equippedSkills['内功']);
+    const fullCost = Math.max(1, Math.floor(p.maxMp * (hasNei ? 0.18 : 0.30)));
+    if (p.mp <= 0) {
+      p.advanceTime(10);
+      return {
+        lines: [{
+          kind: 'warn',
+          text: '你丹田空空，一丝内力也提不起来，疗什么伤。先打坐养气，或服一枚丹药。',
+        }],
+      };
+    }
+    const cost = Math.min(fullCost, p.mp);
+    p.mp = Math.max(0, p.mp - cost);
+
+    /* 回血 = 投入的内力换来的。系数 1.4 上下：满内力（maxMp≈46）一次约
+       治六成伤；内功深厚/资质高更划算。饿着打折。 */
+    const deep = p.attrTotal('内力') + p.attrTotal('悟性') * 2;
+    let rate = clamp(1.4 + deep * 0.012, 1.0, 2.6);
+    if (typeof p.food === 'number' && p.food < 20) rate *= 0.6;
+    /* 内力不够满额的那一回，疗效按投入比例缩水（不能白嫖） */
+    const ratio = cost / fullCost;
+    let heal = Math.max(1, Math.floor(cost * rate * ratio));
+    heal = Math.min(heal, hurt);
+    p.hp = clamp(p.hp + heal, 0, p.maxHp);
+    p.advanceTime(15);
+
+    const lines = [{ kind: 'story', text: '你解下兵刃，就地闭目，气息缓缓推动气血行于伤处。' }];
+    lines.push({
+      kind: 'sys',
+      text: `你耗去内力${cost}点，换回气血${heal}点（气血 ${p.hp}/${p.maxHp}，内力 ${p.mp}/${p.maxMp}）。` +
+        (p.hp >= p.maxHp ? '伤已痊愈。' : '余伤未消，丹田也已见底。'),
+    });
+
+    /* 内力见底还硬撑 → 暗伤累积，三次减气血上限 */
+    if (p.mp <= 0) {
+      p.scar = (p.scar || 0) + 1;
+      if (p.scar >= 3) {
+        p.scar = 0;
+        p.maxHp = Math.max(10, p.maxHp - 3);
+        if (p.hp > p.maxHp) p.hp = p.maxHp;
+        lines.push({ kind: 'warn', text: '三次内力见空仍强行运功，旧伤暗积，气血上限略减。好好歇几日罢。' });
+      }
+    }
+    try { w.fireEvent('onHeal', { player: p, heal, cost }); } catch (e) { }
     return { lines };
   });
 

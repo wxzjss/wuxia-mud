@@ -102,7 +102,16 @@ section('⑤ 内功修炼冲击奇经八脉 + 打坐回内力');
   const e2 = boot(); const w2 = e2.world, p2 = w2.player;
   p2.mp = 10;
   const r = e2.exec('打坐');
-  ok('打坐恢复内力至满', p2.mp === p2.maxMp, `mp=${p2.mp}/${p2.maxMp}`);
+  /* 主人报「打坐是瞬间恢复全部内力，有些离谱」—— 已改为渐进式。
+     这里断言「只回一部分」，别再断言回满（那是旧的离谱行为）。 */
+  ok('打坐只回一部分内力（非瞬间满）', p2.mp > 10 && p2.mp < p2.maxMp,
+    `mp=${p2.mp}/${p2.maxMp}`);
+  ok('单次回复不超过 40% 上限', (p2.mp - 10) / p2.maxMp < 0.4,
+    `单次回复占比 ${Math.round((p2.mp - 10) / p2.maxMp * 100)}%`);
+  let rounds = 0, mp = p2.mp;
+  while (mp < p2.maxMp && rounds < 40) { e2.exec('打坐'); rounds++; mp = p2.mp; }
+  ok('多次打坐能养满内力', mp >= p2.maxMp, `${rounds} 回合回满`);
+  ok('养满需要多回合（不是一下）', rounds >= 3, `rounds=${rounds}`);
   ok('打坐命令成功返回', r.lines.length > 0);
 }
 

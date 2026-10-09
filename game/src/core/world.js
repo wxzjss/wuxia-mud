@@ -26,6 +26,33 @@ const SEASONS = ['spring', 'summer', 'autumn', 'winter'];
 
 /* 单间客栈饭点最多容纳多少人，超出的 NPC 留在原处（饭点只是一部分人去吃饭） */
 const EATERY_CAP = 24;
+/** 名人（A 层 / 有 unique 标记）全图只应存在一个实例，且不去别处吃饭 */
+function isCelebrity(def) {
+  return !!(def && (def.unique === true || def.tier === 'A'));
+}
+
+/** 「定岗」NPC：某个房间的 respawn 点名要的（城门守卫、黑市老板…）。
+ *  语义 = 岗位就在那儿，不该被作息/饭点挪走 —— 挪走岗位就空，
+ *  respawn 又补一个，最后守门的和吃饭的是三个人（×3）。
+ *  ⚠️ 必须排除名人：名人的 respawn 只是「保证他有戏」，
+ *     他们本来就该按 schedule 日出在山门、日落回家，不能钉死在岗位。
+ *  600 多个房间每 tick 都扫一遍太贵，扫一次缓存起来（地图不变则不重扫）。 */
+function isStationed(world, defId) {
+  if (isCelebrity(world.data.npcs[defId])) return false;
+  if (!world._stationedSet) {
+    const s = new Set();
+    for (const rid of Object.keys(world.data.rooms)) {
+      const rs = world.data.rooms[rid].respawn;
+      if (!rs) continue;
+      for (const x of [].concat(rs)) {
+        if (x && x.npc && !isCelebrity(world.data.npcs[x.npc])) s.add(x.npc);
+      }
+    }
+    world._stationedSet = s;
+  }
+  return world._stationedSet.has(defId);
+}
+
 const SEASON_CN = { spring: '春', summer: '夏', autumn: '秋', winter: '冬' };
 const WEATHERS = ['晴', '阴', '雨', '雪', '风', '雾'];
 
@@ -412,7 +439,13 @@ class World extends EventEmitter {
     for (const id of (this._npcsByRoom[roomId] || [])) {
       if (!have.has(id)) {
         const npc = this.spawnNpc(id, roomId, 1, true);
-        if (npc) out.push(npc);
+        /* ⚠️ spawnNpc 对名人会「已有就返回那位」，而他可能人在别的房间
+           （名人会走动）。这里只收真正落在本房间的，否则同一个人会被
+           列两遍 —— 主人在客栈见过「岳不群 ×3」，就是这么来的。 */
+        if (npc && npc.room === roomId && !have.has(npc.defId)) {
+          have.add(npc.defId);
+          out.push(npc);
+        }
       }
     }
     return out;
@@ -430,6 +463,17 @@ class World extends EventEmitter {
   spawnNpc(defId, roomId, count, silent) {
     const def = this.data.npcs[defId];
     if (!def) return null;
+    /* 名人全局只允许一个实例。真死（dead 且已移出 instances）后由 deadNpcs
+       复活机制重新 spawn，所以这里只要「还活着有一个」就不再造。
+       ⚠️ 必须按 defId 跨房间查，不能只查目标房间 —— 名人会走动。
+       ⚠️ 不能 return null：调用方（npcsIncludingTemplates / 命令行 spawn /
+          任务脚本）要的是「这个人」，返回已有实例才安全；返回 null 会让
+          调用方当成「这人没了」，进而读到 undefined.id（历史踩过）。 */
+    if (isCelebrity(def)) {
+      const living = Object.values(this.instances.npcs)
+        .filter(n => n.defId === defId && !n.dead);
+      if (living.length) return living[0];
+    }
     let first = null;
     for (let i = 0; i < (count || 1); i++) {
       const npc = new Character(this, {
@@ -1215,6 +1259,8 @@ class World extends EventEmitter {
       if (n.room === playerRoom) continue;
       const def = this.data.npcs[n.defId];
       if (!def || !def.schedule) continue;
+      /* 定岗 NPC 岗位就是常驻处，别用 schedule 把它搬走 */
+      if (isStationed(this, n.defId)) continue;
       const target = night
         ? (def.schedule.night || def.schedule.day)
         : (def.schedule.day || def.schedule.night);
@@ -1227,6 +1273,11 @@ class World extends EventEmitter {
         if (n.room === playerRoom) continue;
         const def = this.data.npcs[n.defId];
         if (!def || !def.schedule) continue;
+        /* 名人不去别处吃饭 —— 主人报「在江南客栈看到东方不败」。
+           nearestEatery 第 7 步会全图兜底，删房后 BFS 深度很浅，
+           华山掌门几步就能「走到」江南客栈。掌门要有掌门的样子。
+           同理，定岗 NPC（respawn 点名的守卫/掌柜）也不能离开岗位。 */
+        if (isCelebrity(def) || isStationed(this, n.defId)) continue;
         const eatery = this.nearestEatery(n.room);
         /* 客栈容量：挤爆一间不如分摊到别处（删房后地图连通性大增，不设限会 150+ 人一屋） */
         if (eatery && eatery !== n.room && this.npcsIn(eatery).length < EATERY_CAP) n.room = eatery;
@@ -1263,6 +1314,24 @@ class World extends EventEmitter {
         const alive = Object.values(this.instances.npcs)
           .filter(n => n.room === rid && n.defId === rs.npc && !n.dead).length;
         const downed = this.downedIn(rid).filter(n => n.defId === rs.npc).length;
+
+        /* 名人（A 层 / unique）：全图只允许一个实例。主人报「客栈里看到
+           岳不群 ×3」——根因是名人的常驻房间被写进了 respawn（count:1,
+           chance:1），而他本人被饭点挪去客栈，正气堂就「没人」，每 tick 补一个。
+           但名人**本来就只靠 respawn 上场**（newGame 不生成他们），直接跳过
+           会让名人彻底消失、任务断链。所以：已存在就（必要时）挪回来，
+           绝不再造第二个。 */
+        if (isCelebrity(this.data.npcs[rs.npc])) {
+          const living = Object.values(this.instances.npcs)
+            .filter(n => n.defId === rs.npc && !n.dead);
+          if (!living.length && this.rng.chance(rs.chance === undefined ? 0.5 : rs.chance)) {
+            this.spawnNpc(rs.npc, rid, 1);
+          }
+          /* 存在就什么都不做 —— 名人日夜间去哪由 schedule 管，
+             respawn 只负责「他还没上场时把他放进来」。 */
+          continue;
+        }
+
         if (alive + downed < (rs.count || 1) && this.rng.chance(rs.chance === undefined ? 0.5 : rs.chance)) {
           const total = defCounts[rs.npc] != null ? defCounts[rs.npc] : 0;
           const hardCap = /^mob_/.test(rs.npc) ? 8 : 3;
