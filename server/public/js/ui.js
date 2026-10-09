@@ -664,15 +664,38 @@
     });
   }
 
-  async function askNpc(n) {
-    /* 让玩家输入关键词 */
-    modal('询问 ' + n.name,
-      '<div class="modal-text">想问他/她什么？（可写：武学 / 门派 / 江湖 / 任务…）</div>' +
-      '<input id="ask-input" class="modal-input" placeholder="关键词">' +
-      (n.askTopics && n.askTopics.length
-        ? '<div class="ask-topics">' + n.askTopics.map(t => '<button class="mini-tag" data-topic="' + esc(t) + '">' + esc(t) + '</button>').join('') + '</div>'
-        : ''),
-      '<button class="btn-ink" onclick="WXUI.closeModal()">取 消</button>');
+  /* 询问：得让玩家知道**能问什么**。
+   * ⚠️ 主人报：「点询问我怎么知道应该询问什么？」
+   *   原来这里只有一句「可写：武学/门派/江湖/任务…」+ 一个光输入框，
+   *   而 n.askTopics 后端**从来没发过** → 按钮区永远不渲染。
+   *   现在后端 engine.askTopicsOf() 按他实际能答什么给清单，这里负责渲染：
+   *   ① 专属话题 / 通用话题 → 可点按钮，一键问
+   *   ② 带 hint 的（trust 门槛那类）→ 灰掉但**照样显示门槛**，让玩家知道要先去办事
+   *   ③ 输入框保留（玩家可以自己编），但降级成「或自己写」的次要选择 */
+  function askNpc(n) {
+    const topics = (n && n.askTopics) || [];
+    let h = '';
+    if (topics.length) {
+      h += '<div class="modal-text" style="margin-bottom:6px">挑一个问，或者自己写：</div>' +
+        '<div class="ask-topics">' + topics.map(t => {
+          const tip = t.hint ? ' title="' + esc(t.hint) + '"' : '';
+          const cls = t.hint ? 'mini-tag dim' : 'mini-tag';
+          /* 有门槛的也给按钮：点了会得到「你还问不着」的明确提示，
+             总比不给、让玩家自己瞎猜强 */
+          return '<button class="' + cls + '" data-topic="' + esc(t.topic) + '"' + tip + '>' +
+            esc(t.topic) + (t.hint ? '<sup>' + esc(t.hint) + '</sup>' : '') + '</button>';
+        }).join('') + '</div>';
+    } else {
+      /* 兜底文案也别太没谱 —— 后端现在保证至少有通用三项，
+         这里是双保险，防后端哪天真返空 */
+      h += '<div class="modal-text" style="margin-bottom:6px">这人没什么特别可打听的。不过问问总是无妨：</div>' +
+        '<div class="ask-topics">' +
+        ['你是谁', '近况', '江湖消息'].map(x =>
+          '<button class="mini-tag" data-topic="' + esc(x) + '">' + esc(x) + '</button>').join('') +
+        '</div>';
+    }
+    h += '<input id="ask-input" class="modal-input" placeholder="或自己写想问的（回车）">';
+    modal('询问 ' + n.name, h, '<button class="btn-ink" onclick="WXUI.closeModal()">取 消</button>');
     const inp = $('ask-input');
     if (inp) {
       inp.focus();
@@ -680,7 +703,7 @@
         if (e.key === 'Enter') { const v = inp.value.trim(); closeModal(); if (v) doCmd('ask ' + n.name + ' about ' + v); }
       };
     }
-    document.querySelectorAll('.mini-tag').forEach(b => {
+    document.querySelectorAll('.ask-topics .mini-tag').forEach(b => {
       b.onclick = () => { const v = b.getAttribute('data-topic'); closeModal(); doCmd('ask ' + n.name + ' about ' + v, { fromButton: true }); };
     });
   }
@@ -1055,21 +1078,37 @@
 
   function attrHtml(v) {
     const p = v.player || {};
-    const a = p.attrs || {};
+    /* ⚠️ 字段名是 `attr` 不是 `attrs`，`derived` 后端压根不发。
+       原来读 `v.player.attrs` 全 undefined → 点「属性」弹一个空框（主人报的）。
+       读错字段名的典型：数组/对象写出来是「0 个元素」，不是报错。
+       兜底两份都读，这样后端哪天真的加了 attrs 也不冲突。 */
+    const a = p.attr || p.attrs || {};
     const d = p.derived || {};
-    let h = '<div class="attr-grid">';
     const attrNames = { 力量: '力量', 根骨: '根骨', 身法: '身法', 悟性: '悟性', 福缘: '福缘', 定力: '定力' };
-    Object.keys(a).forEach(k => {
-      h += '<div class="attr-card"><div class="ac-name">' + esc(attrNames[k] || k) + '</div>' +
-        '<div class="ac-val">' + a[k] + '</div></div>';
-    });
-    h += '</div>';
-    if (Object.keys(d).length) {
+    let h = '';
+    const keys = Object.keys(a);
+    if (keys.length) {
+      h += '<div class="attr-grid">';
+      keys.forEach(k => {
+        h += '<div class="attr-card"><div class="ac-name">' + esc(attrNames[k] || k) + '</div>' +
+          '<div class="ac-val">' + a[k] + '</div></div>';
+      });
+      h += '</div>';
+    } else {
+      h += '<div class="modal-text">尚未定型。修行与历练会把你该有的本事长出来。</div>';
+    }
+    /* 衍生属性：后端没给 derived 时，用顶层战斗数值凑一份（都是 playerBrief 里的实字段） */
+    const derived = Object.keys(d).length ? d : {
+      攻击: p.atk, 防御: p.def, 身法: p.dodge, 格挡: p.parry, 速度: p.speed,
+      暴击率: p.critRate != null ? Math.round(p.critRate * 100) + '%' : null,
+      气血: p.maxHp, 内力: p.maxMp, 资质: (v.martial && v.martial.aptitude) || null,
+    };
+    const dkeys = Object.keys(derived).filter(k => derived[k] != null);
+    if (dkeys.length) {
       h += '<div class="panel-sub">衍生属性</div><div class="panel-cols"><div class="pc-col">';
-      const keys = Object.keys(d);
-      keys.forEach((k, i) => {
-        h += kv(k, d[k]);
-        if (i === Math.ceil(keys.length / 2) - 1) h += '</div><div class="pc-col">';
+      dkeys.forEach((k, i) => {
+        h += kv(k, derived[k]);
+        if (i === Math.ceil(dkeys.length / 2) - 1) h += '</div><div class="pc-col">';
       });
       h += '</div></div>';
     }
@@ -2489,7 +2528,13 @@
     appendLog, paintLog, clearLog, doCmd, panel, panelForCmd, openSaves, openSettings, applySettings,
     bindInput, bindHotkeys, bindSidebar, bindGuide,
     showModCenter, showModMaker, showMarket,
-    afterAction, autoSave, autosaveId
+    afterAction, autoSave, autosaveId,
+    /* 测试出口：把纯渲染函数挂出来。
+       为什么要它：这些函数是 IIFE 内部的闭包，外面拿不到，
+       以前只能从真 DOM（modal-body.innerHTML）里读文本，
+       写「读字段名对不对」的断言就别扭。
+       全是纯函数（view → html 字符串），不碰 DOM 状态，不产生副作用。 */
+    __html: { attrHtml, martialHtml, slavesHtml },
   };
 
 })(window);

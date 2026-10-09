@@ -29038,6 +29038,359 @@
      "不敢说"
     ]
    }
+  },
+  "guard_palace": {
+   "gender": "male",
+   "level": 42,
+   "attr": {
+    "力量": 48,
+    "根骨": 50,
+    "身法": 44,
+    "悟性": 26,
+    "定力": 48
+   },
+   "hp": 1800,
+   "mp": 400,
+   "atk": 190,
+   "def": 150,
+   "dodge": 70,
+   "parry": 55,
+   "speed": 88,
+   "hostile": false,
+   "desc": "朱红甲胄，甲叶上还有昨夜落的露。他握枪的姿势不像在站岗，像在等谁来。",
+   "learned": {
+    "gunfa_basic": {
+     "level": 60,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "棍": "gunfa_basic"
+   },
+   "equipment": {
+    "武器": "spear_iron",
+    "身体": "armor_leather"
+   },
+   "carry": {
+    "money": 120,
+    "items": []
+   },
+   "socialDone": true,
+   "relDone": true,
+   "tier": "B",
+   "job": "constable",
+   "tag": "swordsman",
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": null,
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "name": "禁军",
+   "title": "禁军校尉",
+   "room": "palace_gate",
+   "talk": [
+    "「宫城重地，验了腰牌才放行。」",
+    "「没有腰牌？城东衙门办得。要么你杀了我自己过去——不过先掂量掂量。」",
+    "「我在这儿站了十一年，人来人往见过不少。你是来办事的，还是来看热闹的？」"
+   ],
+   "ask": [
+    {
+     "topic": "腰牌",
+     "keywords": [
+      "腰牌",
+      "令牌",
+      "牌子",
+      "通行"
+     ],
+     "answer": "「腰牌是内府发的，凭牌入宫。银子买不着——十两银子也不行。找衙门，或者找宫里认得你的人作保。」"
+    }
+   ]
+  },
+  "guard_yamen": {
+   "gender": "male",
+   "level": 26,
+   "attr": {
+    "力量": 38,
+    "根骨": 40,
+    "身法": 32,
+    "悟性": 26,
+    "定力": 40
+   },
+   "hp": 1100,
+   "mp": 400,
+   "atk": 110,
+   "def": 95,
+   "dodge": 50,
+   "parry": 55,
+   "speed": 70,
+   "hostile": false,
+   "desc": "皂衣，腰间挎着铁尺。他拦住你的时候动作很熟练——显然不是今天第一次。",
+   "learned": null,
+   "skills": null,
+   "equipment": null,
+   "carry": {
+    "money": 60,
+    "items": []
+   },
+   "socialDone": true,
+   "relDone": true,
+   "tier": "B",
+   "job": "constable",
+   "tag": "swordsman",
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": null,
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "name": "衙役",
+   "title": "班头",
+   "room": "jn_yamen_gate",
+   "talk": [
+    "「衙门重地，闲人免进。有状子没有？」",
+    "「想告状？先说你是哪里的、告谁。别拿站不住的理由糊弄我。」"
+   ],
+   "ask": [
+    {
+     "topic": "告状",
+     "keywords": [
+      "告状",
+      "状子",
+      "报案"
+     ],
+     "answer": "「状子要写清人名住处，画押。递到门房，我给你转呈。」"
+    }
+   ]
+  },
+  "guard_shaolin": {
+   "gender": "male",
+   "level": 38,
+   "attr": {
+    "力量": 38,
+    "根骨": 40,
+    "身法": 32,
+    "悟性": 26,
+    "定力": 40
+   },
+   "hp": 1500,
+   "mp": 400,
+   "atk": 150,
+   "def": 120,
+   "dodge": 62,
+   "parry": 55,
+   "speed": 72,
+   "hostile": false,
+   "desc": "灰布僧衣，手里捻着一串念珠。他合掌的动作很自然，眼神却一直落在你身上。",
+   "learned": null,
+   "skills": null,
+   "equipment": null,
+   "carry": {
+    "money": 40,
+    "items": []
+   },
+   "socialDone": true,
+   "relDone": true,
+   "tier": "B",
+   "job": "constable",
+   "tag": "swordsman",
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": null,
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "name": "知客僧",
+   "title": "知客",
+   "room": "shaolin_shanmen",
+   "talk": [
+    "「佛门清净，施主若只为赶路，前面的岔口往东是官道。」",
+    "「要见方丈？须先挂单。你身上有兵刃，贫僧须记一笔。」",
+    "「近来寺里不太平——施主夜里走路，当心些。」"
+   ]
+  },
+  "guard_jinywei": {
+   "gender": "male",
+   "level": 48,
+   "attr": {
+    "力量": 38,
+    "根骨": 40,
+    "身法": 32,
+    "悟性": 26,
+    "定力": 40
+   },
+   "hp": 2000,
+   "mp": 400,
+   "atk": 230,
+   "def": 175,
+   "dodge": 80,
+   "parry": 55,
+   "speed": 95,
+   "hostile": false,
+   "desc": "飞鱼服，绣春刀挂在左腰。他是背对着你站的——但你知道他在听。",
+   "learned": null,
+   "skills": null,
+   "equipment": null,
+   "carry": {
+    "money": 300,
+    "items": []
+   },
+   "socialDone": true,
+   "relDone": true,
+   "tier": "B",
+   "job": "constable",
+   "tag": "swordsman",
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": null,
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "name": "锦衣卫",
+   "title": "总旗",
+   "room": "jn_yamen_office",
+   "talk": [
+    "「这一片儿归我们管。你要么有文书，要么有腰牌，要么——」他没说下去，手按在刀上。",
+    "「.registry 上的事，少打听。真要打听，先想清楚自己名字写不写得上。」"
+   ]
+  },
+  "guard_huashan": {
+   "gender": "male",
+   "level": 30,
+   "attr": {
+    "力量": 38,
+    "根骨": 40,
+    "身法": 32,
+    "悟性": 26,
+    "定力": 40
+   },
+   "hp": 1200,
+   "mp": 400,
+   "atk": 130,
+   "def": 100,
+   "dodge": 66,
+   "parry": 55,
+   "speed": 76,
+   "hostile": false,
+   "desc": "青衫，背一柄长剑，剑没出鞘。他站在山道正中，不像拦人，倒像在数人头。",
+   "learned": null,
+   "skills": null,
+   "equipment": null,
+   "carry": {
+    "money": 50,
+    "items": []
+   },
+   "socialDone": true,
+   "relDone": true,
+   "tier": "B",
+   "job": "constable",
+   "tag": "swordsman",
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": null,
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "name": "华山弟子",
+   "title": "看山弟子",
+   "room": "huashan_shanxia",
+   "talk": [
+    "「上山？先在山脚登记。掌门近来的规矩——闲人太多。」",
+    "「没登记就想上去？华山不欢迎偷懒的人。你上去也是白上去。」"
+   ],
+   "ask": [
+    {
+     "topic": "登记",
+     "keywords": [
+      "登记",
+      "上山",
+      "入门",
+      "拜山"
+     ],
+     "answer": "「登记得找山脚的执事。不过我先跟你说清楚——真要拜师，得等三月初七。错过就再等一年。」"
+    }
+   ]
+  },
+  "guard_blulu": {
+   "gender": "male",
+   "level": 34,
+   "attr": {
+    "力量": 38,
+    "根骨": 40,
+    "身法": 32,
+    "悟性": 26,
+    "定力": 40
+   },
+   "hp": 1300,
+   "mp": 400,
+   "atk": 120,
+   "def": 105,
+   "dodge": 60,
+   "parry": 55,
+   "speed": 74,
+   "hostile": false,
+   "desc": "六十来岁的老头，青衫洗得发白，手里捏着半卷书。他看你的眼神先落在你的鞋上。",
+   "learned": null,
+   "skills": null,
+   "equipment": null,
+   "carry": {
+    "money": 80,
+    "items": []
+   },
+   "socialDone": true,
+   "relDone": true,
+   "tier": "B",
+   "job": "constable",
+   "tag": "swordsman",
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": null,
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "name": "书院山长",
+   "title": "山长",
+   "room": "jn_school_yard",
+   "talk": [
+    "「书院不是客栈。要读书，得先在门房登记名册。」",
+    "「你那身行囊——读书人可不带刀。放门房，回来时取。」"
+   ],
+   "ask": [
+    {
+     "topic": "读书",
+     "keywords": [
+      "读书",
+      "书院",
+      "拜师",
+      "入学"
+     ],
+     "answer": "「书院每月初十开讲，逢三休讲。你若连日子都记不住，坐不住是必然的。」"
+    }
+   ]
   }
  }
 }

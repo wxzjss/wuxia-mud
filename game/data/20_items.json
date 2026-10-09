@@ -1674,6 +1674,27 @@
         "clue"
       ],
       "quality": "legend"
+    },
+    "palace_token": {
+      "category": "quest",
+      "price": 0,
+      "desc": "铜制，刻着「内府」二字，背面有一个手刻的「武」字——像是被人拿刀尖划上去的。",
+      "name": "内府腰牌",
+      "quality": "fine"
+    },
+    "yamen_pass": {
+      "category": "quest",
+      "price": 0,
+      "desc": "一块旧木牌，正面写「江南府」，背面刻着一个已经被磨平了的编号。",
+      "name": "衙门传牌",
+      "quality": "common"
+    },
+    "huashan_pass": {
+      "category": "quest",
+      "price": 0,
+      "desc": "一片削得很薄的竹牌，正面烙着「玉真」两个小字。摸上去还带着桐油味，是新领的。",
+      "name": "华山竹牌",
+      "quality": "common"
     }
   },
   "recipes": {

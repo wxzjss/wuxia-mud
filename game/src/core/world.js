@@ -1229,16 +1229,33 @@ class World extends EventEmitter {
    * 七、时间 / 世界心跳
    * ================================================================ */
   advanceTime(minutes) {
-    minutes = minutes || 1;
+    /* ⚠️ 原来写 `minutes = minutes || 1` —— 显式传 0 会被吞成 1，
+       于是「advanceTime(0) 表示不推进」这个语义根本做不到（测试已抓到）。
+       只有 undefined/null 才用默认 1。 */
+    minutes = (minutes === undefined || minutes === null) ? 1 : minutes;
+    if (!(minutes > 0)) minutes = 0;
     const p = this.player;
     if (!p) return;
     this.clockMinutes += minutes;
     p.timeMinutes = this.clockMinutes;
     p.age = 16 + Math.floor(p.timeMinutes / 1440 / 120);
-    // 饥饿
-    if (minutes >= 10) {
-      p.food = clamp(p.food - Math.floor(minutes / 12), 0, p.maxFood);
-      p.water = clamp(p.water - Math.floor(minutes / 8), 0, p.maxWater);
+    /* 饥饿 / 口渴
+       ⚠️ 旧代码写的是 `if (minutes >= 10)` —— 意思是「单次推进 ≥10 分钟才扣」。
+          而走路只推进 1 分钟（doMove 的 cost 默认 1），于是**走路永远不饿不渴**，
+          玩家报告「走路不会掉饱食度与口渴度」，实测确认属实。
+          现在改成「按分钟比例连续扣」，走 1 分钟也扣（哪怕只掉 1 点），
+          待在原地不动（minutes=0）才不掉。
+          速率：饱食约 12 分钟掉 1 点、口渴约 8 分钟掉 1 点 → 满值 100 大约撑一天，
+          与 old 的 12/8 保持同一量级，只是把它从「一次性门槛」改成「连续结算」。 */
+    if (minutes > 0) {
+      p.food = clamp(p.food - (minutes / 12), 0, p.maxFood);
+      p.water = clamp(p.water - (minutes / 8), 0, p.maxWater);
+      /* 扣到小数就记账（不然每走一步都四舍五入回原值，白扣）。
+         ⚠️ 保留 4 位而不是 2 位 —— 2 位时每步舍入误差会累积：
+         12 次 advanceTime(1) 只扣掉 0.96 而不是 1.00（测试实测）。
+         4 位把误差压到 1e-4 量级，肉眼不可见但数值测试能过。 */
+      p.food = Math.round(p.food * 10000) / 10000;
+      p.water = Math.round(p.water * 10000) / 10000;
     }
     // 饥渴归零 → 每次推进时间都掉血（饿死/渴死由 engine.postProcess 判定并复活）
     if ((p.food <= 0 || p.water <= 0) && !p.inCombat) {

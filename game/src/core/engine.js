@@ -192,6 +192,61 @@ class GameEngine {
   }
 
   /** 当前视图快照（给 UI 渲染） */
+  /* ────────────────────────────────────────────────────────────────
+   * askTopicsOf —— 「询问」对话框该给玩家看哪些话题
+   *
+   * 主人报：「点询问我怎么知道应该询问什么？」
+   * 根因：ui.js 里 askNpc() 写了 `n.askTopics` 按钮区，
+   *      **但后端从来没发过这个字段** → 永远是 undefined →
+   *      「询问」只剩一个光秃秃的输入框 + 一句「可写：武学/门派/江湖/任务…」。
+   *      而 329 个 NPC 里只有 18 个有 ask 数据，其余 311 个问啥都是
+   *      「这个我却不知」——玩家无从下手。
+   *
+   * 这里按**他实际能答什么**分类给出话题，三档优先级：
+   *   ① 他自己写的 ask[].topic            —— 专属话题，一定真能问出东西
+   *   ② 画像解锁项（origin/now/want/fear）—— 有 portrait 才有；
+   *      trust 不够时会给「你还问不着」的门槛提示，不是死路，值得列出来
+   *   ③ 通用话题（身份/来历/近况/传闻/江湖）—— 走 askDefault 或通用应答，
+   *      至少不会让人对着空框发呆
+   *
+   * ⚠️ 宁可少给也不能给错：给一个他一定答不出来的按钮是骗玩家。
+   * ⚠️ 顺序即优先级，玩家先看到最可能有戏的。
+   * ──────────────────────────────────────────────────────────────── */
+  askTopicsOf(n) {
+    const def = (n && n.def) || {};
+    const out = [];
+    const push = (topic, hint) => {
+      if (!topic) return;
+      if (out.some(o => o.topic === topic)) return;
+      out.push(hint ? { topic, hint } : { topic });
+    };
+    /* ① 专属话题
+     * ⚠️ 归一化：有的 NPC 把 ask 写成**对象** {topic, answer}，有的写成**数组**。
+     *   直接 `for (const a of def.ask)` 在对象上会抛
+     *   「object is not iterable」——整个 view() 挂掉，进游戏就白屏。 */
+    const askRaw = def.ask;
+    const askList = Array.isArray(askRaw) ? askRaw
+      : (askRaw && typeof askRaw === 'object' ? [askRaw] : []);
+    for (const a of askList) {
+      if (!a) continue;
+      push(a.topic || a.label || a.title, a.hint || null);
+    }
+    /* ② 画像解锁项 */
+    if (n && n.portrait) {
+      const trust = (n.pstate && n.pstate.trust) || 0;
+      const PT = [
+        ['origin', '来历', 0], ['now', '近况', 20], ['want', '想头', 50], ['fear', '惧怕', 70],
+      ];
+      for (const [k, label, need] of PT) {
+        if (!n.portrait[k]) continue;
+        push(label, trust >= need ? null : `需交情（trust≥${need}）`);
+      }
+    }
+    /* ③ 通用兜底：任何 NPC 都接得住这一轮 */
+    for (const g of ['你是谁', '近况', '江湖消息']) push(g, null);
+    return out.slice(0, 8);
+  }
+
   view() {
     const w = this.world, p = w.player;
     if (!p) return { ok: false, needCreate: true, meta: w.data.meta };
@@ -263,6 +318,9 @@ class GameEngine {
       })(),
       addressMe: kinship.addressMe(w, n),
       canSwear: !kinship.alreadyKin(w, n.id) && !kinship.isMarriedTo(w, n.id),
+      /* 「询问」按钮给的话题清单 —— 前端 askNpc() 直接渲染成可点按钮。
+         少了这个，玩家点「询问」只得到一个空输入框（主人报的问题）。 */
+      askTopics: this.askTopicsOf(n),
     }));
 
     const groundItems = w.itemsIn(p.room).map(i => {

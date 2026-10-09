@@ -162,16 +162,37 @@ function buildCommands(world) {
     const allRooms = Object.values(w.data.rooms);
     const gh = fuzzyFind(allRooms, kw, r => r.name);
     if (gh) {
-      const path = findPath(w, p.room, gh.id);
-      if (path) {
+      /* ⚠️ 必须传 ctx：不传就是「无视门禁」的旧 BFS，
+         玩家一句 `go 太和殿` 会直接瞬移进皇宫，把 ex.cond 全绕过去。 */
+      const path = findPath(w, p.room, gh.id, ctx);
+      if (path && path.length) {
         const lines = [{ kind: 'sys', text: `你沿路前往${gh.name}…` }];
         for (const step of path) {
-          w.movePlayerTo(p, step);
-          p.advanceTime(1);
+          /* 逐跳走方向（走 doMove 才对），而不是 movePlayerTo 瞬移：
+             doMove 才会检查 ex.cond / 卖身范围 / 时间成本。 */
+          const cur = w.getRoom(p.room);
+          let dir = null;
+          for (const d of Object.keys(cur.exits || {})) {
+            const e2 = cur.exits[d];
+            if ((typeof e2 === 'string' ? e2 : e2.to) === step) { dir = d; break; }
+          }
+          if (!dir) break;
+          const mv = doMove(ctx, dir);
+          for (const l of (mv && mv.lines) || []) {
+            /* 中间每一跳的房间描述太长，只留第一跳的 travel 文本 */
+            if (l.kind === 'story') lines.push(l);
+          }
+          if (mv && mv.moved === undefined) { lines.push(...((mv.lines) || [])); break; }
         }
         lines.push(...lookRoom(ctx).lines);
         return { lines, moved: true };
       }
+      if (gh.id === p.room) {
+        return { lines: lookRoom(ctx).lines };
+      }
+      /* 门禁挡路时要说清楚是哪一道门，别只说「找不到路」 */
+      const lockedMsg = lockedEdgeHint(w, p.room, gh.id, ctx);
+      if (lockedMsg) return { lines: [{ kind: 'warn', text: lockedMsg }] };
       return { lines: [{ kind: 'warn', text: `似乎找不到通往${gh.name}的路。` }] };
     }
     return { lines: [{ kind: 'warn', text: `你不知道${kw}在哪里。` }] };
@@ -219,7 +240,16 @@ function buildCommands(world) {
         const k = n.name;
         cls[k] = (cls[k] || 0) + 1;
       }
-      const out = Object.keys(cls).map(k => cls[k] > 1 ? `${k} x${cls[k]}` : k);
+      /* 名字后带身份（复用 npcIdentity：门派职位 / 捕快 / 郎中 / 寻常百姓…），
+         跟 lookNpc / guanxi / favor 用的是同一套推断，不会两处口径打架。
+         同名多人时只标一次身份（x2 分支不重复），且身份用第一个遇到的。 */
+      const idOf = {};
+      for (const n of npcs) { if (!idOf[n.name]) idOf[n.name] = npcIdentity(w, n); }
+      const labelOf = k => {
+        const id0 = idOf[k];
+        return id0 ? `${k}（${id0}）` : k;
+      };
+      const out = Object.keys(cls).map(k => cls[k] > 1 ? `${labelOf(k)} x${cls[k]}` : labelOf(k));
       // hl：把每个 NPC 名标成可点，点击弹出「对它做什么」的中文菜单
       const hl = Object.keys(cls).map(k => {
         const one = npcs.find(n => n.name === k);
@@ -233,7 +263,8 @@ function buildCommands(world) {
         if (one && one.def && one.def.quests && one.def.quests.length) actions.push({ label: '接他/她的任务', cmd: 'accept' });
         actions.push({ label: '送他东西', cmd: 'give ' + k });
         actions.push({ label: '查看关系', cmd: 'guanxi ' + k });
-        return { text: k, type: 'npc', actions };
+        /* 名字带上身份，点哪儿都是同一个目标（fuzzyFind 认「名字（身份）」的括号前缀） */
+        return { text: labelOf(k), type: 'npc', actions };
       });
       lines.push({ kind: 'npcs', text: `这里有：${out.join('、')}。`, hl });
       /* ---- 画像 L0 看见 ----
@@ -872,7 +903,16 @@ function buildCommands(world) {
       const color = { 亲: '#c07a4a', 友: '#2f7a4a', 仇: '#a03030', 师: '#1f6f9a', 生: '#8a5ac2', 夫妻: '#c0306a' }[r.kind] || '#666';
       /* 括号里写**身份**，不写住处（主人：什么NPC都住本地，写了等于没写） */
       const who = npcIdentity(w, o);
-      lines.push({ kind: 'plain', text: `　${relKindCN(r.kind)}　${o.name}（${who}）`, color, relId: r.id, relKind: r.kind });
+      /* 好感度：他（当前查看的 NPC）对**这个目标**的好感，-100~100。
+         ⚠️ 别用 npc.favor —— 那是「他对玩家」的好感，套到第三方头上会张冠李戴。
+         优先级：① 运行时已浮动的 relFavor[r.id] ② 数据里的 r.favor
+                 ③ 按 kind 给基准值（仇 -70 / 仇敌带随机 / 友 60 / 亲 90…）。 */
+      const fv = relFavorBetween(npc, o, r);
+      lines.push({
+        kind: 'plain',
+        text: `　${relKindCN(r.kind)}　${o.name}（${who}）　好感度：${fmtRelFavor(fv)}`,
+        color, relId: r.id, relKind: r.kind, relFavor: fv,
+      });
     }
     /* 他自己的好感 */
     const t = social.favorTier(npc.favor);
@@ -1668,16 +1708,34 @@ function buildCommands(world) {
     // ask <人> about <话题>
     const p = ctx.player, w = ctx.world;
     const s = args.join(' ');
-    const m = s.split(/\s+about\s+|关于|问/);
-    let npcKw = args[0], topic = args.slice(1).join(' ');
-    if (m.length >= 2) { npcKw = m[0].trim(); topic = m[1].trim(); }
+    /* ⚠️ 分隔符只认 `about` 和「关于」，**不要拿「问」字切** ——
+       「问 某某 问点什么」的 topic 里本身带「问」，切完只剩碎片
+       （历史上「随便问点什么」被切成「随便」，问了个寂寞）。
+       拿到全部片段，用分隔符定位，剩下的**拼回完整话题**（别只取 m[1]）。 */
+    const SEP = /\s+about\s+|\s*关于\s*|\s+关于\s+/i;
+    let npcKw, topic;
+    const hit = s.match(SEP);
+    if (hit) {
+      const idx = s.indexOf(hit[0]);
+      npcKw = s.slice(0, idx).trim();
+      topic = s.slice(idx + hit[0].length).trim();
+    } else {
+      npcKw = args[0];
+      topic = args.slice(1).join(' ').trim();
+    }
+    if (!npcKw) return { lines: [{ kind: 'warn', text: '问谁？「ask <人> about <话题>」。' }] };
     const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), npcKw, n => n.name);
     if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${npcKw}」。` }] };
+    if (!topic) return { lines: [{ kind: 'warn', text: `想问${npc.name}什么？` }] };
     const def = npc.def || {};
     const lines = [{ kind: 'sys', text: `你向${npc.name}问起「${topic}」。` }];
     let found = false;
     if (def.ask) {
-      for (const a of def.ask) {
+      /* ⚠️ 归一化：ask 可能是对象 {topic,answer}，也可能是数组。
+         直接 for...of 对象会抛「object is not iterable」，ask 指令整条挂掉。 */
+      const askList = Array.isArray(def.ask) ? def.ask : [def.ask];
+      for (const a of askList) {
+        if (!a) continue;
         if (topic.includes(a.topic) || a.topic.includes(topic) || (a.keywords || []).some(k => topic.includes(k))) {
           found = true;
           if (a.answer) lines.push({ kind: 'say', text: `${npc.name}道：「${evalTemplate(a.answer, ctx)}」` });
@@ -1720,6 +1778,47 @@ function buildCommands(world) {
         const d = -5 - (pt.tier === 'A' ? 10 : pt.tier === 'B' ? 5 : 0);
         npc.favor = (npc.favor || 0) + d;
         lines.push({ kind: 'sys', text: `（${npc.name}的脸沉了一下，好感 ${d}）` });
+      }
+    }
+    if (!found) {
+      /* ---- 通用兜底：让「询问」永远有回应 ----
+         329 个 NPC 里只有 18 个有 ask 数据，前端「询问」面板却对所有人开放。
+         这三档是程序化生成的，任何 NPC 都接得住：
+           · 「你是谁」→ 报身份（跟场景栏同一个口径 npcIdentity）
+           · 「近况」  → 按画像/作息/好感编一句
+           · 「江湖消息」→ 用 askDefault，没有就编一句「这我知道得不多」
+         顺序：专属 ask → 画像项 → 通用项（最后兜底）。 */
+      const K = topic || '';
+      if (/你是谁|身份|来历|姓名|叫什么/.test(K)) {
+        found = true;
+        const who = npcIdentity(w, npc);
+        lines.push({ kind: 'say', text: `${npc.name}道：「${who}。在这地方待着，也就这样了。」` });
+      } else if (/近况|最近|如今|怎么了/.test(K)) {
+        found = true;
+        /* 画像近况优先（trust 门槛同上），没有就拿作息/好感拼 */
+        const pt = npc.portrait;
+        const trust = (npc.pstate && npc.pstate.trust) || 0;
+        if (pt && pt.now && trust >= 20) {
+          lines.push({ kind: 'say', text: `${npc.name}道：「${evalTemplate(pt.now, ctx)}」` });
+        } else if (pt && pt.now) {
+          lines.push({ kind: 'say', text: `${npc.name}道：「近况么……你还问不着。」（信不过你，办成几件事再说）` });
+        } else {
+          const f = npc.favor || 0;
+          const tone = f > 40 ? '「老样子，一天一天过着。有你在，倒也不那么闷。」'
+            : f < -20 ? '「不关你的事。」他说完就不再看你。'
+              : '「混口饭吃，哪有什么近况。」';
+          lines.push({ kind: 'say', text: `${npc.name}${personality.sayVerbToned(npc)}：${tone}` });
+        }
+      } else if (/江湖消息|江湖|传闻|消息|news|近闻/.test(K)) {
+        found = true;
+        if (def.askDefault) {
+          lines.push({ kind: 'say', text: `${npc.name}道：「${evalTemplate(def.askDefault, ctx)}」` });
+        } else {
+          /* 没有 askDefault 就给一条「什么都不知道但态度明确」的回应，
+             顺便把 askDefault 缺了这件事说清楚：不是玩家问错，是这个 NPC 没料 */
+          lines.push({ kind: 'say', text: `${npc.name}摇摇头：「江湖上的事？我一个${npcIdentity(w, npc)}，哪能知道那么多。」` });
+          lines.push({ kind: 'sys', text: '（这人没什么可打听的。要问出东西来，得先有交情，或找他真正在意的事。）' });
+        }
       }
     }
     if (!found) {
@@ -2818,6 +2917,37 @@ function relKindCN(k) {
   return k + '人';
 }
 
+/* ================================================================
+ * NPC 之间对第三方的好感度（主人：关系界面要显示「好感度：-70」）
+ *
+ * ⚠️ 别搞错对象：`npc.favor` 是「他对**玩家**的好感」，
+ *    套到关系列表里的第三方头上就是张冠李戴（历史上 favor 面板就翻过车）。
+ *
+ * 三级取值：
+ *   ① npc.relFavor[对方 defId] —— 运行时浮动值（送礼/结仇事件改的），优先
+ *   ② r.favor                  —— 数据里直接写死的
+ *   ③ 按 kind 给基准值（确定性，不用 rng：同一个 NPC 每次看必须是同一个数，
+ *      不然玩家刷新一次数字就跳一次，会以为是 bug）
+ * ============================================================ */
+const REL_FAVOR_BASE = { 友: 60, 亲: 90, 师: 70, 生: 65, 夫妻: 100, 仇: -70, 敌: -60 };
+function relFavorBetween(npc, other, rel) {
+  const oid = (other && (other.defId || other.id)) || null;
+  const dyn = npc && npc.relFavor && oid ? npc.relFavor[oid] : undefined;
+  if (Number.isFinite(dyn)) return Math.max(-100, Math.min(100, Math.round(dyn)));
+  if (rel && Number.isFinite(Number(rel.favor))) {
+    return Math.max(-100, Math.min(100, Math.round(Number(rel.favor))));
+  }
+  const base = REL_FAVOR_BASE[rel && rel.kind];
+  /* 没定基准的 kind 走 0（陌生人 / 未定性），别硬凑一个数字骗玩家 */
+  return base === undefined ? 0 : base;
+}
+/** 好感度显示：正数带 + 号，负数带 −（中文负号），0 显示「中立」 */
+function fmtRelFavor(v) {
+  const n = Math.round(v || 0);
+  if (n === 0) return '0（不相干）';
+  return (n > 0 ? '+' : '−') + Math.abs(n);
+}
+
 /**
  * 这个 NPC 是什么身份。
  * @param {object} w world
@@ -2866,11 +2996,48 @@ function npcIdentity(w, npc) {
   return '江湖散人';
 }
 
-/* 简易寻路（BFS） */
-function findPath(world, from, to) {
+/**
+ * 自动寻路被门禁挡住时，给一句人话提示（而不是干巴巴的「找不到路」）。
+ * 做法：全图忽略门禁 BFS 找一条路，再沿路找第一道 con不满足的边，报它的 msg。
+ * @returns {string|null}
+ */
+function lockedEdgeHint(world, from, to, ctx) {
+  const anyPath = findPath(world, from, to, null);
+  if (!anyPath || !anyPath.length) return null;
+  let cur = from;
+  for (const step of anyPath) {
+    const room = world.getRoom(cur);
+    if (!room) return null;
+    for (const d of Object.keys(room.exits || {})) {
+      const ex = room.exits[d];
+      const tid = typeof ex === 'string' ? ex : ex.to;
+      if (tid !== step) continue;
+      if (ex && ex.cond) {
+        let ok = true;
+        try { ok = !!evalCond(ex.cond, ctx); } catch (e) { ok = true; }
+        if (!ok) return ex.msg || '那边过不去。';
+      }
+    }
+    cur = step;
+  }
+  return null;
+}
+
+/* 简易寻路（BFS）
+   ⚠️ 必须能跳过「上锁的出口」，否则玩家一句 `go 太和殿` 就瞬移进皇宫，
+      `doMove` 里那道 ex.cond 门禁形同虚设（这就是门禁数据填了也不生效的根因）。
+   cond 里可能带 item/sect/rank/title 等拿不到 player 的判定，
+   这时保守当作「通得过」——真正拦得住门的 cond（item/flag/sect）都不依赖随机。
+   @param {object} ctx 可选。给了就按玩家真实条件过滤；不给则忽略门禁（旧行为）。 */
+function findPath(world, from, to, ctx) {
   if (from === to) return [];
   const q = [[from]];
   const seen = new Set([from]);
+  const canPass = (ex) => {
+    if (!ex || !ex.cond) return true;
+    if (!ctx || !ctx.player) return true;
+    try { return !!evalCond(ex.cond, ctx); } catch (e) { return true; }
+  };
   while (q.length) {
     const path = q.shift();
     const cur = path[path.length - 1];
@@ -2880,6 +3047,8 @@ function findPath(world, from, to) {
       const ex = room.exits[d];
       const tid = typeof ex === 'string' ? ex : ex.to;
       if (!tid || seen.has(tid)) continue;
+      /* 被锁住的出口不走（路径里若已锁，直接中断——返回的路径玩家走不通） */
+      if (!canPass(ex)) continue;
       const np = path.concat(tid);
       if (tid === to) return np.slice(1);
       seen.add(tid);
@@ -2893,5 +3062,5 @@ function findPath(world, from, to) {
 module.exports = {
   buildCommands, findPath, cnNum, DIRECTIONS, DIR_CN,
   /* 身份标签 / 关系称谓：导出给测试与其它模块用（见 tools/identity-check.js） */
-  __api: { npcIdentity, relKindCN, tagCN, JOB_CN, TAG_CN, REL_KIND_CN },
+  __api: { npcIdentity, relKindCN, tagCN, JOB_CN, TAG_CN, REL_KIND_CN, relFavorBetween, fmtRelFavor, REL_FAVOR_BASE },
 };

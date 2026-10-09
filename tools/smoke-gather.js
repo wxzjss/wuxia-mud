@@ -44,7 +44,12 @@ section('2. 打水（需容器）');
   ok('无容器时拒绝打水', !gather.hasContainer(w, p));
   p.water = 10;
   const r1 = e.exec('打水');
-  ok('无容器打水失败', p.water === 10, (r1.lines || []).map(l => l.text).join(''));
+  /* ⚠️ 别断言 `p.water === 10` —— exec 末尾会 advanceTime(1)，
+     现在走路/每分钟都扣 0.125 的水（连续结算，不是 minutes>=10 门槛）。
+     所以「失败」的正确判据是「没被打水**补上去**」：扣完只会略低于 10，绝不会涨。 */
+  ok('无容器打水失败（水位没被补上）', p.water < 10.5 && p.water > 8,
+    'water=' + p.water + ' 期望 ~9.875（10 扣一分钟口渴）');
+  ok('无容器打水有明确提示', /容器/.test((r1.lines || []).map(l => l.text).join('')));
 
   // 有容器
   w.giveItem(p, 'leather_waterskin', 1);

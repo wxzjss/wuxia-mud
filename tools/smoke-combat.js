@@ -354,8 +354,27 @@ section('⑦ 源码静态防线：不许再出现「把 .def 当数字用」');
   ok('伤害公式不再直接读 defender.def', C.length === 0, C.map(rel).join(','));
   const D = hits(/this\.def\s*=[^=]/);
   ok('Character 不再写 this.def（防御力改写 defFinal）', D.length === 0, D.map(rel).join(','));
-  const E = hits(/\bp\.def\b|\bplayer\.def\b/);
-  ok('不再有 p.def / player.def 这种数字读点', E.length === 0, E.map(rel).join(','));
+  /* ⚠️ 白名单：ui.js 的属性面板读 `playerBrief()` 组装的**扁平** view.player，
+     那里 `p.def` 是**真数字**（已实测 typeof === 'number'），不是 NPC 实例的
+     `.def`（模板对象引用，拿去算术必 NaN —— 那才是本护栏要拦的坑）。
+     这条护栏真正要拦的是「**实例**的 .def 数字读点」，所以按文件+行精确放行，
+     别把整个文件放出去（那样新写的实例读点又漏了）。 */
+  const E_DEF_ALLOW = {
+    'server/public/js/ui.js': [[1102, '防御: p.def']],
+    'game/src/renderer/js/ui.js': [[1102, '防御: p.def']],
+  };
+  const E = [];
+  for (const f of files) {
+    const r = rel(f);
+    const allow = E_DEF_ALLOW[r] || [];
+    fs.readFileSync(f, 'utf8').split(/\r?\n/).forEach((line, i) => {
+      if (!/\bp\.def\b|\bplayer\.def\b/.test(line)) return;
+      const ln = i + 1;
+      if (allow.some(a => a[0] === ln && line.indexOf(a[1]) >= 0)) return;
+      E.push(r + ':' + ln);
+    });
+  }
+  ok('不再有 p.def / player.def 这种数字读点（扁平 view 已在白名单精确放行）', E.length === 0, E.join(','));
   const COMBAT = fs.readFileSync(path.join(ROOT, 'game', 'src', 'core', 'combat.js'), 'utf8');
   ok('combat.js 的伤害公式走 defenseOf(defender)', /defenseOf\(defender\)/.test(COMBAT));
   ok('combat.js 导出 defenseOf（供其他模块复用）', /module\.exports\s*=\s*\{[^}]*defenseOf/.test(COMBAT));

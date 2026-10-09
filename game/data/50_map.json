@@ -8,7 +8,8 @@
       "exits": {
         "n": "jiangnan_street",
         "s": "road_jiangnan_1",
-        "e": "jiangnan_east_road"
+        "e": "jiangnan_east_road",
+        "w": "palace_street"
       },
       "respawn": [
         {
@@ -649,8 +650,51 @@
       "desc": "山脚处有几间茅舍，其中一间挑着药字幌子，一位白发老妪守在那里。",
       "exits": {
         "s": "road_huashan_1",
-        "n": "huashan_qingke"
-      }
+        "n": {
+          "to": "huashan_qingke",
+          "cond": {
+            "item": "huashan_pass",
+            "count": 1
+          },
+          "msg": "那看山弟子横剑拦住你：「上山先登记。没有竹牌，山道不能上。」",
+          "travel": "你递上竹牌。他翻过来看了看，插回你手里：「往上走，别乱闯客舍。」"
+        }
+      },
+      "actions": [
+        {
+          "cmd": "登记",
+          "label": "在山脚登记",
+          "keywords": [
+            "登记",
+            "入山",
+            "竹牌",
+            "拜山"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "那看山弟子从石墩上跳下来，抄起笔，在名册上添了一行。"
+            },
+            {
+              "type": "+item",
+              "args": [
+                "huashan_pass",
+                1
+              ]
+            },
+            {
+              "type": "say",
+              "raw": "「拿着。别弄丢——丢了自己来取一趟，我这儿不补。」"
+            }
+          ]
+        }
+      ],
+      "respawn": [
+        {
+          "npc": "guard_huashan",
+          "count": 2
+        }
+      ]
     },
     "huashan_qingke": {
       "id": "huashan_qingke",
@@ -679,8 +723,7 @@
       "exits": {
         "s": "huashan_qingke",
         "n": "huashan_bei",
-        "u": "huashan_lianhua",
-        "e": "palace_court3"
+        "u": "huashan_lianhua"
       }
     },
     "huashan_bei": {
@@ -1059,7 +1102,30 @@
       "exits": {
         "s": "road_shaolin_1",
         "n": "shaolin_tianwang"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "问知客",
+          "label": "问那知客僧",
+          "keywords": [
+            "知客",
+            "僧",
+            "问"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "那知客僧抬眼看你，又低下去：「施主若只为赶路，东边岔口是官道。若要入寺，先把兵刃解在山门外。」"
+            }
+          ]
+        }
+      ],
+      "respawn": [
+        {
+          "npc": "guard_shaolin",
+          "count": 1
+        }
+      ]
     },
     "shaolin_tianwang": {
       "id": "shaolin_tianwang",
@@ -1390,8 +1456,7 @@
       "exits": {
         "s": "emei_shanmen",
         "n": "emei_jinding",
-        "e": "emei_yard",
-        "w": "palace_court4"
+        "e": "emei_yard"
       }
     },
     "emei_yard": {
@@ -2190,8 +2255,8 @@
         "e": "road_many_1",
         "w": "xiyu_oasis",
         "s": "road_xixia_1",
-        "n": "palace_road",
-        "ne": "changan_gate"
+        "ne": "changan_gate",
+        "n": "changan_gate"
       }
     },
     "xiyu_oasis": {
@@ -2488,8 +2553,7 @@
       "region": "gumu",
       "desc": "石室四壁刻满了经文与图画，是玉女心经的图谱。角落里放着一口石棺。",
       "exits": {
-        "u": "gumu_mu",
-        "n": "palace_court1"
+        "u": "gumu_mu"
       },
       "actions": [
         {
@@ -3162,8 +3226,7 @@
       "region": "jiangnan",
       "desc": "冯宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
       "exits": {
-        "sw": "jn_resident_3",
-        "n": "palace_court5"
+        "sw": "jn_resident_3"
       }
     },
     "jn_home_10": {
@@ -3365,10 +3428,23 @@
       ],
       "exits": {
         "sw": "jiangnan_street",
-        "n": "jn_yamen_court",
-        "s": "jn_school_lib",
+        "n": {
+          "to": "jn_yamen_court",
+          "cond": {
+            "item": "yamen_pass",
+            "count": 1
+          },
+          "msg": "衙役拦住你：「衙门重地。有传牌没有？」",
+          "travel": "衙役看了传牌，点点头，让开半步：「进去吧，别乱闯。」"
+        },
         "se": "jiangnan_street"
-      }
+      },
+      "respawn": [
+        {
+          "npc": "guard_yamen",
+          "count": 1
+        }
+      ]
     },
     "jn_yamen_court": {
       "id": "jn_yamen_court",
@@ -3445,6 +3521,12 @@
               ]
             }
           ]
+        }
+      ],
+      "respawn": [
+        {
+          "npc": "guard_jinywei",
+          "count": 1
         }
       ]
     },
@@ -3553,8 +3635,7 @@
       ],
       "exits": {
         "s": "jn_school",
-        "e": "jn_school_herb",
-        "n": "jn_yamen_gate"
+        "e": "jn_school_herb"
       }
     },
     "jn_school_yard": {
@@ -3565,9 +3646,51 @@
       "exits": {
         "w": "jn_school",
         "e": "jn_bookshop",
-        "n": "jn_school_hall",
+        "n": {
+          "to": "jn_school_hall",
+          "cond": {
+            "flag": "blulu_enrolled",
+            "count": 1
+          },
+          "msg": "山长站在明伦堂阶前，不动声色地挡了你半步：「名册上没有你。听讲可以，进来先在门房登记。」",
+          "travel": "山长侧身让开，抬手示意你进去。堂里已有十数人，都在低头抄东西，没人抬头。"
+        },
         "s": "jn_yamen_side"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "登记入册",
+          "label": "到门房登记入册",
+          "keywords": [
+            "登记",
+            "入册",
+            "名册",
+            "入学"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你在门房的册子上添了名字、籍贯。书吏吹了吹墨，把笔搁回笔架。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "blulu_enrolled"
+              ]
+            },
+            {
+              "type": "say",
+              "raw": "「成了。明伦堂随时能来听——逢三休讲，记着。」"
+            }
+          ]
+        }
+      ],
+      "respawn": [
+        {
+          "npc": "guard_blulu",
+          "count": 1
+        }
+      ]
     },
     "jn_farm_road": {
       "id": "jn_farm_road",
@@ -3980,8 +4103,7 @@
         }
       ],
       "exits": {
-        "ne": "jiangnan_street",
-        "n": "palace_prison"
+        "ne": "jiangnan_street"
       }
     },
     "palace_gate": {
@@ -3997,13 +4119,38 @@
             "禁军",
             "守卫"
           ],
-          "desc": "问问能不能进去"
+          "desc": "问问能不能进去",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "那两排甲士里有一个转过来看你。他的枪尖没有放下，也没有举起。"
+            },
+            {
+              "type": "say",
+              "raw": "「宫城重地，验了腰牌才放行。」"
+            }
+          ]
         }
       ],
       "exits": {
         "w": "palace_road",
-        "e": "palace_plaza"
-      }
+        "e": {
+          "to": "palace_plaza",
+          "cond": {
+            "item": "palace_token",
+            "count": 1
+          },
+          "msg": "禁军横枪拦住你：「腰牌。没有腰牌，午门不开。」",
+          "travel": "你把腰牌递过去。禁军验了正反面，侧身让开：「请。」"
+        },
+        "s": "palace_street"
+      },
+      "respawn": [
+        {
+          "npc": "guard_palace",
+          "count": 2
+        }
+      ]
     },
     "palace_plaza": {
       "id": "palace_plaza",
@@ -4035,9 +4182,14 @@
       ],
       "exits": {
         "w": "palace_gate",
-        "e": "palace_hall",
-        "n": "jn_yamen_arch"
-      }
+        "e": "palace_hall"
+      },
+      "respawn": [
+        {
+          "npc": "guard_palace",
+          "count": 2
+        }
+      ]
     },
     "palace_hall": {
       "id": "palace_hall",
@@ -4048,8 +4200,22 @@
         "w": "palace_plaza",
         "n": "palace_garden",
         "s": "palace_harem",
-        "nw": "palace_prison"
-      }
+        "nw": {
+          "to": "palace_prison",
+          "cond": {
+            "item": "palace_token",
+            "count": 1
+          },
+          "msg": "通往天牢的那道门虚掩着，可门槛上有一道新划的痕——像是最近才封的。",
+          "travel": "你推门进去。牢里阴冷，只有水滴声。"
+        }
+      },
+      "respawn": [
+        {
+          "npc": "guard_palace",
+          "count": 1
+        }
+      ]
     },
     "palace_garden": {
       "id": "palace_garden",
@@ -4105,9 +4271,25 @@
       "desc": "御案上堆着奏折，朱笔搁在笔山上。一架子的御制诗文集，纸墨都是新的。",
       "exits": {
         "w": "palace_harem",
-        "e": "palace_court6",
-        "n": "jn_farm_4"
-      }
+        "e": "palace_court6"
+      },
+      "actions": [
+        {
+          "cmd": "看封墙",
+          "label": "看看那道封死的墙",
+          "keywords": [
+            "封墙",
+            "墙",
+            "封条"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "（石阶被土填平了，上面长着草。茶山的人说，几十年前这地方能直接走进宫里。）"
+            }
+          ]
+        }
+      ]
     },
     "palace_prison": {
       "id": "palace_prison",
@@ -4115,9 +4297,25 @@
       "region": "palace",
       "desc": "比县衙的牢房阴森十倍，墙上渗着水。铁链拖地的声音在过道里回荡。",
       "exits": {
-        "se": "palace_hall",
-        "s": "jn_misc_shop"
-      }
+        "se": "palace_hall"
+      },
+      "actions": [
+        {
+          "cmd": "看封墙",
+          "label": "看看那道封死的墙",
+          "keywords": [
+            "封墙",
+            "墙",
+            "封条"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "（这面墙是后来砌起来的，砖缝里还夹着旧日的门楣残片。）"
+            }
+          ]
+        }
+      ]
     },
     "palace_road": {
       "id": "palace_road",
@@ -4125,9 +4323,25 @@
       "region": "palace",
       "desc": "笔直的一条青石御道，两侧列着石翁仲与石马，一直延伸到看不见的尽头。",
       "exits": {
-        "e": "palace_gate",
-        "s": "road_xiyu_1"
-      }
+        "e": "palace_gate"
+      },
+      "actions": [
+        {
+          "cmd": "看封墙",
+          "label": "看看那道封死的墙",
+          "keywords": [
+            "封墙",
+            "墙",
+            "封条"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "（戈壁的风沙一直吹到御道，砖缝里积着沙。修墙的工程显然是半途而废了。）"
+            }
+          ]
+        }
+      ]
     },
     "cunzhen_gate": {
       "id": "cunzhen_gate",
@@ -4485,7 +4699,6 @@
       "desc": "一摞摞的卷宗从地上堆到房梁，年份久远的纸上爬满了虫蛀的孔。",
       "exits": {
         "n": "jn_yamen_office",
-        "s": "palace_plaza",
         "w": "hm_npcv_149",
         "e": "hm_npcv_181"
       }
@@ -4566,8 +4779,25 @@
       "desc": "一处宫院，朱漆门窗，廊下悬着一排鸟笼。宫人端着铜盆低头走过。",
       "exits": {
         "w": "palace_harem",
-        "s": "gumu_shi"
-      }
+        "s": "palace_harem"
+      },
+      "actions": [
+        {
+          "cmd": "看封墙",
+          "label": "看看那道封死的墙",
+          "keywords": [
+            "封墙",
+            "墙",
+            "封条"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "（棺材里的气流进来，说明这堵墙不是原来就有的。）"
+            }
+          ]
+        }
+      ]
     },
     "palace_court2": {
       "id": "palace_court2",
@@ -4585,9 +4815,25 @@
       "desc": "夹在两堵高墙之间的一条长巷，走进去听不见半点别的声音，只有自己的脚步。",
       "exits": {
         "s": "palace_harem",
-        "w": "huashan_qianchi",
         "sw": "palace_harem"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看封墙",
+          "label": "看看那道封死的墙",
+          "keywords": [
+            "封墙",
+            "墙",
+            "封条"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "（宫墙到这儿就没了，外头直接是山石。修墙的人大概是有别的事要办。）"
+            }
+          ]
+        }
+      ]
     },
     "palace_court4": {
       "id": "palace_court4",
@@ -4595,8 +4841,7 @@
       "region": "palace",
       "desc": "几十架织机同时作响，织女们低着头飞梭，织的是御用的云锦。",
       "exits": {
-        "s": "palace_garden",
-        "e": "emei_qingyin"
+        "s": "palace_garden"
       }
     },
     "palace_court5": {
@@ -4606,9 +4851,25 @@
       "desc": "御膳房，灶火日夜不熄。掌勺的、切配的、传菜的，脚步不停。",
       "exits": {
         "w": "palace_garden",
-        "s": "jn_home_09",
         "n": "palace_garden"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看封墙",
+          "label": "看看那道封死的墙",
+          "keywords": [
+            "封墙",
+            "墙",
+            "封条"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "（墙根堆着厨余，气味很重——说明这墙封了没多久。）"
+            }
+          ]
+        }
+      ]
     },
     "palace_court6": {
       "id": "palace_court6",
@@ -4616,9 +4877,25 @@
       "region": "palace",
       "desc": "内库重地，一箱箱的古玩字画、金银器皿码得整整齐齐。守库太监寸步不离。",
       "exits": {
-        "w": "palace_study",
-        "n": "jn_market_west"
-      }
+        "w": "palace_study"
+      },
+      "actions": [
+        {
+          "cmd": "看封墙",
+          "label": "看看那道封死的墙",
+          "keywords": [
+            "封墙",
+            "墙",
+            "封条"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "（这边原是市井巷子，如今砖砌死了，只留一道封条——「内库重地」。）"
+            }
+          ]
+        }
+      ]
     },
     "jn_temple_1": {
       "id": "jn_temple_1",
@@ -4681,7 +4958,6 @@
       "exits": {
         "e": "jn_market_north",
         "n": "jn_weaver",
-        "s": "palace_court6",
         "w": "jn_pottery"
       }
     },
@@ -4887,7 +5163,6 @@
       "desc": "缓坡上一垄垄的茶树，采茶女背着竹篓在垄间穿行，手指翻飞。",
       "exits": {
         "n": "jn_farm_road",
-        "s": "palace_study",
         "sw": "jn_farm_road"
       }
     },
@@ -5889,6 +6164,16 @@
           ]
         }
       ]
+    },
+    "palace_street": {
+      "id": "palace_street",
+      "name": "皇城·御街",
+      "region": "jiangnan",
+      "desc": "宫墙之外的御街，朱红墙一直伸到看不见的地方。街上人不多，但每个人走路都贴着墙根。",
+      "exits": {
+        "n": "palace_gate",
+        "e": "jiangnan_gate"
+      }
     }
   },
   "regions": {
