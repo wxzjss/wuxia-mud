@@ -2663,11 +2663,44 @@
             "当"
           ],
           "desc": "把手里的东西当了换钱"
+        },
+        {
+          "label": "后院",
+          "cmd": "d",
+          "keywords": [
+            "后院",
+            "后堂",
+            "地下"
+          ],
+          "desc": "跟着伙计往后院去（当铺不声张的那一面）"
         }
       ],
       "exits": {
-        "e": "jn_market_main"
+        "e": "jn_market_main",
+        "d": "jm_underground"
       }
+    },
+    "jm_underground": {
+      "id": "jm_underground",
+      "name": "东市·地下黑市",
+      "region": "market",
+      "desc": "当铺后院的柴房掀开一块木板，露出往下的石阶。底下点着几盏油灯，墙上挂着绳索和镣铐。两个寻常护卫抱着刀蹲在门口，见人下来才抬眼。",
+      "exits": {
+        "u": "jn_pawnshop"
+      },
+      "respawn": [
+        {
+          "npc": "mob_bandit",
+          "count": 2,
+          "chance": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "say",
+          "raw": "护卫用刀鞘敲了敲门框：「买东西，还是卖东西？——不问出身，只问价钱。」"
+        }
+      ]
     },
     "jn_teahouse": {
       "id": "jn_teahouse",

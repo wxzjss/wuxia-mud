@@ -112,6 +112,7 @@ class World extends EventEmitter {
     this.instances = { npcs: {}, items: {}, corpses: {} };
     this.deadNpcs = {};   // 第五批：真死的 NPC（defId → 死亡时间），10 天后复活
     this.jail = {};       // 第五批：被官府抓进牢的 NPC（defId → 赎金）
+    this.soldSlaves = [];    // 掳人系统：被掳走卖进黑市/青楼的名册（快照，卖出即入库）
     this.activeRules = []; // 功能 Mod 的「规则」（multiply / additive / onEvent），loadMods 时收集
     this.combatHooks = Object.assign({}, DEFAULT_HOOKS);
     this.effectFns = {};
@@ -362,6 +363,14 @@ class World extends EventEmitter {
   /** 房间内可见 NPC 实例 */
   npcsIn(roomId) {
     return Object.values(this.instances.npcs).filter(n => n.room === roomId && !n.dead);
+  }
+  /** 房间里**晕倒**（被打倒但没被补刀）的人。
+   *  ⚠️ 不能用 npcsIn —— 它过滤掉 dead，而 onNpcDown 会把打倒的人同时标
+   *     knockedOut=true + dead=true（战斗层面算「倒下」），结果打赢了的人
+   *     反而谁都看不见。掳人 / 搜身 / 扶人都得用这个。真死的人实例已被
+   *     onNpcKilled 删掉，这里自然查不到，不会混淆。 */
+  downedIn(roomId) {
+    return Object.values(this.instances.npcs).filter(n => n.room === roomId && n.knockedOut);
   }
   npcsIncludingTemplates(roomId) {
     const out = this.npcsIn(roomId).slice();
@@ -1138,6 +1147,12 @@ class World extends EventEmitter {
     if (this.tickCounter === undefined) this.tickCounter = 0;
     this.tickCounter += minutes;
     if (this.tickCounter >= 30) { this.tickCounter = 0; this.worldTick(); }
+    /* 掳人系统：麻袋里的人醒来、护院欠薪、奴隶工钱结算、跟随者有事离开。
+       每次推进时间都跑（不只在整点），因为「多久醒」本身就是分钟级概率。 */
+    try {
+      const kres = require('./kidnap').onTimeTick(this, minutes);
+      for (const l of (kres && kres.lines) || []) this.emit('storyline', { line: l });
+    } catch (e) { /* 掳人模块挂了不许拖垮时间系统 */ }
     this.emit('time', { minutes: this.clockMinutes });
   }
 
@@ -1233,6 +1248,12 @@ class World extends EventEmitter {
       }
     }
     this.fireEvent('onTick', {});
+    /* 掳人系统：亡命之徒主动掳人（每 30 分钟一次 worldTick 判定）+ 跟随者离队 */
+    try {
+      const kd = require('./kidnap');
+      for (const l of kd.tickDesperate(this) || []) this.emit('storyline', { line: l });
+      for (const l of kd.tickFollowers(this, 30) || []) this.emit('storyline', { line: l });
+    } catch (e) { /* 同上，隔离 */ }
   }
 
   /* 功能 Mod 规则：取某字段的总倍率（multiply 规则） */
@@ -1308,6 +1329,9 @@ class World extends EventEmitter {
     p.disciples = [];   // 弟子（npc 实例 id 列表）
     p.mySect = null;    // 自建宗门（玩家私有，随档走，不进全局 data.sects）
     p.estate = { plots: [], sponsored: {} };   // 家园新地块 + 资助NPC建家
+    /* 掳人 / 奴役 / 护院（麻袋里 + 奴 + 护院 + 欠薪 + 通缉 + 债务） */
+    p.kidnap = { bags: [], slaves: [], guards: [], wageDue: 0, wanted: 0, reports: 0, debt: null };
+    p.followers = [];   // 跟随玩家的 NPC 实例 id（好感>60 才能邀）
     // 起始物品
     for (const it of (meta.startItems || [])) this.giveItem(p, it, 1);
     this.player = p;
@@ -1385,6 +1409,20 @@ class World extends EventEmitter {
           plots: (p.estate.plots || []).map(x => Object.assign({}, x)),
           sponsored: Object.assign({}, p.estate.sponsored || {}),
         } : null,
+        /* ---- 掳人 / 奴役 / 护院 ----
+         * bags/slaves/guards 里存的是**快照**（只有 defId + 少量状态），
+         * 不是活实例 —— 因为人被装走之后要从 instances 里删掉，
+         * 放出来时用 reviveFromSnapshot 重新造人。 */
+        kidnap: p.kidnap ? {
+          bags: (p.kidnap.bags || []).map(b => JSON.parse(JSON.stringify(b))),
+          slaves: (p.kidnap.slaves || []).map(s => JSON.parse(JSON.stringify(s))),
+          guards: (p.kidnap.guards || []).map(g => JSON.parse(JSON.stringify(g))),
+          wageDue: p.kidnap.wageDue || 0,
+          wanted: p.kidnap.wanted || 0,
+          reports: p.kidnap.reports || 0,
+          debt: p.kidnap.debt ? JSON.parse(JSON.stringify(p.kidnap.debt)) : null,
+        } : null,
+        followers: (p.followers || []).slice(),
       },
       /* 玩家买/布置的宅子房间是运行期动态建的，不在 data 里，必须单独存 */
       playerHomes: this.serializePlayerHomes(),
@@ -1398,6 +1436,8 @@ class World extends EventEmitter {
       seed: this.rng.seed,
       deadNpcs: Object.assign({}, this.deadNpcs),
       jail: Object.assign({}, this.jail),
+      /* 被掳走卖掉的 NPC 名册（黑市/青楼的货，还原时要重新 spawn） */
+      soldSlaves: (this.soldSlaves || []).map(s => JSON.parse(JSON.stringify(s))),
     };
   }
 
@@ -1501,6 +1541,17 @@ class World extends EventEmitter {
         plots: (sd.estate.plots || []).map(x => Object.assign({}, x)),
         sponsored: Object.assign({}, sd.estate.sponsored || {}),
       } : { plots: [], sponsored: {} },
+      /* ---- 掳人 / 奴役 / 护院（旧档没这字段时走默认空壳，kidnap.data() 会再兜一层）---- */
+      kidnap: sd.kidnap ? {
+        bags: (sd.kidnap.bags || []).map(b => Object.assign({}, b)),
+        slaves: (sd.kidnap.slaves || []).map(s => Object.assign({}, s)),
+        guards: (sd.kidnap.guards || []).map(g => Object.assign({}, g)),
+        wageDue: sd.kidnap.wageDue || 0,
+        wanted: sd.kidnap.wanted || 0,
+        reports: sd.kidnap.reports || 0,
+        debt: sd.kidnap.debt ? Object.assign({}, sd.kidnap.debt) : null,
+      } : { bags: [], slaves: [], guards: [], wageDue: 0, wanted: 0, reports: 0, debt: null },
+      followers: (sd.followers || []).slice(),
     });
     // 恢复装备物品（装备在 equipmentUid 里，物品定义从 data 取）
     p.inventory = (sd.inventory || []).map(i => Object.assign({}, i));
@@ -1516,6 +1567,7 @@ class World extends EventEmitter {
     this.rng = new RNG(save.seed || Date.now());
     this.deadNpcs = Object.assign({}, save.deadNpcs || {});
     this.jail = Object.assign({}, save.jail || {});
+    this.soldSlaves = (save.soldSlaves || []).map(s => Object.assign({}, s));
     this.emit('loaded', {});
     return p;
   }

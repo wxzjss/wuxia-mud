@@ -207,14 +207,28 @@ class GameEngine {
       return { dir: d, name: (this.cmds.DIR_CN[d] || d), to: tid, toName: tr ? tr.name : '?', locked: !!locked };
     }) : [];
 
-    const npcs = w.npcsIncludingTemplates(p.room).map(n => ({
+    /* ⚠️ 必须带上**打倒的人**（knockedOut）——
+       npcsIncludingTemplates 走 npcsIn，而 npcsIn 过滤 dead；
+       onNpcDown 会把打倒的人同时标 knockedOut + dead，
+       结果「你刚打赢、对方还躺在地上」时房间里一个人都没有，
+       连「补刀」和「装进麻袋」两个入口都点不到。
+       真死的人实例已被 onNpcKilled 删掉，不会混进来。 */
+    const downed = w.downedIn(p.room);
+    const standing = w.npcsIn(p.room);
+    const npcs = w.npcsIncludingTemplates(p.room)
+      .concat(downed.filter(d => !standing.some(x => x.id === d.id)))
+      .map(n => ({
       id: n.id, defId: n.defId, name: n.name, title: n.title,
       level: n.level, hp: n.hp, maxHp: n.maxHp, hostile: n.hostile,
+      /* 被打倒（还没被补刀）→ NPC 菜单里才给「装进麻袋」入口 */
+      knockedOut: !!n.knockedOut,
       hasQuest: !!(n.def && n.def.quests && n.def.quests.some(q => p.questStage(q) < 0)),
       canReport: !!(n.def && n.def.quests && n.def.quests.some(q => p.questStage(q) >= 0 && p.questStage(q) < 99)),
       shop: !!n.shop, canTeach: !!(n.def && n.def.teach),
       /* ---- 社交扩展（第一批）---- */
       favor: n.favor || 0,
+      /* 跟随玩家的 NPC（好感过 60 才能邀，奴册面板要显示） */
+      following: !!n.followPlayer,
       favorTier: social.favorTier(n.favor || 0).name,
       favorColor: social.favorTier(n.favor || 0).color,
       tag: (n.def && n.def.tag) || null,
@@ -292,7 +306,70 @@ class GameEngine {
       kinship: kinship.summary(w),
       home: homeMod.summary(w),
       martial: this.martialList(),
+      kidnap: this.kidnapView(),
       mods: this.modLoader.mods.map(m => ({ id: m.id, name: m.name, version: m.version, author: m.author, enabled: m.enabled, category: m.category, description: m.description, counts: m.counts })),
+    };
+  }
+
+  /** 掳人 / 奴役 / 护院 的前端数据（奴册面板）
+   *  · 面板是 async 且数据来自 api.view(this)（血泪 #26），所以这里要给足渲染需要的字段，
+   *    少给一个字段前端就会渲染出「undefined」或干脆空白。
+   *  · 名额表要带上「已用 / 上限 / 档名」，不然玩家不知道自己还能买几个。 */
+  kidnapView() {
+    const w = this.world, p = w.player;
+    if (!p) return null;
+    const kmod = require('./kidnap');
+    const k = kmod.data(w);
+    const q = kmod.quotas(w);
+    const wt = kmod.wantedTier(k.wanted);
+    const bagList = kmod.listBags(w);
+    return {
+      wanted: k.wanted,
+      wantedName: wt.name,
+      wantedShort: wt.short,
+      wantedDesc: wt.desc,
+      reports: k.reports || 0,
+      wageDue: k.wageDue || 0,
+      /* 名额（唐制按身份给限额） */
+      quota: {
+        tierName: q.tier.name,
+        slaves: q.slaves, usedSlaves: q.usedSlaves,
+        guards: q.guards, usedGuards: q.usedGuards,
+      },
+      /* 麻袋：state = out(没醒) / struggling(醒了在挣) / burst(冲出来了) */
+      bags: bagList.map(b => ({
+        idx: b.idx, name: b.name, state: b.state,
+        minutesIn: b.minutesIn, power: b.power, personality: b.personality,
+      })),
+      /* 名下的人 */
+      slaves: k.slaves.map(s => ({
+        name: s.name, obedience: s.obedience, favor: s.favor,
+        task: s.task ? (kmod.TASKS[s.task.key] || {}).name || s.task.key : null,
+        taskEnds: s.taskEnds || 0,
+        minutesLeft: s.taskEnds ? Math.max(0, s.taskEnds - w.clockMinutes) : 0,
+        waitingAt: s.waitingAt ? ((w.getRoom(s.waitingAt) || {}).name || s.waitingAt) : null,
+        escaped: !!s.escaped,
+      })),
+      /* 护院 */
+      guards: k.guards.map(g => ({
+        name: g.name, power: g.power, wage: g.wage, loyalty: g.loyalty,
+        supervising: g.supervising || null,
+        minutesLeft: g.superviseEnds ? Math.max(0, g.superviseEnds - w.clockMinutes) : 0,
+      })),
+      /* 黑市在售（买奴用） */
+      marketStock: (Array.isArray(w.soldSlaves) ? w.soldSlaves : [])
+        .filter(s => s && s.name && s.defId)
+        .map(s => ({ name: s.name, to: s.to, keeper: s.keeper, price: s.price })),
+      inBrothel: kmod.inBrothel(w),
+      inBlackMarket: kmod.inBlackMarket(w),
+      /* 玩家自己被掳：显示赎金与三条出路 */
+      debt: k.debt ? {
+        ransom: k.debt.ransom, paidOff: k.debt.paidOff || 0,
+        days: k.debt.days || 0, by: k.debt.by,
+        market: k.debt.market,
+      } : null,
+      /* 手里有没有袋子（没有袋子时前端该把「掳走」按钮灰掉并给提示） */
+      hasSack: p.countItem(kmod.SACK_ID) > 0,
     };
   }
 

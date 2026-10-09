@@ -1233,6 +1233,18 @@
       "capacity": 20,
       "desc": "瓶身莹白，装的水似乎都比别处清甜。"
     },
+    "sack_coarse": {
+      "id": "sack_coarse",
+      "name": "粗麻袋",
+      "type": "misc",
+      "value": 30,
+      "tags": [
+        "sack",
+        "tool"
+      ],
+      "quality": "worn",
+      "desc": "一只粗布麻袋，口子用麻绳扎着。装人装货都成——山里人用它背柴，掳人的也用它背人。"
+    },
     "butcher_knife": {
       "id": "butcher_knife",
       "name": "剔骨尖刀",
@@ -1543,6 +1555,7 @@
       "name": "天材人參",
       "type": "treasure",
       "category": "天材地果",
+      "quality": "rare",
       "desc": "天地灵气孕育的奇参，服之可大增资质与根骨。",
       "value": 3000,
       "stackable": true,
@@ -1569,6 +1582,7 @@
       "name": "悟极果",
       "type": "treasure",
       "category": "天材地果",
+      "quality": "rare",
       "desc": "传说中的悟道仙果，服之可增悟性。",
       "value": 3000,
       "stackable": true,
@@ -1588,6 +1602,7 @@
       "name": "血参花",
       "type": "treasure",
       "category": "天材地果",
+      "quality": "rare",
       "desc": "生于绝地的血参之花，服之气血与根骨皆增。",
       "value": 1500,
       "stackable": true,

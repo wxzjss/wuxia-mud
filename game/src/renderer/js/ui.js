@@ -499,6 +499,22 @@
   }
 
   /* 点击 NPC 的小菜单 */
+  /** 能不能掳这个人：得有袋子 + 对方已经打倒（晕着）
+   *  判定全从前端已有数据来，不额外请求 —— NPC 菜单要秒开。
+   *  ⚠️ 别在这里多判 `n.hostile`：模板里 hostile 是**常驻标记**（山贼/魔教
+   *     模板一出生就是 true，打输后也不清），而这些恰恰是最该被装进麻袋的人 ——
+   *     后端 packNpc 也不拦 hostile，只拦「牵着任务的」。
+   *     多判这一条的后果：打倒的山贼在菜单里点不到「装进麻袋」，
+   *     掳人系统最主的那条路在前端就断了（已踩）。 */
+  function canKidnap(n) {
+    if (!n || !n.knockedOut) return false;
+    const k = (S.view && S.view.kidnap) || null;
+    if (!k) return false;
+    if (!k.hasSack) return false;
+    /* 袋子满了就别给了，给了也是白给（后端会拒） */
+    return (k.bags || []).length < 3;
+  }
+
   function openNpcMenu(n) {
     /* 头部带一行社交摘要：好感档 / 身份 / 是否可请教·切磋·偷窃 */
     const bits = [];
@@ -541,10 +557,20 @@
       n.kinLabel ? { label: '割袍断义 (sever)', action: 'sever', hint: '断后会掉好感' } : null,
       /* ---- 风险 ---- */
       n.canSteal ? { label: '伺机偷窃 (steal)', action: 'steal', hint: '失手会被通缉' } : null,
+      /* ---- 掳人（主人加的玩法：只对**打倒的**人露出来）----
+         条件从 v.kidnap 读：你得有袋子 + 对方已经晕了。
+         ⚠️ 不给「强掳站着的人」留入口 —— 那是绑架玩法之外的东西，且游戏里
+            装袋模块本来就拒绝没晕倒的人，前端给了按钮也只会吃一发警告。 */
+      canKidnap(n) ? { label: '装进麻袋 (pack)', action: 'pack', hint: '当众下手必被告发' } : null,
+      canKidnap(n) ? { label: '卖了他 (sellnpc)', action: 'sellnpc', hint: '知情转卖，重罪' } : null,
+      (!n.following && (n.favor || 0) > 60) ? { label: '邀他跟随 (follow)', action: 'follow', hint: '他会跟着，但也有自己的事要办' } : null,
       { label: '动手厮杀 (kill)', action: 'kill', hint: '可能致死，谨慎' }
     ].filter(Boolean), it => {
       const BTN = { fromButton: true };
       if (it.action === 'look') doCmd('look ' + n.name, BTN);
+      else if (it.action === 'pack') doCmd('装人 ' + n.name, BTN);
+      else if (it.action === 'sellnpc') doCmd('卖人 ' + n.name, BTN);
+      else if (it.action === 'follow') doCmd('跟随 ' + n.name, BTN);
       else if (it.action === 'talk') doCmd('talk ' + n.name, BTN);
       else if (it.action === 'ask') { askNpc(n); }
       else if (it.action === 'guanxi') doCmd('guanxi ' + n.name, BTN);
@@ -742,6 +768,9 @@
     } else if (name === 'found') {
       title = '宗门 · 师承';
       html = sectFounderHtml(v);
+    } else if (name === 'slaves') {
+      title = '奴册 · 护院 · 麻袋';
+      html = slavesHtml(v);
     } else if (name === 'guide') {
       title = '江湖指引';
       html = guideHtml(v);
@@ -1112,6 +1141,145 @@
 
   /** 宗门/师承面板（跳到 martial 的宗门段，保留独立入口） */
   function sectFounderHtml(v) { return martialHtml(v); }
+
+  /* ============================================================
+   *  奴册面板（掳人 / 奴役 / 护院）
+   *
+   *  三栏：麻袋里 / 名下的人 / 护院，外加恶名与家资名额。
+   *  ⚠️ 数据全从 v.kidnap 取（engine.view 的顶层字段）。
+   *  ⚠️ 每个操作按钮都走 data-cmd（bindPanelActions 统一绑），别自己 addEventListener，
+   *     那样会被 fromButton 的输入法防弹漏掉（血泪 #8：点了没反应先搜有没有绑事件）。
+   * ============================================================ */
+  function slavesHtml(v) {
+    const k = v.kidnap;
+    if (!k) return '<div class="modal-text">（还没有名册。）</div>';
+    let h = '';
+
+    /* ---- 恶名：这一栏最重要，掳人卖人的代价全挂在这儿 ---- */
+    const bad = k.wanted > 0;
+    h += '<div class="modal-text">' +
+      (bad
+        ? '<span style="color:#b23c3c">恶名 ' + (k.wanted || 0) + '　' + esc(k.wantedName || '') + '</span>　—— ' + esc(k.wantedDesc || '') + (k.reports ? '（已被告发 ' + (k.reports || 0) + ' 次）' : '') 
+        : '恶名 0　未及罪。还没人报官，但你欠下的账，迟早要算。') +
+      '</div>';
+
+    /* ---- 自己被掳：三条出路 ---- */
+    if (k.debt) {
+      h += '<div class="kv" style="border-color:#b23c3c"><span class="k">你在黑市</span><span class="v" style="color:#b23c3c">赎金 ' +
+        (k.debt.ransom || 0) + ' 文　已抵 ' + (k.debt.paidOff || 0) + ' 文　第 ' + ((k.debt.days || 0) + 1) + '/5 天</span></div>';
+      h += '<div class="row-ops">' +
+        '<button class="op-btn" data-cmd="赎身">赎身（掏钱）</button>' +
+        '<button class="op-btn" data-cmd="突围">突围（硬打）</button>' +
+        '<button class="op-btn" data-cmd="打工">打工还债</button>' +
+        '</div>';
+    }
+
+    /* ---- 家资名额（唐制按身份给限额）---- */
+    const q = k.quota || {};
+    h += kv('家资', (q.tierName || '寒素') + '　奴 ' + (q.usedSlaves || 0) + '/' + (q.slaves || 0) + '　护院 ' + (q.usedGuards || 0) + '/' + (q.guards || 0));
+    if (k.wageDue > 0) {
+      h += kv('欠工钱', (k.wageDue || 0) + ' 文　拖久了护院要走人', 'bad');
+      h += '<div class="row-ops"><button class="op-btn" data-cmd="发工钱">发工钱</button></div>';
+    }
+
+    /* ---- 麻袋 ---- */
+    h += '<div class="panel-sub">麻袋里' + (k.hasSack ? '（你身上还有空袋）' : '（你身上没有空袋了）') + '</div>';
+    if (!(k.bags || []).length) {
+      h += '<div class="modal-text">空的。用「装人 &lt;人名&gt;」把打倒的人装进来。</div>';
+    } else {
+      h += '<div class="kv-list">';
+      (k.bags || []).forEach(b => {
+        const st = { out: '还在昏迷', struggling: '已经醒了，在袋里挣', burst: '正在往外冲' }[b.state] || b.state;
+        const hh = Math.floor((b.minutesIn || 0) / 60);
+        h += '<div class="kv"><span class="k">第' + (b.idx || '?') + '袋　' + esc(b.name || '') + '</span><span class="v">' +
+          esc(st) + '　装了 ' + hh + ' 个时辰' + '</span></div>';
+      });
+      h += '</div>';
+      h += '<div class="row-ops">' +
+        (k.bags || []).map(b => '<button class="op-btn" data-cmd="放人 ' + (b.idx || 1) + '">放出 ' + esc(b.name || '') + '</button>').join('') +
+        (k.bags || []).map(b => '<button class="op-btn" data-cmd="卖人 ' + esc(b.name || '') + '">卖掉 ' + esc(b.name || '') + '</button>').join('') +
+        '</div>';
+    }
+
+    /* ---- 名下的人 ---- */
+    h += '<div class="panel-sub">名下的人</div>';
+    if (!(k.slaves || []).length) {
+      h += '<div class="modal-text">无。要买奴得去黑市——律制按身份限额，你现在的家资养不起几个人。</div>';
+    } else {
+      h += '<div class="kv-list">';
+      (k.slaves || []).forEach(s => {
+        const busy = s.task ? (s.task + '，还剩 ' + Math.round((s.minutesLeft || 0) / 30) + ' 个时辰') :
+          (s.waitingAt ? ('在' + s.waitingAt + '等你') : '闲着');
+        h += '<div class="kv"><span class="k">' + esc(s.name || '') + '</span><span class="v">' +
+          '服从 ' + (s.obedience || 0) + '　好感 ' + (s.favor || 0) + '　' + esc(busy) +
+          ((s.obedience || 0) <= 80 && (s.favor || 0) <= 80 ? '　<span style="color:#b07a2a">（无人看管易逃）</span>' : '') +
+          '</span></div>';
+      });
+      h += '</div>';
+      h += '<div class="panel-sub">派活（做工 / 采买 / 跑腿 / 洗衣）</div><div class="row-ops">' +
+        (k.slaves || []).map(s => ['做工', '采买', '跑腿', '洗衣'].map(tk =>
+          '<button class="op-btn" data-cmd="使唤 ' + esc(s.name || '') + ' ' + tk + '">' + esc(s.name || '') + '·' + tk + '</button>'
+        ).join('')).join('') +
+        '</div>';
+      h += '<div class="row-ops">' +
+        (k.slaves || []).map(s => '<button class="op-btn" data-cmd="卖人 ' + esc(s.name || '') + '">卖 ' + esc(s.name || '') + '</button>').join('') +
+        '</div>';
+      /* 有护院才能派人盯 */
+      if ((k.guards || []).length) {
+        h += '<div class="panel-sub">派人盯着（护院在看着才不敢跑）</div><div class="row-ops">' +
+          (k.slaves || []).map(s => '<button class="op-btn" data-cmd="监督 ' + esc(s.name || '') + '">盯 ' + esc(s.name || '') + '</button>').join('') +
+          '</div>';
+      }
+    }
+
+    /* ---- 护院 ---- */
+    h += '<div class="panel-sub">护院</div>';
+    if (!(k.guards || []).length) {
+      h += '<div class="modal-text">无。得回自家宅院雇——指令「雇护院 &lt;人名&gt;」。</div>';
+    } else {
+      h += '<div class="kv-list">';
+      (k.guards || []).forEach(g => {
+        const busy = g.supervising ? ('正盯着' + g.supervising + '，还剩 ' + Math.round((g.minutesLeft || 0) / 30) + ' 个时辰') : '看家';
+        h += '<div class="kv"><span class="k">' + esc(g.name || '') + '</span><span class="v">' +
+          '武力 ' + (g.power || 0) + '　日薪 ' + (g.wage || 0) + ' 文　' + busy +
+          ((g.loyalty || 0) < 30 ? '　<span style="color:#b23c3c">（离心）</span>' : '') + '</span></div>';
+      });
+      h += '</div>';
+      h += '<div class="row-ops"><button class="op-btn" data-cmd="发工钱">结清工钱</button></div>';
+    }
+
+    /* ---- 黑市在售 ---- */
+    if (k.inBlackMarket) {
+      h += '<div class="panel-sub">黑市在售</div>';
+      if (!(k.marketStock || []).length) {
+        h += '<div class="modal-text">今日无人待售。</div>';
+      } else {
+        h += '<div class="kv-list">';
+        (k.marketStock || []).forEach(m => {
+          h += '<div class="kv"><span class="k">' + esc(m.name || '') + '</span><span class="v">' +
+            (m.to === 'brothel' ? '青楼' : '黑市') + '　' + (m.price || 0) + ' 文</span></div>';
+        });
+        h += '</div><div class="row-ops">' +
+          (k.marketStock || []).map(m => '<button class="op-btn" data-cmd="买奴 ' + esc(m.name || '') + '">买 ' + esc(m.name || '') + '</button>').join('') +
+          '</div>';
+      }
+    } else if (k.inBrothel) {
+      h += '<div class="panel-sub">你在青楼</div><div class="row-ops">' +
+        '<button class="op-btn" data-cmd="赎回">看赎人名册</button></div>';
+    }
+
+    /* ---- 跟随的人 ---- */
+    const fol = (v.npcs || []).filter(n => n.following);
+    if (fol.length) {
+      h += '<div class="panel-sub">跟着你走的人</div><div class="modal-text">' +
+        fol.map(n => esc(n.name)).join('、') + '</div>';
+    }
+
+    h += '<div class="modal-text" style="margin-top:10px;font-size:12px;opacity:.72">' +
+      '手段都在律法里：略卖良人为奴婢，杖一百、流三千里；知情买者与犯人同罪。' +
+      '奴婢限额按身份给——王公之家不过二十人。</div>';
+    return h;
+  }
 
   function questsHtml(v) {
     const src = questSrc(v);
@@ -1565,6 +1733,7 @@
     sectfounder: 'found', 创宗: 'found', 招贤: 'found', 逐出师门: 'found', 演武: 'found', 大比: 'found', 解散宗门: 'found',
     recruit: 'found', drill: 'found', contest: 'found', disciple: 'found', tutor: 'found', founded: 'found',
     宗门: 'found',
+    slaves: 'slaves', 奴册: 'slaves', 奴仆: 'slaves', 护院: 'slaves', 麻袋: 'slaves', 袋: 'slaves',
     help: 'help', '?': 'help', 帮助: 'help', 指令: 'help', 指令帮助: 'help',
   };
 

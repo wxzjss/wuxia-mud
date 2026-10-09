@@ -19,6 +19,7 @@ const farm = require('./farm');
 const personality = require('./personality');
 const sectFounder = require('./sectFounder');
 const estateMod = require('./estate');
+const kidnapMod = require('./kidnap');
 
 /* 中文数字 → 阿拉伯 */
 const CN_NUM = { 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10, 壹: 1, 贰: 2, 叁: 3, 肆: 4, 伍: 5, 陆: 6, 柒: 7, 捌: 8, 玖: 9, 拾: 10 };
@@ -66,6 +67,23 @@ function buildCommands(world) {
       '采集/农事': ['打水 水源边打水解渴（需容器）', '切割 切野兽尸体取肉皮（需利器）', '加工 客栈/酒楼把生肉做熟', '买地 田头佃户家置田', '种植 <稻种|菜种>', '收割 收成熟庄稼', '偷庄稼 偷别人田（会被通缉）'],
       '任务': ['quest 任务列表', 'accept <任务>', 'abandon <任务>', 'report 交任务'],
       '系统': ['save 存档', 'load 读档', 'settings 设置', 'mods mod 管理', 'clear 清屏', 'nick <称号>'],
+      '掳人/奴仆': [
+        '装人 <人名> 把晕倒的人装进麻袋（无目击者才不惊动官府）',
+        '麻袋 看袋里关着谁',
+        '放人 <第几袋> 放人出来',
+        '赎回 <人名> 青楼/黑市赎人',
+        '卖人 <人名> 卖进地下场所（知情转卖，重罪）',
+        '买奴 <人名> 黑市买奴（受家资名额限制）',
+        '奴册 看麻袋/奴/护院/恶名',
+        '使唤 <人名> <做工|采买|跑腿|洗衣> 派活',
+        '跟随 <人名> 邀人跟随（须好感过 60）',
+        '雇护院 <人名> 看家护院（须在宅院，日薪要付）',
+        '发工钱 结清护院工钱',
+        '监督 <人名> 派护院盯着奴干活',
+        '赎身 在青楼/黑市赎身（不在那儿则无事）',
+        '突围 打出去（武力够强才成）',
+        '还债 打工还债',
+      ],
     };
     for (const g of Object.keys(groups)) {
       lines.push({ kind: 'subtitle', text: g });
@@ -1113,10 +1131,30 @@ function buildCommands(world) {
     return { lines: r.lines };
   });
 
-  /** 赎身 */
+  /** 赎身 —— 一个名字，按当前所在场景分派（主人定的规矩）
+   *  · 在黑市（被掳走关着）→ 黑市赎金（kidnap.redeemSelf）
+   *  · 在青楼（卖身挂着）  → 青楼赎身（work.redeem）
+   *  · 都不在               → 没效果，提示一句，不报错
+   * 三个去向都不是的时候就不该有响应 —— 「赎身」是地点动作，不是全局动作。*/
   reg(['redeem', '赎身', '脱籍'], (ctx) => {
-    const r = workMod.redeem(ctx.world);
-    return { lines: r.lines };
+    const w = ctx.world, p = ctx.player;
+    const k = kidnapMod.data(w);
+    /* ① 黑市：人被掳走关在这儿，赎金另算 */
+    if (kidnapMod.inBlackMarket(w)) return { lines: kidnapMod.redeemSelf(w).lines };
+    /* ② 青楼：卖身契还挂着 */
+    if (kidnapMod.inBrothel(w) && p.prostitution && p.prostitution.sold) {
+      return { lines: workMod.redeem(w).lines };
+    }
+    /* ③ 都不在 */
+    const where = (w.getRoom(p.room) || {}).name || '此处';
+    if (k && k.debt) {
+      /* 被掳走但不在黑市（如被卖进青楼）：赎回自己得在关你的地方办 */
+      return { lines: [{ kind: 'plain', text: `　你被扣在${where}，赎身得找这里的人说。` }] };
+    }
+    if (kidnapMod.inBrothel(w)) {
+      return { lines: [{ kind: 'plain', text: '　你在青楼，却没卖身契——没什么可赎的。' }] };
+    }
+    return { lines: [{ kind: 'plain', text: `　${where}不是能赎身的地方。` }] };
   });
 
   /** 查看身世 / 卖身状态 */
@@ -2327,6 +2365,142 @@ function buildCommands(world) {
     }
     return lines;
   }
+
+  /* ================================================================
+   * 掳人 / 奴役 / 护院（kidnap.js）
+   * 规矩：所有返回值都包成 { lines } —— commands.execute 只认 res.lines。
+   * 装人这类「看一眼就知道违法」的玩法，全部按律法定代价（恶名阶梯），
+   * 不做道德说教，只让官府和pty 传闻来找麻烦。
+   * ================================================================ */
+  const kdLines = (r) => ({ lines: (r && r.lines) || [] });
+  const kdArg = (ctx) => String((ctx && ctx.args) || '').trim();
+
+  /* ---- ① 掳人：把晕倒的 NPC 装进麻袋 ---- */
+  reg(['pack', '装人', '掳走', '扛人'], (ctx) => kdLines(kidnapMod.packNpc(ctx.world, kdArg(ctx))));
+
+  /* ---- ② 麻袋一览 / 放人 ---- */
+  reg(['bags', '麻袋', '袋'], (ctx) => {
+    const list = kidnapMod.listBags(ctx.world);
+    const lines = [{ kind: 'title', text: '【 麻 袋 】' }];
+    if (!list.length) lines.push({ kind: 'plain', text: '　你没扛着麻袋。' });
+    for (const b of list) {
+      const st = { out: '袋里', struggling: '正在挣扎', burst: '要冲出来了' }[b.state] || b.state;
+      lines.push({
+        kind: b.state === 'out' ? 'plain' : 'warn',
+        text: `　第${b.idx}袋　${b.name}　${st}　（装进去 ${b.minutesIn} 分钟）`,
+        bagIdx: b.idx, npcName: b.name,
+      });
+    }
+    if (list.length) lines.push({ kind: 'hint', text: '　用「放人 <第几袋>」把人放出来。' });
+    return { lines };
+  });
+
+  reg(['release', '放人'], (ctx) => kdLines(kidnapMod.releaseBag(ctx.world, kdArg(ctx) || 1)));
+
+  /* ---- ③ 卖人 / 赎人 ---- */
+  reg(['sellnpc', '卖人'], (ctx) => kdLines(kidnapMod.sellNpc(ctx.world, kdArg(ctx))));
+  /* ⚠️ 「赎人」不能占 redeem/赎身 —— 那是青楼卖身线的既有指令（blood rule #27 同理）。
+     赎回别人的名字一律带「买」字口：赎人 → 「赎回」。 */
+  reg(['redeemnpc', '赎回', '赎出'], (ctx) => kdLines(kidnapMod.redeemPerson(ctx.world, kdArg(ctx))));
+
+  /* ---- ④ 黑市买奴 ---- */
+  reg(['buyslave', '买奴'], (ctx) => kdLines(kidnapMod.buySlave(ctx.world, kdArg(ctx))));
+
+  /* ---- ⑤ 名册：麻袋 + 奴 + 护院 + 恶名 ---- */
+  reg(['slaves', '奴册', '奴仆', '护院'], (ctx) => {
+    const w = ctx.world, p = ctx.player;
+    const k = kidnapMod.data(w);
+    if (!k) return { lines: [{ kind: 'plain', text: '你还没上路。' }] };
+    const q = kidnapMod.quotas(w);
+    const wt = kidnapMod.wantedTier(k.wanted);
+    const lines = [{ kind: 'title', text: '【 奴 册 】' }];
+    /* 恶名 */
+    lines.push({ kind: k.wanted > 0 ? 'warn' : 'plain', text: `　恶名：${k.wanted}（${wt.name}）` });
+    if (wt.desc) lines.push({ kind: 'hint', text: '　' + wt.desc });
+    /* 名额 */
+    lines.push({ kind: q.slaves >= q.slaveMax ? 'plain' : 'hint', text: `　家资档：${q.name}　奴 ${k.slaves.length}/${q.slaveMax}　护院 ${k.guards.length}/${q.guardMax}` });
+    /* 麻袋 */
+    lines.push({ kind: 'subtitle', text: '麻袋里' });
+    if (!k.bags.length) lines.push({ kind: 'plain', text: '　（空）' });
+    for (const b of kidnapMod.listBags(w)) {
+      lines.push({ kind: 'plain', text: `　第${b.idx}袋 ${b.name}（${b.minutesIn} 分钟）` });
+    }
+    /* 奴 */
+    lines.push({ kind: 'subtitle', text: '名下的人' });
+    if (!k.slaves.length) lines.push({ kind: 'plain', text: '　（无）' });
+    for (const s of k.slaves) {
+      const busy = s.task && s.taskEnds && w.clockMinutes < s.taskEnds;
+      lines.push({
+        kind: 'plain',
+        text: `　${s.name}　服从 ${s.obedience}　好感 ${s.favor}　${busy ? `干活中（还剩 ${s.taskEnds - w.clockMinutes} 分钟）` : (s.waitingAt ? '在' + ((w.getRoom(s.waitingAt) || {}).name || s.waitingAt) + '等你' : '闲着')}`,
+        npcName: s.name, slaveName: s.name,
+      });
+    }
+    /* 护院 */
+    lines.push({ kind: 'subtitle', text: '护院' });
+    if (!k.guards.length) lines.push({ kind: 'plain', text: '　（无）' });
+    for (const g of k.guards) {
+      const busy = g.supervising && w.clockMinutes < (g.superviseEnds || 0);
+      lines.push({ kind: 'plain', text: `　${g.name}　武力 ${g.power}　日薪 ${g.wage} 文　${busy ? '正盯着' + g.supervising + '干活' : '看家'}${g.loyalty < 30 ? '　（离心）' : ''}` });
+    }
+    if (k.wageDue) lines.push({ kind: 'warn', text: `　欠工钱 ${k.wageDue} 文（拖久了护院会走）` });
+    /* 债务（玩家自己被掳走） */
+    if (k.debt) {
+      const bm = kidnapMod.BLACK_MARKETS.find(b => b.id === k.debt.market) || {};
+      lines.push({ kind: 'warn', text: `【你在${bm.name || '黑市'}】赎金 ${k.debt.ransom} 文　可用「赎身」或「突围」` });
+    }
+    return { lines };
+  });
+
+  /* ---- ⑥ 派活 ---- */
+  reg(['task', '使唤', '派活'], (ctx) => {
+    const arg = kdArg(ctx);
+    /* 「使唤」不带活名 → 列可选活；带活名 → 派 */
+    const TASK_KEYS = { '做工': 'craft', '土工': 'craft', '采买': 'purchase', '跑腿': 'errand', '洗衣': 'laundry' };
+    let taskKey = TASK_KEYS[arg];
+    let who = '';
+    if (!taskKey) {
+      const parts = arg.split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) { who = parts[0]; taskKey = TASK_KEYS[parts[1]]; }
+      else if (parts.length === 1) { who = parts[0]; }
+    }
+    if (!taskKey) {
+      const k = kidnapMod.data(ctx.world);
+      if (!k || !k.slaves.length) return { lines: [{ kind: 'plain', text: '你名下没人。' }] };
+      const lines = [{ kind: 'title', text: '【 派 活 】' }];
+      for (const s of k.slaves) lines.push({ kind: 'plain', text: `　${s.name}　服从 ${s.obedience}　好感 ${s.favor}`, slaveName: s.name });
+      lines.push({ kind: 'subtitle', text: '可派的活' });
+      for (const key of Object.keys(kidnapMod.TASKS)) {
+        const t = kidnapMod.TASKS[key];
+        lines.push({ kind: 'plain', text: `　${t.name}：${t.desc}　约赚 ${t.earn[0]}~${t.earn[1]} 文`, taskKey: key });
+      }
+      lines.push({ kind: 'hint', text: '　用法：使唤 <人名> <活名>，如「使唤 阿福 采买」' });
+      return { lines };
+    }
+    return kdLines(kidnapMod.assignTask(ctx.world, who, taskKey));
+  });
+
+  /* ---- ⑦ 跟随 ---- */
+  reg(['follow', '跟随', '邀跟随'], (ctx) => kdLines(kidnapMod.inviteFollow(ctx.world, kdArg(ctx))));
+
+  /* ---- ⑧ 护院：雇 / 结薪 / 监督 ---- */
+  reg(['hireguard', '雇护院', '请护院'], (ctx) => kdLines(kidnapMod.hireGuard(ctx.world, kdArg(ctx))));
+  reg(['wages', '发工钱', '结薪'], (ctx) => kdLines(kidnapMod.payWages(ctx.world)));
+  reg(['supervise', '监督', '盯着'], (ctx) => kdLines(kidnapMod.supervise(ctx.world, kdArg(ctx))));
+
+  /* ---- ⑨ 玩家自己被掳走后的三条路 ----
+   * 赎身/赎回/脱籍 由上面那个「赎身」按场景统一分派，这里不再重复注册。
+     只补黑市专用的突围（武力打出去），以及还债。 */
+  reg(['escape', '突围', '打出去'], (ctx) => kdLines(kidnapMod.escapeMarket(ctx.world)));
+  reg(['workdebt', '还债', '打工还债'], (ctx) => {
+    const r = kidnapMod.workOffDebt(ctx.world, 60);
+    if (!r || !r.ok) {
+      /* 一次性还不上，就走普通打工 + 记一笔 */
+      const r2 = workMod.work(ctx.world);
+      return { lines: ((r && r.lines) || []).concat(r2.lines || []) };
+    }
+    return kdLines(r);
+  });
 
   return { CMD, execute, doMove, lookRoom, scoreLines, describeItem, lookNpc, advanceQuestCounters, DIRECTIONS, DIR_CN, cnNum, runDialogue };
 }
