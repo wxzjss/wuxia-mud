@@ -569,6 +569,13 @@ body::before {
 .q-done-list { display: flex; flex-direction: column; gap: 4px; }
 .q-done-item { font-size: 12.5px; color: var(--jade); opacity: .8; padding: 2px 0; }
 
+/* 送礼面板：往来摘要 + 行内「已送 N 次」 */
+.gift-log { font-size: 12.5px; color: var(--ink-2); background: var(--paper-2); border-left: 3px solid var(--jade);
+  border-radius: 4px; padding: 7px 10px; margin-bottom: 8px; line-height: 1.7; }
+.gift-log.dim { color: var(--ink-4); border-left-color: var(--line-2); background: transparent; }
+.gift-log b { color: var(--jade-d); }
+.gift-times { font-style: normal; color: var(--gold); margin-left: 8px; font-size: 11px; }
+
 /* NPC 详情面板（点 NPC 菜单里的「细看此人」打开的界面）
    版式：一句定位 → 分节卡片（关系 / 武学 / 随身 / 能教什么 / 作息 → 背景故事）
    背景故事那几节用「左标签 + 右正文」的传记式排版；未解锁的整行压暗 + 斜体，

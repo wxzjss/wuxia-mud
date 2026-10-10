@@ -1,0 +1,975 @@
+{
+  "npcs": {
+    "npcv_167": {
+      "id": "npcv_167",
+      "shop": "shop_toy"
+    },
+    "npcv_073": {
+      "id": "npcv_073",
+      "shop": "shop_tea"
+    },
+    "jn_apothecary": {
+      "id": "jn_apothecary",
+      "name": "陈济仁",
+      "title": "回春堂坐堂",
+      "gender": "male",
+      "age": 61,
+      "tag": "doctor",
+      "room": "jn_pharmacy",
+      "desc": "白发白须，坐在柜台后头给人号脉。三根手指搭在病人腕上，眼睛半闭着。",
+      "level": 9,
+      "hp": 320,
+      "mp": 180,
+      "atk": 12,
+      "def": 8,
+      "dodge": 6,
+      "speed": 10,
+      "hostile": false,
+      "leavesCorpse": false,
+      "shop": "shop_huichuntang",
+      "favorInit": 2,
+      "favorBase": 0.85,
+      "talk": [
+        "病来如山倒，去如抽丝。急不得。",
+        "（他把你手腕翻过来，看了看指节）……练过功夫的人，脉不一样。",
+        "这药柜里三百二十七个抽屉，哪个装什么，我闭着眼也摸得着。"
+      ],
+      "ask": {
+        "医术": "医术没什么玄的：认得药，认得人，认得自己的手。",
+        "回春堂": "开了三十一年。前面的掌柜姓周，传给我是因为我没儿子，他也没儿子。",
+        "药材": "要好的药材往北边山里找，要便宜的往南边码头等。",
+        "疗伤": "金创药敷外伤，内伤得煎药吃。你要是硬扛着，我这儿还有棺材的尺寸。"
+      },
+      "askDefault": "（他摇摇头）老朽只会看病。"
+    },
+    "jn_silkkeeper": {
+      "id": "jn_silkkeeper",
+      "name": "闻素娘",
+      "title": "绸缎庄掌柜",
+      "gender": "female",
+      "age": 47,
+      "tag": "vendor",
+      "room": "jn_silk_shop",
+      "desc": "四十来岁的妇人，两指间常年摸料子，磨出一层薄茧。她说话时手从不空着。",
+      "level": 6,
+      "hp": 220,
+      "atk": 8,
+      "def": 6,
+      "dodge": 8,
+      "speed": 12,
+      "hostile": false,
+      "leavesCorpse": false,
+      "shop": "shop_silk",
+      "favorInit": 1,
+      "talk": [
+        "（她把一卷料子往柜台上一摊）摸摸这手感。这是杭绸，那是蜀锦。",
+        "料子这东西，一眼就看得出贵贱。人也一样。",
+        "穿得体面，走到哪儿门房都不敢拦你。"
+      ],
+      "askDefault": "（她只顾理一匹缎子）要买就说，不买别摸。"
+    },
+    "jn_winewaiter": {
+      "id": "jn_winewaiter",
+      "name": "常阿福",
+      "title": "醉仙楼伙计",
+      "gender": "male",
+      "age": 19,
+      "tag": "waiter",
+      "room": "jn_wine_house",
+      "desc": "肩上搭一条白巾，在桌子之间穿来穿去，两脚几乎不沾地。",
+      "level": 4,
+      "hp": 160,
+      "atk": 6,
+      "def": 4,
+      "dodge": 14,
+      "speed": 18,
+      "hostile": false,
+      "leavesCorpse": false,
+      "shop": "shop_wine",
+      "favorInit": 1,
+      "talk": [
+        "客官打尖还是住店？楼上雅间还空着两间。",
+        "本店的醉仙酿，一坛下去能让人忘了自己姓什么。",
+        "（他把白巾甩上肩）后厨的师傅脾气大，菜催不得。"
+      ],
+      "askDefault": "（他一边擦桌子一边应）小的就是个跑堂的，不懂那些。"
+    },
+    "jn_bookman": {
+      "id": "jn_bookman",
+      "name": "林守拙",
+      "title": "翰墨斋东家",
+      "gender": "male",
+      "age": 52,
+      "tag": "scholar",
+      "room": "jn_bookshop",
+      "desc": "青衫上沾着几点墨，手里总捏着半卷没看完的书，看人时眼睛先从书上抬起来。",
+      "level": 7,
+      "hp": 200,
+      "atk": 8,
+      "def": 6,
+      "dodge": 7,
+      "speed": 11,
+      "hostile": false,
+      "leavesCorpse": false,
+      "shop": "shop_book",
+      "favorInit": 2,
+      "talk": [
+        "书是死的，人是活的。可人不读书，就连死的也比不上。",
+        "这一册是孤本。价钱嘛……看你识不识货。",
+        "买回去别垫桌脚。"
+      ],
+      "ask": {
+        "学问": "学问二字，一是学，二是问。光看不想，等于没看。",
+        "古书": "真古书纸是黄的，字是黑的，墨会往纸里走。假的墨浮在面上。",
+        "武功": "书上写的招式都是死的，真打起来，谁跟你一章一章来。"
+      },
+      "askDefault": "（他随口应了一声，眼睛又回到书上）"
+    },
+    "jn_tutor": {
+      "id": "jn_tutor",
+      "name": "陆见山",
+      "title": "白鹿书院主讲",
+      "gender": "male",
+      "age": 58,
+      "tag": "scholar",
+      "room": "jn_school",
+      "desc": "面容清癯，讲书时目光落在案上那卷经上，不看堂下的人。",
+      "level": 8,
+      "hp": 240,
+      "atk": 10,
+      "def": 7,
+      "dodge": 7,
+      "speed": 12,
+      "hostile": false,
+      "leavesCorpse": false,
+      "favorInit": 1,
+      "talk": [
+        "读书不为功名，为的是心里那杆秤。秤准了，人就不歪。",
+        "你若要问学问，先在这堂里坐得住三日。",
+        "（他停了停）习武的人也来听讲，少见。"
+      ],
+      "ask": {
+        "学问": "先辨是非，再论利害。多数人反着来，所以一世糊涂。",
+        "书院": "白鹿书院三百年了。出过状元，也出过反贼，都算我的学生。",
+        "习武": "刀剑能护身，护不住心。心里没个准绳，本事越大越坏事。"
+      },
+      "askDefault": "（他抬眼看你一下，又低下头去）"
+    },
+    "jn_smithman": {
+      "id": "jn_smithman",
+      "name": "石大山",
+      "title": "铁匠",
+      "gender": "male",
+      "age": 44,
+      "tag": "smith",
+      "room": "jn_smith_inner",
+      "desc": "光着上身，胳膊上全是火燎出来的疤。锤子落下去的节奏几十年没变过。",
+      "level": 12,
+      "hp": 420,
+      "atk": 26,
+      "def": 16,
+      "dodge": 8,
+      "speed": 12,
+      "hostile": false,
+      "leavesCorpse": false,
+      "shop": "shop_blacksmith",
+      "favorInit": 1,
+      "talk": [
+        "（他没抬头，锤子继续落）有话说，等我这口打完。",
+        "铁要烧透了才吃得进火。人心也一样，半生不熟的敲不出好家伙。",
+        "我打了三十年铁，没打过一把给自己用的。"
+      ],
+      "ask": {
+        "兵器": "剑要轻，刀要沉。挑兵器看胳膊，别看价钱。",
+        "打铁": "打铁先学看火。火色对了，铁自己就会走。",
+        "武功": "我只懂锤子。不过天下武学，说到根上都是个「熟」字。"
+      },
+      "askDefault": "（他抡起锤子，火星四溅）"
+    },
+    "jn_grocer": {
+      "id": "jn_grocer",
+      "name": "崔五",
+      "title": "杂货铺掌柜",
+      "gender": "male",
+      "age": 38,
+      "tag": "vendor",
+      "room": "jn_misc_shop",
+      "desc": "瘦高个，袖子里塞着算盘，说话时手不停地在袖口里拨珠子。",
+      "level": 5,
+      "hp": 180,
+      "atk": 7,
+      "def": 5,
+      "dodge": 9,
+      "speed": 13,
+      "hostile": false,
+      "leavesCorpse": false,
+      "shop": "shop_grocery",
+      "favorInit": 1,
+      "talk": [
+        "（他拨了两下算盘）样样都有，样样都不贵。",
+        "客官要出门远行？水葫芦、皮囊、粗麻袋，一样都不能少。",
+        "小本买卖，不赊账。"
+      ],
+      "askDefault": "（他指指货架）要什么自己看，都在架上。"
+    },
+    "jn_villagekeep": {
+      "id": "jn_villagekeep",
+      "name": "孙阿婆",
+      "title": "村口小铺",
+      "gender": "female",
+      "age": 66,
+      "tag": "vendor",
+      "room": "cunzhen_inn",
+      "desc": "坐在门槛边纳鞋底的老太太，铺子小得只摆得下三只篮子。",
+      "level": 3,
+      "hp": 140,
+      "atk": 4,
+      "def": 4,
+      "dodge": 4,
+      "speed": 8,
+      "hostile": false,
+      "leavesCorpse": false,
+      "shop": "shop_village",
+      "favorInit": 3,
+      "talk": [
+        "（她放下鞋底）外乡人？这村子小，往东是大路，往西是山。",
+        "馒头是今早蒸的，还热着。",
+        "赶路的人，多带两个。山里没得买。"
+      ],
+      "askDefault": "（她眯着眼看了你一会儿，又低头纳鞋底）"
+    },
+    "jn_fruitman": {
+      "id": "jn_fruitman",
+      "name": "柳甜儿",
+      "title": "果子摊主",
+      "gender": "female",
+      "age": 24,
+      "tag": "vendor",
+      "room": "jn_fruit_stall",
+      "desc": "竹筐里码着果子，她在摊前哼着小调，一边挑出不能卖的坏果。",
+      "level": 4,
+      "hp": 150,
+      "atk": 6,
+      "def": 4,
+      "dodge": 11,
+      "speed": 14,
+      "hostile": false,
+      "leavesCorpse": false,
+      "shop": "shop_fruit",
+      "favorInit": 2,
+      "talk": [
+        "刚下来的桃，尝一个不要钱。",
+        "（她把一颗荔枝在手里颠了颠）这东西，运到城里就贵了。",
+        "果子摘下来就一天比一天不甜，人也一样。"
+      ],
+      "askDefault": "（她笑着摆手）我只管卖果子。"
+    },
+    "jn_diviner": {
+      "id": "jn_diviner",
+      "name": "徐半仙",
+      "title": "算命先生",
+      "gender": "male",
+      "age": 55,
+      "tag": "commoner",
+      "room": "jn_fortune",
+      "desc": "一方旧布幌子上写着「半仙」，他坐在摊后，眼睛像是看着你，又像是看着你身后。",
+      "level": 3,
+      "hp": 130,
+      "atk": 5,
+      "def": 4,
+      "dodge": 6,
+      "speed": 9,
+      "hostile": false,
+      "leavesCorpse": false,
+      "favorInit": 1,
+      "talk": [
+        "（他捻着胡子）客官面有风尘色，是刚赶了远路。",
+        "卦不敢算尽，算尽了就没意思了。",
+        "你信则有，不信……也还是有。"
+      ],
+      "ask": {
+        "算命": "我算过一千个人的命，有一半准。准的那一半，都照着我的话去做了。",
+        "面相": "眉看早年，眼看中年，颧看晚年。你眼下发青，近日少动气。",
+        "江湖": "江湖上的事我不多嘴。看多了，知道得越少睡得越香。"
+      },
+      "askDefault": "（他闭上眼，摇了摇手里的六枚铜钱）"
+    },
+    "jn_porter": {
+      "id": "jn_porter",
+      "name": "王大壮",
+      "title": "码头脚夫",
+      "gender": "male",
+      "age": 31,
+      "tag": "boatman",
+      "room": "jn_harbor",
+      "desc": "膀大腰圆，一根扁担横在肩上，晒得跟码头的木头一样黑。",
+      "level": 8,
+      "hp": 300,
+      "atk": 20,
+      "def": 10,
+      "dodge": 7,
+      "speed": 11,
+      "hostile": false,
+      "leavesCorpse": false,
+      "favorInit": 1,
+      "talk": [
+        "（他把扁担换个肩）要搬什么？按斤算钱。",
+        "码头上一天三班船，早班往上游，晚班往下游。",
+        "我这身子是干活练出来的，不是练武练出来的。"
+      ],
+      "ask": {
+        "搬运": "一百斤的包，走三里地，二十文。嫌贵你自个儿扛。",
+        "码头": "往南的船走水路最快，往北得翻山。",
+        "水性": "这江水看着平，底下有暗流。会水的也淹死过。"
+      },
+      "askDefault": "（他闷头把一只木箱往肩上送）"
+    },
+    "jn_pawnclerk": {
+      "id": "jn_pawnclerk",
+      "name": "古伯",
+      "title": "当铺朝奉",
+      "gender": "male",
+      "age": 59,
+      "tag": "vendor",
+      "room": "jn_pawnshop",
+      "desc": "高柜台后头只露出半张脸和一双眼睛。手指又细又长，拿东西时像在称重。",
+      "level": 6,
+      "hp": 200,
+      "atk": 8,
+      "def": 8,
+      "dodge": 6,
+      "speed": 10,
+      "hostile": false,
+      "leavesCorpse": false,
+      "shop": "shop_pawn",
+      "favorInit": 1,
+      "talk": [
+        "（他隔着柜台看东西，不看你）当多少？",
+        "死当不退。想清楚了再画押。",
+        "到了我这柜上的东西，多半是主人实在没法子了。"
+      ],
+      "ask": {
+        "当铺": "当一收三。不是我狠，是东西押在手里也要担风险。",
+        "眼力": "看物件先看真不真，再看有没有人要。第二样比第一样难。"
+      },
+      "askDefault": "（他把一张当票推过来）"
+    }
+  },
+  "shops": {
+    "shop_huichuntang": {
+      "id": "shop_huichuntang",
+      "name": "回春堂",
+      "goods": [
+        {
+          "item": "jinchuang_yao",
+          "price": 45
+        },
+        {
+          "item": "herb_danggui",
+          "price": 20
+        },
+        {
+          "item": "herb_lingshen",
+          "price": 120
+        },
+        {
+          "item": "xiaohuan_dan",
+          "price": 85
+        }
+      ]
+    },
+    "shop_silk": {
+      "id": "shop_silk",
+      "name": "绸缎庄",
+      "goods": [
+        {
+          "item": "silk_thread",
+          "price": 60
+        },
+        {
+          "item": "sachet_silk",
+          "price": 45
+        },
+        {
+          "item": "silk_robe",
+          "price": 260
+        },
+        {
+          "item": "brocade_robe",
+          "price": 900
+        }
+      ]
+    },
+    "shop_wine": {
+      "id": "shop_wine",
+      "name": "醉仙楼",
+      "goods": [
+        {
+          "item": "wine_bamboo",
+          "price": 22
+        },
+        {
+          "item": "wine_song",
+          "price": 36
+        },
+        {
+          "item": "dish_noodles",
+          "price": 12
+        },
+        {
+          "item": "dish_dumpling",
+          "price": 15
+        },
+        {
+          "item": "dish_braised_pork",
+          "price": 25
+        },
+        {
+          "item": "dish_sweet_sour",
+          "price": 30
+        }
+      ]
+    },
+    "shop_book": {
+      "id": "shop_book",
+      "name": "翰墨斋",
+      "goods": [
+        {
+          "item": "book_poem",
+          "price": 40
+        },
+        {
+          "item": "book_classic",
+          "price": 80
+        },
+        {
+          "item": "book_strategy",
+          "price": 260
+        },
+        {
+          "item": "book_rare",
+          "price": 480
+        }
+      ]
+    },
+    "shop_blacksmith": {
+      "id": "shop_blacksmith",
+      "name": "铁匠铺",
+      "goods": [
+        {
+          "item": "iron_ore",
+          "price": 15
+        },
+        {
+          "item": "hunting_knife",
+          "price": 55
+        },
+        {
+          "item": "wood_staff",
+          "price": 40
+        },
+        {
+          "item": "iron_sword_basic",
+          "price": 150
+        },
+        {
+          "item": "iron_blade",
+          "price": 95
+        },
+        {
+          "item": "leather_armor",
+          "price": 120
+        }
+      ]
+    },
+    "shop_grocery": {
+      "id": "shop_grocery",
+      "name": "杂货铺",
+      "goods": [
+        {
+          "item": "steamed_bun",
+          "price": 4
+        },
+        {
+          "item": "water_gourd",
+          "price": 5
+        },
+        {
+          "item": "clay_jar",
+          "price": 8
+        },
+        {
+          "item": "sack_coarse",
+          "price": 12
+        },
+        {
+          "item": "leather_waterskin",
+          "price": 22
+        }
+      ]
+    },
+    "shop_village": {
+      "id": "shop_village",
+      "name": "村口小铺",
+      "goods": [
+        {
+          "item": "steamed_bun",
+          "price": 4
+        },
+        {
+          "item": "water_gourd",
+          "price": 5
+        },
+        {
+          "item": "rice",
+          "price": 6
+        },
+        {
+          "item": "vegetable",
+          "price": 3
+        },
+        {
+          "item": "jinchuang_yao",
+          "price": 45
+        }
+      ]
+    },
+    "shop_fruit": {
+      "id": "shop_fruit",
+      "name": "果子摊",
+      "goods": [
+        {
+          "item": "fruit_peach",
+          "price": 12
+        },
+        {
+          "item": "fruit_dried",
+          "price": 18
+        },
+        {
+          "item": "fruit_longan",
+          "price": 28
+        }
+      ]
+    },
+    "shop_pawn": {
+      "id": "shop_pawn",
+      "name": "当铺",
+      "goods": [
+        {
+          "item": "porcelain_bowl",
+          "price": 60
+        },
+        {
+          "item": "silver_hairpin",
+          "price": 95
+        },
+        {
+          "item": "jade_talisman",
+          "price": 200
+        },
+        {
+          "item": "incense_agarwood",
+          "price": 45
+        }
+      ]
+    },
+    "shop_toy": {
+      "id": "shop_toy",
+      "name": "玩物摊",
+      "goods": [
+        {
+          "item": "wood_whistle",
+          "price": 8
+        },
+        {
+          "item": "clay_figure",
+          "price": 15
+        },
+        {
+          "item": "kite_swallow",
+          "price": 20
+        }
+      ]
+    },
+    "shop_tea": {
+      "id": "shop_tea",
+      "name": "老茶馆",
+      "goods": [
+        {
+          "item": "steamed_bun",
+          "price": 4
+        },
+        {
+          "item": "tea_puer",
+          "price": 18
+        },
+        {
+          "item": "tea_longjing",
+          "price": 25
+        }
+      ]
+    }
+  },
+  "items": {
+    "fruit_peach": {
+      "id": "fruit_peach",
+      "name": "水蜜桃",
+      "type": "food",
+      "value": 12,
+      "weight": 1,
+      "desc": "刚下来的桃子，皮薄汁多，一咬顺着手腕往下淌。",
+      "healHp": 6,
+      "stackable": true,
+      "quality": "common"
+    },
+    "fruit_longan": {
+      "id": "fruit_longan",
+      "name": "荔枝",
+      "type": "food",
+      "value": 28,
+      "weight": 1,
+      "desc": "南边快马运来的，壳还是红的。剥开一层白肉，甜得发齁。",
+      "healHp": 10,
+      "stackable": true,
+      "quality": "common"
+    },
+    "fruit_dried": {
+      "id": "fruit_dried",
+      "name": "蜜饯果脯",
+      "type": "food",
+      "value": 18,
+      "weight": 1,
+      "desc": "晒过的果肉裹了一层蜜，揣在怀里赶路时垫嘴正好。",
+      "healHp": 8,
+      "stackable": true,
+      "quality": "common"
+    }
+  },
+  "rooms": {
+    "jn_pharmacy": {
+      "id": "jn_pharmacy",
+      "actions": [
+        {
+          "label": "药柜",
+          "cmd": "list 陈济仁",
+          "keywords": [
+            "药",
+            "抓药",
+            "药柜"
+          ],
+          "desc": "抓几味药"
+        },
+        {
+          "label": "老郎中",
+          "cmd": "talk 陈济仁",
+          "keywords": [
+            "郎中",
+            "看病",
+            "陈济仁"
+          ],
+          "desc": "请郎中看看伤"
+        }
+      ]
+    },
+    "jn_silk_shop": {
+      "id": "jn_silk_shop",
+      "actions": [
+        {
+          "label": "绸缎",
+          "cmd": "list 闻素娘",
+          "keywords": [
+            "绸缎",
+            "料子",
+            "布"
+          ],
+          "desc": "看看料子"
+        }
+      ]
+    },
+    "jn_fruit_stall": {
+      "id": "jn_fruit_stall",
+      "actions": [
+        {
+          "label": "果子摊",
+          "cmd": "list 柳甜儿",
+          "keywords": [
+            "果子",
+            "水果",
+            "桃"
+          ],
+          "desc": "买两个果子"
+        }
+      ]
+    },
+    "jn_fortune": {
+      "id": "jn_fortune",
+      "actions": [
+        {
+          "label": "算命摊",
+          "cmd": "ask 徐半仙 about 算命",
+          "keywords": [
+            "算命",
+            "半仙",
+            "卦"
+          ],
+          "desc": "算一卦"
+        }
+      ]
+    },
+    "jn_pawnshop": {
+      "id": "jn_pawnshop",
+      "actions": [
+        {
+          "label": "当铺",
+          "cmd": "list 古伯",
+          "keywords": [
+            "当铺",
+            "当",
+            "朝奉"
+          ],
+          "desc": "看看死当的物件"
+        },
+        {
+          "label": "典当",
+          "cmd": "sell",
+          "keywords": [
+            "典当",
+            "押"
+          ],
+          "desc": "拿东西换钱"
+        },
+        {
+          "label": "后院",
+          "cmd": "d",
+          "desc": "往里走"
+        }
+      ]
+    },
+    "jn_teahouse": {
+      "id": "jn_teahouse",
+      "actions": [
+        {
+          "label": "茶馆",
+          "cmd": "list 元若",
+          "keywords": [
+            "茶",
+            "茶博士",
+            "茶馆"
+          ],
+          "desc": "要一壶茶"
+        },
+        {
+          "label": "说书",
+          "cmd": "listen 说书",
+          "keywords": [
+            "说书",
+            "听书"
+          ],
+          "desc": "听说书"
+        }
+      ]
+    },
+    "jn_toy_stall": {
+      "id": "jn_toy_stall",
+      "actions": [
+        {
+          "label": "玩物摊",
+          "cmd": "list 皮仲卿",
+          "keywords": [
+            "玩物",
+            "小玩意"
+          ],
+          "desc": "看看小玩意儿"
+        }
+      ]
+    },
+    "jn_wine_house": {
+      "id": "jn_wine_house",
+      "actions": [
+        {
+          "label": "醉仙楼",
+          "cmd": "list 常阿福",
+          "keywords": [
+            "酒",
+            "店小二",
+            "点菜"
+          ],
+          "desc": "点些酒菜"
+        },
+        {
+          "label": "雅间",
+          "cmd": "go 雅间",
+          "keywords": [
+            "雅间",
+            "楼上"
+          ],
+          "desc": "上楼"
+        }
+      ]
+    },
+    "jn_yamen_court": {
+      "id": "jn_yamen_court",
+      "actions": [
+        {
+          "label": "官吏",
+          "cmd": "talk 元怀瑾",
+          "keywords": [
+            "官吏",
+            "官府",
+            "元怀瑾"
+          ],
+          "desc": "上前搭话"
+        }
+      ]
+    },
+    "jn_bookshop": {
+      "id": "jn_bookshop",
+      "actions": [
+        {
+          "label": "翰墨斋",
+          "cmd": "list 林守拙",
+          "keywords": [
+            "书",
+            "书斋",
+            "古书"
+          ],
+          "desc": "翻翻书"
+        }
+      ]
+    },
+    "jn_school": {
+      "id": "jn_school",
+      "actions": [
+        {
+          "label": "夫子",
+          "cmd": "ask 陆见山 about 学问",
+          "keywords": [
+            "夫子",
+            "学问",
+            "先生"
+          ],
+          "desc": "请教一句"
+        }
+      ]
+    },
+    "jn_brothel_gate": {
+      "id": "jn_brothel_gate",
+      "actions": [
+        {
+          "label": "老鸨",
+          "cmd": "talk 苗春",
+          "keywords": [
+            "老鸨",
+            "鸨母",
+            "苗春"
+          ],
+          "desc": "跟鸨母搭话"
+        }
+      ]
+    },
+    "jn_harbor": {
+      "id": "jn_harbor",
+      "actions": [
+        {
+          "label": "江水",
+          "cmd": "drink",
+          "keywords": [
+            "江水",
+            "水"
+          ],
+          "desc": "喝口水"
+        },
+        {
+          "label": "脚夫",
+          "cmd": "ask 王大壮 about 搬运",
+          "keywords": [
+            "脚夫",
+            "搬运",
+            "扛"
+          ],
+          "desc": "问一声脚钱"
+        }
+      ]
+    },
+    "jn_smith_inner": {
+      "id": "jn_smith_inner",
+      "actions": [
+        {
+          "label": "铁砧",
+          "cmd": "list 石大山",
+          "keywords": [
+            "铁匠",
+            "兵器",
+            "铁砧"
+          ],
+          "desc": "看看家伙"
+        },
+        {
+          "label": "炉火",
+          "cmd": "work 打铁",
+          "keywords": [
+            "炉火",
+            "打铁",
+            "帮工"
+          ],
+          "desc": "拉风箱挣口饭钱"
+        }
+      ]
+    },
+    "jn_misc_shop": {
+      "id": "jn_misc_shop",
+      "actions": [
+        {
+          "label": "杂货铺",
+          "cmd": "list 崔五",
+          "keywords": [
+            "杂货",
+            "零碎"
+          ],
+          "desc": "看看杂货"
+        }
+      ]
+    },
+    "cunzhen_inn": {
+      "id": "cunzhen_inn",
+      "actions": [
+        {
+          "label": "小铺",
+          "cmd": "list 孙阿婆",
+          "keywords": [
+            "小铺",
+            "买",
+            "阿婆"
+          ],
+          "desc": "买点干粮"
+        }
+      ]
+    },
+    "gusu_canhe": {
+      "id": "gusu_canhe",
+      "actions": [
+        {
+          "label": "查阅秘录",
+          "cmd": "look 秘录",
+          "keywords": [
+            "秘录",
+            "查阅秘录",
+            "残卷"
+          ],
+          "desc": "翻一翻庄里留下的东西",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "案上摊着一卷没写完的册子，纸已经脆了。前几页是各家兵器的图谱，笔画工整；越往后越潦草，最后几页只剩下反复涂改的一个字——「容」。"
+            },
+            {
+              "type": "narrate",
+              "raw": "你把册子放回原处。参合庄很大，人却少，风穿过空荡荡的回廊，像有人在低声数着什么。"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

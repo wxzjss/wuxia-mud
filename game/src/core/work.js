@@ -12,8 +12,25 @@ const { clamp } = require('./utils');
 
 /** 打工岗位：按房间 id/名字 识别（客栈也算酒楼跑堂） */
 const JOBS = [
-  { key: 'waiter', name: '跑堂', wage: 15, timeCost: 30, foodCost: 12, waterCost: 8, roomRe: /(tavern|wine|inn|酒楼|酒馆|酒家|饭庄|客栈|醉仙楼|天香楼|望江楼|汉江楼)/ },
+  /* ⚠️ `inn` 曾经是裸写的，结果 `jn_smith_**inn**er`（铁匠铺·炉房）也被判成「跑堂」——
+     JOBS 是**按顺序取第一个命中**的，于是铁匠铺打工挣的是 15 文跑堂钱、
+     台词还说「你在铁匠铺·炉房里跑堂」。两处修：
+       · `_inn(?![a-z_])` —— 负向断言挡住 `_inner` 这类词（真客栈 id 都以 `_inn` 结尾）；
+       · 同时保留中文「客栈」兜底（六家客栈房名都带「客栈」）。 */
+  { key: 'waiter', name: '跑堂', wage: 15, timeCost: 30, foodCost: 12, waterCost: 8, roomRe: /(tavern|wine|_inn(?![a-z_])|酒楼|酒馆|酒家|饭庄|客栈|醉仙楼|天香楼|望江楼|汉江楼)/ },
   { key: 'herbalist', name: '抓药', wage: 20, timeCost: 30, foodCost: 10, waterCost: 8, roomRe: /(pharmacy|药铺|医馆|药房|杏林|回春堂|药)/ },
+  /* ---- 下面三类是主人第四轮报「点了没反应」时补的 ----
+     症状：铁匠铺·炉房「炉火」、青溪村·碾房「石磨」、醉春楼后厨「灶台」
+     三个「此地可做」按钮，点下去一律「这里没有你能干的活计（去酒楼或药店看看）」——
+     因为原来 JOBS 只认「跑堂 / 抓药」两类，别的房间名一个都不匹配。
+     项目铁律「给不出的项**一律不给**」，但这里是**给得出**的：
+     铁匠铺拉风箱、碾房推碾、后厨帮厨，都是江湖人挣口饭钱的正经营生。
+     所以补 job 而不是删按钮 —— 顺便让这三个房间不再是空摆设。
+     ⚠️ 房号正则匹配的是 `room.id + '|' + room.name`（见 canWork），
+        id 里带 smith/mill/kitchen 的都认，中文房名也认。 */
+  { key: 'smith', name: '拉风箱', wage: 18, timeCost: 30, foodCost: 14, waterCost: 10, roomRe: /(smith|forge|铁匠|铁砧|炉房|打铁)/ },
+  { key: 'miller', name: '推碾', wage: 13, timeCost: 30, foodCost: 13, waterCost: 9, roomRe: /(mill|碾房|碾|磨坊|谷仓)/ },
+  { key: 'kitchen', name: '帮厨', wage: 14, timeCost: 30, foodCost: 12, waterCost: 9, roomRe: /(kitchen|后厨|灶|伙房)/ },
 ];
 
 /** 青楼房间识别

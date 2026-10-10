@@ -375,16 +375,32 @@
     if (!acts.length) return;
     /* 只有一个动作就直接执行，别弹窗 */
     if (acts.length === 1) {
-      doCmd(acts[0].cmd, { fromButton: true });
+      runInteractAct(acts[0], name);
       return;
     }
     choices('对「' + name + '」做什么', acts.map(a => ({
       label: a.label || a.cmd,
       hint: a.hint || '',
       cmd: a.cmd,
-    })), it => {
-      if (it.cmd) doCmd(it.cmd, { fromButton: true });
-    });
+      /* ⚠️ `act` / `uid` 必须原样传给回调（choices 会把整个 it 透传）——
+         后端给的第一项是 `{act:'profile', uid:实例id}`：**开详情面板**。
+         这里若只认 cmd，就会退回 `look <名字>` 那段文本流，
+         也就是主人报的「点了看看却不弹面板」。 */
+      act: a.act,
+      uid: a.uid,
+    })), it => runInteractAct(it, name));
+  }
+
+  /** 执行日志高亮菜单里的一项：认 `act`，否则退回 `cmd` */
+  function runInteractAct(a, fallbackName) {
+    if (!a) return;
+    if (a.act === 'profile') {
+      /* 优先用后端给的**实例 id**（一对一）；没有 id 才退回名字。
+         退回名字时后端也能按名字找 —— 但重名的人多，尽量别走到那一步。 */
+      openNpcProfile({ id: a.uid || a.cmd && a.cmd.replace(/^\S+\s+/, ''), name: fallbackName });
+      return;
+    }
+    if (a.cmd) doCmd(a.cmd, { fromButton: true });
   }
 
   function clearLog() { logLines = []; paintLog(); }
@@ -659,16 +675,24 @@
    * ============================================================ */
   async function openNpcProfile(n) {
     if (!n) return;
-    const uid = n.id || n.defId || n.name;
-    let pr = null;
+    /* 优先实例 id（一对一），退而求其次用 defId、再退用名字。
+       ⚠️ 日志高亮那条路传进来的可能是**一段文本**（「老郎中」）而不是名字 ——
+       后端 `npcProfileOf` 也认名字，但「老郎中」本来就不是任何人的真名，
+       于是会 404。所以失败时的提示要说清「你看不出这是谁」，
+       而不是笼统的「这里没有这个人」——后者会让玩家以为界面坏了。 */
+    const key = n.id || n.defId || n.name;
+    let pr = null, failed = false;
     try {
-      const d = await api.npcProfile(uid);
+      const d = await api.npcProfile(key);
       pr = (d && d.npc) || null;
     } catch (e) {
-      toast('一时看不真切。', 'warn');
+      failed = true;
+    }
+    if (!pr) {
+      toast((failed ? '一时看不真切' : '看不出「' + (n.name || key) + '」是谁') +
+        '，换个人试试。', 'warn');
       return;
     }
-    if (!pr) { toast('这里没有这个人。', 'warn'); return; }
     modal(pr.name + (pr.title ? ' · ' + pr.title : ''),
       npcProfileHtml(pr),
       '<button class="btn-ink" id="npc-prof-look">打 量</button>' +
@@ -716,6 +740,13 @@
     /* ---- 与你的关系 ---- */
     let rel = row('交情', esc(p.relation.favorCN));
     rel += row('信任', esc(p.relation.trustCN));
+    /* 送礼往来：与送礼面板同一个来源（pstate.gifts），两边说得一样 */
+    if (p.relation.gifts && p.relation.gifts.count > 0) {
+      const gi = Object.keys(p.relation.gifts.items || {});
+      rel += row('往来', '送过 ' + p.relation.gifts.count + ' 次' +
+        (p.relation.gifts.money ? '，银钱共 ' + p.relation.gifts.money + ' 文' : '') +
+        (gi.length ? '　' + esc(gi.slice(0, 3).join('、')) + (gi.length > 3 ? ' 等' : '') : ''));
+    }
 
     /* ---- 武学 ---- */
     let mart = '';
@@ -823,24 +854,87 @@
     });
   }
 
-  /* 送礼：列出背包里可送的东西，点一下直接送 */
+  /* 送礼面板（主人第三轮要求改版）：
+     「点『送他东西』按钮，效果改为弹出玩家身上有什么物品（**包括金钱**），
+       点击选择赠送，**已经送多少**」
+
+     改动三处：
+     ① **金钱并进同一个面板**（原来「送东西」和「给银钱」是两个入口、要来回点）；
+     ② 顶部说清**往来**：已送过几次、给过多少银子、最近送的是什么；
+     ③ 每件物品若送过，行内标「已送 N 次」。
+     ⚠️ 背包空也要开面板 —— 原来 `if (!inv.length) return toast(...)` 直接把面板挡了，
+        连「给点银子」都做不到（而钱是可以在钱袋里的）。 */
   function giveNpc(n) {
     const inv = (S.view && S.view.inventory) || [];
-    if (!inv.length) { toast('行囊空空，没什么可送的。', 'error'); return; }
+    const g = n.gifts || { count: 0, money: 0, items: {} };
+    const sentLog = Object.keys(g.items || {});
     const likes = (n.likes || []).map(x => x.name).join('、');
-    const rows = inv.map(it =>
-      '<button class="pick-row" data-item="' + esc(it.id || it.name) + '">' +
-      '<span class="pr-name">' + esc(it.name) + (it.count > 1 ? ' ×' + it.count : '') + '</span>' +
-      '<span class="pr-sub">' + esc(it.qualityName || it.typeName || '') + '</span></button>'
-    ).join('');
-    modal('送 ' + n.name + ' 东西',
-      '<div class="modal-text">' + (likes ? '他/她似乎偏爱：' + esc(likes) : '此人不挑，来者不拒。') +
-      ' 送对了能大大加好感，送太寒碜的反倒跌份。</div>' +
-      '<div class="pick-list">' + rows + '</div>',
+
+    /* ---- 往来摘要 ---- */
+    let head = '';
+    if (g.count > 0) {
+      head += '<div class="gift-log">此前已送 <b>' + g.count + '</b> 次' +
+        (g.money > 0 ? '，其中银钱共 <b>' + g.money + '</b> 文' : '') +
+        (sentLog.length ? '　（' + esc(sentLog.slice(0, 4).map(k => k + (g.items[k] > 1 ? '×' + g.items[k] : '')).join('、')) +
+          (sentLog.length > 4 ? ' 等' : '') + '）' : '') + '</div>';
+    } else {
+      head += '<div class="gift-log dim">你还没送过' + pronounTA(n.gender) + '什么。</div>';
+    }
+    head += '<div class="modal-text">' + (likes ? '似乎偏爱：' + esc(likes) + '。' : '此人不挑，来者不拒。') +
+      '　送对了能大大加好感，送太寒碜的反倒跌份。</div>';
+
+    /* ---- 物品 ---- */
+    let body = '<div class="mm-sub-title">行囊里的东西</div>';
+    if (inv.length) {
+      body += '<div class="pick-list">' + inv.map(it => {
+        const times = g.items[it.name] || 0;
+        return '<button class="pick-row" data-item="' + esc(it.id || it.name) + '">' +
+          '<span class="pr-name">' + esc(it.name) + (it.count > 1 ? ' ×' + it.count : '') + '</span>' +
+          '<span class="pr-sub">' + esc(it.qualityName || it.typeName || '') +
+          (times ? '<i class="gift-times">已送 ' + times + ' 次</i>' : '') + '</span></button>';
+      }).join('') + '</div>';
+    } else {
+      body += '<div class="mm-empty-sm">行囊空空。身上还有银钱，递几张过去也是一份心意。</div>';
+    }
+
+    /* ---- 金钱 ---- */
+    const money = (S.view && S.view.player && S.view.player.money) || 0;
+    body += '<div class="mm-sub-title">银钱（身上还有 ' + money + ' 文）</div>';
+    body += '<div class="pick-list">' +
+      [50, 100, 300, 800].filter(v => v <= money).map(v =>
+        '<button class="pick-row" data-amt="' + v + '"><span class="pr-name">' + v + ' 文</span>' +
+        '<span class="pr-sub">' + (v <= 20 ? '薄了些' : v >= 300 ? '够分量' : '') + '</span></button>').join('') +
+      '</div>' +
+      '<input id="money-input" class="modal-input" placeholder="或自填数额（文，不超过 ' + money + '）">';
+
+    modal('送 ' + n.name + ' 东西', head + body,
       '<button class="btn-ink" onclick="WXUI.closeModal()">取 消</button>');
-    document.querySelectorAll('.pick-row').forEach(b => {
-      b.onclick = () => { const id = b.getAttribute('data-item'); closeModal(); doCmd('give ' + id + ' to ' + n.name, { fromButton: true }); };
+    document.querySelectorAll('.pick-row[data-item]').forEach(b => {
+      b.onclick = () => {
+        const id = b.getAttribute('data-item');
+        closeModal();
+        doCmd('give ' + id + ' to ' + n.name, { fromButton: true });
+      };
     });
+    document.querySelectorAll('.pick-row[data-amt]').forEach(b => {
+      b.onclick = () => {
+        const v = b.getAttribute('data-amt');
+        closeModal();
+        /* ⚠️ 格式必须是 `give_money <人名> <钱数>`（后端的签名）。
+           老代码发的是 `give_money <钱数> to <人名>` —— 顺序反了，
+           点下去只会得到「这里没有「100」。」。
+           后端现在两种都认（兼容老档/教程），但前端按签名发才是正路。 */
+        doCmd('give_money ' + n.name + ' ' + v, { fromButton: true });
+      };
+    });
+    const inp = $('money-input');
+    if (inp) inp.onkeydown = e => {
+      if (e.key === 'Enter') {
+        const v = inp.value.trim();
+        closeModal();
+        if (v) doCmd('give_money ' + n.name + ' ' + v);
+      }
+    };
   }
 
   /* 给钱：预设几档金额，也可自填 */
@@ -3054,6 +3148,11 @@
     appendLog, paintLog, clearLog, doCmd, panel, panelForCmd, openSaves, openSettings, applySettings,
     quitGame, isQuitCmd,
     centerMapOnHere, fmt1,
+    /* 日志高亮菜单那一项的派发（认 `act`，否则退回 `cmd`）。
+       挂出来是为了能在测试里**直接跑真实派发** —— 日志里的 `.hl` 按钮是
+       `innerHTML` + `querySelectorAll` 造的，假 DOM 里拿不到 paintLog 绑的 onclick，
+       不挂出来就只能测「后端给了什么」，测不到「前端认不认」。 */
+    runInteractAct,
     bindInput, bindHotkeys, bindSidebar, bindGuide,
     showModCenter, showModMaker, showMarket,
     afterAction, autoSave, autosaveId,

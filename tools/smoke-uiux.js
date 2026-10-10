@@ -892,6 +892,104 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     }
   }
 
+  /* ================================================================
+   *  ⑫ 第四轮主人亲报（前端侧）
+   *    · 日志里点 NPC 名 → 「细看此人」必须开面板（原来只打一段 look 文本）
+   *    · 「送他东西」面板：含金钱、点击赠送、显示「已经送多少」
+   * ================================================================ */
+  section('⑫ 第四轮 · 日志里能开详情面板 / 送礼面板（物品+金钱+已送多少）');
+  {
+    /* ---- ⑫-1 日志高亮那一项的派发：认 act:'profile' ---- */
+    {
+      const env = loadUi(makeEnv({ innerWidth: 375 }));
+      const rec = stubApi(env, VIEW);
+      closeMasks(env);
+      env.WX.S.view = VIEW;
+      /* 直接跑**真实派发函数**（openInteractMenu 内部调的就是它） */
+      env.WXUI.runInteractAct({ act: 'profile', uid: SNAKE.id, cmd: 'look ' + SNAKE.name }, SNAKE.name);
+      await settle(); await settle();
+      ok('⑫-1 ★ 日志菜单里的「细看此人」真去拉了该 NPC 的画像（不再打 look 文本流）',
+        rec.npc.length === 1 && rec.exec.length === 0,
+        'npcProfile=' + JSON.stringify(rec.npc) + ' exec=' + (rec.exec.map(x => x.cmd).join(',') || '(空)'));
+
+      /* 退回路径：没有 act 的项仍按 cmd 走（老数据/别的类型的高亮不受影响） */
+      const rec2 = stubApi(env, VIEW);
+      env.WXUI.runInteractAct({ label: '打量', cmd: 'look ' + SNAKE.name }, SNAKE.name);
+      await settle();
+      ok('⑫-1b 没有 act 的项仍按 cmd 派发（老数据不受影响）',
+        rec2.exec.length === 1 && rec2.exec[0].cmd === 'look ' + SNAKE.name,
+        rec2.exec.map(x => x.cmd).join(',') || '(空)');
+    }
+
+    /* ---- ⑫-2 送礼面板：物品 + 金钱 + 往来 ---- */
+    {
+      const who = VIEW.npcs.find(n => n.gender === 'female') || VIEW.npcs[0];
+      const giftView = JSON.parse(JSON.stringify(VIEW));
+      giftView.player.money = 1500;
+      giftView.inventory = [
+        { id: 'steamed_bun', uid: 'g1', name: '馒头', count: 3, typeName: '食物' },
+        { id: 'wine_bamboo', uid: 'g2', name: '竹叶青', count: 1, typeName: '酒' },
+      ];
+      const gn = giftView.npcs.find(n => n.name === who.name) || giftView.npcs[0];
+      gn.gifts = { count: 3, money: 200, items: { '馒头': 2 } };
+
+      const env = loadUi(makeEnv({ innerWidth: 390 }));
+      const rec = stubApi(env, giftView);
+      closeMasks(env);
+      env.WX.S.view = giftView;
+      env.WXUI.renderScene(giftView);
+      const card = env.document.getElementById('scene-npcs').children
+        .find(c => String(c.innerHTML || '').indexOf(gn.name) >= 0);
+      card.onclick();
+      const giveBtn = env.document.getElementById('choices-list').children
+        .find(c => /送.*东西/.test(String(c.innerHTML || '')));
+      ok('⑫-2 菜单里有「送 他/她 东西」项', !!giveBtn, giveBtn ? giveBtn._label : '-');
+      if (giveBtn) {
+        giveBtn.onclick();
+        await settle();
+        const mb = String(env.document.getElementById('modal-body').innerHTML || '');
+        ok('⑫-2a ★ 面板显示「已经送多少」（往来摘要）',
+          /已送\s*<b[^>]*>3<\/b>\s*次/.test(mb) || /已送\s*3\s*次/.test(mb),
+          (mb.match(/此前已送[^<]*(<b>\d+<\/b>)?[^<]*次?/) || [''])[0] || mb.slice(0, 60));
+        ok('⑫-2b ★ 面板里有**金钱**档位（主人要的「包括金钱」）',
+          /data-amt="100"/.test(mb) && /data-amt="800"/.test(mb) && /银钱/.test(mb));
+        ok('⑫-2c 显示身上还有多少钱 + 可自填数额',
+          /身上还有 1500 文/.test(mb) && /money-input/.test(mb));
+        ok('⑫-2d ★ 送过的物品行标了「已送 N 次」（馒头送过 2 次）',
+          /已送 2 次/.test(mb));
+        ok('⑫-2e 未送过的物品行没有这个标记（不是所有人都有）',
+          (mb.match(/已送 \d+ 次/g) || []).length === 1);
+
+        /* 点物品 → 真发 give */
+        const itemBtn = env.document.querySelectorAll('#modal-body .pick-row[data-item]')[0]
+          || env.document.getElementById('modal-body').querySelectorAll('.pick-row[data-item]')[0];
+        const rows = [...mb.matchAll(/data-item="([^"]+)"/g)].map(m => m[1]);
+        ok('⑫-2f 物品行带 data-item（可点）', rows.length >= 1, rows.join(','));
+
+        /* 点金额 → 真发 `give_money <人名> <钱数>`（**后端的签名顺序**） */
+        const st = [];   /* 用一个新的 env 干净地测派发 */
+        const env2 = loadUi(makeEnv({ innerWidth: 390 }));
+        const rec2 = stubApi(env2, giftView);
+        closeMasks(env2);
+        env2.WX.S.view = giftView;
+        env2.WXUI.renderScene(giftView);
+        env2.document.getElementById('scene-npcs').children
+          .find(c => String(c.innerHTML || '').indexOf(gn.name) >= 0).onclick();
+        env2.document.getElementById('choices-list').children
+          .find(c => /送.*东西/.test(String(c.innerHTML || ''))).onclick();
+        await settle();
+        const mb2 = String(env2.document.getElementById('modal-body').innerHTML || '');
+        void st;
+        const amtRows = [...mb2.matchAll(/data-amt="(\d+)"/g)].map(m => m[1]);
+        ok('⑫-2g 金额档位随身上钱数给（1500 文 → 800 档在）', amtRows.indexOf('800') >= 0, amtRows.join(','));
+        /* 直接调那一项的处理逻辑：从真 DOM 读不到 onclick（stub 限制），
+           所以断「前端发的格式」用源码契约 + 后端兼容双保险：
+           ① 后端两种顺序都认（smoke-round4 §G-1/G-1b 已断）；
+           ② 前端必须按签名发 —— 这里断 mb2 里的档位存在，格式由 §G 兜。 */
+      }
+    }
+  }
+
   console.log('\n———————————————————————————————');
   console.log(`  批次7 双端与 UI 回归：${pass} 通过 / ${fail} 失败`);
   if (fails.length) console.log('  失败项：' + fails.join('、'));

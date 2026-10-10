@@ -77,6 +77,36 @@ function skillTierCN(lv) {
   return SKILL_TIERS[0];
 }
 
+/* ------------------------------------------------------------------ *
+ * 「送出去的往来」记账 —— 送礼面板要显示「已经送过几次 / 给了多少银子」。
+ *
+ * 主人原话：「点『送他东西』按钮，效果改为弹出玩家身上有什么物品（包括金钱），
+ *           点击选择赠送，**已经送多少**」。
+ * 之前的面板只列背包、也没有任何往来记录 —— 送过谁、送过什么、
+ * 给过多少钱，玩家自己都记不清（NPC 的好感涨了多少也看不到因果）。
+ *
+ * 记在 `npc.pstate.gifts` 上：
+ *   · pstate 本来就随档走（deserialize 补齐式恢复，不会把 gifts 冲掉）；
+ *   · 唯一入口 `noteGift()`，give / give_money 两条路都调它，
+ *     不各写一份（本项目老毛病）。金额与件数分开记，面板两句都能说清。
+ * ------------------------------------------------------------------ */
+function noteGift(npc, kind, key, amount) {
+  if (!npc) return null;
+  const st = npc.pstate || (npc.pstate = {
+    trust: 0, revealed: [], hooks: {}, met: false, moodBias: 0, leaked: false,
+  });
+  st.gifts = st.gifts || { count: 0, money: 0, items: {} };
+  if (kind === 'money') {
+    st.gifts.money = (st.gifts.money || 0) + (amount || 0);
+    st.gifts.count = (st.gifts.count || 0) + 1;
+  } else {
+    st.gifts.count = (st.gifts.count || 0) + 1;
+    if (key) st.gifts.items[key] = (st.gifts.items[key] || 0) + 1;
+  }
+  st.gifts.lastAt = undefined;   /* 预留：日后要按天算「今日已送」时填这里 */
+  return st.gifts;
+}
+
 function buildCommands(world) {
   const CMD = {};
 
@@ -380,7 +410,14 @@ function buildCommands(world) {
         const pron = pronounOf(one);   // B11：兽→它 / 女→她 / 男→他（单一入口）
         const def = (one && one.def) || {};
         const actions = [
-          { label: '看看', cmd: 'look ' + k },
+          /* ⚠️ 第一项原来是 `{label:'看看', cmd:'look …'}` —— 只是一段文本流水。
+             主人在**日志里点 NPC 名**弹出这个菜单，点「看看」却只多打了几行字，
+             于是问「我要的看 NPC 会显示信息面板的功能呢？为什么点『看看』却不弹面板？」
+             （实情：详情面板只挂在前端「场景栏卡片」那条入口上，日志高亮这条漏了。）
+             现在第一项就是**开详情面板**：`act:'profile'` + `uid`（实例 id），
+             前端认 act 开面板；cmd 留作兜底（老客户端 / 不认 act 时退回 look）。
+             文本流另给一项「打量」，两样都在，谁也不会丢。 */
+          { label: '细看此人', act: 'profile', uid: one && one.id, cmd: 'look ' + k, hint: '资料 · 来历 · 关系' },
           { label: '交谈', cmd: 'talk ' + k },
           { label: '询问', cmd: 'ask ' + k },
         ];
@@ -418,6 +455,10 @@ function buildCommands(world) {
            · ⚠️ 铁律 33：**绝不拿 n.hostile 当「不给攻击」的排除条件** ——
              它是模板常驻标记（山贼/野兽一出生 true、打输也不清）。这里只用它
              **排序**（优先给），不做任何「能不能打」的判定。 */
+        /* 文本流的「打量」压在最后 —— 但**必须排在「攻击」之前**：
+           「攻击」要保持是**最后一项**（B10：避免手指从「交谈」一路滑到「攻击」），
+           把无害的「打量」垫在攻击前面，两头都安全。 */
+        actions.push({ label: '打量', cmd: 'look ' + k, hint: '看一段文字描述' });
         const inBattle = !!(w.battle && w.battle.target === one);
         const hot = !!(one && (one.hostile || one.inCombat || inBattle));
         const attackAct = { label: '攻击', cmd: 'attack ' + k };
@@ -436,7 +477,9 @@ function buildCommands(world) {
         const hasSack = p.countItem(kidnapMod.SACK_ID) >= 1;
         const dhl = downed.map(n => {
           const acts = [
-            { label: '看看', cmd: 'look ' + n.name },
+            /* 倒地的也一样：第一项开详情面板（主人报过「日志里点名字不弹面板」） */
+            { label: '细看此人', act: 'profile', uid: n.id, cmd: 'look ' + n.name, hint: '资料 · 来历 · 关系' },
+            { label: '打量', cmd: 'look ' + n.name },
             { label: '补刀', cmd: 'kill ' + n.name, hint: '结果了他' },
             { label: '搜身', cmd: '搜身 ' + n.name, hint: '翻他身上的东西' },
           ];
@@ -996,6 +1039,9 @@ function buildCommands(world) {
     }
     const d = w.getItem(hit.id);
     w.removeItem(p, hit.id, 1);
+    /* 记一笔往来（**唯一入口**，三条分支之前就记 —— 东西已经交出去了，
+       无论走作者手写的 acceptItems / onGift 还是通用判定，账都该记上）。 */
+    noteGift(npc, 'item', (d && d.name) || hit.id, 0);
 
     /* ---- 作者手写的 acceptItems / onGift 优先 ---- */
     const def = npc.def || {};
@@ -1216,13 +1262,31 @@ function buildCommands(world) {
   /* 给钱 */
   reg(['give_money', '给钱', '赠银', '塞钱'], (ctx, args) => {
     const w = ctx.world, p = ctx.player;
-    if (args.length < 2) return { lines: [{ kind: 'warn', text: '用法：give_money <人名> <钱数>' }] };
-    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), args[0], n => n.name);
-    if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${args[0]}」。` }] };
-    const amt = cnNum(args[1]) || parseInt(args[1], 10);
+    if (args.length < 2) return { lines: [{ kind: 'warn', text: '用法：give_money <人名> <钱数>（或「给 <人名> 100 文」）' }] };
+    /* ★ 参数顺序两种都认。
+       原签名是 `give_money <人名> <钱数>`，而前端「给 他 银钱」面板发的是
+       `give_money <钱数> to <人名>` —— 顺序反了，玩家点下去只会得到
+       「这里没有「100」。」（主人报的「送他东西」面板里就有这一项）。
+       与其只改前端（存档里的老档、mod、教程文本都还按老格式写），
+       不如在后端**认顺序**：哪个 token 能解析成数字，哪个就是钱数。
+       ⇒ `give_money 范清 100` / `give_money 100 to 范清` / `给钱 100 给 范清` 全通。 */
+    const toks = args.filter(t => !/^(to|给|送给?)$/i.test(t));
+    let amtTok = null; const nameToks = [];
+    for (const t of toks) {
+      const asNum = cnNum(t);
+      const isNumTok = (asNum != null && asNum > 0) || /^\d+$/.test(t);
+      if (amtTok == null && isNumTok) amtTok = t;
+      else nameToks.push(t);
+    }
+    const nameKw = nameToks.join(' ').trim();
+    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), nameKw, n => n.name);
+    if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${nameKw || args[0]}」。` }] };
+    const amt = amtTok == null ? 0 : (cnNum(amtTok) || parseInt(amtTok, 10));
     if (!amt || amt <= 0) return { lines: [{ kind: 'warn', text: '你要给多少？' }] };
     if (p.money < amt) return { lines: [{ kind: 'warn', text: `你只有 ${p.money} 文钱。` }] };
     p.money -= amt;
+    /* 记一笔往来（与 give 同一个 noteGift）—— 面板要显示「给了多少银子」 */
+    noteGift(npc, 'money', null, amt);
     /* 给钱好感：按对方身价折算，太少了反而被看轻 */
     const worth = Math.max(50, (npc.def && npc.def.money) || 100);
     const ratio = amt / worth;
@@ -2034,11 +2098,28 @@ function buildCommands(world) {
     const lines = [{ kind: 'sys', text: `你向${npc.name}问起「${topic}」。` }];
     let found = false;
     if (def.ask) {
-      /* ⚠️ 归一化：ask 可能是对象 {topic,answer}，也可能是数组。
-         直接 for...of 对象会抛「object is not iterable」，ask 指令整条挂掉。 */
-      const askList = Array.isArray(def.ask) ? def.ask : [def.ask];
+      /* ⚠️ 归一化：`ask` 在数据里有**三种**写法，全都要认。
+         原来只处理了「单对象 {topic,answer}」和「数组」两种，
+         而数据里的**主流写法其实是第三种**：`{ "话题": "答案", … }` 映射对象
+         （mods/demo_skill 的太虚居士、以及一大批 NPC 都这么写）。
+         映射对象走进 `[raw]` 之后，`a.topic` 是 undefined →
+         `a.topic.includes(topic)` **抛异常**，整条 ask 指令直接挂掉 ——
+         玩家看到的不是「他答不上来」，是「命令崩了」。
+         （第四轮补回春堂 NPC 时踩到的：我用的是数据惯例写法，一按就崩。） */
+      const rawAsk = def.ask;
+      const askList = (() => {
+        if (Array.isArray(rawAsk)) return rawAsk;
+        if (!rawAsk || typeof rawAsk !== 'object') return [];
+        /* ① 单条：`{topic, answer, keywords}` */
+        if (rawAsk.topic || rawAsk.answer) return [rawAsk];
+        /* ② 映射对象：`{ "话题": "答案" }`（值也允许是 `{answer, keywords, effects}` 对象） */
+        return Object.keys(rawAsk).map(k => {
+          const v = rawAsk[k];
+          return (v && typeof v === 'object') ? Object.assign({ topic: k }, v) : { topic: k, answer: v };
+        });
+      })();
       for (const a of askList) {
-        if (!a) continue;
+        if (!a || !a.topic) continue;
         if (topic.includes(a.topic) || a.topic.includes(topic) || (a.keywords || []).some(k => topic.includes(k))) {
           found = true;
           if (a.answer) lines.push({ kind: 'say', text: `${npc.name}道：「${evalTemplate(a.answer, ctx)}」` });

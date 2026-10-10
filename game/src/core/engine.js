@@ -326,6 +326,14 @@ class GameEngine {
         const lt = social.LIKE_TYPES.find(y => y.id === x);
         return lt ? { id: lt.id, name: lt.cn } : null;
       }).filter(Boolean),
+      /* ---- 送礼往来（主人要求：送礼面板要显示「已经送多少」）----
+         `pstate.gifts` 由 `noteGift()` 记（give / give_money 两处唯一入口），随档保存。
+         面板头部显示「已送 N 次 · 已给 X 文」，物品行还能看到「这件送过几次」。 */
+      gifts: (n.pstate && n.pstate.gifts) ? {
+        count: n.pstate.gifts.count || 0,
+        money: n.pstate.gifts.money || 0,
+        items: n.pstate.gifts.items || {},
+      } : { count: 0, money: 0, items: {} },
       /* 虚拟住宅 house:<npcId> 也算有家（B/C 层私宅不在地图上，靠拜访进去） */
       homeOf: (n.def && n.def.home) || null,
       virtualHome: !!(n.def && String(n.def.home || '').startsWith('house:')),
@@ -481,8 +489,13 @@ class GameEngine {
     const out = [];
     for (const a of room.actions) {
       const kws = a.keywords || [];
-      /* 显示名优先用 cmd：主人报「此地可做」显示「告示」，点下去发的是
-         「看告示」，两边不一致看着别扭。cmd 才是玩家实际会看到/输入的东西。 */
+      /* 显示名**优先 label**，其次 cmd，再退 keywords / 房间名。
+         ⚠️ 别把它改成「优先 cmd」：`cmd` 是内部指令（`list 陈济仁`、`work 打铁`），
+            直接显示给玩家毫无意义；`label` 才是人话（「药柜」「炉火」）。
+            野外那批只写了 cmd 的 action（`采药`/`打坐`/`参悟`）本来 cmd 就是人话，
+            兜底自然显示得对 —— 两种写法都照顾到了。
+            （ONCE 这里曾有一条注释说「显示名优先用 cmd」，与代码相反，
+              留着会让人照注释改坏，已改正。） */
       const name = a.label || a.cmd || kws[0] || room.name;
       const cmd = a.cmd || kws[0] || '';
       if (!cmd) continue;
@@ -929,6 +942,12 @@ class GameEngine {
             : favor <= -30 ? `${TA}见你就烦` : favor <= -8 ? `${TA}对你有些芥蒂` : `你与${TA}只是点头之交`,
           trustCN: trust >= 70 ? `${TA}心里的事肯跟你讲` : trust >= 40 ? `${TA}信得过你办事`
             : trust >= 20 ? `${TA}大致认得你这个人` : `${TA}还摸不清你的底细`,
+          /* 送礼往来（与送礼面板同一个来源 pstate.gifts） */
+          gifts: (pstate.gifts ? {
+            count: pstate.gifts.count || 0,
+            money: pstate.gifts.money || 0,
+            items: pstate.gifts.items || {},
+          } : { count: 0, money: 0, items: {} }),
         };
       })(),
       equip, carry, money,
@@ -977,7 +996,21 @@ class GameEngine {
     /* 中文口语归一化：「往北走」→「n」、「查看背包」→「i」 */
     const norm = normalizeCmd(input);
     this.markTutorial(input, norm);
-    const res = this.cmds.execute(norm, ctx);
+    /* ★ 通用防线：**一条指令抛异常，不该让整个请求挂掉**。
+       第四轮修 `ask`（数据里「话题→答案」映射写法会让 `a.topic.includes` 抛异常）时发现：
+       `exec` 原来直接把 `cmds.execute` 的异常冒到上层，服务端 `handleApi` 的 try/catch
+       兜成 500 —— 玩家看到的是「网络错误」，排查的人拿到的是「没线索」，
+       而这个 bug 在数据里躺了很久没人报（数据里 18 个 NPC 用数组写法没事，
+       示例 mod 与新写的 NPC 用映射写法就崩）。
+       现在兜住：给玩家一行**明确的回执**（不静默），并把栈打到服务端日志（可排查）。
+       ⚠️ 别把回执删成静默 —— 那正是本项目最忌的「不报错就不生效」。 */
+    let res;
+    try {
+      res = this.cmds.execute(norm, ctx);
+    } catch (err) {
+      try { console.error('[wxmud] 指令异常：', norm, (err && err.stack) || err); } catch (e2) { void e2; }
+      res = { lines: [{ kind: 'warn', text: `（「${input}」这道指令出了岔子，已经记下来了。）` }] };
+    }
     const lines = res.lines || [];
     // 后处理
     w.advanceTime(1);
