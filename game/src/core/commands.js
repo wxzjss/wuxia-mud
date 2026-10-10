@@ -44,6 +44,39 @@ const DIRECTIONS = {
 };
 const DIR_CN = { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下', ne: '东北', nw: '西北', se: '东南', sw: '西南', in: '内', out: '外' };
 
+/* ------------------------------------------------------------------ *
+ * 「看人」的两个共用口径 —— **模块顶层**（不是 buildCommands 的闭包内）
+ *
+ * 为什么要搬到顶层：`skillTierCN` / `npcInsight` 以前写在 buildCommands 内部，
+ * 外面拿不到。而 NPC 详情面板（`engine.npcProfileOf`）与武学面板（`ui.js`）
+ * 都要显示「他这门练到第几层」「交情够不够看透」——
+ * 拿不到就会各自**再实现一遍**，迟早和「看」这条指令漂移
+ * （本项目老毛病：同一件事两份实现，改一处忘一处）。
+ * 搬到顶层 + 从 `__api` 导出，全项目只有一个口径。
+ * ------------------------------------------------------------------ */
+/** 看透别人武功到第几层：要靠交情。陌生人是看不出来的。 */
+function npcInsight(npc) {
+  const favor = npc.favor || 0;
+  const trust = (npc.pstate && npc.pstate.trust) || 0;
+  /* 打过交道、交情好、或揪住过他的把柄，才谈得上「看得出深浅」 */
+  if (favor >= 40 || trust >= 30) return { deep: true, hint: '' };
+  if (favor >= 15 || trust >= 10) return { deep: false, hint: `交情尚浅，看不透${pronounOf(npc)}的火候` };
+  return { deep: false, hint: `你们素不相识，看不出${pronounOf(npc)}究竟练到了哪一步` };
+}
+
+/* 熟练度分级名（与功法体系一致） */
+const SKILL_TIERS = ['初学', '入门', '小成', '熟练', '精通', '化境', '登峰'];
+function skillTierCN(lv) {
+  if (!lv || lv <= 0) return '未入门';
+  if (lv >= 900) return '登峰造极';
+  if (lv >= 700) return '化境';
+  if (lv >= 500) return '精通';
+  if (lv >= 300) return '熟练';
+  if (lv >= 150) return '小成';
+  if (lv >= 60) return '入门';
+  return SKILL_TIERS[0];
+}
+
 function buildCommands(world) {
   const CMD = {};
 
@@ -673,28 +706,8 @@ function buildCommands(world) {
     return lines;
   }
 
-  /* 看透别人武功到第几层：要靠交情。陌生人是看不出来的。 */
-  function npcInsight(npc) {
-    const favor = npc.favor || 0;
-    const trust = (npc.pstate && npc.pstate.trust) || 0;
-    /* 打过交道、交情好、或揪住过他的把柄，才谈得上「看得出深浅」 */
-    if (favor >= 40 || trust >= 30) return { deep: true, hint: '' };
-    if (favor >= 15 || trust >= 10) return { deep: false, hint: `交情尚浅，看不透${pronounOf(npc)}的火候` };
-    return { deep: false, hint: `你们素不相识，看不出${pronounOf(npc)}究竟练到了哪一步` };
-  }
-
-  /* 熟练度分级名（0~9 层 → 入门/小成/…/登峰造极），与功法体系一致 */
-  const SKILL_TIERS = ['初学', '入门', '小成', '熟练', '精通', '化境', '登峰'];
-  function skillTierCN(lv) {
-    if (!lv || lv <= 0) return '未入门';
-    if (lv >= 900) return '登峰造极';
-    if (lv >= 700) return '化境';
-    if (lv >= 500) return '精通';
-    if (lv >= 300) return '熟练';
-    if (lv >= 150) return '小成';
-    if (lv >= 60) return '入门';
-    return SKILL_TIERS[0];
-  }
+  /* npcInsight / SKILL_TIERS / skillTierCN 已搬到模块顶层（见上方注释），
+     这里不再重复定义 —— 两份定义就是漂移的开始。 */
 
   function describeItem(ctx, itemId, inst) {
     const w = ctx.world;
@@ -3709,5 +3722,10 @@ function findPath(world, from, to, ctx) {
 module.exports = {
   buildCommands, findPath, cnNum, DIRECTIONS, DIR_CN,
   /* 身份标签 / 关系称谓：导出给测试与其它模块用（见 tools/identity-check.js） */
-  __api: { npcIdentity, relKindCN, tagCN, JOB_CN, TAG_CN, REL_KIND_CN, relFavorBetween, fmtRelFavor, REL_FAVOR_BASE },
+  __api: {
+    npcIdentity, relKindCN, tagCN, JOB_CN, TAG_CN, REL_KIND_CN, relFavorBetween, fmtRelFavor, REL_FAVOR_BASE,
+    /* 熟练度档位 + 洞察门槛：NPC 详情面板要跟「看人」显示同一口径，
+       各写一份迟早漂移（`ui.js` 的武学面板也读它）。 */
+    skillTierCN, npcInsight,
+  },
 };

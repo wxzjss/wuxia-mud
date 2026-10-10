@@ -336,6 +336,10 @@ body::before {
 .log-line.exits { color: var(--ink-4); font-size: 13px; }
 .log-line.action { color: #2c6b4d; font-size: 13.5px; }
 .log-line.die { color: var(--red); font-weight: 600; }
+/* 力竭昏倒 / 醒转（玩家**不会死**，只是昏过去）。
+   ⚠️ 有别于 `.die`（血红、重）：昏倒是「眼前一黑」的一瞬，用暗青灰、居中留白，
+   读起来是「晕过去了」而不是「被打死了」——这是主人明确要的观感。 */
+.log-line.faint { color: #4a4a58; font-weight: 600; text-align: center; letter-spacing: .06em; margin: 10px 0 8px; }
 /* 社交相关日志行（好感变动 / 武学条目 / 喜爱之物） */
 .log-line.favor { color: #c0392b; font-size: 13px; }
 .log-line.favor-pos { color: #b8860b; }
@@ -564,6 +568,44 @@ body::before {
 .q-done-title { font-size: 13px; color: var(--ink-3); margin: 14px 0 7px; padding-top: 10px; border-top: 1px dashed var(--line-2); letter-spacing: .5px; }
 .q-done-list { display: flex; flex-direction: column; gap: 4px; }
 .q-done-item { font-size: 12.5px; color: var(--jade); opacity: .8; padding: 2px 0; }
+
+/* NPC 详情面板（点 NPC 菜单里的「细看此人」打开的界面）
+   版式：一句定位 → 分节卡片（关系 / 武学 / 随身 / 能教什么 / 作息 → 背景故事）
+   背景故事那几节用「左标签 + 右正文」的传记式排版；未解锁的整行压暗 + 斜体，
+   一眼就能看出「这里有东西，但还没到时候」——而不是藏起来让玩家不知道有。 */
+.npc-prof { display: flex; flex-direction: column; gap: 10px; }
+.npc-prof .np-lead { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.npc-prof .np-id { font-family: var(--font); font-size: 15px; color: var(--ink); }
+.npc-prof .np-tag { font-size: 11.5px; color: var(--ink-3); background: var(--paper-2); border: 1px solid var(--line-2); border-radius: 3px; padding: 1px 7px; }
+.npc-prof .np-tag.warn { color: var(--gold); border-color: #e3cf9a; background: #fdf6e3; }
+.npc-prof .np-desc { font-size: 13.5px; color: var(--ink-2); line-height: 1.75; }
+.npc-prof .np-role { font-size: 13px; color: var(--ink-3); font-style: italic; line-height: 1.7; }
+.npc-prof .np-sec { border-top: 1px dashed var(--line-2); padding-top: 8px; }
+.npc-prof .np-h { font-size: 12px; letter-spacing: 2px; color: var(--ink-4); margin-bottom: 6px; }
+.npc-prof .np-row { display: flex; gap: 10px; font-size: 13px; line-height: 1.9; }
+.npc-prof .np-k { flex: 0 0 3.2em; color: var(--ink-4); }
+.npc-prof .np-v { flex: 1; color: var(--ink-2); }
+.npc-prof .np-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.npc-prof .np-chip { font-size: 12px; color: var(--ink-2); background: var(--paper-2); border: 1px solid var(--line-2); border-radius: 3px; padding: 2px 8px; }
+.npc-prof .np-chip i { font-style: normal; font-size: 11px; color: var(--ink-4); margin-left: 5px; }
+.npc-prof .np-chip.dim { opacity: .55; }
+.npc-prof .np-note { font-size: 12.5px; color: var(--ink-3); line-height: 1.8; }
+.npc-prof .np-note.dim { color: var(--ink-4); }
+.npc-prof .np-story { display: flex; gap: 8px; font-size: 13px; line-height: 1.85; padding: 3px 0; }
+.npc-prof .np-slabel { flex: 0 0 3.4em; color: var(--gold); font-size: 12px; letter-spacing: 1px; }
+.npc-prof .np-stext { flex: 1; color: var(--ink-2); }
+.npc-prof .np-slock { flex: 1; color: var(--ink-4); font-style: italic; }
+.npc-prof .np-story.locked .np-slabel { color: var(--ink-4); }
+.npc-prof .np-story.secret { border-left: 2px solid var(--gold); padding-left: 8px; }
+.npc-prof .np-story.secret .np-slabel { color: var(--red-2); }
+.npc-prof .np-link { color: var(--blue); cursor: pointer; border-bottom: 1px dotted var(--blue); }
+.npc-prof .np-link:hover { color: var(--ink); }
+/* ⚠️ 这里**故意不新开一个 @media 段**：文件里 `@media (max-width: 560px)` 已有一处
+   （状态条换行那条），而测试按「取第一个 560px 段」找 `.tb-bar` 的 min-width ——
+   在中间再插一段会把它截断，假红一次。
+   窄屏要缩的只是两个标签列，用 em 就够了，不必单开媒体查询。 */
+.npc-prof .np-k { flex-basis: 3em; }
+.npc-prof .np-slabel { flex-basis: 3.2em; }
 
 /* 门派行 */
 .sect-line { display: flex; gap: 10px; padding: 6px 0; font-size: 13.5px; border-bottom: 1px dashed var(--line-2); }

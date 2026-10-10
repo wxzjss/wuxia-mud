@@ -1,17 +1,19 @@
 {
   "id": "demo_skill",
   "name": "太虚剑意（功法示例）",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "武侠行官方",
   "category": "功法",
-  "desc": "一门自创高阶剑法，配配套心法与秘籍。演示了连击、无视防御、吸血三类招式效果，以及学习门槛、属性加成、秘籍关联的写法。",
+  "desc": "一门自创高阶剑法，配配套心法与秘籍。演示了连击、无视防御、吸血三类招式效果，以及学习门槛、属性加成、秘籍关联、NPC 挂武学的写法。⚠️ 武学的 type 必须写**中文槽位名**（拳/剑/刀/棍/鞭/暗器/内功/轻功/招架/身法），category 写**五大类**（外功/内功/奇门/旁门/魔功）—— 写英文（sword/force/dodge）会装不进任何槽位。",
   "tags": ["功法", "剑法", "示例", "内功"],
   "gameVersion": "1.0.0",
   "skills": [
     {
       "id": "taixu_jianyi",
       "name": "太虚剑意",
-      "type": "sword",
+      "type": "剑",
+      "category": "外功",
+      "quality": "rare",
       "maxLevel": 180,
       "difficulty": 4,
       "damageMult": 2.1,
@@ -29,7 +31,9 @@
     {
       "id": "taixu_xinfa",
       "name": "太虚心法",
-      "type": "force",
+      "type": "内功",
+      "category": "内功",
+      "quality": "rare",
       "maxLevel": 200,
       "difficulty": 4,
       "damageMult": 1,
@@ -43,7 +47,9 @@
     {
       "id": "taixu_shenfa",
       "name": "太虚身法",
-      "type": "dodge",
+      "type": "轻功",
+      "category": "内功",
+      "quality": "uncommon",
       "maxLevel": 160,
       "difficulty": 3,
       "damageMult": 1,
@@ -100,6 +106,16 @@
       ],
       "canTeach": true,
       "teach": ["taixu_jianyi", "taixu_xinfa"],
+      "skills": {
+        "剑": "taixu_jianyi",
+        "内功": "taixu_xinfa",
+        "轻功": "taixu_shenfa"
+      },
+      "learned": {
+        "taixu_jianyi": { "level": 180, "exp": 0 },
+        "taixu_xinfa": { "level": 200, "exp": 0 },
+        "taixu_shenfa": { "level": 160, "exp": 0 }
+      },
       "ask": {
         "剑": "剑之要义，在「无」。有意则有形，有形则可破。",
         "太虚": "太虚者，无垠也。你练剑时，心里可还想着胜负？",

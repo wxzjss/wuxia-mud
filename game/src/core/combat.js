@@ -560,7 +560,13 @@ class CombatEngine {
     t.dead = true; t.hp = 0; t.buffs = [];
     const w = this.world;
     if (t.isPlayer) {
-      lines.push({ kind: 'combat', text: '你眼前一黑，倒了下去……' });
+      /* 玩家**不会死，只是力竭昏过去**（主人明确要求：昏倒 → 最近客栈醒转）。
+         文案与计数都走这条唯一口径：
+         ⚠️ 原来这里直接 `t.dead = true` 就 return 了，**绕过了 `world.playerDeath()`** ——
+            于是「战斗里被打倒」从不计「昏倒数」（只有饿昏/渴昏计），
+            同一个动作两条路两个结果。这里补一次调用（幂等：它只标记 + 计数）。 */
+      lines.push({ kind: 'faint', text: '你眼前一黑，什么都不知道了……' });
+      if (typeof w.playerDeath === 'function') w.playerDeath();
       return;
     }
     /* 第五批生死规则：普通 NPC 被打倒 → 晕厥（不致死）；野兽或「晕倒后再补刀」才真死 */

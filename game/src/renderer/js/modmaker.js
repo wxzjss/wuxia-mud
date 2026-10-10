@@ -353,19 +353,28 @@
   function tabSkills() {
     const s = S.spec;
     const st = T.meta ? (T.meta.skillTypes || []) : [];
+    /* ⚠️ 兜底必须写**中文槽位名**：武学的 type 就是 `equippedSkills` 的键，
+       写英文（sword/force/dodge）会装不进任何槽位，玩家 `enable` 时只会得到
+       「没有「sword」这个槽位」。老兜底正是那串英文 —— 官方示例 mod 也照抄了它。 */
     const typeOpts = st.map(t => ({ value: t.value || t, label: t.label || t }));
+    const FALLBACK_TYPES = ['拳', '剑', '刀', '棍', '鞭', '暗器', '内功', '轻功', '招架', '身法'];
+    const catList = (T.meta && T.meta.skillCategories) || ['外功', '内功', '奇门', '旁门', '魔功'];
+    const catOpts = catList.map(c => ({ value: c.value || c, label: c.label || c }));
     const effects = (T.meta && T.meta.effectTypes) || [];
 
     let h = '<div class="mm-section"><h3>武学功法</h3>' +
-      '<p class="mm-tip">从基础拳法到绝世神功，全靠这一页。<br>「招式效果」可以让武功带毒、定身、吸血等特殊效果。</p>';
+      '<p class="mm-tip">从基础拳法到绝世神功，全靠这一页。<br>「招式效果」可以让武功带毒、定身、吸血等特殊效果。<br>' +
+      '<b>类型</b>必须选槽位名（决定这门武学装在哪、以及内功打坐 / 外功淬体的分路）；' +
+      '<b>分类</b>是武学面板里的五大类。</p>';
 
     h += (s.skills || []).map((sk, i) => {
       const exHtml = (sk.effects || []).map((e, j) => effectRow(i, j, e)).join('');
       const body = '<div class="mm-form-grid">' +
         field('武学名称 *', input('skills.' + i + '.name', sk.name, '例如：落英神剑掌')) +
         field('武学 ID *', input('skills.' + i + '.id', sk.id, '例如：luoying_zhang')) +
-        field('类型', select('skills.' + i + '.type', sk.type, typeOpts.length ? typeOpts : ['fist', 'sword', 'blade', 'dodge', 'force', 'internal'])) +
-        field('最高等级', input('skills.' + i + '.maxLevel', sk.maxLevel != null ? sk.maxLevel : 100, '', 'number')) +
+        field('类型', select('skills.' + i + '.type', sk.type, typeOpts.length ? typeOpts : FALLBACK_TYPES)) +
+        field('分类', select('skills.' + i + '.category', sk.category, catOpts)) +
+        field('最高等级', input('skills.' + i + '.maxLevel', sk.maxLevel != null ? sk.maxLevel : 300, '', 'number')) +
         field('难度', input('skills.' + i + '.difficulty', sk.difficulty != null ? sk.difficulty : 1, '1~5', 'number')) +
         field('威力倍率', input('skills.' + i + '.damageMult', sk.damageMult != null ? sk.damageMult : 1, '1.0 = 普通', 'number')) +
         field('命中加成', input('skills.' + i + '.accuracy', sk.accuracy != null ? sk.accuracy : 0, '', 'number')) +
@@ -848,7 +857,7 @@
       case 'regions': return { id: '', name: '', color: '#7a9a7a', desc: '' };
       case 'npcs': return { id: '', name: '', room: '', level: 5, hp: 100, atk: 10, def: 5, dodge: 5, speed: 10, desc: '', talk: [] };
       case 'items': return { id: '', name: '', type: 'consumable', price: 10, weight: 1, desc: '' };
-      case 'skills': return { id: '', name: '', type: 'fist', maxLevel: 100, difficulty: 1, damageMult: 1, mpCost: 0, desc: '', effects: [] };
+      case 'skills': return { id: '', name: '', type: '拳', category: '外功', maxLevel: 300, difficulty: 1, damageMult: 1, mpCost: 0, desc: '', effects: [] };
       case 'sects': return { id: '', name: '', align: '正', desc: '', skills: [], ranks: [] };
       case 'quests': return { id: '', name: '', type: '支线', desc: '', stages: [], rewards: {} };
       case 'dialogues': return { id: '', name: '', npc: '', start: 'n1', nodes: [] };

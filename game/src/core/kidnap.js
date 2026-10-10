@@ -1501,7 +1501,7 @@ function escapeMarket(world) {
     return { ok: true, won: true, lines };
   }
   /* 打不过 → 死（通路④） */
-  lines.push({ kind: 'warn', text: `${bm.guardName}一拳砸在你胸口，你眼前一黑……` });
+  lines.push({ kind: 'faint', text: `${bm.guardName}一拳砸在你胸口，你眼前一黑……` });
   p.deathCount = (p.deathCount || 0) + 1;
   debt.ransom = Math.round(debt.ransom * 2);
   debt.paidOff = 0;

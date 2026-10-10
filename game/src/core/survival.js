@@ -46,18 +46,66 @@ function nearestInn(world, fromRoom) {
   return null;
 }
 
-/** 死亡后复活到最近客栈（补充部分饥渴值，避免刚复活又饿死）。返回客栈房间 id。 */
-function respawnAtInn(world, lines) {
+/* 昏倒与苏醒的**唯一入口**。
+ *
+ * ⚠️ 两件必须说清的事：
+ * ① 主人明确要求：玩家**不是「死」，是力竭昏过去**，然后在最近客栈醒转。
+ *    所以这里的语义与文案一律用「昏倒 / 醒过来」，玩家可见的任何一个字都不许说「死」。
+ * ② 结算（掉银钱、折功力）**只在这一处做**。
+ *    原来「战斗昏倒」在 `world.playerDeath()` 里扣一次钱，
+ *    「饿昏/渴昏」走的是 `engine.postProcess` 的另一段内联代码 —— **两条路各写一份**：
+ *      · 内联那份只算了 `lost` 拿去写台词，**根本没扣**（玩家看到的「损失了 N 文钱」是假的）；
+ *      · 而且它算的是 `p.money * 0.2` —— 若那一路真扣过钱，报给玩家的数字又是扣后余额的 20%，
+ *        跟实际扣的对不上。
+ *    两份实现漂移，正是「同一动作有三条路径」的老毛病。现在只有一份。
+ *
+ * @param world
+ * @param lines  可选。会把「昏倒 → 苏醒」的台词推进去
+ * @param opts   { anchor } 可选。显式落点（青楼卖身者回青楼由 engine 传进来，
+ *               因为 brothelAnchor 在 work 模块，survival 不 require 它以免循环依赖）
+ * @returns {{ room, name, lost, expLost, same }}
+ */
+function respawnAtInn(world, lines, opts) {
+  const o = opts || {};
   const p = world.player;
-  const inn = nearestInn(world, p.room) || innRoomIds(world)[0] || (world.data.meta && world.data.meta.startRoom);
-  const innName = (inn && (world.getRoom(inn) || {}).name) || '客栈';
-  if (inn) world.movePlayerTo(p, inn);
+  const from = p.room;
+  const anchor = o.anchor
+    || nearestInn(world, p.room)
+    || innRoomIds(world)[0]
+    || (world.data.meta && world.data.meta.startRoom);
+  const roomName = (anchor && (world.getRoom(anchor) || {}).name) || '客栈';
+  /* 落点就是原地（本来就昏在客栈里）→ 别说「被背回来」，那段路根本没走 */
+  const same = !!anchor && anchor === from;
+
+  /* ---- 昏倒的代价（唯一结算点）---- */
+  const money0 = Math.max(0, Math.floor(p.money || 0));
+  const lost = Math.floor(money0 * 0.2);
+  const exp0 = Math.max(0, Math.floor(p.exp || 0));
+  const expLost = exp0 - Math.floor(exp0 * 0.9);
+  p.money = money0 - lost;
+  p.exp = Math.floor(exp0 * 0.9);
+
+  if (anchor) world.movePlayerTo(p, anchor);
   p.hp = Math.floor(p.maxHp * 0.4);
   p.mp = Math.floor(p.maxMp * 0.4);
-  p.food = Math.max(p.food, Math.floor(p.maxFood * 0.6));
-  p.water = Math.max(p.water, Math.floor(p.maxWater * 0.6));
-  if (lines) lines.push({ kind: 'die', text: `你悠悠醒转，发现自己躺在${innName}的床榻上，是好心的过路人把你救了回来。` });
-  return inn;
+  p.food = Math.max(p.food || 0, Math.floor(p.maxFood * 0.6));
+  p.water = Math.max(p.water || 0, Math.floor(p.maxWater * 0.6));
+  p.buffs = [];
+  if (typeof p.recalc === 'function') p.recalc();
+
+  if (lines) {
+    lines.push({
+      kind: 'faint',
+      text: same
+        ? `你在一阵草药味里醒转，人就躺在${roomName}自己的床榻上。`
+        : `不知过了多久，你在一阵草药味里醒转——是${roomName}的伙计把你从路边背了回来。`,
+    });
+    const parts = [];
+    if (lost > 0) parts.push(`银钱少了 ${lost} 文`);
+    if (expLost > 0) parts.push('功力折了些');
+    if (parts.length) lines.push({ kind: 'sys', text: `（${parts.join('，')}）` });
+  }
+  return { room: anchor, name: roomName, lost, expLost, same };
 }
 
 module.exports = { innRoomIds, nearestInn, respawnAtInn };

@@ -179,9 +179,18 @@ function closeMasks(env) {
 }
 /** 桩好 api，返回记录器 */
 function stubApi(env, view) {
-  const rec = { exec: [], view: [], combat: [] };
+  const rec = { exec: [], view: [], combat: [], npc: [] };
   env.WX.api.exec = async (cmd, opt) => { rec.exec.push({ cmd, opt: opt || null }); return { ok: true, lines: [] }; };
   env.WX.api.view = async (p) => { rec.view.push(p); return { ok: true, view: view || env.WX.S.view }; };
+  env.WX.api.markGuide = async () => ({ ok: true });
+  /* NPC 详情：**喂真数据**（走真 engine.npcProfileOf），不是手搓 fixture ——
+     手搓的 fixture 只能证明「渲染函数能渲染我编的东西」，
+     证明不了「后端真给得出这些字段」。 */
+  env.WX.api.npcProfile = async (uid) => {
+    rec.npc.push(uid);
+    const pr = engine.npcProfileOf(uid);
+    return pr ? { ok: true, npc: pr } : { ok: false, error: '没有这个人。' };
+  };
   env.WX.S.busy = false;
   return rec;
 }
@@ -262,8 +271,13 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     const box = env.document.getElementById('scene-npcs');
     box.children.find(c => String(c.innerHTML || '').indexOf(SNAKE.name) >= 0).onclick();
     const lbox = env.document.getElementById('choices-list');
-    const lookBtn = lbox.children.find(c => /查看 \(look\)/.test(String(c.innerHTML || '')));
-    ok('S1-9 菜单里找到「查看」项', !!lookBtn);
+    /* ⚠️ 第三轮起，NPC 菜单第一项由「查看 (look)」改成「细看此人 (profile)」
+       （主人要求：点这个按钮要弹出**新界面**看详细资料，不是往日志里打一段文本）。
+       文本版 look 仍能从详情面板底部进去，指令也没废。 */
+    const profBtn = lbox.children.find(c => /细看此人/.test(String(c.innerHTML || '')));
+    ok('S1-9 菜单里找到「细看此人」项（第三轮：第一项换成开详情界面）', !!profBtn);
+    ok('S1-9b 老文本版的「打量 (look)」不再占菜单首项（改从详情面板底部进）',
+      !lbox.children.some(c => /查看 \(look\)/.test(String(c.innerHTML || ''))));
     /* 真派发在下一段独立 env 里验证（不与本段状态耦合） */
   }
   /* 真派发单独置于独立 env，避免与上段状态耦合 */
@@ -273,10 +287,15 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     env.WXUI.renderScene(VIEW);
     const box = env.document.getElementById('scene-npcs');
     box.children.find(c => String(c.innerHTML || '').indexOf(SNAKE.name) >= 0).onclick();
-    const lookBtn = env.document.getElementById('choices-list').children.find(c => /查看 \(look\)/.test(String(c.innerHTML || '')));
-    if (lookBtn) { lookBtn.onclick(); await settle(); }
-    ok('S1-10 ★ 点菜单「查看」真派发 `look <兽名>`',
-      rec.exec.length === 1 && rec.exec[0].cmd === 'look ' + SNAKE.name, rec.exec.map(x => x.cmd).join(',') || '(空)');
+    const lbox2 = env.document.getElementById('choices-list');
+    const profBtn = lbox2.children.find(c => /细看此人/.test(String(c.innerHTML || '')));
+    if (profBtn) { profBtn.onclick(); await settle(); await settle(); }
+    /* ★ 真派发：点「细看此人」必须**只**去拉那个人的画像（api.npcProfile），
+       且**不许**往日志里发 look 指令（那是旧行为）。
+       profile 面板的正文另在 §11 里真渲染断言。 */
+    ok('S1-10 ★ 点「细看此人」去拉该 NPC 的画像（而不是打一段 look 文本）',
+      rec.npc.length === 1 && rec.exec.length === 0,
+      'npcProfile=' + JSON.stringify(rec.npc) + ' exec=' + (rec.exec.map(x => x.cmd).join(',') || '(空)'));
   }
 
   /* ---------- §2 性别名词单一入口 ---------- */
@@ -624,9 +643,15 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     const mh = parseInt((qbRule.match(/min-height:\s*(\d+)px/) || [])[1] || '0', 10);
     ok('⑨-3 窄屏 .qb-btn 最小高度 ≥40px（触屏可点）', mh >= 40, `.qb-btn{${qbRule}} → ${mh}px`);
 
-    /* ---- ⑨-4/5 ≤560px 状态条换行 + 最小宽度（5 条一行会把标签挤断） ---- */
-    const i560 = css.indexOf('@media (max-width: 560px)');
-    const seg560 = i560 >= 0 ? css.slice(i560) : '';
+    /* ---- ⑨-4/5 ≤560px 状态条换行 + 最小宽度（5 条一行会把标签挤断） ----
+       ⚠️ 取的是**所有** 560px 段拼起来，不是「第一个」——
+       曾经因为别处新插了一个 560px 段，把第一个段之后的规则全截掉，
+       于是在没有回归的情况下假红一次。扫描全部段才不会被排版顺序误伤。 */
+    const seg560 = (() => {
+      let out = '', i = -1;
+      while ((i = css.indexOf('@media (max-width: 560px)', i + 1)) >= 0) out += css.slice(i, i + 1400) + '\n';
+      return out;
+    })();
     ok('⑨-4 ≤560px 状态条允许换行', /\.tb-bars\s*\{[^}]*flex-wrap:\s*wrap/.test(seg560),
       (seg560.match(/\.tb-bars\s*\{[^}]*\}/) || [''])[0]);
     const barRule = (seg560.match(/\.tb-bar\s*\{[^}]*\}/) || [''])[0];
@@ -731,6 +756,140 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
       /qg-num[^>]*>2</.test(qh), (qh.match(/<span class="qg-num">[^<]*/) || [''])[0]);
     ok('⑩-3d 三张卡都在（分组不丢内容）',
       ['甲', '乙', '丙'].every(n => qh.indexOf(n) >= 0));
+  }
+
+  /* ================================================================
+   *  ⑪ 第三轮主人要求：NPC「细看此人」详情界面
+   *
+   *  走的是**真实调用链**：真 engine + 真 spawnNpc + 真 scene 卡片 onclick
+   *  → 真 choices 项 onclick → 真 api.npcProfile（喂真 engine.npcProfileOf）
+   *  → 真 modal 渲染 → 读真 #modal-body。
+   *
+   *  ★ 断的是**结构**不是文本片段：
+   *    「未解锁的条目只给锁提示、不给正文」用
+   *    `locked 条数 === np-slock 个数` 与 `np-stext 个数 === 解锁条数` 来卡，
+   *    比在 HTML 里找某段中文更抗改（文案改了结构断言还立得住）。
+   * ================================================================ */
+  section('⑪ 第三轮 · NPC 详情界面（细看此人 → 新界面 + 背景故事分层解锁）');
+  {
+    const w2 = engine.world;
+    /* 挑一个「画像完整」的：有来历/隐秘/恩怨（全库 42 位 A/B 层才齐） */
+    let target = null;
+    for (const id of Object.keys(w2.data.npcs)) {
+      const d = w2.data.npcs[id];
+      if (d && d.portrait && d.portrait.origin && d.portrait.now && d.portrait.fear
+        && d.portrait.secret && d.portrait.feuds && d.portrait.feuds.length) { target = d; break; }
+    }
+    ok('S11-0 前提：找得到一个画像完整的 NPC（有来历/惧怕/隐秘/恩怨）',
+      !!target, target ? target.id + ' / ' + target.name : '无');
+
+    if (target) {
+      const inst = w2.spawnNpc(target.id, w2.player.room, 1, true);
+      ok('S11-0b 实例生成成功', !!inst, inst ? inst.id : '-');
+
+      /* 渲染一次并取回真 modal 正文；trust 由参数控制 */
+      const render = async (trust) => {
+        inst.pstate = inst.pstate || {};
+        inst.pstate.trust = trust;
+        const v = engine.view();
+        const env = loadUi(makeEnv({ innerWidth: 375 }));
+        const rec = stubApi(env, v);
+        closeMasks(env);
+        env.WX.S.view = v;
+        env.WXUI.renderScene(v);
+        const box = env.document.getElementById('scene-npcs');
+        const card = box.children.find(c => String(c.innerHTML || '').indexOf(target.name) >= 0);
+        if (!card) return { env, rec, html: '', clicked: false, err: '场景栏没有他的卡片' };
+        card.onclick();
+        const pb = env.document.getElementById('choices-list').children
+          .find(c => /细看此人/.test(String(c.innerHTML || '')));
+        if (!pb) return { env, rec, html: '', clicked: false, err: '菜单里没有「细看此人」' };
+        pb.onclick();
+        await settle(); await settle();
+        return {
+          env, rec, clicked: true,
+          html: String(env.document.getElementById('modal-body').innerHTML || ''),
+        };
+      };
+
+      /* ---- ① trust=0：来历该给正文，其余该锁 ---- */
+      const a = await render(0);
+      ok('S11-1 真点「细看此人」弹出了新界面（modal 有正文）',
+        a.clicked && a.html.length > 60, a.err || ('正文 ' + a.html.length + ' 字'));
+      /* 按 data-sk 精确取每一块（不靠中文片段，文案改了断言还立得住） */
+      const block = (html, k) => {
+        const m = new RegExp('<div class="np-story[^"]*" data-sk="' + k + '">([\\s\\S]*?)</div>').exec(html);
+        return m ? m[1] : null;
+      };
+      const { unlocked, locked } = engine.npcProfileOf(inst.id).story
+        .reduce((acc, s) => { (s.unlocked ? acc.unlocked : acc.locked).push(s.key); return acc; }, { unlocked: [], locked: [] });
+      /* ★ 期望值按**门槛规则**算，不是「locked 非空就行」：
+         trust=0 时只有 need 为 0 的「来历」该解锁（隐秘门槛 50+tier×5 更不可能）。
+         只断「locked 里有东西 + 它带锁提示」是不够的 ——
+         把前五条的门槛判据写死成 `true` 也能骗过那种断言（实测漏过一次）。 */
+      const needRule = engine.npcProfileOf(inst.id).story
+        .filter(s => s.key === 'origin').map(s => s.key);
+      ok('S11-2 ★ trust=0 时只有「来历」可见（门槛 0），其余条目只给锁提示、不泄正文',
+        JSON.stringify(unlocked) === JSON.stringify(needRule) && needRule.length === 1
+        && locked.length >= 4
+        && !!block(a.html, 'origin') && /np-stext/.test(block(a.html, 'origin'))
+        && locked.every(k => {
+          const b = block(a.html, k);
+          return b && /np-slock/.test(b) && !/np-stext/.test(b);
+        }),
+        `解锁 ${JSON.stringify(unlocked)}（期望 ${JSON.stringify(needRule)}） / 锁 ${JSON.stringify(locked)}`);
+      ok('S11-2b 锁提示说的是人话（来历与心事这一节里不出现数字门槛）',
+        !/≥\s*\d|\bneed\b|trust\s*[:=]\s*\d/.test(
+          (a.html.match(/来历与心事[\s\S]*?(?=<div class="np-sec"|$)/) || [''])[0]),
+        '（「能教你什么」那种「好感 ≥40」是另一回事，玩家需要知道刷到多少）');
+
+      /* ---- ② trust=80：身份/武学/关系/作息/故事都该齐 ---- */
+      const b = await render(80);
+      const c0 = engine.npcProfileOf(inst.id);
+      const bUnlocked = c0.story.filter(s => s.unlocked).length;
+      const bLocked = c0.story.filter(s => !s.unlocked).length;
+      ok('S11-3 ★ trust=80 时背景故事正文全开（锁提示消失）',
+        bUnlocked === c0.story.length && bLocked === 0
+        && c0.story.every(s => s.unlocked && block(b.html, s.key) && /np-stext/.test(block(b.html, s.key))),
+        `24: 解锁 ${c0.story.length}/${c0.story.length}，锁 ${bLocked}`);
+      ok('S11-3b 有「来历与心事」这一节（背景故事真的渲染出来了）',
+        /来历与心事/.test(b.html));
+      ok('S11-3c 有「与你的关系」且说人话（不甩 favor/trust 数字）',
+        /与你的关系/.test(b.html) && /与你|待你|信得过/.test(b.html));
+      ok('S11-3d 有「恩怨」一节（trust≥40 才给）',
+        /恩怨/.test(b.html));
+      ok('S11-3e 「武学」一节渲染出装备槽或提示', /武学/.test(b.html));
+
+      /* ---- ③ 不许出现的两样东西 ---- */
+      ok('S11-4 ★ 详情面板**不列**他喜欢收什么礼（那是要试出来的，不是官方攻略）',
+        !/偏爱|喜欢的东西|送礼清单/.test(b.html));
+      ok('S11-4b 不出现原始字段名（好感/信任只以人话出现）',
+        !/pstate|portrait|trustCN|favorCN/.test(b.html));
+
+      /* ---- ④ 底部快捷动作真派发 ---- */
+      const tk = b.env.document.getElementById('npc-prof-talk');
+      if (tk) { b.rec.exec.length = 0; tk.onclick(); await settle(); }
+      ok('S11-5 ★ 详情面板底部的「交谈」真派发 `talk <名字>`',
+        b.rec.exec.length === 1 && b.rec.exec[0].cmd === 'talk ' + target.name,
+        b.rec.exec.map(x => x.cmd).join(',') || '(空)');
+
+      /* ---- ⑤ 没画像的 NPC 也要能开（只是内容少），不能白屏 ---- */
+      const plainId = Object.keys(w2.data.npcs).find(id => {
+        const d = w2.data.npcs[id];
+        return d && !d.portrait && d.name && d.room;
+      });
+      if (plainId) {
+        const pi = w2.spawnNpc(plainId, w2.player.room, 1, true);
+        const p2 = await render(0);
+        void p2;
+        const env9 = loadUi(makeEnv({ innerWidth: 375 }));
+        stubApi(env9, engine.view());
+        const html9 = env9.WXUI.__html.npcProfileHtml(engine.npcProfileOf(pi.id));
+        ok('S11-6 没画像的 NPC 也能出详情（有身份/关系，不白屏）',
+          /npc-prof/.test(html9) && /与你的关系/.test(html9) && /此人的底细，你只看到这些/.test(html9),
+          (plainId + ' 正文 ' + html9.length + ' 字'));
+      }
+    }
   }
 
   console.log('\n———————————————————————————————');

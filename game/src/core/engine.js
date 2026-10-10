@@ -764,6 +764,191 @@ class GameEngine {
     };
   }
 
+  /* ------------------------------------------------------------------ *
+   *  NPC 详情画像 —— 前端「细看此人」新界面的数据源
+   *
+   *  主人要求：点 NPC 弹出互动菜单 → 点「看该 NPC」的按钮 → 弹出**新界面**，
+   *  显示这个人各方面的详细信息，**包括人物背景故事**。
+   *
+   *  ★ 设计取舍（重要，别把它改成「全公开」）：
+   *    背景故事不是白给的。项目里早有「信任度（trust）到多少才肯说」的规矩
+   *    （commands.js 的询问分支：来历 0 / 近况 20 / 想头 50 / 惧怕 70 /
+   *      恩怨 40 / 隐秘 50+tier×5）。本面板**沿用同一套门槛**：
+   *    未解锁的条目照样列出来（让玩家知道「这里有东西」），但只给
+   *    「信不过你 —— 办成几件事再说」；已解锁的把正文集中呈现，
+   *    省得玩家一个个话题去问（这才是面板的价值）。
+   *    若把 128 个人的底细摊在桌面，「人情往来」整条线就废了。
+   *
+   *  ⚠️ 文案一律说**人**不说**数据**：不打印 trust=53 这种数字，
+   *     只说「他跟你还算说得上话」。数字留给策划，玩家只该读到人味。
+   * ------------------------------------------------------------------ */
+  npcProfileOf(idOrNpc) {
+    const w = this.world, p = w.player;
+    if (!p) return null;
+    const find = (list) => (list || []).find(x =>
+      x && (x.id === idOrNpc || x.defId === idOrNpc || x.name === idOrNpc));
+    let n = (idOrNpc && typeof idOrNpc === 'object') ? idOrNpc
+      : (find(w.npcsIn(p.room)) || find(w.downedIn(p.room)) || w.getNpc(idOrNpc));
+    if (!n) return null;
+
+    const def = n.def || (w.data.npcs && w.data.npcs[n.defId]) || {};
+    const pt = n.portrait || def.portrait || null;
+    const ctx = { player: p, world: w };
+    const tpl = t => (t == null ? '' : String(evalTemplate(String(t), ctx)));
+    const C = require('./commands').__api;
+    const trust = (n.pstate && n.pstate.trust) || 0;
+    const favor = Math.round(n.favor || 0);
+    const pstate = n.pstate || {};
+    const here = p.room === n.room;
+
+    /* ---- 性格（有人味的一段，不是枚举值）---- */
+    const personalityMod = require('./personality');
+    const per = personalityMod.personalityOf(n);
+
+    /* ---- 武学：跟「看人」同一口径（交情浅只报「深不可测」）---- */
+    const insight = C.npcInsight(n);
+    const slots = [];
+    for (const k of Object.keys(n.equippedSkills || {})) {
+      const sid = n.equippedSkills[k];
+      if (!sid) continue;
+      const sd = w.getSkill(sid);
+      if (!sd) continue;
+      const lv = (n.learned && n.learned[sid] && n.learned[sid].level) || 0;
+      slots.push({
+        slot: k, id: sid, name: sd.name, category: sd.category || '', level: lv,
+        tier: insight.deep ? C.skillTierCN(lv) : '深不可测',
+        deep: insight.deep,
+      });
+    }
+    const known = new Set(Object.keys(n.equippedSkills || {}).map(k => n.equippedSkills[k]));
+    const more = Object.keys(n.learned || {})
+      .filter(sid => sid && !known.has(sid))
+      .map(sid => { const sd = w.getSkill(sid); return sd ? sd.name : null; })
+      .filter(Boolean);
+
+    /* ---- 装备 / 随身 ---- */
+    const equip = [];
+    for (const slot of Object.keys(n.equipment || {})) {
+      const iid = n.equipment[slot];
+      if (!iid) continue;
+      const d = w.getItem(iid);
+      equip.push({ slot, name: d ? d.name : iid });
+    }
+    const carry = [];
+    const carryDef = n.carry || def.carry || null;
+    for (const x of [].concat(((carryDef && carryDef.items) || def.items || []) || [])) {
+      const iid = typeof x === 'string' ? x : (x && (x.id || x.itemId));
+      if (!iid) continue;
+      const d = w.getItem(iid);
+      carry.push({ name: d ? d.name : iid, count: (typeof x === 'object' && x.count) || 1 });
+    }
+    const money = (carryDef && carryDef.money !== undefined) ? carryDef.money : def.money;
+
+    /* ---- 能教你什么 ---- */
+    const teach = (n.teach || def.teach || []).map(sid => {
+      const sd = w.getSkill(sid);
+      const need = def.favorToLearn != null ? def.favorToLearn : (n.favorToLearn != null ? n.favorToLearn : 40);
+      return sd ? { id: sid, name: sd.name, need, can: favor >= need } : null;
+    }).filter(Boolean);
+
+    /* ---- 作息 ---- */
+    const sched = def.schedule || n.schedule || null;
+    const schedule = sched ? Object.keys(sched).map(k => ({
+      at: k, place: ((w.getRoom(sched[k]) || {}).name || sched[k]),
+      cn: ({ day: '白天', night: '夜里', dusk: '黄昏', dawn: '清早' })[k] || k,
+    })) : [];
+
+    /* ---- 背景故事：逐条解锁（门槛与「询问」完全一致）---- */
+    const NEED = { origin: 0, now: 20, want: 50, fear: 70, obsession: 30 };
+    const LABEL = { origin: '来历', now: '近况', want: '想头', fear: '惧怕', obsession: '执念' };
+    const story = [];
+    for (const key of ['origin', 'now', 'want', 'fear', 'obsession']) {
+      if (!pt || !pt[key]) continue;
+      const need = NEED[key];
+      const unlocked = trust >= need;
+      story.push({
+        key, label: LABEL[key], need, unlocked,
+        text: unlocked ? tpl(pt[key]) : '',
+        lockHint: unlocked ? '' : '他还信不过你 —— 替他办成几件事再说。',
+      });
+    }
+    /* 隐秘：门槛随机密大小上抬（50 + tier×5），与询问分支同一公式 */
+    if (pt && pt.secret && pt.secret.text) {
+      const need = 50 + (pt.secret.tier || 1) * 5;
+      const unlocked = trust >= need;
+      const knownSecret = !!(pstate.revealed && pstate.revealed.indexOf('secret') >= 0);
+      story.push({
+        key: 'secret', label: '隐秘',
+        /* 已经从他嘴里听过一次的人，面板里就留得住 —— 否则玩家读过就没了 */
+        need: knownSecret ? 0 : need, unlocked: unlocked || knownSecret,
+        text: (unlocked || knownSecret) ? tpl(pt.secret.text) : '',
+        lockHint: '这种事，不是交情够了谁也不肯讲。',
+        secret: true,
+      });
+    }
+
+    /* ---- 恩怨：trust≥40 才说得出「谁跟谁有过节」---- */
+    const feudUnlocked = trust >= 40;
+    const feuds = ((pt && pt.feuds) || []).map(f => {
+      const other = (w.data.npcs && w.data.npcs[f.id]) || {};
+      return {
+        name: other.name || f.id, kind: f.kind || '旧识',
+        why: feudUnlocked ? tpl(f.why) : '', since: f.since || '',
+        locked: !feudUnlocked,
+      };
+    });
+
+    return {
+      ok: true,
+      id: n.id, defId: n.defId || null, name: n.name,
+      title: n.title || def.title || '',
+      identity: C.npcIdentity(w, n),
+      gender: n.gender || def.gender || 'other',
+      age: n.age || def.age || null,
+      tag: n.tag || def.tag || '',
+      here,
+      roomName: here ? '就在此处' : (((w.getRoom(n.room) || {}).name) || '不知去向'),
+      home: def.home ? (((w.getRoom(def.home) || {}).name) || null) : null,
+      desc: n.desc || def.desc || '',
+      role: pt && pt.role ? tpl(pt.role) : '',
+      realm: this.realmName(n),
+      level: n.level || def.level || 0,
+      showLevel: def.showLevel !== false,
+      hpLine: (n.hp < n.maxHp)
+        ? (n.hp / n.maxHp < 0.3 ? '伤势不轻' : n.hp / n.maxHp < 0.6 ? '身上带伤' : '略有疲态')
+        : '看上去气色如常',
+      personality: per ? { id: per.id, name: per.name || per.id, desc: per.desc || '' } : null,
+      /* 关系：说人话，不甩数字（好感/信任折算成一句话）。
+         ⚠️ 第三人称必须过 `pronounOf`（B11 的单一入口）——
+         写死「他」会让药婆婆、灭绝师太这些女角色一律被叫「他」。 */
+      relation: (() => {
+        const TA = require('./pronouns').pronounOf(n);
+        return {
+          favor, trust,
+          favorCN: favor >= 60 ? `${TA}拿你当自己人` : favor >= 25 ? `${TA}待你比旁人亲厚`
+            : favor <= -30 ? `${TA}见你就烦` : favor <= -8 ? `${TA}对你有些芥蒂` : `你与${TA}只是点头之交`,
+          trustCN: trust >= 70 ? `${TA}心里的事肯跟你讲` : trust >= 40 ? `${TA}信得过你办事`
+            : trust >= 20 ? `${TA}大致认得你这个人` : `${TA}还摸不清你的底细`,
+        };
+      })(),
+      equip, carry, money,
+      martial: { slots, more, deep: insight.deep, hint: insight.deep ? '' : insight.hint },
+      /* ⚠️ 故意**不列** `likes`（他喜欢什么）：那是送礼要试出来的东西，
+         列在面板上等于官方攻略，`social.js` 的「合口味」判定就没意义了。 */
+      teach, schedule,
+      disciples: (n.disciples || []).length,
+      feuds, feudUnlocked,
+      story,
+      voice: (pt && pt.voice) ? { tone: pt.voice.tone || '', catchphrase: tpl(pt.voice.catchphrase || ''), style: tpl(pt.voice.style || '') } : null,
+      routine: (pt && pt.routine) ? pt.routine.map(r => ({
+        at: ({ day: '白天', night: '夜里', dusk: '黄昏', dawn: '清早' })[r.at] || r.at,
+        act: tpl(r.act),
+      })) : [],
+      arcInit: (pt && pt.arc && pt.arc.init) || '',
+      hasPortrait: !!pt,
+    };
+  }
+
   combatView() {
     const b = this.world.battle;
     if (!b) return null;
@@ -875,31 +1060,26 @@ class GameEngine {
         }
       }
     }
-    // 饥渴致死：advanceTime 掉血到 0，但没走战斗的 playerDeath
+    // 饥渴昏倒：advanceTime 掉血到 0，但没走战斗的 playerDeath
+    /* ⚠️ 语义是**昏倒**不是死（主人要求）。这里只置标记；结算与苏醒统一在下面那一处 */
     if (p.hp <= 0 && !p.dead && (p.food <= 0 || p.water <= 0)) {
       p.dead = true;
       p.deathCount = (p.deathCount || 0) + 1;
-      merged.push({ kind: 'die', text: p.food <= 0 ? '你饿得眼冒金星，一头栽倒在地，人事不省……' : '你渴得喉咙冒烟，眼前一黑，栽倒在地……' });
+      merged.push({
+        kind: 'faint',
+        text: p.food <= 0 ? '你饿得眼冒金星，一头栽倒在地，人事不省……' : '你渴得喉咙冒烟，眼前一黑，栽倒在地……',
+      });
     }
-    // 死亡复活（战斗死 / 饿死 / 渴死 都落到这里）
-    // 青楼卖身者复活回青楼，其余复活到最近客栈
+    /* 昏倒 → 最近客栈醒转。**唯一入口** `survival.respawnAtInn()`：
+       扣钱折功力、搬人、回血、写「醒过来」的台词，全在里面。
+       原来这里是一段内联实现，与 survival.respawnAtInn 各写一份（那一份还是死代码），
+       且内联这份只算 lost 写台词、根本没扣钱。合并之后只有一份。
+       青楼卖身者由 engine 传 anchor（brothelAnchor 在 work 模块，survival 不依赖它）。 */
     if (p.dead) {
       p.dead = false;
       const isSold = !!(p.prostitution && p.prostitution.sold);
-      const spawn = isSold
-        ? (workMod.brothelAnchor(w) || survival.nearestInn(w, p.room) || w.data.meta.startRoom)
-        : (survival.nearestInn(w, p.room) || w.data.meta.startRoom);
-      const lost = Math.floor(p.money * 0.2);
-      w.movePlayerTo(p, spawn);
-      p.hp = Math.floor(p.maxHp * 0.4);
-      p.mp = Math.floor(p.maxMp * 0.4);
-      p.food = Math.max(p.food, Math.floor(p.maxFood * 0.6));
-      p.water = Math.max(p.water, Math.floor(p.maxWater * 0.6));
-      p.buffs = [];
-      p.recalc();
-      const spawnName = (w.getRoom(spawn) || {}).name || '客栈';
-      merged.push({ kind: 'die', text: `你悠悠醒转，发现自己躺在${spawnName}里，身上少了些银钱……` });
-      merged.push({ kind: 'sys', text: `你损失了 ${lost} 文钱。` });
+      const anchor = isSold ? (workMod.brothelAnchor(w) || null) : null;
+      survival.respawnAtInn(w, merged, { anchor });
     }
     // 支线自动检查
     this.checkQuestAuto(merged);
@@ -1360,7 +1540,13 @@ class GameEngine {
     const idName = (obj) => Object.keys(obj).map(k => ({ id: k, name: obj[k].name || k }));
     return {
       attrs: Object.keys(w.data.attrs),
+      /* ⚠️ 这两个表 **必须与游戏本体口径一致**：
+         `skillTypes` = 武学槽位名（中文），它同时决定「内功打坐冲脉 / 外功淬体」的玩法分叉；
+         `skillCategories` = 武学五大类（面板分类）。
+         Mod 制作器优先读这里；读不到时的兜底也必须写中文 —— 老兜底写的是英文
+         （sword/force/dodge），照着做出来的 mod 武学**装不进任何槽位**。 */
       skillTypes: ['拳', '剑', '刀', '棍', '鞭', '暗器', '内功', '轻功', '招架', '身法'],
+      skillCategories: ['外功', '内功', '奇门', '旁门', '魔功'],
       itemTypes: ['weapon', 'armor', 'helmet', 'boots', 'gloves', 'necklace', 'ring', 'cloak', 'shield', 'accessory', 'consumable', 'food', 'herb', 'material', 'book', 'quest', 'misc'],
       slots: ['头部', '颈部', '身体', '披风', '手部', '脚部', '武器', '副手', '戒指', '饰品'],
       stats: ['atk', 'def', 'dodge', 'parry', 'speed', 'maxHp', 'maxMp', 'critRate', 'lifesteal', 'reflect', 'armorPen'],
@@ -1445,6 +1631,35 @@ class GameEngine {
       }
       return o;
     });
+
+    /* ★ 武学字段归一化（**制作器侧**，与运行时 modloader 的归一化同一口径）。
+       `skills.type` 就是 `equippedSkills` 的槽位键，写英文（sword/force/dodge）
+       会在游戏里装不上任何槽位；`category` 决定武学面板里的五大类。
+       在这里就地纠正，玩家导出的 mod.json 从源头就是中文 ——
+       而不是等进游戏才由 modloader 兜。
+       归一化表只有一份，见 core/modfields.js。 */
+    {
+      const mf = require('./modfields');
+      out.skills = out.skills.map(s => {
+        const o = Object.assign({}, s);
+        if (o.id) o.id = String(o.id);
+        o.type = mf.normSkillType(o.type);
+        o.category = mf.normCategory(o.category, o.type);
+        if (!o.quality) o.quality = 'common';
+        if (o.maxLevel == null || Number(o.maxLevel) <= 0) o.maxLevel = 300;
+        return o;
+      });
+      /* NPC 挂的武学槽位同理（demo_npc 常直接写英文键） */
+      out.npcs = out.npcs.map(n => {
+        const o = Object.assign({}, n);
+        if (o.skills && typeof o.skills === 'object' && !Array.isArray(o.skills)) {
+          const sk = {};
+          for (const k of Object.keys(o.skills)) sk[mf.normSkillType(k)] = o.skills[k];
+          o.skills = sk;
+        }
+        return o;
+      });
+    }
 
     /* NPC：字符串字段 -> 数组 */
     out.npcs = out.npcs.map(n => {
@@ -1547,7 +1762,15 @@ class GameEngine {
     for (const s of (spec.skills || [])) {
       const id = s.id || slug(s.name);
       bucket('skills')[id] = {
-        id, name: s.name, type: s.type || '剑', maxLevel: s.maxLevel || 500,
+        id, name: s.name, type: s.type || '剑',
+        /* ★ category / quality 必须写出！
+           原来这里是**白名单式**只挑字段，没有 category ——
+           于是「制作器里填了功法的五大类」导出时被**悄悄丢掉**，
+           进游戏后武学面板又把 type 当分类显示（冒出「剑」这种分类）。
+           这与 `skills.type` 写英文是同一族的病：填了不生效。 */
+        category: s.category || undefined,
+        quality: s.quality || undefined,
+        maxLevel: s.maxLevel || 300,
         difficulty: s.difficulty || 1.2, desc: s.desc || '',
         damageMult: s.damageMult || 1.2, accuracy: s.accuracy || 90, mpCost: s.mpCost || 0,
         trainCost: s.trainCost || 150, bonus: s.bonus && Object.keys(s.bonus).length ? s.bonus : undefined,
@@ -1650,10 +1873,41 @@ class GameEngine {
     const overwritten = Object.keys(manifest.rooms || {}).filter(id => baseRoomIds.has(id));
     if (overwritten.length) warnings.push(`以下房间将覆盖游戏原版内容：${overwritten.join('、')}`);
     // 武功
+    /* ⚠️ 武学的 `type` 不只是「分类」，它就是 `equippedSkills` 的**槽位键**：
+       写英文（sword/force/dodge）会导致这门武学**装不上任何槽位**，
+       玩家 `enable` 时只会得到「没有「sword」这个槽位」。
+       这里给提示（不是 error）：因为加载时 `modfields` 会自动纠正，
+       但让玩家在**导出前**就看到、直接写对更好。 */
+    const SLOTS = ['拳', '剑', '刀', '棍', '鞭', '暗器', '内功', '轻功', '招架', '身法'];
+    const CATS = ['外功', '内功', '奇门', '旁门', '魔功'];
+    /* 归一化在 normalizeSpec 里已经跑过，所以 manifest 里看到的永远是对的 ——
+       想让「别写英文」这条提示真出现，必须拿**用户原始输入**比一遍。
+       （否则提示恒不触发，等于没写。） */
+    const mf = require('./modfields');
+    const rawSkills = Array.isArray(specRaw && specRaw.skills) ? specRaw.skills : [];
+    const rawById = {};
+    rawSkills.forEach((s, i) => { if (s) rawById[s.id || ('#' + i)] = s; });
     for (const id of Object.keys(manifest.skills || {})) {
       const s = manifest.skills[id];
+      const raw = rawById[id] || null;
       if (!s.name) errors.push(`武学 ${id} 缺少名称`);
       if (!s.type) errors.push(`武学「${s.name}」缺少类型`);
+      else if (SLOTS.indexOf(String(s.type)) < 0) {
+        warnings.push(`武学「${s.name}」的类型「${s.type}」不是合法槽位（可用：${SLOTS.join('、')}）——`
+          + `写英文（sword/force/dodge）这门武学会装不上任何槽位。建议直接改成中文槽位名。`);
+      }
+      if (raw && raw.type != null && String(raw.type) !== String(s.type)) {
+        warnings.push(`武学「${s.name}」的类型原本写的「${raw.type}」，已自动按别名纠正为「${s.type}」；`
+          + `建议直接把源文件改成中文槽位名，免得别处（文档、截图、别人抄你的 mod）沿用旧写法。`);
+      }
+      if (!s.category) {
+        warnings.push(`武学「${s.name}」没填分类，武学面板里只能按类型归类（五大类：${CATS.join(' / ')}）。`);
+      } else if (CATS.indexOf(String(s.category)) < 0) {
+        warnings.push(`武学「${s.name}」的分类「${s.category}」不在五大类里（${CATS.join('、')}），面板会把它单列一类。`);
+      }
+      if (s.maxLevel != null && Number(s.maxLevel) > 0 && Number(s.maxLevel) < 60) {
+        warnings.push(`武学「${s.name}」最高等级只有 ${s.maxLevel} 级，玩家很快就会练满，建议 ≥120。`);
+      }
     }
     // 物品
     for (const id of Object.keys(manifest.items || {})) {

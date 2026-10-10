@@ -400,6 +400,27 @@ class World extends EventEmitter {
   }
 
   buildIndexes() {
+    /* ★ Mod / 外部数据的**字段归一化**（单一入口，幂等）。
+       放在这里的理由和 `applySpeciesMoves` 一样：boot / reload / deserialize
+       **三条加载路径**最后都落到 buildIndexes，挂一处等于全挂上，不会漏。
+       归一化的必要性见 `modfields.js` 头注释 —— 一句话：
+       mod 里 `skills.type` 写英文（sword/force/dodge）就**装不进任何槽位**，
+       `category` 缺了还会在武学面板里冒出一个叫「sword」的分类。 */
+    try {
+      const r = require('./modfields').normalizeWorldData(this.data);
+      if (r.changed) {
+        this._modFieldNotes = r.notes;
+        this.modLog = this.modLog || [];
+        this.modLog.push({
+          level: 'info', mod: '(字段归一化)',
+          msg: `补齐/纠正了 ${r.changed} 处 mod 字段（type/category/quality/maxLevel 等）`,
+        });
+      }
+    } catch (e) {
+      /* 归一化失败不能让整个世界起不来 */
+      this.modLog = this.modLog || [];
+      this.modLog.push({ level: 'error', mod: '(字段归一化)', msg: String(e && e.message) });
+    }
     // 房间 by region
     this._roomsByRegion = {};
     for (const id of Object.keys(this.data.rooms)) {
@@ -2186,7 +2207,7 @@ class World extends EventEmitter {
         if (rr) lines.push(rr);
       }
       if (p.hp <= 0) {
-        lines.push({ kind: 'combat', text: '你眼前一黑，倒了下去……' });
+        lines.push({ kind: 'faint', text: '你眼前一黑，什么都不知道了……' });
         break;
       }
     }
@@ -2258,15 +2279,22 @@ class World extends EventEmitter {
     return res;
   }
 
+  /**
+   * 玩家力竭昏倒（**不是「死」** —— 主人明确要求：昏过去，然后在最近客栈醒转）。
+   *
+   * 只做两件事：**置昏倒标记 + 记一次数**。
+   * ⚠️ **不在这里扣钱扣经验**：结算统一在 `survival.respawnAtInn()`（复活的唯一入口）里做。
+   *    原来这里扣一次钱，而「饿昏/渴昏」走 engine 里另一段内联复活代码 ——
+   *    两条路各写一份，且内联那份只算了个数字写进台词、压根没扣
+   *    （玩家看到的「你损失了 N 文钱」是假的）。见 survival.js 头注释。
+   * 字段名保留 `dead` / `deathCount`（存档兼容），但**玩家可见的文案一律说「昏倒」**。
+   */
   playerDeath() {
     const p = this.player;
     p.dead = true;
     p.hp = 0;
-    const lost = Math.floor(p.money * 0.2);
-    p.money -= lost;
-    p.exp = Math.max(0, Math.floor(p.exp * 0.9));
     p.deathCount = (p.deathCount || 0) + 1;
-    this.emit('playerdeath', { lost });
+    this.emit('playerdeath', { count: p.deathCount });
   }
 
   /* ================================================================

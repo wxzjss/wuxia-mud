@@ -140,7 +140,7 @@ function seedOfficialMods() {
       .map(e => e.name)
       .filter(isOfficialDemo);
   } catch (e) {
-    return { ok: false, added: 0, error: e.message };
+    return { ok: false, added: 0, updated: 0, error: e.message };
   }
   if (!entries.length) return { ok: true, added: 0 };
 
@@ -148,7 +148,7 @@ function seedOfficialMods() {
   idx.mods = idx.mods || [];
   const state = readSeedState();
   const dropped = new Set(state.dropped || []);
-  let added = 0;
+  let added = 0, updated = 0;
 
   for (const dirName of entries) {
     let json;
@@ -161,15 +161,13 @@ function seedOfficialMods() {
     /* id 取值与游戏端 modloader 保持一致：顶层 id 优先 */
     const id = safeId(json.id || (json._mod && json._mod.id) || dirName);
     if (!id) continue;
-    if (idx.mods.some(m => m.id === id)) continue;   /* 已有，不动 */
     if (dropped.has(id)) continue;                    /* 被手动删过，尊重 */
 
     const counts = countContent(json);
     const total = Object.values(counts).reduce((a, b) => a + b, 0);
     if (total === 0) continue;
 
-    idx.mods.push({
-      id,
+    const payload = {
       name: String(json.name || id).slice(0, 60),
       version: String(json.version || '1.0.0').slice(0, 20),
       author: String(json.author || '武侠行官方').slice(0, 40),
@@ -181,19 +179,37 @@ function seedOfficialMods() {
       counts,
       note: '官方示例 Mod，随游戏分发',
       json,
-      downloads: 0,
-      time: Date.now(),
-      updated: Date.now(),
-      timeText: nowStr(),
-      file: null,
       size: JSON.stringify(json).length,
-      official: true
-    });
+    };
+
+    /* ★ 内容指纹：官方示例是**随游戏分发**的，源码改了就该同步到站点。
+       老代码这里是 `if (idx.mods.some(m => m.id === id)) continue;` —— 已有的永远跳过，
+       于是「更新示例 mod」只改了仓库、站点上仍是旧那一份，
+       玩家在模组站下载到的还是老版（比如 skills.type 写英文、装不上槽位的那版）。
+       判据用**内容指纹**而不是 version：改了字段忘了推版本号是常态。
+       只覆盖 official 条目（玩家自己上传的同名 mod 不动）。 */
+    const hash = require('crypto').createHash('md5')
+      .update(JSON.stringify(json)).digest('hex');
+
+    const exist = idx.mods.find(m => m.id === id);
+    if (exist) {
+      if (exist.official === true && exist.hash !== hash) {
+        Object.assign(exist, payload, {
+          hash, updated: Date.now(), timeText: nowStr(), file: null, official: true,
+        });
+        updated++;
+      }
+      continue;
+    }
+
+    idx.mods.push(Object.assign({
+      id, hash, time: Date.now(), updated: Date.now(), timeText: nowStr(), file: null, official: true,
+    }, payload));
     added++;
   }
 
-  if (added) writeIndex(idx);
-  return { ok: true, added, total: idx.mods.length };
+  if (added || updated) writeIndex(idx);
+  return { ok: true, added, updated, total: idx.mods.length };
 }
 
 /* ==========================================================================

@@ -286,6 +286,16 @@ async function handleApi(engine, req, res, pn, query, preset) {
 
       case 'view': return json(res, 200, { ok: true, view: engine.view() });
 
+      /* NPC 详情画像（前端「细看此人」的新界面）。
+         `api.view(panel)` 只吃一个 panel 名，传不了「看哪个人」，
+         所以单开一个 route：POST { uid } → { ok, npc: profile }。 */
+      case 'npc': {
+        const uid = (json_body && (json_body.uid || json_body.id || json_body.name)) || null;
+        const npc = uid == null ? null : engine.npcProfileOf(uid);
+        if (!npc) return json(res, 404, { ok: false, error: '这里没有这个人。' });
+        return json(res, 200, { ok: true, npc });
+      }
+
       /* --- 存读档 --- */
       case 'saves': return json(res, 200, { ok: true, saves: engine.listSaves() });
       case 'save': {

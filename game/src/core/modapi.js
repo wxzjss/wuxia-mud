@@ -540,7 +540,14 @@ function evalEffect(eff, ctx) {
       // combatWith:room:npcId
       const r = w.getRoom(args[0]); break;
     }
-    case 'die': p.hp = 0; p.dead = true; out.push({ kind: 'die', text: '你眼前一黑……' }); break;
+    /* 玩家**不会死，只会力竭昏倒**（主人要求：昏倒 → 最近客栈醒转）。
+       mod 里的 `die` 效果沿用同一口径：置昏倒标记 + 计数（走 world.playerDeath 唯一入口），
+       真正的「搬回客栈 + 扣钱」由 engine 的苏醒流程统一做。 */
+    case 'die':
+      p.hp = 0;
+      if (typeof w.playerDeath === 'function') w.playerDeath(); else p.dead = true;
+      out.push({ kind: 'faint', text: '你眼前一黑……' });
+      break;
     case 'damage': {
       p.hp = clamp(p.hp - num(0, 1), 0, p.maxHp); break;
     }

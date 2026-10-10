@@ -590,7 +590,12 @@
     const marryHint = sameGender ? null : { label: '提亲议婚 (propose)', action: 'propose' };
 
     choices(n.name + (n.title ? ' · ' + n.title : ''), [
-      { label: '查看 (look)', action: 'look' },
+      /* ⚠️ 第一项从「查看 (look)」换成「细看此人」——
+         主人要的是「点这个按钮弹出一个**新界面**，显示这个人各方面的详细信息，
+         **包括人物背景故事**」。原来那个按钮只是往日志里打一段文本（look），
+         翻过去就没了；现在开一个真正的详情面板（见 openNpcProfile）。
+         文本版的 `look` 仍从详情面板底部进得去，指令也照旧能用。 */
+      { label: '细看此人 (profile)', action: 'profile', hint: '来历、武学、关系、作息、背景故事' },
       n.canTalk !== false ? { label: '交谈 (talk)', action: 'talk' } : null,
       { label: '询问 (ask)', action: 'ask' },
       { label: '看人物关系 (guanxi)', action: 'guanxi' },
@@ -618,7 +623,8 @@
       { label: '动手厮杀 (kill)', action: 'kill', hint: '可能致死，谨慎' }
     ].filter(Boolean), it => {
       const BTN = { fromButton: true };
-      if (it.action === 'look') doCmd('look ' + n.name, BTN);
+      if (it.action === 'profile') openNpcProfile(n);
+      else if (it.action === 'look') doCmd('look ' + n.name, BTN);
       else if (it.action === 'pack') doCmd('装人 ' + n.name, BTN);
       else if (it.action === 'sellnpc') doCmd('卖人 ' + n.name, BTN);
       else if (it.action === 'follow') doCmd('跟随 ' + n.name, BTN);
@@ -638,6 +644,173 @@
       else if (it.action === 'steal') stealNpc(n);
       else if (it.action === 'kill') doCmd('kill ' + n.name, BTN);
     }, head);
+  }
+
+  /* ============================================================
+   *  NPC 详情界面（主人要求：点 NPC 菜单里那个按钮 → 弹出新界面，
+   *  显示这个人各方面的详细信息，**包括人物背景故事**）
+   *
+   *  数据来自 `api.npcProfile(uid)`（后端 `engine.npcProfileOf`，按需拉取，
+   *  不塞进每次指令的 view 里）。
+   *
+   *  ★ 背景故事是**分层解锁**的（与「询问」同一套信任门槛）：
+   *    没到门槛的条目不隐藏，而是显示「他还信不过你」——
+   *    让玩家知道「这里还有东西」，也知道该去办事而不是刷礼物。
+   * ============================================================ */
+  async function openNpcProfile(n) {
+    if (!n) return;
+    const uid = n.id || n.defId || n.name;
+    let pr = null;
+    try {
+      const d = await api.npcProfile(uid);
+      pr = (d && d.npc) || null;
+    } catch (e) {
+      toast('一时看不真切。', 'warn');
+      return;
+    }
+    if (!pr) { toast('这里没有这个人。', 'warn'); return; }
+    modal(pr.name + (pr.title ? ' · ' + pr.title : ''),
+      npcProfileHtml(pr),
+      '<button class="btn-ink" id="npc-prof-look">打 量</button>' +
+      '<button class="btn-ink" id="npc-prof-talk">交 谈</button>' +
+      '<button class="btn-ink" onclick="WXUI.closeModal()">关 闭</button>');
+    /* 底部两个快捷动作：复用既有指令，不另起一套 */
+    const lk = $('npc-prof-look');
+    if (lk) lk.onclick = () => { closeModal(); doCmd('look ' + pr.name, { fromButton: true }); };
+    const tk = $('npc-prof-talk');
+    if (tk) tk.onclick = () => { closeModal(); doCmd('talk ' + pr.name, { fromButton: true }); };
+    /* 点「恩怨」里提到的名字 → 看那个人（若你认得他） */
+    document.querySelectorAll('#modal-body [data-npcname]').forEach(b => {
+      b.onclick = () => {
+        const nm = b.getAttribute('data-npcname');
+        closeModal();
+        doCmd('look ' + nm, { fromButton: true });
+      };
+    });
+  }
+
+  /** 详情面板的 HTML（纯函数：profile → html，方便单独测） */
+  function npcProfileHtml(p) {
+    if (!p) return '';
+    const h = [];
+    const sec = (title, body, cls) =>
+      (body ? ('<div class="np-' + (cls || 'sec') + '">' +
+        (title ? '<div class="np-h">' + esc(title) + '</div>' : '') + body + '</div>') : '');
+    const row = (k, v) => (v ? '<div class="np-row"><span class="np-k">' + esc(k) + '</span><span class="np-v">' + v + '</span></div>' : '');
+
+    /* ---- 头：一句定位 + 外观 ---- */
+    let head = '<div class="np-lead">' +
+      '<span class="np-id">' + esc(p.identity || '') + '</span>' +
+      (p.gender ? '<span class="np-tag">' + esc(genderNoun(p.gender)) + (p.age ? ' · ' + p.age + ' 岁' : '') + '</span>' : '') +
+      (p.here ? '' : '<span class="np-tag warn">' + esc(p.roomName || '') + '</span>') +
+      '</div>';
+    if (p.desc) head += '<div class="np-desc">' + esc(p.desc) + '</div>';
+    if (p.role) head += '<div class="np-role">' + esc(p.role) + '</div>';
+
+    /* ---- 修为与状态 ---- */
+    let stat = row('修为', esc(p.realm || '—') + (p.showLevel && p.level ? '（约 ' + p.level + ' 层）' : ''));
+    stat += row('气色', esc(p.hpLine || ''));
+    if (p.personality) stat += row('性子', esc(p.personality.name) + (p.personality.desc ? '　' + esc(p.personality.desc) : ''));
+    if (p.home) stat += row('住处', esc(p.home));
+
+    /* ---- 与你的关系 ---- */
+    let rel = row('交情', esc(p.relation.favorCN));
+    rel += row('信任', esc(p.relation.trustCN));
+
+    /* ---- 武学 ---- */
+    let mart = '';
+    if (p.martial.slots.length) {
+      mart += '<div class="np-list">' + p.martial.slots.map(s =>
+        '<span class="np-chip">' + esc(s.slot) + '·' + esc(s.name) +
+        '<i>' + esc(s.tier) + '</i></span>').join('') + '</div>';
+    }
+    if (p.martial.more.length) {
+      mart += '<div class="np-note">此外还习得：' + esc(p.martial.more.join('、')) + '</div>';
+    }
+    if (!p.martial.slots.length && !p.martial.more.length) mart = '<div class="np-note">看不出会什么武功。</div>';
+    if (p.martial.hint) mart += '<div class="np-note dim">' + esc(p.martial.hint) + '</div>';
+
+    /* ---- 装备 / 随身 ---- */
+    let gear = '';
+    if (p.equip.length) {
+      gear += '<div class="np-list">' + p.equip.map(e =>
+        '<span class="np-chip">' + esc(e.slot) + '·' + esc(e.name) + '</span>').join('') + '</div>';
+    }
+    if (p.carry.length) {
+      gear += '<div class="np-note">随身带着：' + esc(p.carry.map(c => c.name + (c.count > 1 ? '×' + c.count : '')).join('，')) + '。</div>';
+    }
+    if (p.money) gear += '<div class="np-note">身上大约 ' + p.money + ' 文钱。</div>';
+
+    /* ---- 能教你什么 ---- */
+    let teach = '';
+    if (p.teach.length) {
+      teach = '<div class="np-list">' + p.teach.map(t =>
+        '<span class="np-chip' + (t.can ? '' : ' dim') + '">' + esc(t.name) +
+        '<i>' + (t.can ? '可请教' : '好感 ≥' + t.need) + '</i></span>').join('') + '</div>';
+    }
+
+    /* ---- 作息 ---- */
+    let sch = '';
+    if (p.schedule.length) {
+      sch = '<div class="np-list">' + p.schedule.map(s =>
+        '<span class="np-chip">' + esc(s.cn) + '·' + esc(s.place) + '</span>').join('') + '</div>';
+    }
+
+    /* ---- ★ 背景故事（分层解锁）----
+       ⚠️ 每块都带 `data-sk`（origin/now/want/fear/obsession/secret）——
+         既是给测试的稳定锚点（「未解锁就没有正文」这类断言按 key 打，
+         不用在 HTML 里找中文片段），也让日后想加「点某条展开」有抓手。 */
+    let story = '';
+    if (p.story.length) {
+      story = p.story.map(s =>
+        '<div class="np-story' + (s.unlocked ? '' : ' locked') + (s.secret ? ' secret' : '') +
+        '" data-sk="' + esc(s.key) + '">' +
+        '<span class="np-slabel">' + esc(s.label) + '</span>' +
+        (s.unlocked
+          ? '<span class="np-stext">' + esc(s.text) + '</span>'
+          : '<span class="np-slock">' + esc(s.lockHint) + '</span>') +
+        '</div>').join('');
+    }
+    /* 恩怨：谁跟谁有过节（trust ≥ 40 才说得出） */
+    let feud = '';
+    if (p.feuds.length) {
+      feud = p.feuds.map(f =>
+        '<div class="np-story' + (f.locked ? ' locked' : '') + '" data-sk="feuds">' +
+        '<span class="np-slabel">' + esc(f.kind) + '</span>' +
+        '<span class="np-stext">' + (f.locked
+          ? '<span class="np-slock">这种话，不是交情够了谁也不肯讲。</span>'
+          : '<a class="np-link" data-npcname="' + esc(f.name) + '">' + esc(f.name) + '</a>' +
+            (f.why ? '　' + esc(f.why) : '') + (f.since ? '（' + esc(f.since) + '起）' : '')) +
+        '</span></div>').join('');
+    }
+
+    /* ---- 说话的样子（不设门槛：听口气是听得出来的）---- */
+    let voice = '';
+    if (p.voice) {
+      if (p.voice.catchphrase) voice += '<div class="np-story" data-sk="voice"><span class="np-slabel">口头禅</span><span class="np-stext">「' + esc(p.voice.catchphrase) + '」</span></div>';
+      if (p.voice.style) voice += '<div class="np-story" data-sk="voice"><span class="np-slabel">谈吐</span><span class="np-stext">' + esc(p.voice.style) + '</span></div>';
+    }
+    let routine = '';
+    if (p.routine.length) {
+      routine = p.routine.map(r =>
+        '<div class="np-story" data-sk="routine"><span class="np-slabel">' + esc(r.at) + '</span><span class="np-stext">' + esc(r.act) + '</span></div>').join('');
+    }
+
+    h.push(head);
+    h.push(sec('', stat, 'sec'));
+    h.push(sec('与你的关系', rel));
+    h.push(sec('武学', mart));
+    h.push(sec('随身行头', gear));
+    if (teach) h.push(sec('能教你什么', teach));
+    if (sch) h.push(sec('作息', sch));
+    if (story) h.push(sec('来历与心事', story, 'sec story'));
+    if (feud) h.push(sec('恩怨', feud, 'sec story'));
+    if (voice) h.push(sec('说话的口气', voice, 'sec story'));
+    if (routine) h.push(sec('平日做什么', routine, 'sec story'));
+    if (!p.hasPortrait) {
+      h.push('<div class="np-note dim">此人的底细，你只看到这些。</div>');
+    }
+    return '<div class="npc-prof">' + h.join('') + '</div>';
   }
 
   /* 提亲：选场地（酒楼铺张 / 家中简省） */
@@ -1085,6 +1258,10 @@
     h += kv('职位', p.rankName || '—');
     h += kv('年龄', p.age ? p.age + ' 岁' : '—');
     h += kv('战绩', (p.kills || 0) + ' 杀');
+    /* 昏倒数（存档字段仍叫 deathCount，但**玩家可见的只有「昏倒」**——
+       主人要求玩家不会死，只是力竭昏过去、在最近客栈醒转）。
+       原来这个数字从来没在界面上露过面，玩家不知道自己昏过几次。 */
+    h += kv('昏倒', (p.deathCount || 0) + ' 次');
     h += '</div><div class="pc-col">';
     h += kv('气血', p.hp + ' / ' + p.maxHp);
     h += kv('内力', p.mp + ' / ' + p.maxMp);
@@ -2885,7 +3062,7 @@
        以前只能从真 DOM（modal-body.innerHTML）里读文本，
        写「读字段名对不对」的断言就别扭。
        全是纯函数（view → html 字符串），不碰 DOM 状态，不产生副作用。 */
-    __html: { attrHtml, martialHtml, slavesHtml },
+    __html: { attrHtml, martialHtml, slavesHtml, npcProfileHtml },
   };
 
 })(window);

@@ -180,6 +180,11 @@
       return d;
     },
 
+    /* 某个 NPC 的详情画像（点「细看此人」时按需拉，不塞进每次 exec 的 view 里） */
+    async npcProfile(uid) {
+      return await jfetch('/api/npc', { method: 'POST', body: JSON.stringify({ uid }) });
+    },
+
     /* 存档 */
     async saves() { return await jfetch('/api/saves'); },
     async save(id) { const d = await jfetch('/api/save', { method: 'POST', body: JSON.stringify({ id }) }); return d; },
