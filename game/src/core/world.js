@@ -55,6 +55,8 @@ function isStationed(world, defId) {
 
 const SEASON_CN = { spring: '春', summer: '夏', autumn: '秋', winter: '冬' };
 const WEATHERS = ['晴', '阴', '雨', '雪', '风', '雾'];
+/* 随机游走只走平面八向（u/d 是楼梯、in/out 是门，不算「溜达」）——见 worldTick */
+const HORIZ_DIRS = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
 
 /* 把运行时实例（Character / 物品）压成纯数据，剥掉 world / 循环引用，
    存档才能 JSON.stringify。恢复时由 deserialize 重新挂回 world。 */
@@ -864,7 +866,10 @@ class World extends EventEmitter {
       npc.moneyReward = def.moneyReward !== undefined ? def.moneyReward : (def.money || 0);
       npc.loot = def.loot || null;
       npc.leavesCorpse = def.leavesCorpse !== false;
-      npc.wander = def.wander || null;
+      /* ⚠️ 默认游走：数据里只有山贼写了 `wander` —— 「NPC 会随机移动」这件事
+         其实**从来没发生过**。这里给公共场所的普通 NPC 补默认值；
+         有作息的人 / 名人 / 住家户不动（理由见 ambience.defaultWanderFor）。 */
+      npc.wander = def.wander || require('./ambience').defaultWanderFor(this, def);
       npc.ai = def.ai || 'simple';
       npc.talk = def.talk || null;
       /* ---- 社交扩展字段（第一批）----
@@ -2374,20 +2379,36 @@ class World extends EventEmitter {
   }
 
   worldTick() {
-    // NPC 游走
+    /* NPC 游走。
+       ⚠️ 两处非做不可的前置：
+         ① NPC 是**懒实例化**的（boot 完只有 3 个实例，其余是模板），
+            不先把玩家这一圈的人「活化」，隔壁屋永远没人走动，
+            于是「某某急匆匆打你身边经过」这类消息一条也播不出来；
+         ② 一轮可能几十个人同时在走，全部播报会把日志刷烂 ——
+            所以这里只**收集**，交给 ambience.wanderLines 筛「看得见的那些」并限量。 */
+    const amb = require('./ambience');
+    try { amb.ensureNearbyNpcs(this, 1); } catch (e) { /* 活化失败不该拖垮时间系统 */ }
+    const moved = [];
     for (const id of Object.keys(this.instances.npcs)) {
       const n = this.instances.npcs[id];
       if (!n.wander) continue;
       if (this.rng.chance(n.wander.chance || 0.05)) {
         const room = this.data.rooms[n.room];
         if (!room || !room.exits) continue;
-        const dirs = Object.keys(room.exits);
+        /* ⚠️ 只走**平面八个方向**：u/d（上下）与 in/out（里外）不参与随机游走 ——
+           那是楼梯与门，人是走过去的，不是「溜达」过去的；
+           真走了 u，播报会变成「某某一头往楼上去了」，读起来像摔了一跤。 */
+        const dirs = Object.keys(room.exits).filter(d => HORIZ_DIRS.indexOf(d) >= 0);
         if (!dirs.length) continue;
         const d = this.rng.pick(dirs);
         const ex = room.exits[d];
         const tid = typeof ex === 'string' ? ex : ex.to;
-        if (tid && this.data.rooms[tid]) n.room = tid;
+        if (tid && this.data.rooms[tid]) { const from = n.room; n.room = tid; moved.push({ npc: n, from, to: tid }); }
       }
+    }
+    /* 玩家看得见的那几条（离开 / 走进来 / 打身边经过），一次最多 3 条 */
+    if (moved.length) {
+      for (const l of amb.wanderLines(this, moved)) this.emit('storyline', { line: l });
     }
     // 时间作息：昼夜轮换时，把 NPC 从工作地（day）挪回家（night），反之亦然。
     // 玩家眼前的 NPC 不动，避免交互到一半人突然消失。

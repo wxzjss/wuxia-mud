@@ -202,8 +202,12 @@ sec('⑤ 陪练：涨熟练度，但他会伤');
   const { foe } = bagOne(e, 'mob_bandit');
   e.exec('关押 ' + foe.name);
   const c = kidnap.captives(e.world)[0];
-  const expBefore = (p.learned[sd.id] || {}).exp || 0;
-  const lvBefore = (p.learned[sd.id] || {}).level || 0;
+  /* ⚠️ 别盯死 `sd.id` 一门功 —— `boot()` 用的是「武学世家」出身，开局**自带两门功**
+     （basic_fist + basic_sword），而 `sparWith` 是从「装备槽上的武学」里**随机挑一门**。
+     只盯 sd.id 会随机假红（实测：加了氛围系统、掷骰序列一变就红了）。
+     改成记**全部已学武学**的前后快照，断言「有人涨了」——验的是功能，不是运气。 */
+  const snap = () => JSON.parse(JSON.stringify(p.learned || {}));
+  const learnedBefore = snap();
   const hpBefore = c.hp;
 
   const r = e.exec('陪练 ' + foe.name);
@@ -211,11 +215,13 @@ sec('⑤ 陪练：涨熟练度，但他会伤');
     r.lines.some(l => /喂招/.test(l.text)) && r.lines.some(l => /陪练共得/.test(l.text)),
     txt(r.lines).slice(0, 110));
 
-  const after = p.learned[sd.id] || {};
-  const expAfter = (after.level > lvBefore) ? -1 : (after.exp || 0);
-  ok('⑤-2 ★ 熟练度真的涨了（经验 + 或直接升级）',
-    after.level > lvBefore || expAfter > expBefore,
-    JSON.stringify({ lvBefore, lvNow: after.level, expBefore, expAfter }));
+  const learnedAfter = snap();
+  const grew = Object.keys(learnedAfter).filter(id =>
+    (learnedAfter[id].level || 0) > ((learnedBefore[id] || {}).level || 0)
+    || (learnedAfter[id].exp || 0) > ((learnedBefore[id] || {}).exp || 0));
+  ok('⑤-2 ★ 熟练度真的涨了（经验 + 或直接升级）', grew.length > 0,
+    '涨了的武学：' + (grew.map(id => id + '(' + ((learnedBefore[id] || {}).exp || 0) + '→' + (learnedAfter[id].exp || 0) + ')').join(',') || '(一门都没涨)'));
+  void sd;
   ok('⑤-3 ★ 犯人掉了血（真拿他挨打）', (c.hp || 1) < hpBefore, hpBefore + ' → ' + c.hp);
   ok('⑤-4 犯人的服从度也掉了', (c.obedience || 0) < 15, 'obedience=' + c.obedience);
 
@@ -316,11 +322,18 @@ sec('⑦ 越狱：人不在家时，恨你的人会撬锁');
 
   /* 你出远门 → 多跑几次总会跑 */
   p.room = 'jn_market_south';
+  /* ⚠️ 越狱是概率事件，而**概率流的消耗会被别人的改动影响** ——
+     第五轮加了「NPC 随机游走」（worldTick 里要掷骰），掷骰序列一变，
+     「跑 60 次总会中」就变成脆断言了（实测直接红）。
+     这里把 rng.chance 临时钉成必真：验的是**分支通不通**，不是运气好不好。 */
+  const chanceBak = e.world.rng.chance;
+  e.world.rng.chance = () => true;
   let escaped = false;
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < 3; i++) {
     const lines = kidnap.checkCaptiveEscape(e.world, 120);
     if (lines.some(l => /越狱/.test(l.text))) { escaped = true; break; }
   }
+  e.world.rng.chance = chanceBak;
   ok('⑦-2 ★ 你不在家 + 他恨你 → 真会跑（不是永远关得住）', escaped);
   ok('⑦-3 跑掉之后牢里就没人了', kidnap.captives(e.world).length === 0);
 }

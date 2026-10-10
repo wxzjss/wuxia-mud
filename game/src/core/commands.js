@@ -23,6 +23,7 @@ const { pronounOf, genderNoun } = require('./pronouns');
 const sectFounder = require('./sectFounder');
 const estateMod = require('./estate');
 const kidnapMod = require('./kidnap');
+const tutorialMod = require('./tutorial');
 
 /* 中文数字 → 阿拉伯 */
 const CN_NUM = { 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10, 壹: 1, 贰: 2, 叁: 3, 肆: 4, 伍: 5, 陆: 6, 柒: 7, 捌: 8, 玖: 9, 拾: 10 };
@@ -788,6 +789,14 @@ function buildCommands(world) {
     if (room.onLook) {
       evalEffects(room.onLook, ctx).forEach(l => lines.push(l));
     }
+    /* ---- 场所环境音（主人第四轮：「走到青楼会有莺莺燕燕喊官人来玩」）----
+       放在最后一条：房间名、区域、描述、出口、物件都说完了，再补一句「这地方在发生什么」。
+       句库在 `core/ambient-pools.js`，判定与限量在 `core/ambience.js`。
+       ⚠️ 不播的条件有三种，都在 ambientLine 里判：判定不出场所 / 那地方太私密 / 句库空。 */
+    try {
+      const amb = require('./ambience').ambientLine(w, room);
+      if (amb) lines.push(amb);
+    } catch (e) { /* 氛围坏了不许影响看房间 */ }
     return { lines, room };
   }
 
@@ -2325,6 +2334,16 @@ function buildCommands(world) {
          并且回话里那个名字**可点**，点开就是他此刻能聊的几个话头。 */
       lines.push({ kind: 'say', text: smallTalk(w, npc) });
     }
+    /* ---- 引荐人（茶摊老汉）----
+       主人：「玩家进入游戏触发的剧情没有后续吗？这个剧情应该一路引导玩家
+       拜入一个宗门才对」。楔子末尾把玩家交给的就是这位老汉 ——
+       第一次跟他搭话，他把引荐信给你、并指明该往哪座山门去。
+       ⚠️ 只在**这个人**身上挂，且 handOutLetter 自带幂等（发过一次就不再发）。 */
+    try {
+      if (npc.defId === 'guide_teaman') {
+        for (const l of tutorialMod.handOutLetter(w, npc)) lines.push(l);
+      }
+    } catch (e) { /* 引荐坏了不许影响说话 */ }
     /* ---- 闲聊也要有「结果」----
        主人第四轮：「交谈按钮的可交互性就更多了但实际却没有什么」。
        对话内容再花，点完没有任何变化，玩家仍会觉得空。
@@ -2558,6 +2577,14 @@ function buildCommands(world) {
       if (def.askDefault) lines.push({ kind: 'say', text: `${npc.name}道：「${evalTemplate(def.askDefault, ctx)}」` });
       else lines.push({ kind: 'say', text: `${npc.name}摇摇头：「这个我却不知。」` });
     }
+    /* ---- 引荐人：问他也一样给引荐信（玩家可能先问、后聊）----
+       与 talk 那条**同一个入口** `handOutLetter`（幂等），
+       绝不能在两处各写一遍「发信」的逻辑（改一半等于没改）。 */
+    try {
+      if (npc.defId === 'guide_teaman') {
+        for (const l of tutorialMod.handOutLetter(w, npc)) lines.push(l);
+      }
+    } catch (e) { /* 引荐坏了不许影响问话 */ }
     return { lines };
   });
 

@@ -68,8 +68,14 @@ function audit(D) {
     push1('npc:' + id + '.askDefault', n.askDefault);
     (n.listen || []).forEach((l, i) => (l.effects || []).forEach((e, j) => push1('npc:' + id + '.listen[' + i + '][' + j + ']', e.raw || e.text)));
   }
-  /* tutorial 字符串 */
-  (DATA.tutorialSrc.match(/'[^']*'/g) || []).forEach((s, i) => push1('tutorial#' + i, s.replace(/^'|'$/g, '')));
+  /* tutorial 字符串。
+     ⚠️ `{sect}` / `{gate}` / `{art}` 与句库的 `{who}` / `{dir}` / `{place}` 是
+        **运行时填充**的模板位（tutorial.fillStory / ambience.fillTpl），
+        不是「漏填的占位符」。这里先把这几个已知会被填掉的位换成安全字，
+        免得护栏被自家模板语法绊住；「成品里到底还有没有花括号」由
+        `smoke-newbie` 真渲染后断言（那边查的是 player 可见的输出，不是源码）。 */
+  const KNOWN_TPL = /\{(sect|gate|art|who|dir|place)\}/g;
+  (DATA.tutorialSrc.match(/'[^']*'/g) || []).forEach((s, i) => push1('tutorial#' + i, s.replace(/^'|'$/g, '').replace(KNOWN_TPL, 'X')));
 
   const qWalk = (qid, q, fn) => {
     fn('desc', q.desc);

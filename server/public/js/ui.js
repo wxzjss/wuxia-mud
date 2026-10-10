@@ -532,20 +532,39 @@
   function guideHtml(v) {
     const g = v && v.guide;
     if (!g || !g.steps) return '<div class="modal-text">引导数据不可用。</div>';
+    const story = g.story || {};
+    const tgt = story.target || null;
     let h = '<div class="guide-panel">';
-    h += '<div class="gp-head">江湖指引　' +
-      '<b>' + g.doneCount + ' / ' + g.total + '</b> 已完成' +
-      (g.finished ? '<span class="gp-finish">　✓ 全部完成</span>' : '') + '</div>';
+
+    /* 头：这是「完整流程」页（与「任务」面板里那条只有当前进度不同）。
+       标题带「新手教程」四个字 —— 玩家的入口就叫「新手教程」，
+       面板抬头跟入口对不上，玩家会怀疑自己点错了地方。 */
+    h += '<div class="gp-head">新手教程 · 入江湖　' +
+      '<b>' + g.doneCount + ' / ' + g.total + '</b> 章' +
+      (g.finished ? '<span class="gp-finish">　✓ 已走完</span>' : '') + '</div>';
+    h += '<div class="gp-note">这条路走完，你就算在江湖上站住了。'
+      + '左边「任务」里只显示你眼下这一章，这里是全的。</div>';
+    if (tgt && tgt.name) {
+      h += '<div class="gp-target">这一程的去处：<b>' + esc(tgt.name) + '</b>'
+        + (tgt.joined ? '<span class="gp-tag">已入门</span>' : '')
+        + (tgt.pitch ? '<div class="gp-pitch">' + esc(tgt.pitch) + '</div>' : '')
+        + '</div>';
+    }
+
+    /* 全流程：**每一章都列出来**（这是「完整流程」页的意义），
+       但剧情旁白只给「已经走到 / 正在走」的那些 —— 后面几章的正文留给玩家自己撞上。 */
     h += '<div class="gp-steps">';
     g.steps.forEach((s, i) => {
+      if (s.id === 'free') return;
       const cls = s.done ? 'done'
         : (s.locked ? 'locked' : (g.current && g.current.id === s.id ? 'cur' : 'todo'));
       h += '<div class="gp-step ' + cls + '">' +
-        '<span class="gps-idx">' + (s.done ? '✓' : (s.locked ? '🔒' : (i + 1))) + '</span>' +
+        '<span class="gps-idx">' + (s.done ? '✓' : (s.locked ? '🔒' : (s.no || i + 1))) + '</span>' +
         '<div class="gps-body">' +
         '<div class="gps-title">' + esc(s.title) + '</div>' +
         '<div class="gps-goal">' + esc(s.goal) + '</div>' +
-        (!s.done ? '<div class="gps-hint">' + esc(s.hint) + '</div>' : '') +
+        (s.story ? '<div class="gps-story">' + esc(s.story).replace(/\n/g, '<br>') + '</div>' : '') +
+        (!s.done && !s.locked ? '<div class="gps-hint">' + esc(s.hint) + '</div>' : '') +
         '</div></div>';
     });
     h += '</div>';
@@ -1841,7 +1860,7 @@
        现在按类型分组、主线在最上，一眼能分清「我该走的故事」和「我手头的差事」。
        类型名直接用数据里的 `type` 字段（60_quests.json 里就是中文：主线/支线/门派/委托…），
        不认识的类型归到「其他」，不丢内容。 */
-    const ORDER = ['主线', '支线', '门派', '委托', '江湖', '其他'];
+    const ORDER = ['新手', '主线', '支线', '门派', '委托', '江湖', '其他'];
     const groups = {};
     list.forEach(q => {
       const t = String((q && q.type) || '').trim() || '其他';
@@ -1852,7 +1871,29 @@
       return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
     });
 
+    /* ---- 新手教程那条特别渲染（主人第四轮）----
+       「『任务』里面只会显示当前新手教程进度」—— 所以这里**只给当前这一章**
+       （章次 + 剧情 + 目标 + 进度条），不铺开全部章节；
+       要看完整流程，点卡片底部那个按钮去「新手教程」面板（那边才是全的）。
+       两份内容都来自后端同一份 guide 数据，不在这里另算。 */
+    const newbieCard = q => {
+      const cur = q.cur || 0, tot = q.count || 1;
+      const pct = Math.max(4, Math.round(cur / Math.max(1, tot) * 100));
+      let s = '<div class="quest-card newbie">';
+      s += '<div class="q-name">' + esc(q.name) + '<span class="qn-badge">进行中</span></div>';
+      s += '<div class="q-desc">' + esc(q.desc || '') + '</div>';
+      s += '<div class="qnb-bar"><i style="width:' + pct + '%"></i></div>';
+      s += '<div class="qnb-count">第 ' + (q.chapter || 1) + ' / ' + tot + ' 章　' + esc(q.chapterTitle || '') + '</div>';
+      if (q.stageDesc) s += '<div class="q-stage">' + esc(q.stageDesc) + '</div>';
+      if (q.goal) s += '<div class="qnb-goal">当前目标：' + esc(q.goal) + '</div>';
+      if (q.hint) s += '<div class="qnb-hint">' + esc(q.hint) + '</div>';
+      if (q.targetSect) s += '<div class="qnb-sect">这一程的去处：' + esc(q.targetSect) + '</div>';
+      s += '<div class="qnb-foot"><button class="op-btn" data-cmd="guide">看完整流程（新手教程）</button></div>';
+      return s + '</div>';
+    };
+
     const card = q => {
+      if (q && q.isTutorial) return newbieCard(q);
       let s = '<div class="quest-card"><div class="q-name">' + esc(q.name) + '</div>';
       s += '<div class="q-desc">' + esc(q.desc || '') + '</div>';
       s += '<div class="q-stage">当前阶段：' + esc(q.stageDesc || '—') + '</div>';

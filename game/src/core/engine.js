@@ -390,6 +390,14 @@ class GameEngine {
 
     // 任务进度条
     const quests = this.questList();
+    /* 新手教程没做完 → 作为一条**任务**置顶塞进任务列表。
+       主人原话：「在新手教程完成前把新手教程任务添加进『任务』里面置顶
+       （直接点『新手教程』快捷键进入新手教程页面能看完整的新手教程任务流程不同，
+        『任务』里面只会显示当前新手教程进度）」
+       ⇒ 所以这里给的是**精简版**（当前章 + 目标 + 进度），
+         完整流程在 `guide`（新手教程面板）里。两者都由 tutorial.js 算出，不各写一份。 */
+    const newbie = tutorial.tutorialQuestOf(p, p.tutorialFlags || []);
+    if (newbie) quests.active = [newbie].concat(quests.active || []);
 
     return {
       ok: true,

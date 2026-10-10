@@ -116,7 +116,9 @@ function ok(name, cond, extra) {
   const gh = built.guideHtml(v);
   ok('guideHtml 不抛异常', gh.length > 100, 'len=' + gh.length);
   ok('含步骤总数', gh.includes(String(g0.total)));
-  ok('含「江湖指引」', gh.includes('江湖指引'));
+  /* ⚠️ 抬头改成了「新手教程 · 入江湖」：玩家的入口按钮就叫「新手教程」，
+     面板抬头必须跟入口对得上（第五轮把这张清单升级成了剧情任务线）。 */
+  ok('含「新手教程」', gh.includes('新手教程'));
 
   // 逐步推进
   const seq = ['look', 'n', 'i', 'score', 'lian', 'talk 小二'];

@@ -557,15 +557,26 @@ class Character {
     const sd = this.world.getSect(sectId);
     if (!sd) return { ok: false, msg: '（无此门派）' };
     if (this.sect) return { ok: false, msg: `你已在${this.world.getSect(this.sect) ? this.world.getSect(this.sect).name : this.sect}门下，须先脱离。` };
-    if (sd.require) {
+    /* ⚠️ 引荐信的破例：出身决定的那家山门，有的带 karma / 性别 / 悟性门槛
+       （大理想段氏要 karma≥20、少林不收女、桃花岛要悟性≥18）。
+       新手线要把玩家导到自己那条线上，而他开局不满足这些条件 ——
+       茶摊老汉那封引荐信就是拿来破例的（`tutorial.handOutLetter` 写 tutPass）。
+       只对**他本人那一家**有效，拜别家照旧卡门槛。 */
+    const referral = this.vars && this.vars.tutPass === sectId;
+    if (sd.require && !referral) {
       const { evalCond } = require('./modapi');
       if (!evalCond(sd.require, { player: this, world: this.world })) return { ok: false, msg: `${sd.name}不收你这样的弟子。` };
     }
     this.sect = sectId; this.rank = 0;
     if (sd.entryItems) for (const it of sd.entryItems) this.world.giveItem(this, it, 1);
     if (sd.entrySkills) for (const s of sd.entrySkills) this.learnSkill(s);
+    if (referral && this.vars) { this.vars.tutPass = null; this.vars.tutJoined = sectId; }
     this.world.emit('joinsect', { sect: sectId });
-    return { ok: true, msg: `你拜入${sd.name}门下，成为一名${sd.ranks ? sd.ranks[0] : '弟子'}。` };
+    return {
+      ok: true,
+      msg: `你拜入${sd.name}门下，成为一名${sd.ranks ? sd.ranks[0] : '弟子'}。`
+        + (referral ? '（凭那封引荐信，山门为你破了例。）' : ''),
+    };
   }
   leaveSect() {
     const old = this.sect;

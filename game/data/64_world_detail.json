@@ -1,0 +1,94 @@
+{
+  "rooms": {
+    "jn_market_south": {
+      "id": "jn_market_south",
+      "exits": {
+        "n": "jn_gambling_house"
+      }
+    },
+    "jn_gambling_house": {
+      "id": "jn_gambling_house",
+      "name": "东市·聚宝赌坊",
+      "region": "market",
+      "desc": "屋里没窗，四盏油灯照着一屋子人脸，烟气浓得能拧出水来。三张桌子都围满了人，骰盅往桌上一扣，满堂登时没了声音。角落里有人骂娘，有人把最后几文钱推上桌。",
+      "exits": {
+        "s": "jn_market_south"
+      },
+      "onEnter": [
+        {
+          "type": "say",
+          "raw": "门口站着的汉子上下打量了你一眼，没拦——进这屋的人，他都见过。"
+        }
+      ]
+    }
+  },
+
+  "npcs": {
+    "gambler_boss": {
+      "id": "gambler_boss",
+      "name": "常九",
+      "gender": "male",
+      "tag": "gambler",
+      "title": "赌坊庄家",
+      "desc": "黑缎短褂的袖子挽到肘，手里一副骰盅摇得滴水不漏，眼睛却从不看骰子，只看人。",
+      "room": "jn_gambling_house",
+      "home": "house:gambler_boss",
+      "level": 26,
+      "hp": 420,
+      "atk": 52,
+      "def": 40,
+      "dodge": 30,
+      "speed": 22,
+      "money": 1860,
+      "hostile": false,
+      "likes": ["wine"],
+      "favorBase": 0.9,
+      "favorInit": -6,
+      "carry": { "money": 900, "items": ["wine_jar"] },
+      "talk": [
+        "押大押小？一手三文，先看钱。",
+        "赢了的你留不住，输了的你带不走。这行当就这样。",
+        "别站那么近，挡着灯了。"
+      ],
+      "ask": {
+        "赌场": "这儿只认两样：现钱，和运气。没有第三样。",
+        "江湖": "来这儿的人，输了想翻本，赢了想再赢。真正能走出去的没几个。",
+        "常九": "名字是师父给的。他说赌钱的人不能有名，有了名就有人上门。",
+        "东市": "东市南巷，白天卖菜，晚上卖命。"
+      }
+    },
+    "gambler_loser": {
+      "id": "gambler_loser",
+      "name": "输红眼的赌客",
+      "gender": "male",
+      "tag": "gambler",
+      "title": "赌客",
+      "desc": "头发乱得像鸡窝，袖口磨破了，手一直在抖，眼睛死死盯着桌上那副牌九，旁人碰他一下都要回头瞪。",
+      "room": "jn_gambling_house",
+      "home": "house:gambler_loser",
+      "level": 12,
+      "hp": 180,
+      "atk": 24,
+      "def": 16,
+      "dodge": 14,
+      "speed": 15,
+      "money": 7,
+      "hostile": false,
+      "personality": "baozhao",
+      "likes": ["wine", "food"],
+      "favorBase": 1.1,
+      "favorInit": 0,
+      "carry": { "money": 3, "items": [] },
+      "talk": [
+        "这把不算！骰子有鬼！",
+        "再来一把，再来一把就回本了。",
+        "你看什么看？你也来啊。"
+      ],
+      "ask": {
+        "赌": "输了三回了……手气总该转了吧。",
+        "钱": "钱？都在这儿了。就剩这些。",
+        "常九": "他那骰盅……我总觉得不对。可我抓不着。"
+      }
+    }
+  }
+}

@@ -340,6 +340,10 @@ body::before {
    ⚠️ 有别于 `.die`（血红、重）：昏倒是「眼前一黑」的一瞬，用暗青灰、居中留白，
    读起来是「晕过去了」而不是「被打死了」——这是主人明确要的观感。 */
 .log-line.faint { color: #4a4a58; font-weight: 600; text-align: center; letter-spacing: .06em; margin: 10px 0 8px; }
+/* 世界氛围（场所环境音 / NPC 走动消息）。
+   ⚠️ 这一类**必须比正文弱**：它是背景声，不是事件。
+      做亮了会跟「某某攻击了你」抢眼，玩家会误以为是重要信息。 */
+.log-line.ambient { color: var(--ink-4); font-size: 12.5px; font-style: italic; opacity: .88; padding-left: 2px; }
 /* 社交相关日志行（好感变动 / 武学条目 / 喜爱之物） */
 .log-line.favor { color: #c0392b; font-size: 13px; }
 .log-line.favor-pos { color: #b8860b; }
@@ -492,7 +496,34 @@ body::before {
 .gp-step.cur .gps-title { color: var(--gold); font-weight: 600; }
 .gps-goal { font-size: 12.5px; color: var(--ink-3); line-height: 1.6; }
 .gps-hint { font-size: 11.5px; color: var(--ink-4); margin-top: 4px; padding: 4px 7px; background: rgba(255,255,255,.8); border-radius: 4px; border-left: 2px solid var(--line); }
+/* 章节的剧情旁白（已经走到 / 正在走的那几章才有） */
+.gps-story { font-size: 12.5px; color: var(--ink-2); line-height: 1.75; margin-top: 5px;
+  padding: 6px 9px; background: rgba(250, 246, 235, .9); border-radius: 4px; border-left: 2px solid var(--gold); }
+.gp-step.locked .gps-story { display: none; }
 .gp-foot { margin-top: 13px; padding-top: 10px; border-top: 1px dashed var(--line-2); font-size: 12px; color: var(--ink-4); text-align: center; }
+
+/* 「新手教程」面板新加的三块：这一页是**完整流程**，与「任务」里那条只有当前进度不同 */
+.gp-note { font-size: 11.5px; color: var(--ink-4); margin: -6px 0 11px; line-height: 1.7; }
+.gp-target { font-size: 13px; color: var(--ink-2); background: rgba(184, 140, 62, .10);
+  border: 1px solid rgba(184, 140, 62, .30); border-radius: 5px; padding: 8px 11px; margin-bottom: 12px; }
+.gp-target b { color: var(--gold); font-size: 14px; }
+.gp-tag { font-size: 11px; color: var(--jade); border: 1px solid #d3e5da; background: #f3f8f5;
+  border-radius: 3px; padding: 0 6px; margin-left: 6px; }
+.gp-pitch { font-size: 12px; color: var(--ink-3); margin-top: 5px; line-height: 1.7; }
+
+/* 「任务」面板里置顶的那条新手教程（与其它任务卡区分开） */
+.quest-card.newbie { border-left-color: var(--red); background: #fffdf6; }
+.quest-card.newbie .q-name { color: var(--red); }
+.qn-badge { font-size: 10.5px; color: #fff; background: var(--red); border-radius: 3px;
+  padding: 0 5px; margin-left: 7px; vertical-align: 2px; letter-spacing: 0; }
+.qnb-bar { height: 5px; background: var(--line-2); border-radius: 3px; overflow: hidden; margin: 7px 0 5px; }
+.qnb-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold), var(--red)); }
+.qnb-count { font-size: 11.5px; color: var(--ink-3); margin-bottom: 5px; }
+.qnb-goal { font-size: 12.5px; color: var(--ink-2); margin-top: 5px; }
+.qnb-hint { font-size: 11.5px; color: var(--ink-4); margin-top: 4px; padding: 4px 7px;
+  background: rgba(255,255,255,.85); border-radius: 4px; border-left: 2px solid var(--line); }
+.qnb-sect { font-size: 11.5px; color: var(--gold); margin-top: 5px; }
+.qnb-foot { margin-top: 9px; }
 .scene-empty { font-size: 12px; color: var(--ink-4); font-style: italic; padding: 4px 2px; }
 
 /* ---------------------------- 弹窗 ---------------------------- */

@@ -1191,6 +1191,85 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     }
   }
 
+  /* ================================================================
+   *  ⑯ 第四轮 · 「任务」面板置顶新手教程（只给当前进度）
+   *     —— 主人原话：「在新手教程完成前把新手教程任务添加进『任务』里面置顶
+   *        （直接点『新手教程』快捷键进入新手教程页面能看完整的新手教程任务流程
+   *        不同，『任务』里面只会显示当前新手教程进度）」
+   * ================================================================ */
+  section('⑯ 第四轮 · 「任务」面板置顶新手教程（只给当前进度）');
+  {
+    const v = engine.view();
+    ok('⑯-0 前提：真引擎的任务列表首条就是新手教程',
+      !!((v.quests.active || [])[0] || {}).isTutorial,
+      ((v.quests.active || [])[0] || {}).name);
+
+    const env = loadUi(makeEnv({ innerWidth: 390 }));
+    stubApi(env, v);
+    closeMasks(env);
+    env.WX.S.view = v;
+    await env.WXUI.panel('quests');
+    await settle();
+    const mb = String(env.document.getElementById('modal-body').innerHTML || '');
+
+    ok('⑯-1 ★ 面板里出现「<名>（新手教程）」', /入江湖（新手教程）/.test(mb), mb.slice(0, 80));
+    ok('⑯-2 ★ 新手那条有自己的卡片样式（quest-card newbie）', /quest-card newbie/.test(mb));
+    ok('⑯-3 ★ 带「进行中」角标与进度条', /qn-badge/.test(mb) && /qnb-bar/.test(mb));
+    ok('⑯-4 ★ 只显示**当前这一章**（不是把八章全铺开）',
+      /第 \d+ \/ 8 章/.test(mb) && (mb.match(/qnb-count/g) || []).length === 1,
+      (mb.match(/第 \d+ \/ \d+ 章[^<]*/) || [''])[0]);
+    ok('⑯-5 ★ 它是列表里**第一条**（在其它任务卡之前）',
+      (() => {
+        const iNew = mb.indexOf('quest-card newbie');
+        const iOther = mb.indexOf('quest-card', iNew + 5);
+        return iNew >= 0 && (iOther < 0 || iNew < iOther);
+      })(), 'newbie@' + mb.indexOf('quest-card newbie') + ' 其它@' + mb.indexOf('quest-card', mb.indexOf('quest-card newbie') + 5));
+    ok('⑯-6 附一个去「新手教程」面板看全流程的按钮',
+      /data-cmd="guide"/.test(mb), (mb.match(/data-cmd="guide"[^>]*>[^<]*/) || [''])[0]);
+
+    /* 点那个按钮 → 真开「新手教程」面板 */
+    const btn = env.document.querySelectorAll('#modal-body .op-btn')
+      .find(b => b.getAttribute('data-cmd') === 'guide');
+    ok('⑯-7 抠得到「看完整流程」按钮', !!btn);
+    if (btn) {
+      btn.click();
+      await settle(); await settle();
+      const gb = String(env.document.getElementById('modal-body').innerHTML || '');
+      ok('⑯-8 ★ 点它真的换成了「新手教程」面板（完整流程）',
+        /新手教程 · 入江湖/.test(gb), gb.slice(0, 80));
+    }
+  }
+
+  /* ================================================================
+   *  ⑰ 第四轮 · 「新手教程」面板 = 完整流程（与「任务」面板不同）
+   * ================================================================ */
+  section('⑰ 第四轮 · 「新手教程」面板列出完整流程');
+  {
+    const v = engine.view();
+    const env = loadUi(makeEnv({ innerWidth: 390 }));
+    stubApi(env, v);
+    closeMasks(env);
+    env.WX.S.view = v;
+    await env.WXUI.panel('guide');
+    await settle();
+    const gb = String(env.document.getElementById('modal-body').innerHTML || '');
+
+    ok('⑰-1 ★ 抬头是「新手教程 · 入江湖」（与入口按钮对得上）', /新手教程 · 入江湖/.test(gb));
+    /* ⚠️ 必须带个尾随空格：'class="gp-step' 会把容器 'class="gp-steps' 也算上
+       （数出来 9，假红）。章节 div 的 className 恒为 'gp-step <状态>'。 */
+    const steps = (gb.match(/class="gp-step /g) || []).length;
+    ok('⑰-2 ★ 八章全都列出来（这是与「任务」面板的区别）', steps === 8, steps + ' 章');
+    ok('⑰-3 ★ 标出这一程的去处（由身份定的那家势力）', /这一程的去处/.test(gb),
+      (gb.match(/这一程的去处：<b>[^<]*/) || [''])[0]);
+    ok('⑰-4 ★ 当前章带剧情旁白（gps-story）', /gps-story/.test(gb),
+      (gb.match(/<div class="gps-story">[^<]{0,40}/) || [''])[0]);
+    ok('⑰-5 后面没走到的章节是锁住的（🔒）', /🔒/.test(gb));
+    ok('⑰-6 没有 undefined / NaN 漏进 HTML', !/undefined|NaN/.test(gb),
+      (gb.match(/.{0,30}(undefined|NaN).{0,30}/) || [''])[0]);
+    ok('⑰-7 ★ 整页没有漏填的模板位（花括号）', !/\{[^}\n]{1,20}\}/.test(gb),
+      (gb.match(/\{[^}\n]{1,20}\}/) || ['(无)'])[0]);
+  }
+
   console.log('\n———————————————————————————————');
   console.log(`  批次7 双端与 UI 回归：${pass} 通过 / ${fail} 失败`);
   if (fails.length) console.log('  失败项：' + fails.join('、'));
