@@ -77,6 +77,163 @@ function skillTierCN(lv) {
   return SKILL_TIERS[0];
 }
 
+/* ==================================================================
+ * 「询问」的两件配套：他说得上话的**话题**，和他**认识的人**
+ *
+ * 主人第四轮原话：「点击 NPC 页的『询问』后希望能弹出一个页面上面有
+ *   NPC 认识的人名字，点击这些名字按钮 NPC 会说关于它们的事
+ *   （根据 NPC 背景画像来）」。
+ *
+ * 关键决定：**人名清单**与**点了他说什么**共用 `npcKnownPeople()` 一份数据 ——
+ * 前端那份按钮、后端那句回答，绝不能各写一份名单（本项目血泪：
+ * 「同一个功能有 N 个入口，改一半等于没改」）。
+ *
+ * 数据来源只有一处：`def.rel`（286 个 NPC 都有；kind = 仇/友/亲）+
+ * 画像 `feuds`（就是 rel 里 kind=仇 的那批，按 id 去重并入）。
+ * ================================================================== */
+
+/** `ask` 数据在仓库里有**三种**写法 —— 统一成 `[{topic, answer, keywords, effects}]`。
+ *  ① 单条 `{topic, answer}`　② 数组 `[{topic, answer}]`　③ 映射对象 `{"话题": "答案"}`
+ *  ⚠️ 第三种是**数据主流写法**，漏了它会让 `a.topic` 变 undefined 并抛异常（已踩）。 */
+function normalizeAskList(raw) {
+  if (Array.isArray(raw)) return raw;
+  if (!raw || typeof raw !== 'object') return [];
+  if (raw.topic || raw.answer) return [raw];
+  return Object.keys(raw).map(k => {
+    const v = raw[k];
+    return (v && typeof v === 'object') ? Object.assign({ topic: k }, v) : { topic: k, answer: v };
+  });
+}
+
+/** 他认识的人（rel + 画像 feuds，按 defId 去重）。
+ *  ⚠️ `rel[].id` 是 **defId**，要用 `world.data.npcs` 查名 ——
+ *     `world.getNpc()` 查的是**实例 id**（同名方法有两处定义，后者覆盖），查不到。 */
+function npcKnownPeople(world, npc) {
+  const def = (npc && (npc.def || npc)) || {};
+  const out = [];
+  const seen = {};
+  const push = (id, kind, why) => {
+    if (!id || seen[id]) return;
+    const other = world.data.npcs && world.data.npcs[id];
+    if (!other || !other.name) return;
+    seen[id] = 1;
+    out.push({ id, name: other.name, kind: kind || '友', rel: relKindCN(kind), why: why || '' });
+  };
+  for (const r of (def.rel || [])) push(r && r.id, r && r.kind, r && r.why);
+  const pt = (npc && npc.portrait) || {};
+  for (const f of (pt.feuds || [])) push(f && f.id, f && f.kind, f && f.why);
+  return out;
+}
+
+/** 「交谈」在 NPC 没写台词时的**情境现编**。
+ *  主人第四轮：「交谈按钮的可交互性就更多了但实际却没有什么」——
+ *  病根是 300 多个 NPC 里写 `talk` 的是少数，其余一点就回「看了你一眼，没有说话」。
+ *  这里按 时段 / 交情 / 身份 / 禀性 四样拼一句**像人说的话**（不是「万能寒暄」）：
+ *   · 时段决定他眼下在忙什么（清早开张、晌午歇脚、夜里收摊）；
+ *   · 交情决定他愿不愿意搭理你（亲密/和善/客气/冷淡四档，措辞完全不同）；
+ *   · 身份/禀性决定他嘴里念叨的是什么（买卖人念生计、江湖人念恩怨、出家人念清修）。 */
+function smallTalk(world, npc) {
+  const m = world.clockMinutes % 1440;
+  const period = m < 300 ? '夜里' : (m < 420 ? '天刚亮' : (m < 660 ? '清早' : (m < 900 ? '晌午' : (m < 1140 ? '午后' : '掌灯后'))));
+  const favor = npc.favor || 0;
+  const def = npc.def || {};
+  const idn = npcIdentity(world, npc);
+  const per = personality.personalityOf ? personality.personalityOf(npc) : 'mune';
+  const verb = personality.sayVerbToned ? personality.sayVerbToned(npc) : '道';
+
+  /* 敌对 / 山中猛兽：不聊家常 */
+  if (def.hostile) return `${npc.name}${verb}：「有话快说，别耽误我办事。」`;
+
+  const warm = favor >= 40 ? '亲近' : (favor >= 15 ? '和善' : (favor >= 0 ? '客气' : '冷淡'));
+  const open = {
+    亲近: '是你啊。',
+    和善: '来了？',
+    客气: '客官有事？',
+    冷淡: '……有事？',
+  }[warm];
+  /* 禀性影响「说不说废话」：话少的短、绕的多半句、泼辣的带刺 */
+  const PER_LINE = {
+    jing: `${period}了，铺子还开着，你要什么说话。`,
+    lie: `${period}了，我这儿忙得脚不沾地——你有话就挑紧要的说。`,
+    re: `${period}了，热得很，坐会儿喝口水吧。`,
+    leng: `${period}了。有事说事。`,
+    mune: `${period}了，日子就这么过。`,
+  };
+  const BODY = {
+    亲近: [
+      `你我这份交情，不用见外。我在这${idn}行当里讨生活，这些年也就这样。`,
+      `正好，${period}没事，我同你说说近来听见的闲话。`,
+    ],
+    和善: [
+      PER_LINE[per] || PER_LINE.mune,
+      `${period}了，我嘴上闲不住，什么都要说两句。`,
+    ],
+    客气: [
+      PER_LINE[per] || PER_LINE.mune,
+      `我不过是个${idn}，${period}了，也没什么好说的。`,
+    ],
+    冷淡: [
+      '你我素无交情，何必多言。',
+      `我认不得你。${period}了，该干什么干什么去。`,
+      '话不投机。',
+    ],
+  }[warm];
+  const body = world.rng.pick(BODY);
+  return `${npc.name}${verb}：「${open}${body}」`;
+}
+
+
+/** 「问起他认识的人」时，他怎么说 —— 按关系分派，并**从那个人的资料里取料**
+ *  （主人的要求是「根据 NPC 背景画像来」，不是套一句万能话）。
+ *  交情越深说得越多：浅 → 只认得当；中 → 附一句印象；深 → 讲一件具体的事。 */
+function npcAboutPerson(world, npc, who) {
+  const other = (world.data.npcs && world.data.npcs[who.id]) || {};
+  const trust = (npc.pstate && npc.pstate.trust) || 0;
+  const favor = npc.favor || 0;
+  const verb = (typeof personality !== 'undefined' && personality.sayVerbToned)
+    ? personality.sayVerbToned(npc) : '道';
+  const surname = other.name || who.id;
+  const tag = other.tag ? tagCN(other.tag) : '';
+  const sectDef = other.sect && world.data.sects && world.data.sects[other.sect];
+  const identity = tag || (sectDef && sectDef.name) || '江湖上的人';
+  const snip = other.desc ? String(other.desc).replace(/[。；]\s*$/, '').slice(0, 42) : '';
+  const mid = (favor >= 5 || trust >= 5);
+  const deep = (favor >= 20 || trust >= 15);
+  const lines = [];
+  const say = t => lines.push({ kind: 'say', text: `${npc.name}${verb}：「${t}」` });
+
+  if (who.kind === '仇') {
+    if (!mid) {
+      say(`${surname}？你提他做什么。别的我不同你说。`);
+    } else {
+      say(`${surname}……哼。他是${identity}。` + (who.why ? `我们这笔账，起于${who.why}。` : '这笔账，早晚要算。'));
+    }
+    if (deep) {
+      if (snip) say(`「${snip}」——你说，这样的人，我能不记恨？`);
+      lines.push({ kind: 'hint', text: `　（提起${surname}，${npc.name}的语气硬了几分。）` });
+    }
+  } else if (who.kind === '亲') {
+    if (!mid) {
+      say(`${surname}……是啊，我认得。别的就不必多问了。`);
+    } else {
+      say(`${surname}是我${who.rel}。` + (snip ? `「${snip}」` : ''));
+    }
+    if (deep) lines.push({ kind: 'sys', text: `（提起${surname}，${npc.name}的神色软了几分。）` });
+  } else {
+    if (!mid) {
+      say(`${surname}么，打过两回照面。`);
+    } else {
+      say(`${surname}？认得，是个${identity}。` + (snip ? `「${snip}」` : ''));
+    }
+    if (deep) {
+      const homeRoom = other.home && world.getRoom && world.getRoom(other.home);
+      if (homeRoom) say(`他常在${homeRoom.name}一带走动——要找他就去那儿。`);
+      else lines.push({ kind: 'hint', text: `　（他与${surname}交情不浅，话里带了三分亲近。）` });
+    }
+  }
+  return lines;
+}
+
 /* ------------------------------------------------------------------ *
  * 「送出去的往来」记账 —— 送礼面板要显示「已经送过几次 / 给了多少银子」。
  *
@@ -126,7 +283,7 @@ function buildCommands(world) {
       '行动': ['say <话> 说话', 'me <动作> 动作', 'shout <话> 喊话', 'tell <人> <话> 密语', 'emote'],
       '物品': ['get <物品> 拾取', 'drop <物品> 丢弃', 'use <物品> 使用', 'wear/wield <物品> 装备', 'remove <部位> 卸下', 'give <物品> to <人>'],
       '武学': ['learn <武学> 学', 'train / lian <武学> 练功', 'enable <槽位> <武学> 装备武学', 'perform / pf <武学> 施展绝招', 'skills 查看'],
-      '战斗': ['kill / fight <目标> 攻击', 'flee 逃跑', 'auto 自动战斗'],
+      '战斗': ['kill / fight <目标> 攻击', '偷袭 <目标> 先手重击（结仇，多半被告发）', 'flee 逃跑', 'auto 自动战斗'],
       '交互': ['talk <人> 交谈', 'ask <人> about <话题>', '打听 [关键词] 打听江湖传闻', '拜访 <人> 上门拜访（交情够了才进得去）', 'buy <物品> from <人>', 'sell <物品>', 'trade'],
       '门派': ['sect 门派信息', 'join <门派> 拜师', 'leave 脱离门派', 'promote 升职', 'contribute'],
       '营生': ['work / 打工 打工赚钱（酒楼/药店）', '卖身 卖身青楼换银（仅女子）', '接客 应酬攒赎身钱（卖身后）', '赎身 凑钱脱籍', '身世 查看营生/卖身状态'],
@@ -140,7 +297,11 @@ function buildCommands(world) {
         '赎回 <人名> 青楼/黑市赎人',
         '卖人 <人名> 卖进地下场所（知情转卖，重罪）',
         '买奴 <人名> 黑市买奴（受家资名额限制）',
-        '奴册 看麻袋/奴/护院/恶名',
+        '关押 <人名> 把麻袋里的人押进自家地牢（须先开垦「地牢」）',
+        '提审 <人名> 地牢逼供套线索（地牢越深越问得出）',
+        '陪练 <人名> 拿关着的人喂招涨熟练度（他会伤、会恨你）',
+        '放出 <人名> 开锁放人（审过的人出来可能反扑）',
+        '奴册 看麻袋/奴/护院/地牢/恶名',
         '使唤 <人名> <做工|采买|跑腿|洗衣> 派活',
         '跟随 <人名> 邀人跟随（须好感过 60）',
         '雇护院 <人名> 看家护院（须在宅院，日薪要付）',
@@ -425,13 +586,23 @@ function buildCommands(world) {
            ⚠️ 铁律：给不出的项**一律不给** —— 点了没反应（或"这里没有…"）比没有按钮更出戏。
            判据一律用**显式字段**（def.quests / def.sidequest / def.teach / shop / tag），
            绝不扫 name/desc 关键词（B8 之 BLK-2 教训）。 */
-        /* ① 有支线的才给「接他的事」：
+        /* ① 有支线的才给「接取任务」：
               def.quests（13 人）或 def.sidequest（284 人，此前是死字段 → B25 接线）。
-              已接过/已完成/悬空指针 → 不显示。 */
+              已接过/已完成/悬空指针 → 不显示。
+              ★ 主人第四轮：「点击后希望能先弹出任务详情再选择是否接受任务，
+                并把『接他的事』改名为『接取任务』」——
+                所以这里带上 `act:'acceptquest'` + `qid`，前端认它就先弹详情页；
+                cmd 保留（老客户端 / 不认 act 时退回「直接接」的旧行为）。 */
         const aq = availableQuestOf(ctx, one);
         if (aq) {
           const qd = w.getQuest(aq);
-          actions.push({ label: '接他的事', cmd: 'accept ' + ((qd && qd.name) || aq), hint: qd ? qd.name : '' });
+          actions.push({
+            label: '接取任务',
+            act: 'acceptquest',
+            qid: aq,
+            cmd: 'accept ' + ((qd && qd.name) || aq),
+            hint: qd ? qd.name : '',
+          });
         }
         /* ② 能请教的才给「请教武学」 */
         if (def.teach) actions.push({ label: '请教武学', cmd: 'qingjiao ' + k });
@@ -441,6 +612,12 @@ function buildCommands(world) {
         if (def.tag === 'doctor') actions.push({ label: '求医', cmd: '求医 ' + k });
         /* ⑤ 识路的人（镖师/车夫/船夫）才给「问路」 */
         if (['escort', 'groom', 'boatman'].indexOf(def.tag) >= 0) actions.push({ label: '问路', cmd: '问路 ' + k });
+        /* ⑥ 偷袭（主人第四轮点名要的入口）。
+           跟「伺机偷窃」一样属「风险」类，放在风险区；
+           **绝不能顶到「攻击」后面去**（B10：「攻击」要保持最后一项，防手指滑）。 */
+        if (!(one && one.knockedOut)) {
+          actions.push({ label: '伺机偷袭', cmd: '偷袭 ' + k, hint: '先手重击，但会结仇，多半被告发' });
+        }
         actions.push({ label: `送${pron}东西`, cmd: 'give ' + k });
         actions.push({ label: '查看关系', cmd: 'guanxi ' + k });
         /* B10（主人亲报：点 NPC / 野兽弹出来的菜单里没有「攻击」）：
@@ -459,6 +636,20 @@ function buildCommands(world) {
            「攻击」要保持是**最后一项**（B10：避免手指从「交谈」一路滑到「攻击」），
            把无害的「打量」垫在攻击前面，两头都安全。 */
         actions.push({ label: '打量', cmd: 'look ' + k, hint: '看一段文字描述' });
+        /* ★ 「绑架」统一入口（主人第四轮加）：
+           晕着 → 直接装袋；站着 → 先打（真进战斗）。
+           判据全用**显式状态**：`knockedOut`（晕没晕）+ 背包里有没有粗麻袋。
+           日志这条路的按钮只能带一个 cmd，所以状态分流在**后端**做掉，
+           前端两侧（场景栏卡片 / 日志高亮）拿到的是同一条路。 */
+        {
+          const hasSack = p.countItem(kidnapMod.SACK_ID) >= 1;
+          const out_ = !!(one && one.knockedOut);
+          actions.push({
+            label: '绑架',
+            cmd: out_ ? ('装人 ' + k) : ('kill ' + k),
+            hint: out_ ? (hasSack ? '装进麻袋带走' : '得先有条粗麻袋（杂货铺有卖）') : '打晕他，再装袋',
+          });
+        }
         const inBattle = !!(w.battle && w.battle.target === one);
         const hot = !!(one && (one.hostile || one.inCombat || inBattle));
         const attackAct = { label: '攻击', cmd: 'attack ' + k };
@@ -483,7 +674,14 @@ function buildCommands(world) {
             { label: '补刀', cmd: 'kill ' + n.name, hint: '结果了他' },
             { label: '搜身', cmd: '搜身 ' + n.name, hint: '翻他身上的东西' },
           ];
-          if (hasSack) acts.push({ label: '装进麻袋', cmd: 'pack ' + n.name, hint: '当众下手必被告发' });
+          /* ★ 倒在地上的「绑架」= 直接装袋（主人第四轮要的统一入口）。
+             与站着那条（`kill` 先打）是同一个按钮的两种状态，前后端同一套口径。
+             没带麻袋也**照给**（点了有明确指引），别把入口藏起来。 */
+          acts.push({
+            label: '绑架',
+            cmd: '装人 ' + n.name,
+            hint: hasSack ? '装进麻袋带走' : '得先有条粗麻袋（杂货铺有卖）',
+          });
           return { text: n.name, type: 'npc', actions: acts };
         });
         lines.push({ kind: 'npcs', text: `地上还躺着：${downed.map(n => n.name).join('、')}。`, hl: dhl });
@@ -2007,6 +2205,60 @@ function buildCommands(world) {
     return { lines, enterCombat: true };
   });
 
+  /* ---------------- 偷袭（主人第四轮：「其他比如偷袭结缘之类的功能呢？」） ----------------
+     与「攻击」的区别：**先手重击**，代价是结仇、掉交情、多半被告发。
+     · 先手：不算一个完整回合（对方没反应过来，不该有反击）→ 直接掉一截血；
+     · 后果：好感 −30、信任 −20（暗算比当面叫阵更招人恨）；
+     · 只对「站着的人」有效：已经动上手就不是偷袭，昏过去的用不着偷袭。
+     ⚠️ 走 `world.startCombat(p, npc)`（**不传 ambush**）——
+        传了 ambush 等于告诉世界「是 NPC 伏击玩家」，目击者就会反过来帮被打的人
+        （world.combatStartWitnessReaction 读的就是 battle.ambush）。
+        玩家先动手，就该按「玩家是凶手」演：侠义者拦你、官府记你一笔。 */
+  reg(['ambush', '偷袭', '暗算', '背后下手'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    if (!args.length) return { lines: [{ kind: 'warn', text: '偷袭谁？「偷袭 <人名>」。' }] };
+    if (w.battle) return { lines: [{ kind: 'warn', text: '已经动上手了，那就不算偷袭——直接「攻击」吧。' }] };
+    const kw = args.join(' ');
+    /* ⚠️ 倒地的人**不在** npcsIncludingTemplates 里（`npcsIn` 过滤 !dead，
+       而打倒的人是 knockedOut + dead）。不补 downedIn 这一路的话，
+       玩家对躺在地上的人发「偷袭」会得到「这里没有「山贼」」——
+       明明就在脚边躺着，说「没有」最出戏。 */
+    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), kw, n => n.name)
+      || fuzzyFind(w.downedIn(p.room), kw, n => n.name);
+    if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${kw}」。` }] };
+    if (npc.knockedOut) {
+      return { lines: [{ kind: 'warn', text: `${npc.name}已经昏在地上，用不着偷袭——「绑架」或「补刀」更省事。` }] };
+    }
+    const tdef = npc.def || {};
+    if (tdef.quest && tdef.quest.length) {
+      return { lines: [{ kind: 'warn', text: `${npc.name}身上牵着事，暗算了他，这条线索也就断了。` }] };
+    }
+    const r = w.startCombat(p, npc);
+    if (!r.ok) return { lines: [{ kind: 'warn', text: r.msg }] };
+    const combatMod = require('./combat');
+    const atk = Number(p.atk) || 1;
+    const dfn = (combatMod.defenseOf ? combatMod.defenseOf(npc) : 0) || 0;
+    /* 先手加成的口径：攻击 ×2.2，且**只按三成防御**折算 ——
+       背后这一下本就该无视大半护体（不然「偷袭」跟普通一刀没区别，
+       玩家会觉得这个按钮是摆设）。下限 1，保证永远打得动。 */
+    const dmg = Math.max(1, Math.floor(atk * 2.2) - Math.floor(dfn * 0.3));
+    /* ⚠️ 血量留 1 点地板：一击必杀会让战斗状态和击杀结算**同时**收尾，
+       两条路都要写对才不出岔子。留一线血让普通回合去结果他，稳。 */
+    const before = npc.hp || 1;
+    npc.hp = Math.max(1, before - dmg);
+    const real = before - npc.hp;
+    npc.favor = Math.max(-200, (npc.favor || 0) - 30);
+    if (npc.pstate) npc.pstate.trust = Math.max(-100, (npc.pstate.trust || 0) - 20);
+    const lines = [
+      { kind: 'combat', text: `你悄没声地绕到${npc.name}身后，一掌拍向他要害！` },
+      { kind: 'combat', text: `　【偷袭】一击得手，${npc.name}受创 ${real} 点，踉跄回头（还剩 ${npc.hp} 点气血）。` },
+    ];
+    if (real >= before - 1) lines.push({ kind: 'sys', text: '　（他已是强弩之末，再补一下就能放倒。）' });
+    lines.push({ kind: 'sys', text: `　（暗算结仇——${npc.name}此刻恨极了你。）` });
+    for (const l of (r.lines || [])) lines.push(l);
+    return { lines, enterCombat: true };
+  });
+
   /* B4：战斗界面「防御」快捷键 —— 后端此前**根本没有** defend 指令
      （实测 CMD.defend === undefined），所以点了必然回「「defend」是什么指令？」。
      结论是「按钮没绑错、字段也没读错，是后端缺指令」，属可修而非僵尸按钮，
@@ -2066,8 +2318,65 @@ function buildCommands(world) {
       const spoken = personality.styleSpeak(npc, base);
       lines.push({ kind: 'say', text: `${npc.name}${verb}：「${prefix}${spoken}」` });
     } else {
-      lines.push({ kind: 'say', text: `${npc.name}看了你一眼，没有说话。` });
+      /* ★ 主人第四轮：「『交谈』按钮的可交互性就更多了但实际却没有什么」。
+         根因就在这一支：329 个 NPC 里写了 `talk` 台词的是少数，
+         其余绝大部分走到这里都回一句「看了你一眼，没有说话」——
+         点了等于没点。现在改成**按情境现编**（时段 / 交情 / 身份 / 禀性），
+         并且回话里那个名字**可点**，点开就是他此刻能聊的几个话头。 */
+      lines.push({ kind: 'say', text: smallTalk(w, npc) });
     }
+    /* ---- 闲聊也要有「结果」----
+       主人第四轮：「交谈按钮的可交互性就更多了但实际却没有什么」。
+       对话内容再花，点完没有任何变化，玩家仍会觉得空。
+       所以：跟同一个人**每天最多聊出 3 次交情**（+1 好感），
+       上限是为了防「反复点交谈刷好感」—— 一天三句，再多就成了聒噪。 */
+    {
+      const day = Math.floor(w.clockMinutes / 1440);
+      const st = npc.pstate || (npc.pstate = { trust: 0, revealed: [], hooks: {}, met: false, moodBias: 0, leaked: false });
+      if (st.chatDay !== day) { st.chatDay = day; st.chatCount = 0; }
+      if ((st.chatCount || 0) < 3) {
+        st.chatCount = (st.chatCount || 0) + 1;
+        npc.favor = clamp((npc.favor || 0) + 1, -200, 200);
+        lines.push({ kind: 'sys', text: `　（闲谈几句，${npc.name}对你多了三分熟络。好感 +1）` });
+      } else {
+        lines.push({ kind: 'hint', text: '　（话已说尽，再说就成聒噪了——明日再来。）' });
+      }
+    }
+    /* ---- 话头：把回话里的**名字**做成可点菜单 ----
+       这是「交谈」从「看一句话」变成「聊得下去」的关键：
+       点名字就能接着聊、打听、问他的事、送礼、告辞 —— 全是有真指令的项。 */
+    const nameIdx = lines.findIndex(l => l.kind === 'say' && String(l.text || '').includes(npc.name));
+    if (nameIdx >= 0) {
+      lines[nameIdx] = Object.assign({}, lines[nameIdx], {
+        hl: [{
+          text: npc.name, type: 'npc', actions: [
+            { label: '接着聊', cmd: 'talk ' + npc.name, hint: '多说两句' },
+            { label: '打听消息', cmd: 'ask ' + npc.name + ' about 江湖消息' },
+            { label: '问他的事', cmd: 'ask ' + npc.name + ' about 你是谁' },
+            { label: `送${pronounOf(npc) === '她' ? '她' : (pronounOf(npc) === '它' ? '它' : '他')}东西`, cmd: 'give ' + npc.name },
+            { label: '拱手告辞', cmd: '告辞 ' + npc.name, hint: '有始有终，留个好印象' },
+          ],
+        }],
+      });
+    }
+    return { lines };
+  });
+
+  /* ---------------- 告辞（「交谈」的收尾动作）----------------
+     主人第四轮要「交谈可交互性更多」——一轮闲聊总得有个收尾。
+     礼数周全地道个别：小涨好感（礼多人不怪），也让玩家知道这次谈话结束了。 */
+  reg(['farewell', '告辞', '告别', '作别', '抱拳'], (ctx, args) => {
+    const w = ctx.world, p = ctx.player;
+    if (!args.length) return { lines: [{ kind: 'warn', text: '跟谁告辞？' }] };
+    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), args.join(' '), n => n.name);
+    if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${args.join(' ')}」。` }] };
+    const verb = personality.sayVerbToned(npc);
+    const lines = [];
+    const before = npc.favor || 0;
+    npc.favor = clamp(before + 1, -200, 200);
+    lines.push({ kind: 'story', text: `你朝他拱了拱手，道一声「后会有期」。` });
+    lines.push({ kind: 'say', text: `${npc.name}${verb}：「慢走，不送。」` });
+    if ((npc.favor || 0) > before) lines.push({ kind: 'sys', text: `　（礼数到了，${npc.name}的好感 +1。）` });
     return { lines };
   });
 
@@ -2107,17 +2416,7 @@ function buildCommands(world) {
          玩家看到的不是「他答不上来」，是「命令崩了」。
          （第四轮补回春堂 NPC 时踩到的：我用的是数据惯例写法，一按就崩。） */
       const rawAsk = def.ask;
-      const askList = (() => {
-        if (Array.isArray(rawAsk)) return rawAsk;
-        if (!rawAsk || typeof rawAsk !== 'object') return [];
-        /* ① 单条：`{topic, answer, keywords}` */
-        if (rawAsk.topic || rawAsk.answer) return [rawAsk];
-        /* ② 映射对象：`{ "话题": "答案" }`（值也允许是 `{answer, keywords, effects}` 对象） */
-        return Object.keys(rawAsk).map(k => {
-          const v = rawAsk[k];
-          return (v && typeof v === 'object') ? Object.assign({ topic: k }, v) : { topic: k, answer: v };
-        });
-      })();
+      const askList = normalizeAskList(rawAsk);
       for (const a of askList) {
         if (!a || !a.topic) continue;
         if (topic.includes(a.topic) || a.topic.includes(topic) || (a.keywords || []).some(k => topic.includes(k))) {
@@ -2199,6 +2498,19 @@ function buildCommands(world) {
         } else {
           lines.push({ kind: 'say', text: `${npc.name}${verb2}：「你还问不着这个。」（信得过我，才说得出口——先替我把事办了）` });
         }
+      }
+    }
+    /* ---- 问「他认识的人」（主人第四轮）----
+       前端「询问」面板里会列出 `askPeople`（= npcKnownPeople 的同一份数据），
+       点名字就发 `ask <他> about <人名>`；这里负责把名字对上并答出来。
+       ⚠️ 名字要 ≥2 字才参与匹配：单字名（「三」「七」）会让
+          「江湖消息」里的任意一个字都撞上，变成答非所问。 */
+    if (!found) {
+      const who = npcKnownPeople(w, npc).find(x => x.name.length >= 2 &&
+        (topic.includes(x.name) || x.name.includes(topic)));
+      if (who) {
+        found = true;
+        for (const l of npcAboutPerson(w, npc, who)) lines.push(l);
       }
     }
     if (!found) {
@@ -3447,8 +3759,16 @@ function questKeyword(ctx, cmd, args, rawFull) {
   /* ---- ④ 黑市买奴 ---- */
   reg(['buyslave', '买奴'], (ctx) => kdLines(kidnapMod.buySlave(ctx.world, kdArg(ctx))));
 
+  /* ---- ④b 家园地牢（关押 / 提审 / 陪练 / 放出）----
+     estate 的「地牢」地块此前只定义没接线（captiveCap/tortureRate/sparExp 无人消费），
+     这四个指令就是把那块地牢接上。 */
+  reg(['jail', '关押', '收监', '下狱'], (ctx) => kdLines(kidnapMod.imprison(ctx.world, kdArg(ctx))));
+  reg(['interrogate', '提审', '逼供', '审问'], (ctx) => kdLines(kidnapMod.interrogate(ctx.world, kdArg(ctx))));
+  reg(['spar', '陪练', '喂招'], (ctx) => kdLines(kidnapMod.sparWith(ctx.world, kdArg(ctx))));
+  reg(['freecaptive', '放出', '开锁'], (ctx) => kdLines(kidnapMod.freeCaptive(ctx.world, kdArg(ctx))));
+
   /* ---- ⑤ 名册：麻袋 + 奴 + 护院 + 恶名 ---- */
-  reg(['slaves', '奴册', '奴仆', '护院'], (ctx) => {
+  reg(['slaves', '奴册', '奴仆', '护院', '地牢', '牢房'], (ctx) => {
     const w = ctx.world, p = ctx.player;
     const k = kidnapMod.data(w);
     if (!k) return { lines: [{ kind: 'plain', text: '你还没上路。' }] };
@@ -3485,6 +3805,21 @@ function questKeyword(ctx, cmd, args, rawFull) {
       lines.push({ kind: 'plain', text: `　${g.name}　武力 ${g.power}　日薪 ${g.wage} 文　${busy ? '正盯着' + g.supervising + '干活' : '看家'}${g.loyalty < 30 ? '　（离心）' : ''}` });
     }
     if (k.wageDue) lines.push({ kind: 'warn', text: `　欠工钱 ${k.wageDue} 文（拖久了护院会走）` });
+    /* 地牢（只有开出来了才显示） */
+    const dg = kidnapMod.dungeonOf(w);
+    if (dg.has) {
+      const cl = kidnapMod.captives(w);
+      lines.push({ kind: 'subtitle', text: `地牢（${cl.length}/${dg.cap}）` });
+      if (!cl.length) lines.push({ kind: 'plain', text: '　（空）' });
+      for (const c of cl) {
+        lines.push({
+          kind: 'plain',
+          text: `　${c.name}　服从 ${c.obedience || 0}　好感 ${c.favor || 0}　${c.interrogated ? '已审 ' + c.interrogated + ' 次' : '没审过'}`,
+          npcName: c.name,
+        });
+      }
+      if (cl.length) lines.push({ kind: 'hint', text: '　用「提审 <人名>」套话、「陪练 <人名>」喂招、「放出 <人名>」放人。' });
+    }
     /* 债务（玩家自己被掳走） */
     if (k.debt) {
       const bm = kidnapMod.BLACK_MARKETS.find(b => b.id === k.debt.market) || {};
@@ -3802,6 +4137,9 @@ function findPath(world, from, to, ctx) {
 
 module.exports = {
   buildCommands, findPath, cnNum, DIRECTIONS, DIR_CN,
+  /* 「询问」配套：话题写法归一化 + 他认识的人 + 问起那人他怎么说。
+     前端人名清单与后端回答**共用这一份**，别在 UI 里再写一份名单。 */
+  normalizeAskList, npcKnownPeople, npcAboutPerson,
   /* 身份标签 / 关系称谓：导出给测试与其它模块用（见 tools/identity-check.js） */
   __api: {
     npcIdentity, relKindCN, tagCN, JOB_CN, TAG_CN, REL_KIND_CN, relFavorBetween, fmtRelFavor, REL_FAVOR_BASE,

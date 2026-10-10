@@ -280,12 +280,13 @@ section('6 · 互动菜单按情境给项（真 exec look → 读 hl[].actions�
     }
     return [];
   }
-  // 药婆婆：有支线 + 会教 + 有铺子 + 医者 → 应给「接他的事/请教武学/看看货物/求医」
+  // 药婆婆：有支线 + 会教 + 有铺子 + 医者 → 应给「接取任务/请教武学/看看货物/求医」
   const e = boot(); const w = e.world, p = w.player;
   p.room = 'huashan_shanxia';
   const A = actionsFor(e, '药婆婆');
   ok('6.1 医者/掌柜/有支线 → 有「求医」', A.includes('求医'), A.join(','));
-  ok('6.2 → 有「接他的事」（sidequest 接线）', A.includes('接他的事'), A.join(','));
+  ok('6.2 → 有「接取任务」（sidequest 接线；主人第四轮把「接他的事」改名了）',
+    A.includes('接取任务'), A.join(','));
   ok('6.3 → 有「请教武学」（有 teach）', A.includes('请教武学'), A.join(','));
   ok('6.4 → 有「看看货物」（有 shop）', A.includes('看看货物'), A.join(','));
   ok('6.5 攻击仍在，且压最后（寻常 NPC）', A[A.length - 1] === '攻击', A.join(','));
@@ -300,7 +301,7 @@ section('6 · 互动菜单按情境给项（真 exec look → 读 hl[].actions�
   }
   if (plainName) {
     const B = actionsFor(e, plainName);
-    ok(`6.6 无支线/无 teach 的「${plainName}」不给「接他的事」`, !B.includes('接他的事'), B.join(','));
+    ok(`6.6 无支线/无 teach 的「${plainName}」不给「接取任务」`, !B.includes('接取任务'), B.join(','));
     ok('6.7 同上不给「请教武学」/「求医」', !B.includes('请教武学') && !B.includes('求医'), B.join(','));
   } else { ok('6.6 市场里找不到「朴素 NPC」样本（跳过）', true); }
 
@@ -335,7 +336,7 @@ section('6 · 互动菜单按情境给项（真 exec look → 读 hl[].actions�
       return [];
     };
     pR.setQuestStage(q1, 0);
-    ok('6.13 前置支线进行中 → 不冒「接他的事」假入口', !cmds().includes('accept ' + name2), cmds().join(','));
+    ok('6.13 前置支线进行中 → 不冒「接取任务」假入口', !cmds().includes('accept ' + name2), cmds().join(','));
     pR.setQuestStage(q1, 99); pR.setFlag('questdone_' + q1, true);
     ok('6.14 前置完成后 → 第二条才出现', cmds().includes('accept ' + name2), cmds().join(','));
   } else {

@@ -10,7 +10,7 @@ const path = require('path');
 const fs = require('fs');
 const { World } = require('./world');
 const { ModLoader } = require('./modloader');
-const { buildCommands, cnNum } = require('./commands');
+const { buildCommands, cnNum, normalizeAskList, npcKnownPeople } = require('./commands');
 const { evalCond, evalEffects, evalTemplate } = require('./modapi');
 const { fmtTime, shichen, stars, clamp, fuzzyFind, normalizeCmd } = require('./utils');
 const mapLayout = require('./maplayout');
@@ -251,13 +251,12 @@ class GameEngine {
       out.push(hint ? { topic, hint } : { topic });
     };
     /* ① 专属话题
-     * ⚠️ 归一化：有的 NPC 把 ask 写成**对象** {topic, answer}，有的写成**数组**。
-     *   直接 `for (const a of def.ask)` 在对象上会抛
-     *   「object is not iterable」——整个 view() 挂掉，进游戏就白屏。 */
-    const askRaw = def.ask;
-    const askList = Array.isArray(askRaw) ? askRaw
-      : (askRaw && typeof askRaw === 'object' ? [askRaw] : []);
-    for (const a of askList) {
+     * ⚠️ 归一化换成 commands 里的共用函数：`ask` 有**三种**写法
+     *   （单条 / 数组 / **映射对象**{"话题":"答案"}），映射对象是数据主流写法。
+     *   原来这里只认数组与单条 → 用映射对象写的 NPC 一个专属话题都列不出来
+     *   （「询问」面板只剩通用三项，等于功能缩水）。
+     *   共用一份还有个好处：`ask` 指令认什么，这里就列什么，不会漂移。 */
+    for (const a of normalizeAskList(def.ask)) {
       if (!a) continue;
       push(a.topic || a.label || a.title, a.hint || null);
     }
@@ -275,6 +274,23 @@ class GameEngine {
     /* ③ 通用兜底：任何 NPC 都接得住这一轮 */
     for (const g of ['你是谁', '近况', '江湖消息']) push(g, null);
     return out.slice(0, 8);
+  }
+
+  /* ────────────────────────────────────────────────────────────────
+   * askPeopleOf —— 「询问」面板里那份「他认识的人」名单
+   *
+   * 主人第四轮：「点『询问』弹出一个页面上面有 NPC 认识的人名字，
+   *   点击这些名字按钮 NPC 会说关于它们的事（根据 NPC 背景画像来）」。
+   * 名单与后端回答**共用 commands.npcKnownPeople()**（同一份 rel 数据），
+   * 不在这里另写一份 —— 两份名单迟早漂移，届时「点得出来但答不上」。
+   * ──────────────────────────────────────────────────────────────── */
+  askPeopleOf(n) {
+    if (!n) return [];
+    try {
+      return npcKnownPeople(this.world, n).slice(0, 10);
+    } catch (e) {
+      return [];
+    }
   }
 
   view() {
@@ -359,6 +375,8 @@ class GameEngine {
       /* 「询问」按钮给的话题清单 —— 前端 askNpc() 直接渲染成可点按钮。
          少了这个，玩家点「询问」只得到一个空输入框（主人报的问题）。 */
       askTopics: this.askTopicsOf(n),
+      /* 「询问」面板里那份「他认识的人」名单（点一下就问那个人） */
+      askPeople: this.askPeopleOf(n),
     }));
 
     const groundItems = w.itemsIn(p.room).map(i => {
@@ -462,6 +480,29 @@ class GameEngine {
         .map(s => ({ name: s.name, to: s.to, keeper: s.keeper, price: s.price })),
       inBrothel: kmod.inBrothel(w),
       inBlackMarket: kmod.inBlackMarket(w),
+      /* 家园地牢（关押 / 提审 / 陪练 / 放出）。
+         `has` 为假时前端整栏不渲染 —— 没地牢的人不该看见一栏空牢房。 */
+      dungeon: (() => {
+        const dg = kmod.dungeonOf(w);
+        if (!dg.has) return { has: false, level: 0, cap: 0, roomName: null, captives: [] };
+        const droom = dg.roomId ? w.getRoom(dg.roomId) : null;
+        return {
+          has: true, level: dg.level, cap: dg.cap, roomName: droom ? droom.name : null,
+          tortureRate: dg.tortureRate, sparExp: dg.sparExp,
+          here: !!(droom && p.room === droom.id),
+          captives: kmod.captives(w).map(c => ({
+            name: c.name,
+            obedience: c.obedience || 0,
+            favor: c.favor || 0,
+            interrogated: c.interrogated || 0,
+            hp: Math.max(0, Math.round(c.hp || 0)),
+            maxHp: Math.max(1, Math.round(c.maxHp || c.hp || 1)),
+            days: Math.floor(Math.max(0, (w.clockMinutes - (c.jailedAt || w.clockMinutes))) / 1440),
+            power: c.power || 0,
+            hpRatio: clamp(Math.round((c.hp || 0) / Math.max(1, c.maxHp || c.hp || 1) * 100), 0, 100),
+          })),
+        };
+      })(),
       /* 玩家自己被掳：显示赎金与三条出路 */
       debt: k.debt ? {
         ransom: k.debt.ransom, paidOff: k.debt.paidOff || 0,
@@ -701,6 +742,47 @@ class GameEngine {
     // 已完成
     const done = Object.keys(p.quests).filter(k => p.quests[k] >= 99);
     return { active: out, done, completedCount: done.length };
+  }
+
+  /* ============================================================
+   * 任务详情预览 —— 「接取任务」要先弹一页详情，玩家看过再决定接不接
+   *
+   * 主人第四轮：「点击 NPC 页『接他的事』按钮后希望能先弹出任务详情
+   * 再选择是否接受任务，把『接他的事』文本改为『接取任务』」。
+   *
+   * ⚠️ 不能复用 questList：那边只列**进行中**的任务（读 p.quests）。
+   *    这里要的是**还没接**的那一桩，得从 w.data.quests 直接读定义。
+   * ============================================================ */
+  questPreviewOf(qid) {
+    const w = this.world, p = w.player;
+    const qd = qid && w.getQuest(qid);
+    if (!qd) return null;
+    const st = (qd.stages && qd.stages[0]) || {};
+    const targets = (st.targets || []).map(t => ({
+      desc: t.desc || t.id, kind: t.kind || '', count: t.count || 1, cur: 0,
+    }));
+    /* 委托人：giver 指向 npc 的 defId，取模板名最稳（实例可能不在世上） */
+    let giver = '', giverId = qd.giver || '';
+    if (giverId) {
+      const def = w.data.npcs && w.data.npcs[giverId];
+      giver = (def && def.name) || giverId;
+    }
+    const stageNo = p.questStage(qid);
+    return {
+      id: qd.id || qid,
+      name: qd.name || qid,
+      type: qd.type || '',
+      level: qd.level || 0,
+      giver, giverId,
+      desc: qd.desc || '',
+      stageDesc: st.desc || '',
+      targets,
+      rewards: questRewardBrief(qd, w),
+      requireText: questRequireText(qd.require, w),
+      /* 给前端一锤定音：这一刻到底接不接得下（避免「点了才告诉你不行」） */
+      acceptable: !(stageNo >= 0),
+      started: stageNo >= 0,
+    };
   }
 
   mapView() {
@@ -1989,6 +2071,73 @@ class GameEngine {
 function og(v, d) { return v === undefined || v === null || v === '' ? d : v; }
 function slug(s) {
   return String(s || 'mod').toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '_').replace(/^_+|_+$/g, '') || 'item';
+}
+
+/* ------------------------------------------------------------
+ * 任务详情预览用的两个小工具（只给 questPreviewOf 用）
+ * ------------------------------------------------------------ */
+
+/** 把 rewards 数组压成一句「给什么」——玩家接之前最想知道的东西 */
+function questRewardBrief(qd, w) {
+  const bits = [];
+  const items = [];
+  for (const r of (qd.rewards || [])) {
+    if (!r || !r.type) continue;
+    const a = r.args || [];
+    switch (r.type) {
+      case '+exp': bits.push('阅历 ' + (a[0] || 0)); break;
+      case '+pot': bits.push('潜力 ' + (a[0] || 0)); break;
+      case '+money': bits.push((a[0] || 0) + ' 文'); break;
+      case '+rep': {
+        /* args = [门派id 或 '*', 点数] —— 门派 id 要翻成中文，别把 `huashan` 甩给玩家 */
+        const sk = a[0];
+        if (sk === '*' || !sk) bits.push('名望 ' + (a[1] || 0));
+        else {
+          const s = (w.data.sects && w.data.sects[sk]);
+          bits.push(((s && s.name) || sk) + '声望 ' + (a[1] || 0));
+        }
+        break;
+      }
+      case 'favor': bits.push('好感 ' + (a[1] != null ? a[1] : (a[0] || 0))); break;
+      case '+item': {
+        /* ⚠️ 武学书在 `data.books` 里，**不在** `data.items` ——
+           只查 getItem 的话，奖励会显示成裸 id（`book_basic_force`），
+           玩家看不懂。两级兜底：物品 → 书 → 原样 id。 */
+        const it = w.getItem(a[0]) || (w.data.books && w.data.books[a[0]]);
+        items.push((it && it.name ? it.name : a[0]) + (a[1] > 1 ? ' x' + a[1] : ''));
+        break;
+      }
+      case '+skill': {
+        const s = w.getSkill(a[0]);
+        bits.push('武学 ' + (s ? s.name : a[0]));
+        break;
+      }
+      case '+title': bits.push('称号'); break;
+      case 'joinSect': bits.push('可入门派'); break;
+      default: break;   /* say / narrate / flag / -item 之类不是「奖励」，跳过 */
+    }
+  }
+  if (items.length) bits.push(items.join('、'));
+  return bits;
+}
+
+/** 把任务的接取条件翻成人话（require 的键跟 condText 的键不是一套，单写） */
+function questRequireText(req, w) {
+  if (!req || typeof req !== 'object') return '';
+  const parts = [];
+  if (req.noSect) parts.push('须无门派在身');
+  if (req.sect) {
+    const s = (w.data.sects && w.data.sects[req.sect]);
+    parts.push('须是' + ((s && s.name) || req.sect) + '弟子');
+  }
+  if (req.gender) parts.push(req.gender === 'female' ? '限女子' : '限男子');
+  if (req.karma) parts.push('侠义' + req.karma);
+  if (req.level) parts.push('武学修为' + req.level);
+  if (req.attr) {
+    const k = Object.keys(req).find(x => ['>=', '>', '<=', '<'].indexOf(x) >= 0);
+    parts.push((req.attr || '资质') + (k ? k + req[k] : ''));
+  }
+  return parts.join('，');
 }
 
 module.exports = { GameEngine, registerBuiltinFns };

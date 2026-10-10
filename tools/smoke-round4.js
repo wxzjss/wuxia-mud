@@ -266,6 +266,297 @@ section('§Q 询问：数组写法 / 映射对象写法，都要真的答出那�
   }
 }
 
+/* ================================================================
+ * §K 「绑架」—— 日志高亮那条路（后端 hl 动作表）
+ *      —— 主人第四轮加的统一入口：**晕着 → 装袋，站着 → 先打**。
+ *         日志里点 NPC 名的那个菜单只能带一条 cmd，所以状态分流必须**在后端**做，
+ *         前端两个入口（场景栏卡片 / 日志高亮）拿到的才是同一条路。
+ *         断言要点：菜单里有「绑架」这一项，且 cmd 按 `knockedOut` **真的分流**——
+ *         只断「有这一项」是不够的（cmd 写死成 kill 也能过），必须断两态各发什么。
+ * ================================================================ */
+section('§K 「绑架」：站着给「先打」、晕着给「装袋」，后端分流');
+{
+  const e = boot(31);
+  const w = e.world, p = w.player;
+  const grabActions = (name) => {
+    const look = e.exec('look');
+    const line = (look.lines || []).find(l => l.kind === 'npcs' && Array.isArray(l.hl) &&
+      l.hl.some(x => x.text === name || String(x.text || '').indexOf(name) === 0));
+    const h = line && line.hl.find(x => x.text === name || String(x.text || '').indexOf(name) === 0);
+    return (h && h.actions) || [];
+  };
+
+  /* ① 站着的人：这一项 cmd 必须是 `kill <名>`（点了先开打） */
+  const stand = w.spawnNpc('mob_bandit', p.room, 1, true);
+  {
+    const acts = grabActions(stand.name);
+    const k = acts.find(a => /绑架/.test(a.label || ''));
+    ok('K-1 站着的人，日志菜单里有「绑架」一项', !!k, acts.map(a => a.label).join('、'));
+    ok('K-2 ★ 该 cmd 是 `kill <名>`（站着 → 先打，真进战斗）',
+      !!(k && k.cmd === 'kill ' + stand.name), k ? k.cmd : '(没有)');
+    ok('K-3 该项有 hint 说明「打晕他，再装袋」',
+      !!(k && k.hint && /打晕/.test(k.hint)), k ? k.hint : '-');
+  }
+
+  /* ② 把这个人打倒 → 同一项 cmd 必须翻成 `装人 <名>` */
+  {
+    stand.hp = 1;
+    w.onNpcDown(stand, null);
+    const acts = grabActions(stand.name);
+    const k = acts.find(a => /绑架/.test(a.label || ''));
+    ok('K-4 ★ 打倒之后，该项 cmd 翻成 `装人 <名>`（晕着 → 直接装袋）',
+      !!(k && k.cmd === '装人 ' + stand.name), k ? k.cmd : '(没有)');
+    /* 没带麻袋 → hint 要点明「得先有条粗麻袋」，而不是让玩家点了吃一发警告 */
+    const hasSack = p.countItem('sack_coarse') >= 1;
+    ok('K-5 身上没麻袋时 hint 明确指向「粗麻袋」（别让入口把人坑了）',
+      hasSack ? true : !!(k && /麻袋/.test(k.hint || '')),
+      'hasSack=' + hasSack + ' hint=' + (k ? k.hint : '-'));
+  }
+
+  /* ③ 真跑一遍分流后的 cmd：`kill <名>` 要真能开打（不是死按钮） */
+  {
+    const e2 = boot(32);
+    const w2 = e2.world, p2 = w2.player;
+    const foe = w2.spawnNpc('mob_bandit', p2.room, 1, true);
+    const r = e2.exec('kill ' + foe.name);
+    ok('K-6 ★ 站着那条路发的 `kill <名>` 真能开打（端到端，不是死按钮）',
+      !!(w2.battle && w2.battle.target), txt(r.lines).slice(0, 60));
+  }
+}
+
+/* ================================================================
+ * §R 「接取任务」—— 先弹详情，再决定接不接（主人第四轮）
+ *      —— 原来是「接他的事」一点就把任务塞进任务栏。现在：
+ *         ① 名字改成「接取任务」；
+ *         ② 那一项带 `act:'acceptquest'` + `qid`，前端认它先弹详情页；
+ *         ③ 后端 `questPreviewOf(qid)` 要**给得出**那一页的数据
+ *            （委托人 / 第一步 / 目标 / 奖励概要 / 门槛），
+ *            且未接时进度必须是 0/N（不能谎报）。
+ * ================================================================ */
+section('§R 「接取任务」：菜单项改名 + 后端给得出详情数据');
+{
+  const e = boot(41);
+  const w = e.world, p = w.player;
+  /* ⚠️ 别自己重算「哪个任务可接」——`availableQuestOf` 的前置判定（evalCond）
+     跟肉眼扫 `require` 不是一回事（"noSect+karma" 这类条件开局就是满足的，
+     扫「有没有 require 字段」会把能接的判成不能接，实测踩过）。
+     这里改成：让**真玩家**站在那儿 `look`，直接读后端给的那一项。 */
+  const grabAccept = (defId) => {
+    const inst = w.spawnNpc(defId, p.room, 1, true);
+    const look = e.exec('look');
+    for (const l of (look.lines || [])) {
+      if (!Array.isArray(l.hl)) continue;
+      const h = l.hl.find(x => String(x.text || '').indexOf(inst.name) === 0);
+      if (!h) continue;
+      const act = (h.actions || []).find(a => /接取任务/.test(a.label || ''));
+      if (act) return act;
+    }
+    return null;
+  };
+  /* 扫到一个真给得出「接取任务」的人就停（给不出的那些人直接跳过，不算失败） */
+  let act = null;
+  for (const id of Object.keys(w.data.npcs || {})) {
+    const d0 = w.data.npcs[id] || {};
+    if (!(Array.isArray(d0.quests) && d0.quests.length) && !d0.sidequest) continue;
+    act = grabAccept(id);
+    if (act) break;
+  }
+  ok('R-0 前提：找得到一个「给得出接取任务」的 NPC', !!act, act ? String(act.qid) : '(没有)');
+
+  ok('R-1 ★ 菜单里那一项叫「接取任务」（不再叫「接他的事」）', !!act, act ? act.label : '(没找到)');
+  ok('R-2 ★ 该项带 `act:"acceptquest"`（前端靠它先弹详情，而不是直接接）',
+    !!(act && act.act === 'acceptquest'), act ? String(act.act) : '-');
+  ok('R-3 ★ 该项带 `qid`（前端拿它去拉详情）',
+    !!(act && act.qid && w.getQuest(act.qid)), act ? String(act.qid) : '-');
+  ok('R-4 仍带 `cmd` 兜底（老客户端不认 act 时直连「直接接」的旧行为）',
+    !!(act && /^accept /.test(act.cmd || '')), act ? act.cmd : '-');
+
+  const qid = act && act.qid;
+  const pv = qid ? e.questPreviewOf(qid) : null;
+  ok('R-5 ★ 后端给得出任务详情（questPreviewOf 有返回）', !!(pv && pv.name), pv ? pv.name : '(空)');
+  ok('R-6 详情含「委托人 / 目标 / 奖励」三样',
+    !!(pv && typeof pv.giver === 'string' && Array.isArray(pv.targets) && Array.isArray(pv.rewards)),
+    pv ? JSON.stringify({ giver: pv.giver, t: pv.targets.length, r: pv.rewards }) : '-');
+  ok('R-7 ★ 未接时目标进度是 0/N（不能谎报进度）',
+    !!(pv && pv.targets.every(t => t.cur === 0 && t.count >= 1)),
+    pv ? JSON.stringify(pv.targets) : '-');
+  ok('R-8 未接 → acceptable:true（前端据此给「接下这桩事」按钮）',
+    !!(pv && pv.acceptable === true), pv ? String(pv.acceptable) : '-');
+  ok('R-9 奖励概要是人话（不是裸的 `+exp` / `+pot`）',
+    !!(pv && pv.rewards.every(r => !/^[+\-]/.test(String(r)))),
+    pv ? pv.rewards.join('、') : '-');
+  ok('R-9b 门槛翻成中文人话（不是 `noSect:true` 这种裸键）',
+    !!(pv && !/noSect|karma|require/i.test(pv.requireText || '')),
+    pv ? ('「' + pv.requireText + '」') : '-');
+
+  if (pv) {
+    e.exec('accept ' + pv.name);
+    const pv2 = e.questPreviewOf(qid);
+    ok('R-10 接下之后 acceptable 翻 false（按钮会变「已在你身上」，防重复接）',
+      !!(pv2 && pv2.acceptable === false), pv2 ? String(pv2.acceptable) : '-');
+  }
+}
+
+/* ================================================================
+ * §S 「询问」→「他认识的人」（主人第四轮）
+ *      —— 主人要的是「点『询问』弹出一个页面上面有 NPC 认识的人名字，
+ *         点击这些名字按钮 NPC 会说关于它们的事（根据 NPC 背景画像来）」。
+ *      守两条：
+ *        ① 名单**只有一份**（view 里的 askPeople 必须等于 commands.npcKnownPeople
+ *           的同一批）—— 前端自己拼一份名单，就会出现「点得出来但答不上」；
+ *        ② 点名单上的名字，后端真答得出，且答的是**那个人**（不是万能话术）。
+ * ================================================================ */
+section('§S 「询问」→ 他认识的人：名单与回答同源');
+{
+  const cmds = require(path.join(ROOT, 'game', 'src', 'core', 'commands.js'));
+  const e = boot(51);
+  const w = e.world, p = w.player;
+  /* 挑一个 rel 非空的 NPC（286 个都有，随便挑） */
+  const defId = Object.keys(w.data.npcs || {}).find(x => (w.data.npcs[x].rel || []).length > 0);
+  ok('S-0 前提：找得到一个有关系数据的 NPC', !!defId, String(defId));
+  if (defId) {
+    const inst = w.spawnNpc(defId, p.room, 1, true);
+    const v = e.view();
+    const n = (v.npcs || []).find(x => x.name === inst.name);
+    ok('S-1 ★ view 里带 askPeople 名单（前端就渲染这个）',
+      !!(n && Array.isArray(n.askPeople) && n.askPeople.length > 0),
+      n ? JSON.stringify((n.askPeople || []).slice(0, 3)) : '(没这个人)');
+    ok('S-2 名单项带 name / kind / rel（面板要显示关系）',
+      !!(n && n.askPeople.every(x => x.name && x.kind && x.rel)),
+      n ? JSON.stringify(n.askPeople[0] || {}) : '-');
+
+    /* ① 与后端同源 */
+    const same = cmds.npcKnownPeople(w, inst).slice(0, 10);
+    ok('S-3 ★ 前端名单 === 后端 npcKnownPeople（同一份，不各写一套）',
+      JSON.stringify(n.askPeople) === JSON.stringify(same),
+      'view=' + (n.askPeople || []).length + ' 后端=' + same.length);
+
+    /* ② 点名字真答得上，且答的是那个人 */
+    const first = n.askPeople[0];
+    const r = e.exec('ask ' + inst.name + ' about ' + first.name);
+    const t = txt(r.lines);
+    ok('S-4 ★ 问名单上的人，真答得出（走「不知道」兜底就是没接通）',
+      r.lines.some(l => l.kind === 'say') && !/我却不知|不知道/.test(t), t.slice(0, 110));
+    ok('S-5 ★ 答的是被问的那个人（名字出现在回答里）',
+      t.includes(first.name), first.name + ' ／ ' + t.slice(0, 90));
+    ok('S-6 ★ 交情不同、说得不一样（生人守着口，熟人肯多说）',
+      (() => {
+        inst.favor = 30;
+        const r3 = e.exec('ask ' + inst.name + ' about ' + first.name);
+        const t3 = txt(r3.lines);
+        return t3.length > t.length && t3.includes(first.name);
+      })(),
+      '生人 ' + t.length + ' 字 → 熟人 ' + txt(e.exec('ask ' + inst.name + ' about ' + first.name).lines).length + ' 字');
+
+    /* ③ 单字名不该乱撞（防「江湖消息」被单字名截胡） */
+    const r2 = e.exec('ask ' + inst.name + ' about 江湖消息');
+    ok('S-7 ★ 通用话题不被名单截胡（「江湖消息」仍走通用兜底）',
+      !r2.lines.some(l => l.kind === 'say' && n.askPeople.some(x => x.name.length === 1 && l.text.includes(`${x.name}……`))),
+      txt(r2.lines).slice(0, 80));
+  }
+}
+
+/* ================================================================
+ * §T 偷袭 / 交谈 / 告辞（主人第四轮：「NPC 交互页的互动是不是有点少？
+ *      其他比如偷袭结缘之类的功能呢？」「『交谈』按钮的可交互性就更多了
+ *      但实际却没有什么」）
+ *      —— 「结缘」本来就有（bond/纳妾/结拜那一组），缺的是**偷袭**；
+ *         「交谈」的毛病是点完没有任何变化，所以既要给**可点的话头**，
+ *         也要给**看得见的结果**（好感 +1，每天三次封顶）。
+ * ================================================================ */
+section('§T 偷袭 / 交谈 / 告辞');
+{
+  /* ---- 偷袭 ---- */
+  {
+    const e = boot(61);
+    const w = e.world, p = w.player;
+    for (const n of w.npcsIn(p.room)) n.room = '__away__';
+    const a = w.spawnNpc('npcv_001', p.room, 1, true);
+    a.favor = 10;
+    const hp0 = a.hp;
+    const r = e.exec('偷袭 ' + a.name);
+    ok('T-1 ★ 偷袭真扣血（先手重击，不是只喊一嗓子）', a.hp < hp0, hp0 + ' → ' + a.hp);
+    ok('T-2 ★ 偷袭开了战斗，且 battle.ambush === false（玩家是凶手，'
+      + '目击者才会站被打的那边——传 true 就反过来了）',
+      !!(w.battle && w.battle.ambush === false),
+      JSON.stringify(w.battle ? { ambush: w.battle.ambush, target: w.battle.target && w.battle.target.name } : null));
+    ok('T-3 偷袭掉好感（暗算结仇）', (a.favor || 0) < 10, 'favor=' + a.favor);
+    ok('T-4 已经开打后不能再偷袭（给出明确理由）',
+      /已经动上手/.test(txt(e.exec('偷袭 ' + a.name).lines)), txt(e.exec('偷袭 ' + a.name).lines).slice(0, 60));
+    /* 昏倒的人不给偷袭（那是「绑架 / 补刀」的活） */
+    const e2 = boot(62);
+    const w2 = e2.world, p2 = w2.player;
+    for (const n of w2.npcsIn(p2.room)) n.room = '__away__';
+    const down = w2.spawnNpc('mob_bandit', p2.room, 1, true);
+    down.knockedOut = true; down.dead = true;
+    ok('T-5 昏倒的人不能偷袭（提示改用绑架/补刀）',
+      /绑架|补刀/.test(txt(e2.exec('偷袭 ' + down.name).lines)),
+      txt(e2.exec('偷袭 ' + down.name).lines).slice(0, 60));
+  }
+
+  /* ---- 交谈 + 话头 ---- */
+  {
+    const e = boot(63);
+    const w = e.world, p = w.player;
+    for (const n of w.npcsIn(p.room)) n.room = '__away__';
+    const a = w.spawnNpc('npcv_001', p.room, 1, true);
+    a.favor = 0;
+    const r = e.exec('talk ' + a.name);
+    ok('T-6 ★ 交谈有回应（say 行，不是「看了你一眼」）',
+      r.lines.some(l => l.kind === 'say'), txt(r.lines).slice(0, 80));
+
+    const hl = (r.lines.find(l => Array.isArray(l.hl) && l.hl.length) || {}).hl;
+    ok('T-7 ★ 回话里那个名字可点（带 hl，能接着聊）', !!(hl && hl[0] && hl[0].actions && hl[0].actions.length),
+      hl ? hl[0].actions.map(x => x.label).join('、') : '(没有)');
+    const acts = (hl && hl[0] && hl[0].actions) || [];
+    ok('T-8 ★ 话头齐（接着聊 / 打听消息 / 问他的事 / 送礼 / 告辞）',
+      ['接着聊', '打听消息', '问他的事', '拱手告辞'].every(x => acts.some(y => y.label === x)),
+      acts.map(x => x.label).join('、'));
+    /* 每个话头都得是**真指令**（不是点了回「是什么指令」的假按钮） */
+    const bad = [];
+    for (const act of acts) {
+      if (!act.cmd) { bad.push(act.label + '(无 cmd)'); continue; }
+      const t = txt(e.exec(act.cmd).lines);
+      if (/是什么指令|出了岔子/.test(t)) bad.push(act.label + '→' + t.slice(0, 30));
+      /* 打听消息/问他的事 会开打？不会——但「接着聊」会加分，无妨 */
+      w.battle = null; p.inCombat = false; a.inCombat = false;
+    }
+    ok('T-9 ★ 五个话头逐个真跑，全部有真回应（没有假按钮）', bad.length === 0, bad.join(' ／ ') || '全通');
+
+    /* 闲聊有结果：前三次 +1，第四次给「话已说尽」 */
+    const e3 = boot(64);
+    const w3 = e3.world, p3 = w3.player;
+    for (const n of w3.npcsIn(p3.room)) n.room = '__away__';
+    const b = w3.spawnNpc('npcv_001', p3.room, 1, true);
+    b.favor = 0;
+    const f0 = b.favor;
+    e3.exec('talk ' + b.name);
+    ok('T-10 ★ 闲聊有看得见的结果（好感 +1）', b.favor > f0, f0 + ' → ' + b.favor);
+    e3.exec('talk ' + b.name); e3.exec('talk ' + b.name);
+    const f3 = b.favor;
+    const r4 = e3.exec('talk ' + b.name);
+    ok('T-11 ★ 一天三次封顶（第四次不再涨好感，且明说原因）',
+      b.favor === f3 && /话已说尽|聒噪/.test(txt(r4.lines)), 'favor=' + b.favor + ' ／ ' + txt(r4.lines).slice(0, 60));
+    /* 送礼面板/关系面板看到的也必须是同一个数（不漏） */
+    ok('T-12 view 里的好感跟实例一致',
+      ((e3.view().npcs || []).find(x => x.name === b.name) || {}).favor === b.favor);
+  }
+
+  /* ---- 告辞 ---- */
+  {
+    const e = boot(65);
+    const w = e.world, p = w.player;
+    for (const n of w.npcsIn(p.room)) n.room = '__away__';
+    const a = w.spawnNpc('npcv_001', p.room, 1, true);
+    a.favor = 0;
+    const r = e.exec('告辞 ' + a.name);
+    ok('T-13 ★ 告辞有回应', r.lines.some(l => /后会有期/.test(l.text)), txt(r.lines).slice(0, 70));
+    ok('T-14 礼数到了 → 好感 +1', a.favor === 1, 'favor=' + a.favor);
+    ok('T-15 告辞不认识的人也给回应（不静默失败）',
+      e.exec('告辞 不存在的人').lines.some(l => l.kind === 'warn'));
+  }
+}
+
 console.log('\n' + '='.repeat(48));
 console.log(`  第四轮专项回归：${pass} 通过 / ${fail} 失败`);
 if (fails.length) console.log('  失败项：' + fails.join('、'));

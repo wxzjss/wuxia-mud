@@ -296,6 +296,15 @@ async function handleApi(engine, req, res, pn, query, preset) {
         return json(res, 200, { ok: true, npc });
       }
 
+      /* 任务详情预览（「接取任务」先弹详情再决定接不接）。
+         同 `npc`：`api.view(panel)` 传不了「看哪个任务」，单开一条。 */
+      case 'quest': {
+        const qid = (json_body && (json_body.qid || json_body.id || json_body.name)) || null;
+        const quest = qid == null ? null : engine.questPreviewOf(qid);
+        if (!quest) return json(res, 404, { ok: false, error: '没有这个任务。' });
+        return json(res, 200, { ok: true, quest });
+      }
+
       /* --- 存读档 --- */
       case 'saves': return json(res, 200, { ok: true, saves: engine.listSaves() });
       case 'save': {

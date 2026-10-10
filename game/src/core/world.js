@@ -2614,7 +2614,7 @@ class World extends EventEmitter {
     p.mySect = null;    // 自建宗门（玩家私有，随档走，不进全局 data.sects）
     p.estate = { plots: [], sponsored: {} };   // 家园新地块 + 资助NPC建家
     /* 掳人 / 奴役 / 护院（麻袋里 + 奴 + 护院 + 欠薪 + 通缉 + 债务） */
-    p.kidnap = { bags: [], slaves: [], guards: [], wageDue: 0, wanted: 0, reports: 0, debt: null };
+    p.kidnap = { bags: [], slaves: [], guards: [], captives: [], wageDue: 0, wanted: 0, reports: 0, debt: null };
     p.followers = [];   // 跟随玩家的 NPC 实例 id（好感>60 才能邀）
     // 起始物品
     for (const it of (meta.startItems || [])) this.giveItem(p, it, 1);
@@ -2718,6 +2718,9 @@ class World extends EventEmitter {
           bags: (p.kidnap.bags || []).map(b => JSON.parse(JSON.stringify(b))),
           slaves: (p.kidnap.slaves || []).map(s => JSON.parse(JSON.stringify(s))),
           guards: (p.kidnap.guards || []).map(g => JSON.parse(JSON.stringify(g))),
+          /* 家园地牢里关着的人（同样存快照，放出时 reviveFromSnapshot）。
+             ⚠️ 漏了这一行 = 读档后地牢空了，而地块还建着。 */
+          captives: (p.kidnap.captives || []).map(c => JSON.parse(JSON.stringify(c))),
           wageDue: p.kidnap.wageDue || 0,
           wanted: p.kidnap.wanted || 0,
           reports: p.kidnap.reports || 0,
@@ -2942,11 +2945,12 @@ class World extends EventEmitter {
         bags: (sd.kidnap.bags || []).map(b => Object.assign({}, b)),
         slaves: (sd.kidnap.slaves || []).map(s => Object.assign({}, s)),
         guards: (sd.kidnap.guards || []).map(g => Object.assign({}, g)),
+        captives: (sd.kidnap.captives || []).map(c => Object.assign({}, c)),
         wageDue: sd.kidnap.wageDue || 0,
         wanted: sd.kidnap.wanted || 0,
         reports: sd.kidnap.reports || 0,
         debt: sd.kidnap.debt ? Object.assign({}, sd.kidnap.debt) : null,
-      } : { bags: [], slaves: [], guards: [], wageDue: 0, wanted: 0, reports: 0, debt: null },
+      } : { bags: [], slaves: [], guards: [], captives: [], wageDue: 0, wanted: 0, reports: 0, debt: null },
       followers: (sd.followers || []).slice(),
       visitedHouses: Object.assign({}, sd.visitedHouses || {}),
     });

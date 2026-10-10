@@ -624,6 +624,319 @@ function releaseBag(world, idx) {
 }
 
 /* ============================================================
+ * 四b、家园地牢（关押 / 提审 / 陪练 / 放出）
+ *
+ *  ⚠️ 为什么单开一节：`estate.js` 里的 `dungeon` 地块此前**只有定义、没有接线** ——
+ *     玩家花 3200 文 + 铁矿石 16 + 丝线 2 开出来的地牢，什么也做不了；
+ *     `captiveCap` / `tortureRate` / `sparExp` 三个字段全仓**没有任何地方读**
+ *     （典型「不报错就是不生效」）。这里把它们接上：
+ *       · captiveCap  同时能关几个人（每级 +1）
+ *       · tortureRate 提审时套出话的概率加成
+ *       · sparExp     陪练涨熟练度的倍率加成
+ *
+ *  数据：p.kidnap.captives = [ 麻袋快照 + { jailedAt, obedience, favor,
+ *        interrogated, intel[], lastSpar, hp } ]，随手存档走。
+ * ============================================================ */
+
+/** 地牢状态：有没有建成、几级、能关几个、在哪儿 */
+function dungeonOf(world) {
+  const p = world.player;
+  const est = p && p.estate;
+  if (!est) return { level: 0, cap: 0, tortureRate: 0, sparExp: 0, roomId: null, has: false };
+  /* 懒 require：estate → home，与 kidnap 无循环依赖，但要避免顶层互相 require */
+  const estateMod = require('./estate');
+  const level = estateMod.plotLevel(est, 'dungeon');
+  const rec = (est.plots || []).find(x => x.key === 'dungeon');
+  const eff = estateMod.estateEffects(world) || {};
+  return {
+    level,
+    cap: Math.max(0, Math.round(eff.captiveCap || 0)),
+    tortureRate: eff.tortureRate || 0,
+    sparExp: eff.sparExp || 0,
+    roomId: rec ? rec.roomId : null,
+    has: level > 0,
+  };
+}
+
+/** 地牢里关着的人（懒初始化成数组） */
+function captives(world) {
+  const k = data(world);
+  if (!k) return [];
+  if (!Array.isArray(k.captives)) k.captives = [];
+  return k.captives;
+}
+
+/** 按名字模糊找人（不传就取第一个） */
+function findCaptive(world, kw) {
+  const list = captives(world);
+  if (!kw) return list[0] || null;
+  return list.find(c => (c.name || '').includes(kw) || kw.includes(c.name || '')) || null;
+}
+
+/** 从麻袋押进地牢（关押） */
+function imprison(world, kw) {
+  const p = world.player;
+  const k = data(world);
+  if (!p || !k) return { ok: false, lines: [{ kind: 'warn', text: '你还没上路。' }] };
+  const dg = dungeonOf(world);
+  if (!dg.has) {
+    return {
+      ok: false,
+      lines: [
+        { kind: 'warn', text: '你还没有地牢。' },
+        { kind: 'hint', text: '回自家主院发「开垦 地牢」——需主院到「宅院」以上，3200 文 + 铁矿石 16、丝线 2。' },
+      ],
+    };
+  }
+  const cap = Math.max(1, dg.cap);
+  const list = captives(world);
+  if (list.length >= cap) {
+    return { ok: false, lines: [{ kind: 'warn', text: `地牢里已经关了 ${list.length} 个（上限 ${cap}）。再扩一级能多关一个。` }] };
+  }
+  if (!k.bags.length) {
+    return {
+      ok: false,
+      lines: [
+        { kind: 'warn', text: '你袋里没人。得先把人打晕装进麻袋，再扛回来关。' },
+        { kind: 'hint', text: '　（在打倒的人身上用「装人 <名字>」。）' },
+      ],
+    };
+  }
+  const i = kw ? k.bags.findIndex(b => (b.name || '').includes(kw) || kw.includes(b.name || '')) : 0;
+  if (i < 0) {
+    return {
+      ok: false,
+      lines: [
+        { kind: 'warn', text: `袋里没有叫「${kw}」的人。` },
+        { kind: 'hint', text: '袋里是：' + k.bags.map(b => b.name).join('、') },
+      ],
+    };
+  }
+  const b = k.bags.splice(i, 1)[0];
+  list.push(Object.assign({}, b, {
+    jailedAt: world.clockMinutes,
+    obedience: 15,
+    favor: Math.min(0, b.favor || 0),
+    interrogated: 0,
+    intel: [],
+    lastSpar: 0,
+  }));
+  /* 人进了牢房，扎袋的麻绳解开——袋子还给你（`giveItem` 在 world 上，不是 p 上） */
+  world.giveItem(p, SACK_ID, 1);
+  const lines = [
+    { kind: 'story', text: `你把${b.name}从袋里拖出来，推进地牢的栅门，落了锁。` },
+    { kind: 'sys', text: `　（地牢 ${list.length}/${cap}　麻袋收回来了）` },
+    { kind: 'hint', text: '　可对他「提审 <人名>」套话、「陪练 <人名>」拿他喂招、「放出 <人名>」放人。' },
+  ];
+  world.emit('kidnap', { kind: 'jail', name: b.name });
+  return { ok: true, lines };
+}
+
+/** 提审：逼问线索（tortureRate 越高越容易问出来；用刑有恶名风险） */
+function interrogate(world, kw) {
+  const p = world.player;
+  if (!p) return { ok: false, lines: [{ kind: 'warn', text: '你还没上路。' }] };
+  const dg = dungeonOf(world);
+  if (!dg.has) return { ok: false, lines: [{ kind: 'warn', text: '你还没有地牢。' }] };
+  const list = captives(world);
+  const c = findCaptive(world, kw);
+  if (!c) {
+    return { ok: false, lines: [{ kind: 'warn', text: list.length ? `地牢里没有叫「${kw}」的人。` : '牢里空着，提审谁？' }] };
+  }
+
+  const lines = [];
+  const m = world.clockMinutes % 1440;
+  const isNight = m >= NIGHT_FROM || m < NIGHT_TO;
+  /* 夜里审更熬得住人（囚犯困），所以成功率略高 */
+  const rate = clamp(0.4 + (dg.tortureRate || 0) + (isNight ? 0.15 : 0), 0.05, 0.95);
+  p.advanceTime(20);
+  p.stamina = clamp((p.stamina || 100) - 10, 0, p.maxStamina || 100);
+  c.interrogated = (c.interrogated || 0) + 1;
+  /* 每多审一次，嘴越紧 */
+  const stubborn = Math.max(0.4, 1 - c.interrogated * 0.12);
+
+  lines.push({ kind: 'story', text: `你把${c.name}从牢里提出来，逼问起来。` });
+
+  if (world.rng.next() >= rate * stubborn) {
+    c.obedience = clamp((c.obedience || 0) - 5, 0, 100);
+    c.favor = clamp((c.favor || 0) - 10, -200, 200);
+    lines.push({ kind: 'warn', text: `　${c.name}咬紧牙关，一个字也不肯说。` });
+    if (!dg.tortureRate) lines.push({ kind: 'hint', text: '　（地牢修得越深，套话越容易——升级「地牢」试试。）' });
+    return { ok: true, lines };
+  }
+
+  /* 套出东西：一律按**显式字段**分派（他真有什么说什么，不猜） */
+  const def = world.data.npcs[c.defId] || {};
+  c.obedience = clamp((c.obedience || 0) - 15, 0, 100);
+  c.favor = clamp((c.favor || 0) - 25, -200, 200);
+  const done = c.intel || (c.intel = []);
+  const cands = [];
+
+  /* ① 他手里牵着的事（quests / sidequest） */
+  const qids = [];
+  if (Array.isArray(def.quests)) for (const q of def.quests) qids.push(q);
+  if (def.sidequest) qids.push(def.sidequest);
+  for (const q of qids) {
+    if (done.indexOf('quest:' + q) >= 0) continue;
+    const qd = world.getQuest(q);
+    if (!qd) continue;
+    const tip = String((qd.stages && qd.stages[0] && qd.stages[0].desc) || qd.desc || '').slice(0, 40);
+    cands.push({ key: 'quest:' + q, text: `【线索】他熬不住，抖出一桩事：「${qd.name}」——${tip}` });
+  }
+  /* ② 他认识的人（rel：仇 / 友 / 亲）——286 个 NPC 都有 */
+  for (const r of (def.rel || [])) {
+    if (!r || !r.id) continue;
+    const key = 'rel:' + r.kind + ':' + r.id;
+    if (done.indexOf(key) >= 0) continue;
+    const other = world.data.npcs[r.id];
+    if (!other || !other.name) continue;
+    const kindCN = { 仇: '仇家', 友: '故交', 亲: '亲眷' }[r.kind] || '旧识';
+    const word = r.kind === '仇' ? '咬牙切齿' : (r.kind === '亲' ? '声音发颤' : '神色一黯');
+    cands.push({ key, text: `【线索】他${word}，说出一个名字：${other.name}——「这是我的${kindCN}。」` });
+  }
+  /* ③ 师承 / 门派 */
+  if (def.sect && done.indexOf('sect') < 0) {
+    const s = world.data.sects && world.data.sects[def.sect];
+    cands.push({ key: 'sect', text: `【线索】他招了出身：${(s && s.name) || def.sect}门下。` });
+  }
+  /* ④ 最后总能榨出点私房钱 */
+  if (done.indexOf('money') < 0) cands.push({ key: 'money', text: '__MONEY__' });
+
+  const pick = cands.find(x => done.indexOf(x.key) < 0);
+  if (!pick) {
+    lines.push({ kind: 'plain', text: `　${c.name}把知道的都倒干净了，再问也只有这几句。` });
+    return { ok: true, lines };
+  }
+  done.push(pick.key);
+  if (pick.text === '__MONEY__') {
+    const loot = world.rng.int(50, 400) + 20 * Math.floor(martialPower(p) / 120);
+    p.money += loot;
+    lines.push({ kind: 'sys', text: `　他扛不住，说出了私藏银钱的地方——你摸出 ${loot} 文。` });
+  } else {
+    lines.push({ kind: 'sys', text: '　' + pick.text });
+  }
+  /* 私刑的代价：牢里的动静可能惊动街坊 */
+  const k = data(world);
+  if (k && world.rng.chance(0.25)) {
+    k.wanted += 1;
+    p.wanted = (p.wanted || 0) + 1;
+    if (p.reputation) p.reputation['恶名'] = (p.reputation['恶名'] || 0) + 1;
+    lines.push({ kind: 'warn', text: '　（牢里的动静传了出去，你的恶名 +1。）' });
+  }
+  return { ok: true, lines };
+}
+
+/** 陪练：拿他当活靶子喂招（sparExp 越高长得越快；但他会伤、会恨你） */
+function sparWith(world, kw) {
+  const p = world.player;
+  if (!p) return { ok: false, lines: [{ kind: 'warn', text: '你还没上路。' }] };
+  const dg = dungeonOf(world);
+  if (!dg.has) return { ok: false, lines: [{ kind: 'warn', text: '你还没有地牢。' }] };
+  const list = captives(world);
+  const c = findCaptive(world, kw);
+  if (!c) {
+    return { ok: false, lines: [{ kind: 'warn', text: list.length ? `地牢里没有叫「${kw}」的人。` : '牢里空着，跟谁练？' }] };
+  }
+  const ids = Object.keys(p.learned || {});
+  if (!ids.length) return { ok: false, lines: [{ kind: 'warn', text: '你还没学过任何武学，练不出什么。' }] };
+  /* 优先挑装备槽上的武学（那才是你真正在用的） */
+  const slotIds = ids.filter(id => (p.equippedSkills || {})[id]);
+  const pool = slotIds.length ? slotIds : ids;
+  const sid = pool[Math.floor(world.rng.next() * pool.length)];
+  const sd = world.getSkill(sid) || { name: sid };
+  const lv = (p.learned[sid] && p.learned[sid].level) || 0;
+
+  /* 他越不服 / 越恨你，越不肯好好喂招（配合度 0.3~1） */
+  const bond = clamp(((c.obedience || 0) + (c.favor || 0) + 120) / 220, 0.3, 1);
+  const mul = (0.25 + (dg.sparExp || 0)) * bond;
+
+  p.advanceTime(45);
+  p.stamina = clamp((p.stamina || 100) - 30, 0, p.maxStamina || 100);
+  p.hp = clamp(p.hp - Math.floor(p.maxHp * 0.05), 1, p.maxHp);
+
+  const gain = Math.max(1, Math.floor(p.skillExpNeed(lv) * mul));
+  const g = p.gainSkillExp(sid, gain);
+  const lines = [
+    { kind: 'story', text: `你把${c.name}押出来，解开一只手，让他给你喂招。` },
+    { kind: 'sys', text: `　${sd.name}：${g.msg}（陪练共得 ${gain} 点）` },
+  ];
+  c.hp = Math.max(1, Math.round((c.hp || 1) * 0.88));
+  c.obedience = clamp((c.obedience || 0) - 6, 0, 100);
+  c.favor = clamp((c.favor || 0) - 12, -200, 200);
+  c.lastSpar = world.clockMinutes;
+  if ((c.hp || 1) < (c.maxHp || 10) * 0.25) {
+    lines.push({ kind: 'warn', text: `　${c.name}已经不成人形了——再练下去要出人命。` });
+  }
+  if ((c.favor || 0) <= -80) {
+    lines.push({ kind: 'hint', text: `　（${c.name}恨极了你。这种人关着，早晚要出事。）` });
+  }
+  return { ok: true, lines };
+}
+
+/** 放出：开锁放人（手段用得多的人，出来会记恨你） */
+function freeCaptive(world, kw) {
+  const p = world.player;
+  if (!p) return { ok: false, lines: [{ kind: 'warn', text: '你还没上路。' }] };
+  const dg = dungeonOf(world);
+  if (!dg.has) return { ok: false, lines: [{ kind: 'warn', text: '你还没有地牢。' }] };
+  const list = captives(world);
+  const c = findCaptive(world, kw);
+  if (!c) {
+    return { ok: false, lines: [{ kind: 'warn', text: list.length ? `地牢里没有叫「${kw}」的人。` : '牢里空着，放谁？' }] };
+  }
+  const npc = reviveFromSnapshot(world, c, dg.roomId || p.room);
+  if (!npc) return { ok: false, lines: [{ kind: 'warn', text: '这人已经找不回来了（模板丢失）。' }] };
+  list.splice(list.indexOf(c), 1);
+  npc.hp = clamp(Math.round(c.hp || 1), 1, npc.maxHp || 1);
+  if (npc.recalc) npc.recalc();
+
+  const lines = [{ kind: 'story', text: `你把${c.name}从地牢里放了出来。他扶着墙站了半晌，才慢慢走远。` }];
+  const wronged = (c.interrogated || 0) > 0 || (c.favor || 0) < -30;
+  npc.favor = clamp((npc.favor || 0) + (wronged ? -70 : 30), -200, 200);
+  if (wronged) {
+    lines.push({ kind: 'sys', text: '　（他记恨你。放他走，多半是放虎归山。）' });
+    if (world.rng.chance(0.5)) {
+      npc.hostile = true;
+      world.startCombat(p, npc);
+      lines.push({ kind: 'warn', text: `　${c.name}一出门就红了眼，扭头扑上来！` });
+      return { ok: true, battle: true, lines, npc };
+    }
+  } else {
+    lines.push({ kind: 'sys', text: '　（你终究没难为他，他记你一恩。）' });
+  }
+  return { ok: true, lines, npc };
+}
+
+/** 地牢巡视：人不在家时，关久了又恨你的犯人会试着撬锁 */
+function checkCaptiveEscape(world, minutes) {
+  const p = world.player;
+  const list = captives(world);
+  if (!p || !list.length) return [];
+  const dg = dungeonOf(world);
+  if (!dg.has) return [];
+  /* 你人在主院或牢门口，谁也跑不了 */
+  const onGuard = (p.home && p.room === p.home) || (dg.roomId && p.room === dg.roomId);
+  if (onGuard) return [];
+  const lines = [];
+  for (let i = list.length - 1; i >= 0; i--) {
+    const c = list[i];
+    const hate = Math.max(0, -(c.favor || 0)) / 100;      /* 越恨越想跑 */
+    const rate = (0.01 + hate * 0.04) / Math.max(1, dg.level);
+    if (!world.rng.chance(rate / 30 * Math.max(1, minutes / 30))) continue;
+    list.splice(i, 1);
+    const npc = reviveFromSnapshot(world, c, world.nearestEatery(p.room) || p.room);
+    if (npc) { npc.favor = -60; npc.vars = npc.vars || {}; npc.vars.escapedFrom = p.name; }
+    lines.push({ kind: 'warn', text: `【越狱】${c.name}不知用什么撬开了铁栅，趁你不在家跑了。` });
+    if (world.rng.chance(0.4)) {
+      const k = data(world);
+      if (k) { k.wanted += 1; p.wanted = (p.wanted || 0) + 1; }
+      lines.push({ kind: 'warn', text: '　（他径直去了衙门——你的恶名 +1。）' });
+    }
+  }
+  return lines;
+}
+
+/* ============================================================
  * 五、时间推进：醒来 / 冲出麻袋 / 讨论 / 工资 / 工钱
  * ============================================================ */
 
@@ -732,6 +1045,9 @@ function onTimeTick(world, minutes) {
 
   /* ---- ⑤ 护院盯着的时候，奴隶不敢跑 ---- */
   lines.push(...checkEscape(world, minutes));
+
+  /* ---- ⑥ 地牢：人不在家时，恨你的犯人会撬锁 ---- */
+  lines.push(...checkCaptiveEscape(world, minutes));
 
   return { lines };
 }
@@ -980,6 +1296,7 @@ function sellNpc(world, kw) {
 
   /* 优先找麻袋里的 */
   let fromBag = false;
+  let fromJail = false;
   let rec = null;
   if (k.bags.length) {
     const i = kw ? k.bags.findIndex(b => (b.name || '').includes(kw)) : 0;
@@ -988,12 +1305,17 @@ function sellNpc(world, kw) {
   if (!rec && k.slaves.length) {
     rec = kw ? k.slaves.find(s => (s.name || '').includes(kw)) : k.slaves[0];
   }
+  /* 地牢里的也能卖（关着也是资产：卖到黑市/青楼一样出手） */
+  if (!rec && captives(world).length) {
+    const j = kw ? captives(world).find(s => (s.name || '').includes(kw)) : captives(world)[0];
+    if (j) { rec = j; fromJail = true; }
+  }
   if (!rec) {
     return {
       ok: false,
       lines: [
         { kind: 'warn', text: '你没有可卖的人。' },
-        { kind: 'hint', text: '　（能卖的是：麻袋里装着的，或名下买来的奴。）' },
+        { kind: 'hint', text: '　（能卖的是：麻袋里装着的、名下买来的奴、或地牢里关着的。）' },
       ],
     };
   }
@@ -1021,6 +1343,7 @@ function sellNpc(world, kw) {
 
   /* 摘掉 */
   if (fromBag) k.bags.splice(k.bags.indexOf(rec), 1);
+  else if (fromJail) { const jl = captives(world); jl.splice(jl.indexOf(rec), 1); }
   else k.slaves.splice(k.slaves.indexOf(rec), 1);
 
   p.money += price;
@@ -1527,6 +1850,8 @@ module.exports = {
   packNpc, listBags, releaseBag, onTimeTick, wakeRate, wakeUp,
   hireGuard, settleWages, payWages, supervise,
   buySlave, sellNpc, redeemPerson, assignTask, settleTasks, checkEscape,
+  /* 家园地牢（关押 / 提审 / 陪练 / 放出） */
+  dungeonOf, captives, findCaptive, imprison, interrogate, sparWith, freeCaptive, checkCaptiveEscape,
   inviteFollow, tickFollowers,
   /* NPC 反向 */
   npcPack, tickDesperate, playerCaptured, redeemSelf, workOffDebt, escapeMarket,

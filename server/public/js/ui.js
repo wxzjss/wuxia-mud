@@ -382,12 +382,14 @@
       label: a.label || a.cmd,
       hint: a.hint || '',
       cmd: a.cmd,
-      /* ⚠️ `act` / `uid` 必须原样传给回调（choices 会把整个 it 透传）——
+      /* ⚠️ `act` / `uid` / `qid` 必须原样传给回调（choices 会把整个 it 透传）——
          后端给的第一项是 `{act:'profile', uid:实例id}`：**开详情面板**。
          这里若只认 cmd，就会退回 `look <名字>` 那段文本流，
-         也就是主人报的「点了看看却不弹面板」。 */
+         也就是主人报的「点了看看却不弹面板」。
+         `qid` 是「接取任务」要的：前端靠它去拉任务详情。 */
       act: a.act,
       uid: a.uid,
+      qid: a.qid,
     })), it => runInteractAct(it, name));
   }
 
@@ -398,6 +400,12 @@
       /* 优先用后端给的**实例 id**（一对一）；没有 id 才退回名字。
          退回名字时后端也能按名字找 —— 但重名的人多，尽量别走到那一步。 */
       openNpcProfile({ id: a.uid || a.cmd && a.cmd.replace(/^\S+\s+/, ''), name: fallbackName });
+      return;
+    }
+    /* ★ 主人第四轮：点「接取任务」要**先弹任务详情**，玩家看过再决定接不接 ——
+       而不是一点就把任务塞进任务栏。 */
+    if (a.act === 'acceptquest') {
+      openQuestPreview(a.qid, a.cmd);
       return;
     }
     if (a.cmd) doCmd(a.cmd, { fromButton: true });
@@ -605,6 +613,15 @@
     /* 婚配入口：同性只给「结缘」，异性给「提亲 + 结缘」 */
     const marryHint = sameGender ? null : { label: '提亲议婚 (propose)', action: 'propose' };
 
+    /* 「绑架」的三种状态（与后端 hl 动作表同一套口径）：
+         ready —— 他晕着 + 身上有袋 + 袋没满 → 点了直接装走；
+         其余 → 给**明确指引**（打晕他 / 去买袋 / 先安置袋里的人），
+                而不是把入口藏起来（「互动少」的病根就是把能点的都藏了）。 */
+    const kd = (S.view && S.view.kidnap) || {};
+    const kdHasSack = !!kd.hasSack;
+    const kdFull = (kd.bags || []).length >= 3;
+    const kdReady = !!n.knockedOut && kdHasSack && !kdFull;
+
     choices(n.name + (n.title ? ' · ' + n.title : ''), [
       /* ⚠️ 第一项从「查看 (look)」换成「细看此人」——
          主人要的是「点这个按钮弹出一个**新界面**，显示这个人各方面的详细信息，
@@ -629,17 +646,37 @@
       n.kinLabel ? { label: '割袍断义 (sever)', action: 'sever', hint: '断后会掉好感' } : null,
       /* ---- 风险 ---- */
       n.canSteal ? { label: '伺机偷窃 (steal)', action: 'steal', hint: '失手会被通缉' } : null,
-      /* ---- 掳人（主人加的玩法：只对**打倒的**人露出来）----
-         条件从 v.kidnap 读：你得有袋子 + 对方已经晕了。
-         ⚠️ 不给「强掳站着的人」留入口 —— 那是绑架玩法之外的东西，且游戏里
-            装袋模块本来就拒绝没晕倒的人，前端给了按钮也只会吃一发警告。 */
-      canKidnap(n) ? { label: '装进麻袋 (pack)', action: 'pack', hint: '当众下手必被告发' } : null,
+      /* ★ 主人第四轮点名：「其他比如偷袭结缘之类的功能呢？」——
+         「结缘」本来就有（绑/纳妾/结拜那一组），缺的是**偷袭**。
+         与「动手厮杀」的区别写在 hint 里：偷袭是先手重击，但会结仇被告发。 */
+      (!n.knockedOut) ? { label: '伺机偷袭 (ambush)', action: 'ambush', hint: '先手重击，但会结仇，多半被告发' } : null,
+      /* ★ 主人第四轮加的入口：「绑架」（原来是「装进麻袋」，且**只有对方晕了才显示** ——
+         玩家根本不知道有这条路，更不知道得先打晕。现在统一成一个「绑架」按钮，点了按状态分流）：
+           · 他已经晕着 + 有袋 + 袋没满 → 直接装袋带走；
+           · 他站得好好的 → **先打**（真进战斗），打完晕了再回来点，就能装。
+         没带麻袋也**照给**（点了给明确指引「得有条粗麻袋，杂货铺有卖」）——
+         把入口藏起来才是「互动少」的病根。 */
+      { label: '绑架 (kidnap)', action: 'kidnap',
+        hint: kdReady ? '装进麻袋带走'
+          : (n.knockedOut
+            ? (kdHasSack ? '麻袋满了，先安置一下' : '得先有条粗麻袋（杂货铺有卖）')
+            : '打晕他，再装袋') },
       canKidnap(n) ? { label: '卖了他 (sellnpc)', action: 'sellnpc', hint: '知情转卖，重罪' } : null,
       (!n.following && (n.favor || 0) > 60) ? { label: '邀他跟随 (follow)', action: 'follow', hint: '他会跟着，但也有自己的事要办' } : null,
       { label: '动手厮杀 (kill)', action: 'kill', hint: '可能致死，谨慎' }
     ].filter(Boolean), it => {
       const BTN = { fromButton: true };
       if (it.action === 'profile') openNpcProfile(n);
+      /** 「绑架」：晕着就直接装，站着就先打（主人要的统一入口） */
+      else if (it.action === 'kidnap') {
+        if (n.knockedOut) {
+          if (kdReady) doCmd('装人 ' + n.name, BTN);
+          else toast(kdHasSack ? '麻袋满了，先把里头的人安置好。' : '要把人扛走，得先有条粗麻袋（杂货铺有卖）。', 'warn', 2000);
+        } else {
+          toast('先把他打晕，再回来装袋。', 'warn', 1600);
+          doCmd('kill ' + n.name, BTN);
+        }
+      }
       else if (it.action === 'look') doCmd('look ' + n.name, BTN);
       else if (it.action === 'pack') doCmd('装人 ' + n.name, BTN);
       else if (it.action === 'sellnpc') doCmd('卖人 ' + n.name, BTN);
@@ -658,8 +695,60 @@
       else if (it.action === 'swear') doCmd('结拜 ' + n.name, BTN);
       else if (it.action === 'sever') doCmd('断义 ' + n.name, BTN);
       else if (it.action === 'steal') stealNpc(n);
+      else if (it.action === 'ambush') doCmd('偷袭 ' + n.name, BTN);
       else if (it.action === 'kill') doCmd('kill ' + n.name, BTN);
     }, head);
+  }
+
+  /* ============================================================
+   *  任务详情预览（主人第四轮：「接取任务」先弹详情，再决定接不接）
+   *
+   *  数据来自 `api.questPreview(qid)`（后端 `engine.questPreviewOf`）。
+   *  底部两个按钮：接下这桩事 / 再说吧 —— **默认不接**，看清楚了再点。
+   *  拉不到详情时退回旧行为（直接接），不让玩家卡在「点了没反应」。
+   * ============================================================ */
+  function questPreviewHtml(q) {
+    if (!q) return '<div class="modal-text">（打听不到这桩事。）</div>';
+    let h = '';
+    const tags = [];
+    if (q.type) tags.push(esc(q.type));
+    if (q.level) tags.push('推荐修为 ' + q.level);
+    if (q.giver) tags.push('委托人 ' + esc(q.giver));
+    if (tags.length) h += '<div class="q-prev-tags">' + tags.join(' · ') + '</div>';
+    if (q.desc) h += '<div class="q-prev-desc">' + esc(q.desc) + '</div>';
+    if (q.stageDesc) h += '<div class="q-prev-line"><b>第一步</b>　' + esc(q.stageDesc) + '</div>';
+    if (q.targets && q.targets.length) {
+      h += '<div class="q-prev-line"><b>要办的事</b><ul class="q-prev-ul">' +
+        q.targets.map(t => '<li>' + esc(t.desc) + '　<span class="q-prev-n">0/' + (t.count || 1) + '</span></li>').join('') +
+        '</ul></div>';
+    }
+    if (q.rewards && q.rewards.length) {
+      h += '<div class="q-prev-line"><b>办成了给</b>　' + esc(q.rewards.join('　')) + '</div>';
+    }
+    if (q.requireText) h += '<div class="q-prev-line q-prev-req"><b>门槛</b>　' + esc(q.requireText) + '</div>';
+    if (q.acceptable === false) h += '<div class="q-prev-line q-prev-warn">这桩事已经在你身上了。</div>';
+    return h;
+  }
+
+  async function openQuestPreview(qid, fallbackCmd) {
+    if (!qid) { if (fallbackCmd) doCmd(fallbackCmd, { fromButton: true }); return; }
+    let q = null, failed = false;
+    try { const d = await api.questPreview(qid); q = (d && d.quest) || null; }
+    catch (e) { failed = true; }
+    if (!q) {
+      toast(failed ? '一时打听不到这桩事的底细。' : '打听不到这桩事。', 'warn');
+      if (fallbackCmd) doCmd(fallbackCmd, { fromButton: true });
+      return;
+    }
+    const canTake = q.acceptable !== false;
+    modal('任务 · ' + q.name, questPreviewHtml(q),
+      '<button class="btn-ink" id="qp-no">再说吧</button>' +
+      (canTake
+        ? '<button class="btn-ink primary" id="qp-yes">接下这桩事</button>'
+        : '<button class="btn-ink" id="qp-yes" disabled>已在你身上</button>'));
+    const no = $('qp-no'), yes = $('qp-yes');
+    if (no) no.onclick = () => closeModal();
+    if (yes && canTake) yes.onclick = () => { closeModal(); doCmd('accept ' + q.name, { fromButton: true }); };
   }
 
   /* ============================================================
@@ -997,6 +1086,22 @@
         '</div>';
     }
     h += '<input id="ask-input" class="modal-input" placeholder="或自己写想问的（回车）">';
+
+    /* ---- 他认识的人（主人第四轮）----
+       「弹出一个页面上面有 NPC 认识的人名字，点击这些名字按钮 NPC 会说关于
+        它们的事（根据 NPC 背景画像来）」。
+       名单来自**后端** `n.askPeople`（engine.askPeopleOf → commands.npcKnownPeople），
+       前端不自己从画像里拼名单 —— 两边共用一份，点了才一定答得上。 */
+    const people = (n && n.askPeople) || [];
+    if (people.length) {
+      h += '<div class="ask-sub">他认识的人' +
+        '<span class="ask-sub-hint">（点一个，说说这人）</span></div>' +
+        '<div class="ask-topics">' + people.map(pp =>
+          '<button class="mini-tag who" data-who="' + esc(pp.name) + '">' +
+          esc(pp.name) + '<sup>' + esc(pp.rel || '熟人') + '</sup></button>').join('') +
+        '</div>';
+    }
+
     modal('询问 ' + n.name, h, '<button class="btn-ink" onclick="WXUI.closeModal()">取 消</button>');
     const inp = $('ask-input');
     if (inp) {
@@ -1005,8 +1110,17 @@
         if (e.key === 'Enter') { const v = inp.value.trim(); closeModal(); if (v) doCmd('ask ' + n.name + ' about ' + v); }
       };
     }
-    document.querySelectorAll('.ask-topics .mini-tag').forEach(b => {
-      b.onclick = () => { const v = b.getAttribute('data-topic'); closeModal(); doCmd('ask ' + n.name + ' about ' + v, { fromButton: true }); };
+    /* ⚠️ 选择器带 `#modal-body` 前缀（不是裸 `.ask-topics .mini-tag`）：
+       ① 真浏览器里也更稳 —— 别的标签页/面板若也有 `.mini-tag` 就不会被误绑；
+       ② 测试的 DOM stub 只认 `#id …` 形式，裸后代选择器它抠不到元素
+          → onclick 绑不上 → 测试误报「点了没反应」。 */
+    document.querySelectorAll('#modal-body .mini-tag').forEach(b => {
+      b.onclick = () => {
+        const who = b.getAttribute('data-who');
+        const v = who || b.getAttribute('data-topic');
+        closeModal();
+        if (v) doCmd('ask ' + n.name + ' about ' + v, { fromButton: true });
+      };
     });
   }
 
@@ -1632,6 +1746,36 @@
       h += '<div class="row-ops"><button class="op-btn" data-cmd="发工钱">结清工钱</button></div>';
     }
 
+    /* ---- 家园地牢（关押 / 提审 / 陪练 / 放出）----
+       ⚠️ 只有开出了地牢（v.kidnap.dungeon.has）才渲染这一栏 ——
+         没地牢的人不该看见一栏空牢房，也不该看见一堆点了会说「你还没有地牢」的按钮。 */
+    const dg = v.kidnap && v.kidnap.dungeon;
+    if (dg && dg.has) {
+      h += '<div class="panel-sub">地牢 · ' + dg.level + ' 级（' + (dg.captives || []).length + '/' + dg.cap + '）</div>';
+      if (!(dg.captives || []).length) {
+        h += '<div class="modal-text">牢里空着。打倒的人装进麻袋扛回来，用「关押 &lt;人名&gt;」押进去。</div>';
+      } else {
+        h += '<div class="kv-list">';
+        (dg.captives || []).forEach(c => {
+          h += '<div class="kv"><span class="k">' + esc(c.name || '') + '</span><span class="v">' +
+            '服从 ' + (c.obedience || 0) + '　好感 ' + (c.favor || 0) +
+            '　气血 ' + (c.hpRatio || 0) + '%' +
+            (c.interrogated ? '　已审 ' + c.interrogated + ' 次' : '') +
+            (c.days ? '　关了 ' + c.days + ' 天' : '') + '</span></div>';
+        });
+        h += '</div>';
+        h += '<div class="row-ops">' +
+          (dg.captives || []).map(c => '<button class="op-btn" data-cmd="提审 ' + esc(c.name || '') + '">提审 ' + esc(c.name || '') + '</button>').join('') +
+          (dg.captives || []).map(c => '<button class="op-btn" data-cmd="陪练 ' + esc(c.name || '') + '">陪练 ' + esc(c.name || '') + '</button>').join('') +
+          '</div>';
+        h += '<div class="row-ops">' +
+          (dg.captives || []).map(c => '<button class="op-btn" data-cmd="放出 ' + esc(c.name || '') + '">放出 ' + esc(c.name || '') + '</button>').join('') +
+          (dg.captives || []).map(c => '<button class="op-btn" data-cmd="卖人 ' + esc(c.name || '') + '">卖 ' + esc(c.name || '') + '</button>').join('') +
+          '</div>';
+      }
+      h += '<div class="panel-note">牢里没人看着的时候，恨你的人会撬锁跑掉——要么常回家，要么赶紧出手。</div>';
+    }
+
     /* ---- 黑市在售 ---- */
     if (k.inBlackMarket) {
       h += '<div class="panel-sub">黑市在售</div>';
@@ -1645,11 +1789,31 @@
         });
         h += '</div><div class="row-ops">' +
           (k.marketStock || []).map(m => '<button class="op-btn" data-cmd="买奴 ' + esc(m.name || '') + '">买 ' + esc(m.name || '') + '</button>').join('') +
+          (k.marketStock || []).map(m => '<button class="op-btn" data-cmd="赎回 ' + esc(m.name || '') + '">赎 ' + esc(m.name || '') + '</button>').join('') +
           '</div>';
       }
     } else if (k.inBrothel) {
-      h += '<div class="panel-sub">你在青楼</div><div class="row-ops">' +
-        '<button class="op-btn" data-cmd="赎回">看赎人名册</button></div>';
+      /* ★ 主人第四轮：「青楼没有『赎人』按钮」。
+         原来青楼这一栏只给一个「看赎人名册」——点了只是往日志打一份名单，
+         想要赎人得自己手打「赎回 <人名>」，**入口等于没有**。
+         现在把楼里挂赎身牌子的人直接列出来，一人一个「赎」按钮。 */
+      h += '<div class="panel-sub">青楼待赎</div>';
+      const inHouse = (k.marketStock || []).filter(m => m.to === 'brothel');
+      if (!inHouse.length) {
+        h += '<div class="modal-text">楼里眼下没有挂着赎身牌子的人。' +
+          '（被打晕掳走、转卖到这儿的人，才会出现在名册上。）</div>';
+      } else {
+        h += '<div class="kv-list">';
+        inHouse.forEach(m => {
+          h += '<div class="kv"><span class="k">' + esc(m.name || '') + '</span><span class="v">' +
+            '赎身 ' + ((m.price || 0) * 2) + ' 文' +
+            (m.keeper ? '　（在' + esc(m.keeper) + '手里）' : '') + '</span></div>';
+        });
+        h += '</div><div class="row-ops">' +
+          inHouse.map(m => '<button class="op-btn" data-cmd="赎回 ' + esc(m.name || '') + '">赎出 ' + esc(m.name || '') + '</button>').join('') +
+          '</div>';
+      }
+      h += '<div class="row-ops"><button class="op-btn" data-cmd="赎回">看赎人名册</button></div>';
     }
 
     /* ---- 跟随的人 ---- */
@@ -1935,57 +2099,59 @@
     h += '<div class="map-grid-bg" style="width:' + (b.w * MAP_CELL) + 'px;height:' + (b.h * MAP_CELL) + 'px;' +
       'left:' + MAP_PAD + 'px;top:' + MAP_PAD + 'px;background-size:' + MAP_CELL + 'px ' + MAP_CELL + 'px"></div>';
 
-    /* 2) 区域底色块（铺满区域包围盒）—— region 模式只画当前区域 */
+    /* 2) 区域底色块 —— ★ 只画**真实房间占的那块**（主人第四轮：
+       「没有真实地块的那些地图上的背景方块在地图上删了」）。
+       后端给的 `w/h` 是被 terrain/minW 撑过的框（面积不够时用旷野山林填出来的），
+       比真实房间那一团大得多，所以世界地图上到处是一块块**空底色方块**，像没铺完的砖。
+       `roomW/roomH` 才是房间实际占的尺寸（且房间就贴着框的左上角铺），
+       换过来底色块就只框住有地块的地方。 */
     const boxes2 = scopeBox ? { [curRegion]: scopeBox } : boxes;
     Object.keys(boxes2).forEach(k => {
       const box = boxes[k];
+      const bw0 = box.roomW || box.w;
+      const bh0 = box.roomH || box.h;
       const left = (box.x - b.minX) * MAP_CELL + MAP_PAD;
       const top = (box.y - b.minY) * MAP_CELL + MAP_PAD;
-      const bw = box.w * MAP_CELL;
-      const bh = box.h * MAP_CELL;
+      const bw = bw0 * MAP_CELL;
+      const bh = bh0 * MAP_CELL;
       h += '<div class="map-region-box" style="left:' + left + 'px;top:' + top + 'px;' +
         'width:' + bw + 'px;height:' + bh + 'px;background:' + esc(box.color) + '14;border-color:' + esc(box.color) + '44">' +
         '<span class="mrb-label" style="color:' + esc(box.color) + ';font-size:' + (NARROW ? 15 : 11) + 'px">' + esc(box.name) + '</span></div>';
     });
 
-    /* 3) 地形装饰（树石山水…）
-       注意：后端 maplayout 已把区域内相对坐标翻译成全局布局坐标，
-       这里和 rooms 用同一套 cx()/cy() 换算，**不要再减 box.x/box.y**。
-       层级放在区域底色之后、走廊之前，才会被房间格与走廊压住。 */
-    const TERRAIN_GLYPH = {
-      tree: '♣', rock: '▲', grass: '⁛', water: '≈', sand: '·',
-      snow: '❄', road: '▬', wall: '▓', farm: '⌗', cloud: '☁',
-    };
-    const TERRAIN_CLS = {
-      tree: 'tr-tree', rock: 'tr-rock', grass: 'tr-grass', water: 'tr-water',
-      sand: 'tr-sand', snow: 'tr-snow', road: 'tr-road', wall: 'tr-wall',
-      farm: 'tr-farm', cloud: 'tr-cloud',
-    };
-    const terrain = m.terrain || {};
-    const terrRegions = (sc === 'region' && curRegion) ? [curRegion] : Object.keys(terrain);
-    let terrainHtml = '';
-    terrRegions.forEach(rid => {
-      (terrain[rid] || []).forEach(t => {
-        const gx = cx({ x: t.x });
-        const gy = cy({ y: t.y });
-        terrainHtml += '<i class="map-terrain ' + (TERRAIN_CLS[t.type] || 'tr-grass') +
-          '" style="left:' + gx + 'px;top:' + gy + 'px;width:' + MAP_CELL + 'px;height:' + MAP_CELL + 'px;' +
-          'line-height:' + MAP_CELL + 'px;font-size:' + (NARROW ? 24 : 15) + 'px" title="' + esc(t.type) + '">' +
-          (TERRAIN_GLYPH[t.type] || '⁛') + '</i>';
-      });
-    });
-    h += '<div class="map-terrain-layer">' + terrainHtml + '</div>';
+    /* 3) 地形装饰（树石山水…）——★ 主人第四轮要求**删掉**：
+       「把地图界面树木水流之类的图标删了」。
+       原来每个 terrain 格子画一个 ♣/≈/❄ 之类的符号，看着像贴纸，
+       而且它们本来只是「区域面积不够时撑框用的填充」，不是真的地块。
+       数据里还留着（`50_map.json` 的 terrain、`maplayout` 的 tOut 都不动），
+       只是前端**不再画**—— 以后想做成底纹/换成正视图随时能开回来。 */
 
-    /* 4) 走廊：一条 path 画完所有连通线（相邻房间连成一片） */
-    const posOf = {};
-    rooms.forEach(r => { posOf[r.id] = r; });
+    /* 4) 走廊：一条 path 画完所有连通线（相邻房间连成一片）
+       ★ 跨区域也要连（主人第四轮：「世界地图应该是类似于区域地图那样显示地块与地块
+       之间的连接，从一个区域到另一个区域之间的地块之间却没有做出连接」）。
+       老写法是 `rooms.find(x => x.x === r.x + dx && x.y === r.y + dy)` ——
+       **只在当前渲染的集合里找邻居**。世界地图模式下虽然 rooms 几乎是全图，
+       但区域装箱（packRegions）会把各区域推开、中间留空，
+       而 region 模式下 rooms 只有当前区域 → 跨区域那条连线永远找不到对方、画不出。
+       现在改成用 `m.cells`（**全图坐标表**，mapView 已经给了）建一张「坐标 → 房间」反查表：
+       邻居只要坐标对得上就连，区域边界照连不误；另一端不在本次渲染集合里就跳过
+       （画出去也没有意义）。 */
+    const allCells = m.cells || {};
+    const xyKey = (x, y) => x + ',' + y;
+    const idByXY = {};
+    for (const cid of Object.keys(allCells)) {
+      idByXY[xyKey(allCells[cid].x, allCells[cid].y)] = cid;
+    }
+    const shown = {};
+    rooms.forEach(r => { shown[r.id] = r; });
     let paths = '';
     let pathsKnown = '';
     rooms.forEach(r => {
       (r.exits || []).forEach(dir => {
         const d = DIR_OFF[dir];
         if (!d) return;
-        const nb = rooms.find(x => x.x === r.x + d[0] && x.y === r.y + d[1]);
+        const nid = idByXY[xyKey(r.x + d[0], r.y + d[1])];
+        const nb = nid ? shown[nid] : null;     /* 只画两端都在图上的 */
         if (!nb) return;
         const x1 = cx(r), y1 = cy(r), x2 = cx(nb), y2 = cy(nb);
         const seg = 'M' + x1 + ' ' + y1 + ' L' + x2 + ' ' + y2 + ' ';
@@ -2010,14 +2176,21 @@
       else cls += ' unknown';
       const reg = (m.regions || []).find(x => x.id === r.region);
       const stripe = reg ? reg.color : '#999';
-      const known = r.visited || r.current || r.near || r.reach;
-      /* 窄屏名字最多 6 字（46px 方块两行塞得下），桌面仍是 4 字 */
-      const label = r.current ? '你' : (known ? shortName(r.name, M_NAME_MAX) : '');
-      h += '<button class="' + cls + '" style="left:' + left + 'px;top:' + top + 'px;' +
+      /* ★ 去掉「战争迷雾」（主人第四轮要求：「地图不要搞那些战争迷雾」）。
+         原来是「去过/一步可达才显示名字，没去过的只留一个淡点」——
+         世界地图上看过去一片空白小方块，不知道哪儿是哪儿，也没法规划路线。
+         现在**所有地块都显示名字**，只用样式区分「去过 / 没去过」：
+           · 去过 → 正常白底
+           · 没去过 → 淡一些（`dim`）但仍看得清名字
+         仍保留「一步可达 / 附近」这两种**功能性**高亮（点一下能走过去），
+         那不是迷雾、是有用的信息。 */
+      const label = r.current ? '你' : shortName(r.name, M_NAME_MAX);
+      h += '<button class="' + cls + (r.visited || r.current ? '' : ' dim') +
+        '" style="left:' + left + 'px;top:' + top + 'px;' +
         'width:' + MAP_NODE + 'px;height:' + MAP_NODE + 'px;' +
         '--stripe:' + esc(stripe) + '"' +
         ' title="' + esc(r.name) + (r.region ? '（' + esc((reg && reg.name) || r.region) + '）' : '') +
-        (r.dist >= 0 ? '　' + r.dist + ' 步' : '　未探索') + '"' +
+        (r.dist >= 0 ? '　' + r.dist + ' 步' : '　很远') + '"' +
         ' data-room="' + esc(r.id) + '"' +
         (r.near ? ' data-go="' + esc(r.id) + '"' : '') + '>' +
         '<span class="mn-name" style="font-size:' + mFont(r) + 'px;line-height:' + M_LINE + '">' + esc(label) + '</span></button>';
@@ -2318,6 +2491,7 @@
     recruit: 'found', drill: 'found', contest: 'found', disciple: 'found', tutor: 'found', founded: 'found',
     宗门: 'found',
     slaves: 'slaves', 奴册: 'slaves', 奴仆: 'slaves', 护院: 'slaves', 麻袋: 'slaves', 袋: 'slaves',
+    地牢: 'slaves', 牢房: 'slaves',
     help: 'help', '?': 'help', 帮助: 'help', 指令: 'help', 指令帮助: 'help',
   };
 
@@ -3153,6 +3327,8 @@
        `innerHTML` + `querySelectorAll` 造的，假 DOM 里拿不到 paintLog 绑的 onclick，
        不挂出来就只能测「后端给了什么」，测不到「前端认不认」。 */
     runInteractAct,
+    /* 「接取任务」的任务详情弹窗（主人第四轮）—— 挂出来便于测试真派发 */
+    openQuestPreview,
     bindInput, bindHotkeys, bindSidebar, bindGuide,
     showModCenter, showModMaker, showMarket,
     afterAction, autoSave, autosaveId,
@@ -3161,7 +3337,7 @@
        以前只能从真 DOM（modal-body.innerHTML）里读文本，
        写「读字段名对不对」的断言就别扭。
        全是纯函数（view → html 字符串），不碰 DOM 状态，不产生副作用。 */
-    __html: { attrHtml, martialHtml, slavesHtml, npcProfileHtml },
+    __html: { attrHtml, martialHtml, slavesHtml, npcProfileHtml, questPreviewHtml },
   };
 
 })(window);

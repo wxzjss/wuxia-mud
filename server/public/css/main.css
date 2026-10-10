@@ -576,6 +576,17 @@ body::before {
 .gift-log b { color: var(--jade-d); }
 .gift-times { font-style: normal; color: var(--gold); margin-left: 8px; font-size: 11px; }
 
+/* 任务详情预览（点「接取任务」先看这一页，再决定接不接） */
+.q-prev-tags { font-size: 11.5px; color: var(--ink-3); margin-bottom: 6px; }
+.q-prev-desc { font-size: 13.5px; color: var(--ink-2); line-height: 1.8; margin-bottom: 8px; }
+.q-prev-line { font-size: 13px; color: var(--ink-2); line-height: 1.8; margin-bottom: 6px; }
+.q-prev-line b { color: var(--ink); font-weight: 600; }
+.q-prev-ul { margin: 4px 0 0; padding-left: 18px; }
+.q-prev-ul li { margin: 2px 0; }
+.q-prev-n { color: var(--jade-d); font-size: 12px; }
+.q-prev-req { color: var(--gold); }
+.q-prev-warn { color: #b23c3c; }
+
 /* NPC 详情面板（点 NPC 菜单里的「细看此人」打开的界面）
    版式：一句定位 → 分节卡片（关系 / 武学 / 随身 / 能教什么 / 作息 → 背景故事）
    背景故事那几节用「左标签 + 右正文」的传记式排版；未解锁的整行压暗 + 斜体，
@@ -640,6 +651,13 @@ body::before {
 .mini-tag.dim { border-style: dashed; color: var(--ink-4); }
 .mini-tag.dim sup { font-size: 9.5px; opacity: .7; margin-left: 3px; letter-spacing: 0; }
 .mini-tag.dim:hover { background: var(--ink-3); border-color: var(--ink-3); }
+
+/* 「他认识的人」那一栏（人不是「话题」，用暖色区分开，免得混成一片） */
+.ask-sub { font-size: 12.5px; color: var(--ink-3); margin: 12px 0 6px; }
+.ask-sub-hint { font-size: 11px; color: var(--ink-4); margin-left: 6px; }
+.mini-tag.who { background: rgba(184, 140, 62, .10); border-color: rgba(184, 140, 62, .34); color: var(--gold); }
+.mini-tag.who:hover { background: var(--gold); border-color: var(--gold); color: #fff; }
+.mini-tag.who sup { font-size: 9.5px; opacity: .75; margin-left: 4px; letter-spacing: 0; }
 
 /* ============ 江湖舆图 ============ */
 .map-head { margin-bottom: 10px; }

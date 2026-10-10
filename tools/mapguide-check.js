@@ -60,15 +60,20 @@ function ok(name, cond, extra) {
   ok('含探索进度', mh.includes('本范围') && mh.includes('全江湖'));
   ok('含相邻房间快捷', mh.includes('一步可达'));
 
-  /* —— 地形装饰层 —— */
-  console.log('\n── 地形装饰 ──');
+  /* —— 地形装饰层（★ 主人第四轮要求**删掉**）——
+     原来是每个 terrain 格子画一个 ♣/≈/❄ 之类的符号，看着像贴纸；
+     而且它们本来只是「区域面积不够时撑框用的填充」，不是真的地块。
+     数据还留着（后端 mapView 照常返回 terrain），只是前端**不再画** ——
+     断言要守「不再画」，别守「画出来了」（守反了会把主人的要求判成缺陷）。 */
+  console.log('\n── 地形装饰（已按主人要求删掉）──');
   const terr = v.map && v.map.terrain;
-  ok('后端 mapView 返回 terrain', !!terr && Object.keys(terr).length > 0,
+  ok('后端 mapView 仍返回 terrain（数据没删，只是不画）', !!terr && Object.keys(terr).length > 0,
     'terrain 区域数=' + (terr ? Object.keys(terr).length : 0));
-  ok('地图上渲染出地形装饰', mh.includes('map-terrain-layer') && mh.includes('map-terrain '));
+  ok('★ 前端**不再渲染**地形装饰（无 map-terrain-layer / map-terrain 节点）',
+    !mh.includes('map-terrain-layer') && !mh.includes('class="map-terrain '));
   /* ⚠️ 必须查 NaN：cx/cy 传错字段名时坐标全是 NaN，但格子数量仍然对，
      只断言「数量一致」会假绿（真踩过一次）。 */
-  ok('地形坐标无 NaN', !/style="left:NaN|top:NaN/.test(mh),
+  ok('地图坐标无 NaN', !/style="left:NaN|top:NaN/.test(mh),
     (mh.match(/top:NaN/g) || []).length + ' 个 NaN 坐标');
 
   /* —— 两级地图视野（默认只看当前区域）—— */
@@ -76,8 +81,8 @@ function ok(name, cond, extra) {
   const curRoom = m.rooms.find(r => r.current);
   const curTerr = (terr && curRoom && terr[curRoom.region] || []).length;
   const terrCells = (mh.match(/class="map-terrain /g) || []).length;
-  ok('默认只渲染当前区域的地形', terrCells > 0 && terrCells <= curTerr,
-    '渲染 ' + terrCells + ' / 当前区域共 ' + curTerr);
+  ok('★ region 模式同样不画地形装饰（0 个）', terrCells === 0,
+    '渲染 ' + terrCells + ' / 后端当前区域共 ' + curTerr + '（数据在、不画）');
   ok('有视野切换栏', mh.includes('data-scope="region"') && mh.includes('data-scope="world"'));
   const cb = (m.regionBoxes || {})[curRoom.region];
   const cw = (cb.w * 30 + 68) + 'px', chh = (cb.h * 30 + 68) + 'px';

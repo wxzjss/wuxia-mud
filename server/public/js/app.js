@@ -185,6 +185,11 @@
       return await jfetch('/api/npc', { method: 'POST', body: JSON.stringify({ uid }) });
     },
 
+    /* 某个任务的详情（点「接取任务」时先弹详情页，玩家看过再决定接不接） */
+    async questPreview(qid) {
+      return await jfetch('/api/quest', { method: 'POST', body: JSON.stringify({ qid }) });
+    },
+
     /* 存档 */
     async saves() { return await jfetch('/api/saves'); },
     async save(id) { const d = await jfetch('/api/save', { method: 'POST', body: JSON.stringify({ id }) }); return d; },

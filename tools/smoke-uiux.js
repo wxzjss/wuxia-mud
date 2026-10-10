@@ -83,7 +83,13 @@ function makeEl(tag) {
   };
   return el;
 }
-/** 从 HTML 按选择器抠元素（够本测试用；复杂选择器返回 []，宁可测不到也别假绿） */
+/** 从 HTML 按选择器抠元素（够本测试用；复杂选择器返回 []，宁可测不到也别假绿）
+ *  ⚠️ 逐**开标签**扫描，**不要**改成「配对开闭标签」的写法：
+ *     配对写法会把外层 `<div class="ask-topics">` 连同里面嵌套的
+ *     `<button class="mini-tag" …>` 一起「吃掉」（正则非贪婪匹配到最近的 `</div>`），
+ *     于是 `#modal-body .mini-tag[data-who]` 这种**嵌套**元素永远抠到 0 个 ——
+ *     结果是「测试说按钮不存在」，而浏览器里它明明在那儿（假红）。
+ *     `kidnap-ui-check.js` 一直是这么扫的，所以它抠得到 `.op-btn`。 */
 function parseSelectors(html, sel) {
   if (!html || typeof html !== 'string' || !sel) return [];
   const s = String(sel).trim();
@@ -94,7 +100,7 @@ function parseSelectors(html, sel) {
   const cm = rest.match(/\.([A-Za-z0-9_-]+)/); if (cm) cls = cm[1];
   const am = rest.match(/\[([a-zA-Z0-9_:-]+)\]/); if (am) attr = am[1];
   const out = [];
-  const re2 = /<([a-zA-Z][a-zA-Z0-9]*)((?:\s+[a-zA-Z_:][-a-zA-Z0-9_:.]*(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s">]+))?)*)\s*\/?>([\s\S]*?)<\/\1>/g;
+  const re2 = /<([a-zA-Z][a-zA-Z0-9]*)((?:\s+[a-zA-Z_:][-a-zA-Z0-9_:.]*(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s">]+))?)*)\s*\/?>/g;
   let m2;
   while ((m2 = re2.exec(html)) !== null) {
     const attrs = {};
@@ -103,7 +109,7 @@ function parseSelectors(html, sel) {
     while ((a = are.exec(m2[2] || '')) !== null) {
       attrs[a[1].toLowerCase()] = a[2] !== undefined ? a[2] : (a[3] !== undefined ? a[3] : (a[4] !== undefined ? a[4] : ''));
     }
-    const g = { tag: m2[1].toLowerCase(), attrs, text: m2[3] || '' };
+    const g = { tag: m2[1].toLowerCase(), attrs, text: (html.slice(m2.index + m2[0].length).match(/^([^<]*)/) || ['', ''])[1].trim() };
     if (t && g.tag !== t) continue;
     if (cls && String(g.attrs.class || '').split(/\s+/).indexOf(cls) < 0) continue;
     if (attr && !(attr in g.attrs)) continue;
@@ -131,8 +137,11 @@ function makeEnv(opts) {
     querySelector() { return null; },
     querySelectorAll(sel) {
       const m = String(sel).match(/#([A-Za-z0-9_-]+)/);
-      if (!m || !els[m[1]]) return [];
-      return els[m[1]].querySelectorAll(sel);
+      if (m) return els[m[1]] ? els[m[1]].querySelectorAll(sel) : [];
+      /* 不带 #id 的选择器（ui.js 里 `document.querySelectorAll('.ask-topics .mini-tag')`
+         这类）→ 扫 modal-body。不兜这一下的话，ui.js 那边的 onclick **绑不上**，
+         测试就会误报「点了没反应」。 */
+      return els['modal-body'] ? els['modal-body'].querySelectorAll(sel) : [];
     },
     addEventListener(t, f) { (docL[t] = docL[t] || []).push(f); }, removeEventListener() {},
     body: makeEl('body'), head: makeEl('head'), documentElement: makeEl('html'),
@@ -179,10 +188,17 @@ function closeMasks(env) {
 }
 /** 桩好 api，返回记录器 */
 function stubApi(env, view) {
-  const rec = { exec: [], view: [], combat: [], npc: [] };
+  const rec = { exec: [], view: [], combat: [], npc: [], quest: [] };
   env.WX.api.exec = async (cmd, opt) => { rec.exec.push({ cmd, opt: opt || null }); return { ok: true, lines: [] }; };
   env.WX.api.view = async (p) => { rec.view.push(p); return { ok: true, view: view || env.WX.S.view }; };
   env.WX.api.markGuide = async () => ({ ok: true });
+  /* 任务详情：「接取任务」点下去要拉的那一页。**喂真数据**（真 engine.questPreviewOf），
+     不是手搓 fixture —— 手搓的只能证明「渲染函数能渲染我编的东西」。 */
+  env.WX.api.questPreview = async (qid) => {
+    rec.quest.push(qid);
+    const q = engine.questPreviewOf(qid);
+    return q ? { ok: true, quest: q } : { ok: false, error: '没有这个任务。' };
+  };
   /* NPC 详情：**喂真数据**（走真 engine.npcProfileOf），不是手搓 fixture ——
      手搓的 fixture 只能证明「渲染函数能渲染我编的东西」，
      证明不了「后端真给得出这些字段」。 */
@@ -986,6 +1002,191 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
            所以断「前端发的格式」用源码契约 + 后端兼容双保险：
            ① 后端两种顺序都认（smoke-round4 §G-1/G-1b 已断）；
            ② 前端必须按签名发 —— 这里断 mb2 里的档位存在，格式由 §G 兜。 */
+      }
+    }
+  }
+
+  /* ================================================================
+   *  ⑬ 第五轮 · NPC 菜单的「绑架」按钮（主人要的统一入口）
+   *     —— 点了要**真按状态分流**，不是摆设：
+   *        · 站着 → 真发 `kill <名>`（先打，真进战斗）
+   *        · 晕着 + 有袋 → 真发 `装人 <名>`（直接装袋带走）
+   *        · 晕着 + 没袋 → **不发指令**，只给「得先有条粗麻袋」指引
+   *          （发一条注定被后端拒的指令，玩家看到的是「点了没用」）
+   * ================================================================ */
+  section('⑬ 第五轮 · NPC 菜单「绑架」按状态分流');
+  {
+    const base = JSON.parse(JSON.stringify(VIEW));
+    base.kidnap = Object.assign({ hasSack: true, bags: [] }, base.kidnap || {});
+    const stander = base.npcs.find(n => n.gender === 'male') || base.npcs[0];
+    const downer = base.npcs.find(n => n !== stander) || base.npcs[1];
+    stander.knockedOut = false;
+    downer.knockedOut = true;
+
+    /* 走真入口：场景栏卡片 onclick → 菜单 → 找「绑架」项 → 点它 */
+    const clickKidnap = async (view, name) => {
+      const env = loadUi(makeEnv({ innerWidth: 390 }));
+      const rec = stubApi(env, view);
+      closeMasks(env);
+      env.WX.S.view = view;
+      env.WXUI.renderScene(view);
+      const card = env.document.getElementById('scene-npcs').children
+        .find(c => String(c.innerHTML || '').indexOf(name) >= 0);
+      if (!card) return { rec, btn: null };
+      card.onclick();
+      const btn = env.document.getElementById('choices-list').children
+        .find(c => /绑架/.test(String(c.innerHTML || '')));
+      if (btn) { btn.onclick(); await settle(); }
+      return { rec, btn };
+    };
+
+    /* ⑬-1 站着的人 → kill */
+    {
+      const { rec, btn } = await clickKidnap(base, stander.name);
+      ok('⑬-1 站着的人菜单里有「绑架」', !!btn, btn ? btn._label : '(没找到按钮)');
+      ok('⑬-1a ★ 站着点「绑架」→ 真发 `kill <名>`（先打，真进战斗）',
+        rec.exec.length === 1 && rec.exec[0].cmd === 'kill ' + stander.name,
+        rec.exec.map(x => x.cmd).join(',') || '(没发指令)');
+    }
+
+    /* ⑬-2 晕着的人 + 有袋 → 装人 */
+    {
+      const { rec, btn } = await clickKidnap(base, downer.name);
+      ok('⑬-2 晕着的人菜单里有「绑架」', !!btn, btn ? btn._label : '(没找到按钮)');
+      ok('⑬-2a ★ 晕着点「绑架」→ 真发 `装人 <名>`（直接装袋带走）',
+        rec.exec.length === 1 && rec.exec[0].cmd === '装人 ' + downer.name,
+        rec.exec.map(x => x.cmd).join(',') || '(没发指令)');
+    }
+
+    /* ⑬-3 晕着 + 没袋 → 不发指令，只给指引 */
+    {
+      const noSack = JSON.parse(JSON.stringify(base));
+      noSack.kidnap.hasSack = false;
+      const { rec, btn } = await clickKidnap(noSack, downer.name);
+      ok('⑬-3 晕着没袋时菜单**仍给**「绑架」入口（入口不再被藏）', !!btn, btn ? btn._label : '(没找到按钮)');
+      ok('⑬-3a ★ 不发注定被拒的指令，只给「粗麻袋」指引（点了有反馈，不是死按钮）',
+        rec.exec.length === 0, rec.exec.map(x => x.cmd).join(',') || '(没发指令 ✔)');
+    }
+  }
+
+  /* ================================================================
+   *  ⑭ 第四轮 · 「接取任务」先弹详情，玩家点头才真接
+   *     —— 主人原话：「点击 NPC 页『接他的事』按钮后希望能先弹出任务详情
+   *        再选择是否接受任务」。所以：
+   *        · 点它 → 只**拉详情**（不发 accept）
+   *        · 点「再说吧」→ 不发 accept（默认不塞任务）
+   *        · 点「接下这桩事」→ 才发 `accept <任务名>`
+   * ================================================================ */
+  section('⑭ 第四轮 · 「接取任务」先弹详情，确认后才真接');
+  {
+    /* 从**真引擎**里挑一个当前真给得出「接取任务」的人（同 smoke-round4 §R 的口径） */
+    let QID = null, QNAME = null;
+    for (const id of Object.keys(w.data.npcs || {})) {
+      const d0 = w.data.npcs[id] || {};
+      if (!(Array.isArray(d0.quests) && d0.quests.length) && !d0.sidequest) continue;
+      const inst = w.spawnNpc(id, p.room, 1, true);
+      let act = null;
+      for (const l of engine.exec('look').lines) {
+        if (!Array.isArray(l.hl)) continue;
+        const h = l.hl.find(x => String(x.text || '').indexOf(inst.name) === 0);
+        if (h) { act = (h.actions || []).find(a => a.act === 'acceptquest'); if (act) break; }
+      }
+      if (act) { QID = act.qid; QNAME = (engine.questPreviewOf(act.qid) || {}).name; break; }
+    }
+    ok('⑭-0 前提：真引擎里找得到一个「接取任务」项', !!QID, QID + ' / ' + QNAME);
+
+    if (QID) {
+      const env = loadUi(makeEnv({ innerWidth: 390 }));
+      const rec = stubApi(env, VIEW);
+      closeMasks(env);
+      env.WX.S.view = VIEW;
+
+      env.WXUI.runInteractAct({ label: '接取任务', act: 'acceptquest', qid: QID, cmd: 'accept ' + QNAME });
+      await settle(); await settle();
+      ok('⑭-1 ★ 点「接取任务」只**拉详情**，不发 accept（不再一点就接）',
+        rec.quest.length === 1 && rec.quest[0] === QID && rec.exec.length === 0,
+        'quest=' + JSON.stringify(rec.quest) + ' exec=' + (rec.exec.map(x => x.cmd).join(',') || '(空)'));
+
+      const mb = String(env.document.getElementById('modal-body').innerHTML || '');
+      const mf = String(env.document.getElementById('modal-foot').innerHTML || '');
+      const mt = String(env.document.getElementById('modal-title').textContent || '');
+      ok('⑭-2 ★ 详情页标题就是任务名（弹窗一开就知道是哪桩事）',
+        mt.indexOf(String(QNAME)) >= 0, mt || '(标题空)');
+      ok('⑭-3 详情页里有「委托人 / 要办的事 / 办成了给」',
+        /委托人/.test(mb) && /要办的事/.test(mb) && /办成了给/.test(mb), mb.slice(0, 120));
+      ok('⑭-4 底部给「再说吧」+「接下这桩事」两个按钮',
+        /再说吧/.test(mf) && /接下这桩事/.test(mf), mf.slice(0, 90));
+
+      /* 点「再说吧」→ 什么都不发 */
+      env.document.getElementById('qp-no').onclick();
+      await settle();
+      ok('⑭-5 ★ 点「再说吧」不发 accept（默认不往身上塞任务）',
+        rec.exec.length === 0, rec.exec.map(x => x.cmd).join(',') || '(空)');
+
+      /* 再开一次，点「接下这桩事」→ 真发 accept */
+      env.WXUI.runInteractAct({ label: '接取任务', act: 'acceptquest', qid: QID, cmd: 'accept ' + QNAME });
+      await settle(); await settle();
+      env.document.getElementById('qp-yes').onclick();
+      await settle();
+      ok('⑭-6 ★ 点「接下这桩事」才真发 `accept <任务名>`（走了后端真指令）',
+        rec.exec.length === 1 && rec.exec[0].cmd === 'accept ' + QNAME,
+        rec.exec.map(x => x.cmd).join(',') || '(空)');
+    }
+  }
+
+  /* ================================================================
+   *  ⑮ 第四轮 · 「询问」面板里的「他认识的人」
+   *     —— 主人要的是「弹出一个页面上面有 NPC 认识的人名字，
+   *        点击这些名字按钮 NPC 会说关于它们的事」。
+   *       守：面板真列出人名（data-who）、点一下真发 `ask <他> about <人名>`。
+   * ================================================================ */
+  section('⑮ 第四轮 · 「询问」列出他认识的人，点了真问');
+  {
+    /* 挑一个真有关系数据的 NPC（286 个都有），拉一份**新的** view */
+    const defId = Object.keys(w.data.npcs || {}).find(x => (w.data.npcs[x].rel || []).length > 0);
+    const inst = defId ? w.spawnNpc(defId, p.room, 1, true) : null;
+    ok('⑮-0 前提：真引擎里找得到一个有关系的 NPC', !!inst, String(defId));
+    if (inst) {
+      const v15 = engine.view();
+      const env = loadUi(makeEnv({ innerWidth: 390 }));
+      const rec = stubApi(env, v15);
+      closeMasks(env);
+      env.WX.S.view = v15;
+      env.WXUI.renderScene(v15);
+      const card = env.document.getElementById('scene-npcs').children
+        .find(c => String(c.innerHTML || '').indexOf(inst.name) >= 0);
+      ok('⑮-1 场景栏造出他的卡片', !!card, inst.name);
+      if (card) {
+        card.onclick();
+        const askBtn = env.document.getElementById('choices-list').children
+          .find(c => /询问/.test(String(c.innerHTML || '')));
+        ok('⑮-2 菜单里有「询问」', !!askBtn, askBtn ? askBtn._label : '-');
+        if (askBtn) {
+          askBtn.onclick();
+          await settle();
+          const mb = String(env.document.getElementById('modal-body').innerHTML || '');
+          ok('⑮-3 ★ 面板里有「他认识的人」一栏', /他认识的人/.test(mb), mb.slice(0, 80));
+          const who = [...mb.matchAll(/data-who="([^"]+)"/g)].map(m => m[1]);
+          ok('⑮-4 ★ 列出了人名按钮（带 data-who）', who.length > 0, who.join('、'));
+          ok('⑮-5 名字旁边标了关系（仇人/故交/亲人）',
+            /(仇人|友人|亲人|熟人)<\/sup>/.test(mb), (mb.match(/<sup>[^<]*<\/sup>/g) || []).slice(0, 3).join(' '));
+
+          /* 点第一个名字 → 真发 ask */
+          /* ⚠️ 必须用**与 ui.js 完全相同的选择器**去抠：
+             解析结果按 `(选择器, innerHTML)` 缓存，换一个写法就拿到**另一批**
+             新建对象 —— 那批上没绑 onclick，点它等于点空气（实测踩过）。 */
+          const btn = env.document.querySelectorAll('#modal-body .mini-tag')
+            .find(b => b.getAttribute('data-who'));
+          ok('⑮-6 抠得到人名按钮（且带着 ui.js 绑好的 onclick）',
+            !!btn && typeof btn.onclick === 'function', btn ? btn.getAttribute('data-who') : '-');
+          if (btn) {
+            btn.onclick();
+            await settle();
+            ok('⑮-7 ★ 点人名真发 `ask <他> about <那个人>`',
+              rec.exec.length === 1 && rec.exec[0].cmd === 'ask ' + inst.name + ' about ' + who[0],
+              rec.exec.map(x => x.cmd).join(',') || '(没发指令)');
+          }
+        }
       }
     }
   }
