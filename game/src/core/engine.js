@@ -754,7 +754,12 @@ class GameEngine {
    *    这里要的是**还没接**的那一桩，得从 w.data.quests 直接读定义。
    * ============================================================ */
   questPreviewOf(qid) {
-    const w = this.world, p = w.player;
+    const w = this.world, p = w && w.player;
+    /* ⚠️ 还没起局时 `world.player` 是 **null**（沙箱刚部署完、玩家还在选出身）。
+       不挡这一下 → `p.questStage` 抛 TypeError → 路由 500 →
+       前端「接取任务」拿到的是个报错，而不是「退回旧行为」。
+       （线上实测踩到：`/api/quest` 在未起局的沙箱里直接 500。） */
+    if (!p) return null;
     const qd = qid && w.getQuest(qid);
     if (!qd) return null;
     const st = (qd.stages && qd.stages[0]) || {};

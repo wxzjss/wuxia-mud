@@ -39,6 +39,23 @@ function get(p) {
   });
 }
 
+function post(p, body) {
+  return new Promise(resolve => {
+    const payload = JSON.stringify(body || {});
+    const req = http.request({
+      host: '127.0.0.1', port: PORT, path: p, method: 'POST', timeout: 6000,
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) },
+    }, res => {
+      let b = '';
+      res.on('data', c => { b += c; });
+      res.on('end', () => resolve({ code: res.statusCode, body: b }));
+    });
+    req.on('error', e => resolve({ code: 0, body: '', err: e.message }));
+    req.on('timeout', () => { req.destroy(); resolve({ code: 0, body: '', err: 'timeout' }); });
+    req.write(payload); req.end();
+  });
+}
+
 /* 等端口就绪（最长 ~12s）：轮询 /api/boot */
 async function waitReady() {
   for (let i = 0; i < 40; i++) {
@@ -91,6 +108,31 @@ async function waitReady() {
     const saves = await get('/api/saves');
     ok('③-a /api/saves 正常（列档接口 200）', saves.code === 200 && /"ok":true/.test(saves.body),
       'HTTP ' + saves.code);
+
+    /* ④ 未起局（`world.player === null`）时，**任何**路由都不许 500。
+       线上实测踩到过：沙箱刚部署完、玩家还没选出身，`POST /api/quest` 因为
+       `p.questStage` 读到 null 抛 TypeError → 500 → 前端拿到的是报错而不是
+       「退回旧行为」。这类「只在没开局时才炸」的路径，本地测不出来
+       （本地测试全都先 newGame 了），只有**真起一个服务、真发一次请求**才算数。 */
+    section('④ 未起局时所有路由都不许 5xx');
+    const routes = [
+      ['/api/state', {}], ['/api/boot', {}], ['/api/births', {}],
+      ['/api/saves', {}], ['/api/view', {}], ['/api/mods', {}],
+      ['/api/npc', { uid: 'master_yue' }],
+      ['/api/quest', { qid: 'q_herb_collect' }],
+      ['/api/panel', { panel: 'slaves' }],
+      ['/api/exec', { cmd: 'look' }],
+      ['/api/quick', { action: 'look' }],
+      ['/api/combat', {}],
+    ];
+    for (const [p, b] of routes) {
+      const r = await post(p, b);
+      ok('④ ' + p + ' 不是 5xx', r.code > 0 && r.code < 500,
+        'HTTP ' + r.code + (r.body ? ' ' + String(r.body).slice(0, 70) : ''));
+    }
+    /* 明确守住刚修的那条：/api/quest 未起局应回 404 而不是 500 */
+    const q0 = await post('/api/quest', { qid: 'q_herb_collect' });
+    ok('④-a /api/quest 未起局 → 404（不是 500）', q0.code === 404, 'HTTP ' + q0.code);
   } catch (e) {
     ok('测试自身异常：' + (e && e.message), false);
   } finally {
