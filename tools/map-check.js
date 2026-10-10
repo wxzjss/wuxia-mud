@@ -1,13 +1,22 @@
 /* SPRINT-A 地图专项检查（design/09-map-district-allocation.md 步骤9）
- * 八条断言：
+ * 断言：
  *  1 房间 id 唯一且字段完整
- *  2 出口目标真实存在且双向可回
+ *  2 出口目标真实存在且**严格双向可回**（A.d→B ⟺ B.opp(d)→A）
  *  3 34 个 region 都有中文名/颜色/tier/entry 有效
  *  4 NPC district 指向真实 region
  *  5 住宅 owner 真实存在（house:<npcId> 与 hm_* 双向自洽）
  *  6 terrain 不越出所属 region box、不压房间
  *  7 普通区域格数达标（>=100，大区更大）
  *  8 住宅不连片（住宅之间无出口、落脚点非住宅、同区）
+ *  9 区块均衡度（B13：无空壳区、无独占区）
+ * 10 富户宅分布（B13：不堆江南、只配大城/商埠/官府、荒郊秘境零民宅）
+ * 11 出口无悬空 + 显式单向边可追溯（B13）
+ *
+ * 【B13 变更】断言 2 由「反向方向键存在」收紧为「反向必须指回同一房」。
+ *   历史病根：全图曾有 57 处「A.d→B 而 B.opp→C（≠A）」的单向门/死房，
+ *   旧断言只查「B.opp 这个键在不在」，于是长期绿着（假绿）。
+ *   有意单向通行（剧情传送/密道/坠落）须在出口对象上显式写 oneWay:true 豁免，
+ *   并同时登记进下方 ONE_WAY_ALLOWLIST，否则断言 11 判红——不允许「整体豁免」。
  */
 const path = require('path');
 const fs = require('fs');
@@ -53,26 +62,37 @@ section('1 房间 id 唯一且字段完整', () => {
     '重名房间过多（' + dupNames.length + '组）：' + dupNames.slice(0, 5).map(x => x[0] + 'x' + x[1]).join(', '));
 });
 
-/* 2 出口双向 */
+/* 2 出口目标存在 + 严格双向（B13：收紧）
+ * A.d→B 必须存在 B.opp(d)→A，且**指回 A 本人**。
+ * 出口对象的 oneWay:true = 有意单向（豁免严格反向，但仍要目标真实存在）。
+ * ⚠️ 经验（B13 验收）：`via/hint` 交互出口（如峨眉舍身崖「跳崖 ↔ 爬上去」）**同样受本条约束**——
+ *    它们必须有**真反向边**；不许拿 `oneWay:true` 给真单向门「开后门」。 */
 const OPP = { n: 's', s: 'n', e: 'w', w: 'e', ne: 'sw', sw: 'ne', nw: 'se', se: 'nw', u: 'd', d: 'u' };
 const FILLED = {
   capital: [0.25, 0.75], town: [0.25, 0.75], court: [0.25, 0.75], fun: [0.25, 0.70], village: [0.25, 0.70],
   sect: [0.20, 0.70], mad: [0.20, 0.65], wild: [0.10, 0.45], realm: [0.10, 0.45], secret: [0.15, 0.60],
 };
 function targetOf(v) { return typeof v === 'string' ? v : (v && v.to); }
-section('2 出口目标存在且双向可回', () => {
+const oneWayEdges = [];
+section('2 出口目标存在且严格双向可回', () => {
   const ids = Object.keys(rooms);
   ids.forEach(id => {
     const r = rooms[id];
     const exits = r.exits || {};
     Object.keys(exits).forEach(d => {
-      const to = targetOf(exits[d]);
+      const v = exits[d];
+      const to = targetOf(v);
       ok(!!rooms[to], id + ' 的出口 ' + d + '→' + to + ' 目标不存在');
       if (!rooms[to]) return;
-      const back = rooms[to].exits || {};
       const opp = OPP[d];
-      ok(!!back[opp],
-        '单向出口：' + id + ' -' + d + '-> ' + to + '，但 ' + to + ' 无 ' + (opp || '反向') + ' 出口');
+      if (v && typeof v === 'object' && v.oneWay === true) {   /* 显式声明的有意单向边 */
+        oneWayEdges.push(id + ' -' + d + '-> ' + to);
+        return;
+      }
+      const backTo = targetOf((rooms[to].exits || {})[opp]);
+      ok(backTo === id,
+        '非严格反向：' + id + ' -' + d + '-> ' + to + '，但 ' + to + ' -' + (opp || '?') + '-> ' +
+        (backTo === undefined ? '(无此出口)' : backTo));
     });
   });
 });
@@ -238,6 +258,69 @@ section('8 住宅不连片（不互连/落脚非住宅/同区）', () => {
     });
   });
   ok(chains === 0, chains + ' 条住宅之间存在直接出口');
+});
+
+/* 9 区块均衡度（B13）：不许有「空壳区」，也不许有「独占区」 */
+section('9 区块均衡度（无空壳 / 无独占）', () => {
+  const rc = {};
+  Object.keys(rooms).forEach(id => { const r = rooms[id].region || 'wild'; rc[r] = (rc[r] || 0) + 1; });
+  Object.keys(regions).forEach(rid => {
+    const n = rc[rid] || 0;
+    ok(n >= 3, rid + ' 仍是空壳区（仅 ' + n + ' 房，低于最低可用规模 3）');
+    ok(n <= 30, rid + ' 房间过多（' + n + ' 房 > 30），区块失衡');
+  });
+  ok((rc.jiangnan || 0) <= 30, '江南仍独占：' + (rc.jiangnan || 0) + ' 房（应砍到主城规模）');
+  const total = Object.keys(rooms).length;
+  /* CN-B13-2（B13 验收）：收紧总数区间。原 280–340（±28）过宽——验收方变异证明：
+     把 23 座填充房摊到非 jiangnan 的区、总数 335 能整体溜过 §9。旧病根正是「354 间填充物」。
+     收紧到 305–320（目标 312，容差约 ±1 个宅院）。 */
+  ok(total >= 305 && total <= 320, '房间总数异常：' + total + '（B13 目标 312，容差 305–320）');
+  const top = Object.entries(rc).sort((a, b) => b[1] - a[1]);
+  console.log('     总数 ' + total + '，最大区 ' + top[0][0] + '=' + top[0][1] +
+    '，最小区 ' + top[top.length - 1][0] + '=' + top[top.length - 1][1]);
+});
+
+/* 10 富户宅分布（B13）：不堆江南、只配大城/商埠/官府、荒郊秘境零民宅 */
+section('10 富户宅分布（迁宅）', () => {
+  const homeIds = Object.keys(rooms).filter(id => /_home_\d+$/.test(id));
+  const perReg = {};
+  homeIds.forEach(id => { const r = rooms[id].region; perReg[r] = (perReg[r] || 0) + 1; });
+  /* 江南只剩 1 座（张宅 jn_home_01）；钱府是 jn_rich_house，不在此模式内 */
+  const jnHome = Object.keys(rooms).filter(id => /^jn_home_/.test(id));
+  ok(jnHome.length <= 1, '江南仍堆着 ' + jnHome.length + ' 座填充宅院（应 ≤ 1）');
+  /* CN-B13-3（B13 验收）：把江南也纳入 perReg 直测。江南是城镇（不在下面「荒郊零民宅」名单里），
+     故单独守「富户 ≤1」——防有人用非 jn_home_ 前缀在江南塞少量宅而溜过前缀断言。 */
+  ok((perReg.jiangnan || 0) <= 1, '江南仍堆着 ' + (perReg.jiangnan || 0) + ' 座富户民宅（应 ≤ 1）');
+  /* 7 个配得上富户的地方：大城/商埠/官府 */
+  ['luoyang', 'changan', 'chengdu', 'xiangyang', 'harbor', 'gusu', 'yamen'].forEach(c => {
+    const n = perReg[c] || 0;
+    ok(n >= 3 && n <= 5, c + ' 富户宅数量 ' + n + ' 不在 3~5');
+  });
+  /* 荒郊 / 秘境 / 邪派：一座民宅都不配 */
+  ['wild', 'beijiang', 'xixia', 'many', 'haitan', 'xiake', 'jinguo', 'secret', 'gumu', 'mojiao', 'palace'].forEach(c => {
+    ok(!(perReg[c] > 0), c + ' 不该有富户民宅，实为 ' + (perReg[c] || 0));
+  });
+  /* 新迁宅 id 不许用 hm_ 前缀（避开断言 5 owner / 断言 8 连片语义） */
+  ok(homeIds.every(id => !id.startsWith('hm_')), '新迁民宅误用了 hm_ 前缀');
+  console.log('     迁宅分布：' + Object.entries(perReg).sort((a, b) => b[1] - a[1]).map(x => x[0] + '=' + x[1]).join(' '));
+});
+
+/* 11 出口无悬空 + 显式单向边可追溯（B13） */
+const ONE_WAY_ALLOWLIST = [];   /* B13：57 处历史非对称边全部修复，无一条属设计单向 */
+section('11 出口无悬空 + 显式单向边白名单', () => {
+  let dangling = 0;
+  Object.keys(rooms).forEach(id => {
+    Object.keys(rooms[id].exits || {}).forEach(d => {
+      if (!rooms[targetOf(rooms[id].exits[d])]) {
+        dangling++;
+        bad.push(id + ' -' + d + '-> ' + targetOf(rooms[id].exits[d]) + ' 指向不存在的房间');
+      }
+    });
+  });
+  ok(dangling === 0, dangling + ' 条出口悬空');
+  /* 显式单向边（oneWay:true）必须与白名单一一对应：不许用标记把真 bug 合法化 */
+  ok(oneWayEdges.length === ONE_WAY_ALLOWLIST.length,
+    '显式单向边数与白名单不符（共 ' + oneWayEdges.length + ' 条）：' + oneWayEdges.join(' / '));
 });
 
 console.log('\n' + (fail ? 'FAILED' : 'PASSED') + '  ' + pass + ' 通过 / ' + fail + ' 失败');

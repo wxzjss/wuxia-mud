@@ -10,6 +10,9 @@
  *   5. 偷窃：成功率 = 身法/等级差/对方警觉，失败 → 通缉
  * ============================================================ */
 
+/* B11：第三人称代词单一入口（兽→它 / 女→她 / 男→他），别再各处写死「他」 */
+const { pronounOf } = require('./pronouns');
+
 /* ---------------- 喜爱物类型 ---------------- */
 /* tag 用于匹配物品自带的 tags 数组；cn 用于按名称兜底匹配 */
 const LIKE_TYPES = [
@@ -259,7 +262,7 @@ function favorOf(world, npcId) {
  */
 function giftValue(world, npc, itemId) {
   const it = world.getItem(itemId);
-  if (!it) return { favor: 0, matched: false, text: '这东西他怕是看不上眼。' };
+  if (!it) return { favor: 0, matched: false, text: `这东西${pronounOf(npc)}怕是看不上眼。` };
 
   const q = itemQuality(world, itemId);
   const likes = npc.def ? (npc.def.likes || []) : (npc.likes || []);
@@ -304,7 +307,7 @@ function giftValue(world, npc, itemId) {
     likeName: matchedType ? matchedType.cn : null,
     quality: q,
     text: matchedType
-      ? `${npc.name}眼睛一亮——原来他素来喜爱${matchedType.cn}！`
+      ? `${npc.name}眼睛一亮——原来${pronounOf(npc)}素来喜爱${matchedType.cn}！`
       : `${npc.name}道了声谢，收下了${it.name}。`,
   };
 }
@@ -426,7 +429,7 @@ function trySteal(world, npc, which) {
       npc.carry = carry;
       p.money += got;
       loot.push(got + ' 文钱');
-      lines.push({ kind: 'sys', text: `你趁${npc.name}不备，摸走了他怀里的 ${got} 文钱。` });
+      lines.push({ kind: 'sys', text: `你趁${npc.name}不备，摸走了${pronounOf(npc)}怀里的 ${got} 文钱。` });
     }
     /* 偷成功也掉一点好感（若被发现痕迹） */
     lines.push({ kind: 'hint', text: `（偷窃成功，未被察觉。成功率 ${(chance * 100).toFixed(0)}%）` });
@@ -434,7 +437,7 @@ function trySteal(world, npc, which) {
   }
 
   /* 失败 → 被发现 */
-  lines.push({ kind: 'warn', text: `你刚碰到${npc.name}的衣角，就被他一把攥住了手腕！` });
+  lines.push({ kind: 'warn', text: `你刚碰到${npc.name}的衣角，就被${pronounOf(npc)}一把攥住了手腕！` });
   const r = addFavor(world, npc, -25, '偷窃被抓');
   lines.push(...r.lines);
   require('./personality').addMood(npc, -20); // 被偷窃 → 恼怒

@@ -178,7 +178,7 @@ const DIR_OPPOSITE = { n: 's', s: 'n', e: 'w', w: 'e', ne: 'sw', sw: 'ne', nw: '
 const HOLE_IN = [
   ['jn_market_west', 's', 'palace_court6'],   // 东市西巷 → 内库（金银字画）
   ['jn_misc_shop', 'n', 'palace_prison'],      // 杂货铺 → 天牢
-  ['jn_home_09', 'n', 'palace_court5'],        // 冯宅 → 尚膳房
+  ['jn_home_09', 'n', 'palace_court5'],        // 冯宅 → 尚膳房（⚠️ B13 已删冯宅 jn_home_09：cutEdge 对已删房走 problemsEarly → 最终 problems 非空 → 打印「未落盘」并 exit(1)，属硬失败退出、非静默覆盖）
   ['jn_farm_4', 's', 'palace_study'],          // 茶山 → 御书房
   ['gumu_shi', 'n', 'palace_court1'],          // 墓中石室 → 东六宫
   ['huashan_qianchi', 'e', 'palace_court3'],   // 华山千尺幢 → 长巷

@@ -1,0 +1,4161 @@
+{
+  "quests": {
+    "hk_npcv_241_yinzi": {
+      "id": "hk_npcv_241_yinzi",
+      "name": "绸缎庄的窟窿",
+      "type": "支线",
+      "npc": "npcv_241",
+      "giver": "npcv_241",
+      "level": 5,
+      "desc": "绸缎庄的东家跑了，柜上短了三百两。和放让你去看看，那笔亏空断在哪一段。",
+      "stages": [
+        {
+          "desc": "去东市·绸缎庄，问掌柜的那笔亏空断在哪一段",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_silk_shop",
+              "count": 1,
+              "var": "hk_npcv_241_yinzi_go0",
+              "desc": "去东市·绸缎庄，问掌柜的那笔亏空断在哪一段"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "+item",
+              "args": [
+                "ledger_yinzi",
+                1
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "他把印子账翻到折角那页，指腹压着一行小字，没念出来。"
+            },
+            {
+              "type": "say",
+              "raw": "「白纸黑字，你我都在上头。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这一笔，怎么处理|替他把账做平>flag:hk_npcv_241_yinzi_hide;+karma:-15;+money:300;+exp:150;+pot:40;favor:npcv_241:15;incvar:favor_npcv_241:15;;留一份底，原样交官府>flag:hk_npcv_241_yinzi_report;+rep:朝廷:20;+exp:120;+pot:40;favor:npcv_241:-30;incvar:favor_npcv_241:-30"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "和放合上账本，没再抬眼看你。"
+        }
+      ]
+    },
+    "hk_npcv_241_guancai": {
+      "id": "hk_npcv_241_guancai",
+      "name": "寄在他这儿的棺材本",
+      "type": "支线",
+      "npc": "npcv_241",
+      "giver": "npcv_241",
+      "level": 8,
+      "desc": "街坊把钱寄在和放这里当棺材本，有三笔他一次没动过。数目不大，他记了很多年。",
+      "require": {
+        "questDone": "hk_npcv_241_yinzi"
+      },
+      "stages": [
+        {
+          "desc": "去江南城·杏花巷，找老艄公康守，问那三笔没动的账",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_resident_2",
+              "count": 1,
+              "var": "hk_npcv_241_guancai_go0",
+              "desc": "去江南城·杏花巷，找老艄公康守，问那三笔没动的账"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "康守说，那三笔钱他替人存了二十年，一分利没要过。"
+            },
+            {
+              "type": "say",
+              "raw": "「那三笔，我留着。」（停了很久）「你别问为什么。」"
+            },
+            {
+              "type": "menu",
+              "raw": "康守那三笔|替康守赎回那三笔>+karma:12;favor:npcv_064:40;incvar:favor_npcv_064:40;+exp:200;+pot:60;flag:hk_npcv_241_guancai_done;;不劝，把话咽回去>+exp:80;favor:npcv_241:10;incvar:favor_npcv_241:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "和放把那本账往桌角推了推，压上一块镇纸。"
+        }
+      ]
+    },
+    "hk_npcv_154_maishen": {
+      "id": "hk_npcv_154_maishen",
+      "name": "妆匣最底下那张纸",
+      "type": "支线",
+      "npc": "npcv_154",
+      "giver": "npcv_154",
+      "level": 6,
+      "desc": "醉仙楼一楼那间房里，姑娘绝食到第三天。穆逢不吭声，只说她「不懂事」。",
+      "stages": [
+        {
+          "desc": "去醉仙楼一楼，看看那间房和那只妆匣",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_wine_house",
+              "count": 1,
+              "var": "hk_npcv_154_maishen_go0",
+              "desc": "去醉仙楼一楼，看看那间房和那只妆匣"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "+item",
+              "args": [
+                "deed_girl",
+                1
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "妆匣最底下压着一张纸，边角磨得起了毛——是张卖身契，落款是三年前。"
+            },
+            {
+              "type": "say",
+              "raw": "「楼里的姑娘，个个都有一张。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这张纸，怎么办|还那姑娘>-item:deed_girl;+karma:15;+exp:180;+pot:50;favor:npcv_154:-40;incvar:favor_npcv_154:-40;flag:hk_npcv_154_maishen_free;;交回穆逢>+money:200;+karma:-10;+exp:120;favor:npcv_154:20;incvar:favor_npcv_154:20;flag:hk_npcv_154_maishen_crush"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "穆逢把算盘拨了一串，得数和你说的两样。"
+        }
+      ]
+    },
+    "hk_npcv_154_suoyin": {
+      "id": "hk_npcv_154_suoyin",
+      "name": "素银簪",
+      "type": "支线",
+      "npc": "npcv_154",
+      "giver": "npcv_154",
+      "level": 9,
+      "desc": "醉仙楼三位姑娘的妆匣里，各压着一支一模一样的素银簪。穆逢送的东西，从没重过样。",
+      "require": {
+        "questDone": "hk_npcv_154_maishen"
+      },
+      "stages": [
+        {
+          "desc": "在二楼向王若兰、花无、何落梅打听同款的簪子",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_wine_room",
+              "count": 1,
+              "var": "hk_npcv_154_suoyin_go0",
+              "desc": "在二楼向王若兰、花无、何落梅打听同款的簪子"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "三位姑娘妆匣里的簪子摆在一处，连簪头的划痕都同。"
+            },
+            {
+              "type": "say",
+              "raw": "「一根簪子，我能记三年。」"
+            },
+            {
+              "type": "menu",
+              "raw": "同款的簪子|替她把那张纸找出来>+karma:12;+exp:220;+pot:50;flag:hk_npcv_154_suoyin_grey;;不问>+exp:100;favor:npcv_154:10;incvar:favor_npcv_154:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "她把那三支簪子收进一只木匣，上了锁。"
+        }
+      ]
+    },
+    "hk_npcv_010_haosun": {
+      "id": "hk_npcv_010_haosun",
+      "name": "账上那笔耗损",
+      "type": "支线",
+      "npc": "npcv_010",
+      "giver": "npcv_010",
+      "level": 6,
+      "desc": "米行的账上挂着一笔「耗损」，数目对不上仓里的米。屈疏让你去书院那边问一句行情。",
+      "stages": [
+        {
+          "desc": "去白鹿书院，侧访这两月的米价行情",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_school",
+              "count": 1,
+              "var": "hk_npcv_010_haosun_go0",
+              "desc": "去白鹿书院，侧访这两月的米价行情"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "+item",
+              "args": [
+                "ledger_haosun",
+                1
+              ]
+            },
+            {
+              "type": "say",
+              "raw": "「米是会自己少的。少多少，看谁在记账。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "他翻开账底，指着一行没有日期的数目，笔画比别处用力。"
+            },
+            {
+              "type": "menu",
+              "raw": "这笔耗损|替他做平>+karma:-10;+money:250;+exp:200;+pot:60;favor:npcv_010:20;incvar:favor_npcv_010:20;flag:hk_npcv_010_haosun_hide;;留一份底>+rep:*:20;+exp:160;favor:npcv_010:-20;incvar:favor_npcv_010:-20;flag:hk_npcv_010_haosun_hold"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "屈疏把账底折起来，塞进袖口，没再提这笔。"
+        }
+      ]
+    },
+    "hk_npcv_010_fuxue": {
+      "id": "hk_npcv_010_fuxue",
+      "name": "府学门口那道门",
+      "type": "支线",
+      "npc": "npcv_010",
+      "giver": "npcv_010",
+      "level": 8,
+      "desc": "屈疏的儿子被府学门房拦了三回。这个靠粮价吃人的东家，头一回问人「该怎么办」。",
+      "require": {
+        "questDone": "hk_npcv_010_haosun"
+      },
+      "stages": [
+        {
+          "desc": "去白鹿书院门口，找门房问个明白",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_school",
+              "count": 1,
+              "var": "hk_npcv_010_fuxue_go0",
+              "desc": "去白鹿书院门口，找门房问个明白"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "门房说，那孩子连来三回，回回被一句「名额满了」挡在外头。"
+            },
+            {
+              "type": "say",
+              "raw": "「我这辈子没求过人。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这道门|使钱>-money:80;+karma:8;+exp:140;favor:npcv_010:30;incvar:favor_npcv_010:30;flag:hk_npcv_010_fuxue_money;;凭他的名声去说>+karma:8;+exp:180;favor:npcv_010:30;incvar:favor_npcv_010:30;flag:hk_npcv_010_fuxue_fame;;不管>+exp:60;favor:npcv_010:-20;incvar:favor_npcv_010:-20;flag:hk_npcv_010_fuxue_none"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "屈疏点了点头，转身去翻那本米行的账。"
+        }
+      ]
+    },
+    "hk_npcv_208_feng": {
+      "id": "hk_npcv_208_feng",
+      "name": "江上那三条船",
+      "type": "支线",
+      "npc": "npcv_208",
+      "giver": "npcv_208",
+      "level": 7,
+      "desc": "江上三条船停在河心，不肯靠岸。孔拾月要你去问问那三户船家，为什么。",
+      "stages": [
+        {
+          "desc": "去码头·栈桥，说服那三户船家靠岸",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_harbor_wharf",
+              "count": 1,
+              "var": "hk_npcv_208_feng_go0",
+              "desc": "去码头·栈桥，说服那三户船家靠岸"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "「船靠不靠岸，不看水，看抽头几成。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "她把手里的头钱串子往桌上一搁，铜钱散开又收拢。"
+            },
+            {
+              "type": "menu",
+              "raw": "这三条船|替她压船户>+rep:*:20;+money:200;+exp:220;+pot:60;favor:npcv_208:25;incvar:favor_npcv_208:25;flag:hk_npcv_208_feng_press;;帮船户抗抽头>+rep:丐帮:15;+karma:10;+exp:180;favor:npcv_208:-25;incvar:favor_npcv_208:-25;flag:hk_npcv_208_feng_loose"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "孔拾月收了头钱串子，码头的算盘声又响起来。"
+        }
+      ]
+    },
+    "hk_npcv_208_shaochuan": {
+      "id": "hk_npcv_208_shaochuan",
+      "name": "十年前那条船",
+      "type": "支线",
+      "npc": "npcv_208",
+      "giver": "npcv_208",
+      "level": 10,
+      "desc": "孔拾月每年清明在码头烧一叠纸。烧的是什么，码头上没人问过。",
+      "require": {
+        "questDone": "hk_npcv_208_feng"
+      },
+      "stages": [
+        {
+          "desc": "在货栈打听十年前那条沉船",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_harbor_shed",
+              "count": 1,
+              "var": "hk_npcv_208_shaochuan_go0",
+              "desc": "在货栈打听十年前那条沉船"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "纸灰落进江里，随浪散开，她盯着水面没挪眼。"
+            },
+            {
+              "type": "say",
+              "raw": "「十年前那条船，是我押的。名字我没报全。」"
+            },
+            {
+              "type": "menu",
+              "raw": "十年前那条船|替她瞒下>+karma:5;+exp:200;+pot:50;flag:hk_npcv_208_shaochuan_hold;;报到官上>+rep:朝廷:25;+exp:240;favor:npcv_208:-60;incvar:favor_npcv_208:-60;flag:hk_npcv_208_shaochuan_report"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "她把最后一把纸灰撒进江里，转身上了货栈。"
+        }
+      ]
+    },
+    "hk_npcv_091_xiangzi": {
+      "id": "hk_npcv_091_xiangzi",
+      "name": "府衙那只箱子",
+      "type": "支线",
+      "npc": "npcv_091",
+      "giver": "npcv_091",
+      "level": 6,
+      "desc": "衙门后院抬进一口箱子，樊过盯了三天。他说只要你去看一眼：那箱子什么时候出。",
+      "stages": [
+        {
+          "desc": "去衙门·后衙，看那口箱子什么时候抬出去",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_yamen_back",
+              "count": 1,
+              "var": "hk_npcv_091_xiangzi_go0",
+              "desc": "去衙门·后衙，看那口箱子什么时候抬出去"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "箱子贴着封条，锁口是新的，抬进去的两个人一句话没说。"
+            },
+            {
+              "type": "say",
+              "raw": "「锁新，说明里头的旧东西急着走。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那只箱子|替他探明白>+karma:-5;+pot:60;+exp:200;flag:hk_npcv_091_xiangzi_open;;劝他收手>+karma:10;+exp:240;favor:npcv_091:30;incvar:favor_npcv_091:30;flag:hk_npcv_091_xiangzi_stop"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "樊过把那把新锁的样子画在纸上，折起来收好。"
+        }
+      ]
+    },
+    "hk_npcv_091_mianao": {
+      "id": "hk_npcv_091_mianao",
+      "name": "两个小子的棉袄",
+      "type": "支线",
+      "npc": "npcv_091",
+      "giver": "npcv_091",
+      "level": 8,
+      "desc": "当铺后屋堆着两件没人来赎的旧棉袄，樊过每天收摊前都要摸一遍。",
+      "require": {
+        "questDone": "hk_npcv_091_xiangzi"
+      },
+      "stages": [
+        {
+          "desc": "在当铺里，撞见樊过缝那两件棉袄",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_pawnshop",
+              "count": 1,
+              "var": "hk_npcv_091_mianao_go0",
+              "desc": "在当铺里，撞见樊过缝那两件棉袄"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "棉袄的领口拆了又缝，针脚是新的。"
+            },
+            {
+              "type": "say",
+              "raw": "「两个小子，捡来的。一件一个。」"
+            },
+            {
+              "type": "menu",
+              "raw": "两件棉袄|送小子去书院>-money:60;+karma:12;+exp:200;favor:npcv_091:20;incvar:favor_npcv_091:20;flag:hk_npcv_091_mianao_school;;不问>+exp:100;favor:npcv_091:10;incvar:favor_npcv_091:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "樊过收好针线，把那两件棉袄重新压回箱底。"
+        }
+      ]
+    },
+    "hk_npcv_065_siqiliang": {
+      "id": "hk_npcv_065_siqiliang",
+      "name": "元若那四十七两",
+      "type": "支线",
+      "npc": "npcv_065",
+      "giver": "npcv_065",
+      "level": 5,
+      "desc": "杜听涛在茶馆赊了元若三年，四十七两。两个老头隔着一张桌子，谁也不先开口。",
+      "stages": [
+        {
+          "desc": "就在茶馆里，找元若替杜听涛说句话",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_teahouse",
+              "count": 1,
+              "var": "hk_npcv_065_siqiliang_go0",
+              "desc": "就在茶馆里，找元若替杜听涛说句话"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "元若：「我这四十七两，不催他。我就等他自己开口。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "杜听涛听完，端着茶碗没喝，碗沿上磕了个小口。"
+            },
+            {
+              "type": "menu",
+              "raw": "这四十七两|替他还>-money:47;+exp:200;+pot:50;favor:npcv_065:30;incvar:favor_npcv_065:30;flag:hk_npcv_065_siqiliang_paid;;逼他开口>+money:47;+exp:120;favor:npcv_065:-30;incvar:favor_npcv_065:-30;flag:hk_npcv_065_siqiliang_press;;替他把话说透>+karma:10;+exp:260;favor:npcv_073:20;incvar:favor_npcv_073:20;flag:hk_npcv_065_siqiliang_truth"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "杜听涛把茶碗搁下，起身往元若那张桌子走了过去。"
+        }
+      ]
+    },
+    "hk_npcv_065_ziju": {
+      "id": "hk_npcv_065_ziju",
+      "name": "怀里那张字据",
+      "type": "支线",
+      "npc": "npcv_065",
+      "giver": "npcv_065",
+      "level": 9,
+      "desc": "杜听涛怀里揣着一张字据，揣了三十年，边都磨圆了。",
+      "require": {
+        "questDone": "hk_npcv_065_siqiliang"
+      },
+      "stages": [
+        {
+          "desc": "在茶馆逼出那张字据的来路",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_teahouse",
+              "count": 1,
+              "var": "hk_npcv_065_ziju_go0",
+              "desc": "在茶馆逼出那张字据的来路"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "+item",
+              "args": [
+                "iou_du",
+                1
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "字据上墨色发褐，落款人死了三十年。"
+            },
+            {
+              "type": "say",
+              "raw": "「这钱不是他的，是那批官银的。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这张字据|交给元若>-item:iou_du;favor:npcv_073:30;incvar:favor_npcv_073:30;favor:npcv_065:-50;incvar:favor_npcv_065:-50;+exp:240;;替他烧了>-item:iou_du;+karma:5;favor:npcv_065:40;incvar:favor_npcv_065:40;+exp:220;flag:hk_jiuzhangfang"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "杜听涛把茶钱压在碗底下，拱了拱手走了。"
+        }
+      ]
+    },
+    "hk_npcv_223_meimei": {
+      "id": "hk_npcv_223_meimei",
+      "name": "枫桥那个人贩子",
+      "type": "支线",
+      "npc": "npcv_223",
+      "giver": "npcv_223",
+      "level": 8,
+      "desc": "蓝若愚翻了十二年的乱葬岗，为的是找一个人。那个人贩子的名字，他从旁人嘴里听过。",
+      "stages": [
+        {
+          "desc": "去姑苏·世家巷，打听那个人贩子的落脚处",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "gusu_zhai_lane",
+              "count": 1,
+              "var": "hk_npcv_223_meimei_go0",
+              "desc": "去姑苏·世家巷，打听那个人贩子的落脚处"
+            }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "去姑苏·枫桥，跟那个人对质",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "gusu_fengqiao",
+              "count": 1,
+              "var": "hk_npcv_223_meimei_go1",
+              "desc": "去姑苏·枫桥，跟那个人对质"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "枫桥底下停了条小船，船里堆着旧衣裳，大小不一。"
+            },
+            {
+              "type": "say",
+              "raw": "「我不是要杀他。我是要问一句话。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那个人|问出妹妹的下落>+karma:15;+exp:260;+pot:70;favor:npcv_223:40;incvar:favor_npcv_223:40;flag:hk_npcv_223_meimei_found;;收钱闭嘴>+money:300;+karma:-15;+exp:120;flag:hk_npcv_223_meimei_silent;;动手>combat:mob_bandit;+exp:200;flag:hk_npcv_223_meimei_fight"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "蓝若愚朝枫桥那头望了一眼，没再说什么。"
+        }
+      ]
+    },
+    "hk_npcv_223_laoxiapo": {
+      "id": "hk_npcv_223_laoxiapo",
+      "name": "城外那个瞎婆",
+      "type": "支线",
+      "npc": "npcv_223",
+      "giver": "npcv_223",
+      "level": 10,
+      "desc": "蓝若愚偷来的钱，一分没花，全给了城外一个瞎婆。",
+      "require": {
+        "questDone": "hk_npcv_223_meimei"
+      },
+      "stages": [
+        {
+          "desc": "去姑苏城外，找到那个瞎婆，对一对蓝若愚给的信物",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "gusu_town",
+              "count": 1,
+              "var": "hk_npcv_223_laoxiapo_go0",
+              "desc": "去姑苏城外，找到那个瞎婆，对一对蓝若愚给的信物"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "瞎婆摸索着那枚旧铜钱，摸得很久，才说「他还活着」。"
+            },
+            {
+              "type": "say",
+              "raw": "「我不敢认她。认了，就是十二年前那桩事的证。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那位瞎婆|替蓝若愚认下她>+karma:10;+exp:200;favor:npcv_223:30;incvar:favor_npcv_223:30;flag:hk_npcv_223_laoxiapo_ack;;什么都不说>+exp:80;favor:npcv_223:-10;incvar:favor_npcv_223:-10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "蓝若愚把那枚旧铜钱又收回了贴身的口袋里。"
+        }
+      ]
+    },
+    "hk_npcv_174_tuntang": {
+      "id": "hk_npcv_174_tuntang",
+      "name": "仓里那三个月",
+      "type": "支线",
+      "npc": "npcv_174",
+      "giver": "npcv_174",
+      "level": 7,
+      "desc": "城里旱象已起。蒋倦仓里那批米，掺过一遍沙土，他要你再走一趟粮仓。",
+      "stages": [
+        {
+          "desc": "去东市·粮仓，看蒋倦那批米掺了多少",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_granary",
+              "count": 1,
+              "var": "hk_npcv_174_tuntang_go0",
+              "desc": "去东市·粮仓，看蒋倦那批米掺了多少"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "仓角的米堆比别处浅一截，底下垫着细沙。"
+            },
+            {
+              "type": "say",
+              "raw": "「掺过一遍的米，今晚就得多一碗饭，少一碗饭。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这批米|替他掺了>+karma:-20;+money:400;+exp:200;+pot:70;flag:hk_npcv_174_tuntang_mix;;报到官上>+rep:朝廷:25;+exp:240;favor:npcv_174:-50;incvar:favor_npcv_174:-50;flag:hk_npcv_174_tuntang_report"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "蒋倦把那袋米挪到仓角，填回一层整米进了门面。"
+        }
+      ]
+    },
+    "hk_npcv_174_zhangxin": {
+      "id": "hk_npcv_174_zhangxin",
+      "name": "掌心里那把米",
+      "type": "支线",
+      "npc": "npcv_174",
+      "giver": "npcv_174",
+      "level": 10,
+      "desc": "蒋倦抓米搓手，搓了三十年。他说这动作是娘教的。",
+      "require": {
+        "questDone": "hk_npcv_174_tuntang"
+      },
+      "stages": [
+        {
+          "desc": "在窑场看他开仓抓米",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_pottery",
+              "count": 1,
+              "var": "hk_npcv_174_zhangxin_go0",
+              "desc": "在窑场看他开仓抓米"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "他抓一把米，摊开，又攥上，指缝里漏下来的比留下的多。"
+            },
+            {
+              "type": "say",
+              "raw": "「我娘说，搓得出声的米才是好米。搓了三十年我才知道，她是骗我的。」"
+            },
+            {
+              "type": "menu",
+              "raw": "他搓的那把米|劝他改>+karma:10;+exp:200;favor:npcv_174:20;incvar:favor_npcv_174:20;flag:hk_npcv_174_zhangxin_grey;;接着合伙>+money:200;+exp:120;flag:hk_npcv_174_zhangxin_partner"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "蒋倦把掌心那把米倒回仓里，拍了拍手。"
+        }
+      ]
+    },
+    "hk_npcv_240_laocaifeng": {
+      "id": "hk_npcv_240_laocaifeng",
+      "name": "三年攒的那匹绸",
+      "type": "支线",
+      "npc": "npcv_240",
+      "giver": "npcv_240",
+      "level": 6,
+      "desc": "邬修远进了一批绸，价钱低得反常。打开那匹料子，得用剪子。",
+      "stages": [
+        {
+          "desc": "去东市·绸缎庄，剪开那匹绸验货",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_silk_shop",
+              "count": 1,
+              "var": "hk_npcv_240_laocaifeng_go0",
+              "desc": "去东市·绸缎庄，剪开那匹绸验货"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "+item",
+              "args": [
+                "fake_silk",
+                1
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "剪口里掺着麻丝，捋一把，扎手。"
+            },
+            {
+              "type": "say",
+              "raw": "「买的人一辈子摸不到里头。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这匹绸|劝他换真货>+karma:10;+exp:220;+pot:50;favor:npcv_240:30;incvar:favor_npcv_240:30;flag:hk_npcv_240_laocaifeng_honest;;帮他把货卖出>+money:200;+karma:-10;+exp:140;flag:hk_npcv_240_laocaifeng_sold"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "邬修远把剪开的那匹绸卷回去，露出一截没掺麻的边。"
+        }
+      ]
+    },
+    "hk_npcv_240_shouyi": {
+      "id": "hk_npcv_240_shouyi",
+      "name": "箱底那件料子",
+      "type": "支线",
+      "npc": "npcv_240",
+      "giver": "npcv_240",
+      "level": 9,
+      "desc": "邬修远每年腊月裁一件料子，裁了不穿，压在箱底。",
+      "require": {
+        "questDone": "hk_npcv_240_laocaifeng"
+      },
+      "stages": [
+        {
+          "desc": "在北巷翻出他箱底那件料子",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_market_north",
+              "count": 1,
+              "var": "hk_npcv_240_shouyi_go0",
+              "desc": "在北巷翻出他箱底那件料子"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "箱底那件料子叠得整整齐齐，针脚细得不像出自一个卖假料的手。"
+            },
+            {
+              "type": "say",
+              "raw": "「这是给我自己的。卖出去的都是假货，这件不能假。」"
+            },
+            {
+              "type": "menu",
+              "raw": "箱底那件料子|劝他穿上>+karma:8;+exp:200;favor:npcv_240:25;incvar:favor_npcv_240:25;flag:hk_npcv_240_shouyi_wear;;不问>+exp:90;favor:npcv_240:10;incvar:favor_npcv_240:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "邬修远把那件料子抖开又叠好，压回箱底最上头。"
+        }
+      ]
+    },
+    "hk_npcv_009_baizi": {
+      "id": "hk_npcv_009_baizi",
+      "name": "那幅百子图",
+      "type": "支线",
+      "npc": "npcv_009",
+      "giver": "npcv_009",
+      "level": 7,
+      "desc": "绣娘喻凝绣了三年的百子图，抵九两债，押在熊时手里。",
+      "stages": [
+        {
+          "desc": "去江南城市集，找绣娘喻凝看那幅百子图",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jiangnan_market",
+              "count": 1,
+              "var": "hk_npcv_009_baizi_go0",
+              "desc": "去江南城市集，找绣娘喻凝看那幅百子图"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "百子图上九十九个孩子，独缺一个，线头还留着没收。"
+            },
+            {
+              "type": "say",
+              "raw": "「我不写字据。名字，我记在脑子里。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那幅图|替她卖出去>+money:10;+karma:-5;+exp:150;favor:npcv_009:20;incvar:favor_npcv_009:20;flag:hk_npcv_009_baizi_sell;;替绣娘说情>+karma:10;+exp:200;+pot:40;favor:npcv_009:-10;incvar:favor_npcv_009:-10;flag:hk_npcv_009_baizi_grey"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "熊时把算珠一推，说这幅图她先收着。"
+        }
+      ]
+    },
+    "hk_npcv_009_shuoshu": {
+      "id": "hk_npcv_009_shuoshu",
+      "name": "说书人那张嘴",
+      "type": "支线",
+      "npc": "npcv_009",
+      "giver": "npcv_009",
+      "level": 9,
+      "desc": "熊时不识字，可全城欠钱的人，名字一个跑不掉——跑不掉，是因为有人的嘴。",
+      "require": {
+        "questDone": "hk_npcv_009_baizi"
+      },
+      "stages": [
+        {
+          "desc": "去老茶馆，听听说书人念的是哪几个名字",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_teahouse",
+              "count": 1,
+              "var": "hk_npcv_009_shuoshu_go0",
+              "desc": "去老茶馆，听听说书人念的是哪几个名字"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "醒木一响，唱词里三个名字串成一句，堂下有人红了脸。"
+            },
+            {
+              "type": "say",
+              "raw": "「我记不住字，记得住嘴。」"
+            },
+            {
+              "type": "menu",
+              "raw": "说书人那张嘴|买断他>-money:120;+exp:220;+pot:50;favor:npcv_009:30;incvar:favor_npcv_009:30;flag:hk_npcv_009_shuoshu_buy;;让债户知晓>+rep:*:15;+exp:260;favor:npcv_009:-40;incvar:favor_npcv_009:-40;flag:hk_npcv_009_shuoshu_liang"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "熊时听完那三个名字，笑了一声，又数起她的珠子。"
+        }
+      ]
+    },
+    "hk_npcv_237_daoshang": {
+      "id": "hk_npcv_237_daoshang",
+      "name": "那口刀伤",
+      "type": "支线",
+      "npc": "npcv_237",
+      "giver": "npcv_237",
+      "level": 7,
+      "desc": "有人半夜来当铺求郎中治刀伤。李无咎收了钱，第二天那人的通缉就上了墙。",
+      "stages": [
+        {
+          "desc": "去东市·地下黑市，打听那口刀路是谁的",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jm_underground",
+              "count": 1,
+              "var": "hk_npcv_237_daoshang_go0",
+              "desc": "去东市·地下黑市，打听那口刀路是谁的"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "他把药箱合上，扣搭一响，像是替那口刀伤收了尾。"
+            },
+            {
+              "type": "say",
+              "raw": "「治好了不报官——这是我抓药的规矩。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那口刀伤|替他递话>+exp:200;+pot:50;favor:npcv_237:30;incvar:favor_npcv_237:30;favor:npcv_091:20;incvar:favor_npcv_091:20;flag:hk_daolu;;报到官上>+rep:朝廷:25;+exp:180;favor:npcv_237:-50;incvar:favor_npcv_237:-50"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "李无咎把药箱挂回墙上，没再接那桩生意。"
+        }
+      ]
+    },
+    "hk_npcv_237_cheng": {
+      "id": "hk_npcv_237_cheng",
+      "name": "秤砣上那点尘",
+      "type": "支线",
+      "npc": "npcv_237",
+      "giver": "npcv_237",
+      "level": 10,
+      "desc": "李无咎擦那杆秤，擦得秤砣不见一点尘。他擦的不是秤砣。",
+      "require": {
+        "questDone": "hk_npcv_237_daoshang"
+      },
+      "stages": [
+        {
+          "desc": "陪李无咎去城西义庄旧址走一趟",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_yizhuang",
+              "count": 1,
+              "var": "hk_npcv_237_cheng_go0",
+              "desc": "陪李无咎去城西义庄旧址走一趟"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "义庄门口的青砖上，留着几道旧验伤的划痕。"
+            },
+            {
+              "type": "say",
+              "raw": "「那年我验过一个孩子。他娘抱着他来的，说只是睡着了。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那杆秤|陪他在义庄门口站一会儿>+karma:8;+exp:200;favor:npcv_237:25;incvar:favor_npcv_237:25;flag:hk_npcv_237_cheng_grey;;不问>+exp:90;favor:npcv_237:10;incvar:favor_npcv_237:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "李无咎把那杆秤取下来，用布裹好，收进了柜子最里头。"
+        }
+      ]
+    },
+    "hk_npcv_248_jiushui": {
+      "id": "hk_npcv_248_jiushui",
+      "name": "三年前那一笔",
+      "type": "支线",
+      "npc": "npcv_248",
+      "giver": "npcv_248",
+      "level": 9,
+      "desc": "西夏官道那间冰窖，锁着三年前一批卷宗。俞初自己不敢去开。",
+      "stages": [
+        {
+          "desc": "去西夏·冰窖，抽出三年前那张假账",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "xixia_ice",
+              "count": 1,
+              "var": "hk_npcv_248_jiushui_go0",
+              "desc": "去西夏·冰窖，抽出三年前那张假账"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "卷宗里那一页，户头写着一个死人，墨色比别处新。"
+            },
+            {
+              "type": "say",
+              "raw": "「她那年才十七。我记得。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这张假账|把抄本留在手上>+rep:朝廷:30;+money:200;+exp:230;+pot:60;flag:hk_npcv_248_jiushui_copy;;当她的面烧了>+karma:-20;+money:400;+exp:220;flag:hk_npcv_248_jiushui_burn"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "俞初把那页卷宗折起，塞回袖子里，拢了拢领口。"
+        }
+      ]
+    },
+    "hk_npcv_248_changfu": {
+      "id": "hk_npcv_248_changfu",
+      "name": "关外那个孩子",
+      "type": "支线",
+      "npc": "npcv_248",
+      "giver": "npcv_248",
+      "level": 11,
+      "desc": "捕快常拂跟俞初同住一间驿舍。一个知道全部，一个什么都不知道。",
+      "require": {
+        "questDone": "hk_npcv_248_jiushui"
+      },
+      "stages": [
+        {
+          "desc": "在西夏官道找常拂，听她说当年那桩事",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "road_xixia_1",
+              "count": 1,
+              "var": "hk_npcv_248_changfu_go0",
+              "desc": "在西夏官道找常拂，听她说当年那桩事"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "常拂：「那年我查出一笔账，第二天就被革了。我一直没弄明白是谁。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "俞初就在隔一道墙的地方，捏着茶碗，没出声。"
+            },
+            {
+              "type": "menu",
+              "raw": "关外那个孩子|替她讨回清白>+karma:15;+exp:240;favor:npcv_049:40;incvar:favor_npcv_049:40;flag:hk_npcv_248_changfu_clear;;不插手>+exp:100;favor:npcv_248:10;incvar:favor_npcv_248:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "俞初隔墙听完了，起身给常拂续了一碗茶。"
+        }
+      ]
+    },
+    "hk_npcv_215_yanyin": {
+      "id": "hk_npcv_215_yanyin",
+      "name": "那半张盐引",
+      "type": "支线",
+      "npc": "npcv_215",
+      "giver": "npcv_215",
+      "level": 8,
+      "desc": "闵春晓烧了十年那半张盐引，每回都举到灶口，又收回来。",
+      "stages": [
+        {
+          "desc": "去唐门前厅，找祁疏打听盐引旧事",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "tangmen_hall",
+              "count": 1,
+              "var": "hk_npcv_215_yanyin_go0",
+              "desc": "去唐门前厅，找祁疏打听盐引旧事"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "她把那半张盐引举到灶前，火起来又灭——纸边焦了，她没烧。"
+            },
+            {
+              "type": "say",
+              "raw": "「烧了十年，粘不回原样。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那半张盐引|替她烧干净>+karma:12;+exp:240;+pot:60;favor:npcv_215:40;incvar:favor_npcv_215:40;flag:hk_npcv_215_yanyin_done;;留底要挟>+money:500;+karma:-25;+exp:140;flag:hk_npcv_215_yanyin_hold"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "闵春晓把那半张盐引收进贴身的荷包，没再举到灶口。"
+        }
+      ]
+    },
+    "hk_npcv_215_mengming": {
+      "id": "hk_npcv_215_mengming",
+      "name": "孟明亡母那笔钱",
+      "type": "支线",
+      "npc": "npcv_215",
+      "giver": "npcv_215",
+      "level": 10,
+      "desc": "孟明在苗疆守着一间小店。问起他亡母那副药，他只说遇上了好人。",
+      "require": {
+        "questDone": "hk_npcv_215_yanyin"
+      },
+      "stages": [
+        {
+          "desc": "去苗疆圣地，找店伙孟明，问他亡母那副药",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "miaojiang_sheng",
+              "count": 1,
+              "var": "hk_npcv_215_mengming_go0",
+              "desc": "去苗疆圣地，找店伙孟明，问他亡母那副药"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "孟明：「我娘那副药，我一直不知道是谁出的钱。问她，她只说遇上了好人。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "闵春晓听完，把袖里那本盐册按平了。"
+            },
+            {
+              "type": "menu",
+              "raw": "那副药|告诉他>+karma:10;+exp:220;favor:npcv_215:-10;incvar:favor_npcv_215:-10;flag:hk_npcv_215_mengming_tell;;替他保密>+exp:100;favor:npcv_215:10;incvar:favor_npcv_215:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "闵春晓把盐册合上，收进了行囊。"
+        }
+      ]
+    },
+    "hk_npcv_180_beibian": {
+      "id": "hk_npcv_180_beibian",
+      "name": "北边那趟镖",
+      "type": "支线",
+      "npc": "npcv_180",
+      "giver": "npcv_180",
+      "level": 8,
+      "desc": "乐知的镖车上有一口箱子，货单上没写。她头一回先把箱子拆开看。",
+      "require": {
+        "not": {
+          "flag": "know_zhenyi"
+        }
+      },
+      "stages": [
+        {
+          "desc": "在东市大街，验那口不写货单的箱子",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_market_main",
+              "count": 1,
+              "var": "hk_npcv_180_beibian_go0",
+              "desc": "在东市大街，验那口不写货单的箱子"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "箱子里糊着两层棉，压角处留着一块没撕净的旧封条。"
+            },
+            {
+              "type": "say",
+              "raw": "「不写货单的镖，我接过大半辈子。这一趟，我头一回想先看一眼。」"
+            },
+            {
+              "type": "menu",
+              "raw": "北边那趟镖|替她验货>+exp:200;+pot:60;flag:hk_heibiao;;劝她退镖>+karma:10;+exp:240;favor:npcv_180:30;incvar:favor_npcv_180:30;flag:hk_npcv_180_beibian_stop"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "乐知把那口箱子重新捆好，绳结收得比原先还紧。"
+        }
+      ]
+    },
+    "hk_npcv_180_qi": {
+      "id": "hk_npcv_180_qi",
+      "name": "车上那面旧旗",
+      "type": "支线",
+      "npc": "npcv_180",
+      "giver": "npcv_180",
+      "level": 11,
+      "desc": "乐知的镖车上挂着一面旧旗，挂了二十年，褪得看不出颜色。",
+      "require": {
+        "questDone": "hk_npcv_180_beibian"
+      },
+      "stages": [
+        {
+          "desc": "在东市大街，与她一同把车上那面旧旗摘下来",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_market_main",
+              "count": 1,
+              "var": "hk_npcv_180_qi_go0",
+              "desc": "在东市大街，与她一同把车上那面旧旗摘下来"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "旗子落地，她盯着旗角那处补丁，手指在上面停了一下。"
+            },
+            {
+              "type": "say",
+              "raw": "「二十年前我押丢过一趟镖。我把货主的名头，报给了劫道的。那户人家，我记得姓什么。」"
+            },
+            {
+              "type": "menu",
+              "raw": "车上那面旧旗|陪她认下旧账>+karma:12;+exp:260;+pot:70;favor:npcv_180:40;incvar:favor_npcv_180:40;flag:hk_npcv_180_qi_grey;;只摘旗，不深问>+exp:120;favor:npcv_180:10;incvar:favor_npcv_180:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "乐知把那面旧旗叠成一方，压在了车板最底下。"
+        }
+      ]
+    },
+    "hk_npcv_115_mingan": {
+      "id": "hk_npcv_115_mingan",
+      "name": "这桩命案",
+      "type": "支线",
+      "npc": "npcv_115",
+      "giver": "npcv_115",
+      "level": 8,
+      "desc": "费守管着一本结案册子。蜀道上这桩命案，苦主还没找到，真凶更没影。",
+      "stages": [
+        {
+          "desc": "去唐门前厅，查这桩命案的苦主与真凶",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "tangmen_hall",
+              "count": 1,
+              "var": "hk_npcv_115_mingan_go0",
+              "desc": "去唐门前厅，查这桩命案的苦主与真凶"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "他把册子翻到某一页，蘸了墨，笔尖悬着——没落下去。"
+            },
+            {
+              "type": "say",
+              "raw": "「随便挑一个结案，我干过。有一回之后，我不干了。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这桩命案|揪出真凶>+karma:15;+exp:260;+pot:70;favor:npcv_115:40;incvar:favor_npcv_115:40;flag:hk_npcv_115_mingan_true;;由他随便结案>+karma:-20;+money:200;+exp:140;flag:hk_npcv_115_mingan_fake"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "费守把册子合上，压在了案头那方旧砚底下。"
+        }
+      ]
+    },
+    "hk_npcv_115_ce": {
+      "id": "hk_npcv_115_ce",
+      "name": "册子上那个名字",
+      "type": "支线",
+      "npc": "npcv_115",
+      "giver": "npcv_115",
+      "level": 10,
+      "desc": "费守的册子上有一个名字，二十年没划过。",
+      "require": {
+        "questDone": "hk_npcv_115_mingan"
+      },
+      "stages": [
+        {
+          "desc": "在入蜀官道，逼他把册子翻到那一页",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "road_tangmen_1",
+              "count": 1,
+              "var": "hk_npcv_115_ce_go0",
+              "desc": "在入蜀官道，逼他把册子翻到那一页"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "「二十年前有个货郎，是我办的。他死在牢里。这名字，我二十年没划。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "笔尖落在那一页上，抖了一下，划出一道不直的线。"
+            },
+            {
+              "type": "menu",
+              "raw": "册子上那个名字|替货郎翻案>+karma:20;+exp:280;favor:npcv_115:20;incvar:favor_npcv_115:20;flag:hk_npcv_115_ce_grey;;把册子烧了>+exp:160;favor:npcv_115:30;incvar:favor_npcv_115:30;+karma:-5"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "费守把划下去的那一页吹了吹，等墨干。"
+        }
+      ]
+    },
+    "hk_npcv_083_guben": {
+      "id": "hk_npcv_083_guben",
+      "name": "那册孤本",
+      "type": "支线",
+      "npc": "npcv_083",
+      "giver": "npcv_083",
+      "level": 8,
+      "desc": "架阁库一册宋版孤本压在判词底下，成了毕元给自己定的价。",
+      "stages": [
+        {
+          "desc": "去翰墨斋，寻一册好书换下那本孤本",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_bookshop",
+              "count": 1,
+              "var": "hk_npcv_083_guben_go0",
+              "desc": "去翰墨斋，寻一册好书换下那本孤本"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "+item",
+              "args": [
+                "book_rare",
+                1
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "他写完判词，把笔在清水里洗了三遍，洗得笔尖不剩一点墨。"
+            },
+            {
+              "type": "say",
+              "raw": "「这一行字，是要人命的。我改过一行。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这册孤本|拿好书换下它>-item:book_rare;+karma:10;+exp:220;+pot:60;favor:npcv_083:30;incvar:favor_npcv_083:30;flag:hk_npcv_083_guben_swap;;逼他改判>+karma:-15;+money:300;+exp:140;flag:hk_npcv_083_guben_force"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "毕元把那册孤本搁进了换回来的书堆里，没看成色。"
+        }
+      ]
+    },
+    "hk_npcv_083_gaizi": {
+      "id": "hk_npcv_083_gaizi",
+      "name": "改过的那行字",
+      "type": "支线",
+      "npc": "npcv_083",
+      "giver": "npcv_083",
+      "level": 10,
+      "desc": "毕元写判词从不改第二遍，只有一桩案的卷宗上留着刮改的痕。",
+      "require": {
+        "questDone": "hk_npcv_083_guben"
+      },
+      "stages": [
+        {
+          "desc": "去衙门·刑房，调出那卷旧案，找那处刮改",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_yamen_wt",
+              "count": 1,
+              "var": "hk_npcv_083_gaizi_go0",
+              "desc": "去衙门·刑房，调出那卷旧案，找那处刮改"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "那一行字底下的纸面是毛的——刮过，又写上去。"
+            },
+            {
+              "type": "say",
+              "raw": "「刮一回，就得记一辈子。」"
+            },
+            {
+              "type": "menu",
+              "raw": "改过的那行字|替冤者翻案>+karma:15;+exp:260;favor:npcv_083:-30;incvar:favor_npcv_083:-30;flag:hk_npcv_083_gaizi_clear;;替他压下>+exp:120;favor:npcv_083:20;incvar:favor_npcv_083:20"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "毕元把那卷旧案重新捆好，放回了架阁库最里一档。"
+        }
+      ]
+    },
+    "hk_npcv_126_xianghuo": {
+      "id": "hk_npcv_126_xianghuo",
+      "name": "功德箱里那点钱",
+      "type": "支线",
+      "npc": "npcv_126",
+      "giver": "npcv_126",
+      "level": 6,
+      "desc": "破庙功德箱里的钱，和苍数得比念经还熟。",
+      "stages": [
+        {
+          "desc": "在破庙和他一起清点功德箱",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "gaibang_po_miao",
+              "count": 1,
+              "var": "hk_npcv_126_xianghuo_go0",
+              "desc": "在破庙和他一起清点功德箱"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "屈弘：「我这庙里，本有一尊铜像。后来没了。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "和苍数钱的手停了一下，又数下去。"
+            },
+            {
+              "type": "menu",
+              "raw": "这点香火|分给庙里众人>+karma:10;+exp:200;+pot:50;favor:npcv_126:-10;incvar:favor_npcv_126:-10;flag:hk_npcv_126_xianghuo_share;;替他独吞>+money:200;+karma:-15;+exp:130;favor:npcv_126:30;incvar:favor_npcv_126:30;flag:hk_npcv_126_xianghuo_keep"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "和苍把功德箱锁上，钥匙照旧挂在自己腰里。"
+        }
+      ]
+    },
+    "hk_npcv_126_tongxiang": {
+      "id": "hk_npcv_126_tongxiang",
+      "name": "那尊铜像",
+      "type": "支线",
+      "npc": "npcv_126",
+      "giver": "npcv_126",
+      "level": 9,
+      "desc": "和苍骂屈弘是骗子，骂了六年。骂得越响，越像在掩什么。",
+      "require": {
+        "questDone": "hk_npcv_126_xianghuo"
+      },
+      "stages": [
+        {
+          "desc": "在破庙向屈弘问师门那尊铜像的旧事",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "gaibang_po_miao",
+              "count": 1,
+              "var": "hk_npcv_126_tongxiang_go0",
+              "desc": "在破庙向屈弘问师门那尊铜像的旧事"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "「那年我要饭，从那道观里拿了尊像去换钱。那道观……是他的师门。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "他说完这句，把手里的念珠绕了两圈，没再数。"
+            },
+            {
+              "type": "menu",
+              "raw": "那尊铜像|逼他还像>+karma:15;+exp:260;+pot:60;favor:npcv_062:40;incvar:favor_npcv_062:40;favor:npcv_126:-40;incvar:favor_npcv_126:-40;flag:hk_npcv_126_tongxiang_back;;不问>+exp:100;favor:npcv_126:10;incvar:favor_npcv_126:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "和苍把念珠收了，背过身去扫院子里的落叶。"
+        }
+      ]
+    },
+    "hk_npcv_164_yinzi": {
+      "id": "hk_npcv_164_yinzi",
+      "name": "那笔周转银子",
+      "type": "支线",
+      "npc": "npcv_164",
+      "giver": "npcv_164",
+      "level": 9,
+      "desc": "黑木崖的账从皮朝颜手里过。她说崖后有口井，井里的银子一枚没动。",
+      "stages": [
+        {
+          "desc": "去黑木崖大殿，找教中旧账房打听那笔银子的成色",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "mojiao_hall",
+              "count": 1,
+              "var": "hk_npcv_164_yinzi_go0",
+              "desc": "去黑木崖大殿，找教中旧账房打听那笔银子的成色"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "账房翻出那本旧账，纸角上留着一圈茶渍。"
+            },
+            {
+              "type": "say",
+              "raw": "「崖后有口井。我这辈子的银子，都在里头。一枚没动。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那笔银子|替她查账>+exp:240;+pot:70;flag:hk_sirenzhang;;回报教中>+rep:日月神教:20;+exp:180;favor:npcv_164:-30;incvar:favor_npcv_164:-30"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "皮朝颜把账本合上，用一根青布条重新捆紧。"
+        }
+      ]
+    },
+    "hk_npcv_164_sirenzhang": {
+      "id": "hk_npcv_164_sirenzhang",
+      "name": "死人账",
+      "type": "支线",
+      "npc": "npcv_164",
+      "giver": "npcv_164",
+      "level": 12,
+      "desc": "皮朝颜管了半辈子账，攒了一井银子。账本上「采买」两个字，她记了很多年。",
+      "require": {
+        "questDone": "hk_npcv_164_yinzi"
+      },
+      "stages": [
+        {
+          "desc": "随皮朝颜下崖，看那口枯井",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "mojiao_shanmen",
+              "count": 1,
+              "var": "hk_npcv_164_sirenzhang_go0",
+              "desc": "随皮朝颜下崖，看那口枯井"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "账本上一笔写着「采买」两个字。日期她也记得——那批孩子，是她经手的。"
+            },
+            {
+              "type": "say",
+              "raw": "「那笔钱，买过一批孩子的命。」"
+            },
+            {
+              "type": "menu",
+              "raw": "井里那些银子|揭发出去>+karma:20;+exp:280;+pot:80;flag:hk_npcv_164_sirenzhang_expose;;替她掩盖>+exp:160;favor:npcv_164:40;incvar:favor_npcv_164:40;+karma:-10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "皮朝颜站在井口往下看，井底黑黢黢的，什么都没有。"
+        }
+      ]
+    },
+    "hk_npcv_186_zuihua": {
+      "id": "hk_npcv_186_zuihua",
+      "name": "雅间里那句醉话",
+      "type": "支线",
+      "npc": "npcv_186",
+      "giver": "npcv_186",
+      "level": 9,
+      "desc": "醉春楼花厅里，一个官儿喝多了，把不该说的说了。鲁半夏听见了。",
+      "stages": [
+        {
+          "desc": "在醉春楼花厅，听鲁半夏转述雅间那句醉话",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_brothel_hall",
+              "count": 1,
+              "var": "hk_npcv_186_zuihua_go0",
+              "desc": "在醉春楼花厅，听鲁半夏转述雅间那句醉话"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "「我这条命是捡的。捡来的命，多活一天赚一天。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "她说这话时，手里那只酒盏一直没放下，也没喝。"
+            },
+            {
+              "type": "menu",
+              "raw": "那句话|替她压下不递>+karma:15;+exp:240;+pot:70;favor:npcv_186:40;incvar:favor_npcv_186:40;flag:hk_npcv_186_zuihua_hold;;替她递上去>+rep:日月神教:25;+exp:180;favor:npcv_186:-20;incvar:favor_npcv_186:-20;flag:hk_npcv_186_zuihua_send"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "鲁半夏把那只酒盏搁下，起身去伺候下一桌客人。"
+        }
+      ]
+    },
+    "hk_npcv_186_yao": {
+      "id": "hk_npcv_186_yao",
+      "name": "那味哑药",
+      "type": "支线",
+      "npc": "npcv_186",
+      "giver": "npcv_186",
+      "level": 11,
+      "desc": "六年前一杯酒，汪秋被带走，鲁半夏烧了六年纸。",
+      "require": {
+        "questDone": "hk_npcv_186_zuihua"
+      },
+      "stages": [
+        {
+          "desc": "在花厅找汪秋，把六年前那杯酒问清楚",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_brothel_hall",
+              "count": 1,
+              "var": "hk_npcv_186_yao_go0",
+              "desc": "在花厅找汪秋，把六年前那杯酒问清楚"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "「六年前那杯酒，是我端的。汪秋被带走那天，我吐了一整夜。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "她说完，把袖子往上撸了撸，露出腕上一道旧疤。"
+            },
+            {
+              "type": "menu",
+              "raw": "那味哑药|助汪秋翻旧账>+karma:10;+exp:240;favor:npcv_021:30;incvar:favor_npcv_021:30;flag:hk_npcv_186_yao_clear;;不问>+exp:100;favor:npcv_186:10;incvar:favor_npcv_186:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "鲁半夏把灶里最后一张纸拨了拨，火苗暗下去。"
+        }
+      ]
+    },
+    "hk_npcv_090_jieyao": {
+      "id": "hk_npcv_090_jieyao",
+      "name": "丁春秋的解药",
+      "type": "支线",
+      "npc": "npcv_090",
+      "giver": "npcv_090",
+      "level": 9,
+      "desc": "阮听在果子摊后坐着，手一按腕子，话就停。丁春秋种在他身上的蛊，发了七年。",
+      "stages": [
+        {
+          "desc": "在果子摊听他讲蛊发时的样子",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_fruit_stall",
+              "count": 1,
+              "var": "hk_npcv_090_jieyao_go0",
+              "desc": "在果子摊听他讲蛊发时的样子"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "他讲到一半，手忽然按住腕子，指节发白，话停了。"
+            },
+            {
+              "type": "say",
+              "raw": "「一年一续。续不上，就烂在这里。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那味解药|替他再跑一趟星宿海>+exp:260;+pot:70;favor:npcv_090:40;incvar:favor_npcv_090:40;flag:hk_gu;;劝他离开丁春秋>+karma:10;+exp:240;favor:npcv_090:20;incvar:favor_npcv_090:20;flag:hk_npcv_090_jieyao_leave"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "阮听松开按着腕子的手，把摊上那筐果子摆正了些。"
+        }
+      ]
+    },
+    "hk_npcv_090_meimei": {
+      "id": "hk_npcv_090_meimei",
+      "name": "妹妹那碗药",
+      "type": "支线",
+      "npc": "npcv_090",
+      "giver": "npcv_090",
+      "level": 12,
+      "desc": "阮听有个亲妹妹，也中着毒。碗是谁端的，他从没说过。",
+      "require": {
+        "questDone": "hk_npcv_090_jieyao"
+      },
+      "stages": [
+        {
+          "desc": "去姑苏·燕子坞，找郎中毛清辨那碗药的毒",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "gusu_yanzi",
+              "count": 1,
+              "var": "hk_npcv_090_meimei_go0",
+              "desc": "去姑苏·燕子坞，找郎中毛清辨那碗药的毒"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "「我给她下过一味不会死的毒。就为了丁春秋信我还有用，肯续我的解药。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "他摊开手掌，掌心里一道旧疤，是常年攥着药包磨出来的。"
+            },
+            {
+              "type": "menu",
+              "raw": "妹妹那碗药|替他妹妹解蛊并告知真相>+karma:15;+pot:70;+exp:280;favor:npcv_090:-30;incvar:favor_npcv_090:-30;flag:hk_npcv_090_meimei_tell;;瞒下>+karma:-5;+exp:140;favor:npcv_090:20;incvar:favor_npcv_090:20"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "阮听把摊子收了半扇，说今天不做生意了。"
+        }
+      ]
+    },
+    "hk_npcv_074_yajian": {
+      "id": "hk_npcv_074_yajian",
+      "name": "雅间那句话",
+      "type": "支线",
+      "npc": "npcv_074",
+      "giver": "npcv_074",
+      "level": 7,
+      "desc": "和归鸿替雅间传了三十回话，一两银子一回。第三十一回，他坐着没动。",
+      "stages": [
+        {
+          "desc": "在老茶馆，看他这三十回话是怎么传的",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_teahouse",
+              "count": 1,
+              "var": "hk_npcv_074_yajian_go0",
+              "desc": "在老茶馆，看他这三十回话是怎么传的"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "「我传了三十回话，一两银子一回。这一回，我不想传了。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "他把茶钱一文一文数出来，压在碗底，数到一半停了。"
+            },
+            {
+              "type": "menu",
+              "raw": "那句话|替他把话断了>+karma:12;+exp:240;+pot:60;favor:npcv_074:40;incvar:favor_npcv_074:40;flag:hk_npcv_074_yajian_stop;;替他继续传>+money:200;+karma:-15;+exp:150;favor:npcv_074:20;incvar:favor_npcv_074:20;flag:hk_npcv_074_yajian_go"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "和归鸿把数到一半的茶钱推回去，起身出了茶馆。"
+        }
+      ]
+    },
+    "hk_npcv_074_qian": {
+      "id": "hk_npcv_074_qian",
+      "name": "偷换的那坛酒",
+      "type": "支线",
+      "npc": "npcv_074",
+      "giver": "npcv_074",
+      "level": 9,
+      "desc": "镖师强秋在老茶馆坐了很久，等一个说法。那趟误期的镖，坏在一坛酒上。",
+      "require": {
+        "questDone": "hk_npcv_074_yajian"
+      },
+      "stages": [
+        {
+          "desc": "在老茶馆找强秋，问那趟误期的镖",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_teahouse",
+              "count": 1,
+              "var": "hk_npcv_074_qian_go0",
+              "desc": "在老茶馆找强秋，问那趟误期的镖"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "「强秋那晚的酒，是我换的。他在门外站了半宿，我在屋里没敢开门。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "他说完，往强秋常坐的那张桌子看了一眼。"
+            },
+            {
+              "type": "menu",
+              "raw": "那坛酒|替他还强秋一个说法>+karma:10;+exp:260;+pot:60;favor:npcv_081:40;incvar:favor_npcv_081:40;flag:hk_npcv_074_qian_clear;;不问>+exp:100;favor:npcv_074:10;incvar:favor_npcv_074:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "和归鸿给强秋斟了一碗茶，坐到了他对面。"
+        }
+      ]
+    },
+    "hk_npcv_252_minge": {
+      "id": "hk_npcv_252_minge",
+      "name": "那个名额",
+      "type": "支线",
+      "npc": "npcv_252",
+      "giver": "npcv_252",
+      "level": 8,
+      "desc": "醉春楼一年一个脱籍的名额。教陈语冰认字的那个人，跟她抢同一个。",
+      "require": {
+        "not": {
+          "flag": "know_zhenyi"
+        }
+      },
+      "stages": [
+        {
+          "desc": "去醉春楼花厅，找梅拾问名额的事",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_brothel_hall",
+              "count": 1,
+              "var": "hk_npcv_252_minge_go0",
+              "desc": "去醉春楼花厅，找梅拾问名额的事"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "「梅拾教我认字那天，我记着呢。楼里就一个名额。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "她把桌上的字帖翻过去，压在底下。"
+            },
+            {
+              "type": "menu",
+              "raw": "那个名额|劝她让贤>+karma:15;+exp:240;+pot:60;favor:npcv_219:40;incvar:favor_npcv_219:40;favor:npcv_252:-20;incvar:favor_npcv_252:-20;flag:hk_npcv_252_minge_yield;;替她争到>+money:200;+karma:-15;+exp:150;favor:npcv_252:30;incvar:favor_npcv_252:30;flag:hk_npcv_252_minge_win"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "陈语冰把字帖又翻回来，指腹在第一个字上停了停。"
+        }
+      ]
+    },
+    "hk_npcv_252_zi": {
+      "id": "hk_npcv_252_zi",
+      "name": "枕下那个字",
+      "type": "支线",
+      "npc": "npcv_252",
+      "giver": "npcv_252",
+      "level": 11,
+      "desc": "陈语冰枕下压着一张纸，压了很久。",
+      "require": {
+        "questDone": "hk_npcv_252_minge"
+      },
+      "stages": [
+        {
+          "desc": "在房里，看她枕下那张纸",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_brothel_room",
+              "count": 1,
+              "var": "hk_npcv_252_zi_go0",
+              "desc": "在房里，看她枕下那张纸"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "她从枕下抽出一张纸，上面只有一个字，笔画歪歪扭扭——是梅拾教她写的头一个。"
+            },
+            {
+              "type": "say",
+              "raw": "「恨得越狠，这张纸越舍不得烧。」"
+            },
+            {
+              "type": "menu",
+              "raw": "枕下那个字|让梅拾知晓>+karma:5;+exp:220;favor:npcv_219:30;incvar:favor_npcv_219:30;favor:npcv_252:-20;incvar:favor_npcv_252:-20;flag:hk_npcv_252_zi_tell;;什么都不说>+exp:100;favor:npcv_252:10;incvar:favor_npcv_252:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "陈语冰把那张纸重新压回枕下，抹平了枕面。"
+        }
+      ]
+    },
+    "hk_npcv_178_fangzi": {
+      "id": "hk_npcv_178_fangzi",
+      "name": "方子卖给谁了",
+      "type": "支线",
+      "npc": "npcv_178",
+      "giver": "npcv_178",
+      "level": 7,
+      "desc": "钱疏手里半张方子，是药婆婆救她命时给的。后来方子到了山下。",
+      "stages": [
+        {
+          "desc": "在华山脚下，看钱疏那半张方子",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "huashan_shanxia",
+              "count": 1,
+              "var": "hk_npcv_178_fangzi_go0",
+              "desc": "在华山脚下，看钱疏那半张方子"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "「山下的人，心比天冷。她不缺这点药。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "她说这话时，眼睛看着别处。"
+            },
+            {
+              "type": "menu",
+              "raw": "那半张方子|替她把方子收回来>+karma:15;+exp:240;+pot:60;favor:wen_huashan_shop:40;incvar:favor_wen_huashan_shop:40;flag:hk_npcv_178_fangzi_back;;替她卖出去>+money:150;+karma:-15;+exp:150;favor:npcv_178:20;incvar:favor_npcv_178:20;flag:hk_npcv_178_fangzi_sell"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "钱疏把那半张方子折起来，塞进袖里。"
+        }
+      ]
+    },
+    "hk_npcv_178_jiao": {
+      "id": "hk_npcv_178_jiao",
+      "name": "剩下的那半个角",
+      "type": "支线",
+      "npc": "npcv_178",
+      "giver": "npcv_178",
+      "level": 9,
+      "desc": "钱疏撕方子撕了三年，撕剩半个角。",
+      "require": {
+        "questDone": "hk_npcv_178_fangzi"
+      },
+      "stages": [
+        {
+          "desc": "在华山脚下，看她掏出那半个角",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "huashan_shanxia",
+              "count": 1,
+              "var": "hk_npcv_178_jiao_go0",
+              "desc": "在华山脚下，看她掏出那半个角"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "她看了三年，撕了三年。剩下的那半个角，她一直没舍得撕。"
+            },
+            {
+              "type": "say",
+              "raw": "「撕得动纸，撕不动这个角。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那半个角|带她向药婆婆认错>+karma:12;+exp:260;+pot:60;favor:wen_huashan_shop:30;incvar:favor_wen_huashan_shop:30;flag:hk_npcv_178_jiao_grey;;不问>+exp:100;favor:npcv_178:10;incvar:favor_npcv_178:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "钱疏把那半个角收进贴身的小袋，没再撕。"
+        }
+      ]
+    },
+    "hk_npcv_095_qi": {
+      "id": "hk_npcv_095_qi",
+      "name": "半张契",
+      "type": "支线",
+      "npc": "npcv_095",
+      "giver": "npcv_095",
+      "level": 8,
+      "desc": "城西破庙，出家人斗了七年庙产。庞南枝手里那半张契，年份是后添的。",
+      "stages": [
+        {
+          "desc": "去衙门·架阁库，调那批庙产的旧档",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_yamen_arch",
+              "count": 1,
+              "var": "hk_npcv_095_qi_go0",
+              "desc": "去衙门·架阁库，调那批庙产的旧档"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "她把那半张契举到日头底下——年份那两个字的墨色，比别处新。"
+            },
+            {
+              "type": "say",
+              "raw": "「我师父说过莫争。我争了七年，一次没下过狠手。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那半张契|替她压下>+karma:-15;+exp:240;+pot:60;flag:hk_npcv_095_qi_hide;;把旧档原样呈上>+rep:朝廷:20;+exp:260;flag:hk_npcv_095_qi_show"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "庞南枝把契收进佛龛后头，压在一部经书上。"
+        }
+      ]
+    },
+    "hk_npcv_095_shifu": {
+      "id": "hk_npcv_095_shifu",
+      "name": "师父那句「莫争」",
+      "type": "支线",
+      "npc": "npcv_095",
+      "giver": "npcv_095",
+      "level": 10,
+      "desc": "庞南枝的师父临走留了一句「莫把心思用在争上」。她记了七年。",
+      "require": {
+        "questDone": "hk_npcv_095_qi"
+      },
+      "stages": [
+        {
+          "desc": "在破庙找任停、和青荷，问这桩争端的旧底",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jiangnan_temple",
+              "count": 1,
+              "var": "hk_npcv_095_shifu_go0",
+              "desc": "在破庙找任停、和青荷，问这桩争端的旧底"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "「我争了七年，一次没下过狠手——我知道为什么。那半张契，是我添的。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "她说完，把那半张契拿出来，当着你的面撕了。"
+            },
+            {
+              "type": "menu",
+              "raw": "七年了|替她与任停了断>+karma:12;+exp:280;+pot:70;flag:hk_npcv_095_shifu_end;;不问>+exp:100;favor:npcv_095:10;incvar:favor_npcv_095:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "庞南枝扫起了佛前的碎纸，扫得很慢。"
+        }
+      ]
+    },
+    "hk_npcv_036_juanzi": {
+      "id": "hk_npcv_036_juanzi",
+      "name": "樊湘那一页",
+      "type": "支线",
+      "npc": "npcv_036",
+      "giver": "npcv_036",
+      "level": 8,
+      "desc": "翰墨斋后堂收着一页考卷。樊湘落第那年，这一页不见了。",
+      "stages": [
+        {
+          "desc": "在后堂找樊湘、岑元，问落第那年的考卷",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_study_1",
+              "count": 1,
+              "var": "hk_npcv_036_juanzi_go0",
+              "desc": "在后堂找樊湘、岑元，问落第那年的考卷"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "「读书人的事，算不得手段。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "她说「手段」两个字时，声音低了些。"
+            },
+            {
+              "type": "menu",
+              "raw": "那一页考卷|替她还回去>+karma:15;+exp:240;+pot:60;favor:npcv_234:40;incvar:favor_npcv_234:40;flag:hk_npcv_036_juanzi_back;;替她压下>+rep:*:10;+karma:-15;+exp:150;favor:npcv_036:20;incvar:favor_npcv_036:20;flag:hk_npcv_036_juanzi_hold"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "鲁拂衣把那一页夹回了原处，压得很平。"
+        }
+      ]
+    },
+    "hk_npcv_036_kai": {
+      "id": "hk_npcv_036_kai",
+      "name": "书里夹着的那页纸",
+      "type": "支线",
+      "npc": "npcv_036",
+      "giver": "npcv_036",
+      "level": 10,
+      "desc": "鲁拂衣的书里夹着一张纸，她从没敢翻到那一页。",
+      "require": {
+        "questDone": "hk_npcv_036_juanzi"
+      },
+      "stages": [
+        {
+          "desc": "在后堂看鲁拂衣自己翻出夹着的那页纸",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_study_1",
+              "count": 1,
+              "var": "hk_npcv_036_kai_go0",
+              "desc": "在后堂看鲁拂衣自己翻出夹着的那页纸"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "她抽出一本书，翻到某一页——里面夹着的，是樊湘那一页考卷。"
+            },
+            {
+              "type": "say",
+              "raw": "「我自认清高。这页纸，我一直不敢翻这本。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那页纸|助樊湘翻落第>+karma:12;+exp:260;favor:npcv_234:40;incvar:favor_npcv_234:40;favor:npcv_036:-30;incvar:favor_npcv_036:-30;flag:hk_npcv_036_kai_grey;;不问>+exp:100;favor:npcv_036:10;incvar:favor_npcv_036:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "鲁拂衣把那本书合上，插回了书架最里一排。"
+        }
+      ]
+    },
+    "hk_npcv_082_mibao": {
+      "id": "hk_npcv_082_mibao",
+      "name": "埋在院里那份副本",
+      "type": "支线",
+      "npc": "npcv_082",
+      "giver": "npcv_082",
+      "level": 9,
+      "desc": "天牢里那个老仆，每递一回密报，就在院里埋一份副本。",
+      "require": {
+        "not": {
+          "flag": "know_depot_master"
+        }
+      },
+      "stages": [
+        {
+          "desc": "去衙门·大堂，见元怀瑾，问那份副本的下落",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_yamen_court",
+              "count": 1,
+              "var": "hk_npcv_082_mibao_go0",
+              "desc": "去衙门·大堂，见元怀瑾，问那份副本的下落"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "他领你到院角，蹲下来刨开一层土，露出一角油纸包。"
+            },
+            {
+              "type": "say",
+              "raw": "「我每递一回，就埋一份。不是留证据——是留后路。」"
+            },
+            {
+              "type": "menu",
+              "raw": "院里那份副本|替他收好>+exp:260;+pot:70;favor:npcv_082:40;incvar:favor_npcv_082:40;flag:hk_npcv_082_mibao_keep;;交给东厂>+rep:朝廷:20;+exp:200;favor:npcv_149:-50;incvar:favor_npcv_149:-50;flag:hk_npcv_082_mibao_give"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "夏承志把那个油纸包重新埋回土里，把土踩实了。"
+        }
+      ]
+    },
+    "hk_npcv_082_hua": {
+      "id": "hk_npcv_082_hua",
+      "name": "书房里那幅画",
+      "type": "支线",
+      "npc": "npcv_082",
+      "giver": "npcv_082",
+      "level": 11,
+      "desc": "元怀瑾书房挂着一幅画，夏承志理了三十年，一次没敢多看。",
+      "require": {
+        "questDone": "hk_npcv_082_mibao"
+      },
+      "stages": [
+        {
+          "desc": "在天牢，随夏承志去看那幅画",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "palace_prison",
+              "count": 1,
+              "var": "hk_npcv_082_hua_go0",
+              "desc": "在天牢，随夏承志去看那幅画"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "say",
+              "raw": "「老爷书房那幅画，我理了三十年，一次没敢多看。可那幅画上记的事，是我写进去的。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "他说到「写进去」三个字，手在袖子里攥了一下。"
+            },
+            {
+              "type": "menu",
+              "raw": "书房里那幅画|助元怀瑾自清>+karma:15;+exp:280;+pot:70;favor:npcv_149:40;incvar:favor_npcv_149:40;flag:hk_npcv_082_hua_clear;;不问>+exp:100;favor:npcv_082:10;incvar:favor_npcv_082:10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "夏承志把牢门掩上，退回到廊下那张旧凳上坐着。"
+        }
+      ]
+    }
+  },
+  "items": {
+    "ledger_yinzi": {
+      "id": "ledger_yinzi",
+      "name": "印子账本",
+      "type": "misc",
+      "value": 60,
+      "desc": "封皮磨得起了毛，里头一页一行，写着谁欠多少、利几成。字不好看，数却一个不错。",
+      "tags": [
+        "book"
+      ],
+      "quality": "common"
+    },
+    "deed_girl": {
+      "id": "deed_girl",
+      "name": "一张卖身契",
+      "type": "misc",
+      "value": 40,
+      "desc": "纸边压得发黄，落款是三年前。底下按着一个褪了色的指印，像一朵小梅花。",
+      "tags": [
+        "book"
+      ],
+      "quality": "common"
+    },
+    "ledger_haosun": {
+      "id": "ledger_haosun",
+      "name": "耗损账底",
+      "type": "misc",
+      "value": 55,
+      "desc": "一页账底，墨色比别处重。数目对不上仓里的米，多出来的那一截没有日期。",
+      "tags": [
+        "book"
+      ],
+      "quality": "common"
+    },
+    "iou_du": {
+      "id": "iou_du",
+      "name": "一张旧字据",
+      "type": "misc",
+      "value": 70,
+      "desc": "揣了三十年，边角磨得浑圆。落款人的名字已经模糊，底下那个数却认得清。",
+      "tags": [
+        "book"
+      ],
+      "quality": "common"
+    },
+    "fake_silk": {
+      "id": "fake_silk",
+      "name": "一匹掺麻的绸",
+      "type": "misc",
+      "value": 35,
+      "desc": "面上看着光鲜，剪口里牵着麻丝，照光一捋，扎手。",
+      "tags": [
+        "cloth"
+      ],
+      "quality": "poor"
+    }
+  },
+  "rooms": {
+    "gusu_fengqiao": {
+      "id": "gusu_fengqiao",
+      "name": "姑苏·枫桥",
+      "region": "gusu",
+      "desc": "桥是老石桥，桥洞底下常泊着小船。船家说，这桥夜里过的人多，白天反倒清净。桥头一块石碑，字被水汽蚀得看不清了。",
+      "exits": {
+        "w": "gusu_zhai_lane"
+      }
+    },
+    "jn_granary": {
+      "id": "jn_granary",
+      "name": "东市·粮仓",
+      "region": "market",
+      "desc": "粮囤一排排码到房梁，麻袋上落着薄薄一层灰。角上那堆米比别处浅一截，人踩上去，脚感是软的。",
+      "exits": {
+        "n": "jn_pottery"
+      }
+    },
+    "jn_yizhuang": {
+      "id": "jn_yizhuang",
+      "name": "城西·义庄旧址",
+      "region": "jiangnan",
+      "desc": "院墙塌了半面，院里空着，只剩一张验尸的旧木案。青砖地上有几道浅浅的划痕，是长年累月磨出来的。",
+      "exits": {
+        "nw": "jiangnan_west_road"
+      }
+    },
+    "gusu_zhai_lane": {
+      "exits": {
+        "e": "gusu_fengqiao"
+      }
+    },
+    "jn_pottery": {
+      "exits": {
+        "s": "jn_granary"
+      }
+    },
+    "jiangnan_west_road": {
+      "exits": {
+        "se": "jn_yizhuang"
+      }
+    }
+  },
+  "npcs": {
+    "hk_storyteller": {
+      "id": "hk_storyteller",
+      "name": "柳三弦",
+      "gender": "male",
+      "tag": "artist",
+      "desc": "茶馆角落里支着一张矮凳，膝上一把旧三弦。开讲前先抿一口茶，醒木压在手边，讲到要紧处才拍一下。",
+      "room": "jn_teahouse",
+      "level": 12,
+      "hp": 210,
+      "atk": 22,
+      "def": 16,
+      "dodge": 15,
+      "speed": 18,
+      "money": 88,
+      "hostile": false,
+      "likes": [
+        "music",
+        "porcelain"
+      ],
+      "favorBase": 0.7,
+      "favorInit": 5,
+      "carry": {
+        "money": 40,
+        "items": [
+          "wine_jar"
+        ]
+      },
+      "talk": [
+        "醒木一响，各位静听。",
+        "词里的事，十句有八句是真的。"
+      ],
+      "socialDone": true,
+      "schedule": {
+        "day": "jn_teahouse",
+        "night": "jn_teahouse"
+      },
+      "rel": [
+        {
+          "id": "npcv_065",
+          "kind": "友"
+        },
+        {
+          "id": "npcv_074",
+          "kind": "友"
+        }
+      ],
+      "relDone": true,
+      "teach": [
+        "basic_fist"
+      ],
+      "learned": {
+        "basic_fist": {
+          "level": 40
+        },
+        "jh_fist": {
+          "level": 40,
+          "exp": 0
+        },
+        "jh_parry": {
+          "level": 34,
+          "exp": 0
+        }
+      },
+      "skills": {
+        "拳": "jh_fist",
+        "招架": "jh_parry"
+      },
+      "favorToLearn": 40,
+      "age": 55,
+      "tier": "B",
+      "district": "market",
+      "unlock": {
+        "favor": 20
+      },
+      "homeless": true,
+      "job": "storyteller",
+      "title": "说书人",
+      "province": "江南东道",
+      "neighbors": [
+        "杜听涛",
+        "和归鸿"
+      ]
+    },
+    "npcv_241": {
+      "id": "npcv_241",
+      "quests": [
+        "hk_npcv_241_yinzi",
+        "hk_npcv_241_guancai"
+      ],
+      "actions": [
+        {
+          "cmd": "接账",
+          "label": "接账",
+          "keywords": [],
+          "desc": "绸缎庄的窟窿",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_241_yinzi"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "绸缎庄的东家跑了，柜上短了三百两。和放让你去看看，那笔亏空断在哪一段。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_241_yinzi",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问账",
+          "label": "问账",
+          "keywords": [],
+          "desc": "寄在他这儿的棺材本",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_241_guancai"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "街坊把钱寄在和放这里当棺材本，有三笔他一次没动过。数目不大，他记了很多年。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_241_guancai",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_154": {
+      "id": "npcv_154",
+      "quests": [
+        "hk_npcv_154_maishen",
+        "hk_npcv_154_suoyin"
+      ],
+      "actions": [
+        {
+          "cmd": "问姑娘",
+          "label": "问姑娘",
+          "keywords": [],
+          "desc": "妆匣最底下那张纸",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_154_maishen"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "醉仙楼一楼那间房里，姑娘绝食到第三天。穆逢不吭声，只说她「不懂事」。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_154_maishen",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问簪子",
+          "label": "问簪子",
+          "keywords": [],
+          "desc": "素银簪",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_154_suoyin"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "醉仙楼三位姑娘的妆匣里，各压着一支一模一样的素银簪。穆逢送的东西，从没重过样。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_154_suoyin",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_010": {
+      "id": "npcv_010",
+      "quests": [
+        "hk_npcv_010_haosun",
+        "hk_npcv_010_fuxue"
+      ],
+      "actions": [
+        {
+          "cmd": "盘账",
+          "label": "盘账",
+          "keywords": [],
+          "desc": "账上那笔耗损",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_010_haosun"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "米行的账上挂着一笔「耗损」，数目对不上仓里的米。屈疏让你去书院那边问一句行情。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_010_haosun",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "说句话",
+          "label": "说句话",
+          "keywords": [],
+          "desc": "府学门口那道门",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_010_fuxue"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "屈疏的儿子被府学门房拦了三回。这个靠粮价吃人的东家，头一回问人「该怎么办」。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_010_fuxue",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_208": {
+      "id": "npcv_208",
+      "quests": [
+        "hk_npcv_208_feng",
+        "hk_npcv_208_shaochuan"
+      ],
+      "actions": [
+        {
+          "cmd": "问船",
+          "label": "问船",
+          "keywords": [],
+          "desc": "江上那三条船",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_208_feng"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "江上三条船停在河心，不肯靠岸。孔拾月要你去问问那三户船家，为什么。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_208_feng",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问旧事",
+          "label": "问旧事",
+          "keywords": [],
+          "desc": "十年前那条船",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_208_shaochuan"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "孔拾月每年清明在码头烧一叠纸。烧的是什么，码头上没人问过。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_208_shaochuan",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_091": {
+      "id": "npcv_091",
+      "quests": [
+        "hk_npcv_091_xiangzi",
+        "hk_npcv_091_mianao"
+      ],
+      "actions": [
+        {
+          "cmd": "搭话",
+          "label": "搭话",
+          "keywords": [],
+          "desc": "府衙那只箱子",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_091_xiangzi"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "衙门后院抬进一口箱子，樊过盯了三天。他说只要你去看一眼：那箱子什么时候出。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_091_xiangzi",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问棉袄",
+          "label": "问棉袄",
+          "keywords": [],
+          "desc": "两个小子的棉袄",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_091_mianao"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "当铺后屋堆着两件没人来赎的旧棉袄，樊过每天收摊前都要摸一遍。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_091_mianao",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_065": {
+      "id": "npcv_065",
+      "quests": [
+        "hk_npcv_065_siqiliang",
+        "hk_npcv_065_ziju"
+      ],
+      "actions": [
+        {
+          "cmd": "陪他坐坐",
+          "label": "陪他坐坐",
+          "keywords": [],
+          "desc": "元若那四十七两",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_065_siqiliang"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "杜听涛在茶馆赊了元若三年，四十七两。两个老头隔着一张桌子，谁也不先开口。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_065_siqiliang",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问官银",
+          "label": "问官银",
+          "keywords": [],
+          "desc": "怀里那张字据",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_065_ziju"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "杜听涛怀里揣着一张字据，揣了三十年，边都磨圆了。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_065_ziju",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_223": {
+      "id": "npcv_223",
+      "quests": [
+        "hk_npcv_223_meimei",
+        "hk_npcv_223_laoxiapo"
+      ],
+      "actions": [
+        {
+          "cmd": "问他腿",
+          "label": "问他腿",
+          "keywords": [],
+          "desc": "枫桥那个人贩子",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_223_meimei"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "蓝若愚翻了十二年的乱葬岗，为的是找一个人。那个人贩子的名字，他从旁人嘴里听过。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_223_meimei",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问瞎婆",
+          "label": "问瞎婆",
+          "keywords": [],
+          "desc": "城外那个瞎婆",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_223_laoxiapo"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "蓝若愚偷来的钱，一分没花，全给了城外一个瞎婆。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_223_laoxiapo",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_174": {
+      "id": "npcv_174",
+      "quests": [
+        "hk_npcv_174_tuntang",
+        "hk_npcv_174_zhangxin"
+      ],
+      "actions": [
+        {
+          "cmd": "问仓",
+          "label": "问仓",
+          "keywords": [],
+          "desc": "仓里那三个月",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_174_tuntang"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "城里旱象已起。蒋倦仓里那批米，掺过一遍沙土，他要你再走一趟粮仓。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_174_tuntang",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问开仓",
+          "label": "问开仓",
+          "keywords": [],
+          "desc": "掌心里那把米",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_174_zhangxin"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "蒋倦抓米搓手，搓了三十年。他说这动作是娘教的。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_174_zhangxin",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_240": {
+      "id": "npcv_240",
+      "quests": [
+        "hk_npcv_240_laocaifeng",
+        "hk_npcv_240_shouyi"
+      ],
+      "actions": [
+        {
+          "cmd": "问货",
+          "label": "问货",
+          "keywords": [],
+          "desc": "三年攒的那匹绸",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_240_laocaifeng"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "邬修远进了一批绸，价钱低得反常。打开那匹料子，得用剪子。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_240_laocaifeng",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "翻箱底",
+          "label": "翻箱底",
+          "keywords": [],
+          "desc": "箱底那件料子",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_240_shouyi"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "邬修远每年腊月裁一件料子，裁了不穿，压在箱底。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_240_shouyi",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_009": {
+      "id": "npcv_009",
+      "quests": [
+        "hk_npcv_009_baizi",
+        "hk_npcv_009_shuoshu"
+      ],
+      "actions": [
+        {
+          "cmd": "问绣坊",
+          "label": "问绣坊",
+          "keywords": [],
+          "desc": "那幅百子图",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_009_baizi"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "绣娘喻凝绣了三年的百子图，抵九两债，押在熊时手里。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_009_baizi",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "听说书",
+          "label": "听说书",
+          "keywords": [],
+          "desc": "说书人那张嘴",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_009_shuoshu"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "熊时不识字，可全城欠钱的人，名字一个跑不掉——跑不掉，是因为有人的嘴。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_009_shuoshu",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_237": {
+      "id": "npcv_237",
+      "quests": [
+        "hk_npcv_237_daoshang",
+        "hk_npcv_237_cheng"
+      ],
+      "actions": [
+        {
+          "cmd": "抓药",
+          "label": "抓药",
+          "keywords": [],
+          "desc": "那口刀伤",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_237_daoshang"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "有人半夜来当铺求郎中治刀伤。李无咎收了钱，第二天那人的通缉就上了墙。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_237_daoshang",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问他擦秤",
+          "label": "问他擦秤",
+          "keywords": [],
+          "desc": "秤砣上那点尘",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_237_cheng"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "李无咎擦那杆秤，擦得秤砣不见一点尘。他擦的不是秤砣。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_237_cheng",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_248": {
+      "id": "npcv_248",
+      "quests": [
+        "hk_npcv_248_jiushui",
+        "hk_npcv_248_changfu"
+      ],
+      "actions": [
+        {
+          "cmd": "翻卷宗",
+          "label": "翻卷宗",
+          "keywords": [],
+          "desc": "三年前那一笔",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_248_jiushui"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "西夏官道那间冰窖，锁着三年前一批卷宗。俞初自己不敢去开。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_248_jiushui",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "找常拂",
+          "label": "找常拂",
+          "keywords": [],
+          "desc": "关外那个孩子",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_248_changfu"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "捕快常拂跟俞初同住一间驿舍。一个知道全部，一个什么都不知道。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_248_changfu",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_215": {
+      "id": "npcv_215",
+      "quests": [
+        "hk_npcv_215_yanyin",
+        "hk_npcv_215_mengming"
+      ],
+      "actions": [
+        {
+          "cmd": "批盐引",
+          "label": "批盐引",
+          "keywords": [],
+          "desc": "那半张盐引",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_215_yanyin"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "闵春晓烧了十年那半张盐引，每回都举到灶口，又收回来。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_215_yanyin",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "找孟明",
+          "label": "找孟明",
+          "keywords": [],
+          "desc": "孟明亡母那笔钱",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_215_mengming"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "孟明在苗疆守着一间小店。问起他亡母那副药，他只说遇上了好人。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_215_mengming",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_180": {
+      "id": "npcv_180",
+      "quests": [
+        "hk_npcv_180_beibian",
+        "hk_npcv_180_qi"
+      ],
+      "actions": [
+        {
+          "cmd": "问镖车",
+          "label": "问镖车",
+          "keywords": [],
+          "desc": "北边那趟镖",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_180_beibian"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "乐知的镖车上有一口箱子，货单上没写。她头一回先把箱子拆开看。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_180_beibian",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "摘旗",
+          "label": "摘旗",
+          "keywords": [],
+          "desc": "车上那面旧旗",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_180_qi"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "乐知的镖车上挂着一面旧旗，挂了二十年，褪得看不出颜色。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_180_qi",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_115": {
+      "id": "npcv_115",
+      "quests": [
+        "hk_npcv_115_mingan",
+        "hk_npcv_115_ce"
+      ],
+      "actions": [
+        {
+          "cmd": "问案子",
+          "label": "问案子",
+          "keywords": [],
+          "desc": "这桩命案",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_115_mingan"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "费守管着一本结案册子。蜀道上这桩命案，苦主还没找到，真凶更没影。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_115_mingan",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "翻册子",
+          "label": "翻册子",
+          "keywords": [],
+          "desc": "册子上那个名字",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_115_ce"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "费守的册子上有一个名字，二十年没划过。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_115_ce",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_083": {
+      "id": "npcv_083",
+      "quests": [
+        "hk_npcv_083_guben",
+        "hk_npcv_083_gaizi"
+      ],
+      "actions": [
+        {
+          "cmd": "问卷",
+          "label": "问卷",
+          "keywords": [],
+          "desc": "那册孤本",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_083_guben"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "架阁库一册宋版孤本压在判词底下，成了毕元给自己定的价。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_083_guben",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "调旧卷",
+          "label": "调旧卷",
+          "keywords": [],
+          "desc": "改过的那行字",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_083_gaizi"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "毕元写判词从不改第二遍，只有一桩案的卷宗上留着刮改的痕。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_083_gaizi",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_126": {
+      "id": "npcv_126",
+      "quests": [
+        "hk_npcv_126_xianghuo",
+        "hk_npcv_126_tongxiang"
+      ],
+      "actions": [
+        {
+          "cmd": "问功德箱",
+          "label": "问功德箱",
+          "keywords": [],
+          "desc": "功德箱里那点钱",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_126_xianghuo"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "破庙功德箱里的钱，和苍数得比念经还熟。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_126_xianghuo",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问铜像",
+          "label": "问铜像",
+          "keywords": [],
+          "desc": "那尊铜像",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_126_tongxiang"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "和苍骂屈弘是骗子，骂了六年。骂得越响，越像在掩什么。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_126_tongxiang",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_164": {
+      "id": "npcv_164",
+      "quests": [
+        "hk_npcv_164_yinzi",
+        "hk_npcv_164_sirenzhang"
+      ],
+      "actions": [
+        {
+          "cmd": "问赌坊",
+          "label": "问赌坊",
+          "keywords": [],
+          "desc": "那笔周转银子",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_164_yinzi"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "黑木崖的账从皮朝颜手里过。她说崖后有口井，井里的银子一枚没动。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_164_yinzi",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问枯井",
+          "label": "问枯井",
+          "keywords": [],
+          "desc": "死人账",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_164_sirenzhang"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "皮朝颜管了半辈子账，攒了一井银子。账本上「采买」两个字，她记了很多年。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_164_sirenzhang",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_186": {
+      "id": "npcv_186",
+      "quests": [
+        "hk_npcv_186_zuihua",
+        "hk_npcv_186_yao"
+      ],
+      "actions": [
+        {
+          "cmd": "陪酒",
+          "label": "陪酒",
+          "keywords": [],
+          "desc": "雅间里那句醉话",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_186_zuihua"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "醉春楼花厅里，一个官儿喝多了，把不该说的说了。鲁半夏听见了。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_186_zuihua",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "找汪秋",
+          "label": "找汪秋",
+          "keywords": [],
+          "desc": "那味哑药",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_186_yao"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "六年前一杯酒，汪秋被带走，鲁半夏烧了六年纸。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_186_yao",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_090": {
+      "id": "npcv_090",
+      "quests": [
+        "hk_npcv_090_jieyao",
+        "hk_npcv_090_meimei"
+      ],
+      "actions": [
+        {
+          "cmd": "问他毒",
+          "label": "问他毒",
+          "keywords": [],
+          "desc": "丁春秋的解药",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_090_jieyao"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "阮听在果子摊后坐着，手一按腕子，话就停。丁春秋种在他身上的蛊，发了七年。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_090_jieyao",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问妹妹",
+          "label": "问妹妹",
+          "keywords": [],
+          "desc": "妹妹那碗药",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_090_meimei"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "阮听有个亲妹妹，也中着毒。碗是谁端的，他从没说过。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_090_meimei",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_074": {
+      "id": "npcv_074",
+      "quests": [
+        "hk_npcv_074_yajian",
+        "hk_npcv_074_qian"
+      ],
+      "actions": [
+        {
+          "cmd": "递话",
+          "label": "递话",
+          "keywords": [],
+          "desc": "雅间那句话",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_074_yajian"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "和归鸿替雅间传了三十回话，一两银子一回。第三十一回，他坐着没动。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_074_yajian",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "找强秋",
+          "label": "找强秋",
+          "keywords": [],
+          "desc": "偷换的那坛酒",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_074_qian"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "镖师强秋在老茶馆坐了很久，等一个说法。那趟误期的镖，坏在一坛酒上。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_074_qian",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_252": {
+      "id": "npcv_252",
+      "quests": [
+        "hk_npcv_252_minge",
+        "hk_npcv_252_zi"
+      ],
+      "actions": [
+        {
+          "cmd": "问名额",
+          "label": "问名额",
+          "keywords": [],
+          "desc": "那个名额",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_252_minge"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "醉春楼一年一个脱籍的名额。教陈语冰认字的那个人，跟她抢同一个。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_252_minge",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问那本书",
+          "label": "问那本书",
+          "keywords": [],
+          "desc": "枕下那个字",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_252_zi"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "陈语冰枕下压着一张纸，压了很久。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_252_zi",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_178": {
+      "id": "npcv_178",
+      "quests": [
+        "hk_npcv_178_fangzi",
+        "hk_npcv_178_jiao"
+      ],
+      "actions": [
+        {
+          "cmd": "问她药",
+          "label": "问她药",
+          "keywords": [],
+          "desc": "方子卖给谁了",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_178_fangzi"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "钱疏手里半张方子，是药婆婆救她命时给的。后来方子到了山下。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_178_fangzi",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问她那张纸",
+          "label": "问她那张纸",
+          "keywords": [],
+          "desc": "剩下的那半个角",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_178_jiao"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "钱疏撕方子撕了三年，撕剩半个角。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_178_jiao",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_095": {
+      "id": "npcv_095",
+      "quests": [
+        "hk_npcv_095_qi",
+        "hk_npcv_095_shifu"
+      ],
+      "actions": [
+        {
+          "cmd": "问契",
+          "label": "问契",
+          "keywords": [],
+          "desc": "半张契",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_095_qi"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "城西破庙，出家人斗了七年庙产。庞南枝手里那半张契，年份是后添的。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_095_qi",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "劝和",
+          "label": "劝和",
+          "keywords": [],
+          "desc": "师父那句「莫争」",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_095_shifu"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "庞南枝的师父临走留了一句「莫把心思用在争上」。她记了七年。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_095_shifu",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_036": {
+      "id": "npcv_036",
+      "quests": [
+        "hk_npcv_036_juanzi",
+        "hk_npcv_036_kai"
+      ],
+      "actions": [
+        {
+          "cmd": "问考卷",
+          "label": "问考卷",
+          "keywords": [],
+          "desc": "樊湘那一页",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_036_juanzi"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "翰墨斋后堂收着一页考卷。樊湘落第那年，这一页不见了。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_036_juanzi",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问那本书",
+          "label": "问那本书",
+          "keywords": [],
+          "desc": "书里夹着的那页纸",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_036_kai"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "鲁拂衣的书里夹着一张纸，她从没敢翻到那一页。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_036_kai",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_082": {
+      "id": "npcv_082",
+      "quests": [
+        "hk_npcv_082_mibao",
+        "hk_npcv_082_hua"
+      ],
+      "actions": [
+        {
+          "cmd": "问旧仆",
+          "label": "问旧仆",
+          "keywords": [],
+          "desc": "埋在院里那份副本",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_082_mibao"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "天牢里那个老仆，每递一回密报，就在院里埋一份副本。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_082_mibao",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问那幅画",
+          "label": "问那幅画",
+          "keywords": [],
+          "desc": "书房里那幅画",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_082_hua"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "元怀瑾书房挂着一幅画，夏承志理了三十年，一次没敢多看。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_082_hua",
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

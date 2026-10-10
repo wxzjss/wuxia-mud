@@ -191,12 +191,39 @@
     return _hasSave;
   }
 
-  /** 继续游戏：打开存档列表选一个读 */
+  /** 继续游戏：直接载入最近一次存档（主人 bug B2）
+   *
+   * 修法（根因：原实现只做了「拉列表 + 判空 + U.openSaves('load')」，
+   * 全程**没有任何自动载入调用**，所以点「继续游戏」必然落到选择界面）：
+   *   · `local[0]` 即最新档 —— `engine.listSaves()` 已按 `savedAt` 降序返回，
+   *     且已过滤掉测试/调试档（B1），所以 [0] 一定是**你自己最近那一份真存档**。
+   *   · 载入成功走与存档面板「读取」按钮**完全相同**的那套收尾
+   *     （appendLog → renderAll → show('game')），不复述一遍逻辑。
+   *   · 载入失败（存档文件损坏等）**不静默**：toast 报错并退回列表界面，
+   *     玩家仍可手动选另一档 —— 不能因为自动载入失败就把他堵在门外。
+   *   · 一个存档都没有时按验收标准 B2-5：只 toast，**不跳读取界面**。
+   */
   async function continueGame() {
     let local = [];
     try { const d = await api.saves(); local = d.saves || []; } catch (e) { }
     if (!local.length) { U.toast('还没有存档，先创建角色吧', 'warn'); return; }
-    U.openSaves('load');
+    const latest = local[0];
+    try {
+      await api.load(latest.id);
+      U.clearLog();
+      U.appendLog([{ type: 'sys', text: '已读取存档：' + latest.id }]);
+      U.renderAll(S.view);
+      U.show('game');
+      U.toast('读取成功', 'ok');
+      /* 与新建角色后一致：进游戏才拉起键盘。触屏机型点「继续游戏」
+         不该被软键盘挡住视野（验收标准 B2-6）。 */
+      setTimeout(() => { const i = $('cmd-input'); if (i && !('ontouchstart' in window)) i.focus(); }, 200);
+      bus.emit('gamestart');
+      await probeSaves();
+    } catch (e) {
+      U.toast('最近存档读取失败：' + (e && e.message || e) + '，请手动选择', 'error', 4000);
+      U.openSaves('load');
+    }
   }
 
   /* ============================================================

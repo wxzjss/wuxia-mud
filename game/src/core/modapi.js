@@ -208,7 +208,14 @@ function evalCond(cond, ctx) {
     let c;
     const sub = Object.keys(cond).find(k => ['>=', '>', '<=', '<', '==', '!='].includes(k));
     if (sub !== undefined) c = parseCmp(cond[sub]);
-    else if (cond.value !== undefined) c = parseCmp(cond.value);
+    /* ⚠️ 补 `op:` 支持（2026-10-11，W5 事件库落地时发现）：
+       设计文档与画像 hooks 一律写 `{var, op, value}`，但原代码**无视 `op`**，
+       直接 `parseCmp(value)`（数值 → 默认 `>=`）→ 写 `op:'<'` 会**静默变成 `>=`**
+       （又一个「不报错就是不生效」的坑）。这里**纯增量**地认 `op`
+       （有运算符键时仍以运算符键为准，行为不变；无 op 时行为不变，仍默认 `>=`）。 */
+    else if (typeof cond.op === 'string' && ['>=', '>', '<=', '<', '==', '!='].includes(cond.op.trim())) {
+      c = parseCmp(cond.value); c.op = cond.op.trim();
+    } else if (cond.value !== undefined) c = parseCmp(cond.value);
     else c = { op: '>=', num: 0 };
     if (!cmp(p.getVar(cond.var) || 0, c.op, c.num)) return false;
   }
@@ -342,6 +349,16 @@ function evalEffect(eff, ctx) {
 
   // 条件包装 { if: cond, then: [...], else: [...] }
   if (eff && typeof eff === 'object' && eff.if !== undefined && !eff.type) {
+    const ok = evalCond(eff.if, ctx);
+    return evalEffects(ok ? eff.then : eff.else, ctx);
+  }
+  /* ⚠️ 条件包装的**另一种写法**：`{ type:'cond', if, then, else }`
+     （地图数据里 temple「搜查」就是这种）。
+     上一条if 要求 `!eff.type`，而这条偏偏带了 type:'cond'，
+     于是掉进下面的「纯条件 → 忽略」分支，**返回空数组**——
+     玩家点「搜查」按钮，界面一行字都不出，看起来就是按钮坏了。
+     所以这里补上带 type 的分支，两种写法都认。 */
+  if (eff && typeof eff === 'object' && eff.type === 'cond' && eff.if !== undefined) {
     const ok = evalCond(eff.if, ctx);
     return evalEffects(ok ? eff.then : eff.else, ctx);
   }
@@ -561,10 +578,21 @@ function evalEffect(eff, ctx) {
     case 'sound': out.push({ kind: 'sound', text: args[0] }); break;
     case 'hint': out.push({ kind: 'sys', text: raw }); break;
     case 'warn': out.push({ kind: 'warn', text: raw }); break;
+    /* rumor:<seedId>[:roomId] —— 世界事件把「风声」落进传闻系统（design/27 §2.6）。
+       subject 默认 'world'（非玩家 → 不结算玩家声望，R4 守卫）；
+       silent:true 免目击（天灾/械斗本来就是「大家都知道的事」，不要求有人在场）。
+       生成成功时把该传闻的当前说法直接排一行 —— 玩家当场就「听得到」。 */
+    case 'rumor': {
+      if (w && typeof w.addRumor === 'function' && args[0]) {
+        const r = w.addRumor(args[0], { room: args[1] || p.room, subject: 'world', silent: true });
+        if (r && typeof w.fillRumorText === 'function') out.push({ kind: 'story', text: w.fillRumorText(r) });
+      }
+      break;
+    }
 
     // 时间
     case 'sleep': p.advanceTime(num(0, 60)); break;
-    case 'wait': out.push({ kind: 'wait', text: num(0, 500) }); break;
+    case 'wait': out.push({ kind: 'wait', ms: num(0, 500), text: '' }); break;
 
     // 门派
     case 'joinSect': {

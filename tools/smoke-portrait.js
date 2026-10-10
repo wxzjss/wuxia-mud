@@ -215,7 +215,19 @@ ok('13 个画像 NPC 的 ask 全部能问出欲望', shown.ask === PORTRAIT_IDS.
 
 section('⑤ 无画像 NPC 完全保持现状（不崩 / 无 undefined）');
 const noPortrait = Object.keys(w.data.npcs).filter(id => !w.data.npcs[id].portrait && w.data.npcs[id].room);
-ok('无画像 NPC 数量 > 300', noPortrait.length > 300, noPortrait.length + ' 个');
+/* 这一条是**样本量地板**，不是「画像应当只覆盖少数」。
+   历史上被改过两次，两次都是同一个错：
+     · 最早写死 `noPortrait > 300` —— 画像一多就假红（317→281 时炸过一次）；
+     · 后来改成比例 `> 全库 × 0.7` —— 只是把假红推迟了：C 层 86 张落地后
+       覆盖率过半（195/333 = 58%），它又红了。**测的对象从根上就错了。**
+   真正该守的是两件互相独立的事，所以拆成两条断：
+     ① 样本要够大 —— 无画像的人至少留几十个，否则第 ⑤ 组（不崩 / 无 undefined）等于没测；
+     ② 画像**只增不减** —— 谁把画像弄丢了，这条必须红。这才是真正的回归闸门。*/
+const allNpcIds = Object.keys(w.data.npcs);
+const withPortrait = allNpcIds.filter(id => w.data.npcs[id].portrait);
+ok('⑤-a 无画像 NPC 样本量够（≥50，第⑤组才有意义）', noPortrait.length >= 50, `${noPortrait.length} 个`);
+ok('⑤-b 画像数只增不减（少一张就是回归）', withPortrait.length >= 128,
+  `${withPortrait.length} 张（地板 128 = 原 16 + A 层 26 + C 层 86）`);
 let crashed = 0, undef = 0;
 for (const id of noPortrait.slice(0, 60)) {
   const def = w.data.npcs[id];

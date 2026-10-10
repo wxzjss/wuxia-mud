@@ -101,6 +101,19 @@
   /* ============================================================
    *  状态栏
    * ============================================================ */
+  /* 数值显示：最多留一位小数（主人报的「饱食度与饮水小数点不要超过一位」）。
+     生存系统内部按小数扣（`p.food -= 0.5` / 分钟回复按比例加），原值常有
+     99.9187 这种四位小数。向下取整到一位（99.9187 → 99.9）：
+       · 既满足「不超过一位小数」，
+       · 又不会像四舍五入那样把 99.96 显示成满值 100.0（没满却写满，等于谎报）。
+     整数原样返回（100 → 100，不补 .0）。 */
+  function fmt1(n) {
+    const v = Number(n);
+    if (!isFinite(v)) return 0;
+    return Math.floor(v * 10) / 10;
+  }
+  /* 顶栏 / 面板都要用，单一入口，别各写各的（否则又会出现「一处取整一处不取」）。 */
+
   function renderTopbar(p) {
     if (!p) return;
     $('tb-name').textContent = p.name || '侠客';
@@ -121,9 +134,13 @@
     $('tb-money').textContent = p.moneyText || (p.money + ' 文');
     $('tb-time').textContent = (p.timeText || '');
 
-    /* 饱食 / 饮水（第三批：生存） */
-    const food = p.food || 0, foodMax = p.maxFood || 100;
-    const water = p.water || 0, waterMax = p.maxWater || 100;
+    /* 饱食 / 饮水（第三批：生存）
+       ⚠️ 一律走 fmt1()：生存系统按小数扣（`p.food -= 0.5` 之类），
+       直接拼原值会在顶栏出现「饱食 99.9187/100」这种数字 —— 又长又丑，
+       手机上还会被挤断成「饱和100」。（主理人真机截图发现）
+       上限也过一遍 fmt1（maxFood 可能是 100.0 / 100.5 这类数据）。 */
+    const food = fmt1(p.food), foodMax = fmt1(p.maxFood || 100);
+    const water = fmt1(p.water), waterMax = fmt1(p.maxWater || 100);
     const barFood = $('bar-food'), barWater = $('bar-water');
     if (barFood) {
       barFood.style.width = util.pct(food, foodMax) + '%';
@@ -379,6 +396,7 @@
     /* 缓存当前场景 view，供 openNpcMenu 读玩家性别等 */
     if (v && v.player) S.view = v;
     renderGuide(v);
+    maybeShowIntro(v);
 
     const npcBox = $('scene-npcs');
     npcBox.innerHTML = '';
@@ -435,6 +453,23 @@
    *  服务端按玩家真实进度算出 guide 状态（见 core/tutorial.js），
    *  这里负责：右侧常驻「当前该做什么」+ 点击「详情」看全部步骤。
    * ============================================================ */
+
+  /* 沉浸式开场（楔子）：玩家首次进入江湖时弹叙事剧情，看过（seen_intro）后不再弹。
+   * 与后端 tutorial.introFor 配合；点击「踏入江湖」上报标记并关闭。 */
+  function maybeShowIntro(v) {
+    const it = v && v.intro;
+    if (!it || !it.show) return;
+    if (S.introShown) return;             // 本次会话已弹过，防重复弹
+    S.introShown = true;
+    modal(it.title || '楔子', it.body || '',
+      '<button id="intro-go" class="btn-primary">踏入江湖</button>');
+    const b = $('intro-go');
+    if (b) b.onclick = () => {
+      if (api && api.markGuide) api.markGuide('seen_intro');
+      closeModal();
+    };
+  }
+
   function renderGuide(v) {
     const g = v && v.guide;
     const block = $('guide-block');
@@ -537,7 +572,7 @@
     if (n.favorTier) bits.push('<b style="color:' + esc(n.favorColor || '#6a6a6a') + '">' + esc(n.favorTier) +
       '</b>（好感 ' + (n.favor || 0) + '）');
     if (n.tagName) bits.push(esc(n.tagName));
-    if (n.gender) bits.push(n.gender === 'female' ? '女' : '男');
+    if (n.gender) bits.push(genderNoun(n.gender));
     if (n.age) bits.push(n.age + ' 岁');
     if (n.homeName) bits.push('居 ' + esc(n.homeName));
     /* 与我已有的关系（婚配 / 结拜）—— 放最前面最显眼 */
@@ -560,8 +595,8 @@
       { label: '询问 (ask)', action: 'ask' },
       { label: '看人物关系 (guanxi)', action: 'guanxi' },
       { label: '查看好感 (favor)', action: 'favor' },
-      { label: '送他东西 (give)', action: 'give' },
-      { label: '给他银钱 (give_money)', action: 'givemoney' },
+      { label: '送' + pronounTA(n.gender) + '东西 (give)', action: 'give' },
+      { label: '给' + pronounTA(n.gender) + '银钱 (give_money)', action: 'givemoney' },
       n.canQingjiao ? { label: '请教武学 (qingjiao)', action: 'qingjiao' } : null,
       n.canQiecuo !== false ? { label: '切磋武艺 (qiecuo)', action: 'qiecuo', hint: '点到为止，不结仇' } : null,
       /* ---- 姻缘 ---- */
@@ -882,7 +917,7 @@
       h += '<div class="love-card spouse">' +
         '<div class="lc-role">正室</div>' +
         '<div class="lc-name">' + esc(m.spouse.name) + '</div>' +
-        '<div class="lc-sub">' + (m.spouse.gender === 'female' ? '女' : '男') +
+        '<div class="lc-sub">' + genderNoun(m.spouse.gender) +
         (m.spouse.age ? ' · ' + m.spouse.age + ' 岁' : '') + '</div>' +
         (m.spouse.homeName ? '<div class="lc-sub">居 ' + esc(m.spouse.homeName) + '（你可出入布置）</div>' : '') +
         '</div>';
@@ -904,7 +939,7 @@
       h += '<div class="love-sub">妾室</div><div class="love-row-wrap">';
       m.concubines.forEach(c => {
         h += '<div class="love-chip">' + esc(c.name) +
-          '<i>' + (c.gender === 'female' ? '女' : '男') + (c.age ? ' · ' + c.age : '') + '</i></div>';
+          '<i>' + genderNoun(c.gender) + (c.age ? ' · ' + c.age : '') + '</i></div>';
       });
       h += '</div>';
     }
@@ -912,7 +947,7 @@
       h += '<div class="love-sub">结缘</div><div class="love-row-wrap">';
       m.bonds.forEach(c => {
         h += '<div class="love-chip bond">' + esc(c.name) +
-          '<i>' + (c.gender === 'female' ? '女' : '男') + (c.age ? ' · ' + c.age : '') + '</i></div>';
+          '<i>' + genderNoun(c.gender) + (c.age ? ' · ' + c.age : '') + '</i></div>';
       });
       h += '</div>';
     }
@@ -932,7 +967,7 @@
         h += '<div class="love-sub">' + cn + '</div><div class="love-row-wrap">';
         k[key].forEach(x => {
           h += '<div class="love-chip kin' + (x.dead ? ' dead' : '') + '">' + esc(x.name) +
-            '<i>' + (x.gender === 'female' ? '女' : '男') + (x.age ? ' · ' + x.age : '') +
+            '<i>' + genderNoun(x.gender) + (x.age ? ' · ' + x.age : '') +
             ' · 好感 ' + (x.favor || 0) + '</i></div>';
         });
         h += '</div>';
@@ -953,7 +988,7 @@
           if (n.canSwear !== false && !n.kinLabel) tags.push('<i>可结拜</i>');
         }
         h += '<div class="love-chip act" data-npc="' + esc(n.name) + '">' + esc(n.name) +
-          '<i>' + (n.gender === 'female' ? '女' : '男') + (n.age ? ' · ' + n.age + ' 岁' : '') +
+          '<i>' + genderNoun(n.gender) + (n.age ? ' · ' + n.age + ' 岁' : '') +
           ' · 好感 ' + (n.favor || 0) + '</i>' +
           '<span class="lc-tags">' + tags.join(' ') + '</span></div>';
       });
@@ -1044,7 +1079,7 @@
     h += '<div class="pc-col">';
     h += kv('姓名', p.name);
     h += kv('称号', p.title || '—');
-    h += kv('性别', p.gender === 'female' ? '女' : '男');
+    h += kv('性别', genderNoun(p.gender));
     h += kv('境界', p.realm || '不通武艺');
     h += kv('门派', p.sectName || '无门无派');
     h += kv('职位', p.rankName || '—');
@@ -1053,8 +1088,10 @@
     h += '</div><div class="pc-col">';
     h += kv('气血', p.hp + ' / ' + p.maxHp);
     h += kv('内力', p.mp + ' / ' + p.maxMp);
-    h += kv('饱食', p.food + ' / ' + p.maxFood);
-    h += kv('饮水', p.water + ' / ' + p.maxWater);
+    /* 气血/内力是整数，饱食/饮水是小数 —— 一律过 fmt1（单一入口，别两处写法不一致，
+       否则顶栏修好了、这个「状态一览」面板还印 99.9187） */
+    h += kv('饱食', fmt1(p.food) + ' / ' + fmt1(p.maxFood));
+    h += kv('饮水', fmt1(p.water) + ' / ' + fmt1(p.maxWater));
     h += kv('潜能', p.potential);
     h += kv('银两', p.money + ' 文');
     h += kv('杀气', p.karma);
@@ -1362,22 +1399,55 @@
     const list = questArr(src);
     const done = (src && !Array.isArray(src) && Array.isArray(src.done)) ? src.done : [];
     if (!list.length && !done.length) return '<div class="modal-text">暂无进行中的任务。</div>';
-    let h = '';
+
+    /* 分组显示（主人报的「点任务快捷键弹出来的还是旧主线」）。
+       原来是一把梭平铺：只要身上挂着主线，打开面板第一屏全是主线，
+       支线/门派/委托全被压到下面，看着就像「任务面板只有主线」。
+       现在按类型分组、主线在最上，一眼能分清「我该走的故事」和「我手头的差事」。
+       类型名直接用数据里的 `type` 字段（60_quests.json 里就是中文：主线/支线/门派/委托…），
+       不认识的类型归到「其他」，不丢内容。 */
+    const ORDER = ['主线', '支线', '门派', '委托', '江湖', '其他'];
+    const groups = {};
     list.forEach(q => {
-      h += '<div class="quest-card"><div class="q-name">' + esc(q.name) + '</div>';
-      h += '<div class="q-desc">' + esc(q.desc || '') + '</div>';
-      h += '<div class="q-stage">当前阶段：' + esc(q.stageDesc || '—') + '</div>';
+      const t = String((q && q.type) || '').trim() || '其他';
+      (groups[t] = groups[t] || []).push(q);
+    });
+    const keys = Object.keys(groups).sort((a, b) => {
+      const ia = ORDER.indexOf(a), ib = ORDER.indexOf(b);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    });
+
+    const card = q => {
+      let s = '<div class="quest-card"><div class="q-name">' + esc(q.name) + '</div>';
+      s += '<div class="q-desc">' + esc(q.desc || '') + '</div>';
+      s += '<div class="q-stage">当前阶段：' + esc(q.stageDesc || '—') + '</div>';
       if (q.targets && q.targets.length) {
-        h += '<div class="q-targets">';
+        s += '<div class="q-targets">';
         q.targets.forEach(t => {
-          h += '<div class="q-target' + (t.done ? ' done' : '') + '">' +
+          s += '<div class="q-target' + (t.done ? ' done' : '') + '">' +
             '<span>' + esc(t.desc || t.name || '') + '</span>' +
             '<span class="qt-num">' + (t.count != null ? ((t.cur != null ? t.cur : 0) + '/' + (t.count || 1)) : (t.done ? '✔' : '')) + '</span></div>';
         });
-        h += '</div>';
+        s += '</div>';
       }
-      h += '</div>';
-    });
+      return s + '</div>';
+    };
+
+    let h = '';
+    if (list.length) {
+      keys.forEach(k => {
+        h += '<div class="q-group-title">' + esc(k) +
+          '<span class="qg-num">' + groups[k].length + '</span></div>';
+        groups[k].forEach(q => { h += card(q); });
+      });
+      /* 身上只有主线时给一句提示。不写「请前往XX领取」那种说明书腔，
+         只说江湖上的道理 —— 支线本来就靠搭话、帮忙换来的。 */
+      const hasSide = (groups['支线'] || []).length > 0 || (groups['委托'] || []).length > 0;
+      if (!hasSide) {
+        h += '<div class="panel-note">手上还没有别人的事。江湖上那些差事，' +
+          '都是跟人搭话、搭把手换来的 —— 见了面，问一句「有什么事」。</div>';
+      }
+    }
     if (done.length) {
       h += '<div class="q-done-title">已完成（' + done.length + '）</div><div class="q-done-list">';
       done.forEach(d => {
@@ -1468,11 +1538,26 @@
    *    · 区域用整片底色块铺开，边界即区域轮廓
    *    · 去过的地方显示名字，没去过的只留一个淡点
    * ============================================================ */
-  const MAP_CELL = 30;         // 每格边长（含走廊）
-  const MAP_NODE = 26;         // 格子方块边长
-  const MAP_PAD = 34;          // 画布留白
-  const DIR_CN = { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下' };
-  const DIR_OFF = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0], u: [0, -1], d: [0, 1] };
+  /* 地图尺寸两套（按视口宽度选，见 mapHtml 顶部）：
+     桌面维持 30/26/8，手机窄屏放大到 52/46/13 —— 房间名才看得全。
+     之所以在 mapHtml 内部算而不放模块级常量：多个测试脚本会把 mapHtml 源码
+     单独抽出来在别的环境跑，模块级常量在抽取环境里取不到。 */
+  /* ⚠️ 八方向都要有（主人报的「地图显示问题 / 附近位置对不上」）。
+     数据里 `exits` 用的是 `n/s/e/w/ne/nw/se/sw`（全图 650 条出口里有 **124 条是斜向**，
+     占 19%）。这张表原来只写了 6 个方向，于是：
+       · 方位名漏斜向 → 地图抬头印出「出口：北 / 南 / 西 / 东 / **ne**」这种半中半英；
+       · 走廊连线漏斜向 → `const d = DIR_OFF[dir]; if (!d) return;` 直接跳过，
+         斜着相连的两个房间画出来**互不相连**、看着像隔了老远，
+         玩家自然觉得「地图上的位置跟实际对不上」。
+     u/d 仍是「上下层」：不画连线（不同楼层画条直线等于骗人），只在出口名里显示。 */
+  const DIR_CN = {
+    n: '北', s: '南', e: '东', w: '西', u: '上', d: '下',
+    ne: '东北', nw: '西北', se: '东南', sw: '西南',
+  };
+  const DIR_OFF = {
+    n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0],
+    ne: [1, -1], nw: [-1, -1], se: [1, 1], sw: [-1, 1],
+  };
 
   /* ---- 地图视野范围（两级）：默认只看当前区域，可切世界地图 ----
      主人明确要求：打开地图默认显示**当前区域**，另有开关看全部区域。
@@ -1480,6 +1565,22 @@
   let mapScope = 'region';   // 'region' | 'world'
 
   function mapHtml(v) {
+    /* ---- 尺寸自适应（主人报的 bug：手机上地块名看不清 / 看不全）----
+       视口宽度 < 640 视为手机窄屏：把格子与字号一起放大，
+       名字从「最多 4 字」放宽到「最多 6 字」，46px 方块两行塞得下。
+       桌面端（≥640）维持原值 30/26/8，观感零改动。 */
+    let vw = 0;
+    try {
+      if (typeof global !== 'undefined' && global && typeof global.innerWidth === 'number') vw = global.innerWidth;
+    } catch (e) { vw = 0; }
+    const NARROW = vw > 0 && vw < 640;
+    const MAP_CELL = NARROW ? 52 : 30;    // 每格边长（含走廊）
+    const MAP_NODE = NARROW ? 46 : 26;    // 格子方块边长
+    const MAP_PAD = NARROW ? 30 : 34;     // 画布留白
+    const M_LINE = NARROW ? 1.15 : 1;     // 名字行距
+    const M_NAME_MAX = NARROW ? 6 : 4;    // 名字最多显示几个字
+    const mFont = r => NARROW ? (r.current ? 14 : 13) : (r.current ? 9 : 8);
+
     const m = v.map || {};
     const allRooms = m.rooms || [];
     if (!allRooms.length) return '<div class="modal-text">地图数据不可用。</div>';
@@ -1487,13 +1588,18 @@
     /* 当前区域 = 有 current 标记的房间所属区域 */
     const here = allRooms.find(r => r.current);
     const curRegion = here ? here.region : null;
-    if (mapScope === 'region' && !curRegion) mapScope = 'world';
+    /* mapScope 是模块级状态（记住「当前区域 / 天下全图」的选择）。
+       ⚠️ 多个测试脚本会把本函数单独抽出来跑，抽取环境里没有 mapScope；
+       故读取一律走本地 sc，只在确实存在时才回写模块状态 —— 抽出环境也能跑。 */
+    let sc = (typeof mapScope === 'undefined') ? 'world' : mapScope;
+    if (sc === 'region' && !curRegion) sc = 'world';
+    if (typeof mapScope !== 'undefined') mapScope = sc;
 
     const boxes = m.regionBoxes || {};
     /* region 模式：只留当前区域这块 box；world 模式：全图 */
-    const scopeBox = (mapScope === 'region' && boxes[curRegion]) ? boxes[curRegion] : null;
+    const scopeBox = (sc === 'region' && boxes[curRegion]) ? boxes[curRegion] : null;
 
-    const rooms = (mapScope === 'region' && curRegion)
+    const rooms = (sc === 'region' && curRegion)
       ? allRooms.filter(r => r.region === curRegion)
       : allRooms;
     if (!rooms.length) return '<div class="modal-text">此区域暂无地图数据。</div>';
@@ -1525,10 +1631,10 @@
     h += '</div>';
     /* --- 视野切换：当前区域 / 天下全图 --- */
     h += '<div class="map-scope">';
-    h += '<button class="ms-btn' + (mapScope === 'region' ? ' on' : '') + '" data-scope="region">当前区域</button>';
-    h += '<button class="ms-btn' + (mapScope === 'world' ? ' on' : '') + '" data-scope="world">天下全图</button>';
+    h += '<button class="ms-btn' + (sc === 'region' ? ' on' : '') + '" data-scope="region">当前区域</button>';
+    h += '<button class="ms-btn' + (sc === 'world' ? ' on' : '') + '" data-scope="world">天下全图</button>';
     h += '<span class="ms-where">' +
-      (mapScope === 'region'
+      (sc === 'region'
         ? '只显示你脚下这一片：' + esc(((m.regions || []).find(x => x.id === curRegion) || {}).name || '—')
         : '天下三十四州，尽收眼底') +
       '</span></div>';
@@ -1552,11 +1658,11 @@
     /* --- 画布 --- */
     const W = b.w * MAP_CELL + MAP_PAD * 2;
     const H = b.h * MAP_CELL + MAP_PAD * 2;
-    h += '<div class="map-canvas" style="width:' + W + 'px;height:' + H + 'px">';
+    h += '<div class="map-canvas' + (NARROW ? ' map-narrow' : '') + '" style="width:' + W + 'px;height:' + H + 'px">';
 
     /* 1) 底：整张网格纸（让它看起来是一张连续地图） */
     h += '<div class="map-grid-bg" style="width:' + (b.w * MAP_CELL) + 'px;height:' + (b.h * MAP_CELL) + 'px;' +
-      'left:' + MAP_PAD + 'px;top:' + MAP_PAD + 'px"></div>';
+      'left:' + MAP_PAD + 'px;top:' + MAP_PAD + 'px;background-size:' + MAP_CELL + 'px ' + MAP_CELL + 'px"></div>';
 
     /* 2) 区域底色块（铺满区域包围盒）—— region 模式只画当前区域 */
     const boxes2 = scopeBox ? { [curRegion]: scopeBox } : boxes;
@@ -1568,7 +1674,7 @@
       const bh = box.h * MAP_CELL;
       h += '<div class="map-region-box" style="left:' + left + 'px;top:' + top + 'px;' +
         'width:' + bw + 'px;height:' + bh + 'px;background:' + esc(box.color) + '14;border-color:' + esc(box.color) + '44">' +
-        '<span class="mrb-label" style="color:' + esc(box.color) + '">' + esc(box.name) + '</span></div>';
+        '<span class="mrb-label" style="color:' + esc(box.color) + ';font-size:' + (NARROW ? 15 : 11) + 'px">' + esc(box.name) + '</span></div>';
     });
 
     /* 3) 地形装饰（树石山水…）
@@ -1585,14 +1691,15 @@
       farm: 'tr-farm', cloud: 'tr-cloud',
     };
     const terrain = m.terrain || {};
-    const terrRegions = (mapScope === 'region' && curRegion) ? [curRegion] : Object.keys(terrain);
+    const terrRegions = (sc === 'region' && curRegion) ? [curRegion] : Object.keys(terrain);
     let terrainHtml = '';
     terrRegions.forEach(rid => {
       (terrain[rid] || []).forEach(t => {
         const gx = cx({ x: t.x });
         const gy = cy({ y: t.y });
         terrainHtml += '<i class="map-terrain ' + (TERRAIN_CLS[t.type] || 'tr-grass') +
-          '" style="left:' + gx + 'px;top:' + gy + 'px" title="' + esc(t.type) + '">' +
+          '" style="left:' + gx + 'px;top:' + gy + 'px;width:' + MAP_CELL + 'px;height:' + MAP_CELL + 'px;' +
+          'line-height:' + MAP_CELL + 'px;font-size:' + (NARROW ? 24 : 15) + 'px" title="' + esc(t.type) + '">' +
           (TERRAIN_GLYPH[t.type] || '⁛') + '</i>';
       });
     });
@@ -1633,14 +1740,16 @@
       const reg = (m.regions || []).find(x => x.id === r.region);
       const stripe = reg ? reg.color : '#999';
       const known = r.visited || r.current || r.near || r.reach;
-      const label = r.current ? '你' : (known ? shortName(r.name) : '');
+      /* 窄屏名字最多 6 字（46px 方块两行塞得下），桌面仍是 4 字 */
+      const label = r.current ? '你' : (known ? shortName(r.name, M_NAME_MAX) : '');
       h += '<button class="' + cls + '" style="left:' + left + 'px;top:' + top + 'px;' +
+        'width:' + MAP_NODE + 'px;height:' + MAP_NODE + 'px;' +
         '--stripe:' + esc(stripe) + '"' +
         ' title="' + esc(r.name) + (r.region ? '（' + esc((reg && reg.name) || r.region) + '）' : '') +
         (r.dist >= 0 ? '　' + r.dist + ' 步' : '　未探索') + '"' +
         ' data-room="' + esc(r.id) + '"' +
         (r.near ? ' data-go="' + esc(r.id) + '"' : '') + '>' +
-        '<span class="mn-name">' + esc(label) + '</span></button>';
+        '<span class="mn-name" style="font-size:' + mFont(r) + 'px;line-height:' + M_LINE + '">' + esc(label) + '</span></button>';
     });
 
     h += '</div>';
@@ -1669,10 +1778,12 @@
     return h;
   }
 
-  /* 房间名太长就砍一刀，格子里塞得下 */
-  function shortName(n) {
+  /* 房间名太长就砍一刀，格子里塞得下。
+     max = 小屏可放宽（窄屏 6 字、桌面 4 字）；不传时保持老行为（4 字）。 */
+  function shortName(n, max) {
     n = String(n || '');
-    return n.length > 4 ? n.slice(0, 4) : n;
+    const cap = max || 4;
+    return n.length > cap ? n.slice(0, cap) : n;
   }
 
   function helpHtml() {
@@ -1819,7 +1930,18 @@
           const room = (S.view && S.view.map && (S.view.map.rooms || []).find(r => r.id === id)) || null;
           if (!room) return;
           closeModal();
-          /* 优先用方向走（引擎的方向指令最可靠），否则用房间名 */
+          /* ★ 优先用**方向**走，别再只认房间名（主人报的「地图上显示的附近位置与
+             人物实际所在位置不符」）。
+             原来这一步写的是 `doCmd('go ' + room.name)`（注释里写着「优先用方向，
+             否则用房间名」，代码却只做了后半句）。`go <名字>` 是**按名字找**：
+             江湖上同名/近名的房间一多（「客栈」「山道」「小巷」满地都是），
+             点的是地图上紧挨着你的那一格，人却被带去了**另一个同名房间** ——
+             位置自然「对不上」。
+             方向是**当前房间自己的出口**（`view.exits[].dir → to`），一对一，
+             不可能走错。只有「一步可达」的格子才有方向，所以查不到才退回名字。 */
+          const ex = ((S.view && S.view.exits) || [])
+            .find(x => x && x.to === id && !x.locked);
+          if (ex) return doCmd(ex.dir, { fromButton: true });
           doCmd('go ' + room.name, { fromButton: true });
         };
       });
@@ -1842,11 +1964,36 @@
         };
       });
 
+      /* 触屏没有 hover，方块上的 title 提示看不到 ——
+         点「看得到但走不到」的格子，弹出完整房间名（主人报的「地块名看不全」）。
+         可走的格子（data-go）已另有 onclick，跳过，别抢它的「走过去」。
+         未探索的仍保持神秘，只提示「尚未探索」，不剧透名字。 */
+      document.querySelectorAll('#modal-body .map-node[data-room]').forEach(b => {
+        if (b.getAttribute('data-go')) return;
+        b.onclick = () => {
+          const id = b.getAttribute('data-room');
+          const room = (S.view && S.view.map && (S.view.map.rooms || []).find(r => r.id === id)) || null;
+          if (!room) return;
+          const known = room.visited || room.current || room.near || room.reach;
+          if (!known) return toast('此处尚未探索');
+          const rn = ((S.view.map.regions || []).find(x => x.id === room.region) || {}).name || '';
+          toast(room.name + (rn ? '（' + rn + '）' : '') + (room.dist >= 0 ? '　' + room.dist + ' 步' : ''));
+        };
+      });
+
       /* 斜向平移（主人报的 bug：只能上下/左右滑，滑不出斜角）
          浏览器原生触摸滚动一次只沿一个轴，这里自己接管 pointer 手势：
          按下 → 记起点；移动 → 同时改 scrollLeft 和 scrollTop（真斜向）；
          松开 → 若位移超过阈值则吞掉这次点击，避免拖完误触「走过去」。 */
       bindMapPan();
+
+      /* 开图先把自己挪到视野正中（主人报的「地图上显示的附近位置与人物实际所在位置不符」）。
+         画布是「整块区域」大小（窄屏一个 16×16 的区域 = 892×892px），手机可视区只有
+         ~343×400。不居中的话，开图停在左上角：玩家自己的格子大概率在视野外，
+         眼前看到的全是「别处」，自然觉得地图和实际对不上 —— 再加当时横向还划不动
+         （见 .map-canvas 的 max-width 注释），等于永远找不到自己。
+         居中后「你在这里」的红点就在正中，「一步可达」的房间自然落在它四周。 */
+      centerMapOnHere();
     }
     /* 社交面板：点某人 → 看详情 */
     if (name === 'social') {
@@ -1909,6 +2056,15 @@
     return PANEL_CMDS[c] || null;
   }
 
+  /* 「退出游戏」也走本地拦截：退出的动作**只能由界面完成**（后端最多回你一句话，
+     关不掉这一局）。所以和面板指令一样，在 doCmd 里就地处理，不打扰后端。
+     后端 commands.js 也注册了同名指令 —— 那是给纯文本客户端 / mod 留的体面答复，
+     顺带让 help 的「系统」组列得出来。两边都要在，别只留一边。 */
+  const QUIT_CMDS = ['quit', 'exit', '退出游戏', '退出', '离开游戏', '回主菜单'];
+  function isQuitCmd(cmd) {
+    return QUIT_CMDS.indexOf(String(cmd || '').trim().toLowerCase()) >= 0;
+  }
+
   /* 面板 → 新手教程标记。用函数声明而非 const，避免 panel() 在 719 行
      提前访问它时的 TDZ 报错（panel 早于 const 声明但调用发生在加载后，
      仍然用函数更稳妥）。 */
@@ -1922,16 +2078,35 @@
     if (!el || el.__panBound) return;
     el.__panBound = true;
     const sx = { x: 0, y: 0, l: 0, t: 0, on: false, moved: 0 };
+
+    /* ⚠️ 主人报的 bug「手滑动地图划不动」的根因就在这里：
+       TouchEvent 上**没有** clientX/clientY —— 坐标在 e.touches[0] 里。
+       旧代码对 touchstart/touchmove 直接读 e.clientX（= undefined），
+       dx 于是成了 NaN，el.scrollLeft 被赋成 NaN（浏览器忽略），
+       结果：桌面上鼠标拖得动，手机上怎么划都不动。
+       统一入口按「鼠标事件 → e.clientX / 触摸事件 → touches[0].clientX」取坐标。 */
+    const ptOf = e => {
+      if (!e) return null;
+      const t = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]);
+      if (t && typeof t.clientX === 'number') return { x: t.clientX, y: t.clientY };
+      if (typeof e.clientX === 'number') return { x: e.clientX, y: e.clientY };
+      return null;
+    };
+
     const down = e => {
       if (e.button != null && e.button !== 0) return;
+      const p = ptOf(e);
+      if (!p) return;
       sx.on = true; sx.moved = 0;
-      sx.x = e.clientX; sx.y = e.clientY;
+      sx.x = p.x; sx.y = p.y;
       sx.l = el.scrollLeft; sx.t = el.scrollTop;
       el.classList.add('panning');
     };
     const move = e => {
       if (!sx.on) return;
-      const dx = e.clientX - sx.x, dy = e.clientY - sx.y;
+      const p = ptOf(e);
+      if (!p) return;
+      const dx = p.x - sx.x, dy = p.y - sx.y;
       sx.moved = Math.max(sx.moved, Math.abs(dx) + Math.abs(dy));
       el.scrollLeft = sx.l - dx;
       el.scrollTop = sx.t - dy;
@@ -1963,6 +2138,37 @@
         if (e.cancelable) e.preventDefault();
       }
     }, { passive: false });
+  }
+
+  /* 把地图画布滚到「你在这里」那一格的正中。
+     ⚠️ 房间格子的坐标写在内联 style 里（left/top 由 mapHtml 算好），
+     所以这里**从 DOM 反读**，不再把几何算法抄第二遍（抄了迟早和 mapHtml 走偏）。
+     用 getAttribute('style') 而不是 el.style.left：DOM stub（测试用的假 DOM）
+     只实现了 setAttribute，解析内联串两边都能拿到。 */
+  function centerMapOnHere() {
+    const canvas = document.querySelector('#modal-body .map-canvas');
+    if (!canvas) return false;
+    const nodes = document.querySelectorAll('#modal-body .map-node') || [];
+    let here = null;
+    for (let i = 0; i < nodes.length; i++) {
+      const cls = String((nodes[i] && nodes[i].className) || '');
+      if (cls.split(/\s+/).indexOf('here') >= 0) { here = nodes[i]; break; }
+    }
+    if (!here) return false;
+    const st = String((here.getAttribute && here.getAttribute('style')) || '');
+    const ml = st.match(/left:\s*(-?[\d.]+)px/);
+    const mt = st.match(/top:\s*(-?[\d.]+)px/);
+    const mw = st.match(/width:\s*(-?[\d.]+)px/);
+    if (!ml || !mt) return false;
+    const left = parseFloat(ml[1]), top = parseFloat(mt[1]);
+    const side = mw ? parseFloat(mw[1]) : 26;   /* 格子边长（窄屏 46 / 桌面 26），居中要减半个 */
+    /* 可视尺寸优先取画布本身（受 max-width/max-height 夹过）；
+       取不到（老浏览器 / 假 DOM）就退回视口宽，至少别把 scrollLeft 留在 0。 */
+    const vw = canvas.clientWidth || (typeof innerWidth === 'number' ? innerWidth : 0);
+    const vh = canvas.clientHeight || 0;
+    if (vw > 0 && canvas.scrollWidth > vw) canvas.scrollLeft = Math.max(0, left - (vw - side) / 2);
+    if (vh > 0 && canvas.scrollHeight > vh) canvas.scrollTop = Math.max(0, top - (vh - side) / 2);
+    return true;
   }
 
   let cmdHistory = [];
@@ -2028,6 +2234,15 @@
       appendLog([{ type: 'cmd', text: '> ' + cmd }]);
       if (fromButton) blurCmdInput();
       return panel(pn);
+    }
+
+    /* 退出游戏：同样本地解决。放在这里而不是后端，是因为「回主菜单」是界面行为
+       （要切屏、要刷「继续游戏」按钮），后端返回的文本做不到。 */
+    if (isQuitCmd(cmd)) {
+      pushHistory(cmd);
+      appendLog([{ type: 'cmd', text: '> ' + cmd }]);
+      if (fromButton) blurCmdInput();
+      return quitGame();
     }
 
     pushHistory(cmd);
@@ -2131,6 +2346,47 @@
       .finally(() => { _autosavePending = false; });
   }
 
+  /* ============================================================
+   *  退出游戏（quit / 退出游戏 / 侧栏「返回主菜单」共用这一条路）
+   *
+   *  三条规矩，都是「别让玩家白玩」：
+   *    ① 先问一句 —— 敲错一个字就退出，谁都要骂人；
+   *    ② 退出前**先存档**（有人关掉了自动存档，也不能因此丢进度）；
+   *    ③ 回主菜单后要把「继续游戏」按钮刷出来 —— 否则刚退出就看不到自己的档，
+   *       玩家会以为进度没了。
+   * ============================================================ */
+  async function quitGame() {
+    /* 没进游戏（还在标题/创建角色）时不必问，也没什么可存 */
+    if (!S.view || !S.view.player) { show('start'); return; }
+    const ok = await confirmBox('退出游戏', '退出前会先替你存好进度。确定回主菜单吗？', '退 出');
+    if (!ok) return;
+
+    appendLog([{ type: 'info', text: '你收拢行囊，退出了江湖。' }]);
+    let saved = false;
+    try {
+      const key = autosaveId();
+      const d = await api.save(key);
+      cloudSave(key, d && d.data);
+      saved = true;
+    } catch (e) {
+      /* 存不上也不能把人锁在游戏里 —— 只是老实告诉玩家这次没存成 */
+    }
+
+    show('start');
+    try {
+      const d = await api.saves();
+      const has = ((d && d.saves) || []).length > 0;
+      const btn = $('btn-continue');
+      if (btn) btn.style.display = has ? '' : 'none';
+      const nb = $('btn-newgame');
+      if (nb) nb.classList.toggle('primary', !has);
+    } catch (e) {
+      /* 主菜单自己还会再探一次存档，这里失败不影响 */
+    }
+    toast(saved ? '已退出游戏（进度已保存）' : '已退出游戏（这次没能存上，下次记得手动存档）',
+      saved ? 'ok' : 'warn');
+  }
+
   /* 登录态下把存档也落一份到云端（换设备接着玩） */
   function cloudSave(key, data) {
     const C = global.WXCLOUD;
@@ -2213,12 +2469,61 @@
 
     box.innerHTML = items.map(it =>
       '<button class="qb-btn" data-cmd="' + esc(it.cmd) + '">' + esc(it.label) + '</button>').join('') +
+      /* ☰ 菜单：手机端唯一的面板 / 系统入口。
+         ⚠️ 窄屏（≤820px）CSS 会把 #sidebar 整个 display:none，桌面上点得到的
+            属性 / 装备 / 姻缘义亲 / 家宅 / 保存进度 / 设置 / 返回主菜单，
+            在手机上**一个入口都没有**（「设置」「保存进度」也不在指令表里）；
+            战斗态快捷条又被换成攻击键，连背包都点不开（触屏验收第 9 条因此必挂）。
+         桌面端侧栏还在，.qb-menu 由 CSS 藏起来（见 main.css），不重复。 */
+      '<button class="qb-btn qb-menu" id="qb-menu" title="打开菜单（面板 / 存档 / 设置）">☰ 菜单</button>' +
       (inCombat ? '' : '<button class="qb-btn qb-edit" id="qb-edit" title="编辑快捷键">⚙ 编辑</button>');
     box.querySelectorAll('.qb-btn[data-cmd]').forEach(b => {
       b.onclick = () => doCmd(b.getAttribute('data-cmd'), { fromButton: true });
     });
+    const menuBtn = $('qb-menu');
+    if (menuBtn) menuBtn.onclick = openSideMenu;
     const edit = $('qb-edit');
     if (edit) edit.onclick = openQuickbarEditor;
+  }
+
+  /* 手机端「☰ 菜单」：等价于左侧栏那套面板 + 系统动作。
+     数据与侧栏同源（下面 bindSidebar / doSidebarAct 共用），别各写一份。
+     ⚠️ 不变式（`tools/smoke-uiux.js` §7 会钉住）：**本清单必须覆盖 `index.html`
+        `#sidebar` 里每一个 `data-panel` / `data-act`** —— 否则窄屏（侧栏 display:none）
+        那个面板在手机上就又没有入口了，而且不会有人发现。
+     ⚠️ 本清单比侧栏多出两项（`slaves` 奴册·护院 / `guide` 江湖指引）：它们**根本不在
+        侧栏里**，桌面端只能靠指令或快捷条进；留在 ☰ 里是有意的，§7 把它们记为「已知多余项」，
+        别的多余项仍会报红。 */
+  function openSideMenu() {
+    const list = [
+      { label: '状态', panel: 'score' },
+      { label: '属性', panel: 'attr' },
+      { label: '武学', panel: 'skills' },
+      { label: '任务', panel: 'quests' },
+      { label: '门派', panel: 'sect' },
+      { label: '武学修为', panel: 'martial' },
+      { label: '宗门 · 师承', panel: 'found' },
+      { label: '背包', panel: 'inventory' },
+      { label: '装备', panel: 'equipment' },
+      { label: '状态效果', panel: 'affects' },
+      { label: '人情往来', panel: 'social' },
+      { label: '姻缘义亲', panel: 'love' },
+      { label: '我的家宅', panel: 'home' },
+      { label: '奴册 · 护院', panel: 'slaves' },
+      { label: '地图', panel: 'map' },
+      { label: '指令帮助', panel: 'help' },
+      { label: '江湖指引', panel: 'guide' },
+      { label: '保存进度', act: 'save', hint: '存到本机' },
+      { label: '读取存档', act: 'loadlist' },
+      { label: 'MOD 管理', act: 'modcenter' },
+      { label: 'MOD 制作器', act: 'modmaker' },
+      { label: '设置', act: 'settings' },
+      { label: '返回主菜单', act: 'backmenu', hint: '会先替你存档' },
+    ];
+    choices('菜单', list, it => {
+      if (it.panel) return panel(it.panel);
+      if (it.act) return doSidebarAct(it.act);
+    });
   }
 
   /* 编辑快捷键：增删改 + 恢复默认 */
@@ -2443,6 +2748,13 @@
       const tag = (e.target.tagName || '').toLowerCase();
       if (tag === 'input' || tag === 'textarea') return;
 
+      /* ⚠️ 面板 / 选择框开着时，屏蔽方向与字母快捷键（还有 1-9 的方向键）。
+         否则：开着「背包」「地图」看内容时按 w/a/s/d 会**在弹窗背后偷偷走动**
+         —— 弹窗不关、日志在底下变，玩家以为只是翻页。
+         数字键更隐蔽：九宫格在弹窗后面的日志里，按 1 会走到「上一个房间」的出口。 */
+      const openMask = id => { const m = $(id); return !!(m && m.classList && !m.classList.contains('hidden')); };
+      if (openMask('modal-mask') || openMask('choices-mask')) return;
+
       /* 数字键 1-9 = 方向/快捷。
          方向按钮只剩九宫格（.exit-map）里了。
          ⚠️ 日志里堆着历史房间的出口图，必须只取**最后一个** .exit-map，
@@ -2482,6 +2794,20 @@
     }
   }
 
+  /* 侧栏「动作」按钮的统一处理（左侧栏与手机 ☰ 菜单共用一处，别写两份） */
+  function doSidebarAct(a) {
+    if (a === 'save') return openSaves('save');
+    if (a === 'loadlist') return openSaves('load');
+    if (a === 'modcenter') return showModCenter();
+    if (a === 'modmaker') return showModMaker();
+    if (a === 'settings') return openSettings();
+    if (a === 'backmenu') {
+      /* 与 quit 指令共用同一套：先确认、再存档、再回主菜单。
+         以前这里只切屏不存档 —— 关掉自动存档的人点它会白丢一段进度。 */
+      return quitGame();
+    }
+  }
+
   function bindSidebar() {
     document.querySelectorAll('#sidebar .sb-btn').forEach(b => {
       b.onclick = () => {
@@ -2489,16 +2815,7 @@
         const a = b.getAttribute('data-act');
         if (p) return panel(p);
         if (!a) return;
-        if (a === 'save') return openSaves('save');
-        if (a === 'loadlist') return openSaves('load');
-        if (a === 'modcenter') return showModCenter();
-        if (a === 'modmaker') return showModMaker();
-        if (a === 'settings') return openSettings();
-        if (a === 'backmenu') {
-          confirmBox('返回主菜单', '返回主菜单不会丢失进度（请先确认已保存）。', '返 回').then(ok => {
-            if (ok) show('start');
-          });
-        }
+        doSidebarAct(a);
       };
     });
   }
@@ -2520,12 +2837,46 @@
   }
 
   /* ============================================================
+   *  性别名词 / 指代 —— 前端镜像（真相源：game/src/core/pronouns.js）
+   *
+   *  ⚠️ 为什么这里另有一份：前端（浏览器里 / 测试的 vm 里）**拿不到 core 模块**
+   *     （没有 require），而后端 NPC 视图目前只发 `gender` 的**原始值**，
+   *     不发算好的名词。判据只能在这里镜像一次。
+   *  ⚠️ 铁律：**不许再散落 `gender === 'female' ? '女' : '男'`** —— 那正是
+   *     B11/B15 的成因：`gender === 'other'`（毒蛇/灰狼等 6 个）会落进 else，
+   *     被显示成「男」（主人实测：点毒蛇，菜单头写着「山中猛兽 · 男」）。
+   *     所有按性别渲染名词的地方一律走 genderNoun()。
+   *  → 待后端把 `genderNoun` 直接放进 NPC 视图字段后，这里应改为「只读后端给的名词」，
+   *     届时前端这份镜像可删（登记于 design/13-owner-bug-fix-report.md）。
+   *  ⚠️ 位置：本块是纯辅助函数，放在文件末尾（导出之前）只是为与其它渲染辅助相邻；
+   *     函数声明会**提升**，上方调用点（openNpcMenu / scoreHtml / loveHtml …）照样能用，
+   *     与位置无关。历史：本块曾被挪到这里以避开 smoke-combat 的**行号**白名单假红；
+   *     该护栏现已改为「整行原文 + 次数」，不再钉行号，位置因此自由。
+   * ============================================================ */
+  function genderNoun(x) {
+    const g = (x && typeof x === 'object') ? x.gender : x;
+    if (g === 'female') return '女';
+    if (g === 'male') return '男';
+    return '不明';            /* other / 缺失：兽 & 性别成谜的人 */
+  }
+  /* 指代「对方」的人称（菜单文案用）：他 / 她；性别成谜用「TA」。
+     —— 与既有「与 TA 结缘 / 与 TA 结拜」同一写法，不为兽类生造「它」。 */
+  function pronounTA(x) {
+    const g = (x && typeof x === 'object') ? x.gender : x;
+    if (g === 'female') return '她';
+    if (g === 'male') return '他';
+    return 'TA';
+  }
+
+  /* ============================================================
    *  导出
    * ============================================================ */
   global.WXUI = {
     show, toast, modal, closeModal, bindModal, choices, closeChoices, confirmBox,
     renderAll, renderTopbar, renderRoom, renderRoomActions, renderScene, renderCombat, renderQuickbar,
     appendLog, paintLog, clearLog, doCmd, panel, panelForCmd, openSaves, openSettings, applySettings,
+    quitGame, isQuitCmd,
+    centerMapOnHere, fmt1,
     bindInput, bindHotkeys, bindSidebar, bindGuide,
     showModCenter, showModMaker, showMarket,
     afterAction, autoSave, autosaveId,

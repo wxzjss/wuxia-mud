@@ -16,6 +16,19 @@ const { fmtTime, shichen, stars, clamp, fuzzyFind, normalizeCmd } = require('./u
 const mapLayout = require('./maplayout');
 const tutorial = require('./tutorial');
 const social = require('./social');
+
+/* 「可与名宿一战」的名单 —— `defeatLegend` 条件就认它。
+ *
+ * 放在模块级、只此一份，是为了让测试能**读同一个来源**（而不是在测试里再抄一份名单，
+ * 那样改一处忘一处，测试就守不住东西了）。
+ *
+ * ⚠️ 选人铁律：**绝不能放主线 Boss 或主线委托人**。
+ *   曾经放过 `mojiao_dongfang`（第四幕 Boss）/ `blood_saber`·`xingxiu_laoxian`（第三幕 Boss）/
+ *   `shaolin_fangzheng`（第三幕委托人）/ `nv_huang`（第五幕委托人）—— 后果是
+ *   ① 玩家可能**在第一幕就把第四幕的 Boss 打倒**，后面再打一次；
+ *   ② 或者反过来**打自己的委托人**（蓝图 §0 专门规避过的缺陷）。
+ *   现在这三位（灭绝师太 / 太虚居士 / 神秘老僧）都是**不在任何主线节点上**的成名人物。 */
+const LEGEND_IDS = ['emei_miejue', 'taixu_hermit', 'shenni'];
 const marriage = require('./marriage');
 const kinship = require('./kinship');
 const homeMod = require('./home');
@@ -32,6 +45,22 @@ const TAG_NAMES = {
   hunter: '猎户', monk: '僧人', nun: '尼姑', taoist: '道人', actor: '戏子',
   boatman: '船夫', gambler: '赌徒', waiter2: '茶博士',
 };
+/* -------------------------------------------------------------------- *
+ * 测试 / 调试存档的命名约定（主人 bug B1）
+ *
+ * 根因：`saves/` 是玩家存档目录，但工具脚本（`tools/smoke-test.js`、
+ * `tools/smoke-act2.js`）跑一次就往里裸写一份存档，于是「测试侠客」
+ * 出现在主人的读取存档列表里，且因savedAt 最新而排在**首行**。
+ *
+ * 修法分两层（缺一层都不够）：
+ *   ① 工具脚本改走 `save(id, {_test:true})`，不再写裸文件（B1 的一半）；
+ *   ② `listSaves()` 按下面的名单 + `_testMark` 双重过滤（B1 的另一半，
+ *      也顺带挡住历史遗留档）。
+ * 真实玩家存档既不命中名单、也不带 _testMark，故不会被误伤。
+ * -------------------------------------------------------------------- */
+const TEST_SAVE_PREFIXES = ['test_', 'smoke_', '_inst_', '_local_', 'tmp_'];
+const TEST_SAVE_IDS = new Set(['test_slot']);
+
 function tagNameCN(t) { return t ? (TAG_NAMES[t] || t) : null; }
 
 // 注册到世界的内置自定义条件 / 效果函数
@@ -46,9 +75,10 @@ function registerBuiltinFns(world) {
   };
   world.condFns.defeatLegend = ({ }, ctx) => {
     const p = ctx.player;
-    return ['mojiao_dongfang', 'blood_saber', 'xingxiu_laoxian', 'shaolin_fangzheng', 'emei_miejue', 'nv_huang']
-      .some(id => p.hasFlag('killed_' + id));
+    return LEGEND_IDS.some(id => p.hasFlag('killed_' + id));
   };
+  /* 把名单挂到 world 上，供测试与 mod 读同一个来源（见文件头 LEGEND_IDS 注释） */
+  world.legendIds = LEGEND_IDS.slice();
   world.condFns.visited50 = ({ }, ctx) => Object.keys(ctx.player.flags).filter(k => k.startsWith('visited_')).length >= 50;
   world.condFns.hasItemCount = (args, ctx) => ctx.player.countItem(args.item) >= (args.count || 1);
   // 完成 N 条支线（主线靠支线推进：认识江湖朋友、打探消息）
@@ -344,7 +374,7 @@ class GameEngine {
         region: region ? region.name : room.region,
         regionId: room.region,
         regionColor: region ? region.color : '#666',
-        desc: evalTemplate(room.desc || '', { player: p, world: w }),
+        desc: (w._migrateNotice ? w._migrateNotice + '\n' : '') + evalTemplate(room.desc || '', { player: p, world: w }),
         color: region ? region.color : '#666',
         env: [w.seasonCN(), shichen(p.timeMinutes), w.weather].filter(Boolean).join(' · '),
         /* 家宅：这间屋子归谁、我能不能上手布置 */
@@ -363,6 +393,7 @@ class GameEngine {
       quests,
       map: this.mapView(),
       guide: tutorial.guideState(p, p.tutorialFlags || []),
+      intro: tutorial.introFor(p, p.tutorialFlags || []),
       marriage: marriage.summary(w),
       kinship: kinship.summary(w),
       home: homeMod.summary(w),
@@ -664,7 +695,18 @@ class GameEngine {
     const room = w.getRoom(p.room);
     if (!room) return { region: null, rooms: [], current: null };
     const region = w.getRegion(room.region);
-    const allRooms = w.data.rooms;
+    /* ⚠️ 私域（private:true）**不上地图** ——
+       design/09 §3.3：B/C 层虚拟宅院是「拜访」才进的副本，不是地图上的格子。
+       不过滤的话，玩家一拜访地图上就冒出一格「张家宅」，区域房间数也跟着跳。
+       注：`private` 这个标记是 estate/home/sectFounder 早就在用的「玩家房产不上地图」
+       语义，拜访私域沿用它，mapView 一并过滤 —— 两边同向，不冲突。
+       但**删除**私域只能按 `_privateHost` 判（见 world.leaveHouse 的注释）。 */
+    const allRooms = {};
+    for (const id of Object.keys(w.data.rooms)) {
+      const r = w.data.rooms[id];
+      if (r && r.private) continue;
+      allRooms[id] = r;
+    }
 
     /* --- 布局：区域装箱，每个区域内部按出口方向排布 --- */
     if (!this._mapLayout || this._mapLayoutFor !== allRooms) {
@@ -745,6 +787,8 @@ class GameEngine {
     if (!p) return { lines: [{ kind: 'warn', text: '请先创建角色。' }], view: this.view() };
     const ctx = { player: p, world: w, engine: this };
     const before = p.room;
+    /* B13 连带收尾：读档迁移提示「只顶在下一屏房间描述前」，玩家一动就撤掉，不长期挂描述上。 */
+    if (w._migrateNotice) w._migrateNotice = null;
     /* 中文口语归一化：「往北走」→「n」、「查看背包」→「i」 */
     const norm = normalizeCmd(input);
     this.markTutorial(input, norm);
@@ -752,6 +796,9 @@ class GameEngine {
     const lines = res.lines || [];
     // 后处理
     w.advanceTime(1);
+    /* 世界动态 W5/W7：把「推进时间时」世界抛出的 storyline 台词排进玩家输出。
+       （storyline 产品侧零消费者 —— 以前 onTick / onDayTick 的台词 emit 出去就沉了。） */
+    this._drainWorldLines(lines);
     this.postProcess(lines, before, opts);
     const out = { lines, ...res };
     out.view = this.view();
@@ -777,7 +824,8 @@ class GameEngine {
   markTutorialFlag(flag) {
     const p = this.world.player;
     if (!p || !flag) return false;
-    const valid = Object.keys(tutorial.CMD_FLAGS).some(k => tutorial.CMD_FLAGS[k] === flag);
+    const valid = Object.keys(tutorial.CMD_FLAGS).some(k => tutorial.CMD_FLAGS[k] === flag)
+      || tutorial.EXTRA_FLAGS.indexOf(flag) >= 0;
     if (!valid) return false;
     if (!p.tutorialFlags) p.tutorialFlags = [];
     if (p.tutorialFlags.indexOf(flag) >= 0) return true;
@@ -795,7 +843,24 @@ class GameEngine {
     const c = this.cmds;
     const merged = lines || [];
     // 击杀计数
-    const killLines = merged.filter(l => l.text && l.text.includes('气绝'));
+    /* ⚠️ 必须typeof 一下：lines 里不全是 {text: string}——
+       modapi 的 'sound'/'wait' 效果会塞非字符串载荷进来，
+       直接 l.text.includes(...) 会在玩家点某些房间按钮时整个崩掉
+       （TypeError: l.text.includes is not a function）。 */
+    const killLines = merged.filter(l => l && typeof l.text === 'string' && l.text.includes('气绝'));
+    /* 🩸 这一行以前只算出一个 `killLines` 就没了下文（死变量）——
+       后果是 **「击杀 N 个某某」这类任务目标永远不涨**：
+       `q_emei_entry`（杀恶徒 10）/ `q_bounty_bandit`（杀山贼 10）/ `q_huashan_entry`（杀山贼 3）/
+       `q_huashan_spy`（杀魔教教众 3）/ `q_xianglong`（击败丁春秋）/ `q_huashan_sword_test`（击退来犯之敌 5）
+       —— 玩家杀够数也交不了任务（`report` 会因目标未满而拒绝）。
+       现在按 world 登记的击杀队列真推进；`killLines` 保留给下面的提示文案用。 */
+    const killQueue = (w._killQueue || []).splice(0);
+    for (const defId of killQueue) {
+      if (!defId) continue;
+      const add = c.advanceQuestCounters({ player: p, world: w }, 'kill', defId, 1);
+      if (add && add.length) for (const l of add) merged.push(l);
+    }
+    void killLines;
     // 击杀在 world.onNpcKilled 里已经发事件，这里补一次
     // 房间类
     for (const qid of Object.keys(p.quests)) {
@@ -899,8 +964,20 @@ class GameEngine {
       lines.push({ kind: 'goto', text: opt.goto });
     }
     w.advanceTime(1);
+    this._drainWorldLines(lines);
     this.postProcess(lines, p.room);
     return { lines, view: this.view() };
+  }
+
+  /** 把推进时间期间世界抛出的 storyline 台词（W5/W7/onTick/worldTick）排进输出。
+   *  与 commands.js 返回的 lines 并列，玩家才看得见「世界自己发生的事」。 */
+  _drainWorldLines(lines) {
+    const w = this.world;
+    if (!w || typeof w.drainTickLines !== 'function') return;
+    const tick = w.drainTickLines();
+    for (const l of tick) {
+      if (l && l.text !== undefined && l.text !== '') lines.push(l);
+    }
   }
 
   /* ------------------------------------------------------------------ *
@@ -922,24 +999,64 @@ class GameEngine {
   /* ------------------------------------------------------------------ *
    * 存读档
    * ------------------------------------------------------------------ */
+
+  /**
+   * 判断一份存档是不是「测试/调试档」，是则**不出现在玩家存档列表里**。
+   *
+   * 背景（主人 bug B1）：`listSaves()` 原本把 `saves/` 下所有 `.json` 全列出，
+   * 无任何过滤，于是 `tools/smoke-test.js` 跑一次留下的 `test_slot.json`
+   * （玩家名「测试侠客」）就混进了主人的读取存档列表 —— 而它的 savedAt
+   * 还比两个真存档都新，排序在**第一行**，触屏玩家根本无从自查来源。
+   *
+   * 两条判据（不同严格度，因为可信度不同）：
+   *   ① `TEST_SAVE_IDS` 精确名单 —— **按 id 直接挡，不看正文**。
+     这些是保留名，玩家存档的 id 一律是 `save_<时间戳>` 格式，绝不会撞上；
+     历史遗留档（没有标记的旧 test_slot.json）靠这条挡住。
+   *   ② `TEST_SAVE_PREFIXES` 前缀 —— **必须同时**正文带 `_testMark` 才算。
+     只看前缀就杀太危险：将来玩家手打一个 `test_xxx` 存档名就会被误删。
+     `_testMark` 由 `save(id, {_test:true})` 写入，伪造不了。
+   *
+   * 真实玩家存档两条都不满足，一定不会被误伤。
+   */
+  _isTestSave(id, j) {
+    if (TEST_SAVE_IDS.has(id)) return true;
+    if (!TEST_SAVE_PREFIXES.some(p => id.startsWith(p))) return false;
+    return !!(j && j._testMark);
+  }
+
   listSaves() {
     const out = [];
     if (!fs.existsSync(this.saveDir)) return out;
     for (const f of fs.readdirSync(this.saveDir).filter(x => x.endsWith('.json'))) {
       try {
         const j = JSON.parse(fs.readFileSync(path.join(this.saveDir, f), 'utf8'));
-        out.push({ id: f.replace(/\.json$/, ''), name: j.player ? j.player.name : '?', level: j.player ? j.player.level : 1,
+        const id = f.replace(/\.json$/, '');
+        /* B1：测试/调试档一律不列出。 */
+        if (this._isTestSave(id, j)) continue;
+        out.push({ id, name: j.player ? j.player.name : '?', level: j.player ? j.player.level : 1,
           savedAt: j.savedAt, time: j.clockMinutes, room: j.player ? j.player.room : '', mods: (j.mods || []).length });
       } catch (e) { /* ignore */ }
     }
     return out.sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
   }
 
-  save(id) {
+  /**
+   * 存一档。传 `_test: true` 会把这一档标记成测试档：
+   * ① 正文里写 `_testMark`，② id 强制加 `test_` 前缀，
+   * 两条一起保证它**既不会被 listSaves 列出，也不会被玩家误读**。
+   * 测试脚本请一律走这条路，不要往真 saves/ 里裸写文件。
+   */
+  save(id, opts) {
     const w = this.world;
     if (!w.player) return { ok: false, msg: '没有可保存的存档。' };
-    const sid = id || ('save_' + new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19));
+    opts = opts || {};
+    let sid = id || ('save_' + new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19));
     const data = w.serialize();
+    if (opts._test) {
+      if (!TEST_SAVE_PREFIXES.some(p => sid.startsWith(p))) sid = 'test_' + sid;
+      data._testMark = true;
+      data.savedBy = 'test';
+    }
     // 额外记录任务 / 成就状态
     fs.writeFileSync(path.join(this.saveDir, sid + '.json'), JSON.stringify(data, null, 2), 'utf8');
     return { ok: true, id: sid, msg: `已保存到存档「${sid}」。`, data };

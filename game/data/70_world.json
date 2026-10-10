@@ -1,0 +1,997 @@
+{
+  "rumorSeeds": {
+    "rs_kill_named": {
+      "id": "rs_kill_named",
+      "kind": "杀人",
+      "polarity": -1,
+      "weight": 3.0,
+      "heat0": 85,
+      "tauDays": 6,
+      "ttlDays": 20,
+      "loud": true,
+      "texts": {
+        "true": "听说{who}在{where}把{whom}给结果了，一招都没还手。",
+        "half": "风声说{where}出了人命，动手的好像是{who}。",
+        "false": "你听说了吗？{who}在{where}连伤七条人命，那剑使得跟鬼似的！"
+      },
+      "marks": ["血案"]
+    },
+    "rs_kill_civilian": {
+      "id": "rs_kill_civilian",
+      "kind": "杀良",
+      "polarity": -1,
+      "weight": 4.0,
+      "heat0": 95,
+      "tauDays": 8,
+      "ttlDays": 24,
+      "loud": true,
+      "texts": {
+        "true": "{where}出了桩惨案，{who}把一个平头百姓给杀了，街坊都噤了声。",
+        "half": "听说是{who}在{where}闹出了人命，死的似是个良民。",
+        "false": "不得了！{who}在{where}屠了半条街，连妇孺都不放过！"
+      },
+      "marks": ["血案", "草菅"]
+    },
+    "rs_theft_caught": {
+      "id": "rs_theft_caught",
+      "kind": "偷窃",
+      "polarity": -1,
+      "weight": 1.5,
+      "heat0": 55,
+      "tauDays": 2,
+      "ttlDays": 8,
+      "loud": false,
+      "texts": {
+        "true": "{who}在{where}伸手摸了人家的钱袋，当场被人逮个正着。",
+        "half": "风言{where}有个贼被拿了，好像是{who}。",
+        "false": "{who}在{where}偷了金山银山，却没人敢声响！"
+      },
+      "marks": ["盗窃"]
+    },
+    "rs_resist_arrest": {
+      "id": "rs_resist_arrest",
+      "kind": "抗官",
+      "polarity": -1,
+      "weight": 2.5,
+      "heat0": 80,
+      "tauDays": 5,
+      "ttlDays": 16,
+      "loud": true,
+      "texts": {
+        "true": "{who}在{where}当街拒捕，打伤了差役，撒腿就跑。",
+        "half": "听说{where}有人跟官府动了手，传是{who}。",
+        "false": "{who}在{where}反了天了，把衙门的人都撂倒了！"
+      },
+      "marks": ["抗官", "血案"]
+    },
+    "rs_save_life": {
+      "id": "rs_save_life",
+      "kind": "救人",
+      "polarity": 1,
+      "weight": 2.0,
+      "heat0": 60,
+      "tauDays": 5,
+      "ttlDays": 14,
+      "loud": false,
+      "texts": {
+        "true": "{who}在{where}从刀下救下一条人命，周遭都称一声好汉。",
+        "half": "说是{who}在{where}搭救了个人，不知真假。",
+        "false": "{who}在{where}单枪匹马退了十几个凶徒，神乎其技！"
+      },
+      "marks": ["义举"]
+    },
+    "rs_alms": {
+      "id": "rs_alms",
+      "kind": "行善",
+      "polarity": 1,
+      "weight": 0.8,
+      "heat0": 30,
+      "tauDays": 3,
+      "ttlDays": 8,
+      "loud": false,
+      "texts": {
+        "true": "{who}在{where}施了粥，几碗热汤救了几个快冻僵的乞儿。",
+        "half": "好像{who}在{where}散了些银米，积了点德。",
+        "false": "{who}在{where}开了三天流水席，穷人都当他是活菩萨！"
+      },
+      "marks": ["善名"]
+    },
+    "rs_tournament_win": {
+      "id": "rs_tournament_win",
+      "kind": "扬名",
+      "polarity": 1,
+      "weight": 3.5,
+      "heat0": 90,
+      "tauDays": 12,
+      "ttlDays": 30,
+      "loud": true,
+      "texts": {
+        "true": "{who}在{where}的大比上夺了头名，一招鲜吃遍天。",
+        "half": "江湖传{where}比武出了个黑马，八成是{who}。",
+        "false": "{who}在{where}以一敌百，把各派高手全挑落了马！"
+      },
+      "marks": ["扬名"]
+    },
+    "rs_sect_join": {
+      "id": "rs_sect_join",
+      "kind": "门派",
+      "polarity": 1,
+      "weight": 2.5,
+      "heat0": 75,
+      "tauDays": 10,
+      "ttlDays": 25,
+      "loud": true,
+      "texts": {
+        "true": "{who}在{where}正式入了门墙，往后算是有字号的人了。",
+        "half": "听闻{who}拜进了{where}的门户，不知深浅。",
+        "false": "{who}在{where}被破例收为亲传，风光得紧！"
+      },
+      "marks": ["江湖"]
+    },
+    "rs_sect_betray": {
+      "id": "rs_sect_betray",
+      "kind": "门派",
+      "polarity": -1,
+      "weight": 2.5,
+      "heat0": 75,
+      "tauDays": 10,
+      "ttlDays": 25,
+      "loud": true,
+      "texts": {
+        "true": "{who}在{where}背师叛门，卷了东西就走，人人唾弃。",
+        "half": "风声{where}出了个叛徒，传是{who}。",
+        "false": "{who}在{where}把师门掀了个底朝天，反出山门！"
+      },
+      "marks": ["背叛"]
+    },
+    "rs_deadbeat": {
+      "id": "rs_deadbeat",
+      "kind": "失信",
+      "polarity": -1,
+      "weight": 1.0,
+      "heat0": 40,
+      "tauDays": 4,
+      "ttlDays": 12,
+      "loud": false,
+      "texts": {
+        "true": "{who}在{where}赊了账赖着不还，掌柜的直跺脚。",
+        "half": "说是{who}在{where}欠了钱没影了。",
+        "false": "{who}在{where}骗了整条街的赊账，卷款潜逃！"
+      },
+      "marks": ["失信"]
+    },
+    "rs_break_marriage": {
+      "id": "rs_break_marriage",
+      "kind": "风评",
+      "polarity": -1,
+      "weight": 1.5,
+      "heat0": 50,
+      "tauDays": 5,
+      "ttlDays": 14,
+      "loud": false,
+      "texts": {
+        "true": "{who}在{where}当众退了亲，把对方一家臊得抬不起头。",
+        "half": "闲话{where}有人悔了婚约，说的好像是{who}。",
+        "false": "{who}在{where}休了三门亲事，成了街上的笑柄！"
+      },
+      "marks": ["风评"]
+    },
+    "rs_secret_out": {
+      "id": "rs_secret_out",
+      "kind": "揭私",
+      "polarity": -1,
+      "weight": 2.0,
+      "heat0": 70,
+      "tauDays": 4,
+      "ttlDays": 12,
+      "loud": true,
+      "texts": {
+        "true": "{who}在{where}把一个见不得人的秘辛抖落了出来，满城皆知。",
+        "half": "风传{where}有人泄了底，八成是{who}干的。",
+        "false": "{who}在{where}把惊天丑事捅破，牵连了一大片人！"
+      },
+      "marks": ["秘辛"]
+    },
+    "rs_dungeon_clear": {
+      "id": "rs_dungeon_clear",
+      "kind": "奇遇",
+      "polarity": 1,
+      "weight": 2.5,
+      "heat0": 70,
+      "tauDays": 9,
+      "ttlDays": 24,
+      "loud": false,
+      "texts": {
+        "true": "{who}在{where}的秘境里走了一遭，还活着出来了，堪称走运。",
+        "half": "传闻{where}的凶地有人独闯，说的好像是{who}。",
+        "false": "{who}在{where}的绝境里得了绝世奇缘，脱胎换骨！"
+      },
+      "marks": ["奇遇"]
+    },
+    "rs_drunkard": {
+      "id": "rs_drunkard",
+      "kind": "市井",
+      "polarity": 0,
+      "weight": 0.5,
+      "heat0": 25,
+      "tauDays": 2,
+      "ttlDays": 6,
+      "loud": false,
+      "texts": {
+        "true": "{who}在{where}连醉了三日，躺在檐下哼着小曲儿。",
+        "half": "说是{where}有个醉鬼，大约是{who}。",
+        "false": "{who}在{where}喝了三缸酒还不倒，酒量惊了半条街！"
+      },
+      "marks": ["醉乡"]
+    },
+    "rs_bigspender": {
+      "id": "rs_bigspender",
+      "kind": "豪客",
+      "polarity": 0,
+      "weight": 1.0,
+      "heat0": 45,
+      "tauDays": 3,
+      "ttlDays": 8,
+      "loud": false,
+      "texts": {
+        "true": "{who}在{where}一掷五百两，眼皮都不眨一下。",
+        "half": "风闻{where}来了个阔客，像极了{who}。",
+        "false": "{who}在{where}把整座楼都包了下来，挥金如土！"
+      },
+      "marks": ["豪奢"]
+    },
+    "rs_jailbreak": {
+      "id": "rs_jailbreak",
+      "kind": "重案",
+      "polarity": -1,
+      "weight": 4.0,
+      "heat0": 100,
+      "tauDays": 15,
+      "ttlDays": 40,
+      "loud": true,
+      "texts": {
+        "true": "{who}在{where}被下了大狱，又硬是越了狱，朝廷脸面扫地。",
+        "half": "惊闻{where}走了个要犯，传是{who}干的。",
+        "false": "{who}在{where}劫了天牢，把半个监城的囚犯都放了出来！"
+      },
+      "marks": ["重案", "血案"]
+    },
+    "rs_e_world_disaster": {
+      "id": "rs_e_world_disaster",
+      "kind": "天灾",
+      "polarity": 0,
+      "weight": 1.5,
+      "heat0": 70,
+      "tauDays": 8,
+      "ttlDays": 25,
+      "loud": true,
+      "texts": {
+        "true": "北边今年的收成，怕是完了。",
+        "half": "听说北边闹了灾，粮价要动。",
+        "false": "北边绝收了，饿殍遍野，逃难的人往南涌。"
+      },
+      "marks": [
+        "灾荒"
+      ]
+    },
+    "rs_e_world_sect": {
+      "id": "rs_e_world_sect",
+      "kind": "门派",
+      "polarity": 0,
+      "weight": 2,
+      "heat0": 65,
+      "tauDays": 10,
+      "ttlDays": 30,
+      "loud": true,
+      "texts": {
+        "true": "听说了吗，那几个门派又动了刀子。",
+        "half": "风声说两大门派近来不睦，早晚要出事。",
+        "false": "江湖要大乱了，几家门派已经血拼了好几场！"
+      },
+      "marks": [
+        "门派"
+      ]
+    },
+    "rs_e_world_market": {
+      "id": "rs_e_world_market",
+      "kind": "行情",
+      "polarity": 0,
+      "weight": 1,
+      "heat0": 50,
+      "tauDays": 6,
+      "ttlDays": 15,
+      "loud": false,
+      "texts": {
+        "true": "码头的货，这两天价不对。",
+        "half": "听人说集上的行情有点变。",
+        "false": "货价涨疯了，一日三变！"
+      },
+      "marks": [
+        "行情"
+      ]
+    },
+    "rs_e_world_wanted": {
+      "id": "rs_e_world_wanted",
+      "kind": "官面",
+      "polarity": -1,
+      "weight": 2.5,
+      "heat0": 75,
+      "tauDays": 7,
+      "ttlDays": 20,
+      "loud": true,
+      "texts": {
+        "true": "城门口贴了图，说是要拿一个人。",
+        "half": "听说官府在查一桩案子。",
+        "false": "官府发了海捕文书，方圆百里都在拿人！"
+      },
+      "marks": [
+        "官面"
+      ]
+    }
+
+  },
+  "worldEvents": {
+    "onDayTick": [
+      {
+        "id": "w5_locust",
+        "cat": "天灾饥荒",
+        "name": "蝗灾",
+        "cond": {
+          "and": [
+            {
+              "season": "summer"
+            },
+            {
+              "region": "farmland"
+            },
+            {
+              "chance": 0.12
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "天边飞来一片黄云，落到地里才知是蝗虫——它们不叫，只响。"
+          },
+          "var:grain_price=3",
+          "flag:famine_year",
+          "rumor:rs_e_world_disaster"
+        ],
+        "cooldownDays": 60
+      },
+      {
+        "id": "w5_wanted_poster",
+        "cat": "官府缉拿",
+        "name": "画影图形",
+        "cond": {
+          "and": [
+            {
+              "karma": "<=-30"
+            },
+            {
+              "chance": 0.3
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "城门口新贴了一张告示，画上的人眉眼竟有几分像你，围看的人散了又聚。"
+          },
+          "flag:wanted_poster",
+          "-rep:朝廷:20",
+          "rumor:rs_e_world_wanted"
+        ],
+        "cooldownDays": 30
+      },
+      {
+        "id": "w5_wanted_amnesty",
+        "cat": "官府缉拿",
+        "name": "大赦",
+        "cond": {
+          "and": [
+            {
+              "flag": "holiday_yuandan"
+            },
+            {
+              "var": "wanted",
+              "op": ">=",
+              "value": 1
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "新岁大赦，衙门口贴了榜：凡未结的旧案，一笔勾销。"
+          },
+          "var:wanted=0",
+          "unflag:wanted_poster",
+          "+rep:朝廷:5"
+        ]
+      },
+      {
+        "id": "w5_foe_bribe",
+        "cat": "江湖恩怨",
+        "name": "托人递话",
+        "cond": {
+          "and": [
+            {
+              "var": "rumor_heat_bad_max",
+              "op": ">=",
+              "value": 10
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "me",
+            "raw": "一个不相识的后生拦住你，递上一封没有署名的信"
+          },
+          {
+            "type": "narrate",
+            "raw": "信上只有一句：识相的，趁早离了这地界。"
+          },
+          "flag:foe_warned"
+        ],
+        "cooldownDays": 15
+      },
+      {
+        "id": "w5_sect_clash",
+        "cat": "门派纷争",
+        "name": "两派械斗",
+        "cond": {
+          "and": [
+            {
+              "var": "faction_rel_huashan_mojiao",
+              "op": "<",
+              "value": -40
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "me",
+            "raw": "山道上一伙人正打得难解难分"
+          },
+          "rumor:rs_e_world_sect",
+          "menu:帮谁|帮华山>+rep:huashan:20;;帮魔教>+rep:mojiao:20;;都不帮>-rep:*:3"
+        ],
+        "cooldownDays": 20
+      },
+      {
+        "id": "w5_sect_recruit",
+        "cat": "门派纷争",
+        "name": "大开山门",
+        "cond": {
+          "and": [
+            {
+              "var": "faction_power_huashan",
+              "op": ">=",
+              "value": 55
+            },
+            {
+              "chance": 0.15
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "华山近来声势正盛，山门前求艺的人排了半里地。"
+          },
+          "flag:sect_recruiting"
+        ],
+        "cooldownDays": 25
+      },
+      {
+        "id": "w5_storyteller",
+        "cat": "市井琐事",
+        "name": "说书人",
+        "cond": {
+          "and": [
+            {
+              "room": "jn_teahouse"
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "茶博士把长嘴壶一提，满堂安静下来，说书的清了清嗓子。"
+          },
+          "rumor:rs_e_world_market"
+        ],
+        "cooldownDays": 3
+      },
+      {
+        "id": "w5_price_swing",
+        "cat": "商路货殖",
+        "name": "货价波动",
+        "cond": {
+          "and": [
+            {
+              "region": "harbor"
+            },
+            {
+              "chance": 0.25
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "码头上几条船刚靠岸，脚夫喊的价，比上个月高了两成。"
+          },
+          "var:price_harbor=1.2",
+          "rumor:rs_e_world_market"
+        ],
+        "cooldownDays": 10
+      },
+      {
+        "id": "w5_refugee",
+        "cat": "天灾饥荒",
+        "name": "流民入城",
+        "cond": {
+          "and": [
+            {
+              "flag": "famine_year"
+            },
+            {
+              "region": "market"
+            },
+            {
+              "chance": 0.3
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "城门口涌进一群面黄肌瘦的人，扶老携幼，一言不发。"
+          },
+          "flag:refugees"
+        ],
+        "cooldownDays": 12
+      },
+      {
+        "id": "w5_wedding",
+        "cat": "市井琐事",
+        "name": "迎亲",
+        "cond": {
+          "and": [
+            {
+              "region": "jiangnan"
+            },
+            {
+              "chance": 0.06
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "街那头锣鼓响起来，一顶花轿由远及近，看热闹的人挤了半条街。"
+          }
+        ],
+        "cooldownDays": 8
+      },
+      {
+        "id": "w5_beacon",
+        "cat": "边关烽火",
+        "name": "烽火台举烟",
+        "cond": {
+          "and": [
+            {
+              "room": "road_beijiang_1"
+            },
+            {
+              "chance": 0.15
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "西北方向升起了三道烟。头一道是黑的，第二道也是黑的，第三道隔了很久才起来。"
+          },
+          "flag:hu_raid_warn"
+        ],
+        "cooldownDays": 30
+      },
+      {
+        "id": "w5_snow_block",
+        "cat": "边关烽火",
+        "name": "雪封山",
+        "cond": {
+          "and": [
+            {
+              "season": "winter"
+            },
+            {
+              "region": "beijiang"
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "一夜大雪，山道上的车辙全被填平，前头怕是走不通了。"
+          }
+        ],
+        "cooldownDays": 20
+      }
+    ]
+  },
+  "factions": {
+    "huashan": {
+      "id": "huashan",
+      "name": "华山派",
+      "kind": "门派",
+      "align": "正道",
+      "homeRegion": "huashan",
+      "power": 58,
+      "treasury": 1960,
+      "territories": [
+        "huashan"
+      ],
+      "mood": "守成"
+    },
+    "shaolin": {
+      "id": "shaolin",
+      "name": "少林派",
+      "kind": "门派",
+      "align": "正道",
+      "homeRegion": "shaolin",
+      "power": 46,
+      "treasury": 1720,
+      "territories": [
+        "shaolin"
+      ],
+      "mood": "守成"
+    },
+    "wudang": {
+      "id": "wudang",
+      "name": "武当派",
+      "kind": "门派",
+      "align": "正道",
+      "homeRegion": "wudang",
+      "power": 46,
+      "treasury": 1720,
+      "territories": [
+        "wudang"
+      ],
+      "mood": "守成"
+    },
+    "emei": {
+      "id": "emei",
+      "name": "峨眉派",
+      "kind": "门派",
+      "align": "正道",
+      "homeRegion": "emei",
+      "power": 46,
+      "treasury": 1720,
+      "territories": [
+        "emei"
+      ],
+      "mood": "守成"
+    },
+    "gaibang": {
+      "id": "gaibang",
+      "name": "丐帮",
+      "kind": "门派",
+      "align": "中立",
+      "homeRegion": "gaibang",
+      "power": 52,
+      "treasury": 1840,
+      "territories": [
+        "gaibang"
+      ],
+      "mood": "守成"
+    },
+    "tangmen": {
+      "id": "tangmen",
+      "name": "唐门",
+      "kind": "门派",
+      "align": "中立",
+      "homeRegion": "tangmen",
+      "power": 40,
+      "treasury": 1600,
+      "territories": [
+        "tangmen"
+      ],
+      "mood": "守成"
+    },
+    "mojiao": {
+      "id": "mojiao",
+      "name": "日月神教",
+      "kind": "门派",
+      "align": "邪道",
+      "homeRegion": "mojiao",
+      "power": 52,
+      "treasury": 1840,
+      "territories": [
+        "mojiao"
+      ],
+      "mood": "守成"
+    },
+    "miaojiang": {
+      "id": "miaojiang",
+      "name": "苗疆五毒教",
+      "kind": "门派",
+      "align": "邪道",
+      "homeRegion": "miaojiang",
+      "power": 46,
+      "treasury": 1720,
+      "territories": [
+        "miaojiang"
+      ],
+      "mood": "守成"
+    },
+    "dali": {
+      "id": "dali",
+      "name": "大理段氏",
+      "kind": "门派",
+      "align": "正道",
+      "homeRegion": "dali",
+      "power": 46,
+      "treasury": 1720,
+      "territories": [
+        "dali"
+      ],
+      "mood": "守成"
+    },
+    "xingxiu": {
+      "id": "xingxiu",
+      "name": "星宿派",
+      "kind": "门派",
+      "align": "邪道",
+      "homeRegion": "xiyu",
+      "power": 46,
+      "treasury": 1720,
+      "territories": [
+        "xiyu"
+      ],
+      "mood": "守成"
+    },
+    "gumu": {
+      "id": "gumu",
+      "name": "古墓派",
+      "kind": "门派",
+      "align": "中立",
+      "homeRegion": "gumu",
+      "power": 40,
+      "treasury": 1600,
+      "territories": [
+        "gumu"
+      ],
+      "mood": "守成"
+    },
+    "taohua": {
+      "id": "taohua",
+      "name": "桃花岛",
+      "kind": "门派",
+      "align": "中立",
+      "homeRegion": "taohuadao",
+      "power": 46,
+      "treasury": 1720,
+      "territories": [
+        "taohuadao"
+      ],
+      "mood": "守成"
+    },
+    "xiake": {
+      "id": "xiake",
+      "name": "侠客岛",
+      "kind": "门派",
+      "align": "中立",
+      "homeRegion": "xiake",
+      "power": 40,
+      "treasury": 1600,
+      "territories": [
+        "xiake"
+      ],
+      "mood": "守成"
+    },
+    "xuedao": {
+      "id": "xuedao",
+      "name": "血刀门",
+      "kind": "门派",
+      "align": "邪道",
+      "homeRegion": "beijiang",
+      "power": 46,
+      "treasury": 1720,
+      "territories": [
+        "beijiang"
+      ],
+      "mood": "守成"
+    },
+    "court": {
+      "id": "court",
+      "name": "朝廷",
+      "kind": "官府",
+      "align": "中立",
+      "homeRegion": "yamen",
+      "power": 55,
+      "treasury": 9000,
+      "territories": [
+        "yamen",
+        "palace",
+        "luoyang",
+        "changan",
+        "chengdu",
+        "xiangyang"
+      ],
+      "mood": "巡查"
+    },
+    "gang": {
+      "id": "gang",
+      "name": "漕帮",
+      "kind": "商会",
+      "align": "中立",
+      "homeRegion": "harbor",
+      "power": 40,
+      "treasury": 5200,
+      "territories": [
+        "harbor"
+      ],
+      "mood": "走货"
+    }
+  },
+  "calendar": {
+    "yearDays": 120,
+    "seasonDays": 30,
+    "monthDays": 30,
+    "festivals": [
+      {
+        "day": 0,
+        "id": "yuandan",
+        "name": "元日",
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "城中爆竹声不断，家家户户贴了新联，见面都拱手道一声新岁。"
+          },
+          "flag:holiday_yuandan"
+        ]
+      },
+      {
+        "day": 15,
+        "id": "shangyuan",
+        "name": "上元",
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "入夜挂起灯来，一条街都是红的；人挤人，灯也挤灯。"
+          },
+          "flag:holiday_shangyuan"
+        ]
+      },
+      {
+        "day": 35,
+        "id": "qingming",
+        "name": "清明",
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "城外坟茔多了许多新土，纸钱的灰被风卷着，飘飘荡荡。"
+          },
+          "flag:holiday_qingming"
+        ]
+      },
+      {
+        "day": 55,
+        "id": "duanwu",
+        "name": "端午",
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "河上龙舟鼓声震天，岸上人山人海；雄黄酒一坛坛往桌上搬。"
+          },
+          "flag:holiday_duanwu",
+          "+food:20"
+        ]
+      },
+      {
+        "day": 70,
+        "id": "qixi",
+        "name": "七夕",
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "桥头巷口成双成对，卖巧果的摊子前围了不少人。"
+          },
+          "flag:holiday_qixi"
+        ]
+      },
+      {
+        "day": 95,
+        "id": "zhongqiu",
+        "name": "中秋",
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "月亮圆得晃眼，家家把桌摆到院里；就是江湖人，今夜也少动刀兵。"
+          },
+          "flag:holiday_zhongqiu",
+          "+pot:30"
+        ]
+      },
+      {
+        "day": 110,
+        "id": "chongyang",
+        "name": "重阳",
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "半山都是登高赏菊的人，菊酒的气味一路飘下来。"
+          },
+          "flag:holiday_chongyang",
+          "+pot:30"
+        ]
+      },
+      {
+        "day": 118,
+        "id": "suichu",
+        "name": "岁除",
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "这一夜家家守岁，灯亮到天明；官府的差役也歇了班。"
+          },
+          "flag:holiday_suichu"
+        ]
+      }
+    ],
+    "cycles": [
+      {
+        "id": "wulin_dahui",
+        "name": "武林大会",
+        "periodDays": 240,
+        "offset": 60,
+        "span": 4,
+        "venue": [
+          "shaolin_daxiong",
+          "wudang_zixiao"
+        ],
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "少林与武当联名下帖，邀天下同道赴会——武林大会开了。"
+          },
+          "flag:cycle_wulin"
+        ]
+      },
+      {
+        "id": "caoyun",
+        "name": "漕运开帮",
+        "periodDays": 120,
+        "offset": 50,
+        "span": 3,
+        "venue": [
+          "jn_harbor"
+        ],
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "漕帮开帮，码头上人喊马嘶，货船排出去几里地。"
+          },
+          "flag:cycle_caoyun"
+        ]
+      }
+    ]
+  }
+}

@@ -6,6 +6,7 @@
   --paper-2: #ebe6d9;
   --paper-3: #e2dbc9;
   --ink: #2b2721;
+  --ink-1: #1f1c17;      /* 最深墨（楔子强调句用）；以前没定义，var(--ink-1) 整条声明被丢弃 */
   --ink-2: #4a443a;
   --ink-3: #6f675a;
   --ink-4: #9a917f;
@@ -14,7 +15,10 @@
   --red: #9c2b25;
   --red-2: #c0413a;
   --gold: #a8842c;
+  --gold-d: #8a6d1e;     /* 深金（悬停底色/小节标题）；以前没定义 —— 地图出口按钮 hover 时
+                            白字落在被丢弃的底色上 = 文字消失（见下方 .exit-inline:hover） */
   --jade: #3f7a63;
+  --jade-d: #2c6b4d;     /* 深翠（激活态文字）；与 .ra-btn 的 #2c6b4d 同色，以前没定义 */
   --blue: #2f5f8a;
   --purple: #6b4a7a;
   --hp: #b5352c;
@@ -255,9 +259,17 @@ body::before {
 .sb-btn:hover { background: rgba(255, 255, 255, .85); color: var(--ink); padding-left: 14px; }
 
 /* 中间舞台 */
-#stage { flex: 1; display: flex; flex-direction: column; min-width: 0; background: rgba(252, 250, 244, .84); }
+/* 中栏「一列」：房间卡 / 日志 / 输入栏 / 快捷条 共用**同一个宽度上限**。
+   做法：上限值只在这里定义一次（--col-w），下面四块一律 max-width: var(--col-w) 居中。
+   ⚠️ 别在下面各处再写一个数字 —— 那样以后改一处忘三处，又会错位。
+   ⚠️ 用 rem 不用 px：设置里的「字体大小」调的是根字号，rem 会跟着缩放，
+      一行的**字数**保持稳定（px 的话字变大时每行挤更多字）。
+   ⚠️ 窄屏（≤820px）由下面的媒体查询把 --col-w 覆写成 none → 四块满宽，手机照旧好点。 */
+#stage { flex: 1; display: flex; flex-direction: column; min-width: 0; background: rgba(252, 250, 244, .84); --col-w: 34rem; }
 
-#room-panel { flex: 0 0 auto; padding: 12px 18px 10px; border-bottom: 1px solid var(--line-2); background: rgba(247, 244, 235, .9); }
+/* ⚠️ 上限设在**块级卡片本身**上（不是设在里面的文字上）——
+   否则底色/边框只包住文字，出现「半截底色」。 */
+#room-panel { flex: 0 0 auto; padding: 12px 18px 10px; border-bottom: 1px solid var(--line-2); background: rgba(247, 244, 235, .9); max-width: var(--col-w); margin-left: auto; margin-right: auto; }
 .room-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
 .room-name { font-family: var(--font); font-size: 22px; font-weight: 700; letter-spacing: .1em; color: var(--ink); }
 .room-region { font-size: 12px; color: var(--red); letter-spacing: .04em; }
@@ -293,8 +305,15 @@ body::before {
 /* ⚠️ .exit-btns（九宫格下面那排方向按钮）已随 UI 删除，别再引用。 */
 
 /* 日志 */
-.log { flex: 1; overflow-y: auto; padding: 12px 18px; line-height: 1.8; font-family: var(--font); font-size: 14px; }
+/* ⚠️ #log 是滚动容器：上限设在容器上（而不是每行 .log-line 上），
+   这样日志列与房间卡/输入栏共用同一条列宽；行内不再各写数字。 */
+.log { flex: 1; overflow-y: auto; padding: 12px 18px; line-height: 1.8; font-family: var(--font); font-size: 14px; max-width: var(--col-w); margin-left: auto; margin-right: auto; }
 .log-line { margin-bottom: 3px; word-break: break-word; animation: fadeIn .22s ease; }
+/* 出口九宫格：**固定像素宽的地图**，不能跟着列宽被挤坏 / 截断。
+   · .log-line.exits 改为占满日志宽并居中（地图自身 .exit-map{max-width:100%;width:fit-content}
+     与 .em-grid{max-width:34em} 已自保，最长也不会溢出 #log）。
+   · 这里不再需要"豁免行宽"，因为行宽已由 #log 容器统一给出。 */
+.log-line.exits { max-width: none; display: flex; justify-content: center; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
 .log-line.plain { color: var(--ink-2); }
 .log-line.cmd { color: var(--ink-4); font-family: var(--font-ui); font-size: 13px; margin-top: 6px; }
@@ -367,9 +386,12 @@ body::before {
 .cb-btn.disabled:hover { background: #fff; color: var(--ink-2); border-color: var(--line); }
 
 /* 指令栏 */
+/* ⚠️ 上限在 #cmdbar 本身（display:flex，**不换行**）：
+   缩窄后提示符 + 输入框 + 发送按钮仍是**同一行**，不会挤成两层。 */
 #cmdbar {
   flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
   padding: 9px 14px; background: rgba(240, 235, 222, .94); border-top: 1px solid var(--line);
+  max-width: var(--col-w); margin-left: auto; margin-right: auto;
 }
 #cmdbar .prompt { font-family: var(--font); font-size: 18px; color: var(--red); font-weight: 700; }
 #cmd-input {
@@ -391,6 +413,7 @@ body::before {
 .quickbar {
   flex: 0 0 auto; display: flex; flex-wrap: wrap; gap: 6px;
   padding: 7px 14px 10px; background: rgba(240, 235, 222, .94);
+  max-width: var(--col-w); margin-left: auto; margin-right: auto;
 }
 .qb-btn {
   padding: 5px 13px; font-size: 12.5px; font-family: var(--font-ui); cursor: pointer;
@@ -398,6 +421,10 @@ body::before {
   transition: all .15s;
 }
 .qb-btn:hover { background: var(--ink); color: #f6f1e4; border-color: var(--ink); }
+/* ☰ 菜单按钮：**手机端专用**（窄屏 #sidebar 被隐藏，它是面板 / 存档 / 设置 / 回主菜单
+   在手机上唯一可见的入口；战斗态快捷条被换成攻击键时也靠它开背包）。
+   桌面端左侧栏还在，这里藏起来 —— 不在已定稿的桌面布局上加东西。 */
+.qb-menu { display: none; }
 
 /* 右场景栏 */
 #scene { flex: 0 0 238px; overflow-y: auto; padding: 10px 9px; background: rgba(238, 233, 220, .82); border-left: 1px solid var(--line); }
@@ -486,6 +513,10 @@ body::before {
 .modal-foot { flex: 0 0 auto; display: flex; justify-content: flex-end; gap: 10px; padding: 12px 18px; border-top: 1px solid var(--line-2); }
 .modal-foot .btn-ink { min-width: auto; padding: 8px 20px; font-size: 14px; }
 .modal-text { font-family: var(--font); font-size: 14.5px; line-height: 1.8; color: var(--ink-2); }
+/* 沉浸式开场（楔子）叙事排版 */
+.intro-p { font-family: var(--font); font-size: 14.5px; line-height: 1.95; color: var(--ink-2); margin: 0 0 12px; text-indent: 2em; }
+.intro-p:last-child { margin-bottom: 0; }
+.intro-em { color: var(--ink-1); font-weight: 600; text-indent: 2em; border-left: 3px solid var(--ink-3); padding-left: 12px; }
 .modal-input { width: 100%; padding: 9px 12px; margin-top: 6px; font-size: 14px; font-family: var(--font); border: 1px solid var(--line); border-radius: var(--radius); background: #fff; color: var(--ink); outline: none; }
 .modal-input:focus { border-color: var(--ink-3); }
 .modal-note { font-size: 12.5px; color: var(--ink-4); margin-top: 8px; }
@@ -515,6 +546,13 @@ body::before {
 .ac-val { font-family: var(--font); font-size: 26px; font-weight: 700; color: var(--red); }
 
 /* 任务卡片 */
+/* 分组标题（主线 / 支线 / 门派 / 委托）：原来一把梭平铺，主线把面板占满，
+   看着像「任务面板只有主线」。（主人报「点任务弹出来的还是旧主线」） */
+.q-group-title { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink-4);
+  letter-spacing: 2px; margin: 14px 0 8px; }
+.q-group-title:first-child { margin-top: 0; }
+.q-group-title::after { content: ''; flex: 1; height: 1px; background: var(--line-2); }
+.qg-num { font-size: 11px; color: var(--ink-4); letter-spacing: 0; opacity: .75; }
 .quest-card { padding: 13px 15px; margin-bottom: 11px; background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--jade); border-radius: 5px; }
 .q-name { font-family: var(--font); font-size: 16px; color: var(--ink); margin-bottom: 5px; }
 .q-desc { font-size: 13px; color: var(--ink-3); line-height: 1.7; margin-bottom: 7px; }
@@ -571,8 +609,20 @@ body::before {
 .dot-known { background: var(--jade); }
 .dot-unknown { background: var(--line); }
 
-/* 连续大地图：网格底纸 + 粗走廊 + 密排方块，看起来是一整张图 */
-.map-canvas { position: relative; background: #fbfaf6; border: 1px solid var(--line); border-radius: 7px; overflow: auto; max-height: 54vh; margin-bottom: 12px;
+/* 连续大地图：网格底纸 + 粗走廊 + 密排方块，看起来是一整张图
+   ⚠️ max-width 与 max-height 必须**成对**出现（主人报的「手机端地图只能上下滑、
+   不能左右以及随意方向滑动」的根因就在这里）。
+   画布的内联样式写的是内容真实宽度（如 width:892px）。原来只给了 max-height：
+     · 纵向 —— 画布自己溢出，scrollTop 生效，滑得动 ✔
+     · 横向 —— 画布**自己**不溢出（宽 892px 就是 892px），横向溢出被**外层 .map-wrap
+       （max-height:60vh; overflow:auto）**兜走了。于是：
+         ① `el.scrollLeft = …` 永远被浏览器夹成 0 —— 斜向平移（bindMapPan）只操作画布，
+            不动 .map-wrap，所以左/右/斜着都划不动；
+         ② 手指落在画布上，`touch-action:none` 把这一片手势整个禁掉，
+            外层 .map-wrap 也没法靠原生滚动横向走。
+   补上 max-width:100% 后，画布被压到容器宽（手机约 343px），892px 的内容溢出
+   **在画布内部**，scrollLeft 才有可动范围 —— 上下、左右、斜向于是都通。 */
+.map-canvas { position: relative; background: #fbfaf6; border: 1px solid var(--line); border-radius: 7px; overflow: auto; max-width: 100%; max-height: 54vh; margin-bottom: 12px;
   /* 斜向平移：自己处理手势，禁掉浏览器一次只走一个轴的原生滚动 */
   touch-action: none; cursor: grab; -webkit-overflow-scrolling: auto; }
 .map-canvas.panning { cursor: grabbing; user-select: none; -webkit-user-select: none; }
@@ -1024,6 +1074,9 @@ body::before {
 }
 @media (max-width: 820px) {
   #sidebar { display: none; }
+  /* 中栏一列在窄屏**不生效**：--col-w 覆写成 none → 四块满宽可点（手机照旧）。
+     这里显式写出来，是为了「窄屏满宽」是**声明**而非依赖 max-width 恰好大于屏宽。 */
+  #stage { --col-w: none; }
   .game-title { font-size: 56px; }
   .mm-tabs { flex: 0 0 110px; }
   .mm-tab { font-size: 11.5px; padding: 6px 8px; }
@@ -1040,6 +1093,25 @@ body::before {
   .tb-name { font-size: 16px; }
   .tb-money { font-size: 12px; }
   .tb-time { font-size: 11px; }
+  /* ☰ 菜单在手机上显形（侧栏隐藏后它是唯一入口） */
+  .qb-menu { display: inline-block; }
+  /* 快捷条按钮也是触屏目标：原来只有 29px 高，手指点不准。
+     与弹窗按钮统一抬到 ≥40px（真机截图量出来的）。 */
+  .qb-btn { min-height: 40px; padding: 8px 14px; }
+  /* 触屏点击目标：弹窗头部 ✕ 与底部按钮别只有 17px 一个字，
+     手指点不准（主人问「返回按钮够不够大好点」）。抬到 ≥40px。 */
+  .modal-head button { padding: 8px 12px; min-width: 40px; min-height: 40px; line-height: 1; }
+  .modal-foot { padding: 10px 14px; }
+  .modal-foot .btn-ink { padding: 11px 22px; }
+  .choices-title { font-size: 16px; }
+}
+
+/* 更窄的屏（≤560px）：5 条状态条一行塞不下，标签会被截成「饱…」这种。
+   允许换行 + 每条给最小宽度，保证「饱食 99/100」这种数字读得全。 */
+@media (max-width: 560px) {
+  .tb-bars { flex-wrap: wrap; }
+  .tb-bar { flex: 1 1 108px; min-width: 108px; height: 15px; }
+  .tb-bar span { font-size: 10px; }
 }
 body.narrow .log-line { margin-bottom: 1px; line-height: 1.55; font-size: 13px; }
 body.narrow #sidebar { flex: 0 0 140px; }

@@ -37,9 +37,10 @@ sec('② killed_* flag（阶段3 defeatLegend 的前提）');
 {
   const e = boot();
   const w = e.world, p = w.player;
-  /* 直接走战斗击杀路径 */
+  /* 直接走战斗击杀路径。⚠️ 名宿必须**从引擎的名单里拿**（`w.legendIds`）——
+     以前这里写死 `blood_saber`，名单一改测试就整片红，而那并不是被测代码的问题。 */
   const rid = p.room;
-  const bossId = 'blood_saber';
+  const bossId = (w.legendIds || [])[0] || 'blood_saber';
   const npc = w.spawnNpc(bossId, rid, 1, true);
   ok('能生成名宿实例', !!npc, npc && npc.defId);
   npc.hp = 1;
@@ -113,9 +114,41 @@ sec('④ 主线必须能交掉（阶段推进链）');
       ok('阶段' + i + ' 的 learned_* flag 都有真技能', bad.length === 0, bad.join(','));
     }
     if (st.cond && st.cond.fn === 'defeatLegend') {
-      ok('阶段' + i + ' defeatLegend 的六个名宿都存在',
-        ['mojiao_dongfang', 'blood_saber', 'xingxiu_laoxian', 'shaolin_fangzheng', 'emei_miejue', 'nv_huang']
-          .every(id => !!w.data.npcs[id]));
+      /* 名单**从引擎读**（`world.legendIds`），不在测试里再抄一份 ——
+         抄两份的下场是「改了引擎忘了改测试」，断言就成了摆设。 */
+      const pool = (w.legendIds || []).slice();
+      ok('阶段' + i + ' defeatLegend 名单非空', pool.length > 0, JSON.stringify(pool));
+      ok('阶段' + i + ' defeatLegend 名单里的人真实存在',
+        pool.every(id => !!w.data.npcs[id]),
+        pool.filter(id => !w.data.npcs[id]).join(',') || '(全部存在)');
+      /* ⚠️ 这条才是真正要守的东西：名单里**不许有主线 Boss 或主线委托人**。
+         否则玩家可能在第一幕打倒第四幕的 Boss（后面再打一次），
+         或者被引导去打自己的委托人。 */
+      const MAINLINE_ONLY = ['mojiao_dongfang', 'blood_saber', 'xingxiu_laoxian',
+        'shaolin_fangzheng', 'nv_huang', 'depot_master', 'depot_shadow', 'ren_woxing'];
+      const clash = pool.filter(id => MAINLINE_ONLY.indexOf(id) >= 0);
+      ok('阶段' + i + ' defeatLegend 名单里没有主线 Boss / 委托人',
+        clash.length === 0, clash.join(','));
+
+      /* ★ 文案与名单必须对得上（design/21 §E2 的 P0，「还是旧主线」的那一条）。
+         原来这段 desc 写的是「东方不败 / 血刀老祖 / 丁春秋 / 方证大师」——
+         **四个人一个都不在名单里**（一个第四幕 Boss、两个第三幕 Boss、一个第三幕委托人），
+         玩家照面板去把这四位挨个打一遍，任务永远不推进、也不报错。
+         判据：desc 括号里点名的每个人，都能反查到 id、且该 id 就在 `legendIds` 里。
+         （名字从 desc 里现取，不是在测试里再抄一份名单 —— 抄名单就守不住文案了。） */
+      const par = /（([^）]*)）/.exec(st.desc || '');
+      if (par) {
+        const idsByName = {};
+        for (const nid of Object.keys(w.data.npcs)) idsByName[w.data.npcs[nid].name] = nid;
+        const named = par[1].split(/[\/、]/).map(s => s.trim()).filter(Boolean);
+        const realBad = named.filter(nm => !idsByName[nm]);
+        ok('阶段' + i + ' 的 desc 点名的都是真实 NPC',
+          realBad.length === 0, realBad.length ? '查无此人：' + realBad.join('、') : named.join('、'));
+        const notInPool = named.filter(nm => idsByName[nm] && pool.indexOf(idsByName[nm]) < 0);
+        ok('阶段' + i + ' ★ desc 点名的高手都在 defeatLegend 名单里（文案 = 代码，玩家照着打真能推进）',
+          notInPool.length === 0,
+          notInPool.length ? '点了却打不动：' + notInPool.join('、') : named.join('、'));
+      }
     }
     if (st.cond && st.cond.hasSect) ok('阶段' + i + ' 的 hasSect 条件字段真实', st.cond.hasSect === true);
   });
@@ -147,7 +180,7 @@ sec('⑤ 全流程模拟：能不能真走到 99');
         for (const s of sqs) p.quests[s] = 99;
       }
       if (stage.cond.fn === 'defeatLegend') {
-        const n = w.spawnNpc('blood_saber', p.room, 1, true);
+        const n = w.spawnNpc((w.legendIds || [])[0] || 'blood_saber', p.room, 1, true);
         w.onNpcDown(n);
       }
       if (stage.cond.flagsAny) p.learnSkill('jiuyin_zhenjing');
@@ -195,7 +228,7 @@ sec('⑥ 真·交任务：找委托人一步步推到完成（99）');
       ['stage0 入派', () => { p.sect = '少林'; p.setVar('hasSect', 1); }],
       ['stage1 武学百级', () => { p.learnSkill('huashan_sword'); p.gainSkillExp('huashan_sword', 1e12); }],
       ['stage2 五桩支线', () => { for (const s of Object.keys(w.data.quests).filter(i => /^sq_/.test(i)).slice(0, 5)) p.quests[s] = 99; }],
-      ['stage3 击败名宿', () => { w.onNpcDown(w.spawnNpc('blood_saber', p.room, 1, true)); }],
+      ['stage3 击败名宿', () => { w.onNpcDown(w.spawnNpc((w.legendIds || [])[0] || 'blood_saber', p.room, 1, true)); }],
       ['stage4 绝顶内功', () => { p.learnSkill('jiuyin_zhenjing'); }],
     ];
     for (const [label, prep] of round) {
@@ -230,7 +263,7 @@ sec('⑦ 主线文案自洽');
   for (const id of Object.keys(w.data.npcs)) {
     if ((w.data.npcs[id].quests || []).includes(Q)) { giverId = id; break; }
   }
-  const LEGENDS = ['mojiao_dongfang', 'blood_saber', 'xingxiu_laoxian', 'shaolin_fangzheng', 'emei_miejue', 'nv_huang'];
+  const LEGENDS = (w.legendIds || []).slice();
   ok('委托人不在「要击败的名宿」名单里（别逼玩家打自己的委托人）',
     !!giverId && !LEGENDS.includes(giverId), 'giver=' + giverId);
   /* 阶段描述里点名的人名，库里都要真有其人 */

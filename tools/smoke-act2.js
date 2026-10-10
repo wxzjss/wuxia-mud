@@ -14,6 +14,8 @@ const fs = require('fs');
 const path = require('path');
 const { GameEngine } = require('../game/src/core/engine.js');
 const { evalCond } = require('../game/src/core/modapi');
+/* 存档写进隔离沙盒，绝不碰玩家的saves/（主人 bug B1） */
+const TEST_SAVE_DIR = require('./_test-save-dir');
 
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => {
@@ -22,7 +24,7 @@ const ok = (name, cond, extra) => {
 };
 function sec(t) { console.log('\n=== ' + t + ' ==='); }
 function boot(seed) {
-  const e = new GameEngine({ seed: seed || 20261010 });
+  const e = new GameEngine({ seed: seed || 20261010, saveDir: TEST_SAVE_DIR });
   e.boot(); e.newGame({ name: '试剑', gender: 'male' });
   return e;
 }
@@ -386,9 +388,9 @@ sec('⑨ 存读档不丢第二幕进度（真往返）');
   ok('问方证落 fangzheng_admitted', p.hasFlag('fangzheng_admitted'));
 
   /* 真存 → 新引擎真读 */
-  const sv = e.save(SID);
+  const sv = e.save(SID, { _test: true });
   ok('存档成功', sv.ok, sv.msg);
-  const e2 = new GameEngine({ seed: 999 });
+  const e2 = new GameEngine({ seed: 999, saveDir: TEST_SAVE_DIR });
   e2.boot(); e2.newGame({ name: '读档者', gender: 'male' });
   const lr = e2.loadSave(SID);
   ok('读档成功', lr.ok, lr.msg);

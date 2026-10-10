@@ -3,8 +3,10 @@ const social = require('../game/src/core/social.js');
 const marriage = require('../game/src/core/marriage.js');
 const kinship = require('../game/src/core/kinship.js');
 const homeMod = require('../game/src/core/home.js');
+/* 存档写进隔离沙盒，绝不碰玩家的 saves/（主人 bug B1） */
+const TEST_SAVE_DIR = require('./_test-save-dir');
 
-const e = new GameEngine({ seed: 20261010 });
+const e = new GameEngine({ seed: 20261010, saveDir: TEST_SAVE_DIR });
 e.boot();
 e.newGame({ name: '试剑', gender: 'male', birth: 'wuxue' });
 const w = e.world, p = w.player;
@@ -41,7 +43,7 @@ const before = {
 };
 
 const save = w.serialize();
-const e2 = new GameEngine({ seed: 20261010 });
+const e2 = new GameEngine({ seed: 20261010, saveDir: TEST_SAVE_DIR });
 e2.boot();
 e2.world.deserialize(JSON.parse(JSON.stringify(save)), []);
 e2.restoreRelations();

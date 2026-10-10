@@ -313,6 +313,19 @@ class CombatEngine {
     return n;
   }
   pickSkill(u, t) {
+    /* ---- B3 · 物种专属招式优先 ----
+       蛇/狼这类动物没有「装备槽」意义上的武学：它们只会speciesMoves 里那几招。
+       所以这里**先**在 speciesMoves 里随机取一招（取不到才落回下面的槽位逻辑）。
+       为什么必须随机而不是取第一个：一条蛇只会一招，看起来和「只有基本拳脚」
+       没区别；随机取才有「毒牙/缠绕/吐信轮着来」的观感，这正是 B3 要的。
+       `learned` 校验保留：招式被剥掉（毒被打散之类）时不会照放。 */
+    const sm = u.speciesMoves;
+    if (Array.isArray(sm) && sm.length) {
+      const usable = sm.filter(id => u.learned[id] && this.world.getSkill(id));
+      if (usable.length) {
+        return this.world.getSkill(usable[Math.floor(this.world.rng.next() * usable.length)]);
+      }
+    }
     /* Boss 阶段招优先（bossSkill 由 tickBossPhase 在阶段切换时写上实例）。
        at:1 的首阶段永远不触发「切换」，所以这里再兜一层：
        没有 bossSkill 就按当前阶段号取配置，否则第一档指定的招式永远放不出来。 */
@@ -408,6 +421,14 @@ class CombatEngine {
     if (t.isPlayer) {
       const adj = w.ruleAdd('damageTaken');
       if (adj) dmg = Math.max(0, dmg + adj);
+    }
+
+    /* B4「防御」快捷键的效果：guardTurns>0 时本回合伤害减半。
+       判据挂在 battle 上（战斗态的唯一权威），先减伤再落血，
+       所以「防御」这一回合是真的挨得住打，而不是空转一回合。 */
+    if (t.isPlayer && battle && battle.guardTurns > 0) {
+      const guarded = Math.max(1, Math.floor(dmg / 2));
+      if (guarded < dmg) dmg = guarded;
     }
 
     t.hp = clamp(t.hp - dmg, 0, t.maxHp);

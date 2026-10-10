@@ -17,6 +17,9 @@ const workMod = require('./work');
 const gather = require('./gather');
 const farm = require('./farm');
 const personality = require('./personality');
+/* B11：第三人称人称代词 / 性别的**单一入口**（他/她/它、男/女/不明）。
+   全仓按性别渲染人称的地方一律走这里，别各自 `female?'女':'男'` 兜底。 */
+const { pronounOf, genderNoun } = require('./pronouns');
 const sectFounder = require('./sectFounder');
 const estateMod = require('./estate');
 const kidnapMod = require('./kidnap');
@@ -61,12 +64,12 @@ function buildCommands(world) {
       '物品': ['get <物品> 拾取', 'drop <物品> 丢弃', 'use <物品> 使用', 'wear/wield <物品> 装备', 'remove <部位> 卸下', 'give <物品> to <人>'],
       '武学': ['learn <武学> 学', 'train / lian <武学> 练功', 'enable <槽位> <武学> 装备武学', 'perform / pf <武学> 施展绝招', 'skills 查看'],
       '战斗': ['kill / fight <目标> 攻击', 'flee 逃跑', 'auto 自动战斗'],
-      '交互': ['talk <人> 交谈', 'ask <人> about <话题>', 'buy <物品> from <人>', 'sell <物品>', 'trade'],
+      '交互': ['talk <人> 交谈', 'ask <人> about <话题>', '打听 [关键词] 打听江湖传闻', '拜访 <人> 上门拜访（交情够了才进得去）', 'buy <物品> from <人>', 'sell <物品>', 'trade'],
       '门派': ['sect 门派信息', 'join <门派> 拜师', 'leave 脱离门派', 'promote 升职', 'contribute'],
       '营生': ['work / 打工 打工赚钱（酒楼/药店）', '卖身 卖身青楼换银（仅女子）', '接客 应酬攒赎身钱（卖身后）', '赎身 凑钱脱籍', '身世 查看营生/卖身状态'],
       '采集/农事': ['打水 水源边打水解渴（需容器）', '切割 切野兽尸体取肉皮（需利器）', '加工 客栈/酒楼把生肉做熟', '买地 田头佃户家置田', '种植 <稻种|菜种>', '收割 收成熟庄稼', '偷庄稼 偷别人田（会被通缉）'],
       '任务': ['quest 任务列表', 'accept <任务>', 'abandon <任务>', 'report 交任务'],
-      '系统': ['save 存档', 'load 读档', 'settings 设置', 'mods mod 管理', 'clear 清屏', 'nick <称号>'],
+      '系统': ['save 存档', 'load 读档', 'settings 设置', 'mods mod 管理', 'clear 清屏', 'nick <称号>', 'quit / 退出游戏 退出到主菜单（会自动存档）'],
       '掳人/奴仆': [
         '装人 <人名> 把晕倒的人装进麻袋（无目击者才不惊动官府）',
         '麻袋 看袋里关着谁',
@@ -95,8 +98,44 @@ function buildCommands(world) {
 
   /* ---------------- 移动 ---------------- */
 
+  /* ================================================================
+   * B5 · 交战中不许移动（主人亲报：「战斗界面我依然能走，
+   * 甚至带着和山贼的战斗界面能一路走回客栈」）
+   *
+   * 根因：doMove 此前**完全没有战斗态检查**，方向键 / go / 走 / 去 /
+   * 「往北走」/ 房间名 / 互动出口（爬山坡·渡河）全都从这里直通
+   * movePlayerTo，于是交战中一步一个脚印地走回了客栈。
+   *
+   * 为什么收敛在 doMove 一处而不是逐个入口打补丁：
+   *   所有「玩家自主位移」的路径**最终都调用 doMove** ——
+   *   方向键注册表（第 142 行）、go/去/前往/走（第 149 行）、
+   *   go <房间名> 的逐跳寻路（第 180 行）、execute 的纯方向分支
+   *   （第 2520/2521 行）、房间名匹配（第 2553 行）、
+   *   互动出口 via/hint（第 2564 行）。堵doMove 一处即全覆盖。
+   *
+   * 战斗态读哪个字段（铁律：先打真实结构再写，别猜）：
+   *   实测 world 的键里同时有 `combat` 和 `battle`，但
+   *   `world.combat` 是 **CombatEngine 实例**（构造函数 combat.js），
+   *   `world.battle` 才是**本局战斗的对象**（startCombat/startDuel 里
+   *   赋值，finishCombat/flee 里置 null）。战斗态 = !!w.battle，
+   *   与 commands.js 里既有的 perform/flee/auto 判据完全一致。
+   *
+   * 为什么不封 movePlayerTo：那条路还接着**非玩家自主**的位移 ——
+   *   拜访上门（919行）、modapi 的 teleport/warp、survival 死亡回客栈。
+   *   锁在 movePlayerTo 会把「战斗中被 NPC 拖走/死亡送医」也一起锁死。
+   * ================================================================ */
+  const COMBAT_MOVE_HINT =
+    '你正与人交手，走不脱！想脱身得先把这桩了结：'
+    + '「kill <目标>」或「auto」进攻、「perform <武学>」使绝招、'
+    + '「defend」凝神防守，或「flee」逃跑。';
+
   const doMove = (ctx, dir) => {
     const p = ctx.player, w = ctx.world;
+    /* ⚠️ 必须在任何位移/时间消耗之前就拦下来，
+       否则「advanceTime + movePlayerTo」都已经生效了。 */
+    if (w.battle) {
+      return { lines: [{ kind: 'warn', text: COMBAT_MOVE_HINT }] };
+    }
     const room = w.getRoom(p.room);
     if (!room) return { lines: [{ kind: 'warn', text: '你似乎迷失在了虚空之中。' }] };
     const exits = room.exits || {};
@@ -129,6 +168,10 @@ function buildCommands(world) {
     }
     p.advanceTime(cost);
     const r = w.movePlayerTo(p, target);
+    /* B13 连带收尾：movePlayerTo 对「目标不存在」返回 {ok:false}（它自己是对的），
+       但 doMove 此前**忽略**了返回值、照样报 moved:true —— 万一出口指向幽灵房，
+       玩家会「没动却提示已移动」。这里补上防御（正常数据下永不为真：map-check 已禁悬空出口）。 */
+    if (!r || !r.ok) return { lines: [{ kind: 'warn', text: (r && r.msg) || '那边似乎走不通。' }] };
     const lines = [];
     if (ex && ex.travel) lines.push({ kind: 'story', text: ex.travel });
     const view = lookRoom(ctx);
@@ -149,6 +192,7 @@ function buildCommands(world) {
     if (d) return doMove(ctx, d);
     // 按房间名找（同区域 / 相邻）
     const room = w.getRoom(p.room);
+    if (!room) return { lines: [{ kind: 'warn', text: '你似乎不在一个真实所在，辨不清方向。' }] };
     const cands = [];
     for (const dir of Object.keys(room.exits || {})) {
       const ex = room.exits[dir];
@@ -166,6 +210,10 @@ function buildCommands(world) {
          玩家一句 `go 太和殿` 会直接瞬移进皇宫，把 ex.cond 全绕过去。 */
       const path = findPath(w, p.room, gh.id, ctx);
       if (path && path.length) {
+        /* B5：逐跳寻路也得先探战斗态。doMove 里虽然也拦，
+           但那时已经打出了「你沿路前往X…」的过场语，再撤回反而绕。
+           这里提前拦一次，提示才干净（也不会谎报 moved:true）。 */
+        if (w.battle) return { lines: [{ kind: 'warn', text: COMBAT_MOVE_HINT }] };
         const lines = [{ kind: 'sys', text: `你沿路前往${gh.name}…` }];
         for (const step of path) {
           /* 逐跳走方向（走 doMove 才对），而不是 movePlayerTo 瞬移：
@@ -222,6 +270,35 @@ function buildCommands(world) {
     return String(hit.act).replace(/[。.]+$/, '');   // 句号由调用方统一补
   }
 
+  /** 乞丐 / 流民 / 平民 —— 「施舍行善」的判定对象（B22 rs_alms）。
+   *  用**显式 tag** 判据，不扫名字（B8 之 BLK-2 教训）。 */
+  function isPoor(npc) {
+    const tag = npc && npc.def && npc.def.tag;
+    return ['beggar', 'refugee', 'commoner', 'farmer'].indexOf(tag) >= 0;
+  }
+
+  /** 这个 NPC 名下**当前可接**的一条任务 id（没有则 null）。
+   *  来源两层：`def.quests`（13 人有）与 `def.sidequest`（284 人有，此前是死字段 → B25）。
+   *  过滤：任务必须真实存在（挡悬空指针，如 26 人指向的未落地 hk_*）、且尚未接取/完成。
+   *  用**显式字段**判据，不猜名字/描述（B8 之 BLK-2 教训）。 */
+  function availableQuestOf(ctx, npc) {
+    if (!npc) return null;
+    const w = ctx.world, p = ctx.player, def = npc.def || {};
+    const ids = [];
+    if (Array.isArray(def.quests)) for (const q of def.quests) ids.push(q);
+    if (def.sidequest) ids.push(def.sidequest);
+    for (const q of ids) {
+      if (!q || !w.getQuest(q)) continue;
+      if (p.questStage(q) >= 0) continue;   // 已在进行 / 已完成
+      /* 前置未满足的不算「可接」（sidequest-land 实测：第二 hook 带 require.questDone，
+         第一条进行中时会冒出「点下去＝你还不满足接取条件」的假入口 —— 违反「给不出的项不给」）。 */
+      const qd0 = w.getQuest(q);
+      if (qd0 && qd0.require && !evalCond(qd0.require, ctx)) continue;
+      return q;
+    }
+    return null;
+  }
+
   function lookRoom(ctx) {
     const p = ctx.player, w = ctx.world;
     const room = w.getRoom(p.room);
@@ -231,6 +308,20 @@ function buildCommands(world) {
     const region = w.getRegion(room.region);
     if (region) lines.push({ kind: 'plain', text: `(${region.name || room.region} · ${shichen(p.timeMinutes)} · 天色${w.weather})` });
     lines.push({ kind: 'desc', text: evalTemplate(room.desc || '', ctx) });
+
+    /* ---- 世界动态 W6/W7 的外显（design/27 §3.3-6 地盘标识 / §4 节庆）----
+       · 地盘：此地属某势力 → 一行「此处已是XX的地界」，势力越盛越明显。
+       · 节庆：今日有节 → 一行提示，房间之外「街市比平日热闹」。
+       两者都是**状态驱动**（读 factionState / day），不是写死进 desc —— 数据不动，观感变。 */
+    if (typeof w.factionOfRegion === 'function' && room.region) {
+      const fid = w.factionOfRegion(room.region);
+      const fac = fid && w.factionState && w.factionState.factions[fid];
+      if (fac) lines.push({ kind: 'plain', text: `此处是${fac.name}的地界，弟子往来，规矩森严（${fac.mood}）。` });
+    }
+    if (typeof w.festivalToday === 'function') {
+      const fest = w.festivalToday();
+      if (fest) lines.push({ kind: 'plain', text: `今日是${fest.name}，街上比平日热闹许多。` });
+    }
 
     // NPC
     const npcs = w.npcsIncludingTemplates(p.room);
@@ -253,20 +344,74 @@ function buildCommands(world) {
       // hl：把每个 NPC 名标成可点，点击弹出「对它做什么」的中文菜单
       const hl = Object.keys(cls).map(k => {
         const one = npcs.find(n => n.name === k);
+        const pron = pronounOf(one);   // B11：兽→它 / 女→她 / 男→他（单一入口）
+        const def = (one && one.def) || {};
         const actions = [
           { label: '看看', cmd: 'look ' + k },
           { label: '交谈', cmd: 'talk ' + k },
           { label: '询问', cmd: 'ask ' + k },
         ];
-        if (one && one.def && one.def.teach) actions.push({ label: '请教武学', cmd: 'qingjiao ' + k });
+        /* ---- 任务一：按情境给项 ----
+           ⚠️ 铁律：给不出的项**一律不给** —— 点了没反应（或"这里没有…"）比没有按钮更出戏。
+           判据一律用**显式字段**（def.quests / def.sidequest / def.teach / shop / tag），
+           绝不扫 name/desc 关键词（B8 之 BLK-2 教训）。 */
+        /* ① 有支线的才给「接他的事」：
+              def.quests（13 人）或 def.sidequest（284 人，此前是死字段 → B25 接线）。
+              已接过/已完成/悬空指针 → 不显示。 */
+        const aq = availableQuestOf(ctx, one);
+        if (aq) {
+          const qd = w.getQuest(aq);
+          actions.push({ label: '接他的事', cmd: 'accept ' + ((qd && qd.name) || aq), hint: qd ? qd.name : '' });
+        }
+        /* ② 能请教的才给「请教武学」 */
+        if (def.teach) actions.push({ label: '请教武学', cmd: 'qingjiao ' + k });
+        /* ③ 有铺子的才给「看看货物」 */
         if (one && one.shop) actions.push({ label: '看看货物', cmd: 'list ' + k });
-        if (one && one.def && one.def.quests && one.def.quests.length) actions.push({ label: '接他/她的任务', cmd: 'accept' });
-        actions.push({ label: '送他东西', cmd: 'give ' + k });
+        /* ④ 医者才给「求医」（tag=doctor，11 人） */
+        if (def.tag === 'doctor') actions.push({ label: '求医', cmd: '求医 ' + k });
+        /* ⑤ 识路的人（镖师/车夫/船夫）才给「问路」 */
+        if (['escort', 'groom', 'boatman'].indexOf(def.tag) >= 0) actions.push({ label: '问路', cmd: '问路 ' + k });
+        actions.push({ label: `送${pron}东西`, cmd: 'give ' + k });
         actions.push({ label: '查看关系', cmd: 'guanxi ' + k });
+        /* B10（主人亲报：点 NPC / 野兽弹出来的菜单里没有「攻击」）：
+           · cmd 用**真实的攻击指令** `attack` —— 批次 2 已把 attack 并入 kill
+             （reg(['kill','fight','attack','杀','攻击','打'], …)，见本文件 kill 处理器），
+             与手动敲「攻击 xxx」完全同一条路径，不另造分支。
+           · 目标名照现有 actions 的写法用裸名 k（fuzzyFind 认这个名字），不另起口径。
+           · 敌对 / 已交战者把「攻击」顶到最前（此刻玩家多半就是想打）；
+             普通百姓 / 寻常人物也**照给**，只是压在最后（「查看关系」之后）——
+             武侠世界本就能动手，后端从不拦「攻击谁」，把入口藏起来才是 B10 的病根；
+             排最后纯粹为压低触屏误触（挨着「交谈」手指一滑就开打）。
+           · ⚠️ 铁律 33：**绝不拿 n.hostile 当「不给攻击」的排除条件** ——
+             它是模板常驻标记（山贼/野兽一出生 true、打输也不清）。这里只用它
+             **排序**（优先给），不做任何「能不能打」的判定。 */
+        const inBattle = !!(w.battle && w.battle.target === one);
+        const hot = !!(one && (one.hostile || one.inCombat || inBattle));
+        const attackAct = { label: '攻击', cmd: 'attack ' + k };
+        if (hot) actions.unshift(attackAct); else actions.push(attackAct);
         /* 名字带上身份，点哪儿都是同一个目标（fuzzyFind 认「名字（身份）」的括号前缀） */
         return { text: labelOf(k), type: 'npc', actions };
       });
       lines.push({ kind: 'npcs', text: `这里有：${out.join('、')}。`, hl });
+      /* ---- 倒地/晕倒的人（任务一）----
+         ⚠️ 铁律 32：`npcsIn` 过滤 `!dead`，而打倒的人是 knockedOut+dead，
+         所以「这里有：」里**看不到他们** —— 倒地相关一律走 `world.downedIn()`。
+         给「补刀 / 搜身 / 装进麻袋」三个入口（各有真指令、点了有反馈）；
+         没麻袋就不给「装进麻袋」（给了也是白发警告）。 */
+      const downed = w.downedIn(p.room);
+      if (downed.length) {
+        const hasSack = p.countItem(kidnapMod.SACK_ID) >= 1;
+        const dhl = downed.map(n => {
+          const acts = [
+            { label: '看看', cmd: 'look ' + n.name },
+            { label: '补刀', cmd: 'kill ' + n.name, hint: '结果了他' },
+            { label: '搜身', cmd: '搜身 ' + n.name, hint: '翻他身上的东西' },
+          ];
+          if (hasSack) acts.push({ label: '装进麻袋', cmd: 'pack ' + n.name, hint: '当众下手必被告发' });
+          return { text: n.name, type: 'npc', actions: acts };
+        });
+        lines.push({ kind: 'npcs', text: `地上还躺着：${downed.map(n => n.name).join('、')}。`, hl: dhl });
+      }
       /* ---- 画像 L0 看见 ----
          有画像的 NPC 额外给一句「此刻正在做什么」（routine 按当前时段取），
          而不是千篇一律的名字 + 身份。没画像的 NPC 完全保持原样。 */
@@ -389,6 +534,13 @@ function buildCommands(world) {
       if (a.cond && !evalCond(a.cond, ctx)) {
         return { lines: [{ kind: 'warn', text: a.failMsg || '现在做不了这个。' }] };
       }
+      /* B6：和 questKeyword 同一类问题 —— action 没有 effects 时
+         evalEffects([]) 返回空数组，玩家「看 牢门」「看 槐树」
+         得到的是**零行输出**（界面上一片空白，等同于按钮坏了）。
+         这里给一句明确的落空说明。 */
+      if (!a.effects || !a.effects.length) {
+        return { lines: [{ kind: 'plain', text: `你细看了看，此处暂无更多可看的了。` }] };
+      }
       return { lines: evalEffects(a.effects || [], ctx) };
     }
     // NPC
@@ -404,6 +556,7 @@ function buildCommands(world) {
     if (hit) return { lines: describeItem(ctx, hit.it.id || hit.it.itemId, hit.it) };
     // 出口 / 房间
     const room = w.getRoom(p.room);
+    if (!room) return { lines: [{ kind: 'warn', text: '这里一片虚无，四下都看不清。' }] };
     for (const d of Object.keys(room.exits || {})) {
       const ex = room.exits[d];
       if (DIR_CN[d] === kw || d === kw) {
@@ -424,9 +577,15 @@ function buildCommands(world) {
     const lines = [{ kind: 'subtitle', text: `${npc.name}（${id0}）` }];
     /* 名人的称号另起一行，别跟身份混为一谈 */
     if (npc.title && npc.title !== id0 && npc.title.length > 3) {
-      lines.push({ kind: 'plain', text: `江湖上人称他「${npc.title}」。` });
+      lines.push({ kind: 'plain', text: `江湖上人称${pronounOf(npc)}「${npc.title}」。` });
     }
     lines.push({ kind: 'desc', text: npc.desc || '看不出什么特别之处。' });
+    /* ---- 画像 role → 「这是个什么人」的一句身份定位（任务三）----
+       role 是画像里的**定位**（如「华山脚下独居的老药婆，采药、看病、也替人藏东西」），
+       不是复述 desc —— 看人一眼就该看出对方是个什么人。128 位有画像的 NPC 全带 role。 */
+    if (npc.portrait && npc.portrait.role) {
+      lines.push({ kind: 'plain', text: `一眼看去，${evalTemplate(npc.portrait.role, ctx)}。` });
+    }
     const def = npc.def || {};
     if (def.showLevel !== false) lines.push({ kind: 'plain', text: `看起来约 ${npc.level} 层修为。` });
     if (npc.hp < npc.maxHp) {
@@ -480,7 +639,7 @@ function buildCommands(world) {
       if (ss.length) {
         lines.push({
           kind: 'plain',
-          text: `他习有：${ss.join('，')}。` +
+          text: `${pronounOf(npc)}习有：${ss.join('，')}。` +
             (insight.deep ? '' : `　（${insight.hint}）`),
         });
       }
@@ -520,8 +679,8 @@ function buildCommands(world) {
     const trust = (npc.pstate && npc.pstate.trust) || 0;
     /* 打过交道、交情好、或揪住过他的把柄，才谈得上「看得出深浅」 */
     if (favor >= 40 || trust >= 30) return { deep: true, hint: '' };
-    if (favor >= 15 || trust >= 10) return { deep: false, hint: '交情尚浅，看不透他的火候' };
-    return { deep: false, hint: '你们素不相识，看不出他究竟练到了哪一步' };
+    if (favor >= 15 || trust >= 10) return { deep: false, hint: `交情尚浅，看不透${pronounOf(npc)}的火候` };
+    return { deep: false, hint: `你们素不相识，看不出${pronounOf(npc)}究竟练到了哪一步` };
   }
 
   /* 熟练度分级名（0~9 层 → 入门/小成/…/登峰造极），与功法体系一致 */
@@ -570,7 +729,7 @@ function buildCommands(world) {
     const p = ctx.player, w = ctx.world;
     const lines = [];
     lines.push({ kind: 'title', text: `【 ${p.name} 】` });
-    lines.push({ kind: 'plain', text: `性别：${{ male: '男', female: '女', other: '不明' }[p.gender] || '不明'}　年龄：${p.age} 岁　${p.title ? '称号：' + p.title : ''}` });
+    lines.push({ kind: 'plain', text: `性别：${genderNoun(p)}　年龄：${p.age} 岁　${p.title ? '称号：' + p.title : ''}` });
     if (p.sect) {
       const sd = w.getSect(p.sect);
       lines.push({ kind: 'plain', text: `门派：${sd ? sd.name : p.sect}${sd && sd.ranks ? ' · ' + (sd.ranks[p.rank] || '弟子') : ''}` });
@@ -855,13 +1014,93 @@ function buildCommands(world) {
     }
     /* 品质也亮一下，让玩家理解为什么给得少 */
     if (gv.quality && gv.quality.name) {
-      lines.push({ kind: 'hint', text: `（【${gv.quality.name}】的物件，${gv.matched ? '又合他心意' : '可惜不对他胃口'}）` });
+      lines.push({ kind: 'hint', text: `（【${gv.quality.name}】的物件，${gv.matched ? `又合${pronounOf(npc)}心意` : `可惜不对${pronounOf(npc)}胃口`}）` });
     }
     lines.push(...r.lines);
+    /* B22 埋点 4/14 · rs_alms（把东西给了乞丐/贫民 = 行善）。 */
+    if (isPoor(npc) && typeof w.addRumor === 'function') {
+      const rm = w.getRoom(p.room);
+      w.addRumor('rs_alms', { room: p.room, about: npc.defId,
+        vars: { who: p.name || '有人', where: (rm && rm.name) || '此地', whom: npc.name } });
+    }
     return { lines };
   });
 
   /* ---------------- 社交 ---------------- */
+
+  /* 打听消息：在当前区域打听江湖传闻（#109 世界记忆·传闻系统）
+   * 传闻由玩家行为（杀人/救人/扬名…）经目击生成，会走样、扩散、衰减、消亡；
+   * 同一桩事在不同 NPC 口中说辞不同（truth 分档 + 关系态度后缀）。 */
+  reg(['打听', '打听消息', '探听', '风闻', '听风声', '问消息'], (ctx, args) => {
+    const w = ctx.world, p = ctx.player;
+    const room = w.getRoom(p.room);
+    if (!room) return { lines: [{ kind: 'error', text: '你不在任何地方。' }] };
+    const region = room.region || '_wild';
+    const keyword = (args || []).join(' ').trim();
+    const list = w.listenRumors(region, keyword, 3);
+    if (!list.length) {
+      const none = keyword
+        ? `你在${room.name}向人探听「${keyword}」的消息，却无人谈及此事。`
+        : `你在${room.name}竖起耳朵听了半晌，周遭只聊些家长里短、柴米油盐，没甚要紧风声。`;
+      return { lines: [{ kind: 'plain', text: none }] };
+    }
+    const lines = [{ kind: 'title', text: `【 街谈巷议 · ${room.name} 】` }];
+    const roomNpcs = w.npcsIn(p.room).filter(n => !n.dead && !(n.def || {}).hostile && !n.knockedOut);
+    const speaker = roomNpcs.length ? roomNpcs[Math.floor(w.rng.next() * roomNpcs.length)] : null;
+    const spName = speaker ? speaker.name : '一个路过的茶客';
+    let relKind = null;
+    if (speaker) {
+      for (const r of (p.rel || [])) { if (r.id === speaker.defId) { relKind = r.kind; break; } }
+    }
+    const ACTIONS = ['捋了捋胡须', '压低了嗓子', '凑过身来', '咂了咂嘴', '端起茶碗抿了一口', '抬眼打量了你一下'];
+    const action = ACTIONS[Math.floor(w.rng.next() * ACTIONS.length)];
+    for (const r of list) {
+      const text = w.fillRumorText(r);
+      const who = (r.vars && r.vars.who) || '那人';
+      let suffix = '（我也是听人说的，作不得准。）';
+      if (relKind === '亲') suffix = '（他压低了声音）这话我只跟你一个人说。';
+      else if (relKind === '友') suffix = `依我看，${who}不是那样的人。`;
+      else if (relKind === '仇') suffix = `哼，${who}那种人，早晚有报应。`;
+      lines.push({ kind: 'say', text: `${spName}${action}，说道：「${text}」${suffix}` });
+    }
+    lines.push({ kind: 'hint', text: '（传闻会随日子走样、消散；同一桩事，不同的人嘴里说法也不同。）' });
+    return { lines };
+  });
+
+  /* ---- 私域拜访（#111 Step6 · design/09 §3.3）----
+   * B/C 层 NPC 的家是 `house:<npcId>` 虚拟宅院，不在地图上。
+   * 好感 ≥30 / 接过他支线 / 债主仇家 才有资格进门；进去能聊天、买卖。 */
+  reg(['拜访', '造访', '登门', '上门'], (ctx, args) => {
+    const w = ctx.world, p = ctx.player;
+    if (!args.length) return { lines: [{ kind: 'warn', text: '你想拜访谁？' }] };
+    /* 🔴 B5 补漏（质量验收打回）：拜访是**玩家按键可触发**的位移，
+       却直调 w.movePlayerTo 绕过 doMove 门禁 —— 我上一轮「所有自主位移
+       都收敛doMove」的断言就是漏在这里（那次只审了 exec 的解析路径，
+       没审 handler 内部）。可利用性：门槛只有 favor>=30，
+       攒到好感后战斗中一句「拜访 张掌柜」就位移成功，且 battle 还挂着，
+       等于「一边打着山贼一边窜进别人家」。
+       门禁必须放在 visitHouse **之前**：放晚了房间已经建好，
+       白跑一趟还会留下一个凭空多出来的私域。 */
+    if (w.battle) return { lines: [{ kind: 'warn', text: COMBAT_MOVE_HINT }] };
+    const kw = args.join(' ').trim();
+    /* ⚠️ 只能拜访「本区域」的人（远房亲戚不必跑那么远）。
+       用 allNpcs 全局找：主人可能不在场，去他家敲门才合理。 */
+    const hit = fuzzyFind(w.allNpcs(), kw, n => n.name);
+    if (!hit) return { lines: [{ kind: 'warn', text: `打听不到「${kw}」这号人物。` }] };
+    const before = p.room;
+    const r = w.visitHouse(hit.defId || hit.id, p.room);
+    if (!r.ok) return { lines: [{ kind: 'warn', text: r.msg }] };
+    const lines = [
+      { kind: 'story', text: r.msg },
+      { kind: 'plain', text: `（你能进门，只因${r.why}。）` },
+    ];
+    const mv = w.movePlayerTo(p, r.roomId);
+    if (!mv.ok) return { lines };
+    lines.push(...(lookRoom(ctx).lines || []));
+    lines.push({ kind: 'hint', text: '（四下无人拦你。想走，原路出去便是。）' });
+    void before;
+    return { lines, moved: true };
+  });
 
   /* 查看好感 */
   reg(['favor', '好感', '关系', 'renyuan'], (ctx, args) => {
@@ -896,7 +1135,7 @@ function buildCommands(world) {
     const def = npc.def || {};
     const lines = [{ kind: 'title', text: `【 ${npc.name}的人际 】` }];
     const rel = npc.rel || def.rel || [];
-    if (!rel.length) lines.push({ kind: 'plain', text: '　他孤身一人，似乎没有什么来往的人。' });
+    if (!rel.length) lines.push({ kind: 'plain', text: `　${pronounOf(npc)}孤身一人，似乎没有什么来往的人。` });
     for (const r of rel) {
       const o = w.data.npcs[r.id];
       if (!o) continue;
@@ -948,7 +1187,7 @@ function buildCommands(world) {
         skillId: s.id, favorNeed: s.favorNeed, money: s.money, ok: canFavor || canMoney,
       });
     }
-    lines.push({ kind: 'hint', text: '用「qingjiao <人名> <武学名>」请教；好感够就免费，不够可花钱（若他肯收）。' });
+    lines.push({ kind: 'hint', text: `用「qingjiao <人名> <武学名>」请教；好感够就免费，不够可花钱（若${pronounOf(npc)}肯收）。` });
     return { lines };
   });
 
@@ -981,6 +1220,12 @@ function buildCommands(world) {
     const lines = [{ kind: 'sys', text: `你把 ${amt} 文钱塞到${npc.name}手里。` }];
     lines.push({ kind: 'say', text: amt >= worth * 0.5 ? `${npc.name}推辞了两下，还是收了，脸上有了笑意。` : `${npc.name}接了钱，点了点头。` });
     lines.push(...r.lines);
+    /* B22 埋点 4/14 · rs_alms（施舍行善，善名 +）：给乞丐/流民/贫民钱即记一笔。 */
+    if (isPoor(npc) && typeof w.addRumor === 'function') {
+      const rm = w.getRoom(p.room);
+      w.addRumor('rs_alms', { room: p.room, about: npc.defId,
+        vars: { who: p.name || '有人', where: (rm && rm.name) || '此地', whom: npc.name } });
+    }
     return { lines };
   });
 
@@ -1010,6 +1255,12 @@ function buildCommands(world) {
     if (others.length && r.ok) {
       lines.push({ kind: 'hint', text: `（此地还有旁人看着，幸好没被发现。）` });
     }
+    /* B22 埋点 1/14 · rs_theft_caught（偷窃被抓，恶名 −）：人赃并获 → 同房间目击即传。 */
+    if (r.caught && typeof w.addRumor === 'function') {
+      const rm = w.getRoom(p.room);
+      w.addRumor('rs_theft_caught', { room: p.room, about: npc.defId,
+        vars: { who: p.name || '有人', where: (rm && rm.name) || '此地', whom: npc.name } });
+    }
     return { lines };
   });
 
@@ -1029,7 +1280,7 @@ function buildCommands(world) {
       for (const c of list) {
         lines.push({
           kind: c.ok ? 'favor' : 'plain',
-          text: `${c.name}　${c.gender === 'female' ? '女' : '男'}　${c.age} 岁　好感 ${c.favor}${c.ok ? '　✔ 可以提亲' : '　✘ ' + c.reason}`,
+          text: `${c.name}　${genderNoun(c)}　${c.age} 岁　好感 ${c.favor}${c.ok ? '　✔ 可以提亲' : '　✘ ' + c.reason}`,
           npcId: c.id,
         });
       }
@@ -1074,7 +1325,7 @@ function buildCommands(world) {
       const list = marriage.candidates(w, 'concubine');
       if (!list.length) return { lines: [{ kind: 'warn', text: '此地无人可纳。' }] };
       const lines = [{ kind: 'title', text: '【 可纳之人 】' }];
-      for (const c of list) lines.push({ kind: c.ok ? 'favor' : 'plain', text: `${c.name}　${c.gender === 'female' ? '女' : '男'}　${c.age} 岁　好感 ${c.favor}${c.ok ? '　✔' : '　✘ ' + c.reason}`, npcId: c.id });
+      for (const c of list) lines.push({ kind: c.ok ? 'favor' : 'plain', text: `${c.name}　${genderNoun(c)}　${c.age} 岁　好感 ${c.favor}${c.ok ? '　✔' : '　✘ ' + c.reason}`, npcId: c.id });
       return { lines };
     }
     const npc = fuzzyFind(w.npcsIncludingTemplates(w.player.room), args.join(' '), n => n.name);
@@ -1090,7 +1341,7 @@ function buildCommands(world) {
       const list = marriage.candidates(w, 'bond');
       if (!list.length) return { lines: [{ kind: 'warn', text: '此地无人可结缘。' }] };
       const lines = [{ kind: 'title', text: '【 可以结缘的人 】' }, { kind: 'hint', text: '（结缘不限男女，年龄须不满 45，不占正室之位）' }];
-      for (const c of list) lines.push({ kind: c.ok ? 'favor' : 'plain', text: `${c.name}　${c.gender === 'female' ? '女' : '男'}　${c.age} 岁　好感 ${c.favor}${c.ok ? '　✔' : '　✘ ' + c.reason}`, npcId: c.id });
+      for (const c of list) lines.push({ kind: c.ok ? 'favor' : 'plain', text: `${c.name}　${genderNoun(c)}　${c.age} 岁　好感 ${c.favor}${c.ok ? '　✔' : '　✘ ' + c.reason}`, npcId: c.id });
       return { lines };
     }
     const npc = fuzzyFind(w.npcsIncludingTemplates(w.player.room), args.join(' '), n => n.name);
@@ -1106,18 +1357,18 @@ function buildCommands(world) {
     const lines = [{ kind: 'title', text: '【 姻 缘 簿 】' }];
     if (s.spouse) {
       const sp = s.spouse;
-      lines.push({ kind: 'favor', text: `正室　${sp.name}　${sp.gender === 'female' ? '女' : '男'}　${sp.age || '?'} 岁`, color: '#c0306a' });
+      lines.push({ kind: 'favor', text: `正室　${sp.name}　${genderNoun(sp)}　${sp.age || '?'} 岁`, color: '#c0306a' });
       if (sp.homeName) lines.push({ kind: 'plain', text: `　居所：${sp.homeName}（你可自由出入）` });
     } else {
       lines.push({ kind: 'plain', text: '　尚未娶亲。' });
     }
     if (s.concubines.length) {
       lines.push({ kind: 'subtitle', text: '妾室' });
-      for (const c of s.concubines) lines.push({ kind: 'plain', text: `　${c.name}　${c.gender === 'female' ? '女' : '男'}　${c.age || '?'} 岁` });
+      for (const c of s.concubines) lines.push({ kind: 'plain', text: `　${c.name}　${genderNoun(c)}　${c.age || '?'} 岁` });
     }
     if (s.bonds.length) {
       lines.push({ kind: 'subtitle', text: '结缘' });
-      for (const c of s.bonds) lines.push({ kind: 'plain', text: `　${c.name}　${c.gender === 'female' ? '女' : '男'}　${c.age || '?'} 岁` });
+      for (const c of s.bonds) lines.push({ kind: 'plain', text: `　${c.name}　${genderNoun(c)}　${c.age || '?'} 岁` });
     }
     if (s.plan) {
       lines.push({ kind: 'subtitle', text: '在议' });
@@ -1152,7 +1403,7 @@ function buildCommands(world) {
       for (const c of list) {
         lines.push({
           kind: c.ok ? 'favor' : 'plain',
-          text: `${c.name}　${c.gender === 'female' ? '女' : '男'}　${c.age} 岁　好感 ${c.favor}` +
+          text: `${c.name}　${genderNoun(c)}　${c.age} 岁　好感 ${c.favor}` +
                 (c.ok ? `　✔ 可结为${c.label}` : `　✘ ${c.reason}`),
           npcId: c.id,
         });
@@ -1193,7 +1444,7 @@ function buildCommands(world) {
         const where = x.homeName ? `　（${x.homeName}）` : '';
         lines.push({
           kind: 'plain',
-          text: `　${x.name}　${x.gender === 'female' ? '女' : '男'}　${x.age || '?'} 岁　好感 ${x.favor}${x.dead ? '　【已故】' : ''}${where}`,
+          text: `　${x.name}　${genderNoun(x)}　${x.age || '?'} 岁　好感 ${x.favor}${x.dead ? '　【已故】' : ''}${where}`,
           npcId: x.id, color: x.dead ? '#8a8a8a' : undefined,
         });
       }
@@ -1222,6 +1473,10 @@ function buildCommands(world) {
     const kw = args.join(' ');
     const t = homeMod.tiersOf().find(x => x.name.includes(kw) || x.id === kw || kw.includes(x.name.slice(1, 3)));
     const r = homeMod.buy(w, t ? t.id : kw);
+    /* B22 埋点 13/14 · rs_bigspender（置宅是大手笔，市井要传）。 */
+    if (r && r.ok && typeof w.addRumor === 'function') {
+      w.addRumor('rs_bigspender', { room: p.room, vars: { who: p.name || '有人', where: (w.getRoom(p.room) || {}).name || '衙门', whom: '中人' } });
+    }
     return { lines: r.lines };
   });
 
@@ -1232,6 +1487,11 @@ function buildCommands(world) {
 
   /** 回家 */
   reg(['home', '回家', '回府', '归家'], (ctx) => {
+    /* 🔴 B5 同类漏网之二（本次全仓审计时自己发现的）：
+       goHome 直接 `p.room = p.home`（home.js:363/352），连
+       movePlayerTo 都不走，是**第二条**能脱战位移的按键路径。
+       同样在进handler 第一时间拦。 */
+    if (ctx.world.battle) return { lines: [{ kind: 'warn', text: COMBAT_MOVE_HINT }] };
     const r = homeMod.goHome(ctx.world);
     return { lines: r.lines, moved: !!r.moved };
   });
@@ -1528,7 +1788,7 @@ function buildCommands(world) {
       return {
         lines: [
           { kind: 'warn', text: `${teacher.name}摇头：「这门功夫不能轻传。」` },
-          { kind: 'hint', text: `（需要好感 ${need}，你当前 ${myFavor}。多与他来往、送礼，或帮他做事。）` },
+          { kind: 'hint', text: `（需要好感 ${need}，你当前 ${myFavor}。多与${pronounOf(teacher)}来往、送礼，或帮${pronounOf(teacher)}做事。）` },
         ],
       };
     }
@@ -1556,6 +1816,9 @@ function buildCommands(world) {
     if (myFavor >= need) {
       const fr = social.addFavor(w, teacher, 3, '请教武学');
       lines.push(...fr.lines);
+      /* 顺带一点信任：肯把真本事传你，是「信得过」的另一半（画像 secret/feuds 门槛用 trust）。 */
+      teacher.pstate = teacher.pstate || { trust: 0, revealed: [], hooks: {}, met: false, moodBias: 0, leaked: false };
+      teacher.pstate.trust = Math.min(100, (teacher.pstate.trust || 0) + 2);
     }
     p.advanceTime(30 + (sd.difficulty || 1) * 10);
     return { lines };
@@ -1640,6 +1903,15 @@ function buildCommands(world) {
 
   reg(['kill', 'fight', 'attack', '杀', '攻击', '打'], (ctx, args) => {
     const p = ctx.player, w = ctx.world;
+    /* B4：战斗界面「全力一击」点的是**光杆** `attack`（不带目标名）。
+       旧实现第一句就要 args，不带就回「你想攻击谁？」——
+       而战斗面板里的对手是已知的（w.battle.target），玩家不该再输一遍名字。
+       所以交战中无参数 = 朝当前对手全力出手（走 combatStep 的普通攻击分支），
+       这才是这个按钮在战斗面板里该有的语义。 */
+    if (!args.length && w.battle) {
+      const r = w.combatStep();
+      return { lines: r ? r.lines : [], combatStep: true };
+    }
     if (!args.length) return { lines: [{ kind: 'warn', text: '你想攻击谁？' }] };
     const kw = args.join(' ');
     const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), kw, n => n.name);
@@ -1652,7 +1924,21 @@ function buildCommands(world) {
     const r = w.startCombat(p, npc);
     if (!r.ok) return { lines: [{ kind: 'warn', text: r.msg }] };
     const lines = [{ kind: 'combat', text: `你向${npc.name}发起了攻击！` }];
+    /* B7：同房间目击者（怯懦的逃走、侠义的拔刀相助、平民惊呼）的反应台词。
+       由 world 的 `combatstart` 钩子产出（见 world.js combatStartWitnessReaction）。 */
+    for (const l of (r.lines || [])) lines.push(l);
     return { lines, enterCombat: true };
+  });
+
+  /* B4：战斗界面「防御」快捷键 —— 后端此前**根本没有** defend 指令
+     （实测 CMD.defend === undefined），所以点了必然回「「defend」是什么指令？」。
+     结论是「按钮没绑错、字段也没读错，是后端缺指令」，属可修而非僵尸按钮，
+     故补齐后端：凝神防守一回合，减小本回合所受伤害。
+     实现走 combatStep 的 userAction 分支，并在 combat.js 的受击处生效。 */
+  reg(['defend', '防御', '招架', '守'], (ctx) => {
+    if (!ctx.world.battle) return { lines: [{ kind: 'warn', text: '你并没有在战斗。' }] };
+    const r = ctx.world.combatStep({ type: 'defend' });
+    return { lines: r ? r.lines : [], combatStep: true };
   });
 
   reg(['flee', '逃跑', '跑'], (ctx) => {
@@ -1692,12 +1978,16 @@ function buildCommands(world) {
     } else if (npc.talk) {
       /* ---- 画像 L1 听见 ----
          说话动词：personality 管，voice.tone 只在 敬/泼/酸 时顶掉（心情极低时一切让位）。
-         口头禅：按画像层级 A 30% / B 15% / C 不露，前缀在台词之前。 */
+         口头禅：按画像层级 A 30% / B 15% / C 不露，前缀在台词之前。
+         句式：voice.style → 句式签名（personality.styleSpeak）——**改的是句子结构本身**
+         （话少的削成一小句、绕的截断咽回去、要说两遍的真的重说），不是加个前缀词。 */
       const verb = personality.sayVerbToned(npc);
       const cp = personality.catchphraseOf(npc);
       const rate = personality.catchphraseRate(npc);
       const prefix = (cp && rate && w.rng.next() < rate) ? cp : '';
-      lines.push({ kind: 'say', text: `${npc.name}${verb}：「${prefix}${evalTemplate(w.rng.pick([].concat(npc.talk)), ctx)}」` });
+      const base = evalTemplate(w.rng.pick([].concat(npc.talk)), ctx);
+      const spoken = personality.styleSpeak(npc, base);
+      lines.push({ kind: 'say', text: `${npc.name}${verb}：「${prefix}${spoken}」` });
     } else {
       lines.push({ kind: 'say', text: `${npc.name}看了你一眼，没有说话。` });
     }
@@ -1779,6 +2069,43 @@ function buildCommands(world) {
         npc.favor = (npc.favor || 0) + d;
         lines.push({ kind: 'sys', text: `（${npc.name}的脸沉了一下，好感 ${d}）` });
       }
+      /* ---- 画像 L3 吐露：恩怨 feuds + 隐秘 secret（任务三）----
+         这两样是**交情到一定程度才肯说**的东西，门槛一律用 trust（不是 favor）：
+           · 恩怨 feuds —— trust≥40 说得出「谁跟谁有过节」（江湖人最爱嚼这个）；
+           · 隐秘 secret —— 门槛随画像 secret.tier 抬（50 + tier×5；tier2→60、tier3→65），
+             事越大越不肯讲。吐露后记进 pstate.revealed（存档留痕，日后可追踪）。
+         交情不够时**不撒谎也不白给**：明确把门槛说出来，玩家才知道该去做事。 */
+      const verb2 = personality.sayVerbToned(npc);
+      const FEUDK = ['仇家', '恩怨', '结仇', '和谁有仇', '仇人', '冤家', '过节', '旧账'];
+      if (!found && pt.feuds && pt.feuds.length && FEUDK.some(x => topic.includes(x))) {
+        found = true;
+        if (trust >= 40) {
+          const parts = pt.feuds.slice(0, 3).map(f => {
+            /* feuds[].id 是 **defId**（模板 id），要用 data.npcs 查名；
+               ⚠️ world.getNpc() 查的是**实例 id**（同名方法有两个定义，后者覆盖）→ 查不到。 */
+            const other = (w.data.npcs && w.data.npcs[f.id]) || {};
+            const nm = other.name || f.id;
+            return `${nm}（${f.kind || '旧识'}${f.why ? '：' + f.why : ''}${f.since ? '，' + f.since + '起' : ''}）`;
+          });
+          lines.push({ kind: 'say', text: `${npc.name}${verb2}：「提这些做什么……${parts.join('；')}。」` });
+        } else {
+          lines.push({ kind: 'say', text: `${npc.name}${verb2}：「谁的账，也轮不到同你说。」（信不过你，办成几件事再说）` });
+        }
+      }
+      const SECK = ['秘密', '秘辛', '底细', '心事', '隐情', '把柄', '瞒着', '不可告人', '藏着'];
+      if (!found && pt.secret && pt.secret.text && SECK.some(x => topic.includes(x))) {
+        found = true;
+        const need = 50 + (pt.secret.tier || 1) * 5;
+        if (trust >= need) {
+          lines.push({ kind: 'say', text: `${npc.name}${verb2}：「这话我只说一遍……${evalTemplate(pt.secret.text, ctx)}」` });
+          if (npc.pstate) {
+            npc.pstate.revealed = npc.pstate.revealed || [];
+            if (npc.pstate.revealed.indexOf('secret') < 0) npc.pstate.revealed.push('secret');
+          }
+        } else {
+          lines.push({ kind: 'say', text: `${npc.name}${verb2}：「你还问不着这个。」（信得过我，才说得出口——先替我把事办了）` });
+        }
+      }
     }
     if (!found) {
       /* ---- 通用兜底：让「询问」永远有回应 ----
@@ -1805,7 +2132,7 @@ function buildCommands(world) {
         } else {
           const f = npc.favor || 0;
           const tone = f > 40 ? '「老样子，一天一天过着。有你在，倒也不那么闷。」'
-            : f < -20 ? '「不关你的事。」他说完就不再看你。'
+            : f < -20 ? `「不关你的事。」${pronounOf(npc)}说完就不再看你。`
               : '「混口饭吃，哪有什么近况。」';
           lines.push({ kind: 'say', text: `${npc.name}${personality.sayVerbToned(npc)}：${tone}` });
         }
@@ -1817,7 +2144,7 @@ function buildCommands(world) {
           /* 没有 askDefault 就给一条「什么都不知道但态度明确」的回应，
              顺便把 askDefault 缺了这件事说清楚：不是玩家问错，是这个 NPC 没料 */
           lines.push({ kind: 'say', text: `${npc.name}摇摇头：「江湖上的事？我一个${npcIdentity(w, npc)}，哪能知道那么多。」` });
-          lines.push({ kind: 'sys', text: '（这人没什么可打听的。要问出东西来，得先有交情，或找他真正在意的事。）' });
+          lines.push({ kind: 'sys', text: `（${pronounOf(npc)}没什么可打听的。要问出东西来，得先有交情，或找${pronounOf(npc)}真正在意的事。）` });
         }
       }
     }
@@ -1860,10 +2187,23 @@ function buildCommands(world) {
     const d = w.getItem(hit.item || hit.id);
     const price = (hit.price || Math.floor((d.value || 10) * 1.5)) * count;
     const discount = 1 - clamp((p.reputation[shopNpc.def && shopNpc.def.sect] || 0) / 2000, 0, 0.15);
-    const final = Math.floor(price * discount);
+    /* 世界动态 W6（design/27 §3.3-2）：本派地盘上，势力越盛，货越便宜。
+       叠在既有 reputation 折扣之上（各至多 15%）。 */
+    let facDisc = 0;
+    if (typeof w.factionOfRegion === 'function') {
+      const rm = w.getRoom(p.room);
+      const fid = rm && w.factionOfRegion(rm.region);
+      const fac = fid && w.factionState && w.factionState.factions[fid];
+      if (fac) facDisc = clamp(fac.power / 100 * 0.15, 0, 0.15);
+    }
+    const final = Math.floor(price * discount * (1 - facDisc));
     if (p.money < final) return { lines: [{ kind: 'warn', text: `你钱不够，需要 ${final} 文，你有 ${p.money} 文。` }] };
     p.money -= final;
     w.giveItem(p, hit.item || hit.id, count);
+    /* B22 埋点 13/14 · rs_bigspender（挥金，市井闲谈）：单笔消费超 500 文记一笔。 */
+    if (final >= 500 && typeof w.addRumor === 'function') {
+      w.addRumor('rs_bigspender', { room: p.room, vars: { who: p.name || '有人', where: (w.getRoom(p.room) || {}).name || '市上', whom: '掌柜' } });
+    }
     return { lines: [{ kind: 'sys', text: `你买下了${d.name}${count > 1 ? ' x' + count : ''}，花费 ${final} 文。` }] };
   });
 
@@ -1947,6 +2287,10 @@ function buildCommands(world) {
     if (!r.ok) return { lines: [{ kind: 'warn', text: r.msg }] };
     const lines = [{ kind: 'sys', text: r.msg }];
     if (targetSect.entryEffects) evalEffects(targetSect.entryEffects, ctx).forEach(l => lines.push(l));
+    /* B22 埋点 6/14 · rs_sect_join（拜入门派，扬名 +）：门派弟子/山门目击 → 邻房也传。 */
+    if (typeof w.addRumor === 'function') {
+      w.addRumor('rs_sect_join', { room: p.room, about: targetSect.id, vars: { who: p.name, where: targetSect.name } });
+    }
     return { lines };
   });
 
@@ -1956,6 +2300,10 @@ function buildCommands(world) {
     const sd = w.getSect(p.sect);
     const r = p.leaveSect();
     p.karma -= 20;
+    /* B22 埋点 7/14 · rs_sect_betray（叛门，恶名 −）：山门目击 → 邻房传开。 */
+    if (typeof w.addRumor === 'function') {
+      w.addRumor('rs_sect_betray', { room: p.room, about: sd ? sd.id : null, vars: { who: p.name, where: sd ? sd.name : '师门' } });
+    }
     return { lines: [{ kind: 'sys', text: r.msg }, { kind: 'warn', text: `叛出${sd ? sd.name : '门派'}，你的名声受损了。` }] };
   });
 
@@ -2036,12 +2384,19 @@ function buildCommands(world) {
         }
       }
     }
-    // 可接任务（本房间 NPC 身上的）
+    // 可接任务（本房间 NPC 身上的）—— def.quests + def.sidequest（B25 接线）
     const available = [];
     for (const n of w.npcsIncludingTemplates(p.room)) {
-      if (!n.def || !n.def.quests) continue;
-      for (const q of n.def.quests) {
-        if (p.questStage(q) < 0) available.push({ q, npc: n });
+      if (!n.def) continue;
+      const ids = [];
+      if (Array.isArray(n.def.quests)) for (const q of n.def.quests) ids.push(q);
+      if (n.def.sidequest) ids.push(n.def.sidequest);
+      for (const q of ids) {
+        const qd = w.getQuest(q);
+        if (!qd) continue;                   // 挡悬空指针
+        if (p.questStage(q) >= 0) continue;  // 已在进行 / 已完成
+        if (qd.require && !evalCond(qd.require, ctx)) continue;  // 前置未满足 → 不算「可接」
+        available.push({ q, npc: n });
       }
     }
     if (available.length) {
@@ -2122,6 +2477,13 @@ function buildCommands(world) {
   reg(['save', '存档'], () => ({ lines: [], action: 'save' }));
   reg(['load', '读档'], () => ({ lines: [], action: 'load' }));
   reg(['settings', '设置'], () => ({ lines: [], openPanel: 'settings' }));
+  /* 退出游戏：网页端由前端 doCmd() 优先本地拦截（弹确认框 → 自动存档 → 回主菜单），
+     见 ui.js 的 isQuitCmd() / quitGame()。这里保留后端实现，是为了
+     ① 让 help 的「系统」组列得出来；② 纯文本客户端 / mod 调到时给个体面的答复。 */
+  reg(['quit', 'exit', '退出游戏', '退出', '离开游戏', '回主菜单'], () => ({
+    lines: [{ kind: 'hint', text: '你收拢行囊，退出了江湖。' }],
+    action: 'quit',
+  }));
 
   /* 内部：由服务端 /api/panel 转发，直接开面板（不输出任何文字） */
   reg(['__panel__score', '__panel__状态'], (ctx) => ({ lines: [], openPanel: 'score', panelData: null }));
@@ -2243,6 +2605,126 @@ function buildCommands(world) {
     }
     try { w.fireEvent('onHeal', { player: p, heal, cost }); } catch (e) { }
     return { lines };
+  });
+
+  /* ---------------- 求医（任务一：医者的互动项，要点得动、有反馈） ----------------
+     医者（tag=doctor，11 人）点击菜单给「求医」。诊金按伤势算，无伤时明确回绝；
+     银钱不够也明说 —— 绝不出现「点了没反应」。 */
+  reg(['求医', '看病', '问诊', '诊病'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const here = w.npcsIncludingTemplates(p.room).filter(n => (n.def || {}).tag === 'doctor');
+    if (!here.length) return { lines: [{ kind: 'warn', text: '这里没有会看病的人。' }] };
+    let med = here[0];
+    if (args.length) { const t = fuzzyFind(here, args.join(' '), n => n.name); if (t) med = t; }
+    const hpMiss = Math.max(0, p.maxHp - p.hp);
+    const mpMiss = Math.max(0, p.maxMp - p.mp);
+    if (hpMiss <= 0 && mpMiss <= 0) {
+      return { lines: [{ kind: 'say', text: `${med.name}抬眼看了看你：「气色不差，不必吃我的药。」` }] };
+    }
+    const fee = Math.max(5, Math.round(hpMiss * 0.4 + mpMiss * 0.2));
+    if ((p.money || 0) < fee) {
+      return { lines: [
+        { kind: 'say', text: `${med.name}道：「诊金 ${fee} 文，你拿得出么？」` },
+        { kind: 'hint', text: `（你只有 ${p.money || 0} 文。先去筹钱，或另寻郎中。）` },
+      ] };
+    }
+    p.money -= fee;
+    p.hp = p.maxHp;
+    p.mp = clamp(p.mp + Math.round(p.maxMp * 0.6), 0, p.maxMp);
+    return { lines: [
+      { kind: 'say', text: `${med.name}让你坐下，搭上脉，又取了些药末调开。` },
+      { kind: 'sys', text: `你付了 ${fee} 文诊金，伤痛大减（气血 ${p.hp}/${p.maxHp}）。` },
+    ] };
+  });
+
+  /* ---------------- 问路（任务一：镖师 / 车夫 / 船夫的互动项） ----------------
+     按当前房间出口做 BFS，找同 region 最近的一处「有字号的地方」（客栈/市集/衙门/渡口…），
+     报出方向与步数。是真计算出来的路，不是套话。 */
+  reg(['问路', '打听路', '找路', '带路'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const here = w.npcsIncludingTemplates(p.room).filter(n => ['escort', 'groom', 'boatman'].indexOf((n.def || {}).tag) >= 0);
+    if (!here.length) return { lines: [{ kind: 'warn', text: '这里没有识路的人。' }] };
+    let g = here[0];
+    if (args.length) { const t = fuzzyFind(here, args.join(' '), n => n.name); if (t) g = t; }
+    const room = w.getRoom(p.room);
+    if (!room) return { lines: [{ kind: 'warn', text: '你连自己在哪儿都不知道。' }] };
+    const NOTABLE = /客栈|酒|茶|市|集|铺|衙|渡|码头|城门|镖局|寺|观|宫/;
+    // BFS：找同 region 里最近的一处「有字号的地方」
+    const seen = { [p.room]: null };   // roomId -> 从起点走的第一步方向
+    const q = [p.room];
+    let target = null;
+    while (q.length && !target) {
+      const cur = q.shift();
+      const cr = w.getRoom(cur);
+      if (!cr) continue;
+      for (const d of Object.keys(cr.exits || {})) {
+        const ex = cr.exits[d];
+        const tid = typeof ex === 'string' ? ex : (ex && ex.to);
+        if (!tid || seen[tid] !== undefined || !w.data.rooms[tid]) continue;
+        seen[tid] = seen[cur] || d;     // 第一步方向
+        const tr = w.data.rooms[tid];
+        if (tr.region === room.region && tr.id !== p.room && NOTABLE.test(tr.name || '')) { target = tr; break; }
+        q.push(tid);
+      }
+    }
+    if (!target) {
+      return { lines: [{ kind: 'say', text: `${g.name}想了想，摇头道：「这附近，倒也没什么好去处。」` }] };
+    }
+    /* 步数 = BFS 深度（重新算一遍最短步） */
+    const dist = {}; dist[p.room] = 0;
+    const q2 = [p.room];
+    while (q2.length) {
+      const cur = q2.shift();
+      if (cur === target.id) break;
+      const cr = w.getRoom(cur);
+      for (const d of Object.keys((cr && cr.exits) || {})) {
+        const ex = cr.exits[d];
+        const tid = typeof ex === 'string' ? ex : (ex && ex.to);
+        if (!tid || dist[tid] !== undefined || !w.data.rooms[tid]) continue;
+        dist[tid] = dist[cur] + 1;
+        q2.push(tid);
+      }
+    }
+    const steps = dist[target.id];
+    const dirCN = DIR_CN[seen[target.id]] || seen[target.id];
+    return { lines: [
+      { kind: 'say', text: `${g.name}抬手往${dirCN}边一指：「往${dirCN}去，过了${steps}道门就是${target.name}。」` },
+      { kind: 'hint', text: `（${target.name}：往${dirCN}，约 ${steps} 步。）` },
+    ] };
+  });
+
+  /* ---------------- 搜身（任务一：倒地者的互动项） ----------------
+     对象是 **打倒/晕倒** 的人（knockedOut）——用 downedIn，不用 npcsIn（铁律 32）。
+     拿走他身上的钱与物，每人只可搜一次。 */
+  reg(['搜身', '搜刮', 'loot', 'searchbody'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const downed = w.downedIn(p.room);
+    if (!downed.length) return { lines: [{ kind: 'warn', text: '这里没有倒下的人可搜。' }] };
+    const kw = args.join(' ').trim();
+    let tgt = downed[0];
+    if (kw) {
+      const t = downed.find(n => (n.name || '').includes(kw)) || fuzzyFind(downed, kw, n => n.name);
+      if (!t) return { lines: [{ kind: 'warn', text: `这没有叫「${kw}」的倒地者。` }, { kind: 'hint', text: '可搜的：' + downed.map(n => n.name).join('、') }] };
+      tgt = t;
+    }
+    if (tgt._searched) return { lines: [{ kind: 'plain', text: `${tgt.name}身上已经被你翻过了。` }] };
+    const taken = [];
+    const carry = tgt.carry || (tgt.def && tgt.def.carry) || null;
+    if (carry) {
+      if (carry.money) { p.money = (p.money || 0) + carry.money; taken.push(carry.money + ' 文'); carry.money = 0; }
+      const items = [].concat(carry.items || []);
+      for (const it of items) {
+        const iid = typeof it === 'string' ? it : (it && (it.id || it.itemId));
+        if (!iid || !w.getItem(iid)) continue;
+        const cnt = (typeof it === 'object' && it.count) || 1;
+        w.giveItem(p, iid, cnt);
+        taken.push(((w.getItem(iid) || {}).name || iid) + (cnt > 1 ? ' x' + cnt : ''));
+      }
+      if (carry.items) carry.items = [];
+    }
+    tgt._searched = true;
+    if (!taken.length) return { lines: [{ kind: 'plain', text: `你在${tgt.name}身上翻了翻，什么也没有。` }] };
+    return { lines: [{ kind: 'sys', text: `你从${tgt.name}身上搜出了：${taken.join('、')}。` }] };
   });
 
   /* ---------------- 外功淬体（淬炼肉身，需血量与药物，有生命危险） ---------------- */
@@ -2430,6 +2912,106 @@ function buildCommands(world) {
 
   /* ---------------- 主解析入口 ---------------- */
 
+  /* ================================================================
+   * B6 · 「此地可做」按钮点了没反应/说没有 —— 归一化入口
+   *
+   * 主人原话：「"回春堂后院"的"此地可做"有草药，点了却说此地没有草药，
+   * **这肯定不是个例**」。实测确认确实是一类问题，不是孤例。
+   *
+   * 【根因 1· 渲染读的字段和判定读的字段对不上（主人猜的那条，成立）】
+   *   前端「此地可做」按钮渲染自engine.roomActionsView()，
+   *   它遍历 room.actions，逐条给出 { name, cmd, ok }，点下去执行的就是 a.cmd。
+   *   而 commands.execute() 的解析顺序是：
+   *       1) 内置指令 CMD 表 → 2) 方向 → 3) roomCmd → 4) questKeyword
+   *   **内置指令表排在房间 action 前面**。于是只要 action 的动词撞上内置指令，
+   *   action 就被内置指令整条吞掉，effects 永远不执行。
+   *   全量实测（128 条room action）：**48 条的动词是内置指令**，
+   *   其中 27 条是多词cmd（如 `get 药材` / `talk 郎中` / `list 当铺`）。
+   *
+   * 【根因 2 · questKeyword 只拿首词比对，多词 cmd 永远匹配不上】
+   *   questKeyword(ctx, cmd0, args) 里做的是 `a.cmd === cmd`（严格相等）
+   *   和 `keywords.some(k => cmd.includes(k))`，可 cmd 是**首词**。
+   *   所以 `listen 说书` / `read 告示` / `knock 登闻鼓` / `search 书架`
+   *   这类 action 无论玩家点按钮还是手输，都匹配不上，
+   *   实测 7 条全部返回「「listen」是什么指令？」——纯静默失败。
+   *
+   * 【修法】统一收口在 execute() 这一处，不逐条打补丁：
+   *   ① selfSuffRoomAction()：房间 action **自带 effects** 时优先于内置指令
+   *      （自带 effects ＝作者明确写了要做什么，被吞掉就是 bug）；
+   *      不带 effects 的仍旧交给内置指令（`harvest`/`sell`/`d`/`打坐`
+   *      这些是**故意**委托给内置指令的，不能抢）。
+   *   ② questKeyword 改用**整条输入串**参与匹配，多词 cmd 终于能命中。
+   *   ③ gather 归一化：没有 effects 的 `get/采 <东西>` 类 action
+   *      （如 `get 药材`、`get 稻种`）按「此处可采」语义兑现 ——
+   *      去物品表里解析出真实物品给玩家。原先这类 action 点了必然
+   *      「这里没有「药材」」，因为房间根本没放ground item。
+   * ================================================================ */
+
+  /* 采集类 action 的泛称→真实物品别名（只认「说得通」的映射，不乱给）
+     房间地图数据里这些 action 只写了「药材」这种泛称，
+     而物品表里没有叫「药材」的东西，必须有一张明确的对照表，
+     否则玩家点一下什么也拿不到。 */
+  const GATHER_ALIAS = {
+    '药材': 'herb_lingshen', '草药': 'herb_lingshen', '药': 'herb_lingshen',
+    '稻种': 'seed_rice', '种子': 'seed_rice', '菜种': 'seed_vegetable',
+  };
+
+  /** 从物品表解析一个「可采之物」；解析不出返回 null（不硬塞） */
+  function resolveGatherable(w, name) {
+    const items = w.data.items || {};
+    const kw = String(name || '').trim();
+    if (!kw) return null;
+    if (GATHER_ALIAS[kw]) return GATHER_ALIAS[kw];
+    /* 精确名→ id 精确匹配 */
+    for (const id of Object.keys(items)) if (items[id] && items[id].name === kw) return id;
+    /* 模糊：与别名表同key 的物品名也算命中 */
+    const hit = fuzzyFind(Object.keys(items).map(id => ({ id, name: items[id] && items[id].name })), kw, x => x.name);
+    return hit ? hit.id : null;
+  }
+
+  /** 房间 action 是否「自带 effects」（= 不该被内置指令吞） */
+  function selfSuffRoomAction(ctx, rawFull) {
+    const p = ctx.player, w = ctx.world;
+    const room = w.getRoom(p.room);
+    if (!room) return null;
+    for (const a of room.actions || []) {
+      if (!a.cmd || !(a.effects && a.effects.length)) continue;
+      if (a.cmd === rawFull) return a;
+    }
+    return null;
+  }
+
+  /** 没有 effects 的采集类 action → 兑现成真物品
+   *
+   *⚠️ 必须先确认「本房间真的声明了这么一条 action」才兑现，
+   *   否则 `get 稻谷` 这种普通的捡地上东西，会被这里抢走
+   *   （走giveItem 而不是 pickupItem，尸体/地面实例都不会被消耗）。
+   *   所以这里查的是 room.actions，不是「看起来像采集指令」。 */
+  function gatherRoomAction(ctx, rawFull) {
+    const p = ctx.player, w = ctx.world;
+    const room = w.getRoom(p.room);
+    if (!room) return null;
+    const raw = String(rawFull || '').trim();
+    const m = /^(get|拿|取|采|摘|捡|拾取|take|pick)\s*(.+)$/i.exec(raw);
+    if (!m) return null;
+    /* 本房间是否声明了这条采集 action（cmd 或 keywords 命中） */
+    const declared = (room.actions || []).some(a =>
+      (a.cmd || '').trim() === raw || (a.keywords || []).some(k => k && raw.includes(k)));
+    if (!declared) return null;
+    const itemId = resolveGatherable(w, m[2]);
+    if (!itemId) return null;   /* 解析不出就老实不处理，交给后续报「没有」 */
+    if (w.battle) return { lines: [{ kind: 'warn', text: COMBAT_MOVE_HINT }] };
+    const r = w.giveItem(p, itemId, 1);
+    if (!r.ok) return { lines: [{ kind: 'warn', text: '你拿不动更多东西了。' }] };
+    p.advanceTime(5);
+    return {
+      lines: [
+        { kind: 'story', text: `你俯身拾起${r.name}。` },
+        { kind: 'sys', text: `你得到了：${r.name} x1。` },
+      ],
+    };
+  }
+
   function execute(input, ctx) {
     const raw = String(input || '').trim();
     if (!raw) return { lines: [] };
@@ -2447,6 +3029,26 @@ function buildCommands(world) {
     const cmd0 = toks[0];
     let args = toks.slice(1);
 
+    /* B6-① 房间 action 自带 effects 时，优先于内置指令表。
+       没有这一层，`talk 禁军`（皇城·午门，明明白白写了 effects）
+       会被内置 talk 吞掉，玩家永远看不到那两句写好的台词。 */
+    const selfSuff = selfSuffRoomAction(ctx, raw);
+    if (selfSuff) {
+      if (selfSuff.cond && !evalCond(selfSuff.cond, ctx)) {
+        return { lines: [{ kind: 'warn', text: selfSuff.failMsg || '现在做不了这个。' }] };
+      }
+      return { lines: evalEffects(selfSuff.effects, ctx) };
+    }
+
+    /* B6-③ 采集类 action 的归一化兑现。
+       ⚠️ 必须排在「1) 内置指令」**之前**：回春堂·后院那条action 的 cmd
+       就是 `get 药材`，而 `get` 是内置指令 —— 放在它后面永远轮不到，
+       玩家只会听到 pickupItem 报「这里没有「药材」」。
+       （gatherRoomAction 内部已确认「本房间确实声明了这条 action」，
+         所以不会抢走普通的「捡地上东西」。） */
+    const g0 = gatherRoomAction(ctx, raw);
+    if (g0) return g0;
+
     // 1) 内置指令
     let entry = CMD[cmd0] || CMD[cmd0.toLowerCase()];
     if (entry) return entry.run(ctx, args) || { lines: [] };
@@ -2460,7 +3062,7 @@ function buildCommands(world) {
     if (r1) return { lines: r1 };
 
     // 4) 任务关键词（常见的任务动作）
-    const r2 = questKeyword(ctx, cmd0, args);
+    const r2 = questKeyword(ctx, cmd0, args, raw);
     if (r2) return { lines: r2 };
 
     // 5) mod 注册的自定义指令
@@ -2514,16 +3116,41 @@ function buildCommands(world) {
     };
   }
 
-  /* 任务关键词处理（如「摘桃子」「砍树」） */
-  function questKeyword(ctx, cmd, args) {
+  /* 任务关键词处理（如「摘桃子」「砍树」）
+   *
+   * B6-②：rawFull 是**整条输入串**。此前这里只拿首词 cmd 去比，
+   * 导致 `listen 说书` / `read 告示` / `knock 登闻鼓` / `search 书架`
+   * 这类多词 action 永远匹配不上（a.cmd 是整串，cmd 只有首词），
+   * 玩家点按钮必然吃到「「listen」是什么指令？」。 */
+function questKeyword(ctx, cmd, args, rawFull) {
     const p = ctx.player, w = ctx.world;
     const room = w.getRoom(p.room);
     if (!room) return null;
+    const full = String(rawFull || (cmd + ' ' + (args || []).join(' ')).trim()).trim();
+    /* action 的 cmd 既可能是整串（`listen 说书`），也可能只是首词（`采药`），
+       两种写法都要认—— 这正是「渲染发的 cmd」与「判定匹配的 cmd」对齐的地方。 */
+    const matchAction = a => {
+      if (!a) return false;
+      const ac = (a.cmd || '').trim();
+      if (!ac) return false;
+      if (ac === full || ac === cmd) return true;
+      if (full && ac.startsWith(full)) return true;
+      if ((a.keywords || []).some(k => k && (full.includes(k) || k.includes(full)))) return true;
+      return false;
+    };
     // 房间里的可交互物件
     const acts = room.actions || [];
     for (const a of acts) {
-      if ((a.cmd && (a.cmd === cmd || a.cmd === cmd + args.join(''))) || (a.keywords || []).some(k => cmd.includes(k))) {
+      if (matchAction(a)) {
         if (a.cond && !evalCond(a.cond, ctx)) return a.failMsg ? [{ kind: 'warn', text: a.failMsg }] : [{ kind: 'warn', text: '现在做不了这个。' }];
+        if (!a.effects || !a.effects.length) {
+          /* B6：action 存在但没写 effects（纯描述性/委托给内置指令的）。
+             这里不能静默返回空数组 —— 玩家点了按钮却什么都没发生，
+             正是主人报的「点了没反应」。
+             注意措辞：不要把 desc 生硬拼进来（会出现
+             「你溪里试试手气」这种半句话），只给一句明确的「无发现」。 */
+          return [{ kind: 'plain', text: `你留心察看了一番，此处暂时没有更多可做的了。` }];
+        }
         return evalEffects(a.effects, ctx);
       }
     }
@@ -2629,6 +3256,12 @@ function buildCommands(world) {
     if (!reportable.length) return false;
     const { q, qd, stage, st } = reportable[0];
     lines.push({ kind: 'say', text: `${npc.name}点了点头：「你办得不错。」` });
+    /* 画像信任轴 trust 的增长通道（任务三）：**办成事才涨 trust**。
+       送礼涨 favor（喜欢你），办事涨 trust（信得过你）——两条轴不混（design/01 §1.2）。
+       trust 是画像 origin/now/want/fear（0/20/50/70）与 secret/feuds（40~65）的门槛；
+       此前**全仓没有任何地方涨 trust** ⇒ 那些内容玩家永远看不到。这里补上。 */
+    npc.pstate = npc.pstate || { trust: 0, revealed: [], hooks: {}, met: false, moodBias: 0, leaked: false };
+    npc.pstate.trust = Math.min(100, (npc.pstate.trust || 0) + 8);
     // 清理阶段变量
     if (stage && stage.targets) for (const t of stage.targets) p.setVar(t.var || `q_${q}_${t.id}`, 0);
     if (stage && stage.effects) evalEffects(stage.effects, { ...ctx, npc }).forEach(l => lines.push(l));
@@ -2661,7 +3294,14 @@ function buildCommands(world) {
       const stage = qd.stages[st];
       for (const t of (stage.targets || [])) {
         if (t.kind !== kind) continue;
-        if (t.key && t.key !== key && !(t.keys || []).includes(key)) continue;
+        /* 目标名单：单数 `key` 与复数 `keys` 是**两种等价写法**，必须一起认。
+           ⚠️ 原写法 `if (t.key && t.key !== key && !(t.keys||[]).includes(key)) continue;`
+           短路在 `t.key` 为假时整条不成立 → **只写 `keys` 的目标等于没写限制**：
+           "击杀恶徒十个"变成"击杀任意人十个"（全库 3 条：q_emei_entry /
+           q_huashan_sword_test / q_bounty_bandit）。现在按并集判定；
+           两者都不写才是真的"击杀任意目标"（全库当前 0 条）。 */
+        const wantK = t.key ? [t.key] : (Array.isArray(t.keys) ? t.keys : []);
+        if (wantK.length && wantK.indexOf(key) < 0) continue;
         const vk = t.var || `q_${qid}_${t.id}`;
         const cur = (p.getVar(vk) || 0) + n;
         p.setVar(vk, Math.min(cur, t.count || 1));
@@ -2798,7 +3438,14 @@ function buildCommands(world) {
   /* ---- ⑨ 玩家自己被掳走后的三条路 ----
    * 赎身/赎回/脱籍 由上面那个「赎身」按场景统一分派，这里不再重复注册。
      只补黑市专用的突围（武力打出去），以及还债。 */
-  reg(['escape', '突围', '打出去'], (ctx) => kdLines(kidnapMod.escapeMarket(ctx.world)));
+  reg(['escape', '突围', '打出去'], (ctx) => {
+    const r = kidnapMod.escapeMarket(ctx.world);
+    /* B22 埋点 14/14 · rs_jailbreak（越狱/突围成功，重案 −）：大动静 → 邻房也传。 */
+    if (r && r.ok && typeof ctx.world.addRumor === 'function') {
+      ctx.world.addRumor('rs_jailbreak', { room: ctx.player.room, about: 'court', vars: { who: ctx.player.name || '有人', where: '黑市' } });
+    }
+    return kdLines(r);
+  });
   reg(['workdebt', '还债', '打工还债'], (ctx) => {
     const r = kidnapMod.workOffDebt(ctx.world, 60);
     if (!r || !r.ok) {
@@ -2820,7 +3467,7 @@ function favorDetail(w, npc) {
   const t = social.favorTier(npc.favor);
   const lines = [
     { kind: 'title', text: `【 ${npc.name} 】` },
-    { kind: 'plain', text: `　身份：${npcIdentity(w, npc)}　${npc.gender === 'female' ? '女' : '男'}　${npc.level || 1} 级` },
+    { kind: 'plain', text: `　身份：${npcIdentity(w, npc)}　${genderNoun(npc)}　${npc.level || 1} 级` },
     { kind: 'favor', text: `　好感：${npc.favor || 0}（${t.name}）—— ${t.cn}`, color: t.color, favor: npc.favor || 0, tier: t.name },
   ];
 
@@ -2858,7 +3505,7 @@ function favorDetail(w, npc) {
   const carry = npc.carry || def.carry || {};
   const cnums = (carry.items || []).length;
   if (cnums || carry.money) {
-    lines.push({ kind: 'hint', text: `　（他怀里似乎${carry.money ? '揣着钱' : ''}${carry.money && cnums ? '，还' : ''}${cnums ? `带着 ${cnums} 样东西` : ''}）` });
+    lines.push({ kind: 'hint', text: `　（${pronounOf(npc)}怀里似乎${carry.money ? '揣着钱' : ''}${carry.money && cnums ? '，还' : ''}${cnums ? `带着 ${cnums} 样东西` : ''}）` });
   }
 
   /* 关系 */

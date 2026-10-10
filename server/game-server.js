@@ -117,7 +117,21 @@ function createServer(opts) {
       if (rel.startsWith('/game/')) return serveStatic(req, res, GAME_DIR, rel.replace('/game/', '/'));
       // mods 目录（mod 图标等）
       if (rel.startsWith('/modfiles/')) return serveStatic(req, res, path.join(ROOT, 'mods'), rel.replace('/modfiles/', '/'));
-      if (rel.startsWith('/saves/')) return serveStatic(req, res, path.join(ROOT, 'saves'), rel.replace('/saves/', '/'));
+      /* ⚠️ /saves/** 静态读取**默认关闭**，要开必须显式设 `WX_ALLOW_SAVES=1`。
+         为什么这样定：
+           · 公网部署时 `saves/` 是**所有访问者共用的服务端目录**（自动存档按设备 id 落盘），
+             无条件开放 = 把玩家存档挂在公网 URL 上。实测线上
+             `GET /saves/test_slot.json` 返回 **200**，猜到文件名就能取到。
+           · 前端**从不请求**这个路径（读档走 `/api/load`、存档走 `/api/save`），
+             所以关掉它对游戏零影响。
+           · 为什么不用「来源是 127.0.0.1 才放行」：线上是反向代理，
+             代理与源站同机 ⇒ `socket.remoteAddress` 也是回环，**判定会失效**。
+             按「默认拒绝 + 显式开关」才在构造上安全。
+         本机单人想直接 curl 自己的存档时，启动前设 WX_ALLOW_SAVES=1 即可。 */
+      if (rel.startsWith('/saves/')) {
+        if (process.env.WX_ALLOW_SAVES !== '1') return json(res, 404, { ok: false, error: '未找到' });
+        return serveStatic(req, res, path.join(ROOT, 'saves'), rel.replace('/saves/', '/'));
+      }
       return serveStatic(req, res, path.join(GAME_DIR, 'src', 'renderer'), rel);
     } catch (e) {
       console.error('[server error]', e);

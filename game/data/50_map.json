@@ -75,7 +75,7 @@
       "exits": {
         "s": "jiangnan_street",
         "e": "jiangnan_smithy",
-        "n": "jn_market_main"
+        "u": "jn_market_main"
       },
       "onEnter": [
         {
@@ -205,7 +205,7 @@
       "id": "jiangnan_east_road",
       "name": "城东官道",
       "region": "jiangnan",
-      "desc": "官道笔直通向东方，两旁是刚抽穗的水田。远处隐约有山影起伏。",
+      "desc": "官道笔直朝东，两旁水田刚抽了穗，绿得晃眼。再远些，山影一层压着一层。",
       "exits": {
         "w": "jiangnan_gate",
         "e": "road_huashan_1",
@@ -224,7 +224,7 @@
       "id": "jiangnan_west_road",
       "name": "城西小道",
       "region": "jiangnan",
-      "desc": "泥泞的小路两旁荒草齐腰，尽头隐约可见一座破败的庙宇。",
+      "desc": "泥路被雨水泡得发软，两旁荒草齐腰。路尽头的破庙塌了半边飞檐，黑黢黢的椽木露在外面。",
       "exits": {
         "e": "jiangnan_qiao",
         "w": "jiangnan_temple",
@@ -249,8 +249,7 @@
       "exits": {
         "s": "jiangnan_west_road",
         "n": "jn_woods_1",
-        "e": "jn_hill_top",
-        "w": "jn_home_19"
+        "e": "jn_hill_top"
       },
       "actions": [
         {
@@ -289,8 +288,7 @@
       "region": "jiangnan",
       "desc": "庙宇早已荒废，佛像倒了一半，蛛网结满屋梁。供桌上积着厚厚的灰，却有一处被人擦得干净。",
       "exits": {
-        "e": "jiangnan_west_road",
-        "n": "jn_home_21"
+        "e": "jiangnan_west_road"
       },
       "onEnter": [
         {
@@ -385,7 +383,7 @@
         "w": "gusu_town",
         "e": "road_haibin_1",
         "s": "road_nan_1",
-        "ne": "jn_home_27"
+        "sw": "road_tangmen_1"
       },
       "encounter": {
         "chance": 0.2,
@@ -435,7 +433,7 @@
       "id": "wild_forest_2",
       "name": "黑松林深处",
       "region": "wild",
-      "desc": "林子越来越密，脚下的路已经看不真切。前方隐约有一处水潭。",
+      "desc": "林子越走越密，脚下早没了路。枝叶缝里透出一线亮，照着前面一汪水潭。",
       "exits": {
         "e": "wild_forest_1",
         "w": "wild_pool"
@@ -459,7 +457,7 @@
       "id": "wild_pool",
       "name": "幽潭",
       "region": "wild",
-      "desc": "一汪深潭藏在林中，潭水碧绿见底，倒映着树影。潭边石头上生着一层滑腻的青苔。",
+      "desc": "一汪深潭陷在林子里，水色发暗，只照得出树影。潭边石头上糊着层滑腻的青苔，一踩一趔趄。",
       "exits": {
         "e": "wild_forest_2"
       },
@@ -888,7 +886,6 @@
       "region": "huashan",
       "desc": "后山僻静无人，一条小径通往一处突出的崖壁。崖上刻着些模糊的字迹。",
       "exits": {
-        "e": "huashan_qingke",
         "s": "huashan_zhengqi",
         "n": "huashan_yunu",
         "w": "huashan_qingke"
@@ -1031,7 +1028,7 @@
       "id": "huashan_houdong",
       "name": "思过崖·后洞",
       "region": "huashan",
-      "desc": "崖壁后竟藏着一个天然石洞，洞口被藤蔓遮住。洞内幽深，隐约有刻字。",
+      "desc": "崖壁背后藏着个天然石洞，洞口垂着藤蔓。往里几步就没了光，只有岩壁上几行字迹，摸得出来。",
       "exits": {
         "s": "huashan_siguoya"
       },
@@ -1091,7 +1088,7 @@
         "w": "road_huashan_1",
         "n": "shaolin_shanmen",
         "e": "road_wudang_1",
-        "s": "luoyang_gate"
+        "ne": "luoyang_gate"
       }
     },
     "shaolin_shanmen": {
@@ -1207,7 +1204,7 @@
       "id": "shaolin_ta",
       "name": "少林·塔林",
       "region": "shaolin",
-      "desc": "数百座石塔静立于林中，是历代高僧的埋骨之所。风过塔林，发出呜呜的声响。",
+      "desc": "几百座石塔立在林子里，高矮不一。风从塔缝间穿过，呜呜地响。",
       "exits": {
         "s": "shaolin_daxiong",
         "e": "shaolin_lianwu"
@@ -1217,7 +1214,7 @@
       "id": "shaolin_lianwu",
       "name": "少林·练武场",
       "region": "shaolin",
-      "desc": "一片开阔的沙土场地，木人桩、石锁、铁沙袋一应俱全。数十名武僧正在呼喝练功。",
+      "desc": "沙土场地踩得又平又实，木人桩、石锁、铁沙袋沿边摆开。几十个武僧赤着膊，呼喝声撞在山壁上。",
       "exits": {
         "w": "shaolin_ta"
       },
@@ -1259,7 +1256,8 @@
       "desc": "三层木阁，藏书万卷。阁内光线幽暗，一个瘦小的老僧拿着扫帚，正一下一下扫着地。",
       "exits": {
         "e": "shaolin_tianwang",
-        "n": "hm_npcv_024"
+        "n": "hm_npcv_024",
+        "w": "shaolin_houshan"
       },
       "respawn": [
         {
@@ -1306,7 +1304,7 @@
       "id": "road_wudang_1",
       "name": "武当道",
       "region": "wudang",
-      "desc": "穿过一片竹林，前方石阶依山而建，直通云雾深处。道旁松涛阵阵。",
+      "desc": "穿过竹林，石阶顺着山势往上，一头扎进云雾里。道旁松树连片，风过就哗哗响。",
       "exits": {
         "w": "road_shaolin_1",
         "n": "wudang_shanmen",
@@ -1338,7 +1336,7 @@
       "id": "wudang_lianwu",
       "name": "武当·紫霄岩",
       "region": "wudang",
-      "desc": "一块突出的巨岩，岩面光滑如镜。岩上刻着一个巨大的「道」字。",
+      "desc": "一块突出的巨岩，岩面光滑如镜。岩上刻着个巨大的「道」字，笔画被风雨磨圆了。",
       "exits": {
         "e": "wudang_taihe",
         "n": "wudang_jinding"
@@ -1393,9 +1391,10 @@
       "id": "wudang_jinding",
       "name": "武当·金顶",
       "region": "wudang",
-      "desc": "金顶之上云海翻腾，一座铜铸金殿在阳光下熠熠生辉。此处是武当最高处。",
+      "desc": "金顶在云海之上，一座铜殿在日头下亮得刺眼。风大，人几乎站不住。",
       "exits": {
-        "s": "wudang_lianwu"
+        "s": "wudang_lianwu",
+        "n": "wudang_houshan"
       },
       "actions": [
         {
@@ -1497,11 +1496,12 @@
       "id": "emei_jinding",
       "name": "峨眉·金顶",
       "region": "emei",
-      "desc": "峨眉金顶，日出之时可见「佛光」奇景。顶上一座铜殿，殿前站着一位面容冷峻的老尼，手中长剑寒光凛冽。",
+      "desc": "金顶上风硬，云海在脚下翻。一座铜殿立在山尖，殿前站着个面容冷硬的老尼，手里那柄剑泛着青光。",
       "exits": {
         "s": "emei_qingyin",
         "n": "emei_she_ru",
-        "w": "hm_emei_miejue"
+        "w": "hm_emei_miejue",
+        "e": "emei_houshan"
       },
       "respawn": [
         {
@@ -1515,7 +1515,7 @@
       "id": "emei_she_ru",
       "name": "峨眉·舍身崖",
       "region": "emei",
-      "desc": "万丈悬崖，云雾缭绕。崖边立着一块石碑：「舍身成佛」。",
+      "desc": "崖下深不见底，云雾贴着崖壁往上涌。崖边立着一块旧石碑，刻着「舍身成佛」四个字。",
       "exits": {
         "s": "emei_jinding",
         "d": {
@@ -1566,11 +1566,12 @@
       "id": "road_tangmen_1",
       "name": "入蜀官道",
       "region": "tangmen",
-      "desc": "官道两旁是连绵的丘陵，远处可见巴山如黛。路上偶尔有押镖的车队经过。",
+      "desc": "官道顺着丘陵起伏，一路向西。押镖的车队偶尔碾过，车辙压得又深又直。",
       "exits": {
-        "e": "road_jiangnan_2",
         "s": "tangmen_gate",
-        "w": "road_dali_1"
+        "w": "road_dali_1",
+        "ne": "road_jiangnan_2",
+        "e": "road_tangmen_2"
       }
     },
     "road_tangmen_2": {
@@ -1580,8 +1581,8 @@
       "desc": "官道穿过一片竹林，竹叶沙沙作响。前方岔路，一向北通往峨眉，一向南通往唐门。",
       "exits": {
         "n": "road_emei_1",
-        "e": "road_tangmen_1",
-        "s": "tangmen_gate"
+        "w": "road_tangmen_1",
+        "e": "tangmen_gate"
       }
     },
     "tangmen_gate": {
@@ -1591,7 +1592,8 @@
       "desc": "一座青石堡门，门楣上刻着「唐」字。堡门内外各立着四个面无表情的守卫，腰间鼓鼓囊囊皆是暗器。",
       "exits": {
         "n": "road_tangmen_1",
-        "s": "tangmen_hall"
+        "s": "tangmen_hall",
+        "w": "road_tangmen_2"
       }
     },
     "tangmen_hall": {
@@ -1690,7 +1692,8 @@
       "exits": {
         "e": "road_tangmen_1",
         "s": "dali_wangfu",
-        "w": "road_miao_1"
+        "w": "road_miao_1",
+        "n": "dali_wuhua"
       }
     },
     "dali_wangfu": {
@@ -1767,7 +1770,8 @@
       "exits": {
         "n": "road_miao_1",
         "e": "miaojiang_gu",
-        "s": "hm_miao_lan"
+        "s": "hm_miao_lan",
+        "w": "miaojiang_zhai"
       },
       "respawn": [
         {
@@ -1823,7 +1827,7 @@
       "id": "road_haibin_1",
       "name": "东海官道",
       "region": "haitan",
-      "desc": "官道尽头是海。咸腥的海风扑面而来，远处海面上一座岛屿隐约可见。",
+      "desc": "官道走到头，脚下成了沙滩。海风又咸又腥，刮得脸发紧；远处海面上一座岛浮在雾里，灰蒙蒙的。",
       "exits": {
         "w": "road_jiangnan_2",
         "e": "haitan_dock"
@@ -1838,7 +1842,8 @@
         "w": "road_haibin_1",
         "e": "haitan_boat",
         "n": "secret_xiake",
-        "s": "jn_study_2"
+        "s": "jn_study_2",
+        "ne": "haitan_village"
       },
       "respawn": [
         {
@@ -1928,7 +1933,7 @@
       "id": "taohuadao_dock",
       "name": "桃花岛·渡口",
       "region": "taohuadao",
-      "desc": "岛上渡口，四周桃林如云，花瓣随风飘落。树林深处似有似无地传出箫声。",
+      "desc": "渡口四周桃林成片，花瓣落了一地。林子里飘出断断续续的箫声，一停，就只剩水声。",
       "exits": {
         "n": "taohuadao_forest",
         "w": "haitan_boat"
@@ -1960,7 +1965,7 @@
       "id": "taohuadao_forest",
       "name": "桃花岛·桃林",
       "region": "taohuadao",
-      "desc": "千树万树桃花开，林中道路曲折，看似无路，转过一株老树却又豁然开朗。这是黄药师的奇门阵法。",
+      "desc": "满林桃花开得正盛，路却拐得古怪——眼看走到头，绕过一株老树，眼前又是一条小径。",
       "exits": {
         "s": "taohuadao_dock",
         "n": "taohuadao_qingyin",
@@ -2042,7 +2047,7 @@
       "id": "taohuadao_qingyin",
       "name": "桃花岛·清音洞",
       "region": "taohuadao",
-      "desc": "一个临海的洞窟，洞口朝东，可观日出。洞内石桌上摆着一支玉箫，一位青袍怪人背对着你立于洞中。",
+      "desc": "临海的洞窟，洞口朝东，正对着日头升起的地方。洞里一张石桌，桌上搁着支玉箫，一个青袍怪人背对着洞口站着。",
       "exits": {
         "s": "taohuadao_forest",
         "n": "taohuadao_zhu",
@@ -2099,9 +2104,9 @@
       "region": "gaibang",
       "desc": "中原腹地，官道宽阔，车马络绎。道旁有个茶棚，几个乞丐蹲在棚下乘凉。",
       "exits": {
-        "n": "road_nan_1",
         "s": "gaibang_po_miao",
-        "e": "road_xixia_1"
+        "e": "road_xixia_1",
+        "ne": "road_nan_1"
       }
     },
     "road_nan_1": {
@@ -2113,7 +2118,8 @@
         "n": "road_jiangnan_2",
         "s": "gumu_shan",
         "w": "road_beijiang_1",
-        "e": "xiangyang_gate"
+        "e": "xiangyang_gate",
+        "sw": "road_gaibang_1"
       }
     },
     "gaibang_po_miao": {
@@ -2143,7 +2149,8 @@
         "e": "road_nan_1",
         "n": "beijiang_xuedao",
         "w": "road_many_1",
-        "s": "jinguo_ruin"
+        "s": "jinguo_ruin",
+        "ne": "beijiang_shankou"
       },
       "encounter": {
         "chance": 0.35,
@@ -2201,7 +2208,8 @@
       "desc": "一处建在戈壁上的土堡，堡门大开，门内横七竖八插着许多兵器。一个秃顶的矮胖老者坐在中央的交椅上，手里擦着一柄血红的刀。",
       "exits": {
         "s": "road_beijiang_1",
-        "n": "hm_blood_saber"
+        "n": "hm_blood_saber",
+        "e": "beijiang_houzhai"
       },
       "respawn": [
         {
@@ -2218,7 +2226,8 @@
       "desc": "一望无际的草原，风吹草低见牛羊。远处有牧民的帐篷，炊烟袅袅。",
       "exits": {
         "e": "road_beijiang_1",
-        "w": "road_xiyu_1"
+        "w": "road_xiyu_1",
+        "n": "many_pool"
       },
       "actions": [
         {
@@ -2250,7 +2259,7 @@
       "id": "road_xiyu_1",
       "name": "西域古道",
       "region": "xiyu",
-      "desc": "黄沙漫天，一条古道蜿蜒向西。驼铃声声，一支商队正缓缓前行。",
+      "desc": "黄沙扑面，古道一路向西。驼铃声由远及近，一支商队慢吞吞地走过来。",
       "exits": {
         "e": "road_many_1",
         "w": "xiyu_oasis",
@@ -2266,7 +2275,8 @@
       "desc": "沙漠中的一片绿洲，泉水汩汩，几株枣椰树投下浓荫。商队在此歇脚。",
       "exits": {
         "e": "road_xiyu_1",
-        "w": "xiyu_xingxiu"
+        "w": "xiyu_xingxiu",
+        "n": "xiyu_shule"
       },
       "actions": [
         {
@@ -2291,7 +2301,7 @@
       "id": "xiyu_xingxiu",
       "name": "星宿海",
       "region": "xiyu",
-      "desc": "一片诡异的沼泽，水面泛着幽蓝的光。一群黑衣弟子正簇拥着一位白须老者，齐声高呼。",
+      "desc": "沼泽的水面泛着幽蓝的光，踩下去咕嘟冒泡。一群黑衣弟子围着一个白须老者，扯着嗓子齐声高喊。",
       "exits": {
         "e": "xiyu_oasis",
         "n": "hm_xingxiu_laoxian"
@@ -2318,7 +2328,8 @@
       "exits": {
         "n": "road_xiyu_1",
         "w": "road_gaibang_1",
-        "s": "xixia_ice"
+        "s": "xixia_ice",
+        "e": "xixia_yanchang"
       }
     },
     "xixia_ice": {
@@ -2388,10 +2399,11 @@
       "id": "gusu_yanzi",
       "name": "姑苏·燕子坞",
       "region": "gusu",
-      "desc": "一座精致的庄园临水而建，园中亭台楼阁错落有致。庄内静悄悄的，只有水声潺潺。",
+      "desc": "庄园临水而建，亭台错落。园里静得出奇，只听得见水绕着廊下流。",
       "exits": {
         "s": "gusu_town",
-        "e": "gusu_canhe"
+        "e": "gusu_canhe",
+        "n": "gusu_zhai_lane"
       },
       "actions": [
         {
@@ -2431,7 +2443,7 @@
       "id": "gusu_canhe",
       "name": "参合庄",
       "region": "gusu",
-      "desc": "一处更为隐秘的别院，匾额上「参合庄」三字古意盎然。庄内收藏着天下各派的武学秘录。",
+      "desc": "一处极隐蔽的别院，匾上「参合庄」三字是旧笔。院墙很高，墙内静得听不见人声。",
       "exits": {
         "w": "gusu_yanzi"
       },
@@ -2512,7 +2524,7 @@
       "id": "gumu_mu",
       "name": "活死人墓",
       "region": "gumu",
-      "desc": "一座巨大的石墓，墓门半开。墓内寒气逼人，石室中摆着一张寒玉床。",
+      "desc": "一座巨石砌成的墓，墓门半开着。里头寒气往外涌，石室正中摆着张白玉床，冻得泛青光。",
       "exits": {
         "n": "gumu_shan",
         "d": "gumu_shi"
@@ -2598,9 +2610,10 @@
       "id": "secret_black_market",
       "name": "秘境·黑市",
       "region": "secret",
-      "desc": "一条藏在地下的小巷，两侧挂满灯笼。摊子上摆着见不得光的东西：毒药、兵刃、来路不明的秘籍。一个独眼男人坐在尽头。",
+      "desc": "地底的一条小巷，两侧灯笼昏黄。摊上摆的尽是见不得光的东西——毒药、兵刃、来路不明的册子。尽头坐着个独眼男人。",
       "exits": {
-        "n": "jiangnan_west_road"
+        "n": "jiangnan_west_road",
+        "e": "secret_guishi"
       },
       "respawn": [
         {
@@ -2623,7 +2636,8 @@
       "desc": "海外仙山之上，一面巨大的石壁。壁上刻着蝌蚪文与刀剑图谱，无数高手曾在此枯坐至老。",
       "exits": {
         "s": "haitan_dock",
-        "n": "xiake_neike"
+        "n": "xiake_neike",
+        "e": "xiake_dukou"
       },
       "actions": [
         {
@@ -2669,10 +2683,11 @@
       "id": "jinguo_ruin",
       "name": "金国故城",
       "region": "jinguo",
-      "desc": "断壁残垣散落于风沙之中，曾经的宫殿如今只剩几根石柱。地下似乎有暗道入口。",
+      "desc": "断壁歪在风沙里，当年的宫殿只剩几根石柱撑着天。石柱间的地砖塌了一块，底下黑沉沉的。",
       "exits": {
         "n": "road_beijiang_1",
-        "d": "jinguo_ruin_d"
+        "d": "jinguo_ruin_d",
+        "e": "jinguo_shi"
       },
       "actions": [
         {
@@ -2765,7 +2780,7 @@
       "id": "mojiao_shanmen",
       "name": "黑木崖·山门",
       "region": "mojiao",
-      "desc": "黑木崖如刀削斧劈，崖壁上凿有一条窄窄的栈道。崖顶黑雾翻涌，隐约可见宫殿一样的建筑。",
+      "desc": "黑木崖立得像刀劈出来的，崖壁上凿着条只容一人走的栈道。抬头上望，崖顶云里浮着几角飞檐。",
       "exits": {
         "n": "jiangnan_east_road",
         "u": "mojiao_hall",
@@ -2809,9 +2824,10 @@
       "id": "xiake_neike",
       "name": "侠客岛·内堂",
       "region": "xiake",
-      "desc": "石室中摆着数十张石桌，桌上刻着不同的武学图谱。赏善罚恶二使静立两侧。",
+      "desc": "石室里摆着几十张石桌，每张桌面上都刻着不同的图谱。赏善罚恶二使立在两侧，一动不动。",
       "exits": {
-        "s": "secret_xiake"
+        "s": "secret_xiake",
+        "n": "xiake_dong"
       },
       "actions": [
         {
@@ -2848,14 +2864,15 @@
       "region": "market",
       "desc": "东市的大街宽敞得能并行四辆马车，两旁幌子密得像林。卖绸缎的、卖果子的、算命的、耍猴的，一路排开。人声鼎沸，你得提高嗓门才说得上话。",
       "exits": {
-        "w": "jiangnan_market",
         "n": "jn_silk_shop",
         "s": "jn_fruit_stall",
         "e": "jn_fortune",
         "ne": "jn_pawnshop",
-        "nw": "jn_teahouse",
         "se": "jn_wine_house",
-        "sw": "jn_market_north"
+        "sw": "jn_market_north",
+        "d": "jiangnan_market",
+        "w": "jn_teahouse",
+        "nw": "jn_market_south"
       }
     },
     "jn_silk_shop": {
@@ -2954,7 +2971,6 @@
         }
       ],
       "exits": {
-        "e": "jn_market_main",
         "d": "jm_underground",
         "sw": "jn_market_main"
       }
@@ -3006,9 +3022,9 @@
         }
       ],
       "exits": {
-        "sw": "jn_market_main",
         "se": "jn_toy_stall",
-        "n": "hm_npcv_081"
+        "n": "hm_npcv_081",
+        "e": "jn_market_main"
       }
     },
     "jn_toy_stall": {
@@ -3079,13 +3095,8 @@
       "desc": "一条幽静的长巷，两侧是青砖院墙，墙头探出几枝石榴。巷子里晾着衣裳，风一吹哗啦啦响。",
       "exits": {
         "e": "jn_resident_2",
-        "w": "jiangnan_west_road",
         "n": "jn_home_01",
-        "s": "jn_home_04",
-        "ne": "jn_home_07",
-        "nw": "jn_home_10",
-        "se": "jn_home_13",
-        "sw": "jn_home_16"
+        "sw": "jiangnan_west_road"
       }
     },
     "jn_resident_2": {
@@ -3096,12 +3107,7 @@
       "exits": {
         "w": "jn_resident_1",
         "s": "jn_resident_3",
-        "n": "jn_home_02",
-        "e": "jn_home_05",
-        "ne": "jn_home_08",
-        "nw": "jn_home_11",
-        "se": "jn_home_14",
-        "sw": "jn_home_17"
+        "n": "jn_rich_house"
       }
     },
     "jn_resident_3": {
@@ -3134,13 +3140,7 @@
       ],
       "exits": {
         "n": "jn_resident_2",
-        "s": "jiangnan_street",
-        "e": "jn_home_03",
-        "w": "jn_home_06",
-        "ne": "jn_home_09",
-        "nw": "jn_home_12",
-        "se": "jn_home_15",
-        "sw": "jn_home_18"
+        "sw": "jiangnan_street"
       }
     },
     "jn_home_01": {
@@ -3149,191 +3149,7 @@
       "region": "jiangnan",
       "desc": "张宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
       "exits": {
-        "s": "jn_resident_1",
-        "n": "jn_rich_hall"
-      }
-    },
-    "jn_home_02": {
-      "id": "jn_home_02",
-      "name": "李宅",
-      "region": "jiangnan",
-      "desc": "李宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "s": "jn_resident_2"
-      }
-    },
-    "jn_home_03": {
-      "id": "jn_home_03",
-      "name": "王宅",
-      "region": "jiangnan",
-      "desc": "王宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "w": "jn_resident_3",
-        "n": "jn_home_23"
-      }
-    },
-    "jn_home_04": {
-      "id": "jn_home_04",
-      "name": "赵宅",
-      "region": "jiangnan",
-      "desc": "赵宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "n": "jn_resident_1",
-        "s": "jn_home_20"
-      }
-    },
-    "jn_home_05": {
-      "id": "jn_home_05",
-      "name": "孙宅",
-      "region": "jiangnan",
-      "desc": "孙宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "w": "jn_resident_2"
-      }
-    },
-    "jn_home_06": {
-      "id": "jn_home_06",
-      "name": "周宅",
-      "region": "jiangnan",
-      "desc": "周宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "e": "jn_resident_3",
-        "n": "jn_school_herb"
-      }
-    },
-    "jn_home_07": {
-      "id": "jn_home_07",
-      "name": "吴宅",
-      "region": "jiangnan",
-      "desc": "吴宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "sw": "jn_resident_1",
-        "n": "jn_home_22"
-      }
-    },
-    "jn_home_08": {
-      "id": "jn_home_08",
-      "name": "郑宅",
-      "region": "jiangnan",
-      "desc": "郑宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "sw": "jn_resident_2"
-      }
-    },
-    "jn_home_09": {
-      "id": "jn_home_09",
-      "name": "冯宅",
-      "region": "jiangnan",
-      "desc": "冯宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "sw": "jn_resident_3"
-      }
-    },
-    "jn_home_10": {
-      "id": "jn_home_10",
-      "name": "陈宅",
-      "region": "jiangnan",
-      "desc": "陈宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "se": "jn_resident_1"
-      }
-    },
-    "jn_home_11": {
-      "id": "jn_home_11",
-      "name": "褚宅",
-      "region": "jiangnan",
-      "desc": "褚宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "se": "jn_resident_2",
-        "n": "jn_home_26"
-      }
-    },
-    "jn_home_12": {
-      "id": "jn_home_12",
-      "name": "卫宅",
-      "region": "jiangnan",
-      "desc": "卫宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "se": "jn_resident_3"
-      }
-    },
-    "jn_home_13": {
-      "id": "jn_home_13",
-      "name": "蒋宅",
-      "region": "jiangnan",
-      "desc": "蒋宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "nw": "jn_resident_1"
-      }
-    },
-    "jn_home_14": {
-      "id": "jn_home_14",
-      "name": "沈宅",
-      "region": "jiangnan",
-      "desc": "沈宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "nw": "jn_resident_2",
-        "n": "jn_home_28"
-      }
-    },
-    "jn_home_15": {
-      "id": "jn_home_15",
-      "name": "韩宅",
-      "region": "jiangnan",
-      "desc": "韩宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "nw": "jn_resident_3",
-        "n": "jn_rich_garden"
-      }
-    },
-    "jn_home_16": {
-      "id": "jn_home_16",
-      "name": "杨宅",
-      "region": "jiangnan",
-      "desc": "杨宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "ne": "jn_resident_1",
-        "n": "jn_rich_house"
-      }
-    },
-    "jn_home_17": {
-      "id": "jn_home_17",
-      "name": "朱宅",
-      "region": "jiangnan",
-      "desc": "朱宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "ne": "jn_resident_2",
-        "s": "jn_home_25"
-      }
-    },
-    "jn_home_18": {
-      "id": "jn_home_18",
-      "name": "秦宅",
-      "region": "jiangnan",
-      "desc": "秦宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "ne": "jn_resident_3",
-        "n": "jn_home_29"
-      }
-    },
-    "jn_home_19": {
-      "id": "jn_home_19",
-      "name": "尤宅",
-      "region": "jiangnan",
-      "desc": "尤宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "s": "jn_resident_1",
-        "e": "jiangnan_hill"
-      }
-    },
-    "jn_home_20": {
-      "id": "jn_home_20",
-      "name": "许宅",
-      "region": "jiangnan",
-      "desc": "许宅是一座两进的院子，门上的红漆已经褪了色。院里种着石榴与夹竹桃，晾衣绳上搭着刚浆洗的衣裳。",
-      "exits": {
-        "s": "jn_resident_2",
-        "n": "jn_home_04"
+        "s": "jn_resident_1"
       }
     },
     "jn_rich_house": {
@@ -3372,7 +3188,7 @@
       "id": "jn_rich_garden",
       "name": "钱府·后花园",
       "region": "jiangnan",
-      "desc": "假山、池塘、曲桥、凉亭，一应俱全。池塘里养着锦鲤，见人来便拥作一团讨食吃。",
+      "desc": "假山堆得体面，一池碧水，曲桥连着凉亭。池里的锦鲤见人过来，全拥到岸边讨食。",
       "actions": [
         {
           "label": "池塘",
@@ -3397,8 +3213,7 @@
         }
       ],
       "exits": {
-        "w": "jn_rich_hall",
-        "s": "jn_home_15"
+        "w": "jn_rich_hall"
       }
     },
     "jn_yamen_gate": {
@@ -3427,7 +3242,6 @@
         }
       ],
       "exits": {
-        "sw": "jiangnan_street",
         "n": {
           "to": "jn_yamen_court",
           "cond": {
@@ -3543,7 +3357,7 @@
       "id": "jn_yamen_prison",
       "name": "衙门·监狱",
       "region": "yamen",
-      "desc": "一股霉味扑面而来。铁栅后是挤作一团的犯人，有的在哭，有的在骂，有的早已没了声音。",
+      "desc": "霉味浓得呛人。铁栅后有犯人挤作一团，有人在哭，有人骂骂咧咧，角落里那个一声不吭。",
       "actions": [
         {
           "label": "牢门",
@@ -3567,7 +3381,10 @@
       "desc": "父母官的家眷住处，比前衙清静得多，院里有棵几百年的老槐树。",
       "exits": {
         "s": "jn_yamen_court",
-        "e": "jn_yamen_guest"
+        "e": "jn_yamen_guest",
+        "ne": "ya_home_01",
+        "nw": "ya_home_02",
+        "se": "ya_home_03"
       }
     },
     "jn_bookshop": {
@@ -3816,7 +3633,7 @@
       "id": "jn_brothel_hall",
       "name": "醉春楼·花厅",
       "region": "qinglou",
-      "desc": "花厅上悬着八盏琉璃灯，照得一屋子人脸红扑扑的。姑娘们坐在绣墩上，弹唱的弹唱，说笑的说笑。",
+      "desc": "花厅悬着八盏琉璃灯，照得一屋子人脸发红。姑娘们散坐在绣墩上，弹的弹，笑的笑。",
       "exits": {
         "s": "jn_brothel_gate",
         "e": "jn_brothel_stage",
@@ -3927,7 +3744,8 @@
       "desc": "堆满了南来北往的货：景德镇的瓷器、苏杭的绸缎、岭南的果干。看货的老头儿一口黄牙。",
       "exits": {
         "s": "jn_harbor",
-        "e": "jn_harbor_inn"
+        "e": "jn_harbor_inn",
+        "n": "jn_harbor_backstreet"
       }
     },
     "jn_harbor_inn": {
@@ -4031,8 +3849,7 @@
         }
       ],
       "exits": {
-        "s": "jiangnan_smithy",
-        "n": "jn_home_30"
+        "s": "jiangnan_smithy"
       }
     },
     "jn_pharmacy": {
@@ -4061,7 +3878,6 @@
         }
       ],
       "exits": {
-        "se": "jiangnan_street",
         "n": "jn_pharmacy_back",
         "nw": "jiangnan_street"
       }
@@ -4195,11 +4011,9 @@
       "id": "palace_hall",
       "name": "皇城·太和殿",
       "region": "palace",
-      "desc": "殿高十丈，七十二根金丝楠木柱撑起一片穹顶。地上铺着金砖，光可鉴人。站在这里，人显得极小。",
+      "desc": "殿高十丈，七十二根金丝楠木柱撑着穹顶。地砖擦得能照出人影。人往殿中一站，只剩小小一个。",
       "exits": {
         "w": "palace_plaza",
-        "n": "palace_garden",
-        "s": "palace_harem",
         "nw": {
           "to": "palace_prison",
           "cond": {
@@ -4208,7 +4022,9 @@
           },
           "msg": "通往天牢的那道门虚掩着，可门槛上有一道新划的痕——像是最近才封的。",
           "travel": "你推门进去。牢里阴冷，只有水滴声。"
-        }
+        },
+        "e": "palace_garden",
+        "ne": "palace_harem"
       },
       "respawn": [
         {
@@ -4221,7 +4037,7 @@
       "id": "palace_garden",
       "name": "皇城·御花园",
       "region": "palace",
-      "desc": "太湖石堆成的假山，一池碧水，岸边垂柳拂水，亭台掩映。寻常人一辈子也见不到这样的景致。",
+      "desc": "太湖石堆成假山，一池碧水，垂柳压着水面。亭台半掩在树影里，园子里静得只听见水声。",
       "actions": [
         {
           "label": "池水",
@@ -4246,22 +4062,22 @@
         }
       ],
       "exits": {
-        "e": "palace_hall",
         "n": "palace_court4",
-        "s": "palace_court5"
+        "s": "palace_court5",
+        "w": "palace_hall"
       }
     },
     "palace_harem": {
       "id": "palace_harem",
       "name": "皇城·后宫",
       "region": "palace",
-      "desc": "重重宫阙，一进套着一进，走进去很容易迷路。时有宫人捧着食盒低头快步走过。",
+      "desc": "宫门一重套着一重，走两步就分不清来路。宫人捧着食盒贴墙快步过去，头也不抬。",
       "exits": {
-        "s": "palace_hall",
         "e": "palace_study",
         "n": "palace_court1",
         "w": "palace_court2",
-        "ne": "palace_court3"
+        "ne": "palace_court3",
+        "sw": "palace_hall"
       }
     },
     "palace_study": {
@@ -4360,7 +4176,6 @@
         }
       ],
       "exits": {
-        "s": "road_jiangnan_1",
         "n": "cunzhen_street",
         "w": "road_jiangnan_1"
       }
@@ -4501,7 +4316,7 @@
       "id": "cun_home_01",
       "name": "青溪村·王家",
       "region": "cunzhen",
-      "desc": "青溪村·王家的院子。土墙围着，院里拴着牛，墙角搭着鸡窝，一派农家气象。",
+      "desc": "土墙圈出的小院，檐下挂着几串干辣椒。院里拴着头黄牛，正慢悠悠反刍。",
       "exits": {
         "se": "cunzhen_street"
       }
@@ -4510,7 +4325,7 @@
       "id": "cun_home_02",
       "name": "青溪村·李家",
       "region": "cunzhen",
-      "desc": "青溪村·李家的院子。土墙围着，院里拴着牛，墙角搭着鸡窝，一派农家气象。",
+      "desc": "院门是荆条编的，虚掩着。墙角搭着鸡窝，几只母鸡在土里刨食。",
       "exits": {
         "n": "cunzhen_farm"
       }
@@ -4519,7 +4334,7 @@
       "id": "cun_home_03",
       "name": "青溪村·陈家",
       "region": "cunzhen",
-      "desc": "青溪村·陈家的院子。土墙围着，院里拴着牛，墙角搭着鸡窝，一派农家气象。",
+      "desc": "院里铺着石板，扫得干净。墙根一排咸菜坛子，坛口压着青石。",
       "exits": {
         "nw": "cunzhen_street"
       }
@@ -4528,7 +4343,7 @@
       "id": "cun_home_04",
       "name": "青溪村·杨家",
       "region": "cunzhen",
-      "desc": "青溪村·杨家的院子。土墙围着，院里拴着牛，墙角搭着鸡窝，一派农家气象。",
+      "desc": "院里种着棵枣树，树下摆着石臼。晾衣杆上挂着打了补丁的粗布衣裳。",
       "exits": {
         "e": "cunzhen_farm"
       }
@@ -4537,7 +4352,7 @@
       "id": "cun_home_05",
       "name": "青溪村·刘家",
       "region": "cunzhen",
-      "desc": "青溪村·刘家的院子。土墙围着，院里拴着牛，墙角搭着鸡窝，一派农家气象。",
+      "desc": "土墙矮矮的，猪圈挨着灶房。院里柴垛堆得半人高，劈好的木柴码得齐整。",
       "exits": {
         "ne": "cunzhen_street"
       }
@@ -4546,7 +4361,7 @@
       "id": "cun_home_06",
       "name": "青溪村·黄家",
       "region": "cunzhen",
-      "desc": "青溪村·黄家的院子。土墙围着，院里拴着牛，墙角搭着鸡窝，一派农家气象。",
+      "desc": "小院里搭着棚，棚下停着辆独轮车。墙头晒着一排草鞋，大的一双，小的两双。",
       "exits": {
         "se": "cunzhen_farm"
       }
@@ -4572,15 +4387,15 @@
         "s": "jiangnan_hill",
         "n": "jn_woods_2",
         "w": "jn_stream",
-        "e": "jn_hill_top",
-        "ne": "jn_temple_1"
+        "ne": "jn_temple_1",
+        "nw": "jn_hill_top"
       }
     },
     "jn_woods_2": {
       "id": "jn_woods_2",
       "name": "城西·密林深处",
       "region": "wild",
-      "desc": "树木遮天蔽日，光线暗得像黄昏。地上有野兽的足迹，深处似乎还有什么东西在喘气。",
+      "desc": "树冠盖得密不透风，光漏不下来，暗得像黄昏。泥地上印着一串新鲜兽爪，林子深处沉着一声声粗喘。",
       "respawn": [
         {
           "npc": "mob_wolf",
@@ -4646,7 +4461,7 @@
       "id": "jn_cave",
       "name": "城西·无名山洞",
       "region": "wild",
-      "desc": "洞口只容一人通过，里头越走越深，越走越冷。墙上似有人刻过字，被苔藓盖住了一半。",
+      "desc": "洞口窄得只容一人侧进。往里越走越冷，壁上像是刻过字，苔藓盖住了下半截。",
       "actions": [
         {
           "label": "刻字",
@@ -4666,11 +4481,10 @@
       "id": "jn_hill_top",
       "name": "城西·孤山顶",
       "region": "wild",
-      "desc": "登上山顶，四野尽收眼底。江如素练，城似棋盘。风大得站不稳，衣袍猎猎作响。",
+      "desc": "登上山顶，四野都在脚底。江窄成一条白线，城灰扑扑一片。风大，得岔开腿才站得住。",
       "exits": {
-        "s": "jn_woods_1",
-        "n": "jiangnan_hill",
-        "w": "jiangnan_hill"
+        "w": "jiangnan_hill",
+        "se": "jn_woods_1"
       }
     },
     "jn_yamen_side": {
@@ -4687,7 +4501,7 @@
       "id": "jn_yamen_wt",
       "name": "衙门·刑房",
       "region": "yamen",
-      "desc": "夹棍、拶指、板子，一应俱全。地上有洗不掉的暗色痕迹，进来就觉着后背发凉。",
+      "desc": "墙上挂着夹棍、拶指、板子，排得整整齐齐。地上有几处深色的印子，怎么刷也刷不掉。",
       "exits": {
         "s": "jn_yamen_prison"
       }
@@ -4718,7 +4532,6 @@
       "region": "shuyuan",
       "desc": "学舍一间，两张板床一张书案。墙上贴着学生自己写的字，墨迹还新。",
       "exits": {
-        "w": "jn_school",
         "e": "jn_school"
       }
     },
@@ -4728,7 +4541,6 @@
       "region": "shuyuan",
       "desc": "比东斋更窄，窗纸破了两个洞。案上一盏油灯，灯芯烧得只剩一点。",
       "exits": {
-        "e": "jn_school",
         "se": "jiangnan_west_road",
         "sw": "jn_school"
       }
@@ -4748,8 +4560,7 @@
       "region": "shuyuan",
       "desc": "书院后的一小块药圃，种着薄荷、紫苏、车前子。是学生们按《本草》栽的。",
       "exits": {
-        "w": "jn_school_lib",
-        "s": "jn_home_06"
+        "w": "jn_school_lib"
       }
     },
     "jn_study_1": {
@@ -4778,7 +4589,6 @@
       "region": "palace",
       "desc": "一处宫院，朱漆门窗，廊下悬着一排鸟笼。宫人端着铜盆低头走过。",
       "exits": {
-        "w": "palace_harem",
         "s": "palace_harem"
       },
       "actions": [
@@ -4814,7 +4624,6 @@
       "region": "palace",
       "desc": "夹在两堵高墙之间的一条长巷，走进去听不见半点别的声音，只有自己的脚步。",
       "exits": {
-        "s": "palace_harem",
         "sw": "palace_harem"
       },
       "actions": [
@@ -4850,7 +4659,6 @@
       "region": "palace",
       "desc": "御膳房，灶火日夜不熄。掌勺的、切配的、传菜的，脚步不停。",
       "exits": {
-        "w": "palace_garden",
         "n": "palace_garden"
       },
       "actions": [
@@ -4903,7 +4711,6 @@
       "region": "wild",
       "desc": "一座香火不算旺的小寺，山门上的漆剥落了大半。院里晒着僧衣，一个老僧在扫地。",
       "exits": {
-        "n": "jn_woods_1",
         "sw": "jn_woods_1"
       }
     },
@@ -4931,7 +4738,6 @@
       "region": "market",
       "desc": "东市北边的一条巷子，卖的都是些粗使家什。打铁的、箍桶的、修鞋的，各占一角。",
       "exits": {
-        "s": "jn_market_main",
         "w": "jn_market_west",
         "e": "jn_carriage",
         "n": "hm_npcv_073",
@@ -4944,10 +4750,10 @@
       "region": "market",
       "desc": "南巷多是小吃摊，煎饼、馄饨、糖炒栗子，香气一路能飘出半条街。",
       "exits": {
-        "n": "jn_market_main",
         "e": "jn_market_east",
         "w": "jn_tavern",
-        "s": "jn_wine_house"
+        "s": "jn_wine_house",
+        "se": "jn_market_main"
       }
     },
     "jn_market_west": {
@@ -4968,7 +4774,8 @@
       "desc": "东巷尽头是个小广场，常有卖艺的在此耍刀弄枪，围一圈看客。",
       "exits": {
         "w": "jn_market_south",
-        "s": "jn_pottery"
+        "s": "jn_pottery",
+        "e": "jn_weaver"
       }
     },
     "jn_weaver": {
@@ -4978,7 +4785,7 @@
       "desc": "几十张织机排开，女工们低头穿梭，机杼声连成一片。",
       "exits": {
         "s": "jn_market_west",
-        "n": "jn_market_east"
+        "w": "jn_market_east"
       }
     },
     "jn_pottery": {
@@ -5007,106 +4814,7 @@
       "region": "jiangnan",
       "desc": "院里停着七八辆大车，骡马在槽边嚼草。车夫们蹲在墙根下赌钱。",
       "exits": {
-        "w": "jn_market_north",
-        "n": "jn_home_24"
-      }
-    },
-    "jn_home_21": {
-      "id": "jn_home_21",
-      "name": "陈家巷·老宅",
-      "region": "jiangnan",
-      "desc": "陈家巷·老宅。院门虚掩，里头传出锅碗瓢盆的动静，是寻常人家过日子的声响。",
-      "exits": {
-        "s": "jn_resident_1"
-      }
-    },
-    "jn_home_22": {
-      "id": "jn_home_22",
-      "name": "王家小院",
-      "region": "jiangnan",
-      "desc": "王家小院。院门虚掩，里头传出锅碗瓢盆的动静，是寻常人家过日子的声响。",
-      "exits": {
-        "n": "jn_resident_1",
-        "s": "jn_home_07"
-      }
-    },
-    "jn_home_23": {
-      "id": "jn_home_23",
-      "name": "刘家院",
-      "region": "jiangnan",
-      "desc": "刘家院。院门虚掩，里头传出锅碗瓢盆的动静，是寻常人家过日子的声响。",
-      "exits": {
-        "w": "jn_resident_1",
-        "s": "jn_home_03"
-      }
-    },
-    "jn_home_24": {
-      "id": "jn_home_24",
-      "name": "黄泥巷·旧宅",
-      "region": "jiangnan",
-      "desc": "黄泥巷·旧宅。院门虚掩，里头传出锅碗瓢盆的动静，是寻常人家过日子的声响。",
-      "exits": {
-        "e": "jn_resident_1",
-        "s": "jn_carriage"
-      }
-    },
-    "jn_home_25": {
-      "id": "jn_home_25",
-      "name": "赵家小院",
-      "region": "jiangnan",
-      "desc": "赵家小院。院门虚掩，里头传出锅碗瓢盆的动静，是寻常人家过日子的声响。",
-      "exits": {
-        "sw": "jn_resident_1",
-        "n": "jn_home_17"
-      }
-    },
-    "jn_home_26": {
-      "id": "jn_home_26",
-      "name": "孙家院",
-      "region": "jiangnan",
-      "desc": "孙家院。院门虚掩，里头传出锅碗瓢盆的动静，是寻常人家过日子的声响。",
-      "exits": {
-        "se": "jn_resident_1",
-        "s": "jn_home_11"
-      }
-    },
-    "jn_home_27": {
-      "id": "jn_home_27",
-      "name": "城西·李家",
-      "region": "jiangnan",
-      "desc": "城西·李家。院门虚掩，里头传出锅碗瓢盆的动静，是寻常人家过日子的声响。",
-      "exits": {
-        "nw": "jn_resident_1",
-        "sw": "road_jiangnan_2"
-      }
-    },
-    "jn_home_28": {
-      "id": "jn_home_28",
-      "name": "城西·周家",
-      "region": "jiangnan",
-      "desc": "城西·周家。院门虚掩，里头传出锅碗瓢盆的动静，是寻常人家过日子的声响。",
-      "exits": {
-        "ne": "jn_resident_1",
-        "s": "jn_home_14"
-      }
-    },
-    "jn_home_29": {
-      "id": "jn_home_29",
-      "name": "城西·吴家",
-      "region": "jiangnan",
-      "desc": "城西·吴家。院门虚掩，里头传出锅碗瓢盆的动静，是寻常人家过日子的声响。",
-      "exits": {
-        "s": "jn_resident_1"
-      }
-    },
-    "jn_home_30": {
-      "id": "jn_home_30",
-      "name": "城西·郑家",
-      "region": "jiangnan",
-      "desc": "城西·郑家。院门虚掩，里头传出锅碗瓢盆的动静，是寻常人家过日子的声响。",
-      "exits": {
-        "n": "jn_resident_1",
-        "s": "jn_smith_inner"
+        "w": "jn_market_north"
       }
     },
     "jn_brothel_2": {
@@ -5143,7 +4851,6 @@
       "region": "harbor",
       "desc": "天没亮就开市的鱼摊，木盆里活鱼乱跳，腥气冲天。讨价还价的声音像吵架。",
       "exits": {
-        "w": "jn_harbor",
         "sw": "jn_harbor"
       }
     },
@@ -5162,7 +4869,6 @@
       "region": "farmland",
       "desc": "缓坡上一垄垄的茶树，采茶女背着竹篓在垄间穿行，手指翻飞。",
       "exits": {
-        "n": "jn_farm_road",
         "sw": "jn_farm_road"
       }
     },
@@ -5172,7 +4878,6 @@
       "region": "farmland",
       "desc": "一片夯得极平的空场，堆着稻草垛。农闲时孩子们在这里翻滚打闹。",
       "exits": {
-        "w": "jn_farm_1",
         "n": "jn_farm_1"
       }
     },
@@ -5209,7 +4914,7 @@
       "id": "hm_master_yue",
       "name": "岳不群的家",
       "region": "huashan",
-      "desc": "岳不群的家。青砖小院，院里有口井、一架葡萄藤。日头偏西时，能听见里头锅铲响。",
+      "desc": "青砖院墙砌得齐整，门半掩着。院里一架葡萄藤，藤下摆张石桌，桌上摊开半卷剑谱，压谱的是一方镇纸。",
       "exits": {
         "n": "huashan_zhengqi"
       },
@@ -5222,7 +4927,7 @@
       "id": "hm_nv_yue",
       "name": "岳灵珊的家",
       "region": "huashan",
-      "desc": "岳灵珊的家。青砖小院，院里有口井、一架葡萄藤。日头偏西时，能听见里头锅铲响。",
+      "desc": "院门虚掩，墙头探出一枝石榴。井台边搁着双绣鞋，晾衣绳上挂着件洗得发白的葱绿衫子。",
       "exits": {
         "w": "huashan_zhengqi"
       },
@@ -5235,7 +4940,7 @@
       "id": "hm_linghu",
       "name": "令狐冲的家",
       "region": "huashan",
-      "desc": "令狐冲的家。青砖小院，院里有口井、一架葡萄藤。日头偏西时，能听见里头锅铲响。",
+      "desc": "院里杂草没膝，井绳松垮垮垂着。墙根堆了七八个空酒坛，蛛网一路结到了酒葫芦上。",
       "exits": {
         "s": "huashan_yunu"
       },
@@ -5248,7 +4953,7 @@
       "id": "hm_shaolin_fangzheng",
       "name": "方证大师的家",
       "region": "shaolin",
-      "desc": "方证大师的家。青砖小院，院里有口井、一架葡萄藤。日头偏西时，能听见里头锅铲响。",
+      "desc": "小院干干净净，一根草也见不着。墙角一口水缸，缸边立着把旧扫帚，檐下的念珠被风吹得轻轻碰响。",
       "exits": {
         "e": "shaolin_daxiong"
       },
@@ -5261,7 +4966,7 @@
       "id": "hm_wudang_chongxu",
       "name": "冲虚道长的家",
       "region": "wudang",
-      "desc": "冲虚道长的家。院中摆着一方石台，台上燃着残香，烟气袅袅地散。",
+      "desc": "院中一方青石台，台上余着一小撮香灰。竹帚靠在墙根，扫过的地面上一片叶子也没有。",
       "exits": {
         "s": "wudang_zixiao"
       },
@@ -5274,7 +4979,7 @@
       "id": "hm_emei_miejue",
       "name": "灭绝师太的家",
       "region": "emei",
-      "desc": "灭绝师太的家。青砖小院，院里有口井、一架葡萄藤。日头偏西时，能听见里头锅铲响。",
+      "desc": "院墙刷得雪白，不种一星花草。门环擦得锃亮，门槛上却横着一道深深的旧剑痕。",
       "exits": {
         "e": "emei_jinding"
       },
@@ -5287,7 +4992,7 @@
       "id": "hm_gaibang_hong",
       "name": "洪七公的家",
       "region": "gaibang",
-      "desc": "洪七公的家。青砖小院，院里有口井、一架葡萄藤。日头偏西时，能听见里头锅铲响。",
+      "desc": "院里搭着个土灶，灶灰还是热的。墙根埋着成堆的鸡骨头和空酒坛，树上还挂着两片荷叶。",
       "exits": {
         "n": "gaibang_po_miao"
       },
@@ -5300,7 +5005,7 @@
       "id": "hm_mojiao_dongfang",
       "name": "东方不败的家",
       "region": "mojiao",
-      "desc": "东方不败的家。青砖小院，院里有口井、一架葡萄藤。日头偏西时，能听见里头锅铲响。",
+      "desc": "院中一架蔷薇修剪得一丝不乱。窗内亮着灯，窗台上搁着个针线筐，顶针压在绣绷上。",
       "exits": {
         "n": "mojiao_shanmen"
       },
@@ -5313,7 +5018,7 @@
       "id": "hm_nv_huang",
       "name": "黄药师的家",
       "region": "taohuadao",
-      "desc": "黄药师的家。门前挂着一串风干的药草，风一吹，整条巷子都是苦香。",
+      "desc": "院门上挂着一串风干的药草，苦香透进半条巷子。墙内断断续续传来琴声，弹三两声便停了。",
       "exits": {
         "e": "taohuadao_qingyin"
       },
@@ -5326,7 +5031,7 @@
       "id": "hm_miao_lan",
       "name": "蓝凤凰的家",
       "region": "miaojiang",
-      "desc": "蓝凤凰的家。青砖小院，院里有口井、一架葡萄藤。日头偏西时，能听见里头锅铲响。",
+      "desc": "阶前晾着几张蛇蜕，檐下挂着成串的银铃。墙角一只陶瓮，瓮口盖着木板，里头时有细响。",
       "exits": {
         "n": "miaojiang_sheng"
       },
@@ -5339,7 +5044,7 @@
       "id": "hm_duan_yu",
       "name": "段誉的家",
       "region": "dali",
-      "desc": "段誉的家。青砖小院，院里有口井、一架葡萄藤。日头偏西时，能听见里头锅铲响。",
+      "desc": "院子收拾得清爽，石桌上摊着一卷书，扉页画着半幅人像。墙外那株山茶开得正好。",
       "exits": {
         "n": "dali_wangfu"
       },
@@ -5352,7 +5057,7 @@
       "id": "hm_blood_saber",
       "name": "血刀老祖的家",
       "region": "beijiang",
-      "desc": "血刀老祖的家。青砖小院，院里有口井、一架葡萄藤。日头偏西时，能听见里头锅铲响。",
+      "desc": "院里没有井，只一道磨刀石，石上留着暗红的印子。墙头插着几支断箭，门板豁了个口。",
       "exits": {
         "s": "beijiang_xuedao"
       },
@@ -5365,7 +5070,7 @@
       "id": "hm_xingxiu_laoxian",
       "name": "丁春秋的家",
       "region": "xiyu",
-      "desc": "丁春秋的家。青砖小院，院里有口井、一架葡萄藤。日头偏西时，能听见里头锅铲响。",
+      "desc": "院里朝正屋摆开一溜蒲团，十来个。门上悬着块新漆的匾，写着「星宿老仙」四字。",
       "exits": {
         "s": "xiyu_xingxiu"
       },
@@ -5378,7 +5083,7 @@
       "id": "hm_wen_huashan_shop",
       "name": "药婆婆的家",
       "region": "huashan",
-      "desc": "药婆婆的家。门前挂着一串风干的药草，风一吹，整条巷子都是苦香。",
+      "desc": "院角晾着几匾草药，占了半院子。地上遗着些草梗药渣，混着新焙出来的苦味。",
       "exits": {
         "e": "huashan_yunu"
       },
@@ -5391,7 +5096,7 @@
       "id": "hm_npcv_024",
       "name": "蒋停舟的家",
       "region": "shaolin",
-      "desc": "蒋停舟的家。青砖小院，院里有口井、一架葡萄藤。日头偏西时，能听见里头锅铲响。",
+      "desc": "院门常关着，门环上积了薄尘。墙头搭着一领旧斗笠，檐下悬着个空剑鞘。",
       "exits": {
         "s": "shaolin_cangjing"
       },
@@ -5404,7 +5109,7 @@
       "id": "hm_npcv_027",
       "name": "任停的家",
       "region": "jiangnan",
-      "desc": "任停的家。院落清净，一株老树，石阶上扫得不见落叶。",
+      "desc": "院落清净，一株老树，石阶上扫得不见落叶。",
       "exits": {
         "s": "jiangnan_inn"
       },
@@ -5417,7 +5122,7 @@
       "id": "hm_npcv_037",
       "name": "邵清欢的家",
       "region": "farmland",
-      "desc": "邵清欢的家。土墙小院，门口晒着农具和一小片金黄谷子，鸡在脚边刨食。",
+      "desc": "土墙小院，门口晒着农具和一小片金黄谷子，鸡在脚边刨食。",
       "exits": {
         "s": "jn_farm_shed"
       },
@@ -5430,7 +5135,7 @@
       "id": "hm_npcv_062",
       "name": "屈弘的家",
       "region": "gaibang",
-      "desc": "屈弘的家。院中摆着一方石台，台上燃着残香，烟气袅袅地散。",
+      "desc": "院里摆着个香炉，香灰冷了大半。门后靠着把旧拂尘，柄上的漆掉了几块。",
       "exits": {
         "e": "gaibang_po_miao"
       },
@@ -5443,7 +5148,7 @@
       "id": "hm_npcv_073",
       "name": "元若的家",
       "region": "market",
-      "desc": "元若的家。青砖小院，院里有口井、一架葡萄藤。日头偏西时，能听见里头锅铲响。",
+      "desc": "院里停着辆卸了货的骡车，木箱堆到墙根。窗内有人算账，算盘珠子拨得噼啪响。",
       "exits": {
         "s": "jn_market_north"
       },
@@ -5456,7 +5161,7 @@
       "id": "hm_npcv_081",
       "name": "强秋的家",
       "region": "market",
-      "desc": "强秋的家。青砖小院，院里有口井、一架葡萄藤。日头偏西时，能听见里头锅铲响。",
+      "desc": "院角靠着两根镖旗杆，旗面卷着没展。地上踩出一片脚印，深浅不一，像练过桩。",
       "exits": {
         "s": "jn_teahouse"
       },
@@ -5469,7 +5174,7 @@
       "id": "hm_npcv_102",
       "name": "闵守的家",
       "region": "shuyuan",
-      "desc": "闵守的家。院里种着一丛竹，窗纸透着灯影，隐约听见翻书的窸窣声。",
+      "desc": "院里种着一丛竹，窗纸上映着灯影，翻书的窸窣声断断续续传出来。",
       "exits": {
         "s": "jn_study_1"
       },
@@ -5482,7 +5187,7 @@
       "id": "hm_npcv_109",
       "name": "庞听的家",
       "region": "market",
-      "desc": "庞听的家。朱漆大门，门楣上挂着匾额，两尊石狮蹲在阶前。墙内隐约有假山流水，是户殷实人家。",
+      "desc": "朱漆大门，门楣悬着匾额，两尊石狮蹲在阶前。墙内水声叮咚，是户殷实人家。",
       "exits": {
         "s": "jn_silk_shop"
       },
@@ -5495,7 +5200,7 @@
       "id": "hm_npcv_149",
       "name": "元怀瑾的家",
       "region": "yamen",
-      "desc": "元怀瑾的家。门第森严，门前立着旗杆，阶石磨得发亮。往来的人到了这儿都不自觉放轻了脚步。",
+      "desc": "门第森严，门前立着旗杆，阶石磨得发亮。过往的人到了这儿，脚步都不由得放轻。",
       "exits": {
         "e": "jn_yamen_arch"
       },
@@ -5508,7 +5213,7 @@
       "id": "hm_npcv_181",
       "name": "黄清的家",
       "region": "yamen",
-      "desc": "黄清的家。青砖小院，院里有口井、一架葡萄藤。日头偏西时，能听见里头锅铲响。",
+      "desc": "院墙矮，一眼看到底。门后立着一根水火棍，磨得溜光，杵在那儿当家什。",
       "exits": {
         "w": "jn_yamen_arch"
       },
@@ -5520,8 +5225,8 @@
     "luoyang_gate": {
       "id": "luoyang_gate",
       "exits": {
-        "s": "road_shaolin_1",
-        "n": "luoyang_street"
+        "n": "luoyang_street",
+        "sw": "road_shaolin_1"
       },
       "name": "洛阳城·东门",
       "region": "luoyang",
@@ -5535,11 +5240,12 @@
         "w": "luoyang_tavern",
         "ne": "luoyang_inn",
         "nw": "luoyang_lane",
-        "u": "luoyang_brothel"
+        "u": "luoyang_brothel",
+        "n": "luoyang_mudan_lane"
       },
       "name": "洛阳城·牡丹大街",
       "region": "luoyang",
-      "desc": "牡丹大街宽阔平坦，路旁植满牡丹，正值花期，满街繁花似锦。文人墨客三三两两，指点着哪一株开得最艳。"
+      "desc": "牡丹大街又宽又平，路两边全是牡丹，开得正盛。几个读书人凑在一处，争论哪一株开得最艳。"
     },
     "luoyang_market": {
       "id": "luoyang_market",
@@ -5548,7 +5254,7 @@
       },
       "name": "洛阳城·南市",
       "region": "luoyang",
-      "desc": "南市热闹非凡，丝绸、瓷器、纸砚样样俱全。洛水畔的商户最会做生意，讨价还价声此起彼伏。"
+      "desc": "南市人挤人，绸缎、瓷器、纸砚摆了一街。洛水边的商户嘴上功夫最厉害，讨价还价吵成一片。"
     },
     "luoyang_tavern": {
       "id": "luoyang_tavern",
@@ -5567,7 +5273,7 @@
       },
       "name": "天香楼·牡丹雅间",
       "region": "luoyang",
-      "desc": "牡丹雅间临窗而设，窗下正是满城牡丹。酒香与花香混在一起，未饮先醉了三分。"
+      "desc": "雅间临窗，推开窗就是满城牡丹。花香混着酒气飘进来，桌上那壶还没动。"
     },
     "luoyang_inn": {
       "id": "luoyang_inn",
@@ -5629,7 +5335,7 @@
       },
       "name": "长安城·明德门",
       "region": "changan",
-      "desc": "明德门是长安的正南门，五道门洞开，气象森严。城墙上旌旗猎猎，守军甲胄鲜明。"
+      "desc": "五道门洞一字排开，门板包着铁皮。城墙上旗子被风扯得乱响，守军甲片上还挂着霜。"
     },
     "changan_street": {
       "id": "changan_street",
@@ -5639,7 +5345,8 @@
         "w": "changan_tavern",
         "ne": "changan_inn",
         "nw": "changan_lane",
-        "u": "changan_brothel"
+        "u": "changan_brothel",
+        "n": "changan_huanguan_lane"
       },
       "name": "长安城·朱雀大街",
       "region": "changan",
@@ -5727,7 +5434,6 @@
     "chengdu_gate": {
       "id": "chengdu_gate",
       "exits": {
-        "s": "road_emei_1",
         "n": "chengdu_street",
         "w": "road_emei_1"
       },
@@ -5743,7 +5449,8 @@
         "w": "chengdu_tavern",
         "ne": "chengdu_inn",
         "nw": "chengdu_lane",
-        "u": "chengdu_brothel"
+        "u": "chengdu_brothel",
+        "n": "chengdu_jinli_lane"
       },
       "name": "成都府·锦官大街",
       "region": "chengdu",
@@ -5831,7 +5538,6 @@
     "xiangyang_gate": {
       "id": "xiangyang_gate",
       "exits": {
-        "s": "road_nan_1",
         "n": "xiangyang_street",
         "w": "road_nan_1"
       },
@@ -5847,7 +5553,8 @@
         "w": "xiangyang_tavern",
         "ne": "xiangyang_inn",
         "nw": "xiangyang_lane",
-        "u": "xiangyang_brothel"
+        "u": "xiangyang_brothel",
+        "n": "xiangyang_jiangmen_lane"
       },
       "name": "襄阳城·北街",
       "region": "xiangyang",
@@ -5879,7 +5586,7 @@
       },
       "name": "汉江楼·铁瓮厅",
       "region": "xiangyang",
-      "desc": "铁瓮厅窗朝汉江，烟波浩渺。一盏灯，一壶酒，多少守城旧事都付笑谈中。"
+      "desc": "厅里一扇窗正对汉江。灯芯噼啪响，壶里的酒温着，守城的旧事在几个老卒嘴里翻来覆去。"
     },
     "xiangyang_inn": {
       "id": "xiangyang_inn",
@@ -5975,7 +5682,7 @@
       "id": "luoyang_brothel",
       "name": "洛阳城·牡丹阁",
       "region": "luoyang",
-      "desc": "朱门绣户，金匾高悬「牡丹阁」三字。满园牡丹开得灼灼，进出的皆是锦衣华服的贵人，一派富贵风流气象。",
+      "desc": "满园牡丹开得正烈。进出的都是锦衣华服的贵人，连脚步声都带着三分讲究。",
       "exits": {
         "d": "luoyang_street"
       },
@@ -6014,7 +5721,7 @@
       "id": "changan_brothel",
       "name": "长安城·平康坊",
       "region": "changan",
-      "desc": "天下第一等的风月场。坊中曲径通幽，楼阁参差，丝竹之声不绝，五陵年少、胡商胡姬混杂其间，纸醉金迷。",
+      "desc": "坊里曲径通幽，楼阁一层叠一层，丝竹声没停过。五陵年少同胡商胡姬混在一处，谁也不问谁出处。",
       "exits": {
         "d": "changan_street"
       },
@@ -6053,7 +5760,7 @@
       "id": "chengdu_brothel",
       "name": "成都府·翠云楼",
       "region": "chengdu",
-      "desc": "竹影婆娑里一座两层小楼，挂着「翠云」的绿绸招子。堂中茶香与脂粉香混作一处，姑娘们软语轻声，闲适慵懒。",
+      "desc": "竹影里一座两层小楼，挑着「翠云」的绿绸招子。堂中茶香混着脂粉气，姑娘们说话都是软绵绵的成都腔。",
       "exits": {
         "d": "chengdu_street"
       },
@@ -6092,7 +5799,7 @@
       "id": "xiangyang_brothel",
       "name": "襄阳城·凤来仪",
       "region": "xiangyang",
-      "desc": "边城要塞里的温柔乡。楼名「凤来仪」，往来多是行伍中的将官与南来北往的客商，酒酣耳热，嗓门洪亮。",
+      "desc": "楼名「凤来仪」，进出的多是行伍将官和过路客商，喝到脸红脖子粗，嗓门一个比一个大。",
       "exits": {
         "d": "xiangyang_street"
       },
@@ -6131,7 +5838,7 @@
       "id": "emei_ya_di",
       "name": "峨眉·舍身崖底",
       "region": "emei",
-      "desc": "崖底是一片幽谷，古木参天，藤萝垂挂。抬头只见一线天光，崖壁如削，望之令人眩晕。谷中落叶厚积，似已久无人迹。",
+      "desc": "崖底是片幽谷，古木参天，藤萝从半空垂下来。抬头只看得见一线天光。落叶积了半尺厚，踩上去没声。",
       "exits": {
         "u": {
           "to": "emei_she_ru",
@@ -6173,6 +5880,482 @@
       "exits": {
         "n": "palace_gate",
         "e": "jiangnan_gate"
+      }
+    },
+    "luoyang_mudan_lane": {
+      "id": "luoyang_mudan_lane",
+      "name": "洛阳城·牡丹巷",
+      "region": "luoyang",
+      "desc": "巷子往北去，家家门前都种牡丹，开得挤挤挨挨。",
+      "exits": {
+        "s": "luoyang_street",
+        "ne": "ly_home_01",
+        "nw": "ly_home_02",
+        "se": "ly_home_03",
+        "sw": "ly_home_04"
+      }
+    },
+    "changan_huanguan_lane": {
+      "id": "changan_huanguan_lane",
+      "name": "长安城·宦宅巷",
+      "region": "changan",
+      "desc": "天子脚下的一条深巷，门第森严，朱漆大门后头住的多是世宦人家。",
+      "exits": {
+        "s": "changan_street",
+        "ne": "ca_home_01",
+        "nw": "ca_home_02",
+        "se": "ca_home_03",
+        "sw": "ca_home_04"
+      }
+    },
+    "chengdu_jinli_lane": {
+      "id": "chengdu_jinli_lane",
+      "name": "成都府·锦里宅巷",
+      "region": "chengdu",
+      "desc": "锦官城里最富庶的一条巷子，蜀锦的香气顺着门缝往外淌。",
+      "exits": {
+        "s": "chengdu_street",
+        "ne": "cd_home_01",
+        "nw": "cd_home_02",
+        "se": "cd_home_03"
+      }
+    },
+    "xiangyang_jiangmen_lane": {
+      "id": "xiangyang_jiangmen_lane",
+      "name": "襄阳城·将门巷",
+      "region": "xiangyang",
+      "desc": "军镇襄阳的一条巷子，门口立着拴马桩，住的多是世代行伍的将门。",
+      "exits": {
+        "s": "xiangyang_street",
+        "ne": "xy_home_01",
+        "nw": "xy_home_02",
+        "se": "xy_home_03"
+      }
+    },
+    "jn_harbor_backstreet": {
+      "id": "jn_harbor_backstreet",
+      "name": "江口码头·货栈后街",
+      "region": "harbor",
+      "desc": "货栈背后的一条街，住的是码头上最有脸面的几家海商，门口停着货担与骡车。",
+      "exits": {
+        "s": "jn_harbor_shed",
+        "ne": "hb_home_01",
+        "nw": "hb_home_02",
+        "se": "hb_home_03",
+        "sw": "hb_home_04"
+      }
+    },
+    "gusu_zhai_lane": {
+      "id": "gusu_zhai_lane",
+      "name": "姑苏·世家巷",
+      "region": "gusu",
+      "desc": "姑苏城的一条幽深巷子，粉墙黛瓦，住的多是诗礼传家的旧姓。",
+      "exits": {
+        "s": "gusu_yanzi",
+        "ne": "gs_home_01",
+        "nw": "gs_home_02",
+        "se": "gs_home_03"
+      }
+    },
+    "ly_home_01": {
+      "id": "ly_home_01",
+      "name": "洛阳·王宅",
+      "region": "luoyang",
+      "desc": "王家是洛阳的老户，两进的院子，门楣上悬着「太原王」的旧匾。",
+      "exits": {
+        "sw": "luoyang_mudan_lane"
+      }
+    },
+    "ly_home_02": {
+      "id": "ly_home_02",
+      "name": "洛阳·李宅",
+      "region": "luoyang",
+      "desc": "李家院里有口老井，据说通着洛河，井水冬暖夏凉。",
+      "exits": {
+        "se": "luoyang_mudan_lane"
+      }
+    },
+    "ly_home_03": {
+      "id": "ly_home_03",
+      "name": "洛阳·沈宅",
+      "region": "luoyang",
+      "desc": "沈宅的照壁雕得极精，砖缝里嵌着蝙蝠与铜钱，是「福在眼前」的老花样。",
+      "exits": {
+        "nw": "luoyang_mudan_lane"
+      }
+    },
+    "ly_home_04": {
+      "id": "ly_home_04",
+      "name": "洛阳·韩宅",
+      "region": "luoyang",
+      "desc": "韩家世代读书，宅子里最气派的是那座藏书楼。",
+      "exits": {
+        "ne": "luoyang_mudan_lane"
+      }
+    },
+    "ca_home_01": {
+      "id": "ca_home_01",
+      "name": "长安·郑宅",
+      "region": "changan",
+      "desc": "郑宅的门房极深，来访的人要先递名帖，在门房枯坐半晌。",
+      "exits": {
+        "sw": "changan_huanguan_lane"
+      }
+    },
+    "ca_home_02": {
+      "id": "ca_home_02",
+      "name": "长安·陈宅",
+      "region": "changan",
+      "desc": "陈家是开国勋贵的后裔，院里还留着祖上征战时的石锁。",
+      "exits": {
+        "se": "changan_huanguan_lane"
+      }
+    },
+    "ca_home_03": {
+      "id": "ca_home_03",
+      "name": "长安·秦宅",
+      "region": "changan",
+      "desc": "秦宅的垂花门修得像宫殿的一角，气派压过一巷人家。",
+      "exits": {
+        "nw": "changan_huanguan_lane"
+      }
+    },
+    "ca_home_04": {
+      "id": "ca_home_04",
+      "name": "长安·卫宅",
+      "region": "changan",
+      "desc": "卫宅内院栽满海棠，春来时一巷人都来看花。",
+      "exits": {
+        "ne": "changan_huanguan_lane"
+      }
+    },
+    "cd_home_01": {
+      "id": "cd_home_01",
+      "name": "成都·杨宅",
+      "region": "chengdu",
+      "desc": "杨家是蜀锦大商，前院待客，后院是几十张织机日夜作响。",
+      "exits": {
+        "sw": "chengdu_jinli_lane"
+      }
+    },
+    "cd_home_02": {
+      "id": "cd_home_02",
+      "name": "成都·朱宅",
+      "region": "chengdu",
+      "desc": "朱宅最出名的是那一桌川菜，辣得客人直流泪又停不下筷子。",
+      "exits": {
+        "se": "chengdu_jinli_lane"
+      }
+    },
+    "cd_home_03": {
+      "id": "cd_home_03",
+      "name": "成都·许宅",
+      "region": "chengdu",
+      "desc": "许家开药行，院里晒着川贝与黄连，空气里一股苦香。",
+      "exits": {
+        "nw": "chengdu_jinli_lane"
+      }
+    },
+    "xy_home_01": {
+      "id": "xy_home_01",
+      "name": "襄阳·周宅",
+      "region": "xiangyang",
+      "desc": "周家是将门，门后一排兵器架，锈迹斑斑却擦得发亮。",
+      "exits": {
+        "sw": "xiangyang_jiangmen_lane"
+      }
+    },
+    "xy_home_02": {
+      "id": "xy_home_02",
+      "name": "襄阳·吴宅",
+      "region": "xiangyang",
+      "desc": "吴宅的院墙上留着一道旧箭痕，是围城那年留下的。",
+      "exits": {
+        "se": "xiangyang_jiangmen_lane"
+      }
+    },
+    "xy_home_03": {
+      "id": "xy_home_03",
+      "name": "襄阳·冯宅",
+      "region": "xiangyang",
+      "desc": "冯家行商走北边，院里堆着从塞外运回的各色皮货。",
+      "exits": {
+        "nw": "xiangyang_jiangmen_lane"
+      }
+    },
+    "hb_home_01": {
+      "id": "hb_home_01",
+      "name": "码头·褚宅",
+      "region": "harbor",
+      "desc": "褚家是海商，宅子里摆着南洋来的象牙与香料，前堂挂着海图。",
+      "exits": {
+        "sw": "jn_harbor_backstreet"
+      }
+    },
+    "hb_home_02": {
+      "id": "hb_home_02",
+      "name": "码头·尤宅",
+      "region": "harbor",
+      "desc": "尤家行船行了几辈子，门前的缆绳磨得比石头还光。",
+      "exits": {
+        "se": "jn_harbor_backstreet"
+      }
+    },
+    "hb_home_03": {
+      "id": "hb_home_03",
+      "name": "码头·陈宅",
+      "region": "harbor",
+      "desc": "陈家专做瓷器转口，院里堆着还没来得及装船的青花。",
+      "exits": {
+        "nw": "jn_harbor_backstreet"
+      }
+    },
+    "hb_home_04": {
+      "id": "hb_home_04",
+      "name": "码头·黄宅",
+      "region": "harbor",
+      "desc": "黄家是码头上管事的，谁家的货先卸后卸，全凭他一句话。",
+      "exits": {
+        "ne": "jn_harbor_backstreet"
+      }
+    },
+    "gs_home_01": {
+      "id": "gs_home_01",
+      "name": "姑苏·慕容别院",
+      "region": "gusu",
+      "desc": "别院临水而筑，白墙照影，檐角飞翘。门额上两个小字「慕容」，笔锋极锐——燕北旧族，南渡的贵胄。",
+      "exits": {
+        "sw": "gusu_zhai_lane"
+      }
+    },
+    "gs_home_02": {
+      "id": "gs_home_02",
+      "name": "姑苏·刘家院",
+      "region": "gusu",
+      "desc": "刘家院小些，院里一株老桂，秋天满巷都是甜香。",
+      "exits": {
+        "se": "gusu_zhai_lane"
+      }
+    },
+    "gs_home_03": {
+      "id": "gs_home_03",
+      "name": "姑苏·赵家小院",
+      "region": "gusu",
+      "desc": "赵家是书香门第，院墙上爬满紫藤，窗下常有人临帖。",
+      "exits": {
+        "nw": "gusu_zhai_lane"
+      }
+    },
+    "ya_home_01": {
+      "id": "ya_home_01",
+      "name": "衙后·孙宅",
+      "region": "yamen",
+      "desc": "孙家是衙门的书吏世家，院里静得只听见翻卷宗的沙沙声。",
+      "exits": {
+        "sw": "jn_yamen_back"
+      }
+    },
+    "ya_home_02": {
+      "id": "ya_home_02",
+      "name": "衙后·蒋宅",
+      "region": "yamen",
+      "desc": "蒋家几代做幕，宅子不大，书案却摆得比卧榻还讲究。",
+      "exits": {
+        "se": "jn_yamen_back"
+      }
+    },
+    "ya_home_03": {
+      "id": "ya_home_03",
+      "name": "衙后·孙家院",
+      "region": "yamen",
+      "desc": "孙家院与孙宅隔墙相望，是分出去的旁支，日子过得更素净些。",
+      "exits": {
+        "nw": "jn_yamen_back"
+      }
+    },
+    "shaolin_houshan": {
+      "id": "shaolin_houshan",
+      "name": "少林·后山",
+      "region": "shaolin",
+      "desc": "藏经阁后的一道山坡，古松夹道。落叶积了厚厚一层，踩上去半天不散。",
+      "exits": {
+        "e": "shaolin_cangjing"
+      }
+    },
+    "emei_houshan": {
+      "id": "emei_houshan",
+      "name": "峨眉·后山",
+      "region": "emei",
+      "desc": "金顶之后的山谷，云雾终年不散，偶有药农背着竹篓攀岩采药。",
+      "exits": {
+        "w": "emei_jinding"
+      }
+    },
+    "wudang_houshan": {
+      "id": "wudang_houshan",
+      "name": "武当·后山",
+      "region": "wudang",
+      "desc": "武当后山的一处平台，清晨常有道士在此吐纳练剑。",
+      "exits": {
+        "s": "wudang_jinding"
+      }
+    },
+    "dali_wuhua": {
+      "id": "dali_wuhua",
+      "name": "大理·五华楼",
+      "region": "dali",
+      "desc": "五华楼高踞城中，登楼可望苍山洱海。楼下是热闹的边贸集市。",
+      "exits": {
+        "s": "road_dali_1"
+      }
+    },
+    "miaojiang_zhai": {
+      "id": "miaojiang_zhai",
+      "name": "苗疆·苗寨",
+      "region": "miaojiang",
+      "desc": "苗寨挂在山腰上，吊脚楼依着山势一层层垒上去。屋檐下摆着一排陶瓮，瓮里时有窸窣声。",
+      "exits": {
+        "e": "miaojiang_sheng"
+      }
+    },
+    "xiyu_shule": {
+      "id": "xiyu_shule",
+      "name": "西域·疏勒镇",
+      "region": "xiyu",
+      "desc": "大漠商道上的一处绿洲小镇，驼铃昼夜不绝，什么语言都听得见。",
+      "exits": {
+        "s": "xiyu_oasis"
+      }
+    },
+    "haitan_village": {
+      "id": "haitan_village",
+      "name": "梅海滩·渔村",
+      "region": "haitan",
+      "desc": "退潮时露出大片滩涂，渔家老小赶海拾贝，崖边晾着渔网。",
+      "exits": {
+        "sw": "haitan_dock"
+      }
+    },
+    "beijiang_shankou": {
+      "id": "beijiang_shankou",
+      "name": "雪谷·山口",
+      "region": "beijiang",
+      "desc": "雪谷第一道哨卡，两壁夹一线天，风裹着雪粒打在脸上生疼。",
+      "exits": {
+        "sw": "road_beijiang_1"
+      }
+    },
+    "beijiang_houzhai": {
+      "id": "beijiang_houzhai",
+      "name": "血刀寨·后寨",
+      "region": "beijiang",
+      "desc": "血刀门的后寨，寨墙用整根圆木扎成，雪地上血痕未消。",
+      "exits": {
+        "w": "beijiang_xuedao"
+      }
+    },
+    "xixia_yanchang": {
+      "id": "xixia_yanchang",
+      "name": "西夏·盐场",
+      "region": "xixia",
+      "desc": "盐池一片白茫茫，煮盐的人比打仗的人多，盐堆得像小山。",
+      "exits": {
+        "w": "road_xixia_1"
+      }
+    },
+    "xiake_dong": {
+      "id": "xiake_dong",
+      "name": "侠客岛·石室",
+      "region": "xiake",
+      "desc": "石壁上凿出一间石室，四壁刻满蝌蚪样的文字，笔画扭曲，看不出一句成句的话。",
+      "exits": {
+        "s": "xiake_neike"
+      }
+    },
+    "xiake_dukou": {
+      "id": "xiake_dukou",
+      "name": "侠客岛·渡口",
+      "region": "xiake",
+      "desc": "乱石滩上垒着个渡口，渡船三日才来一趟。海面浮着薄雾，对岸是什么地方，没人说得清。",
+      "exits": {
+        "w": "secret_xiake"
+      }
+    },
+    "jinguo_shi": {
+      "id": "jinguo_shi",
+      "name": "旧陵·石室",
+      "region": "jinguo",
+      "desc": "旧陵深处的石室，四壁嵌着铜灯，机关密布，脚下不知哪一块砖是活的。",
+      "exits": {
+        "w": "jinguo_ruin",
+        "n": "jinguo_tomb"
+      }
+    },
+    "jinguo_tomb": {
+      "id": "jinguo_tomb",
+      "name": "旧陵·主墓",
+      "region": "jinguo",
+      "desc": "主墓室里摆着一口青铜棺椁。陪葬的珠玉在幽光里泛着冷光，静得连呼吸都显得吵。",
+      "exits": {
+        "s": "jinguo_shi"
+      }
+    },
+    "many_pool": {
+      "id": "many_pool",
+      "name": "蛮荒·毒沼",
+      "region": "many",
+      "desc": "一片冒着绿泡的沼泽，瘴气弥漫，枯骨半沉在泥里，蚊蚋成团。",
+      "exits": {
+        "s": "road_many_1",
+        "e": "many_camp"
+      }
+    },
+    "many_camp": {
+      "id": "many_camp",
+      "name": "蛮荒·野人寨",
+      "region": "many",
+      "desc": "茅草搭的寨子，墙上钉着成排的兽骨和人头。寨中一堆篝火，火苗从没断过。",
+      "exits": {
+        "w": "many_pool",
+        "e": "many_ruin"
+      }
+    },
+    "many_ruin": {
+      "id": "many_ruin",
+      "name": "蛮荒·上古遗迹",
+      "region": "many",
+      "desc": "藤蔓把一座上古遗迹缠得只剩几根残柱。柱上刻着无人认得的符文，摸上去冰凉刺骨。",
+      "exits": {
+        "w": "many_camp"
+      }
+    },
+    "secret_guishi": {
+      "id": "secret_guishi",
+      "name": "黑市·鬼市",
+      "region": "secret",
+      "desc": "鬼市天不亮就开，买卖双方都用布遮着脸，成交只在袖子里捏手指头。",
+      "exits": {
+        "w": "secret_black_market",
+        "n": "secret_anxiang"
+      }
+    },
+    "secret_anxiang": {
+      "id": "secret_anxiang",
+      "name": "黑市·暗巷",
+      "region": "secret",
+      "desc": "鬼市后头那条巷子窄得只容一人侧身。墙根下立着两三个人影，凑近了才听见在低声讲价。",
+      "exits": {
+        "s": "secret_guishi",
+        "e": "secret_cage"
+      }
+    },
+    "secret_cage": {
+      "id": "secret_cage",
+      "name": "黑市·囚笼",
+      "region": "secret",
+      "desc": "暗巷尽头排着一列铁笼，笼里锁着人。铁链拖地的声响一阵过来，一阵又没了。",
+      "exits": {
+        "w": "secret_anxiang"
       }
     }
   },
@@ -6557,25 +6740,6 @@
       "emei_yard",
       "dali_wangfu",
       "jn_home_01",
-      "jn_home_02",
-      "jn_home_03",
-      "jn_home_04",
-      "jn_home_05",
-      "jn_home_06",
-      "jn_home_07",
-      "jn_home_08",
-      "jn_home_09",
-      "jn_home_10",
-      "jn_home_11",
-      "jn_home_12",
-      "jn_home_13",
-      "jn_home_14",
-      "jn_home_15",
-      "jn_home_16",
-      "jn_home_17",
-      "jn_home_18",
-      "jn_home_19",
-      "jn_home_20",
       "jn_rich_house",
       "jn_school_yard",
       "jn_farm_house",
@@ -6586,7 +6750,31 @@
       "cun_home_03",
       "cun_home_04",
       "cun_home_05",
-      "cun_home_06"
+      "cun_home_06",
+      "ly_home_01",
+      "ly_home_02",
+      "ly_home_03",
+      "ly_home_04",
+      "ca_home_01",
+      "ca_home_02",
+      "ca_home_03",
+      "ca_home_04",
+      "cd_home_01",
+      "cd_home_02",
+      "cd_home_03",
+      "xy_home_01",
+      "xy_home_02",
+      "xy_home_03",
+      "hb_home_01",
+      "hb_home_02",
+      "hb_home_03",
+      "hb_home_04",
+      "gs_home_01",
+      "gs_home_02",
+      "gs_home_03",
+      "ya_home_01",
+      "ya_home_02",
+      "ya_home_03"
     ]
   },
   "terrain": {

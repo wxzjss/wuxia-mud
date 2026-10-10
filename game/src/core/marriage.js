@@ -20,6 +20,8 @@
  *   前提：双方至少一人有家园
  * ============================================================ */
 const social = require('./social');
+/* B11：性别名词单一入口（男/女/不明），别再 `female?'女':'男'`（other 会落成「男」） */
+const { genderNoun } = require('./pronouns');
 
 const REL_KIND = '夫妻';
 const BOND_KIND = '结缘';
@@ -128,8 +130,8 @@ function instById(world, defId) {
   return social.findInst(world, defId);
 }
 
-/** 性别文本 */
-function gCN(g) { return g === 'female' ? '女' : '男'; }
+/** 性别文本（走 pronouns 单一入口，other 不再冒充「男」） */
+function gCN(g) { return genderNoun({ gender: g }); }
 
 /* ============================================================
  * 二、资格判定

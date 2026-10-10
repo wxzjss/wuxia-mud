@@ -354,27 +354,47 @@ section('⑦ 源码静态防线：不许再出现「把 .def 当数字用」');
   ok('伤害公式不再直接读 defender.def', C.length === 0, C.map(rel).join(','));
   const D = hits(/this\.def\s*=[^=]/);
   ok('Character 不再写 this.def（防御力改写 defFinal）', D.length === 0, D.map(rel).join(','));
-  /* ⚠️ 白名单：ui.js 的属性面板读 `playerBrief()` 组装的**扁平** view.player，
+  /* ⚠️ 放行白名单：ui.js 的属性面板读 `playerBrief()` 组装的**扁平** view.player，
      那里 `p.def` 是**真数字**（已实测 typeof === 'number'），不是 NPC 实例的
      `.def`（模板对象引用，拿去算术必 NaN —— 那才是本护栏要拦的坑）。
-     这条护栏真正要拦的是「**实例**的 .def 数字读点」，所以按文件+行精确放行，
-     别把整个文件放出去（那样新写的实例读点又漏了）。 */
-  const E_DEF_ALLOW = {
-    'server/public/js/ui.js': [[1102, '防御: p.def']],
-    'game/src/renderer/js/ui.js': [[1102, '防御: p.def']],
-  };
+     这条护栏真正要拦的是「**实例**的 .def 数字读点」，所以只放行**这一行原文**，
+     别把整个文件放出去（那样新写的实例读点又漏了）。
+     ⚠️ 判据从「文件 + 行号」改成「**文件 + 整行原文 + 出现次数**」：
+        · 旧的行号判据会随上方任何编辑漂移 —— 在文件开头加一行注释就**假红**（已踩）；
+        · 行号判据还**抓不住**「同一个写法被复制到别处」；
+        改成原文 + 次数后：漂移不再误报，复制则必红（净增强）。
+     ⚠️ 走查的 `files` 只覆盖 game/src 与 tools；server 副本不在其中，靠下面的
+        计数断言单独兜（它顺便能发现两份副本在这一行上不同步）。 */
+  const DEF_READ_LINE = '      攻击: p.atk, 防御: p.def, 身法: p.dodge, 格挡: p.parry, 速度: p.speed,';
+  const E_DEF_ALLOW = [
+    { file: 'game/src/renderer/js/ui.js', text: DEF_READ_LINE, times: 1 },
+    { file: 'server/public/js/ui.js', text: DEF_READ_LINE, times: 1 },
+  ];
+  const RE_DEF_READ = /\bp\.def\b|\bplayer\.def\b/;
   const E = [];
   for (const f of files) {
     const r = rel(f);
-    const allow = E_DEF_ALLOW[r] || [];
     fs.readFileSync(f, 'utf8').split(/\r?\n/).forEach((line, i) => {
-      if (!/\bp\.def\b|\bplayer\.def\b/.test(line)) return;
-      const ln = i + 1;
-      if (allow.some(a => a[0] === ln && line.indexOf(a[1]) >= 0)) return;
-      E.push(r + ':' + ln);
+      if (!RE_DEF_READ.test(line)) return;
+      /* 放行条件：**整行原文逐字相等**（不再是「行号对上 + 含子串」） */
+      if (E_DEF_ALLOW.some(a => a.file === r && line === a.text)) return;
+      E.push(r + ':' + (i + 1));
     });
   }
-  ok('不再有 p.def / player.def 这种数字读点（扁平 view 已在白名单精确放行）', E.length === 0, E.join(','));
+  ok('不再有 p.def / player.def 这种数字读点（扁平 view 只放行白名单那一行原文）',
+    E.length === 0, E.join(','));
+  /* ★ 白名单自身的计数断言：每个条目的实际命中次数必须**正好等于** times。
+     这一层是旧的行号判据给不了的 —— 「同一写法被复制到别处」在此必红。 */
+  const hitsOf = a => {
+    const p = path.join(ROOT, a.file);
+    if (!fs.existsSync(p)) return -1;
+    return fs.readFileSync(p, 'utf8').split(/\r?\n/).filter(l => l === a.text).length;
+  };
+  const allowMis = E_DEF_ALLOW
+    .filter(a => hitsOf(a) !== a.times)
+    .map(a => `${a.file} 期望 ${a.times} 次，实到 ${hitsOf(a)} 次`);
+  ok('白名单每条的命中次数 == 期望次数（防同一写法被复制到别处 / 两份副本不同步）',
+    allowMis.length === 0, allowMis.join('；'));
   const COMBAT = fs.readFileSync(path.join(ROOT, 'game', 'src', 'core', 'combat.js'), 'utf8');
   ok('combat.js 的伤害公式走 defenseOf(defender)', /defenseOf\(defender\)/.test(COMBAT));
   ok('combat.js 导出 defenseOf（供其他模块复用）', /module\.exports\s*=\s*\{[^}]*defenseOf/.test(COMBAT));

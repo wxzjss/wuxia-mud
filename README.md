@@ -454,14 +454,22 @@ jinyong-mud/
 ## 十一、测试
 
 ```bash
-# 先启动两个服务，然后：
-node tools/e2e.js          # 端到端联调，71 项断言
-node tools/smoke-test.js   # 引擎冒烟测试
+# 次优先，全量回归（不需要起服务）：
+node tools/map-check.js        # 地图八+三条断言（B13 后 6492 项）
+node tools/mapguide-check.js   # 地图指引
+for f in tools/smoke-*.js; do node "$f" || echo "FAIL $f"; done   # 全量冒烟（31 套）
+
+# 需先启动两个服务：
+node tools/e2e.js              # 端到端联调
 ```
+
+> **全量回归口径**：`tools/smoke-*.js` 的**全部文件**（现 31 套，含 `smoke-map-migrate` 等）都要
+> `exit=0` 且**零 `✘`**。新增冒烟只需放到 `tools/smoke-*.js` 命名空间即自动纳入。
+> **验收纪律**：判结论前先**冻结被测文件 md5**，验收窗口内不改源码（避免「边验边改」的 moving target）。
 
 `e2e.js` 覆盖：站点 API、8 个静态页面、**一键下载打包（校验 zip 魔数与文件数）**、上传 / 查询 / 下载 / 删除、游戏建角、18 条指令（含 6 条中文口语）、10 个面板、6 个存档接口、编辑器元数据与校验、跨服务一键上传 + 一键下载。
 
-当前结果：**71 / 71 通过**。
+当前结果：**122 / 122 通过**（`node tools/e2e.js`）。
 
 ---
 

@@ -2,7 +2,8 @@
 const path = require('path');
 const { GameEngine } = require('../game/src/core/engine');
 
-const engine = new GameEngine({ projectRoot: path.resolve(__dirname, '..') });
+/* 存档写进隔离沙盒，绝不碰玩家的 saves/（主人 bug B1）—— 见 tools/_test-save-dir.js */
+const engine = new GameEngine({ projectRoot: path.resolve(__dirname, '..'), saveDir: require('./_test-save-dir') });
 const boot = engine.boot();
 console.log('=== BOOT LOG ===');
 console.log(JSON.stringify(boot.bootLog, null, 1));
@@ -61,7 +62,7 @@ run('采药');
 
 // 存档测试
 console.log('\n=== 存档 ===');
-console.log(JSON.stringify(engine.save('test_slot'), null, 1));
+console.log(JSON.stringify(engine.save('smoke_test_slot', { _test: true }), null, 1));
 console.log(JSON.stringify(engine.listSaves(), null, 1));
 
 // 编辑器元数据

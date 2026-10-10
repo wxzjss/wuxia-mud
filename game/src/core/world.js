@@ -143,6 +143,28 @@ class World extends EventEmitter {
     this.deadNpcs = {};   // 第五批：真死的 NPC（defId → 死亡时间），10 天后复活
     this.jail = {};       // 第五批：被官府抓进牢的 NPC（defId → 赎金）
     this.soldSlaves = [];    // 掳人系统：被掳走卖进黑市/青楼的名册（快照，卖出即入库）
+    /* ---- 世界记忆 · 传闻系统（#109，SPRINT-B W1–W4）----
+     * rumors：运行期活跃传闻数组（随档 serialize）；rumorSeq：uid 自增计数器。 */
+    this.rumors = [];
+    this.rumorSeq = 1;
+    /* ---- 世界动态 W5–W7（#109 后续块，2026-10-11 工程落地）----
+     * factionState：势力运行值（power/treasury/mood/relations），模板在 data.factions；
+     * calendarState：节庆运行值（上次触发日）；两者都随档（serialize/deserialize）。
+     * _evCooldown：世界事件的冷却记账（evId → 上次触发的 day）；_evFired：once 记账。 */
+    this.factionState = null;
+    this.calendarState = { lastFestival: null };
+    this._evCooldown = {};
+    this._evFired = {};
+    /* _tickLines / _collecting：把「时间推进期间」世界抛出的 storyline 台词
+       收进缓冲，交给 engine.exec 排进玩家输出。
+       背景：`storyline` 全仓**产品侧零消费者**（见 smoke-events 头部注）——
+       onTick / onDayTick（W5/W7）/ worldTick 的台词语义上就是给玩家看的，
+       以前 emit 出去就沉了。这里只收「推进时间时」发出的（_collecting=true），
+       命令处理器执行期间的 emit 不收（那条路径各自已有 lines 返回，避免重复）。 */
+    this._tickLines = [];
+    this._collecting = false;
+    this.regionAdj = {};     // 区域邻接表（跨区出口权重，运行时预计算，不写进数据文件）
+    this.kFlow = {};         // 区域人口流动系数（传闻扩散强度，clamp 到 0.15~0.60）
     this.activeRules = []; // 功能 Mod 的「规则」（multiply / additive / onEvent），loadMods 时收集
     this.combatHooks = Object.assign({}, DEFAULT_HOOKS);
     this.effectFns = {};
@@ -156,6 +178,43 @@ class World extends EventEmitter {
     this.weather = '晴';
     this.clockMinutes = 540;
     this.version = '1.0.0';
+
+    /* B7：接上「战斗开始」这个钩子。
+       此前 `startCombat` 里的 `this.emit('combatstart', ...)` **零监听**，
+       所以 NPC 目睹玩家被山贼/毒蛇袭击时毫无反应（主人原话「不会来帮我，
+       也不会惊呼逃跑」）。反应树（witnessReaction / fleeNpc / personality）
+       早就写好了，缺的只是这一个接线。
+       注册在构造器里 → 所有 World 实例都生效，测试里 new World() 也一样。 */
+    this.on('combatstart', ev => {
+      const lines = this.combatStartWitnessReaction(ev && ev.battle);
+      /* 存到 this._combatWitnessLines：startCombat 的返回体是纯数据，
+         emit 的载荷已经在发出去之前就消费完了，所以这里中转一道。 */
+      this._combatWitnessLines = (this._combatWitnessLines || []).concat(lines || []);
+    });
+
+    /* B21（第二处根因）：把「升级」接线到 onLevelUp 事件。
+       `character.gainExp()` 升级时一直只 `emit('levelup', …)`，而这个事件
+       **全仓零监听**；同时 `60_quests.json` 的 `onLevelUp`（≥5 那句提示）
+       **从来没有任何地方调用过 fireEvent('onLevelUp')**。
+       ⇒ 就算修好 mergeData 把 handler 数组从「被揉成对象」里救回来，
+         onLevelUp 依然**永远不会触发**（升级提示照样没有，主人原话的症状）。
+       与 combatstart 同款处理：注册在构造器里，所有 World 实例都生效。 */
+    this.on('levelup', ev => { this.fireEvent('onLevelUp', ev || {}); });
+
+    /* 世界动态：把「推进时间时」发出的 storyline 台词收进 _tickLines。
+       只有 _collecting 为真（advanceTime 体内）才收 —— 见构造器字段注释。 */
+    this.on('storyline', ev => {
+      if (this._collecting && ev && ev.line) {
+        if (this._tickLines.length < 40) this._tickLines.push(ev.line);
+      }
+    });
+  }
+
+  /** 取出「上一次推进时间」期间世界抛出的台词（并清空缓冲）。engine.exec / menuPick 调用。 */
+  drainTickLines() {
+    const out = this._tickLines;
+    this._tickLines = [];
+    return out;
   }
 
   /* ================================================================
@@ -229,6 +288,28 @@ class World extends EventEmitter {
             const entry = json[k][id];
             if (entry === null || entry === undefined) { delete this.data[k][id]; continue; }
             if (entry && entry._delete) { delete this.data[k][id]; continue; }
+            /* ⚠ B21 根因修复（通用，不是给某个键打补丁）：
+               值本身是数组时**绝不能** `Object.assign({ id }, entry)` ——
+               那会把数组揉成 `{id:'onKill', 0:h0, 1:h1}`（数组只剩数字键，类型变对象）。
+               `events`（以及将来同形的 `worldEvents`）的 handler 挂在数组元素上，
+               被揉后 handler 的 `cond`/`effects` 全丢；而 `fireEvent` 用
+               `[].concat(壳对象)` 只迭代一次 → **整个事件静默失效**（不报错、就是不发生）。
+               数组的语义 = 「同一个键下的一串记录」，与 deepMerge 的数组规则**保持一致**：
+               按 arrayMode（默认 replace=后者覆盖 / append=追加 / prepend=前置）整段合并，
+               **始终保持数组类型**。只有「对象值」才走 byId 的 entry 合并（并打 __source）。 */
+            if (Array.isArray(entry)) {
+              this.data[k][id] = deepMerge(this.data[k][id], entry, { arrayMode });
+              continue;
+            }
+            /* ⚠️ 与上一条同族：**原语值**（数字/字符串/布尔）也绝不能走 byId 的
+               `Object.assign({ id }, entry)` —— Object.assign 会忽略原语，只留下 `{id}`。
+               实测（W5/W7 落地时抓到）：`calendar.yearDays:120` 被揉成 `{id:'yearDays'}`，
+               于是 `day % yearDays` → NaN → 节庆**一条都不触发**（静默失效，与 B21 同族）。
+               原语值直接赋值即可（它没有「字段」可合并）。 */
+            if (entry === null || typeof entry !== 'object') {
+              this.data[k][id] = entry;
+              continue;
+            }
             this.data[k][id] = this.mergeEntry(this.data[k][id], Object.assign({ id }, entry), mod, arrayMode);
           }
         }
@@ -293,6 +374,15 @@ class World extends EventEmitter {
       }
     }
     this.buildIndexes();
+    /* B3 · 物种专属招式。
+       挂在这里（而不是 boot()/deserialize() 里）是因為这是**所有**加载路径的必经点：
+       engine.boot() 走 loadMods → buildIndexes，engine.reload() 同样，
+       deserialize() 也在末尾调 buildIndexes —— 三条路一次覆盖，不会漏。
+       早先只挂在 deserialize() 上时，boot() 走loadBaseData() 那条路完全绕过，
+       毒蛇仍是基本拳脚（这个坑本身就是「同一个动作有三条路径」提醒的）。 */
+    this.applySpeciesMoves();
+    /* W6/W7：从 data.factions / data.calendar 建运行值（所有加载路径的必经点）。 */
+    this.initWorldDynamics();
     this.validate();
     return this.modLog;
   }
@@ -327,6 +417,54 @@ class World extends EventEmitter {
         (this._npcsByRoom[n.room] = this._npcsByRoom[n.room] || []).push(id);
       }
     }
+    // 传闻系统：预计算区域邻接表 + 人口流动系数（地图静态，运行时算一次即可）
+    this.computeRegionAdj();
+  }
+
+  /** 预计算区域邻接表与 kFlow（#109 W1）。
+   *  · regionAdj[r][r2] = 双向跨区出口数之和（只用于「是否有通路」与随机选路）。
+   *  · kFlow[r] = clamp(区域内流动人口 tag 占比, 0.15, 0.60)；衙门/青楼 +0.20 修正
+   *    （官面上的事传得快、枕边话传得快，否则这些区传闻永远传不进/传不出）。
+   *  权重不参与强度计算——强度只由 kFlow 决定，避免大区域碾压小区域。 */
+  computeRegionAdj() {
+    const adj = {};
+    const regionOf = rid => (this.data.rooms[rid] && this.data.rooms[rid].region) || '_wild';
+    for (const rid of Object.keys(this.data.rooms)) {
+      const room = this.data.rooms[rid];
+      const r = regionOf(rid);
+      for (const dir of Object.keys(room.exits || {})) {
+        const ex = room.exits[dir];
+        const tid = typeof ex === 'string' ? ex : ex.to;
+        if (!tid || !this.data.rooms[tid]) continue;
+        const r2 = regionOf(tid);
+        if (r === r2) continue; // 只统计跨区
+        if (!adj[r]) adj[r] = {};
+        adj[r][r2] = (adj[r][r2] || 0) + 1;
+      }
+    }
+    this.regionAdj = adj;
+
+    const FLOWY = new Set(['merchant', 'escort', 'boatman', 'vendor', 'groom', 'beggar']);
+    const regionNpc = {};
+    for (const rid of Object.keys(this.data.rooms)) {
+      const region = regionOf(rid);
+      const npcIds = this._npcsByRoom[rid] || [];
+      if (!regionNpc[region]) regionNpc[region] = { total: 0, flowy: 0 };
+      for (const nid of npcIds) {
+        regionNpc[region].total++;
+        const def = this.data.npcs[nid];
+        if (def && FLOWY.has(def.tag)) regionNpc[region].flowy++;
+      }
+    }
+    const kFlow = {};
+    for (const region of Object.keys(regionNpc)) {
+      const { total, flowy } = regionNpc[region];
+      let k = total ? flowy / total : 0;
+      k = clamp(k, 0.15, 0.60);
+      if (region === 'yamen' || region === 'qinglou') k = clamp(k + 0.20, 0.15, 0.60);
+      kFlow[region] = k;
+    }
+    this.kFlow = kFlow;
   }
 
   validate() {
@@ -368,6 +506,180 @@ class World extends EventEmitter {
     if (!est || !Array.isArray(est.plots) || !est.plots.length) return null;
     return require('./estate').estateEffects(this);
   }
+  /* ================================================================
+   * 二·五、私域（B/C 层虚拟宅院 · design/09 §3.3）
+   *
+   * C 层 285 个 NPC 的家是 `house:<npcId>`，**不占 room id、不上地图**
+   * （engine.mapView 已过滤 private 房）。要进去得满足门槛，命令「拜访」才建路。
+   *
+   * 为什么不写进 data：198 户 × 4 间 = 792 间房会把地图撑爆（620 房的老病灶）。
+   * 这里只按需生成「堂屋」1 间，其余留白；整段不写 data，存档只存「访问过谁」。
+   */
+
+  /** 拜访门槛：好感 ≥30 / 接过他支线 / 债主仇家（掳人系统联动） */
+  canVisitHouse(npc, p) {
+    const d = npc.def || {};
+    if (npc.favor >= 30) return { ok: true, why: '交情' };
+    if ((d.quests || []).some(q => p.questStage(q) >= 0)) return { ok: true, why: '他有求于你' };
+    const kd = p.kidnap || {};
+    if ((kd.owners || []).includes(npc.defId)) return { ok: true, why: '你是他的债主' };
+    if ((kd.slaves || []).some(s => (s.defId || s.id) === npc.defId)) return { ok: true, why: '他在你手下' };
+    return {
+      ok: false,
+      msg: `你与${npc.name}还谈不上交情，这般贸然上门，只怕连门都进不去。`,
+    };
+  }
+
+  /** 私域房间 id：C 层 B/C 层统一 `house_<defId>`，与存档里的访问记录对齐 */
+  houseRoomId(defId) { return 'house_' + defId; }
+
+  /**
+   * 按 5 房模板生成院子布局。
+   * ⚠️ 只返回「数据」，不写 data.rooms —— 真正落房间由 ensureHouse 干，
+   *    这样读档能靠存下来的 layout 原样重建，不必重新掷骰。
+   */
+  houseLayout(npc) {
+    const d = npc.def || {};
+    const who = npc.name;
+    const trade = d.shop ? '靠墙一张旧柜台，上头摆着几样零碎货物。' : '墙角堆着些农具杂物。';
+    return {
+      rooms: [
+        {
+          key: 'hall', name: `${who}家·堂屋`, z: 0,
+          desc: `${who}的堂屋。屋里陈设简朴，一方条案、两把旧椅，墙上挂着些寻常农具。${trade}`,
+        },
+      ],
+      /* 预留：卧房/厨房/院子/柴房 —— 随访问进度逐间解锁（design/09 §3.3） */
+      locked: [
+        { key: 'bed', name: `${who}家·卧房` },
+        { key: 'kitchen', name: `${who}家·厨房` },
+        { key: 'yard', name: `${who}家·院子` },
+        { key: 'wood', name: `${who}家·柴房` },
+      ],
+      host: npc.defId,
+    };
+  }
+
+  /**
+   * 确保某人的私域房间已建（幂等）。
+   * @returns 房间 id
+   */
+  ensureHouse(npc, fromRoom) {
+    const id = this.houseRoomId(npc.defId);
+    if (this.data.rooms[id]) return id;
+    const lay = this.houseLayout(npc);
+    const hall = lay.rooms[0];
+    /* region 用主人的辖区；查不到就沿用当前房间的 region（保证地图分组不炸） */
+    const region = (npc.def && npc.def.district) ||
+      (fromRoom && fromRoom.region) || 'wild';
+    this.data.rooms[id] = {
+      id, name: hall.name, region,
+      desc: hall.desc,
+      private: true,          /* engine.mapView 据此把私域排除出地图 */
+      owner: npc.defId,
+      exits: {},
+    };
+    return id;
+  }
+
+  /**
+   * 拜访某人的家。
+   * 流程：校验门槛 → 建房 → 把主人挪进堂屋（玩家要能跟他说话）→
+   *      记一条双向边（来路 ↔ 堂屋）→ 玩家进屋。
+   * @returns {ok, msg, roomId, lines}
+   */
+  visitHouse(npcId, fromRoomId) {
+    const p = this.player;
+    const def = this.data.npcs[npcId];
+    if (!def || !p) return { ok: false, msg: '没有这个人。' };
+    /* 只对虚拟私宅生效；A/B 层的真房间（hm_*）本来就在地图上，直接走过去 */
+    if (String(def.home || '') !== 'house:' + npcId) {
+      return { ok: false, msg: `${def.name || npcId}的住处你自个儿走去便是，不必「拜访」。` };
+    }
+    const from = this.getRoom(fromRoomId);
+    /* ⚠️ 复用场上已有实例，**不要无脑 spawn** ——
+       spawnNpc 对非名人每次都新建一个 Character（名人只返已有那位），
+       重复 spawn 会造出「张掌柜×2」，且玩家在别处培养的好感落在**另一个**实例上，
+       拜访时读到的 favor 永远是模板初始值 → 门槛永远差一口气（测试实测 favor=11）。
+       这正是记忆铁律 1 的同类：拿到的不是玩家以为的那个对象。 */
+    let npc = null;
+    for (const n of Object.values(this.instances.npcs)) {
+      if (n.defId === npcId && !n.dead) { npc = n; break; }
+    }
+    if (!npc) npc = this.spawnNpc(npcId, fromRoomId, 1);
+    if (!npc) return { ok: false, msg: '此人此刻不在镇上。' };
+    if (npc.dead) return { ok: false, msg: `${npc.name}已经不在人世了。` };
+    const gate = this.canVisitHouse(npc, p);
+    if (!gate.ok) return { ok: false, msg: gate.msg };
+
+    const roomId = this.ensureHouse(npc, from);
+    const room = this.getRoom(roomId);
+
+    /* 主人进堂屋（玩家要能跟他对话 —— talk 只在同房间找人，记忆第 34 条） */
+    const prevRoom = npc.room;
+    npc.room = roomId;
+    /* 记下主人原来的去处，走出私域时送回去 */
+    npc._houseHostReturn = prevRoom;
+    npc._inPrivateHouse = true;
+
+    /* 双向补边：来路加一条进屋口，堂屋加一条回去的路 */
+    const DIR_IN = { s: 'n', n: 's', e: 'w', w: 'e', ne: 'sw', nw: 'se', se: 'nw', sw: 'ne' };
+    let inDir = 'n';
+    for (const d of Object.keys(DIR_IN)) {
+      if (from && from.exits && !from.exits[d]) { inDir = d; break; }
+    }
+    const backDir = DIR_IN[inDir];
+    if (from && from.exits) from.exits[inDir] = roomId;
+    room.exits[backDir] = fromRoomId;
+    room._privateHost = npcId;
+    room._privateFrom = fromRoomId;
+
+    if (!p.visitedHouses) p.visitedHouses = {};
+    p.visitedHouses[npcId] = (p.visitedHouses[npcId] || 0) + 1;
+
+    return {
+      ok: true, roomId, npcId,
+      msg: `${npc.name}见你上门，眉头一动，末了让开身：「既是熟人，进来坐罢。」`,
+      why: gate.why,
+    };
+  }
+
+  /**
+   * 玩家走出私域时调用：把主人送回原来的房间，并把私域房间拆掉。
+   * ⚠️ 私域不在地图上（private），留着会让 mapView 的房间总数对不上，
+   *    也让「回城走一圈再进来」这种直觉行为失真 —— 所以拆干净。
+   */
+  leaveHouse(roomId) {
+    const room = this.data.rooms[roomId];
+    /* ⚠️⚠️ 只能按 `_privateHost` 认「这是拜访建的私域」，**绝不能只看 private**！
+       `private:true` 早就被三处占用了：estate（家园地块）/ home（主宅）/
+       sectFounder（自建宗门），它们都是**玩家自己的房**，同样不上地图。
+       一刀切按 private 删 → 玩家走出家园就把自己的院子删了，
+       smoke-estate 实测直接挂：「可走回主院 room=hm_plot_1_yard」。 */
+    if (!room || !room._privateHost) return false;
+    const hostId = room._privateHost;
+    const from = room._privateFrom;
+    if (hostId) {
+      /* ⚠️ instances.npcs 是按**实例 id**（npc_xxx）建的表，不是 defId！
+         直接 `instances.npcs[hostId]` 永远取不到 → 主人送不回原处、
+         标记也不清（测试 D2/D3 实测抓到）。必须遍历比对 defId。 */
+      for (const n of Object.values(this.instances.npcs)) {
+        if (n.defId !== hostId || !n._inPrivateHouse) continue;
+        const back = n._houseHostReturn;
+        if (back && this.data.rooms[back]) n.room = back;
+        n._inPrivateHouse = false;
+        n._houseHostReturn = null;
+      }
+    }
+    if (from && this.data.rooms[from] && this.data.rooms[from].exits) {
+      for (const d of Object.keys(this.data.rooms[from].exits)) {
+        if (this.data.rooms[from].exits[d] === roomId) delete this.data.rooms[from].exits[d];
+      }
+    }
+    delete this.data.rooms[roomId];
+    return true;
+  }
+
   getQuest(id) { return this.data.quests[id]; }
   getRegion(id) { return this.data.regions[id]; }
   season() {
@@ -450,6 +762,21 @@ class World extends EventEmitter {
     }
     return out;
   }
+  /** 全图「活着的」NPC 实例（按 defId 去重，取一个代表）。
+   *  「拜访」要找不在场的人，所以不能用 npcsIn(房间)。
+   *  ⚠️ 名人/常驻 NPC 同一 defId 可能有多实例（会走动、respawn），
+   *     这里按 defId 去重，只留一个，避免「岳不群 ×3」式重名。 */
+  allNpcs() {
+    const out = [];
+    const seen = new Set();
+    for (const n of Object.values(this.instances.npcs)) {
+      if (n.dead || !n.defId) continue;
+      if (seen.has(n.defId)) continue;
+      seen.add(n.defId);
+      out.push(n);
+    }
+    return out;
+  }
   itemsIn(roomId) {
     return Object.values(this.instances.items).filter(i => i.room === roomId);
   }
@@ -503,6 +830,11 @@ class World extends EventEmitter {
       npc.room = roomId;
       npc.favor = 0;
       npc.hostile = !!def.hostile;
+      /* B3：物种专属招式（由 applySpeciesMoves 写在模板上）。
+         必须 copy 一份到实例：pickSkill 读的是**实例**的 speciesMoves，
+         而模板对象是全地图共享的引用 —— 直接赋值等于让同种 NPC 共享同一个数组，
+         将来谁改了会带动全图（与 social.js 的 spouse/rel 同一个坑，不踩第二次）。 */
+      npc.speciesMoves = Array.isArray(def.speciesMoves) ? def.speciesMoves.slice() : null;
       npc.dialog = def.dialog || null;
       npc.shop = def.shop || null;
       npc.drop = def.drop || null;
@@ -624,6 +956,11 @@ class World extends EventEmitter {
     const def = npc.def || {};
     // 给玩家奖励（经验/潜能的倍率规则已由 gainExp/gainPotential 内部应用）
     if (this.inPlayerParty(npc, battle)) {
+      /* 击杀类任务目标的计数队列。
+         ⚠️ 为什么要排队而不是在这里直接加：任务目标计数住在 commands 层
+         （`advanceQuestCounters`），而 world **不反向依赖 commands**（分层铁律）。
+         所以 world 只登记"这一轮谁死了"，由 engine 在 postProcess 里消费。 */
+      (this._killQueue = this._killQueue || []).push(npc.defId);
       p.gainExp(Math.floor(npc.expReward * (def.expMult || 1)));
       p.gainPotential(npc.potReward);
       p.money += Math.floor(npc.moneyReward * this.ruleMult('money'));
@@ -662,6 +999,17 @@ class World extends EventEmitter {
     this.fireEvent('onKill', { npc });
     // 目击反应（第五批）：房间里其他人看到杀人，按性格/武力/身份反应
     this.witnessReaction(npc);
+    // 世界记忆 · 传闻：杀具名 NPC / 门派弟子 → rs_kill_named；杀平民 → rs_kill_civilian
+    const killedDef = npc.def || {};
+    const named = !!(killedDef.sect || killedDef.tier || killedDef.unique || killedDef.portrait);
+    const pname = (this.player && this.player.name) || '一个江湖客';
+    const rname = (this.getRoom(npc.room) || {}).name || '某处';
+    this.addRumor(named ? 'rs_kill_named' : 'rs_kill_civilian', {
+      room: npc.room,
+      who: pname, where: rname, whom: npc.name || '一个人',
+      subject: 'player', about: npc.defId || null,
+      vars: { who: pname, where: rname, whom: npc.name || '一个人' },
+    });
   }
 
   /** 某 NPC 是否有武力（有武学 / 战斗类身份） */
@@ -673,7 +1021,31 @@ class World extends EventEmitter {
     return ['swordsman', 'constable', 'escort', 'hunter', 'monk', 'taoist', 'nun', 'thief'].includes(npc.tag || def.tag);
   }
 
-  /** 目击反应：房间里的 NPC 看到玩家杀人后的反应（跑/呼救/报官/怒视/帮人） */
+  /** 两个 NPC 实例之间的关系（rel 是单向存储，故双向都查）。
+   *  返回 '亲' | '友' | '仇' | null。
+   *  · 亲 = 夫妻 / 父母子女等至亲；· 友 = 至交；· 仇 = 宿敌。
+   *  数据里只有这三种 kind（友708 / 亲238 / 仇151）。 */
+  relBetween(a, b) {
+    if (!a || !b) return null;
+    const aid = a.defId, bid = b.defId;
+    if (!aid || !bid) return null;
+    const kinds = [];
+    for (const r of (a.rel || [])) if (r.id === bid) kinds.push(r.kind);
+    for (const r of (b.rel || [])) if (r.id === aid) kinds.push(r.kind);
+    if (!kinds.length) return null;
+    if (kinds.indexOf('亲') >= 0) return '亲';
+    if (kinds.indexOf('友') >= 0) return '友';
+    if (kinds.indexOf('仇') >= 0) return '仇';
+    return null;
+  }
+
+  /** 目击反应：房间里的 NPC 看到玩家杀人后的反应。
+   *  优先处理「受害者至亲 / 至交」当场目睹——他们绝不会无动于衷（出戏点①）。
+   *  其余按性格 / 武力 / 身份给反应（跑 / 呼救 / 报官 / 怒视 / 帮人）。
+   *
+   *  ⚠️ 分支判断已抽到 `witnessTree()`，因为 B7（玩家挨打时目击者的反应）
+   *  要用**同一棵树**、只是把「谁是受害者」反过来。抽之前这里是内联的，
+   *  两边各写一份必然走偏（B7 的教训：缺的不是逻辑，是钩子）。 */
   witnessReaction(victim) {
     const p = this.player;
     if (!p) return;
@@ -681,6 +1053,11 @@ class World extends EventEmitter {
     const personalityMod = require('./personality');
     const witnesses = this.npcsIn(room).filter(n => n.id !== victim.id && !n.dead && !(n.def || {}).hostile);
     for (const w of witnesses) {
+      const rk = this.relBetween(w, victim);
+      if (rk === '亲' || rk === '友') {
+        this.witnessKinsmanReaction(w, victim, rk, personalityMod);
+        continue;
+      }
       const per = personalityMod.personalityOf(w);
       const hasMartial = this.npcHasMartialArts(w);
       const tag = w.tag || (w.def || {}).tag || '';
@@ -692,6 +1069,12 @@ class World extends EventEmitter {
         p.wanted = (p.wanted || 0) + 1;
         kind = 'warn';
         text = `${w.name}厉喝：「光天化日，竟敢行凶！来人，给我拿下！」（你被官府通缉，通缉度 +1）`;
+        /* B22 埋点 2/14 · rs_resist_arrest（当街抗官/拒捕，恶名 −）：
+           官差目击行凶 = 报案语义点（与 p.wanted+1 同一处）。loud → 邻房也听见动静。 */
+        this.addRumor('rs_resist_arrest', {
+          room, about: w.defId || null,
+          vars: { who: p.name || '有人', where: (this.getRoom(room) || {}).name || '此地', whom: w.name },
+        });
       } else if (per && (per.id === 'xiayi' || per.id === 'haoshuang') && hasMartial) {
         // 侠义有武力：挺身制止
         kind = 'warn';
@@ -714,6 +1097,255 @@ class World extends EventEmitter {
     }
   }
 
+  /* ================================================================
+   * B7 · NPC 目睹「玩家被袭击」的反应
+   *
+   * 根因（不是「没写反应」，是「钩子没接」）：
+   *   `startCombat()` 里 `this.emit('combatstart', ...)` 发出去的事件，
+   *   **全仓零监听** —— 反应树 `witnessReaction`（world.js:951）只挂在
+   *   `onNpcDown` / `onNpcKilled` 上，也就是**只在 NPC 挨打时**触发。
+   *   玩家挨打这条路从头到尾没有任何人接。
+   *
+   * 这里做的三件事：
+   *   ① 把「目击者该做什么」的分支判断抽成 `witnessTree()`，与
+   *      `witnessReaction` 共用（不复制第二份逻辑）；
+   *   ② 接到 `combatstart` 上（构造函数里 `this.on('combatstart', ...)`）；
+   *   ③ 反应台词**通过返回值交给 commands.js**，而不是只 emit('storyline')
+   *      —— 因为 `storyline` 这个事件在产品侧没有任何消费者
+   *      （全仓只有 tools/ 里的两个 smoke 在监听），只 emit 的话
+   *      玩家在界面上一个字都看不到，那还是没修。
+   * ================================================================ */
+
+  /**
+   * 目击反应树（**B7 与 witnessReaction 共用**）。
+   * @param w        目击者 NPC 实例
+   * @param personalityMod personality 模块
+   * @param foeName  凶手的显示名（供台词指代）
+   * @param playerIsVictim true = 玩家挨打（袭击者是个敌对 NPC）；
+   *                      false = NPC 挨打（凶手是玩家）—— 原witnessReaction 的情形
+   * @returns {{kind:string, text:string}}
+   */
+  witnessTree(w, personalityMod, foeName, playerIsVictim, victimIsVillain) {
+    const per = personalityMod.personalityOf(w);
+    const hasMartial = this.npcHasMartialArts(w);
+    const tag = w.tag || (w.def || {}).tag || '';
+    const official = ['constable', 'official', 'escort'].includes(tag);
+
+    /* —— 官府 ——
+       玩家是凶手 → 缉凶，通缉度 +1（原逻辑，一字未改）。
+       玩家是受害者 → 官差**制止凶手**，绝不能给受害者记通缉，
+       否则玩家挨打反而被通缉，是彻头彻尾的反向效果。
+       玩家打的是**该打的人**（山贼/魔教）→ 官差睁一只眼闭一只眼：
+       当街打山贼算除害，把他拿下才是真的说不通（也与「杀人放火金腰带」的
+       江湖逻辑相悖）；而且这一支要是照常 +1，打山贼反倒被通缉，玩家一定会骂。 */
+    if (official) {
+      if (playerIsVictim) {
+        return { kind: 'warn', text: `${w.name}厉喝一声拔刀：「光天化日持械行凶！${foeName}，你还不放下兵器！」` };
+      }
+      if (victimIsVillain) {
+        return { kind: 'plain', text: `${w.name}扫了一眼地上那人，别过头去：「……我没看见。」` };
+      }
+      return { kind: 'warn', text: `${w.name}厉喝：「光天化日，竟敢行凶！来人，给我拿下！」（你被官府通缉，通缉度 +1）` };
+    }
+    /* —— 侠义且有武力 ——
+       玩家是受害者 → 真的**加入战斗**帮玩家打（不只是说漂亮话）。
+       玩家是凶手   → 挺身制止（原逻辑）。
+       ⚠️ 两边的台词必须分开：老代码两边共用一句「好个${foeName}，休得伤人！」，
+       而玩家当凶手时 foeName 就是玩家的名字 —— 变成「好个试侠，休得伤人！」，
+       听着像街坊在跟玩家打招呼。凶手一侧改成人话：喝止 + 挡人。 */
+    if (per && (per.id === 'xiayi' || per.id === 'haoshuang') && hasMartial) {
+      return playerIsVictim
+        ? { kind: 'warn', text: `${w.name}怒目圆睁，一按刀柄：「好个${foeName}，休得伤人！」` }
+        : { kind: 'warn', text: `${w.name}断喝一声，横身拦住：「住手！光天化日，动手伤人算甚么本事！」` };
+    }
+    /* —— 怯懦：两条路径一致，都是真的逃走（fleeNpc 会真的挪走/消失） —— */
+    if (per && per.id === 'qienuo') {
+      return { kind: 'plain', text: `${w.name}吓得魂飞魄散，连滚带爬地逃走了。` };
+    }
+    if (hasMartial) {
+      return playerIsVictim
+        ? { kind: 'plain', text: `${w.name}面色一沉，手按兵刃，戒备地盯住了${foeName}。` }
+        : { kind: 'plain', text: `${w.name}面色一沉，手按兵刃，警惕地盯着你。` };
+    }
+    /* —— 无武力平民：惊呼 —— */
+    return playerIsVictim
+      ? { kind: 'plain', text: `${w.name}大惊失色：「${foeName}！光天化日你就敢动手？还不快住手！」` }
+      : { kind: 'plain', text: `${w.name}惊呼：「杀人啦！出人命啦！」` };
+  }
+
+  /**
+   * 战斗开始时的目击反应（B7）。由 `combatstart` 事件驱动，
+   * 所以**任何** startCombat 调用方（kill 指令 / kidnap 剧情 / modapi / NPC 主动袭击）
+   * 都会走到这里 —— 不需要在每个调用点各补一遍。
+   * @returns {Array<{kind,text}>} 交给调用方并入指令输出的台词
+   */
+  combatStartWitnessReaction(battle) {
+    const p = this.player;
+    if (!p || !battle) return [];
+    /* ★ 先判**谁先动的手**（主人报：「为什么我主动攻击某个 NPC，旁边有个 NPC 来帮我，
+         而不是帮被我攻击的小叫花？」）。
+       老代码写死 `playerIsVictim = true`，并且把 `battle.target` 当成「凶手」——
+       而 `target` 恰恰是**被玩家打的那个 NPC**。于是整棵树反过来演：
+         玩家打小叫花 → 树以为「小叫花在行凶、玩家在挨打」→
+         侠义 NPC「挺身加入战团，与你并肩迎敌」= 帮着凶手打受害者。
+       正确判据（都不看 target）：
+         · `battle.ambush` 为真 → NPC 伏击玩家（遭遇战），凶手是防御方；
+         · 否则 → 玩家发起（kill / fight / 掳人 / modapi），凶手是玩家。 */
+    const atk = [].concat(battle.attackers || []);
+    const def = [].concat(battle.defenders || []);
+    const playerIsVictim = !!battle.ambush;
+    const aggressor = playerIsVictim
+      ? (def[0] || atk[0] || null)
+      : (atk.indexOf(p) >= 0 ? p : (atk[0] || p));
+    if (!aggressor) return [];
+    const foeName = aggressor.name || '那人';
+    /* 受害者：供「挡在他身前」这类台词指代（玩家是受害者时就是玩家自己） */
+    const victim = playerIsVictim
+      ? p
+      : (def.indexOf(p) >= 0 ? p : (def[0] || null));
+
+    /* 受害者是谁、值不值得替他出头。
+       ⚠️ 光判「谁先动手」还不够，还得判**被打的是不是该打的人**：
+         玩家打小叫花（弱者）→ 侠义之士该挡在小叫花身前；
+         玩家打山贼/魔教（除害） → 侠义之士没道理替山贼出头，退到一边看热闹才对。
+       这一层老代码完全没有（它对受害者是谁一概不问），加进第二幕的
+       「帮错了人」症状就出在这。 */
+    const victimIsVillain = !playerIsVictim && this.isVillainNpc(victim);
+
+    /* 目击者 = 屋里除**本次参战双方**以外的活人。
+       ⚠️ 老代码用的是 `n.id !== attackerId` —— 而 `attackerId` 取的是 target（被打的那个），
+       于是真正的另一方（玩家）不算问题、可**被打的 NPC 本身**却被排除在外，
+       同时其它参战方（同门助战）也没排干净。按 id 全排才对。
+       `def.hostile` 仍然排除：山贼/毒蛇这类敌对生物不做「旁观市民」的惊呼/逃跑反应
+       （它们本来就该打，让它们喊「杀人啦」反而出戏）。 */
+    const involved = atk.concat(def).map(x => x && x.id).filter(Boolean);
+    const witnesses = this.npcsIn(p.room)
+      .filter(n => involved.indexOf(n.id) < 0 && !n.dead && !n.knockedOut && !n.inCombat && !(n.def || {}).hostile);
+    if (!witnesses.length) return [];
+    const personalityMod = require('./personality');
+    const lines = [];
+    for (const w of witnesses) {
+      const r = this.witnessTree(w, personalityMod, foeName, playerIsVictim, victimIsVillain);
+      /* 怯懦：反应树判定为「逃」时**真的挪走**（这是 B7 验收项 B7-3，
+         光打印一句「逃走了」而不挪房间，等于没逃）。 */
+      const per = personalityMod.personalityOf(w);
+      /* ⚠️ 官府目击者「看人下菜」：玩家是受害者 → 制止凶手（下面 witnessTree 那句
+         「你还不放下兵器」）；玩家是凶手 → 那一句台词写着「（你被官府通缉，通缉度 +1）」，
+         **这个 +1 得真的加**。老代码走不到这一支（playerIsVictim 恒 true），
+         所以 +1 从来没实现过 —— 一旦按真实凶手判定，就会出现
+         「字面写着 +1、数字纹丝不动」的谎报，比不写还坏。 */
+      const wtag = String(w.tag || (w.def || {}).tag || '');
+      if (!playerIsVictim && !victimIsVillain
+        && ['constable', 'official', 'escort'].indexOf(wtag) >= 0) {
+        p.wanted = (p.wanted || 0) + 1;
+      }
+      if (per && per.id === 'qienuo') this.fleeNpc(w);
+      /* 侠义/豪爽——分三种情形，**站队必须站对**：
+         ① 玩家被伏击       → 进 attackers，与玩家并肩（原 B7 行为，保留）；
+         ② 玩家打弱者（小叫花/平民）→ 进 defenders，挡在受害者身前跟玩家动手
+                                    —— 主人要的「该帮被打的那个」；
+         ③ 玩家打该打的人（山贼/魔教）→ **谁也不帮，退到一边**。
+            （老代码在这里一律 push 进 attackers = 帮玩家打受害者，
+              正是主人报的「旁边有个 NPC 来帮我而不是帮被打的人」。）
+         挂进 battle 数组，战斗结束时会随 finishCombat 统一清 inCombat，不会漏清。 */
+      else if (per && (per.id === 'xiayi' || per.id === 'haoshuang')) {
+        if (victimIsVillain) {
+          r.text += `${w.name}抱臂退到一旁：「这等货色，早该有人收拾。」`;
+        } else if (this.npcHasMartialArts(w)) {
+          const side = playerIsVictim ? battle.attackers : battle.defenders;
+          if (side.indexOf(w) < 0) {
+            side.push(w);
+            w.inCombat = true;
+            r.text += playerIsVictim
+              ? `${w.name}挺身加入战团，与你并肩迎敌！`
+              : `${w.name}一步跨到${(victim && victim.name) || '那人'}身前，${
+                w.gender === 'female' ? '她' : '他'}的兵刃已出了鞘。`;
+          }
+        } else if (!playerIsVictim && victim) {
+          /* 讲义气但没武力：帮不上手，至少把人护到身后（打人的是你，矛头也对着你） */
+          r.text += `${w.name}把${victim.name}往身后一拉，瞪着你。`;
+        }
+      }
+      /* 目睹险情，心情小幅下滑（幅度小于「目睹惨案」，只是虚惊一场）。
+         除害（玩家打山贼）不算险情，心情不跌 —— 否则打山贼还会惹得满屋人不快。 */
+      if (!victimIsVillain) {
+        const mood = personalityMod.addMood(w, -8);
+        if (mood.tier.name === '万念俱灰') r.text += `（${w.name}吓得失魂落魄）`;
+      }
+      lines.push({ kind: r.kind, text: r.text });
+      this.emit('storyline', { line: { kind: r.kind, text: r.text } });
+    }
+    return lines;
+  }
+
+  /**
+   * 「江湖上该除的害」吗？—— 目击者**站队**要用这个判据。
+   *   玩家打小叫花 → 不是（弱者），侠义之士该管；
+   *   玩家打山贼/魔教/猛兽 → 是，侠义之士不替他出头。
+   * 判据只用**模板常驻标记**（`def.hostile` 是山贼/魔教/毒蛇出生就带的，见 spawnNpc），
+   * 不看本次战斗、不看谁先动手 —— 免得又变成「看错字段导致站队反了」。
+   */
+  isVillainNpc(n) {
+    if (!n) return false;
+    const d = n.def || {};
+    if (d.hostile || n.hostile) return true;
+    const tag = String(n.tag || d.tag || '');
+    if (/匪|盗|贼|寇|魔|恶|凶|淫/.test(tag)) return true;
+    if (typeof d.karma === 'number' && d.karma <= -30) return true;
+    return false;
+  }
+
+  /** 至亲 / 至交目睹挚爱被杀 / 被打倒：崩溃或暴怒，并当场记仇（持久化到 pstate / 门派声望）。 */
+  witnessKinsmanReaction(w, victim, rk, personalityMod) {
+    const p = this.player;
+    const hasMartial = this.npcHasMartialArts(w);
+    const isKin = rk === '亲';
+    /* 致死 vs 击倒：onNpcKilled 不置 knockedOut，onNpcDown 会置；
+       同一帧内该标记能区分「被杀」与「被打倒」，措辞分开才不穿帮。 */
+    const lethal = !victim.knockedOut;
+    // 称呼：按性别推一个更贴肉的叫法（rel 只给了「亲」，不细分夫妻 / 父母）
+    let term;
+    if (isKin) {
+      if (w.gender === 'male' && victim.gender === 'female') term = '爱妻';
+      else if (w.gender === 'female' && victim.gender === 'male') term = '夫君';
+      else term = '至亲';
+    } else {
+      term = victim.gender === 'female' ? '过命的姊妹' : '过命的兄弟';
+    }
+    let text, kind = 'warn';
+    if (isKin) {
+      text = hasMartial
+        ? (lethal
+            ? `${w.name}目眦欲裂，嘶吼一声扑将上来：「狗贼！你杀我${term}，此仇不共戴天！」`
+            : `${w.name}目眦欲裂，挺兵上前：「狗贼！你竟对我${term}下此毒手，我与你不死不休！」`)
+        : (lethal
+            ? `${w.name}扑倒在${victim.name}尸身旁，肝肠寸断，指着你颤声道：「……你这禽兽，我${term}……我记下了。」`
+            : `${w.name}扑到${victim.name}身侧，见${term}生死不知，肝肠寸断，颤声道：「……狗贼，我${term}……我记下了。」`);
+    } else {
+      text = hasMartial
+        ? (lethal
+            ? `${w.name}攥紧兵刃，盯着你沉声道：「${victim.name}是我${term}，此仇，我记下了。」`
+            : `${w.name}攥紧兵刃，盯着你沉声道：「${victim.name}是我${term}，这笔账，我记下了。」`)
+        : (lethal
+            ? `${w.name}脸色惨白，望着${victim.name}的尸首，牙关紧咬：「好……好狠的心。」`
+            : `${w.name}脸色惨白，望着${victim.name}，牙关紧咬：「你……你竟下如此狠手。」`);
+    }
+    // —— 持久惩罚（出戏点③：世界要记得你干的事）——
+    w.hostile = true;                                  // 势同水火：日后不可结拜 / 婚嫁 / 收徒
+    const drop = isKin ? 90 : 45;
+    w.favor = Math.max(-200, (w.favor || 0) - drop);   // 好感暴跌
+    personalityMod.addMood(w, isKin ? -60 : -40);      // 心情重创
+    if (!w.pstate) w.pstate = { trust: 0, revealed: [], hooks: {}, met: false, moodBias: 0, leaked: false };
+    w.pstate.avengers = w.pstate.avengers || [];        // 日后重逢 / 任务可读取（#116 衔接）
+    if (w.pstate.avengers.indexOf(victim.defId) < 0) w.pstate.avengers.push(victim.defId);
+    // 死者、目击者门派对玩家的恶感（江湖声誉受损）
+    const sect = victim.sect || (victim.def || {}).sect;
+    if (sect) p.reputation[sect] = (p.reputation[sect] || 0) - (isKin ? 30 : 15);
+    p.wanted = (p.wanted || 0) + 1;                    // 目击报案，通缉度 +1
+    this.emit('storyline', { line: { kind, text } });
+    this.fireEvent('onKinsmanWitness', { witness: w, victim, relation: rk });
+  }
+
   /** NPC 逃跑：离开当前房间（挪到相邻出口，没有就 despawn） */
   fleeNpc(npc) {
     const room = this.getRoom(npc.room);
@@ -725,6 +1357,362 @@ class World extends EventEmitter {
     const tid = typeof ex === 'string' ? ex : ex.to;
     if (tid && this.data.rooms[tid]) npc.room = tid;
     else delete this.instances.npcs[npc.id];
+  }
+
+  /* ================================================================
+   * 六之二、世界记忆 · 传闻系统（#109，SPRINT-B W1–W4）
+   * 玩家的行为 → 目击 → 生成会走样/扩散/衰减的流言；NPC 用流言里的你表态。
+   * 与 #108 亲属记仇、p.reputation/p.wanted 共同组成「世界记得你」闭环。
+   * ================================================================ */
+
+  /** 生成一个传闻实例。
+   *  opts: { room, who, where, whom, subject='player', about=null, vars={}, seedId }
+   *  目击者判定：同房间非 hostile 非晕倒 NPC 必为目击；loud 时相邻房间 50%（夜×0.5 雨×0.7）。
+   *  目击者数为 0 则不生成（无人看见 = 无人可传，避免「全江湖都知道你在无人区干了什么」）。 */
+  addRumor(seedId, opts) {
+    opts = opts || {};
+    const seed = this.data.rumorSeeds && this.data.rumorSeeds[seedId];
+    if (!seed) return null;
+    const room = this.getRoom(opts.room);
+    if (!room) return null;
+    const originRegion = room.region || '_wild';
+
+    const witnesses = [];
+    for (const w of this.npcsIn(opts.room)) {
+      if (w.dead || (w.def || {}).hostile || w.knockedOut) continue;
+      witnesses.push(w.defId);
+    }
+    if (seed.loud) {
+      let prob = 0.5;
+      if (this.isNight()) prob *= 0.5;
+      if (this.weather === '雨') prob *= 0.7;
+      for (const dir of Object.keys(room.exits || {})) {
+        const ex = room.exits[dir];
+        const tid = typeof ex === 'string' ? ex : ex.to;
+        if (!tid || !this.data.rooms[tid]) continue;
+        for (const n of this.npcsIn(tid)) {
+          if (n.dead || (n.def || {}).hostile || n.knockedOut) continue;
+          if (this.rng.chance(prob)) witnesses.push(n.defId);
+        }
+      }
+    }
+    if (!witnesses.length && !opts.silent) return null; // 无人目击，传闻不产生（世界事件可 opts.silent 免目击）
+
+    const uidv = 'r_' + String(this.rumorSeq++).padStart(5, '0');
+    const bornDay = Math.floor(this.clockMinutes / 1440);
+    const spread = {}; spread[originRegion] = seed.heat0;
+    const rumor = {
+      uid: uidv, seedId, subject: opts.subject || 'player', about: opts.about || null,
+      truth: 100, originRoom: opts.room, originRegion,
+      bornDay, heat: seed.heat0, heat0: seed.heat0,
+      spread, witnesses: Array.from(new Set(witnesses)),
+      hopCount: 0, vars: opts.vars || {}, marks: seed.marks || [],
+      polarity: seed.polarity, weight: seed.weight,
+    };
+    this.applyRumorReputation(seed, room, opts.about, opts.subject);
+    this.rumors.push(rumor);
+    if (this.rumors.length > 200) {
+      this.rumors.sort((a, b) => a.bornDay - b.bornDay);
+      this.rumors = this.rumors.slice(this.rumors.length - 200);
+    }
+    this.fireEvent('onRumorBorn', { rumor });
+    return rumor;
+  }
+
+  /** 传闻实例 → 声誉结算（一次性，不持续结算避免重复计分）。
+   *  Δrep = polarity × weight × (heat0/100)；key：涉及门派弟子→该门派名；
+   *  发生地对应某门派地盘(sect.region/homeRegion)→该门派名；否则 '*'（全江湖声望）。 */
+  applyRumorReputation(seed, room, about, subject) {
+    const p = this.player;
+    if (!p) return;
+    /* ⚠️ R4（design/27 §2.6）：世界传闻（天灾/械斗…）subject 不是玩家，
+       绝不能把 Δrep 记到玩家头上。这里加 subject 守卫（缺省 subject='player' 不变）。 */
+    if ((subject || 'player') !== 'player') return;
+    if (!p.reputation) p.reputation = {};
+    const drep = seed.polarity * seed.weight * (seed.heat0 / 100);
+    let key = '*';
+    const aboutDef = about && this.data.npcs[about];
+    if (aboutDef && aboutDef.sect) key = aboutDef.sect;
+    else if (room && room.region) {
+      for (const sid of Object.keys(this.data.sects || {})) {
+        const sc = this.data.sects[sid];
+        if (sc && ((sc.region || sc.homeRegion) === room.region)) { key = sid; break; }
+      }
+    }
+    p.reputation[key] = (p.reputation[key] || 0) + drep;
+  }
+
+  /** 每日结算：热度衰减 + 区域扩散/衰减 + 走样 + 消亡 + 地域知名度累加。
+   *  挂在 advanceTime 跨日时调用（onDayTick 内部点）。 */
+  dailyRumorTick() {
+    const day = Math.floor(this.clockMinutes / 1440);
+    const dead = [];
+    for (const r of this.rumors) {
+      const seed = this.data.rumorSeeds && this.data.rumorSeeds[r.seedId];
+      const tau = (seed && seed.tauDays) || 6;
+      const ttl = (seed && seed.ttlDays) || 20;
+      const dt = day - r.bornDay;
+      r.heat = Math.round(r.heat0 * Math.exp(-dt / tau));
+      /* 本地遗忘基线：每个仍有强度的 region 衰减后的值（>0.5 才保留）。
+         ⚠️ 必须先算基线再累加增益——否则 `next[rg]=s` 直接赋值会把邻居汇入的增益覆盖掉，
+         邻区永远收不到扩散。 */
+      const base = {};
+      for (const rg of Object.keys(r.spread)) {
+        const s = r.spread[rg] * Math.exp(-1 / tau);
+        if (s > 0.5) base[rg] = s;
+      }
+      const next = Object.assign({}, base);
+      for (const rg of Object.keys(base)) {
+        const k = (this.kFlow[rg] !== undefined) ? this.kFlow[rg] : 0.15;
+        const adj = this.regionAdj[rg] || {};
+        for (const nb of Object.keys(adj)) {
+          const gain = base[rg] * k * 0.35;
+          if (gain <= 0.5) continue;
+          next[nb] = Math.min(100, (next[nb] || 0) + gain);
+          // 走样：每扩散一跳 truth 偏移（±8），hopCount+1
+          r.truth = clamp(r.truth + Math.round((this.rng.next() * 16) - 8), 0, 100);
+          r.hopCount++;
+        }
+      }
+      r.spread = next;
+      const maxS = Object.keys(r.spread).length ? Math.max.apply(null, Object.values(r.spread)) : 0;
+      if (maxS < 5 || dt > ttl) { dead.push(r.uid); continue; }
+      // 地域知名度（fame）：在仍有显著强度的 region 累加一次，钳制 0~100
+      const p = this.player;
+      if (p) {
+        p.fame = p.fame || {};
+        for (const rg of Object.keys(r.spread)) {
+          if (r.spread[rg] > 5) {
+            p.fame[rg] = clamp((p.fame[rg] || 0) + 0.1 * (r.spread[rg] / 100) * (r.heat0 / 100) * 10, 0, 100);
+          }
+        }
+      }
+    }
+    if (dead.length) this.rumors = this.rumors.filter(r => dead.indexOf(r.uid) < 0);
+  }
+
+  /** 按 truth 档位渲染传闻文本（实时，不固化——truth 跨档才换说法，这正是「走样」）。 */
+  fillRumorText(rumor) {
+    const seed = this.data.rumorSeeds && this.data.rumorSeeds[rumor.seedId];
+    if (!seed) return '';
+    const tier = rumor.truth >= 70 ? 'true' : (rumor.truth >= 40 ? 'half' : 'false');
+    let t = (seed.texts[tier] || seed.texts.true || '');
+    const v = rumor.vars || {};
+    t = t.replace(/\{who\}/g, v.who || '有人').replace(/\{where\}/g, v.where || '某处').replace(/\{whom\}/g, v.whom || '一个人');
+    return t;
+  }
+
+  /** 玩家在某 region 打听：返回活跃且在该区有强度的传闻（最多 limit 条）。
+   *  keyword 非空时按 vars(who/whom) 与 marks 过滤。 */
+  listenRumors(region, keyword, limit) {
+    limit = limit || 3;
+    const list = [];
+    for (const r of this.rumors) {
+      const s = r.spread[region] || 0;
+      if (s < 1) continue;
+      if (keyword) {
+        const v = r.vars || {};
+        const hit = (v.who && v.who.indexOf(keyword) >= 0)
+          || (v.whom && v.whom.indexOf(keyword) >= 0)
+          || (r.marks || []).indexOf(keyword) >= 0;
+        if (!hit) continue;
+      }
+      list.push(r);
+    }
+    list.sort((a, b) => (b.heat * (b.spread[region] || 0)) - (a.heat * (a.spread[region] || 0)));
+    return list.slice(0, limit);
+  }
+
+  /* ================================================================
+   * 六之三、世界动态 W6/W7（#109 后续块 · design/27 落地）
+   *  W6 势力消长：月度结算（day % 30 === 0），运行值 factionState（模板 data.factions）
+   *  W7 节庆日历：day % 120 命中 data.calendar.festivals
+   *  ⚠️ W5 事件库走数据（70_world.json → worldEvents），本块只做「算」与「写 p.vars」，
+   *     W5 的 cond 只读 p.vars（design/25 §10.1 契约：#116/W6 只写、W5 只读）。
+   * ================================================================ */
+
+  /** 从 data.factions 建运行值（模板→运行值分离；deserialize 会覆盖回存档值）。 */
+  initWorldDynamics() {
+    const src = this.data.factions || {};
+    const fs = {};
+    for (const id of Object.keys(src)) {
+      const f = src[id] || {};
+      fs[id] = {
+        id, name: f.name || id, kind: f.kind || '门派', align: f.align || '中立',
+        homeRegion: f.homeRegion || null,
+        power: typeof f.power === 'number' ? f.power : 50,
+        treasury: typeof f.treasury === 'number' ? f.treasury : 1000,
+        territories: (f.territories || []).slice(),
+        mood: f.mood || '守成',
+      };
+    }
+    /* 关系初值（design/27 §3.1）：正道↔正道 +40 / 正道↔魔道 −60 / 魔道↔魔道 −20；
+       ↔朝廷：正道 +20、魔道 −50；gang（商会）与所有门派 +10。对称矩阵，存上三角即可。 */
+    const rel = {};
+    const ids = Object.keys(fs);
+    const pair = (a, b) => (a < b ? a + '|' + b : b + '|' + a);
+    const base = (a, b) => {
+      const A = fs[a], B = fs[b];
+      if (A.kind === '商会' || B.kind === '商会') return 10;
+      /* 门派数据的阵营字段是 正道 / 中立 / 邪道（30_sects.json 实测）；
+         设计稿写「魔道」→ 这里把 邪道 归一到 魔道 再相比。 */
+      const nm = (x) => (x === '邪道' ? '魔道' : x);
+      const x = nm(A.align), y = nm(B.align);
+      if (x === '正道' && y === '正道') return 40;
+      if (x === '魔道' && y === '魔道') return -20;
+      if ((x === '正道' && y === '魔道') || (x === '魔道' && y === '正道')) return -60;
+      if (y === '官府') return x === '正道' ? 20 : (x === '魔道' ? -50 : 0);
+      if (x === '官府') return y === '正道' ? 20 : (y === '魔道' ? -50 : 0);
+      return 0;
+    };
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) rel[pair(ids[i], ids[j])] = base(ids[i], ids[j]);
+    }
+    this.factionState = { factions: fs, relations: rel, lastMonth: null };
+  }
+
+  /** 该 region 是否属于某势力地盘；返回势力 id（先看 territories，再看 homeRegion）。 */
+  factionOfRegion(regionId) {
+    const st = this.factionState;
+    if (!st || !regionId) return null;
+    for (const id of Object.keys(st.factions)) {
+      if ((st.factions[id].territories || []).indexOf(regionId) >= 0) return id;
+    }
+    for (const id of Object.keys(st.factions)) {
+      if (st.factions[id].homeRegion === regionId) return id;
+    }
+    return null;
+  }
+
+  /** 势力关系值（对称矩阵，缺省 0）。 */
+  factionRel(a, b) {
+    const st = this.factionState;
+    if (!st) return 0;
+    const k = a < b ? a + '|' + b : b + '|' + a;
+    return st.relations[k] === undefined ? 0 : st.relations[k];
+  }
+
+  /** 门派弟子数（模板口径：data.npcs 里 def.sect === id）。 */
+  countSectDisciples(sectId) {
+    let n = 0;
+    for (const id of Object.keys(this.data.npcs || {})) {
+      const d = this.data.npcs[id];
+      if (d && d.sect === sectId) n++;
+    }
+    return n;
+  }
+
+  /** 每日世界动态（跨日时由 _advanceTime 调用）：W7 节庆 + W6 月度 + 写 p.vars。 */
+  worldDynamics(day) {
+    if (!this.factionState) this.initWorldDynamics();
+    const p = this.player;
+    if (!p) return;
+    this.runCalendar(day);
+    if (day > 0 && day % 30 === 0) this.runFactionMonth(day);
+    this.syncFactionVars();
+  }
+
+  /** 一年多少天（data.calendar.yearDays；缺省 120）。⚠️ 一律按数字校验后用 ——
+   *  万一将来某条合并路径又把原语揉成对象，这里不会静默变成 NaN。 */
+  yearDays() {
+    const y = this.data.calendar && this.data.calendar.yearDays;
+    return (typeof y === 'number' && y > 0) ? y : 120;
+  }
+
+  /** W7：节庆日历（day % yearDays 命中 data.calendar.festivals → 执行其 effects；
+   *  另按 calendar.cycles 的 periodDays/offset/span 判周期大事）。 */
+  runCalendar(day) {
+    const cal = this.data.calendar || {};
+    const yd = this.yearDays();
+    const d = ((day % yd) + yd) % yd;
+    const ctx = { player: this.player, world: this };
+    const push = (effects) => { for (const l of evalEffects(effects || [], ctx)) this.emit('storyline', { line: l }); };
+    this.calendarState = this.calendarState || {};
+    const fest = (cal.festivals || []).find(f => f.day === d);
+    if (fest) {
+      this.calendarState.lastFestival = { id: fest.id, name: fest.name, day };
+      push(fest.effects);
+    }
+    for (const cy of cal.cycles || []) {
+      const per = cy.periodDays || 0;
+      if (!per) continue;
+      const off = cy.offset || 0;
+      const span = cy.span || 1;
+      if ((day % per) >= off && (day % per) < (off + span)) {
+        this.calendarState.lastCycle = { id: cy.id, name: cy.name, day };
+        push(cy.effects);
+      }
+    }
+  }
+
+  /** 今日是否节庆（供 look / talk 渲染用；不落盘，按 day 现算）。 */
+  festivalToday() {
+    const cal = this.data.calendar || {};
+    const yd = this.yearDays();
+    const d = ((Math.floor(this.clockMinutes / 1440) % yd) + yd) % yd;
+    return (cal.festivals || []).find(f => f.day === d) || null;
+  }
+
+  /** W6：月度结算（design/27 §3.2 重标定公式）。 */
+  runFactionMonth(day) {
+    const st = this.factionState;
+    const byReg = this._roomsByRegion || {};
+    for (const id of Object.keys(st.factions)) {
+      const f = st.factions[id];
+      let income = 0;
+      for (const rg of f.territories) {
+        const rooms = (byReg[rg] || []).length;
+        const tax = 1 + Math.floor(rooms / 12);          // 实测税基（R6 重标定）
+        income += tax * (40 + f.power) / 100;
+      }
+      const disciples = this.countSectDisciples(id);
+      const extra = (f.mood === '进取') ? 4 : 0;
+      const E = disciples * 3 + extra;
+      const dp = clamp((income - E) * 0.6, -4, 4);        // 单月最多 ±4
+      f.power = clamp(Math.round((f.power + dp) * 10) / 10, 0, 100);
+      f.treasury = Math.round(f.treasury + (income - E) * 20);
+      /* mood 按 power / treasury 迁移（design/27 §3.3 第 4 条：弟子台词按 mood 换组） */
+      if (f.treasury < 0 || f.power < 25) f.mood = '窘迫';
+      else if (f.power >= 75) f.mood = '进取';
+      else if (f.mood === '窘迫' && f.power >= 40) f.mood = '守成';
+    }
+    /* 关系漂移：Δrel[a][b] = clamp(−0.02×(power_a − power_b), −3, +3) */
+    const ids = Object.keys(st.factions);
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        const a = st.factions[ids[i]], b = st.factions[ids[j]];
+        const k = ids[i] + '|' + ids[j];
+        const drift = clamp(-0.02 * (a.power - b.power), -3, 3);
+        st.relations[k] = clamp((st.relations[k] || 0) + drift, -100, 100);
+      }
+    }
+    st.lastMonth = day;
+  }
+
+  /** 把势力状态写进 p.vars（W5 的 cond 只读 p.vars —— design/25 §10.1）。 */
+  syncFactionVars() {
+    const p = this.player;
+    const st = this.factionState;
+    if (!p || !st) return;
+    if (!p.vars) p.vars = {};
+    let relMin = 0;
+    for (const id of Object.keys(st.factions)) {
+      const f = st.factions[id];
+      p.vars['faction_power_' + id] = Math.round(f.power);
+      p.vars['faction_treasury_' + id] = Math.round(f.treasury);
+      p.vars['faction_mood_' + id] = f.mood;
+    }
+    const ids = Object.keys(st.factions);
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        const v = st.relations[ids[i] + '|' + ids[j]];
+        if (v !== undefined) {
+          p.vars['faction_rel_' + ids[i] + '_' + ids[j]] = v;
+          if (v < relMin) relMin = v;
+        }
+      }
+    }
+    p.vars.faction_rel_all = relMin;   // 「最低的一段关系」（恶名事件读它）
   }
 
   inPlayerParty(npc, battle) {
@@ -961,6 +1949,12 @@ class World extends EventEmitter {
     const room = this.data.rooms[roomId];
     if (!room) return { ok: false, msg: `（不存在房间：${roomId}）` };
     const old = this.data.rooms[ch.room];
+    /* 私域（B/C 层虚拟宅院）：走出去就拆掉并把主人送回原处。
+       挂在 movePlayerTo 是因为所有移动（方向键 / go / 传送）都收敛到这里，
+       是唯一的「离院」出口，不会漏（design/09 §3.3）。
+       ⚠️ 判据是 `_privateHost`（拜访建的），不是 `private` ——
+          后者被家园/主宅/宗门占用，一刀切会删掉玩家自己的房。 */
+    if (old && old._privateHost && old.id !== roomId) this.leaveHouse(old.id);
     ch.room = roomId;
     this.emit('roomchange', { ch, from: old ? old.id : null, to: roomId });
     this.fireEvent('onEnter', { roomId, ch });
@@ -981,11 +1975,31 @@ class World extends EventEmitter {
       const pool = room.encounter.npcs || [];
       if (pool.length) {
         const nid = this.rng.pick(pool);
-        const npc = this.spawnNpc(nid, ch.room, 1);
+        /* B12（主人报：「被毒蛇击败后再回去，毒蛇名旁出现 x2」）：
+           遭遇是**每次进屋独立掷骰**、且从不查「房里是不是已经有一只」。玩家打赢了
+           毒蛇会被 onNpcKilled 清掉（所以平时见不到 x2），可一旦**打输**，毒蛇没死、
+           留在了原地；玩家复活回客栈后再进来，又掷中一次 → 原地再刷一只**活**毒蛇 →
+           房里两条活毒蛇 → 名字旁显示 x2。**计数没错，错的是重复 spawn。**
+           修法：**房里已有活着的同种怪就不再新造，直接拿它再打一场**（re-engage）。
+           —— 既不叠同名，又不丢掉这次遭遇（不像「直接不刷」会让再进屋毫无动静）。
+           ⚠️ 判据用 `npcsIn`（过滤 dead）——倒地/晕厥的实例不参与复用。
+              倒地是玩法的一部分（补刀 / 搜身 / 装袋都靠 downedIn）：
+              地上躺着一条时，再进屋**照常**刷一条活的，倒地实例原样保留、不被删。
+           ⚠️ 只限「同种不叠加」，不消灭遭遇本身：换个物种照刷。 */
+        const existing = this.npcsIn(ch.room).find(n => n.defId === nid) || null;
+        const npc = existing || this.spawnNpc(nid, ch.room, 1);
         if (npc) {
           npc.hostile = true;
           lines.push({ kind: 'warn', text: `【遭遇】${npc.name}拦住去路！` });
-          this.startCombat(ch, npc);
+          /* ★ 批次 2 返工（BLK-1）：这里原来只有 `this.startCombat(ch, npc);` ——
+             **丢弃了返回体**，而目击者反应台词（`lines`）正装在返回体里。
+             后果：主人原话场景「看到我被山贼与毒蛇**袭击**」走的就是这条遭遇战路径
+             （玩家根本没出手，是被伏击），怯懦者会**默默消失**（行为对），
+             但屏幕上**一行台词都没有** —— 观感上等于「还是没反应」。
+             `kill` 路径（commands.js）早就老实接了 `r.lines`，只有这里漏了。
+             所以必须接住返回体并把台词并进本次房间输出，玩家才真能看到。 */
+          const r = this.startCombat(ch, npc, { ambush: true });
+          if (r && Array.isArray(r.lines) && r.lines.length) lines.push(...r.lines);
         }
       }
     }
@@ -1056,7 +2070,18 @@ class World extends EventEmitter {
     }
   }
 
-  startCombat(ch, targetIdOrNpc) {
+  /**
+   * 开一场战斗。
+   * @param ch           发起方（通常就是玩家）
+   * @param targetIdOrNpc 对手（NPC defId / 实例）
+   * @param opts         可选 `{ambush:true}` = **是 NPC 伏击玩家**，不是玩家先动的手。
+   *                     遭遇战（进屋被山贼/毒蛇拦住去路）走这条。
+   *                     为什么非要一个显式标记：`battle.attackers` 按 `startCombat(ch, npc)`
+   *                     的形状永远是 `[ch]`，光看数组分不清「谁先动的手」——
+   *                     而目击者要判的是**该帮谁**（B30/B7：主人报「我主动打人，
+   *                     旁边 NPC 却来帮我，不帮被我打的那个」就是这儿判错的一方）。
+   */
+  startCombat(ch, targetIdOrNpc, opts) {
     let npc = typeof targetIdOrNpc === 'string' ? this.getNpc(targetIdOrNpc) : targetIdOrNpc;
     if (!npc && typeof targetIdOrNpc === 'string' && this.data.npcs[targetIdOrNpc]) {
       npc = this.spawnNpc(targetIdOrNpc, ch.room, 1);
@@ -1070,9 +2095,15 @@ class World extends EventEmitter {
       turn: 0, log: [], over: false, winner: null,
       startedAt: this.clockMinutes,
       target: npc,
+      /* 谁先动的手：true = NPC 伏击（遭遇战），false/缺省 = 玩家发起 */
+      ambush: !!(opts && opts.ambush),
     };
     this.emit('combatstart', { battle: this.battle });
-    return { ok: true, battle: this.battle, npc };
+    /* B7：把目击者反应台词带回给调用方（`kill` 指令会并进本次输出）。
+       没有这一步的话，反应只存在于事件里，玩家在界面上看不到。 */
+    const witnessLines = this._combatWitnessLines || [];
+    this._combatWitnessLines = [];
+    return { ok: true, battle: this.battle, npc, lines: witnessLines };
   }
 
   combatStep(userAction) {
@@ -1108,6 +2139,15 @@ class World extends EventEmitter {
       } else {
         return { lines: [{ kind: 'combat', text: `${sd.name}需要 ${sd.mpCost} 点内力，你内力不足。` }] };
       }
+    }
+    if (userAction && userAction.type === 'defend') {
+      /* B4：战斗界面「防御」快捷键的后端。
+         语义 = 凝神防守一回合：本回合受到的伤害减半。
+         用 battle.guardTurns 挂在**战斗对象**上（不是 player），
+         这样多人群战也只对「这一局」生效，战斗结束自然随 battle 一起丢弃，
+         不会像 bossPhaseIdx 那样漏清（见 finishCombat 的复位清单）。 */
+      this.battle.guardTurns = 1;
+      return { lines: this.stepEnemyOnly([{ kind: 'combat', text: '你沉肩扎马，凝神防守。' }]) };
     }
     if (userAction && userAction.type === 'item') {
       const p = this.player;
@@ -1151,6 +2191,10 @@ class World extends EventEmitter {
       }
     }
     if (enemies.every(e => e.hp <= 0)) { battle.over = true; battle.winner = 'attackers'; }
+    /* B4：防守只保本回合 —— 敌人这一轮打完了，就把 guardTurns 消耗掉。
+       放在 stepEnemyOnly 末尾，是因为三条玩家分支
+       （绝招/防御/use 物品）全都经由它落地，挂在任何一处都会漏。 */
+    if (battle.guardTurns > 0) battle.guardTurns--;
     return lines;
   }
 
@@ -1228,7 +2272,22 @@ class World extends EventEmitter {
   /* ================================================================
    * 七、时间 / 世界心跳
    * ================================================================ */
+  /* ⚠️ 为什么拆成两层：`storyline` 全仓产品侧零消费者（smoke-events 头部注），
+     而 onTick / onDayTick（W5/W7）/ worldTick 抛的台词语义上就是给玩家看的。
+     这里在真正的推进逻辑外面套一层 `_collecting` 开关，
+     让推进期间发出的 storyline 进 _tickLines 缓冲，engine.exec 排进玩家输出。
+     调用签名不变（所有外部调用照旧 `advanceTime(n)`），行为除了「台词终于看得见」外不变。 */
   advanceTime(minutes) {
+    const _was = this._collecting;
+    this._collecting = true;
+    try {
+      return this._advanceTime(minutes);
+    } finally {
+      this._collecting = _was;
+    }
+  }
+
+  _advanceTime(minutes) {
     /* ⚠️ 原来写 `minutes = minutes || 1` —— 显式传 0 会被吞成 1，
        于是「advanceTime(0) 表示不推进」这个语义根本做不到（测试已抓到）。
        只有 undefined/null 才用默认 1。 */
@@ -1236,6 +2295,7 @@ class World extends EventEmitter {
     if (!(minutes > 0)) minutes = 0;
     const p = this.player;
     if (!p) return;
+    const prevDay = Math.floor(this.clockMinutes / 1440);
     this.clockMinutes += minutes;
     p.timeMinutes = this.clockMinutes;
     p.age = 16 + Math.floor(p.timeMinutes / 1440 / 120);
@@ -1273,6 +2333,15 @@ class World extends EventEmitter {
       const kres = require('./kidnap').onTimeTick(this, minutes);
       for (const l of (kres && kres.lines) || []) this.emit('storyline', { line: l });
     } catch (e) { /* 掳人模块挂了不许拖垮时间系统 */ }
+    // 跨日检测：每日结算传闻（衰减/扩散/走样/消亡）+ 世界动态（W6 月度 / W7 节庆）+ onDayTick
+    const newDay = Math.floor(this.clockMinutes / 1440);
+    if (newDay !== prevDay) {
+      this.dailyRumorTick();
+      /* 顺序：传闻结算 → 世界动态（写 p.vars.faction_* / 节庆 flag）→ fireEvent('onDayTick')
+         ⇒ W5 事件读到的势力/节庆状态都是当天的（与 design/27 §1.2 的顺序一致）。 */
+      this.worldDynamics(newDay);
+      this.fireEvent('onDayTick', { day: newDay, prevDay });
+    }
     this.emit('time', { minutes: this.clockMinutes });
   }
 
@@ -1438,10 +2507,38 @@ class World extends EventEmitter {
   }
 
   fireEvent(name, payload) {
-    const handlers = this.data.events[name] || [];
+    /* ⚠️ E2（design/27 §2.1 / B21 同族坑）：
+       以前这里**只读 `this.data.events[name]`**，不读 `this.data.worldEvents`。
+       W5 事件库挂在 `worldEvents.onDayTick` 上 → 少了这一行，新键永远不触发
+       （与 B21「events 被揉成对象→静默失效」完全同族的静默坑）。
+       同时加一道「非数组 handler 兜底」：万一将来某条路径又把数组揉成对象，
+       Object.values(...).filter(有 cond 或 effects) 还能把它救回来。 */
+    let handlers = this.data.events[name]
+      || (this.data.worldEvents && this.data.worldEvents[name])
+      || [];
+    if (!Array.isArray(handlers)) {
+      handlers = Object.values(handlers).filter(x => x && typeof x === 'object' && (x.cond || x.effects));
+    }
+    const day = Math.floor(this.clockMinutes / 1440);
     for (const h of [].concat(handlers)) {
+      if (!h || typeof h !== 'object') continue;
+      /* E7 · 冷却 / 一次性（引擎原本不认这两个字段）：
+         事件可按 id 声明 `cooldownDays`（同事件 N 天内不重复）或 `once`（一辈子一次）。
+         只对「带 id 的处理器」生效 → 基础事件（onKill 等无 id）零影响。 */
+      if (h.id) {
+        /* ⚠️ 用 `!== undefined` 而不是真值判断：day 可能是 0（开局当天），
+           `if (this._evFired[id])` 会把「第 0 天触发过」当成没触发过。 */
+        if (h.once && this._evFired[h.id] !== undefined) continue;
+        const cd = Number(h.cooldownDays) || 0;
+        if (cd > 0 && this._evCooldown[h.id] !== undefined && (day - this._evCooldown[h.id]) < cd) continue;
+      }
       if (h.cond && !evalCond(h.cond, { player: this.player, world: this })) continue;
-      evalEffects(h.effects, { player: this.player, world: this, event: payload }).forEach(l => this.emit('storyline', { line: l }));
+      const fired = evalEffects(h.effects, { player: this.player, world: this, event: payload });
+      if (h.id && fired.length) {
+        this._evCooldown[h.id] = day;
+        if (h.once) this._evFired[h.id] = day;
+      }
+      fired.forEach(l => this.emit('storyline', { line: l }));
     }
     // 功能 Mod 的 onEvent 规则（kind=onEvent, target=事件名）
     for (const r of this.activeRules) {
@@ -1496,11 +2593,28 @@ class World extends EventEmitter {
     this.player = p;
     this.clockMinutes = p.timeMinutes;
     this.buildIndexes();
+    /* 世界动态：开局就把势力状态写进 p.vars（W5 的 cond 读它，第一日就要有值）。 */
+    if (this.factionState) this.syncFactionVars();
     // 起始武学
     for (const s of (meta.startSkills || [])) p.learnSkill(s);
-    // 自动接主线任务（type === '主线'），让「任务」面板开局就有主线可看
+    /* 自动接主线任务（type === '主线'）—— **只接「起手式」那一条**。
+       ⚠️ 原来是「所有 type==='主线' 一律接上」。加进第二幕之后这就坏了：
+         `q_main_sect`（门派之疑，level 30，委托人冲虚道长）也会在开局被塞进任务簿，
+        新角色一进游戏就看见「把半块东厂铜牌带回武当，交给冲虚道长过目」——
+         ① 剧透二幕、② 玩家压根没有那块铜牌（它是第一幕幕末才发的）、
+         ③ 新手引导第 5 步「寻个营生」的「非主线」判定一开局就被点亮
+           （tutorial.js 那句 `some(k => k !== 'q_main_jianghu')`）。
+       （这条隐患 design/17-intro-rewrite.md §5 早就记了「建议重做主线时一并处理」，
+         主人这回以「点任务快捷键弹出来的还是旧主线」把症状报到台面上。）
+       判据用 `giver`：**有委托人的主线必须由那个人当面交给你**，
+       无委托人（= 开场就背在身上的起手式）才自动接。
+       数据侧还可显式关掉：`auto:false`。 */
     for (const qid of Object.keys(this.data.quests || {})) {
-      if (this.data.quests[qid].type === '主线') p.setQuestStage(qid, 0);
+      const q = this.data.quests[qid];
+      if (!q || q.type !== '主线') continue;
+      if (q.giver) continue;
+      if (q.auto === false) continue;
+      p.setQuestStage(qid, 0);
     }
     // 性格/出身加成
     this.applyBirth(cfg, p);
@@ -1582,6 +2696,9 @@ class World extends EventEmitter {
           debt: p.kidnap.debt ? JSON.parse(JSON.stringify(p.kidnap.debt)) : null,
         } : null,
         followers: (p.followers || []).slice(),
+        /* 私域访问记录（#111 Step6）：拜访过谁家、几次。房间本身不入档
+           （进出即建即拆），但「来过」要留着，日后好写「故人」类支线。 */
+        visitedHouses: Object.assign({}, p.visitedHouses || {}),
       },
       /* 玩家买/布置的宅子房间是运行期动态建的，不在 data 里，必须单独存 */
       playerHomes: this.serializePlayerHomes(),
@@ -1597,6 +2714,15 @@ class World extends EventEmitter {
       jail: Object.assign({}, this.jail),
       /* 被掳走卖掉的 NPC 名册（黑市/青楼的货，还原时要重新 spawn） */
       soldSlaves: (this.soldSlaves || []).map(s => JSON.parse(JSON.stringify(s))),
+      /* 世界记忆 · 传闻（#109）：活跃传闻数组 + uid 计数器，必须随档 */
+      rumors: (this.rumors || []).map(r => JSON.parse(JSON.stringify(r))),
+      rumorSeq: this.rumorSeq || 1,
+      /* 世界动态 W5–W7：势力走势 / 节庆 / 事件冷却与一次性记账，必须随档
+         （否则读档后势力走势被重置，而玩家的 fame/传闻都还在 → 世界记忆错位）。 */
+      factionState: this.factionState ? JSON.parse(JSON.stringify(this.factionState)) : null,
+      calendarState: this.calendarState ? JSON.parse(JSON.stringify(this.calendarState)) : null,
+      evCooldown: Object.assign({}, this._evCooldown || {}),
+      evFired: Object.assign({}, this._evFired || {}),
     };
   }
 
@@ -1656,10 +2782,93 @@ class World extends EventEmitter {
     }
   }
 
+  /**
+   * B3 · 给物种挂上专属招式（也是 B8「按画像配功法」的写法模板）。
+   *
+   * 根因：`mob_snake`（毒蛇）的数据里 `skills: { 拳: "basic_fist" }`，
+   * 而 `combat.pickSkill()` 原先只从 `equippedSkills` 的六个槽位里挑，
+   * 于是它一辈子只会「基本拳脚」—— 主人原话「毒蛇的攻击方式是基本拳脚」。
+   *
+   * 修法（**不改 game/data/*.json**，数据文件保持零改动）：
+   *   ① 招式定义写在 `core/bestiary.js`（标准 skill 结构，与 10_skills.json 同构）；
+   *   ② 本方法在数据加载后把它们注入 `data.skills`；
+   *   ③ 给对应 NPC 模板写 `speciesMoves: [招式id…]`（**新增字段，动物专用**）
+   *      并补上 `learned` 学会记录；
+   *   ④ `combat.pickSkill()` 优先在 speciesMoves 里随机取招。
+   *
+   * 为什么用新字段 speciesMoves 而不是占用 equippedSkills 的槽位：
+   *   · 槽位是「装备位」，蛇的「拳」槽已被 basic_fist 占着，硬顶等于**换掉**它，
+   *     改完连基本拳脚都不会了 —— 那是替换，不是修好；
+   *   · 槽位顺序是固定的（剑→刀→棍→鞭→暗器→拳），一条蛇只用得上其中一个，
+   *     装在槽里等于「三招只放得出一招」，B3 要的观感就没了；
+   *   · speciesMoves 与「人物武学」正交，铺到人身上也不会串味
+ *     （B8 给人配功法时走 equippedSkills / learned，两条路互不干扰）。
+   *
+   * ★ 批次 2 返工（BLK-2）：原 `speciesOf()` 第③级「描述里出现关键词就判物种」
+   *   把人类 NPC 判成了蛇类。这里补一道**类型闸门**：只有 mob_/animal_ 前缀的
+   *   模板才允许被注入 speciesMoves，人物模板一律不注入（详见循环内注释）。
+   *
+   * @returns {number} 被挂上专属招式的 NPC 模板数
+   */
+  applySpeciesMoves() {
+    const bestiary = require('./bestiary');
+    this._speciesHumanRejects = 0;   // 被类型闸门拦下的「人物却声明了 species」计数
+    /* ① 注入招式定义。已存在同名id 就跳过（不覆盖 mod 自带的同名招式）。 */
+    for (const list of Object.values(bestiary.SPECIES_MOVES)) {
+      for (const sk of list) {
+        if (!this.data.skills[sk.id]) {
+          this.data.skills[sk.id] = Object.assign({ __source: 'bestiary.js(物种专属招式)' }, sk);
+        }
+      }
+    }
+    /* ② 按物种给 NPC 模板挂 speciesMoves + 补 learned（学会）。 */
+    let patched = 0;
+    /* ★ BLK-2 第二道保险：**只有动物 id 前缀的模板才允许被自动挂招式。**
+       根因是旧 `speciesOf()` 的第③级关键词兜底（/蛇|snake|viper/ 扫 name+desc），
+       把人类 NPC「蓝凤凰 miao_lan」（desc: 手腕上盘着一条碧绿小蛇）判成蛇类，
+       挂上毒牙噬咬/缠身绞杀/信子吐信，**顶掉**了她自己的苗家暗器与冰蚕丝掌，
+       实测她整局只出蛇类招式 —— 玩家可见的严重回归，且因运行时注入每局必现。
+       现在 speciesOf() 已删掉关键词兜底，这里再加一道类型闸门：
+       万一将来有人手滑给人物模板写了 species 字段（或把规则表加宽），
+       **人物模板也拿不到 speciesMoves** —— 双保险，B3 不会以任何形式复发到人身上。 */
+    for (const id of Object.keys(this.data.npcs)) {
+      const def = this.data.npcs[id];
+      const species = bestiary.speciesOf(def);
+      if (!species) continue;                  // 判不出物种 → 原样不动，零影响
+      /* 类型闸门：人物模板（id 非 mob_/animal_ 前缀）一律不注入。
+         这是**守卫**而不是「主要判据」—— 主要判据在 speciesOf() 里。
+         若这里真的拦下了什么，说明有人写了 species= 却忘了过动物闸门，
+         属于数据错误，值得在报告里点名，所以这里记一笔计数。 */
+      if (!bestiary.isAnimalId(id)) { this._speciesHumanRejects++; continue; }
+      const moves = bestiary.SPECIES_MOVES[species] || [];
+      if (!moves.length) continue;
+      def.species = def.species || species;
+      def.learned = def.learned || {};
+      /* 只保留真正注入成功的招式 id（skills 里已存在的同名招式也算成功）。 */
+      const ids = [];
+      for (const sk of moves) {
+        if (!this.data.skills[sk.id]) continue;
+        /* 已学会就只抬熟练度，不覆盖作者定的等级。 */
+        const cur = def.learned[sk.id];
+        def.learned[sk.id] = (cur && typeof cur === 'object')
+          ? { level: Math.max(cur.level || 1, 60) }
+          : { level: 60 };
+        ids.push(sk.id);
+      }
+      if (!ids.length) continue;
+      /* 作者显式写过 speciesMoves 就不覆盖（留给 mod 自己配）。 */
+      if (!Array.isArray(def.speciesMoves) || !def.speciesMoves.length) def.speciesMoves = ids;
+      patched++;
+    }
+    return patched;
+  }
+
   deserialize(save, modList) {
     this.loadBaseData();
     if (modList) this.loadMods(modList);
     this.buildIndexes();
+    this.applySpeciesMoves();
+    this.initWorldDynamics();
     if (!save || !save.player) return null;
     const sd = save.player;
     this.clockMinutes = save.clockMinutes || 540;
@@ -1711,11 +2920,29 @@ class World extends EventEmitter {
         debt: sd.kidnap.debt ? Object.assign({}, sd.kidnap.debt) : null,
       } : { bags: [], slaves: [], guards: [], wageDue: 0, wanted: 0, reports: 0, debt: null },
       followers: (sd.followers || []).slice(),
+      visitedHouses: Object.assign({}, sd.visitedHouses || {}),
     });
     // 恢复装备物品（装备在 equipmentUid 里，物品定义从 data 取）
     p.inventory = (sd.inventory || []).map(i => Object.assign({}, i));
     p.recalc();
     this.player = p;
+    /* B13 连带收尾：旧档可能停在「已被删除的房间」。
+       世界区块重设计（design/19）删掉了 jn_home_02..30 等房；若存档里 player.room 正指向
+       这类不存在的房，读档后玩家会被**软锁**：方向键原地不动、`go <房间名>` 抛
+       「Cannot read properties of undefined (reading 'exits')」、`look` 只显「一片虚无」。
+       兜底：把玩家送回 meta.startRoom，并置一条提示（由 engine.view() 顶在房间描述前，
+       不静默——静默失败正是本项目反复吃亏的地方）。 */
+    if (!this.data.rooms[p.room]) {
+      const from = p.room;
+      const fb = (this.data.meta && this.data.meta.startRoom) || Object.keys(this.data.rooms)[0];
+      p.room = this.data.rooms[fb] ? fb : Object.keys(this.data.rooms)[0];
+      this._migrateNotice =
+        '（你原先所在的地方已不存于世间，恍惚间你竟又回到了' +
+        ((this.data.rooms[p.room] || {}).name || '起点') + '。）';
+      p.log = Array.isArray(p.log) ? p.log : [];
+      p.log.push({ kind: 'sys', text: this._migrateNotice });
+      this._roomMigrated = { from: from, to: p.room };
+    }
     /* 重建玩家买的宅子房间（运行期动态建、不在 data 里） */
     this.restorePlayerHomes(save.playerHomes);
     this.reviveInstances(save.instances);
@@ -1727,6 +2954,15 @@ class World extends EventEmitter {
     this.deadNpcs = Object.assign({}, save.deadNpcs || {});
     this.jail = Object.assign({}, save.jail || {});
     this.soldSlaves = (save.soldSlaves || []).map(s => Object.assign({}, s));
+    /* 世界记忆 · 传闻（#109）：恢复活跃传闻 + uid 计数器（fame 在 p.fame 里随玩家恢复） */
+    this.rumors = (save.rumors || []).map(r => Object.assign({}, r));
+    this.rumorSeq = save.rumorSeq || 1;
+    /* 世界动态 W5–W7：势力走势 / 节庆 / 事件记账随档恢复（存档缺失则用 initWorldDynamics 的模板值）。 */
+    if (save.factionState && save.factionState.factions) this.factionState = save.factionState;
+    if (save.calendarState) this.calendarState = save.calendarState;
+    this._evCooldown = Object.assign({}, save.evCooldown || {});
+    this._evFired = Object.assign({}, save.evFired || {});
+    this.syncFactionVars();
     this.emit('loaded', {});
     return p;
   }

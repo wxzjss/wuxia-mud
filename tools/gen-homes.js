@@ -25,6 +25,15 @@ const npcDoc = JSON.parse(fs.readFileSync(NPC_FILE, 'utf8'));
 const rooms = mapDoc.rooms;
 const npcs = npcDoc.npcs;
 
+/* ⚠️ B13 守卫（design/19-map-rebalance.md R4）：本脚本会写 50_map.json（加 `hm_*` 私宅与巷道）。
+ * B13 已重排世界区块并手工校正过严格反向边，重跑本脚本会扰动成品数据。
+ * 确需重建：FORCE_GEN_HOMES=1 node tools/gen-homes.js。 */
+if (process.env.FORCE_GEN_HOMES !== '1' && ['ly_home_01', 'many_ruin', 'secret_cage'].some(id => rooms[id])) {
+  console.error('[gen-homes] 检测到地图已是 B13 世界区块重设计后的版本，拒绝在成品数据上运行。');
+  console.error('          如确需重建：FORCE_GEN_HOMES=1 node tools/gen-homes.js（会扰动 B13 手改）。');
+  process.exit(2);
+}
+
 /* ---------- 可复现随机 ---------- */
 function mulberry32(a) {
   return function () {

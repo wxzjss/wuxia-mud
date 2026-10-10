@@ -31,6 +31,19 @@ const pick = a => a[Math.floor(rng() * a.length)];
 const doc = JSON.parse(fs.readFileSync(MAP_FILE, 'utf8'));
 const rooms = doc.rooms;
 
+/* ⚠️ B13 守卫（design/19-map-rebalance.md R4）：
+ * 本脚本会批量生成江南填充宅院 `jn_home_01..30`（见下方 RESIDENT_NAMES / MORE_HOMES 两处循环）。
+ * B13 已把这 29 座填充房删除/迁往他城，**重跑本脚本会把它们全部「复活」并覆盖手改**。
+ * 故加硬守卫：检测到已重设计的地图即拒绝运行。
+ * 确需在地图基线上重建，请显式 `FORCE_GEN_MAP=1 node tools/gen-map.js` 并自行承担覆盖后果。 */
+const B13_SENTINELS = ['ly_home_01', 'many_ruin', 'secret_cage', 'gs_home_01'];
+if (process.env.FORCE_GEN_MAP !== '1' && B13_SENTINELS.some(id => rooms[id])) {
+  console.error('[gen-map] 检测到地图已是 B13 世界区块重设计后的版本（含迁建宅 / 补建秘境房）。');
+  console.error('          本脚本会重新生成 jn_home_* 填充宅院，禁止在成品数据上运行。');
+  console.error('          如确需重建基线：FORCE_GEN_MAP=1 node tools/gen-map.js（会覆盖 B13 手改）。');
+  process.exit(2);
+}
+
 /* ---------- 新区域 ---------- */
 const NEW_REGIONS = {
   yamen: { name: '衙门府", '.replace('", ', ''), color: '#8a6a2a' },
