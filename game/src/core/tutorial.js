@@ -287,6 +287,23 @@ const INTRO_HANDOFF =
   + '你还没开口，他先说话了：「坐下。听我讲两句。」</p>';
 
 const INTRO_VARIANTS = {
+  /* 中立楔子（主人 2026-10-11）：
+     「mod 出身或不选出身的中立剧情 —— 玩家不再是强绑定正派或反派，
+       而是一种中立视角下的剧情」。
+     没选出身、或选了 mod 自带出身（birth 不在官方表里）的人走这一条。
+     ⚠️ 键名用 `_neutral`（下划线开头）是为了跟「出身 id」区分开，
+       别让哪个 mod 的出身 id 正好叫 neutral 把它顶掉。 */
+  _neutral: {
+    title: '【楔子】没有名字的那一个',
+    handoff: true,
+    body:
+      '<p class="intro-p">你不是谁家的孩子。也没有谁在山那头等你的信。</p>'
+      + '<p class="intro-p">庙堂的账上没你这一笔，江湖的名册里也没有你这一页。'
+      + '这倒有一样好处：谁都不必提防你，谁都可以跟你做一桩买卖。</p>'
+      + '<p class="intro-p">走这条道的人，最后站哪一边，是做出来的，不是生出来的。</p>'
+      + '<p class="intro-p">道口有棵老槐树，树底下支着个茶摊。你身上那点东西，'
+      + '够走到那儿，也够坐下来喝一碗。</p>',
+  },
   /* 楼里新来的（主人 2026-10-11）：女身，开局就被卖进醉春楼，牌子还没挂。
      这一版**不接茶摊那句收束**（她人就在楼里）—— 见 introFor 里的 handoff:false。 */
   brothel_sold: {
@@ -530,7 +547,12 @@ function introFor(player, tutorialFlags) {
     : (typeof flags.has === 'function' && flags.has('seen_intro'));
   if (shown) return { show: false, title: '', body: '' };
 
-  const picked = INTRO_VARIANTS[(player && player.birth)] || INTRO_VARIANTS.orphan;
+  /* 楔子按**出身**挑（主人 2026-10-11：「不同出身对应不同主线剧情别忘了」）。
+     没选出身、或 mod 自带出身（id 不在官方表里）→ 走中立楔子。
+     ⚠️ 原来是 `|| INTRO_VARIANTS.orphan` —— 那等于「没出身的人 = 孤儿出身」，
+        把中立那条路吞了。 */
+  const _vb = player && player.birth;
+  const picked = (_vb && INTRO_VARIANTS[_vb]) || INTRO_VARIANTS._neutral;
   /* 「楼里新来的」不走茶摊那条收束 —— 她人就在楼里，老汉那碗茶轮不到她喝。
      各版的收束本来就不该硬凑成同一句（这也是当初把 handoff 抽出来的本意：
      抽出来是为了不重复，不是为了强求一致）。 */

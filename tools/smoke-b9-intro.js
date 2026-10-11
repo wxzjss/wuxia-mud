@@ -90,7 +90,10 @@ let ROOM = null, META = null, BIRTH_IDS = null;
  * ================================================================ */
 section('① 取版矩阵：每个身份一版（真实路径 GameEngine → view().intro）');
 {
-  const FALLBACK = '【楔子】一双破草鞋';   // orphan 版，也是回落版
+  /* 口径变更（主人 2026-10-11）：「mod 出身或不选出身的中立剧情」——
+   没出身 / 出身 id 不在官方表里（mod 自带）的人，走**中立楔子**，
+   不再回落成「孤儿出身」那一版（那等于把中立这条路吞了）。 */
+  const FALLBACK = '【楔子】没有名字的那一个';   // 中立版，也是回落版
 
   /* A. 真实引擎路径：逐个身份起局，读 view().intro */
   const titles = {};
@@ -116,11 +119,11 @@ section('① 取版矩阵：每个身份一版（真实路径 GameEngine → vie
     new Set(BIRTH_IDS.map(id => intro(id).body)).size, BIRTH_IDS.length);
 
   /* D. 缺失 / 未知 / 不传 → 回落 orphan 版 */
-  eq('① birth 缺失(undefined) → 回落版', intro(undefined).title, FALLBACK);
-  eq('① birth 缺失(null) → 回落版', intro(null).title, FALLBACK);
-  eq('① birth 未知值("nonsense") → 回落版', intro('nonsense').title, FALLBACK);
-  eq('① 未知 birth 走真实引擎 → 回落版', boot('nonsense').view().intro.title, FALLBACK, 'boot("nonsense")');
-  eq('① 不传 birth 走真实引擎 → 回落版', boot(undefined).view().intro.title, FALLBACK);
+  eq('① birth 缺失(undefined) → 中立版', intro(undefined).title, FALLBACK);
+  eq('① birth 缺失(null) → 中立版', intro(null).title, FALLBACK);
+  eq('① birth 未知值("nonsense") → 中立版', intro('nonsense').title, FALLBACK);
+  eq('① 未知 birth 走真实引擎 → 中立版', boot('nonsense').view().intro.title, FALLBACK, 'boot("nonsense")');
+  eq('① 不传 birth 走真实引擎 → 中立版', boot(undefined).view().intro.title, FALLBACK);
 
   /* E. 每个身份的楔子都要有「往哪去」的方向感（不是十三份同一个模板换名词） */
   const noDir = [];
