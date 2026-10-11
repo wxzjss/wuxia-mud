@@ -1352,6 +1352,141 @@
         ]
       }
     },
+    "cy_xy_patrol_1": {
+      "id": "cy_xy_patrol_1",
+      "name": "屠捕快",
+      "gender": "male",
+      "tag": "constable",
+      "title": "巡街捕快",
+      "room": "xiangyang_street",
+      "home": "house:cy_xy_patrol_1",
+      "personality": "xiayi",
+      "desc": "腰上挂着铁尺，走路带风，眼睛扫得很勤。",
+      "talk": [
+        "站住，哪儿来的？",
+        "没事别在街上晃。"
+      ],
+      "age": 39,
+      "likes": [
+        "flower"
+      ],
+      "level": 12,
+      "hp": 162,
+      "atk": 35,
+      "def": 22,
+      "dodge": 11,
+      "speed": 13,
+      "money": 226,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 30,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_street",
+        "night": "xiangyang_gate"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城当差的捕快，案子归他管，麻烦也归他管",
+        "origin": "原是街上的闲汉，被拉去做线人，后来补了差。",
+        "now": "手上压着一桩案子，上头催得紧，线索却断在半路。",
+        "want": "在衙门里熬到一个不必看人脸色的位置",
+        "fear": "怕办错案子冤枉了人",
+        "voice": {
+          "tone": "正色，不平的事要管",
+          "catchphrase": "这案子，难。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在街口站着，眼睛扫过每一个走过的人"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "官"
+        ]
+      }
+    },
+    "cy_xy_patrol_2": {
+      "id": "cy_xy_patrol_2",
+      "name": "戚捕头",
+      "gender": "male",
+      "tag": "official",
+      "title": "襄阳府捕头",
+      "room": "xiangyang_market",
+      "home": "house:cy_xy_patrol_2",
+      "personality": "yinzhi",
+      "desc": "说话前先看你一眼，像在心里过了一遍章程。",
+      "talk": [
+        "照着规矩来。",
+        "文书压着，急不得。"
+      ],
+      "age": 44,
+      "likes": [
+        "silver"
+      ],
+      "level": 13,
+      "hp": 115,
+      "atk": 14,
+      "def": 11,
+      "dodge": 14,
+      "speed": 16,
+      "money": 103,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 51,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_market",
+        "night": "xiangyang_gate"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城衙门里的书办，案上的文书一摞压一摞",
+        "origin": "接了他爹的缺，公门里的门道他从小就学。",
+        "now": "上头的公文压了三天，他还没敢落笔。",
+        "want": "把那些旧账从册子上抹清楚",
+        "fear": "怕上面出事牵连到自己",
+        "voice": {
+          "tone": "阴沉，话都想过才说",
+          "catchphrase": "这文书，早该结了。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "伏在案上写字，写完吹一吹墨"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "官",
+          "书"
+        ]
+      }
+    },
     "cy_ly_gate_1": {
       "id": "cy_ly_gate_1",
       "name": "柏文远",
@@ -1989,7 +2124,7 @@
       },
       "schedule": {
         "day": "luoyang_tavern_up",
-        "night": "luoyang_tavern_up"
+        "night": "luoyang_gate"
       },
       "tier": "B",
       "district": "luoyang",
@@ -2698,6 +2833,141 @@
         },
         "marks": [
           "武"
+        ]
+      }
+    },
+    "cy_ly_patrol_1": {
+      "id": "cy_ly_patrol_1",
+      "name": "窦捕快",
+      "gender": "male",
+      "tag": "constable",
+      "title": "巡街捕快",
+      "room": "luoyang_street",
+      "home": "house:cy_ly_patrol_1",
+      "personality": "xiayi",
+      "desc": "腰上挂着铁尺，走路带风，眼睛扫得很勤。",
+      "talk": [
+        "站住，哪儿来的？",
+        "没事别在街上晃。"
+      ],
+      "age": 59,
+      "likes": [
+        "tea"
+      ],
+      "level": 12,
+      "hp": 158,
+      "atk": 21,
+      "def": 10,
+      "dodge": 7,
+      "speed": 13,
+      "money": 42,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 66,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_street",
+        "night": "luoyang_gate"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城当差的捕快，案子归他管，麻烦也归他管",
+        "origin": "原是街上的闲汉，被拉去做线人，后来补了差。",
+        "now": "手上压着一桩案子，上头催得紧，线索却断在半路。",
+        "want": "在衙门里熬到一个不必看人脸色的位置",
+        "fear": "怕办错案子冤枉了人",
+        "voice": {
+          "tone": "正色，不平的事要管",
+          "catchphrase": "这案子，难。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在街口站着，眼睛扫过每一个走过的人"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "官"
+        ]
+      }
+    },
+    "cy_ly_patrol_2": {
+      "id": "cy_ly_patrol_2",
+      "name": "乔捕头",
+      "gender": "male",
+      "tag": "official",
+      "title": "洛阳府捕头",
+      "room": "luoyang_market",
+      "home": "house:cy_ly_patrol_2",
+      "personality": "yinzhi",
+      "desc": "案上那叠文书压得整整齐齐，人不离座。",
+      "talk": [
+        "文书压着，急不得。",
+        "照着规矩来。"
+      ],
+      "age": 36,
+      "likes": [
+        "silver"
+      ],
+      "level": 17,
+      "hp": 103,
+      "atk": 18,
+      "def": 15,
+      "dodge": 14,
+      "speed": 12,
+      "money": 59,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 63,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_market",
+        "night": "luoyang_gate"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城公门里管文书的，笔比刀还快",
+        "origin": "读书没读出来，考了个书办的位置，一坐十几年。",
+        "now": "有一桩旧案要重提，他手上的册子对不上。",
+        "want": "升一级，或者至少不出错",
+        "fear": "怕留一份见不得光的档在手里",
+        "voice": {
+          "tone": "阴沉，话都想过才说",
+          "catchphrase": "这个……得照着规矩来。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "伏在案上写字，写完吹一吹墨"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "官",
+          "书"
         ]
       }
     },
@@ -3718,6 +3988,141 @@
         ]
       }
     },
+    "cy_cd_patrol_1": {
+      "id": "cy_cd_patrol_1",
+      "name": "米捕快",
+      "gender": "male",
+      "tag": "constable",
+      "title": "巡街捕快",
+      "room": "chengdu_street",
+      "home": "house:cy_cd_patrol_1",
+      "personality": "xiayi",
+      "desc": "脸上没什么表情，看人的时候多停半息。",
+      "talk": [
+        "站住，哪儿来的？",
+        "没事别在街上晃。"
+      ],
+      "age": 55,
+      "likes": [
+        "tea"
+      ],
+      "level": 12,
+      "hp": 170,
+      "atk": 17,
+      "def": 22,
+      "dodge": 7,
+      "speed": 13,
+      "money": 98,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 22,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_street",
+        "night": "chengdu_gate"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府当差的捕快，案子归他管，麻烦也归他管",
+        "origin": "原是街上的闲汉，被拉去做线人，后来补了差。",
+        "now": "手上压着一桩案子，上头催得紧，线索却断在半路。",
+        "want": "在衙门里熬到一个不必看人脸色的位置",
+        "fear": "怕办错案子冤枉了人",
+        "voice": {
+          "tone": "正色，不平的事要管",
+          "catchphrase": "这案子，难。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在街口站着，眼睛扫过每一个走过的人"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "官"
+        ]
+      }
+    },
+    "cy_cd_patrol_2": {
+      "id": "cy_cd_patrol_2",
+      "name": "霍捕头",
+      "gender": "male",
+      "tag": "official",
+      "title": "成都府捕头",
+      "room": "chengdu_market",
+      "home": "house:cy_cd_patrol_2",
+      "personality": "mune",
+      "desc": "说话前先看你一眼，像在心里过了一遍章程。",
+      "talk": [
+        "照着规矩来。",
+        "文书压着，急不得。"
+      ],
+      "age": 32,
+      "likes": [
+        "jade"
+      ],
+      "level": 13,
+      "hp": 163,
+      "atk": 28,
+      "def": 11,
+      "dodge": 6,
+      "speed": 16,
+      "money": 183,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 11,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_market",
+        "night": "chengdu_gate"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府衙门里的书办，案上的文书一摞压一摞",
+        "origin": "接了他爹的缺，公门里的门道他从小就学。",
+        "now": "上头的公文压了三天，他还没敢落笔。",
+        "want": "把那些旧账从册子上抹清楚",
+        "fear": "怕上面出事牵连到自己",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "这文书，早该结了。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "伏在案上写字，写完吹一吹墨"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "官",
+          "书"
+        ]
+      }
+    },
     "cy_ca_gate_1": {
       "id": "cy_ca_gate_1",
       "name": "卫擎",
@@ -3886,7 +4291,7 @@
       },
       "schedule": {
         "day": "changan_street",
-        "night": "changan_street"
+        "night": "changan_gate"
       },
       "tier": "B",
       "district": "changan",
@@ -4568,7 +4973,7 @@
       },
       "schedule": {
         "day": "changan_huanguan_lane",
-        "night": "changan_huanguan_lane"
+        "night": "changan_gate"
       },
       "tier": "B",
       "district": "changan",
@@ -4865,6 +5270,141 @@
         },
         "marks": [
           "邻"
+        ]
+      }
+    },
+    "cy_ca_patrol_1": {
+      "id": "cy_ca_patrol_1",
+      "name": "秦捕快",
+      "gender": "male",
+      "tag": "constable",
+      "title": "巡街捕快",
+      "room": "changan_street",
+      "home": "house:cy_ca_patrol_1",
+      "personality": "yinzhi",
+      "desc": "脸上没什么表情，看人的时候多停半息。",
+      "talk": [
+        "站住，哪儿来的？",
+        "没事别在街上晃。"
+      ],
+      "age": 58,
+      "likes": [
+        "wine"
+      ],
+      "level": 17,
+      "hp": 171,
+      "atk": 20,
+      "def": 19,
+      "dodge": 14,
+      "speed": 16,
+      "money": 67,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 19,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_street",
+        "night": "changan_gate"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城当差的捕快，案子归他管，麻烦也归他管",
+        "origin": "原是街上的闲汉，被拉去做线人，后来补了差。",
+        "now": "手上压着一桩案子，上头催得紧，线索却断在半路。",
+        "want": "在衙门里熬到一个不必看人脸色的位置",
+        "fear": "怕办错案子冤枉了人",
+        "voice": {
+          "tone": "阴沉，话都想过才说",
+          "catchphrase": "这案子，难。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在街口站着，眼睛扫过每一个走过的人"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "官"
+        ]
+      }
+    },
+    "cy_ca_patrol_2": {
+      "id": "cy_ca_patrol_2",
+      "name": "卫捕头",
+      "gender": "male",
+      "tag": "official",
+      "title": "京兆府捕头",
+      "room": "changan_market",
+      "home": "house:cy_ca_patrol_2",
+      "personality": "yinzhi",
+      "desc": "说话前先看你一眼，像在心里过了一遍章程。",
+      "talk": [
+        "照着规矩来。",
+        "文书压着，急不得。"
+      ],
+      "age": 53,
+      "likes": [
+        "tea"
+      ],
+      "level": 16,
+      "hp": 114,
+      "atk": 21,
+      "def": 14,
+      "dodge": 7,
+      "speed": 21,
+      "money": 118,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 58,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_market",
+        "night": "changan_gate"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城衙门里的书办，案上的文书一摞压一摞",
+        "origin": "接了他爹的缺，公门里的门道他从小就学。",
+        "now": "上头的公文压了三天，他还没敢落笔。",
+        "want": "把那些旧账从册子上抹清楚",
+        "fear": "怕上面出事牵连到自己",
+        "voice": {
+          "tone": "阴沉，话里总留着半句",
+          "catchphrase": "这文书，早该结了。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "伏在案上写字，写完吹一吹墨"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "官",
+          "书"
         ]
       }
     },
@@ -5409,6 +5949,74 @@
         },
         "marks": [
           "商"
+        ]
+      }
+    },
+    "cy_gs_patrol_1": {
+      "id": "cy_gs_patrol_1",
+      "name": "陆巡检",
+      "gender": "male",
+      "tag": "official",
+      "title": "姑苏巡检",
+      "room": "gusu_zhai_lane",
+      "home": "house:cy_gs_patrol_1",
+      "personality": "yinzhi",
+      "desc": "说话前先看你一眼，像在心里过了一遍章程。",
+      "talk": [
+        "照着规矩来。",
+        "文书压着，急不得。"
+      ],
+      "age": 26,
+      "likes": [
+        "jade"
+      ],
+      "level": 15,
+      "hp": 101,
+      "atk": 22,
+      "def": 9,
+      "dodge": 18,
+      "speed": 14,
+      "money": 281,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 6,
+      "carry": {
+        "money": 33,
+        "items": []
+      },
+      "schedule": {
+        "day": "gusu_zhai_lane",
+        "night": "gusu_town"
+      },
+      "tier": "B",
+      "district": "gusu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "姑苏衙门里的书办，案上的文书一摞压一摞",
+        "origin": "接了他爹的缺，公门里的门道他从小就学。",
+        "now": "上头的公文压了三天，他还没敢落笔。",
+        "want": "把那些旧账从册子上抹清楚",
+        "fear": "怕上面出事牵连到自己",
+        "voice": {
+          "tone": "阴沉，话都想过才说",
+          "catchphrase": "这文书，早该结了。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "伏在案上写字，写完吹一吹墨"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "官",
+          "书"
         ]
       }
     },
@@ -6356,6 +6964,141 @@
         },
         "marks": [
           "船"
+        ]
+      }
+    },
+    "cy_hb_15": {
+      "id": "cy_hb_15",
+      "name": "彭捕快",
+      "gender": "male",
+      "tag": "constable",
+      "title": "码头捕快",
+      "room": "jn_harbor",
+      "home": "house:cy_hb_15",
+      "personality": "haoshuang",
+      "desc": "脸上没什么表情，看人的时候多停半息。",
+      "talk": [
+        "站住，哪儿来的？",
+        "没事别在街上晃。"
+      ],
+      "age": 58,
+      "likes": [
+        "silver"
+      ],
+      "level": 7,
+      "hp": 145,
+      "atk": 22,
+      "def": 21,
+      "dodge": 10,
+      "speed": 18,
+      "money": 177,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 10,
+      "carry": {
+        "money": 13,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_harbor",
+        "night": "jn_harbor_wharf"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头当差的捕快，案子归他管，麻烦也归他管",
+        "origin": "原是街上的闲汉，被拉去做线人，后来补了差。",
+        "now": "手上压着一桩案子，上头催得紧，线索却断在半路。",
+        "want": "在衙门里熬到一个不必看人脸色的位置",
+        "fear": "怕办错案子冤枉了人",
+        "voice": {
+          "tone": "豪爽，笑声先到",
+          "catchphrase": "这案子，难。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在街口站着，眼睛扫过每一个走过的人"
+          }
+        ],
+        "arc": {
+          "init": "一开口就是笑，先递茶再说话。",
+          "warm": "把你当自己人，有好处先想到你。"
+        },
+        "marks": [
+          "官"
+        ]
+      }
+    },
+    "cy_hb_16": {
+      "id": "cy_hb_16",
+      "name": "岑税捕",
+      "gender": "male",
+      "tag": "official",
+      "title": "码头巡检",
+      "room": "jn_harbor_shed",
+      "home": "house:cy_hb_16",
+      "personality": "yinzhi",
+      "desc": "公服的袖口磨得发亮，手指上有一处笔茧。",
+      "talk": [
+        "照着规矩来。",
+        "文书压着，急不得。"
+      ],
+      "age": 41,
+      "likes": [
+        "flower"
+      ],
+      "level": 6,
+      "hp": 180,
+      "atk": 17,
+      "def": 12,
+      "dodge": 19,
+      "speed": 11,
+      "money": 204,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 11,
+      "carry": {
+        "money": 52,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_harbor_shed",
+        "night": "jn_harbor_wharf"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头衙门里的书办，案上的文书一摞压一摞",
+        "origin": "接了他爹的缺，公门里的门道他从小就学。",
+        "now": "上头的公文压了三天，他还没敢落笔。",
+        "want": "把那些旧账从册子上抹清楚",
+        "fear": "怕上面出事牵连到自己",
+        "voice": {
+          "tone": "阴沉，话里总留着半句",
+          "catchphrase": "这文书，早该结了。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "伏在案上写字，写完吹一吹墨"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "官",
+          "书"
         ]
       }
     },

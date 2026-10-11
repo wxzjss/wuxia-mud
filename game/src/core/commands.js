@@ -452,6 +452,14 @@ function buildCommands(world) {
     try {
       lines.push(...require('./duel').maybeNpcDuel(w));
     } catch (e) { /* 打架表演失败不该挡路 */ }
+    /* ---- 官府巡街的盘查（design/67 §3）----
+       身上背着恶名的人，在街上撞见官差会被拦下问话。与上面几条同一层
+       （只在**玩家自己走一格**时触发）—— 放进 lookRoom 就成了「站着也被查」。
+       三个出口：报名 / 打点 / 拒捕（拒捕就是普通的「打」，不另造战斗分支）。 */
+    try {
+      const pc = require('./patrol').maybeCheck(w, p, w.getRoom(p.room), w.npcsIncludingTemplates(p.room));
+      if (pc) lines.push(pc);
+    } catch (e) { /* 盘查失败不该挡路 */ }
     const view = lookRoom(ctx);
     lines.push(...view.lines);
     return { lines, moved: true };
@@ -3997,6 +4005,19 @@ function buildCommands(world) {
         { kind: 'say', text: `${name}看了你一眼，也没多说什么，把袖子放下来走了。` },
       ],
     };
+  });
+
+  /* ---------------- 官府盘查（design/67 §3）----------------
+     被官差拦住时的两个出口。第三个「拒捕」不在这里 —— 那就是普通的「打」，
+     复用既有战斗指令，不另造一条分支（同 B10 的思路：入口可以多，路径只能一条）。 */
+  reg(['报名', '报上名号', '通名'], (ctx) => {
+    const w = ctx.world, p = ctx.player;
+    return { lines: require('./patrol').report(w, p) };
+  });
+
+  reg(['打点', '使钱', '打点官差'], (ctx) => {
+    const w = ctx.world, p = ctx.player;
+    return { lines: require('./patrol').bribe(w, p) };
   });
 
   /* ---------------- 武学自创（2026-10-11 自拟）----------------

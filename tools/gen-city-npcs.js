@@ -153,6 +153,8 @@ const TOWNS = [
     ['xy_home_01', '周敬斋', 'male', 'richman', '襄阳富户', 'xy_home_01', 'yinzhi'],
     ['xy_home_02', '吴婶', 'female', '', '周宅邻舍', 'xy_home_02', 'wenwan'],
     ['xy_home_03', '冯济仁', 'male', 'doctor', '坐堂郎中', 'xy_home_03', 'lengmo'],
+    ['xy_patrol_1', '屠捕快', 'male', 'constable', '巡街捕快', 'xiangyang_street', 'xiayi'],
+    ['xy_patrol_2', '戚捕头', 'male', 'official', '襄阳府捕头', 'xiangyang_market', 'yinzhi'],
   ] },
 
   /* ---------------- 洛阳 · 旧都、牡丹花会 ---------------- */
@@ -177,6 +179,8 @@ const TOWNS = [
     ['ly_home_03', '沈墨林', 'male', 'scholar', '致仕老儒', 'ly_home_03', 'wenwan'],
     ['ly_home_04', '韩素娘', 'female', '', '韩宅主母', 'ly_home_04', 'youhua'],
     ['ly_arena_1', '裘打擂', 'male', 'swordsman', '守擂武人', 'luoyang_arena', 'baozhao'],
+    ['ly_patrol_1', '窦捕快', 'male', 'constable', '巡街捕快', 'luoyang_street', 'xiayi'],
+    ['ly_patrol_2', '乔捕头', 'male', 'official', '洛阳府捕头', 'luoyang_market', 'yinzhi'],
   ] },
 
   /* ---------------- 成都 · 蜀中富庶、远离兵祸 ---------------- */
@@ -196,6 +200,8 @@ const TOWNS = [
     ['cd_home_01', '杨守田', 'male', 'farmer', '杨宅当家人', 'cd_home_01', 'mune'],
     ['cd_home_02', '朱济世', 'male', 'doctor', '朱宅坐堂', 'cd_home_02', 'wenwan'],
     ['cd_home_03', '许巧姑', 'female', 'artisan', '许宅绣娘', 'cd_home_03', 'wenwan'],
+    ['cd_patrol_1', '米捕快', 'male', 'constable', '巡街捕快', 'chengdu_street', 'xiayi'],
+    ['cd_patrol_2', '霍捕头', 'male', 'official', '成都府捕头', 'chengdu_market', 'mune'],
   ] },
 
   /* ---------------- 长安 · 都城、官气最重 ---------------- */
@@ -217,6 +223,8 @@ const TOWNS = [
     ['ca_home_02', '陈敬之', 'male', 'scholar', '陈宅西席', 'ca_home_02', 'wenwan'],
     ['ca_home_03', '秦九娘', 'female', '', '秦宅主母', 'ca_home_03', 'baozhao'],
     ['ca_home_04', '卫老丈', 'male', '', '卫宅老人', 'ca_home_04', 'mune'],
+    ['ca_patrol_1', '秦捕快', 'male', 'constable', '巡街捕快', 'changan_street', 'yinzhi'],
+    ['ca_patrol_2', '卫捕头', 'male', 'official', '京兆府捕头', 'changan_market', 'yinzhi'],
   ] },
 
   /* ---------------- 姑苏 · 水乡、文人 ---------------- */
@@ -229,6 +237,7 @@ const TOWNS = [
     ['gs_home_02', '刘塾师', 'male', 'scholar', '刘家塾师', 'gs_home_02', 'wenwan'],
     ['gs_home_03', '赵船姑', 'female', 'boatman', '赵家船娘', 'gs_home_03', 'haoshuang'],
     ['gs_fengqiao_1', '阮桥婆', 'female', 'vendor', '枫桥摊主', 'gusu_fengqiao', 'baozhao'],
+    ['gs_patrol_1', '陆巡检', 'male', 'official', '姑苏巡检', 'gusu_zhai_lane', 'yinzhi'],
   ] },
 
   /* ---------------- 江口码头 · 漕运 ---------------- */
@@ -247,6 +256,8 @@ const TOWNS = [
     ['hb_12', '陈寡妇', 'female', '', '陈宅寡妇', 'hb_home_03', 'wenwan'],
     ['hb_13', '黄季伯', 'male', '', '黄宅老人', 'hb_home_04', 'mune'],
     ['hb_14', '费老艄', 'male', 'boatman', '乌篷船艄公', 'jn_boat', 'mune'],
+    ['hb_15', '彭捕快', 'male', 'constable', '码头捕快', 'jn_harbor', 'haoshuang'],
+    ['hb_16', '岑税捕', 'male', 'official', '码头巡检', 'jn_harbor_shed', 'yinzhi'],
   ] },
 
   /* ---------------- 白鹿书院 · 江南城内的 town 型区域（tier=town，也得有人） ---------------- */
@@ -409,6 +420,15 @@ const QUESTS = [
     reward: '渡口的江水照旧浑着。' },
 ];
 
+/* ---------- 巡街官差的夜间点位（design/67 §3「按路线走动」） ----------
+ * 现有 schedule 只有 day / night 两档，捕快就按两档排：白天守在本街，
+ * 入夜换到城门 / 桥头这些「夜里更该有人」的地方。真·逐时辰换防要动引擎的
+ * 调度器，等 §3 做深时再说；两档已经能让同一个人昼夜出现在两处。 */
+const NIGHT_POST = {
+  xiangyang: 'xiangyang_gate', luoyang: 'luoyang_gate', chengdu: 'chengdu_gate',
+  changan: 'changan_gate', gusu: 'gusu_town', harbor: 'jn_harbor_wharf',
+};
+
 /* ---------- 取句序号：同一个 tag 组内轮转，保证相邻两人不重样 ---------- */
 const groupSeq = {};function nextSeq(tag, key) {
   const g = tag + '|' + key;
@@ -481,7 +501,12 @@ for (const town of TOWNS) {
       favorBase: 1,
       favorInit: 4 + (H(id + 'fi') % 8),
       carry: { money: 10 + (H(id + 'cm') % 60), items: [] },
-      schedule: { day: room, night: room },
+      /* 巡街官差：白天守本街，入夜换到城门 / 桥头 */
+      schedule: (() => {
+        const isWatch = (tag === 'constable' || tag === 'official');
+        const night = isWatch ? (NIGHT_POST[town.key] || room) : room;
+        return { day: room, night: night };
+      })(),
       tier: 'B',
       district: town.key,
       homeless: true,
