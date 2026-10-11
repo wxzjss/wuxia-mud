@@ -1244,7 +1244,7 @@ function hireGuard(world, kw) {
   pick.vars.isGuard = true;
   pick.favor = clamp((pick.favor || 0) + 25, -200, 200);
   lines.push({ kind: 'story', text: `${pick.name}卷起袖子：「既如此，我替你看家。」` });
-  lines.push({ kind: 'sys', text: `　（${pick.name}　武力 ${power}，日薪 ${wage} 文。工钱按日结算，钱不够会欠薪，欠多了他就走人。）` });
+  lines.push({ kind: 'sys', text: `　（${pick.name}　武力 ${power}，日薪 ${wage} 文。工钱按日结，钱不够先欠着；欠多了，人自己会走。）` });
   return { ok: true, lines, guard: pick };
 }
 

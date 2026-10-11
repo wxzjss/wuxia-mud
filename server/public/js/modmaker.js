@@ -243,7 +243,7 @@
       field('作者', input('author', s.author, '你的大名')) +
       field('版本号', input('version', s.version, '1.0.0')) +
       field('分类', select('category', s.category, cats)) +
-      field('适用游戏版本', input('gameVersion', s.gameVersion, '1.0.0'), '不确定就保持默认') +
+      field('适用游戏版本', input('gameVersion', s.gameVersion, '1.0.0'), '拿不准，默认这个就行') +
       '</div>' +
       field('简介', area('desc', s.desc, '一句话介绍这个 Mod 玩什么…', 3)) +
       field('标签', input('__tags', (s.tags || []).join(' '), '用空格分隔，如：剧情 江南 新手'), '方便别人搜索') +
@@ -261,7 +261,7 @@
 
     let h = '<div class="mm-section"><h3>地图房间</h3>' +
       '<p class="mm-tip">每个「房间」就是玩家能站的一个地方。用<b>出口方向</b>把它们连起来，就成了一张地图。<br>' +
-      '小技巧：先在「区域」页建一个区域，再建房间时选上它，地图上就会自动归组。</p>';
+      '小技巧：先去「区域」页建一个区域，回头建房间时把它选上，地图上自然归成一组。</p>';
 
     h += '<div class="mm-roomlist"><span class="mm-row-sub">新建房间可连接到已有房间：</span>' +
       '<input class="mm-input mm-mid" id="mm-room-search" placeholder="搜索已有房间…（选填）" list="mm-room-options">' +
@@ -354,7 +354,7 @@
         field('分部（tier）', select('npcs.' + i + '.tier', n.tier || 'C', [
           ['A', 'A · 名角'], ['B', 'B · 有名字的'], ['C', 'C · 寻常人'], ['mob', 'mob · 杂兵'],
         ])) +
-        field('门派（sect）', input('npcs.' + i + '.sect', n.sect || '', '门派 id（如 huashan）；留空就是散人')) +
+        field('门派（sect）', input('npcs.' + i + '.sect', n.sect || '', '门派 id，例如 huashan；留空即散人')) +
         '</div>' +
         field('人物描述', area('npcs.' + i + '.desc', n.desc, '他长什么样？在做什么？', 2)) +
         '<div class="mm-check-row">' +
@@ -848,7 +848,7 @@
       '<input class="mm-input" id="mm-idq" placeholder="按 ID 或名字过滤（例如 master_yue / 岳不群）">' +
       '</div>' +
       '<div class="mm-idtip">点一行右边的「改这个」，就把它在游戏里**现在的样子**载进表单；' +
-      '改完「保存到本地」或「一键上传」，游戏内重载这个 Mod 就生效（同 ID 覆盖）。</div>' +
+      '改完「保存到本地」或「一键上传」，回游戏重载这个 Mod 即可生效（同 ID 覆盖）。</div>' +
       '<div id="mm-idlist"><div class="mm-empty">正在读取…</div></div>';
   }
 
@@ -1009,7 +1009,7 @@
          再上传就会把它们当成 mod 内容发出去。 */
       S.spec = jsonToSpec(m.json || m);
       T.dirty = false;
-      U.toast('已载入「' + (S.spec.name || id) + '」，改完点上传就是更新', 'ok', 3000);
+      U.toast('已载入「' + (S.spec.name || id) + '」，改完点上传即为更新', 'ok', 3000);
       tab('basic');
     } catch (e) { U.toast('取回失败：' + e.message, 'error'); }
   }
@@ -1442,7 +1442,13 @@
 
     let cfg = S.siteConfig;
     try { cfg = await api.siteConfig(); } catch (e) { }
-    const base = (cfg && cfg.apiBase) || 'http://127.0.0.1:8788';
+    /* 显示**实际生效**的站点地址（服务端 site/config 回的 effectiveBase）。
+       ⚠️ 合并部署下真实转发地址是内部端口（如 127.0.0.1:8895），
+          直接把它摊给玩家看只会让人以为「填错了」；
+          所以合并部署一律写「本站」，只有独立部署才显示具体地址。 */
+    const base = (cfg && cfg.combined)
+      ? '本站（同一个服务器）'
+      : ((cfg && (cfg.effectiveBase || cfg.apiBase)) || 'http://127.0.0.1:8788');
 
     const body =
       '<div class="up-box">' +

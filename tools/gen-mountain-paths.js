@@ -200,7 +200,7 @@ for (const v of VILLAGES) {
       now: '近来香客少，他一天只跑得了一趟。',
       want: '攒够钱，换一副好竹杠', fear: '怕哪一天自己挑不动了',
       voice: { tone: '豪爽，笑声先到', catchphrase: '东西给我，你只管走。' },
-      routine: [{ at: 'day', act: '把竹杠往肩上一搭，脚尖一点就起了' }],
+      routine: [{ at: 'day', act: '把竹杠往肩上一搭，脚下一点，人就起了' }],
       marks: ['工'] },
   };
   out.npcs[v.id + '_tea'] = {

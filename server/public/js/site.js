@@ -86,8 +86,7 @@
       ['list.html', 'Mod 列表', 'list'],
       ['tutorial.html', '制作教程', 'tutorial'],
       ['examples.html', '示例 Mod', 'examples'],
-      ['upload.html', '发布 Mod', 'upload'],
-      ['game.html', '玩游戏', 'game']
+      ['upload.html', '发布 Mod', 'upload']
     ];
     const html =
       '<div class="sh-inner">' +

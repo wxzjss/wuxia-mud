@@ -44,7 +44,10 @@ group('① 账号 / 论坛 / 云存档 已彻底撤除');
   'server/public/mine.html',
   'server/account.js'
 ].forEach(f => ok(f + ' 已删除', !E(f)));
-ok('游戏端 cloud.js 已重建（云存档）', E('game/src/renderer/js/cloud.js'));
+/* 🔴 2026-10-11 主人：「把游戏里的云存档相关功能全部删除」。
+   游戏端 cloud.js（云存档 + 登录）已删，改成反向断言 —— 别再让它悄悄回来。
+   ⚠️ 站点自己那份 server/public/js/cloud.js 另有用途（mods 表），不在此列。 */
+ok('游戏端 cloud.js 已删除（云存档下线）', !E('game/src/renderer/js/cloud.js'));
 
 /* 站点 cloud.js 只留 mods 表 */
 const CLOUD = R('server/public/js/cloud.js');
@@ -66,7 +69,11 @@ const SITE = R('server/public/js/site.js');
   ok('site.js 已无 ' + k, SITE.indexOf(k) < 0);
 });
 ok('site.js 顶栏无论坛入口', !/'forum\.html'/.test(SITE));
-ok('site.js 顶栏有 6 个入口', (SITE.match(/\[&#39;|^\s*\['/gm) || SITE.match(/'index\.html'|'list\.html'|'tutorial\.html'|'examples\.html'|'upload\.html'|'game\.html'/g) || []).length >= 6);
+/* 顶栏入口从 6 个降到 5 个：「玩游戏」那一项指向 game.html，
+   而下载离线版的整页功能已按主人要求删除。 */
+ok('site.js 顶栏有 5 个入口（已去掉「玩游戏」）',
+  (SITE.match(/\[&#39;|^\s*\['/gm) || SITE.match(/'index\.html'|'list\.html'|'tutorial\.html'|'examples\.html'|'upload\.html'/g) || []).length >= 5
+  && !/'game\.html'/.test(SITE));
 
 /* 游戏端三个脚本无账号/云存档 */
 const APP = R('game/src/renderer/js/app.js');
@@ -95,7 +102,7 @@ ok('modmaker 保留站点上传', /api\.siteUpload\(/.test(MM));
 const HTML = R('game/src/renderer/index.html');
 ok('index.html 无账号区容器', !/id="start-user"/.test(HTML));
 ok('index.html 保留继续游戏按钮', /id="btn-continue"/.test(HTML));
-ok('index.html 引用 js/cloud.js（云存档）', /js\/cloud\.js/.test(HTML));
+ok('index.html 不再引用 js/cloud.js', !/js\/cloud\.js/.test(HTML));
 const verM = HTML.match(/\?v=(20\d{6}[a-z])/);
 ok('版本号存在且统一', !!verM && (HTML.match(new RegExp('\\?v=' + verM[1], 'g')) || []).length >= 6, verM ? verM[1] : '未找到');
 ['20261008f', '20261008g', '20261008e'].forEach(v => {
@@ -124,7 +131,8 @@ ok('serveStatic 先查黑名单再查文件', (() => {
 
 const GS = R('server/game-server.js');
 ok('game-server 已无 save/read', !/case 'save\/read'/.test(GS));
-ok('game-server 有 save/write（云存档落盘）', /case 'save\/write'/.test(GS));
+/* 云存档一删，save/write 这条路由就没有调用方了（它本来只干「云端拉回来的档写进本地」）。 */
+ok('game-server 已无 save/write（随云存档删除）', !/case 'save\/write'/.test(GS));
 
 /* 样式也清干净。
    ⚠️ `.acct-` 已从名单里拿掉：2026-10-11 主人要求上传必须登录，

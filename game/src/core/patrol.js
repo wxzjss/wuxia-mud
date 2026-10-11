@@ -117,10 +117,10 @@ function report(world, p) {
     const after = Math.min(100, wanted + 3);
     if (p.kidnap) p.kidnap.wanted = after;
     out.push({ kind: 'warn', text: `你报上名号。${name}的眼神一变：「你？……跟我回衙门走一趟。」` });
-    out.push({ kind: 'plain', text: `（${tierOf(wanted)}的案子，一个名字就够了。他把你的名号记下了 —— 恶名 ${wanted} → ${after}。）` });
+    out.push({ kind: 'plain', text: `（${tierOf(wanted)}的案子，报个名字就够了。他把你的名号记下 —— 恶名 ${wanted} → ${after}。）` });
   } else {
     out.push({ kind: 'bad', text: `你报了名号。${name}反而笑了：「省得我找。」街两头的差役朝你围了过来。` });
-    out.push({ kind: 'plain', text: '（要脱身，只有「拒捕」一条路；也可以转身就走，只是往后更难。）' });
+    out.push({ kind: 'plain', text: '（要脱身，「拒捕」是唯一的活路；转身就走也行，只是往后更难。）' });
   }
   clear(p);
   return out;

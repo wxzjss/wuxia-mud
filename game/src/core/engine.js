@@ -255,7 +255,23 @@ class GameEngine {
        （第 1 章旁白 + 老汉那句话 + 主线开题），正是主人要的那件事。
        markSeen 只用在「读档」上 —— 老存档没有 `_storyBeat` 这笔账，
        不补记的话读一次档会把几十桩进行中的任务一口气念一遍。 */
-    return this.view();
+    const v = this.view();
+    /* 🔴 主人 2026-10-11：「创建完角色进入游戏后**直接触发新手剧情**把第一章发到屏幕上，
+       而不是先『看』才能看见（这样的话会直接完成第一个任务）。」
+       旧行为：开局屏幕上只有房间描述，第一章要等**第一条指令**之后由 storybeat 补讲 ——
+       而新手最自然的第一条指令就是「看」，于是「剧情出现」和「第 1 章完成」撞在同一秒，
+       玩家根本分不清哪件事是自己做出来的。
+       现在：开局当场把第一章（旁白 + 老汉那句话 + 「现在做什么」）推上屏幕；
+       而第 1 章的目标（`did_look`）照旧只认「真看了」——
+       这屏文字**不会**顺手把第一个任务判完成（那也是主人点名的毛病）。 */
+    try {
+      const sb = require('./storybeat').reconcile(this.world, p);
+      if (sb && sb.length) {
+        v.lines = (v.lines || []).concat(sb);
+        v.guide = tutorial.guideState(p, p.tutorialFlags || []);
+      }
+    } catch (e) { /* 剧情发不出来不该挡着开局 */ }
+    return v;
   }
 
   /** 当前视图快照（给 UI 渲染） */
@@ -726,6 +742,11 @@ class GameEngine {
       /* 主线分化（design/67 §5 P1）——面板要显示「你走的哪条线、走到第几幕」 */
       mainline: (function () { try { return require('./mainline').briefOf(p); } catch (e) { return null; } })(),
       hp: p.hp, maxHp: p.maxHp, mp: p.mp, maxMp: p.maxMp,
+      /* 上限构成拆解（2026-10-11）—— 主人报「初始最大血 89，没走两步变 149」。
+         涨是该涨的（内功等级 + 通脉），坏在**全仓没有一处告诉玩家这钱从哪儿来**。
+         这里下发拆解，状态面板就能写「基础 88 + 内功 18 + 经脉 36 = 142」，
+         玩家一眼看懂「是我自己练上去的」。 */
+      vitals: (function () { try { return p.vitalsBreakdown(); } catch (e) { return null; } })(),
       food: p.food, water: p.water, maxFood: p.maxFood, maxWater: p.maxWater,
       money: p.money, gold: p.goldText(), karma: p.karma, kills: p.kills,
       potential: p.potential, title: p.title, titles: p.titles,
@@ -768,6 +789,18 @@ class GameEngine {
   skillList() {
     const p = this.world.player, w = this.world;
     const out = [];
+    /* 🔴 「基础武学」到底怎么认（2026-10-11）。
+       前端一直读 `s.isBasic`，可**数据里从来没有 isBasic 这个字段**（实测 0 门），
+       于是 `isBasic` 恒为 false —— 战斗栏里就混进了「基本内功 / 基本拳脚」，
+       武学面板也没法把它们排除在「激活」之外（主人亲报的那两条）。
+       真正的判据在角色侧：`SLOT_ROOT` 的**值**就是各系基础武学
+       （内功→basic_force、拳→basic_fist、剑→basic_sword…）。
+       在这里算一次、下发给前端，别让每个渲染函数各认一套。 */
+    const ROOTS = new Set();
+    try {
+      const SR = require('./character').SLOT_ROOT || {};
+      for (const k of Object.keys(SR)) for (const id of SR[k]) ROOTS.add(id);
+    } catch (e) { /* 拿不到就退化成只认数据里的 isBasic */ }
     for (const id of Object.keys(p.learned)) {
       const sd = w.getSkill(id);
       if (!sd) continue;
@@ -794,7 +827,7 @@ class GameEngine {
         damageMult: sd.damageMult != null ? sd.damageMult : null,
         /* 武学重制新增三件（§2.6）：品级 / 绑在哪门基础武学（及其等级）/ 上限是谁卡的 */
         grade: sd.grade || null,
-        isBasic: !!sd.isBasic,
+        isBasic: ROOTS.has(id) || !!sd.isBasic,
         standalone: !!sd.standalone,
         base: sd.base || null,
         baseName: baseSd ? baseSd.name : null,
@@ -813,9 +846,35 @@ class GameEngine {
     const CR = require('./character');
     const md = p.meridians || {};
     const mnames = CR.MERIDIAN_NAMES || { 任: '任脉', 督: '督脉' };
-    const meridians = Object.keys(mnames).map(k => ({
-      key: k, name: mnames[k] || (k + '脉'), lv: md[k] || 0, max: CR.MERIDIAN_MAX || 8,
+    const MORDER = CR.MERIDIAN_ORDER || Object.keys(mnames);
+    const MMAX = CR.MERIDIAN_MAX || 8;
+    /* ⚠️ 顺序 = 玩家实际的冲脉顺序（任→督→…），**不是** Object.keys 的插入顺序。
+       面板要按这个顺序列出，否则玩家看到的「下一脉」跟实际在冲的那条对不上。 */
+    const meridians = MORDER.map(k => ({
+      key: k, name: mnames[k] || (k + '脉'), lv: md[k] || 0, max: MMAX,
+      /* 「通了这一条能涨什么」——旧面板只有进度，玩家不知道为什么要通 */
+      bonusText: (function () {
+        const b = [];
+        if (k === '任') b.push('气血上限 +12/关');
+        if (k === '阳跷') b.push('气血上限 +6/关');
+        if (k === '督') b.push('内力上限 +15/关');
+        if (k === '阳维') b.push('内力上限 +5/关');
+        if (k === '冲' || k === '阴维') b.push('破防 +2%/关');
+        if (k === '阴跷') b.push('暴击率 +1%/关');
+        if (k === '带') b.push('招架与卸力');
+        return b.join('、') || '周身流转更顺';
+      })(),
     }));
+    /* 当前正在冲的那一条 = 顺序里第一条没满的（与 character.tryAssaultMeridian 同一口径） */
+    let nextKey = null;
+    for (const k of MORDER) if ((md[k] || 0) < MMAX) { nextKey = k; break; }
+    const mnext = meridians.find(x => x.key === nextKey) || null;
+    const need = mnext ? (CR.meridianNeed ? CR.meridianNeed(mnext.lv) : 40) : 0;
+    const mexp = p.meridianExp || 0;
+    meridians.forEach(x => { x.isNext = (x.key === nextKey); if (x.isNext) { x.exp = mexp; x.need = need; } });
+    const meridianSummary = mnext
+      ? { key: mnext.key, name: mnext.name, lv: mnext.lv, exp: mexp, need, pct: need ? Math.min(100, Math.round(mexp / need * 100)) : 0 }
+      : null;
     const ap = p.attrTotal ? p.attrTotal('资质') : (p.attr['资质'] || 0);
     /* 修炼诸途：每种途径当前可用度 */
     const ways = [
@@ -856,7 +915,7 @@ class GameEngine {
       hall: (w.getRoom(p.mySect.hall) || {}).name || p.mySect.hall || null,
     } : null;
     return {
-      meridians, aptitude: ap, ways,
+      meridians, meridianSummary, aptitude: ap, ways,
       recipes: byCat,
       disciples, mySect,
       maxLevelHint: '上限由资质与根骨决定（资质权重最高）',
@@ -1087,6 +1146,37 @@ class GameEngine {
       };
     });
 
+    /* ---- 跨区域「桥」（2026-10-11 主人）----
+       「我要的世界地图是所有地图首尾连接：如果这个 A 区域地图边缘的地块再往前走一步
+        就是 B 区域，那么这个 A 区域的地块就用线连接那块 B 区域的地块，
+        整个分散的世界地图合并成一个完整的大地图。」
+       为什么前端画不出来：`packRegions` 会把各区域**推开**、之间留空当，
+       于是「真出口连着的两个房间」在图上的坐标**从来不相邻**，
+       前端那条「按坐标找邻居」的走廊逻辑一条都命中不了（老注释里记过这个坑）。
+       所以这类边只能由后端从**真出口**算出来下发给前端。
+       ⚠️ 只收「真出口连着、但图上不相邻」的：坐标系上本来就挨着的，走廊已经画了，
+          再补一条直线是重复画。同一条边只发一次（按 id 排序去重）。 */
+    const bridges = [];
+    {
+      const DD = mapLayout.DIR_DELTA || {};
+      const ids = Object.keys(allRooms);
+      for (const id of ids) {
+        const r = allRooms[id];
+        const c1 = layout.cells[id];
+        if (!c1) continue;
+        for (const dir of Object.keys(r.exits || {})) {
+          const t = allRooms[r.exits[dir]];
+          if (!t) continue;
+          const c2 = layout.cells[t.id];
+          if (!c2) continue;
+          const d = DD[String(dir).toLowerCase()];
+          if (d && c1.x + d[0] === c2.x && c1.y + d[1] === c2.y) continue;  // 图上本来就挨着
+          if (id > t.id) continue;                                        // 一条边只发一次
+          bridges.push({ a: id, b: t.id, dir, crossRegion: r.region !== t.region });
+        }
+      }
+    }
+
     return {
       region: region ? { id: region.id, name: region.name, desc: region.desc, color: region.color } : null,
       rooms, current: p.room, regions,
@@ -1094,6 +1184,7 @@ class GameEngine {
       regionBoxes: layout.regionBoxes || {},
       bounds: layout.bounds,
       terrain: layout.terrain || {},
+      bridges,
       explore: { visited: visitedCount, total: Object.keys(allRooms).length },
     };
   }
@@ -1538,6 +1629,23 @@ class GameEngine {
     if (!p) return;
     // 房间访问记录
     if (!p.hasFlag('visited_' + p.room)) { p.setFlag('visited_' + p.room, true); }
+
+    /* ---- 新手第二章：走出去**再回到那处位置**才算完成（2026-10-11 主人）----
+       原话：「第二章剧情我走一步就能完成，然后弹出第三章就很懵逼
+       （能不能改成走出去再回到那处位置才算完成并显示第三章？）」
+       `did_step` 由 `markTutorial` 在「抬过脚」时点亮，但那只说明走过一步；
+       这里拿**移动前后的房间**把「离开导引处」与「又回到导引处」分开记：
+         · 移动后不在导引处 → 记 did_leave（走出去了）
+         · 移动后回到导引处、且之前走出去过 → 记 did_move（这一章才算完成）
+       只认位置不认指令 —— 方向键、`go`、地图点格子、传送，哪条路都算。 */
+    const guideRoom = (w.data && w.data.meta && w.data.meta.startRoom) || null;
+    if (guideRoom && beforeRoom && beforeRoom !== p.room) {
+      if (!p.tutorialFlags) p.tutorialFlags = [];
+      const hasF = (f) => p.tutorialFlags.indexOf(f) >= 0;
+      const addF = (f) => { if (!hasF(f)) { p.tutorialFlags.push(f); p.setFlag('tut_' + f, true); } };
+      if (p.room !== guideRoom) addF('did_leave');
+      else if (hasF('did_leave')) addF('did_move');
+    }
     // 任务计数：击杀 / 物品 / 房间
     const c = this.cmds;
     const merged = lines || [];

@@ -15,8 +15,11 @@
  *        GET  /api/categories               分类统计
  *        GET  /api/stats                    站点统计
  *        GET  /api/health                   健康检查
- *        GET  /api/download-game            一键下载整个游戏（zip）
- *        GET  /api/game-pack                打包信息
+ *        GET  /api/game-url                 游戏网页版地址
+ *
+ *  ⚠️「一键下载整个游戏」（/api/download-game、/api/game-pack）已于 2026-10-11
+ *     按主人要求删除 —— 游戏只在线游玩，不提供下载包。
+ *     game.html 页面一并删除，并加进 REMOVED_PAGES（云端沙箱复用，光删文件不够）。
  *
  *  存储：server/site-data/mods.json（索引） + server/site-data/files/*.zip
  *
@@ -758,249 +761,6 @@ function apiDownload(id) {
   return out;
 }
 
-/* ==========================================================================
- *  一键下载游戏：把整个项目打包成 zip 给用户
- * ========================================================================== */
-
-/* 打包时排除的目录 / 文件（相对 ROOT 的路径片段） */
-const PACK_EXCLUDE_DIRS = new Set([
-  'node_modules', '.git', '.workbuddy', '.vscode', '.idea',
-  'saves', 'userdata',
-  '_nodedl', '_runtime_cache',
-  /* 站点数据（索引/上传的 zip）不该进游戏包 */
-  'site-data',
-  /* ⚠ 关键：mods/_local 是「用户浏览器授权文件夹」来的私有 Mod，
-     绝不能跟着下载包发出去。整个 _local 目录排除。 */
-  '_local',
-  /* 本地临时验证目录（跑测试时生成，不能发出去） */
-  '.livetest', '.packtest', '.maptest',
-  /* 截图/评审产物（无头浏览器跑出来的 png）—— 1 MB 级的死重量，
-     既不该进下载包，也不该跟着发布上传。 */
-  '.review', '.shots',
-]);
-const PACK_EXCLUDE_FILES = new Set([
-  'package-lock.json', '.DS_Store', 'Thumbs.db',
-]);
-
-/* ------------------------------------------------------------------ *
- *  便携版 Node：放进包里让用户「解压即玩」，不必自己装 Node.js
- *  打包时 node.exe 会作为 runtime/node.exe 写进去；
- *  没下载过就自动去官网取一份缓存起来（只下一次）。
- * ------------------------------------------------------------------ */
-const NODE_VERSION = 'v24.21.0';
-const NODE_URL = 'https://nodejs.org/dist/' + NODE_VERSION + '/node-' + NODE_VERSION + '-win-x64.zip';
-const NODE_CACHE = path.join(__dirname, '_runtime_cache', 'node.exe');
-
-let _nodeBufPromise = null;
-
-function getPortableNode() {
-  if (_nodeBufPromise) return _nodeBufPromise;
-  _nodeBufPromise = (async () => {
-    try {
-      if (fs.existsSync(NODE_CACHE) && fs.statSync(NODE_CACHE).size > 1024 * 1024) {
-        return fs.readFileSync(NODE_CACHE);
-      }
-    } catch (e) { /* 读不到就重新下 */ }
-
-    console.log('  [打包] 首次准备便携版 Node（' + NODE_VERSION + '），需要联网下载一次…');
-    try {
-      const buf = await downloadBuffer(NODE_URL);
-      const exe = extractNodeExe(buf);
-      if (!exe || exe.length < 1024 * 1024) throw new Error('解压出来的 node.exe 不完整');
-      try {
-        fs.mkdirSync(path.dirname(NODE_CACHE), { recursive: true });
-        fs.writeFileSync(NODE_CACHE, exe);
-      } catch (e) { /* 缓存失败不影响本次打包 */ }
-      console.log('  [打包] 便携版 Node 就绪（' + (exe.length / 1024 / 1024).toFixed(1) + ' MB）');
-      return exe;
-    } catch (e) {
-      console.error('  [打包] 便携版 Node 准备失败：' + (e && e.message || e));
-      _nodeBufPromise = null;   /* 允许下次重试 */
-      return null;
-    }
-  })();
-  return _nodeBufPromise;
-}
-
-/** 下载一个 URL 到 Buffer（跟随重定向） */
-function downloadBuffer(u, depth) {
-  depth = depth || 0;
-  return new Promise((resolve, reject) => {
-    if (depth > 5) return reject(new Error('重定向次数过多'));
-    let parsed;
-    try { parsed = new URL(u); } catch (e) { return reject(e); }
-    const mod = parsed.protocol === 'https:' ? require('https') : require('http');
-    const rq = mod.get({
-      hostname: parsed.hostname,
-      port: parsed.port,
-      path: parsed.pathname + parsed.search,
-      headers: { 'User-Agent': 'wuxia-mod-site' },
-      timeout: 300000,
-    }, (rs) => {
-      if (rs.statusCode >= 300 && rs.statusCode < 400 && rs.headers.location) {
-        rs.resume();
-        return resolve(downloadBuffer(new URL(rs.headers.location, u).toString(), depth + 1));
-      }
-      if (rs.statusCode !== 200) {
-        rs.resume();
-        return reject(new Error('HTTP ' + rs.statusCode));
-      }
-      const chunks = [];
-      rs.on('data', c => chunks.push(c));
-      rs.on('end', () => resolve(Buffer.concat(chunks)));
-      rs.on('error', reject);
-    });
-    rq.on('error', reject);
-    rq.on('timeout', () => { rq.destroy(); reject(new Error('下载超时')); });
-  });
-}
-
-/** 从 node 官方 zip 里取出 node.exe（自实现，避免依赖解压库） */
-function extractNodeExe(zipBuf) {
-  /* 扫局部文件头找 .../node.exe */
-  let i = 0;
-  while (i + 30 <= zipBuf.length) {
-    if (zipBuf.readUInt32LE(i) !== 0x04034b50) { i += 1; continue; }
-    const method = zipBuf.readUInt16LE(i + 8);
-    const compSize = zipBuf.readUInt32LE(i + 18);
-    const nameLen = zipBuf.readUInt16LE(i + 26);
-    const extLen = zipBuf.readUInt16LE(i + 28);
-    const nameStart = i + 30;
-    const name = zipBuf.toString('utf8', nameStart, nameStart + nameLen);
-    const dataStart = nameStart + nameLen + extLen;
-
-    if (/\/node\.exe$/i.test(name)) {
-      const raw = zipBuf.subarray(dataStart, dataStart + compSize);
-      if (method === 0) return Buffer.from(raw);
-      if (method === 8) return require('zlib').inflateRawSync(raw);
-      throw new Error('不支持的压缩方式：' + method);
-    }
-    if (compSize > 0) i = dataStart + compSize;
-    else i = dataStart;
-  }
-  return null;
-}
-
-/** 递归收集要打包的文件 */
-function collectPackFiles(dir, prefix, out) {
-  let entries;
-  try { entries = fs.readdirSync(dir, { withFileTypes: true }); }
-  catch (e) { return out; }
-  for (const e of entries) {
-    if (e.name.startsWith('.')) continue;
-    if (PACK_EXCLUDE_FILES.has(e.name)) continue;
-    const full = path.join(dir, e.name);
-    const rel = prefix + e.name;
-    if (e.isDirectory()) {
-      if (PACK_EXCLUDE_DIRS.has(e.name)) continue;
-      collectPackFiles(full, rel + '/', out);
-    } else if (e.isFile()) {
-      out.push({ full, rel });
-    }
-  }
-  return out;
-}
-
-/** 生成整包 zip。opts.includeSaves 决定是否带上存档；默认带便携版 Node */
-async function buildGameZip(opts) {
-  opts = opts || {};
-  const w = new zipmini.ZipWriter();
-  const baseName = 'jinyong-mud';
-
-  const files = collectPackFiles(ROOT, baseName + '/', []);
-  let total = 0;
-
-  for (const f of files) {
-    if (!opts.includeSaves && /\/saves\//.test(f.rel)) continue;
-    try {
-      const buf = fs.readFileSync(f.full);
-      w.add(f.rel, buf);
-      total += buf.length;
-    } catch (e) { /* 跳过读不了的文件 */ }
-  }
-
-  /* 便携版 Node：解压即玩，不需要用户自己装 */
-  let runtimeIncluded = false;
-  if (opts.includeRuntime !== false) {
-    const exe = await getPortableNode();
-    if (exe) {
-      w.add(baseName + '/runtime/node.exe', exe);
-      total += exe.length;
-      runtimeIncluded = true;
-    }
-  }
-
-  /* 确保 mods / saves 目录存在（空目录也带上，方便开箱即用） */
-  w.add(baseName + '/mods/README.txt',
-    '把你的 Mod 放在这里，每个 Mod 一个文件夹。\n' +
-    '文件夹里至少有一个 mod.json。\n' +
-    '也可以在游戏里用「MOD 管理器」自动安装。\n');
-  if (!opts.includeSaves) {
-    w.add(baseName + '/saves/.keep', '存档目录\n');
-  }
-
-  const buf = w.toBuffer();
-  return { buf, files: files.length + (runtimeIncluded ? 1 : 0), rawSize: total, runtimeIncluded };
-}
-
-/** GET /api/download-game[?saves=1] —— 直接返回整包 zip */
-async function apiDownloadGame(res, query) {
-  try {
-    const r = await buildGameZip({
-      includeSaves: query.saves === '1',
-      includeRuntime: query.runtime !== '0',     /* ?runtime=0 可要一个不带 Node 的精简包 */
-    });
-    const name = 'jinyong-mud-' + new Date().toISOString().slice(0, 10) + '.zip';
-    sendBuf(res, 200, r.buf, {
-      'Content-Type': 'application/zip',
-      'Content-Disposition': 'attachment; filename="' + name + '"',
-      'Content-Length': r.buf.length,
-      'X-Pack-Files': String(r.files),
-      'X-Pack-Runtime': r.runtimeIncluded ? '1' : '0',
-    });
-  } catch (e) {
-    sendJson(res, 500, { ok: false, error: '打包失败：' + (e && e.message || e) });
-  }
-}
-
-/** 打包前的容量预检，供前端提示用 */
-function apiGamePackInfo() {
-  const files = collectPackFiles(ROOT, '', []);
-  let raw = 0, count = 0;
-  for (const f of files) {
-    if (/^saves\//.test(f.rel)) continue;
-    try { raw += fs.statSync(f.full).size; count++; } catch (e) { }
-  }
-  /* 便携版 Node 是否已经备好（备好则打包会把它一起带上） */
-  let runtimeReady = false, runtimeBytes = 0;
-  try {
-    if (fs.existsSync(NODE_CACHE)) {
-      runtimeBytes = fs.statSync(NODE_CACHE).size;
-      runtimeReady = runtimeBytes > 1024 * 1024;
-    }
-  } catch (e) { }
-
-  return {
-    ok: true,
-    files: count + (runtimeReady ? 1 : 0),
-    rawBytes: raw + runtimeBytes,
-    version: packVersion(),
-    runtime: {
-      included: runtimeReady || !!_nodeBufPromise,
-      ready: runtimeReady,
-      version: NODE_VERSION,
-      bytes: runtimeBytes,
-    },
-  };
-}
-
-function packVersion() {
-  try {
-    const p = path.join(ROOT, 'game', 'data', '00_core.json');
-    const j = JSON.parse(fs.readFileSync(p, 'utf8'));
-    return (j.meta && j.meta.version) || '1.0.0';
-  } catch (e) { return '1.0.0'; }
-}
 
 /* ==========================================================================
  *  API：直接下载 zip 文件（浏览器下载）
@@ -1099,7 +859,13 @@ function apiDelete(id, body) {
    这些文件在本地已删除，但云端沙箱是**复用**的：部署只往里拷文件、
    不会删掉多余文件，于是旧版本残留的 HTML 会一直挂在线上。
    所以这里显式拉黑 —— 不管磁盘上有没有，一律 404。 */
-const REMOVED_PAGES = new Set(['/account.html', '/forum.html', '/mine.html']);
+const REMOVED_PAGES = new Set(['/account.html', '/forum.html', '/mine.html',
+  /* 🔴 2026-10-11 主人：「把 Mod 站的『下载游戏』功能删除，因为我们已经不能下载
+     游戏了，只能在线游玩」。页面文件已删，但**必须同时拉黑** ——
+     线上云沙箱是复用的，部署只往里拷文件、不删多余文件，
+     旧版 game.html 会一直挂在线上，玩家照样能下到一个**打包不完整**的旧包。
+     （这条是记忆里的老坑：删页面 = 删文件 + 加黑名单，两件事都得做。） */
+  '/game.html']);
 
 function serveStatic(pathname, res) {
   let rel = decodeURIComponent(pathname);
@@ -1176,16 +942,6 @@ async function handle(req, res) {
       /* /api/stats */
       if (head === 'stats') {
         return sendJson(res, 200, apiStats());
-      }
-
-      /* /api/download-game   一键下载整个游戏（zip） */
-      if (head === 'download-game') {
-        return await apiDownloadGame(res, query);
-      }
-
-      /* /api/game-pack       打包信息（文件数 / 体积 / 版本） */
-      if (head === 'game-pack') {
-        return sendJson(res, 200, apiGamePackInfo());
       }
 
       /* /api/game-url        游戏网页版地址（站点「开始游戏」按钮用） */
@@ -1370,4 +1126,4 @@ if (require.main === module) {
   start();
 }
 
-module.exports = { start, createSiteServer, handle, apiList, apiUpload, apiDownload, apiDetail, countContent, apiDownloadGame, apiGamePackInfo, buildGameZip, seedOfficialMods, resolveGameUrl, apiRegister, apiLogin, apiLogout, apiMyMods, whoami, ensureDirs, readIndex, writeIndex };
+module.exports = { start, createSiteServer, handle, apiList, apiUpload, apiDownload, apiDetail, countContent, seedOfficialMods, resolveGameUrl, apiRegister, apiLogin, apiLogout, apiMyMods, whoami, ensureDirs, readIndex, writeIndex };

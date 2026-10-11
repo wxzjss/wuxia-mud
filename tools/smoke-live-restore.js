@@ -86,8 +86,11 @@ function section(t) { console.log('\n── ' + t + ' ──'); }
     /function afterAction[\s\S]{0,900}?applyView\(d\.view\)/.test(UI));
   ok('★ afterAction 拦住 noPlayer（不落日志、不换视图）',
     /if \(d\.noPlayer\)\s*\{\s*recoverLostPlayer\(\)/.test(UI));
-  ok('有接人的实现（本地档 → 云端两路）',
-    /recoverLostPlayer/.test(UI) && /pullCloudSaveOnce/.test(UI));
+  /* 🔴 2026-10-11 云存档已删，接人的路只剩**本地档**这一条（autosave_<设备>）。
+     仍然要守：接人函数在、而且云端那条老路徹底拆干净了。 */
+  ok('有接人的实现（本地兜底档）',
+    /recoverLostPlayer/.test(UI) && /api\.load\(key\)/.test(UI));
+  ok('云端接人那条老路已拆（pullCloudSaveOnce 不存在）', !/pullCloudSaveOnce/.test(UI));
 
   ok('app.js 有 keepView 守卫', /function keepView\s*\(/.test(APP));
   ok('★ app.js 里再无「无条件的 S.view = d.view」',

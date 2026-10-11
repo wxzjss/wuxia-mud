@@ -76,6 +76,41 @@ function ok(name, cond, extra) {
   ok('地图坐标无 NaN', !/style="left:NaN|top:NaN/.test(mh),
     (mh.match(/top:NaN/g) || []).length + ' 个 NaN 坐标');
 
+  /* —— 世界地图「首尾相连」：跨区域桥（2026-10-11 主人）——
+     原话：「我要的世界地图是所有地图首尾连接：如果这个 A 区域边缘的地块
+     再往前走一步就是 B 区域，那就用线把两块连起来，整个分散的世界地图
+     合并成一个完整的大地图。」 */
+  console.log('\n── 跨区域桥（世界地图首尾相连）──');
+  {
+    const br = (v.map && v.map.bridges) || [];
+    const cross = br.filter(x => x.crossRegion);
+    ok('后端下发了 bridges', br.length > 0, br.length + ' 条');
+    ok('★ 其中有跨区域的桥（这是主人点名的那一类）', cross.length > 0, cross.length + ' 条');
+    /* 桥的两个端点必须是真实房间，而且**在图上的坐标不相邻** ——
+       相邻的那些走廊已经画过了，再补一条就是重复画。 */
+    const cellOf = id => (v.map.cells || {})[id];
+    const real = cross.filter(x => cellOf(x.a) && cellOf(x.b));
+    ok('★ 桥的两端都是真实房间', real.length === cross.length,
+      real.length + '/' + cross.length);
+    const DIRS = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0], u: [0, -1], d: [0, 1],
+      nw: [-1, -1], ne: [1, -1], sw: [-1, 1], se: [1, 1] };
+    const adjacent = real.filter(x => {
+      const A = cellOf(x.a), B = cellOf(x.b), d = DIRS[x.dir];
+      return !!(d && A.x + d[0] === B.x && A.y + d[1] === B.y);
+    });
+    ok('★ 桥都是「图上不相邻」的（不相邻才需要桥）', adjacent.length === 0,
+      adjacent.length + ' 条其实相邻');
+    /* 世界模式渲染里确实画了虚线桥 */
+    const worldBuilt = new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF', 'mapScope',
+      grab('mapHtml') + '\n' + grab('shortName') + '\n' + grab('guideHtml') + '\nreturn { mapHtml };')(
+        esc, MAP_CELL, MAP_NODE, MAP_PAD, DIR_CN, DIR_OFF, 'world');
+    const wh = worldBuilt.mapHtml(v);
+    ok('★ 世界地图渲染出跨区桥（edge-bridge）', wh.indexOf('edge-bridge') >= 0);
+    ok('桥是虚线（跟实心走廊区分开，CSS 有 stroke-dasharray）',
+      /\.map-edges\s+\.edge-bridge\s*\{[^}]*dasharray/.test(
+        fs.readFileSync(path.join(ROOT, 'game/src/renderer/css/main.css'), 'utf8')));
+  }
+
   /* —— 两级地图视野（默认只看当前区域）—— */
   console.log('\n── 两级地图视野 ──');
   const curRoom = m.rooms.find(r => r.current);
@@ -84,11 +119,24 @@ function ok(name, cond, extra) {
   ok('★ region 模式同样不画地形装饰（0 个）', terrCells === 0,
     '渲染 ' + terrCells + ' / 后端当前区域共 ' + curTerr + '（数据在、不画）');
   ok('有视野切换栏', mh.includes('data-scope="region"') && mh.includes('data-scope="world"'));
+  /* 🔴 2026-10-11 主人：「区域地图只居中显示那一块区域，但你区域地块框框外面
+     还有那么大一片空地块不删是留着做什么的。」
+     ⇒ 取景框从「后端那个被 terrain/minW 撑大的 box」改成
+       「本区域房间的**紧包围盒**」。所以这里不能再拿 cb.w/cb.h 算，
+       要按房间实际范围算，并且顺带断言「比那个撑大的框更小」。 */
   const cb = (m.regionBoxes || {})[curRoom.region];
-  const cw = (cb.w * 30 + 68) + 'px', chh = (cb.h * 30 + 68) + 'px';
-  ok('region 模式画布=当前区域大小（不是全图）',
+  const inReg = m.rooms.filter(r => r.region === curRoom.region);
+  const tMinX = Math.min.apply(null, inReg.map(r => r.x));
+  const tMinY = Math.min.apply(null, inReg.map(r => r.y));
+  const tMaxX = Math.max.apply(null, inReg.map(r => r.x));
+  const tMaxY = Math.max.apply(null, inReg.map(r => r.y));
+  const tw = tMaxX - tMinX + 1, th = tMaxY - tMinY + 1;
+  const cw = (tw * 30 + 68) + 'px', chh = (th * 30 + 68) + 'px';
+  ok('region 模式画布=本区域房间的紧包围盒',
     mh.includes('width:' + cw + ';height:' + chh),
-    '区域 ' + curRoom.region + ' ' + cb.w + 'x' + cb.h + ' → 期望 ' + cw + 'x' + chh);
+    '区域 ' + curRoom.region + ' 实际 ' + tw + 'x' + th + ' → 期望 ' + cw + 'x' + chh);
+  ok('★ 画布不再包含框外那圈空地块（严格小于后端撑大的 box）',
+    tw <= cb.w && th <= cb.h, '实际 ' + tw + 'x' + th + ' vs 后端框 ' + cb.w + 'x' + cb.h);
   const shownNodes = (mh.match(/class="map-node/g) || []).length;
   const scopeRooms = m.rooms.filter(r => r.region === curRoom.region).length;
   ok('region 模式只渲染本区域房间', shownNodes === scopeRooms,
@@ -121,7 +169,9 @@ function ok(name, cond, extra) {
   ok('含「新手教程」', gh.includes('新手教程'));
 
   // 逐步推进
-  const seq = ['look', 'n', 'i', 'score', 'lian', 'talk 小二'];
+  /* ⚠️ 第二章改成「走出去再回来」才算完成（2026-10-11），
+     所以序列里  之后必须补一个  走回来，否则后面的步全被锁住。 */
+  const seq = ['look', 'n', 's', 'i', 'score', 'lian', 'talk 小二'];
   let last = g0.doneCount;
   let increased = 0;
   for (const cmd of seq) {

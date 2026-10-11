@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>武侠行 · 江湖再启</title>
-  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/main.css?v=20261011x">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
 </head>
 
@@ -31,7 +31,6 @@
         <button class="btn-ink primary" data-act="continue" id="btn-continue" style="display:none">继 续 游 戏</button>
         <button class="btn-ink primary" data-act="newgame" id="btn-newgame">创 建 角 色</button>
         <button class="btn-ink" data-act="loadgame">读 取 存 档</button>
-        <button class="btn-ink" data-act="login" id="btn-login">登 录 · 云 存 档</button>
         <button class="btn-ink" data-act="modcenter">M O D 管 理</button>
         <button class="btn-ink" data-act="modmaker">M O D 制 作 器</button>
         <button class="btn-ink" data-act="guidedoc">教 程 与 说 明</button>
@@ -334,7 +333,6 @@
   <!-- ?v= 用于缓存穿透：改了这里就等于强制所有浏览器重新拉脚本。
        配合服务端的 no-store，确保发版后不会有人继续跑旧代码。 -->
   <script src="js/localmods.js?v=20261011x"></script>
-  <script src="js/cloud.js?v=20261011x"></script>
   <script src="js/app.js?v=20261011x"></script>
   <script src="js/ui.js?v=20261011x"></script>
   <script src="js/modmaker.js?v=20261011x"></script>

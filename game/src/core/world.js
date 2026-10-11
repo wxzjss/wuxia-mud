@@ -2278,12 +2278,12 @@ class World extends EventEmitter {
          「点页面任意其他按钮自动退出吐纳状态」）。所以这里拦下的，是**不经过 exec
          的移动**（剧情摆位 / 传送），那些场景本来就不该把人从坐忘里拽走。 */
     if (ch.isPlayer && require('./neigong').blocksMove(ch)) {
-      return { ok: false, msg: '你正坐着吐纳，气行到一半，身子还沉。（点屏幕上任何别的按钮，就能醒过来。）' };
+      return { ok: false, msg: '你正坐着吐纳，气行到一半，身子还沉。想醒过来，点屏幕上随便哪个别的按钮。' };
     }
     /* 双修 / 采补当中同样不能走（主人 2026-10-11：「不能随意移动」）。
        收敛在同一个点上，方向键 / go / 传送都拦得住；玩家主动走的那条路见上。 */
     if (ch.isPlayer && require('./dualcultivate').blocksMove(ch)) {
-      return { ok: false, msg: '这会儿脱不开身。（点屏幕上任何别的按钮，就能脱身。）' };
+      return { ok: false, msg: '这会儿脱不开身。想走开，点屏幕上随便哪个别的按钮。' };
     }
     const room = this.data.rooms[roomId];
     if (!room) return { ok: false, msg: `（不存在房间：${roomId}）` };
@@ -3330,6 +3330,10 @@ class World extends EventEmitter {
         /* 主线分化（design/67 §5 P1）——不带上它，读档就把「我走哪条线」丢了 */
         mainline: p.mainline,
         insect: p.insect, quests: p.quests, flags: p.flags, vars: p.vars, tutorialFlags: p.tutorialFlags || [],
+        /* 奇经八脉 + 冲脉进度（2026-10-11）——**原来这两样都没存**，读档即清空：
+           通了脉的人读一次档，maxHp/maxMp 会**掉回去**（recalc 从空经脉重算），
+           而玩家只会看到「血上限怎么变少了」。静默的数据丢失。 */
+        meridians: p.meridians, meridianExp: p.meridianExp || 0,
         /* 房间动作的限次记账（`once` / `oncePerDay`）。**必须随档走** ——
            不存的话读一次档就能把「一辈子一次」的参悟重新刷一遍。 */
         actionUsed: p.actionUsed || {}, actionLast: p.actionLast || {},
@@ -3568,6 +3572,7 @@ class World extends EventEmitter {
       /* 老存档没有 mainline → 按出身补一条（别让读档的人变成「没有线」） */
       mainline: sd.mainline || require('./mainline').init(sd.birth || null, sd.gender || 'male', {}),
       insect: sd.insect || null, quests: sd.quests || {}, flags: sd.flags || {}, tutorialFlags: sd.tutorialFlags || [],
+      meridians: Object.assign(require("./character").emptyMeridians(), sd.meridians || {}), meridianExp: sd.meridianExp || 0,
       actionUsed: sd.actionUsed || {}, actionLast: sd.actionLast || {},
       duelLog: sd.duelLog || {}, duelWin: sd.duelWin || {},
       vars: sd.vars || {}, sect: sd.sect || null, rank: sd.rank || 0,

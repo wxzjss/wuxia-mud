@@ -108,7 +108,7 @@ function setupDual(e) {
   ok('view 报出双修状态（带轮次）', busyOf(e2) && busyOf(e2).kind === 'dual' && busyOf(e2).rounds === 4,
     JSON.stringify(busyOf(e2)));
   ok('起手提示教的是「点别的按钮」（不再教「敲收功」）',
-    /点屏幕上任何别的按钮/.test(txt(r20)) && !/敲「收功」/.test(txt(r20)), txt(r20).slice(0, 60));
+    /点屏幕上[^。]*别的按钮/.test(txt(r20)) && !/敲「收功」/.test(txt(r20)), txt(r20).slice(0, 60));
 
   const r21 = e2.exec('背包');
   const t21 = txt(r21);

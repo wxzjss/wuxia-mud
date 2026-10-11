@@ -85,7 +85,7 @@ put(skillsFile.skills, 'shadow_echo', {
 }, '功法 shadow_echo（影分身）');
 put(skillsFile.skills, 'imperial_order', {
   id: 'imperial_order', name: '圣旨纶音', type: '棍', maxLevel: 800, difficulty: 5,
-  desc: '一开口就是「奉天承运」。听的人通常站不住。',
+  desc: '还没出声，先来一句「奉天承运」。听的人通常站不住。',
   damageMult: 1.5, accuracy: 88, mpCost: 60, trainCost: 760,
   effects: [
     { type: 'debuff', name: '跪', turns: 2, mods: { atk: -40, speed: -30 } },

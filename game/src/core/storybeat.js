@@ -117,6 +117,13 @@ function reconcile(world, p) {
       if (!got.length) continue;
       out.push({ kind: 'subtitle', text: `第 ${s.no} 章 · ${s.title}` });
       out.push(...got);
+      /* 🔴 主人 2026-10-11：「我发现发到屏幕上的剧情没有现在要干什么的提示，
+         建议在剧情文本下一行添加一句大白话具体讲现在该做什么
+         （比如说现在要点击屏幕下方的快捷键『查看四周』之类的）」。
+         ⇒ 紧跟剧情补一行 hint。用 `s.todo`（写到「屏幕上哪个键」这一层），
+           而不是 `s.hint`（那是给熟手的速记，写着「敲 look」）——
+           第一次进游戏的人还没学会指令，只会按键。 */
+      if (s.todo) out.push({ kind: 'hint', text: '▸ 现在做什么：' + s.todo });
       m.tut = s.no;
       /* 一次只讲一章。第一版是「能补多少补多少」，结果开头一条 look
          就把第 1、2 章连着倒出来 —— 剧情是给人读的，不是给人刷的。

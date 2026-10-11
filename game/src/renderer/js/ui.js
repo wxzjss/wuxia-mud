@@ -130,6 +130,29 @@
     $('bar-mp').style.width = util.pct(mp, mpMax) + '%';
     $('txt-hp').textContent = '气血 ' + hp + '/' + hpMax;
     $('txt-mp').textContent = '内力 ' + mp + '/' + mpMax;
+    /* 上限构成的悬停提示（主人报「数字自己会跳」）—— 拆开写在 title 上，
+       鼠标一停就知道这 142 里哪一截是内功、哪一截是经脉。 */
+    (function () {
+      const vt = p.vitals;
+      if (!vt) return;
+      const bits = [];
+      const seg = (label, o) => {
+        if (!o || !o.total) return;
+        const pp = [];
+        if (o.base) pp.push('底子 ' + o.base);
+        if (o.equip) pp.push('装备 ' + o.equip);
+        if (o.other) pp.push('天赋 ' + o.other);
+        if (o.skill) pp.push('内功 ' + o.skill);
+        if (o.meridian) pp.push('经脉 ' + o.meridian);
+        if (pp.length) bits.push(label + '：' + pp.join(' + ') + ' = ' + o.total);
+      };
+      seg('气血上限', vt.maxHp);
+      seg('内力上限', vt.maxMp);
+      const tip = bits.join('\n');
+      const eh = $('txt-hp'), em = $('txt-mp');
+      if (eh) eh.title = tip;
+      if (em) em.title = tip;
+    })();
 
     /* 删等级系统后，经验条改为显示「武学境界」（玩家强弱只看武学功法等级） */
     const realm = p.realm || '不通武艺';
@@ -590,7 +613,7 @@
         '</div></div>';
     });
     h += '</div>';
-    h += '<div class="gp-foot">引导不会限制你 —— 想干嘛就干嘛，随时点这里回看。</div>';
+    h += '<div class="gp-foot">引导不捆人。想干什么干什么，回头点这里看就是。</div>';
     h += '</div>';
     return h;
   }
@@ -766,7 +789,7 @@
       h = '<div class="modal-text">' + esc(n.name) + '摇摇头：「我这点本事，教不了人。」</div>';
     } else {
       h = '<div class="modal-text">点一门功夫，向' + esc(n.name) + '请教。' +
-        '（拜过师，师父教徒弟是天经地义；没拜师的，就看交情或使钱。）</div>';
+        '（拜过师的，师父教徒天经地义；没拜师的，看他与你的交情，或者使钱。）</div>';
       h += '<div class="qj-list">';
       list.forEach(s => {
         h += '<div class="qj-row' + (s.can ? '' : ' off') + '">' +
@@ -945,8 +968,8 @@
         const v = pr[key];
         if (v && !v.can) { toast(v.why || '这会儿不成。', 'warn', 3600); return; }
         const yes = await confirmBox(label,
-          '这是一件脱不开身的事：起手之后就得一轮一轮往下走。' +
-          '中途要走开，点屏幕上任何别的按钮就行（只是上头那点功夫就白费了）。' +
+          '这是一件脱不开身的事：起了手，就得一轮一轮往下走。' +
+          '中途想走，点屏幕上随便哪个别的按钮（只是上头那点功夫白费了）。' +
           '屋里若有人经过，场面会很难看。确定吗？', '就 这 么 办');
         if (!yes) return;
         closeModal();
@@ -1079,7 +1102,7 @@
     h += '<div class="panel-sec">传功</div>';
     if (!list.length) h += '<div class="modal-text hint-dim">你自己还没学成什么，没得可传。</div>';
     else {
-      h += '<div class="modal-text hint-dim">传下去只剩六成火候；他已经会的、比你熟的，就传不进去了。</div>';
+      h += '<div class="modal-text hint-dim">传下去只剩六成火候。他会的、比你熟的，传不进去。</div>';
       list.slice(0, 24).forEach(sk => {
         h += '<div class="np-row"><span class="np-k">' + esc(sk.name) + '</span>'
           + '<span class="np-v">' + sk.level + ' 级 <button class="mini-btn" data-teach="' + esc(sk.name) + '">传</button></span></div>';
@@ -1798,8 +1821,34 @@
     /* 声望是「键→ 数值」的对象（门派名/恶名等动态键），直接丢给 kv 会变 [object Object] */
     h += kv('声望', repText(p.reputation));
     h += '</div></div>';
+    h += vitalNote(p);
     if (p.timeText) h += '<div class="panel-note">' + esc(p.timeText) + '</div>';
     return h;
+  }
+
+  /** 上限构成（2026-10-11）—— 主人报「初始最大血 89，没走两步变 149，你怎么还没修好」。
+      查下来**不是 bug**：走路完全不涨（实测纯走 40 次纹丝不动），
+      涨的是两处 —— ① 内功等级（每级 +1.2 血 / +1.8 内力）② 通奇经八脉（任脉 +12 血/关）。
+      真正的毛病是**全仓没有一处交代这钱从哪儿来**，玩家只能看见数字自己跳。
+      所以在状态面板把它拆开写明：基础 + 内功 + 经脉 + 装备 = 当前上限。 */
+  function vitalNote(p) {
+    const vt = p.vitals;
+    if (!vt || !vt.maxHp || !vt.maxMp) return '';
+    function line(label, o) {
+      if (!o || !o.total) return '';
+      const parts = [];
+      if (o.base) parts.push('底子 ' + o.base);
+      if (o.equip) parts.push('装备 ' + o.equip);
+      if (o.other) parts.push('天赋 ' + o.other);
+      if (o.skill) parts.push('内功 ' + o.skill);
+      if (o.meridian) parts.push('经脉 ' + o.meridian);
+      if (!parts.length) return '';
+      return label + '上限 ' + parts.join(' + ') + ' ＝ ' + o.total;
+    }
+    const a = line('气血', vt.maxHp), b = line('内力', vt.maxMp);
+    if (!a && !b) return '';
+    return '<div class="panel-note">' + esc([a, b].filter(Boolean).join('　·　'))
+      + '。上限只随内功修为与奇经八脉增长，走路不会凭空涨。</div>';
   }
 
   /** 声望对象 → 可读文本：取数值最高的 3 项 */
@@ -1876,9 +1925,9 @@
     if (!list.length) {
       return '<div class="modal-text">你手上一门功夫都没有。<br><br>' +
         '先去<b>拜师</b>：屋子里找个人，点「细看此人」→「拜 师」，' +
-        '成了师徒再「请教」他的功夫——一学就会。往后精进就靠这一面板。</div>';
+        '成了师徒，再「请教」他的功夫。往后练功精进，都在这一面板上。</div>';
     }
-    let h = '<div class="modal-text">点一门就练：<b>自动耗内力</b>，内力够就一直练下去。' +
+    let h = '<div class="modal-text">挑一门点下去，人自己就练上了：<b>内力往里头耗</b>，耗干净为止。' +
       '<br><span class="hint-dim">内力上限越高、这门功夫等级越低，练得越快。</span></div>';
     h += '<div class="prac-grid">';
     for (const s of list) {
@@ -1893,6 +1942,29 @@
     return h;
   }
 
+  /* 「练这门功夫」按钮（主人 2026-10-11）：
+       「内功后面需要有『打坐』按钮，拳脚后续有练拳按钮以此类推」。
+     · 内功 → 打坐。内功只能靠打坐练，而且打坐还是**冲奇经八脉**的唯一路子。
+     · 其余按门类给「练拳 / 练剑 / 练刀 / 练轻功…」，指令统一是 `练武学 <武学名>`。
+     ⚠️ 打坐发的是英文 `meditate`，不是中文「打坐」——
+        中文那个词在 `PANEL_CMDS` 里曾被当成「打开武学面板」的快捷词，
+        用英文别名可以保证不管那张表以后怎么改，这个按钮都是真打坐。 */
+  const PRACTICE_LABEL = {
+    拳: '练拳', 掌: '练掌', 指: '练指', 腿: '练腿', 爪: '练爪',
+    剑: '练剑', 刀: '练刀', 棍: '练棍', 鞭: '练鞭', 暗器: '练暗器',
+    轻功: '练轻功', 招架: '练招架', 身法: '练身法', 音波: '练音波',
+    医术: '习医', 毒术: '练毒',
+  };
+  function practiceBtn(s) {
+    if (!s || !s.canTrain) return '';          /* 已到上限就不给按钮，免得点了只回一句「练不动了」 */
+    const type = String(s.type || ''), cat = String(s.category || '');
+    if (type === '内功' || cat === '内功') {
+      return '<button class="mini-btn" data-cmd="meditate" title="打坐：回内力，兼冲奇经八脉">打坐</button>';
+    }
+    const label = PRACTICE_LABEL[type] || PRACTICE_LABEL[cat] || '练功';
+    return '<button class="mini-btn" data-cmd="练武学 ' + esc(s.name) + '">' + esc(label) + '</button>';
+  }
+
   function skillsHtml(v) {
     const list = (v.player && v.player.skills) || v.skills || [];
     if (!list.length) return '<div class="modal-text">尚未习得任何武学。</div>';
@@ -1903,7 +1975,7 @@
 
     h += '<div class="panel-sec">已激活</div>';
     if (active.length) {
-      h += '<table class="data-table"><thead><tr><th>槽位</th><th>武学</th><th>品级</th><th>等级</th><th>熟练度</th></tr></thead><tbody>';
+      h += '<table class="data-table"><thead><tr><th>槽位</th><th>武学</th><th>品级</th><th>等级</th><th>熟练度</th><th>修习</th></tr></thead><tbody>';
       active.forEach(s => {
         const pctStr = s.level >= s.maxLevel ? '圆满' : util.pct(s.exp, s.expNeed) + '%';
         h += '<tr><td>' + esc(s.slot || s.type) + '</td>' +
@@ -1911,20 +1983,23 @@
           (s.baseName ? ' <span class="hint-dim">← 依《' + esc(s.baseName) + '》' + s.baseLevel + '</span>' : '') + '</td>' +
           '<td>' + (s.grade || '—') + '</td>' +
           '<td>' + s.level + ' / ' + s.maxLevel + '</td>' +
-          '<td>' + pctStr + '</td></tr>';
+          '<td>' + pctStr + '</td>' +
+          '<td>' + practiceBtn(s) + '</td></tr>';
       });
       h += '</tbody></table>';
+      h += '<div class="modal-text hint-dim">武技会被自动带进战斗快捷栏（内功这类没有武技的不会）。</div>';
     } else {
       h += '<div class="modal-text">还没有激活任何武学。用「装备武学 &lt;槽位&gt; &lt;武学名&gt;」装上，或者在下表点「激活」。</div>';
     }
 
     h += '<div class="panel-sec">散手 · 无根基（' + stand.length + '/3）</div>';
     if (stand.length) {
-      h += '<table class="data-table"><thead><tr><th>散手</th><th>品级</th><th>等级</th><th>熟练度</th></tr></thead><tbody>';
+      h += '<table class="data-table"><thead><tr><th>散手</th><th>品级</th><th>等级</th><th>熟练度</th><th>修习</th></tr></thead><tbody>';
       stand.forEach(s => {
         const pctStr = s.level >= s.maxLevel ? '圆满' : util.pct(s.exp, s.expNeed) + '%';
         h += '<tr><td class="td-name">' + esc(s.name) + gradeTag(s.grade) + '</td>' +
-          '<td>' + (s.grade || '—') + '</td><td>' + s.level + ' / ' + s.maxLevel + '</td><td>' + pctStr + '</td></tr>';
+          '<td>' + (s.grade || '—') + '</td><td>' + s.level + ' / ' + s.maxLevel + '</td><td>' + pctStr + '</td>' +
+          '<td>' + practiceBtn(s) + '</td></tr>';
       });
       h += '</tbody></table>';
       h += '<div class="modal-text hint-dim">散手不属于任何基础武学一系，不占槽位，最多同时运起三路。</div>';
@@ -1934,16 +2009,24 @@
 
     h += '<div class="panel-sec">所学未激活</div>';
     if (rest.length) {
-      h += '<table class="data-table"><thead><tr><th>武学</th><th>品级</th><th>等级</th><th>熟练度</th><th></th></tr></thead><tbody>';
+      h += '<table class="data-table"><thead><tr><th>武学</th><th>品级</th><th>等级</th><th>熟练度</th><th>修习</th><th></th></tr></thead><tbody>';
       rest.forEach(s => {
         const pctStr = s.level >= s.maxLevel ? '圆满' : util.pct(s.exp, s.expNeed) + '%';
+        /* 🔴 基础武学不给「激活」（主人 2026-10-11 原话：「基础武学比如基础内功这种不能激活」）。
+           它们开局就自动挂在各自的槽上、常驻生效，是「这一系的上限由它决定」的那一本；
+           再摆一个激活按钮只会让人以为自己漏点了一下。 */
+        const actBtn = s.isBasic
+          ? '<span class="hint-dim" title="基础武学开局即常驻生效，练它就能抬高本系上限">常驻</span>'
+          : '<button class="mini-btn" data-cmd="enable ' + esc((s.base && s.type) || s.type || '') + ' ' + esc(s.name) + '">激活</button>';
         h += '<tr><td class="td-name">' + esc(s.name) + gradeTag(s.grade) +
+          (s.isBasic ? ' <span class="hint-dim">· 基础武学</span>' : '') +
           (s.baseName ? ' <span class="hint-dim">依《' + esc(s.baseName) + '》</span>' : '') +
           '<br>' + limitHint(s) + '</td>' +
           '<td>' + (s.grade || '—') + '</td>' +
           '<td>' + s.level + ' / ' + s.maxLevel + '</td>' +
           '<td>' + pctStr + '</td>' +
-          '<td><button class="mini-btn" data-cmd="enable ' + esc((s.base && s.type) || s.type || '') + ' ' + esc(s.name) + '">激活</button></td></tr>';
+          '<td>' + practiceBtn(s) + '</td>' +
+          '<td>' + actBtn + '</td></tr>';
       });
       h += '</tbody></table>';
     } else {
@@ -2005,17 +2088,44 @@
     h += '<div class="panel-sec">资质 · 奇经八脉</div>';
     h += '<div class="modal-text">资质 <b>' + (m.aptitude || 0) + '</b>　' +
       esc(m.maxLevelHint || '') + '</div>';
+    /* ---- 奇经八脉 ----
+       主人 2026-10-11 两条意见，一起落在这里：
+         ①「为什么我打坐一下就直接显示我冲开了任脉？（有点太小儿科的感觉）」
+            → 后端已改成**进度制 + 顺序推进**（打坐必给进度，攒够才通一关），
+              面板就得把「离下一关还差多少」摆在明面上，否则玩家只看见进度条没动。
+         ②「经脉在哪看也不知道」
+            → 这面板原本只列了「已通/百分比」，既没写下一脉是哪条、
+              也没写通了能涨什么。现在补齐：**下一关进度条 + 每条脉的收益 + 冲脉顺序**。 */
     const md = m.meridians || [];
+    const ms = m.meridianSummary || null;
+    const MMAX = md.length ? (md[0].max || 8) : 8;
     if (md.length) {
-      h += '<table class="data-table"><thead><tr><th>经脉</th><th>进度</th><th>已通</th></tr></thead><tbody>';
+      h += '<div class="panel-sec">' + (ms ? '下一关 · ' + esc(ms.name) : '奇经八脉（已全通）') + '</div>';
+      if (ms) {
+        h += '<div class="modal-text">进度 <b>' + ms.exp + '</b> / ' + ms.need +
+          '　· ' + ms.pct + '%　· 通了这关就是第 ' + (ms.lv + 1) + '/' + MMAX + ' 关</div>';
+        h += '<div style="height:8px;background:rgba(128,128,128,.22);border-radius:4px;overflow:hidden;margin:4px 0 8px">'
+          + '<div style="height:100%;width:' + Math.max(0, Math.min(100, ms.pct)) + '%;background:#c8a04a"></div></div>';
+        h += '<div class="modal-text hint-dim">打坐一次攒一分进度（悟性越高攒得越快），攒满就通一关 —— 不是坐一下开一条。</div>';
+      } else {
+        h += '<div class="modal-text">八脉全通，周身气息再无一处滞涩。</div>';
+      }
+      h += '<table class="data-table"><thead><tr><th>经脉</th><th>已通</th><th>通了能涨</th></tr></thead><tbody>';
       md.forEach(x => {
-        const pctv = Math.round((x.lv / (x.max || 8)) * 100);
-        h += '<tr><td class="td-name">' + esc(x.name) + '</td>' +
-          '<td>' + x.lv + ' / ' + (x.max || 8) + '</td>' +
-          '<td>' + (x.lv >= (x.max || 8) ? '✔ 通' : pctv + '%') + '</td></tr>';
+        const max = x.max || 8;
+        const full = x.lv >= max;
+        const hl = x.isNext ? ' style="background:rgba(200,160,74,.16)"' : '';
+        h += '<tr' + hl + '><td class="td-name">' + esc(x.name) + (full ? ' ✔' : '') +
+          (x.isNext ? '　<i style="opacity:.7;font-style:normal">正在冲</i>' : '') + '</td>' +
+          '<td>' + x.lv + ' / ' + max + '</td>' +
+          '<td>' + esc(x.bonusText || '周身流转更顺') + '</td></tr>';
       });
       h += '</tbody></table>';
-      h += '<div class="modal-text">内功修炼时有机会冲击奇经八脉，通脉越多，内力上限、气血与招式越强。</div>';
+      h += '<div class="modal-text hint-dim">冲脉有先后：任 → 督 → 冲 → 带 → 阴跷 → 阳跷 → 阴维 → 阳维。'
+        + '一条通满，才轮到下一条。每通一关，涨多少当场会写在打坐的结果里。</div>';
+    } else {
+      h += '<div class="panel-sec">奇经八脉</div>';
+      h += '<div class="modal-text">还没有内功根基。学一门内功（如《基本内功》），再去「打坐」。</div>';
     }
 
     /* 修炼诸途 */
@@ -2548,12 +2658,28 @@
 
     /* 视野裁到本区域 box（多留 1 格余量，房间别贴边） */
     const b0 = m.bounds || { minX: 0, minY: 0, w: 1, h: 1 };
-    const b = scopeBox
-      ? {
-        minX: scopeBox.x, minY: scopeBox.y,
-        w: scopeBox.w, h: scopeBox.h,
+    /* 🔴 主人 2026-10-11：「区域地图只居中显示那一块区域，但你区域地块框框外面
+       还有那么大一片空地块不删是留着做什么的。」
+       根因：取景框用的是后端那个 `regionBoxes[x]`，而它**被 terrain / minW 撑过** ——
+       区域面积凑不够时，后端会拿旷野山林把框填大，于是框里留出一大片
+       没有任何地块的空地，看着像「画布没铺满」。
+       改法：区域模式**按本区域房间的实际范围**取景（真实占地的紧包围盒），
+       一格多余的都不留；后端那个 box 只留着取颜色和名字。 */
+    let b = b0;
+    if (sc === 'region' && curRegion) {
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      for (const r of rooms) {
+        if (r.x < minX) minX = r.x;
+        if (r.y < minY) minY = r.y;
+        if (r.x > maxX) maxX = r.x;
+        if (r.y > maxY) maxY = r.y;
       }
-      : b0;
+      if (isFinite(minX) && isFinite(minY)) {
+        b = { minX, minY, w: (maxX - minX + 1), h: (maxY - minY + 1) };
+      } else {
+        b = scopeBox ? { minX: scopeBox.x, minY: scopeBox.y, w: scopeBox.w, h: scopeBox.h } : b0;
+      }
+    }
     const ex = m.explore || { visited: 0, total: allRooms.length };
     const scopeCount = rooms.length;
     const scopeVisited = rooms.filter(r => r.visited).length;
@@ -2654,10 +2780,15 @@
     let regionLabels = '';
     Object.keys(boxes2).forEach(k => {
       const box = boxes[k];
-      const bw0 = box.roomW || box.w;
-      const bh0 = box.roomH || box.h;
-      const left = (box.x - b.minX) * MAP_CELL + MAP_PAD;
-      const top = (box.y - b.minY) * MAP_CELL + MAP_PAD;
+      /* 区域模式下这块底色跟着上面的**紧包围盒**走（不再用后端那个撑大的框），
+         否则底色块会从画布左上角伸出去，看着比地图还大一圈。 */
+      const tight = (sc === 'region' && k === curRegion);
+      const x0 = tight ? b.minX : box.x;
+      const y0 = tight ? b.minY : box.y;
+      const bw0 = tight ? b.w : (box.roomW || box.w);
+      const bh0 = tight ? b.h : (box.roomH || box.h);
+      const left = (x0 - b.minX) * MAP_CELL + MAP_PAD;
+      const top = (y0 - b.minY) * MAP_CELL + MAP_PAD;
       const bw = bw0 * MAP_CELL;
       const bh = bh0 * MAP_CELL;
       /* data-cx/data-cy = 该框中心在画布内容坐标系里的像素位置（区域名按钮「飞过去」用） */
@@ -2719,9 +2850,32 @@
         else paths += seg;
       });
     });
+    /* 4b) 跨区域「桥」（2026-10-11 主人）——
+       原话：「我要的世界地图是所有地图首尾连接：如果这个 A 区域地图边缘的地块
+       再往前走一步就是 B 区域，那么这个 A 区域的地块就用线连接那块 B 区域的地块，
+       整个分散的世界地图合并成一个完整的大地图。」
+       上面那条走廊逻辑只在**坐标相邻**时才连线，而 `packRegions` 把各区域推开、
+       中间留了空当 —— 跨区域的两个房间在图上不相邻，走廊永远连不上。
+       所以后端把这类边单独算成 `m.bridges` 下发（见 engine.mapView），
+       这里只负责画：一条虚线，把两端的格子牵起来。
+       ⚠️ **只画跨区域的**（`crossRegion`）。同区域但图上不相邻的还有一百多条
+          （斜向出口 / 上下层 / 区域内部留空），全画出来整张图会变成蛛网，
+          而主人要解决的是「区域与区域之间断开」这件事。 */
+    let pathsCrossDim = '';
+    let pathsCrossKnown = '';
+    (m.bridges || []).forEach(br => {
+      if (!br.crossRegion) return;
+      const A = shown[br.a], B = shown[br.b];
+      if (!A || !B) return;                 /* 两端都在图上才画（区域模式只画本区） */
+      const seg = 'M' + cx(A) + ' ' + cy(A) + ' L' + cx(B) + ' ' + cy(B) + ' ';
+      if (A.visited && B.visited) pathsCrossKnown += seg;
+      else pathsCrossDim += seg;
+    });
     h += '<svg class="map-edges" width="' + W + '" height="' + H + '">' +
       '<path d="' + paths + '" class="edge edge-dim"/>' +
-      '<path d="' + pathsKnown + '" class="edge edge-known"/></svg>';
+      '<path d="' + pathsKnown + '" class="edge edge-known"/>' +
+      '<path d="' + pathsCrossDim + '" class="edge edge-dim edge-bridge"/>' +
+      '<path d="' + pathsCrossKnown + '" class="edge edge-known edge-bridge"/></svg>';
 
     /* 4) 房间格子：方块填满格子，连成一整片 */
     const off = (MAP_CELL - MAP_NODE) / 2;
@@ -2841,10 +2995,10 @@
         '<span class="mrn-num">' + (r.visitedCount || 0) + '/' + (r.count || 0) + '</span>' +
         (can ? '<i class="mrn-fly">↗</i>' : '') + '</button>';
     };
-    h += '<div class="map-region-nav" title="去过的地方点一下就飞过去；没去过的只能先看看地图">';
+    h += '<div class="map-region-nav" title="去过的地方，点一下人就直接过去；没去过的，只能挪挪视角看看">';
     h += '<div class="mrn-head"><span class="mrn-title">地名索引</span>' +
       '<span class="mrn-sub">去过 ' + regs.filter(r => (r.visitedCount || 0) > 0).length + '/' + regs.length +
-      ' 处　带 ↗ 的点一下就能飞过去</span></div>';
+      ' 处　带 ↗ 的能直接过去</span></div>';
     if (canFly.length) h += '<div class="mrn-grid">' + canFly.map(regBtn).join('') + '</div>';
     else h += '<div class="mrn-empty">还没去过别处。先把脚下这一片走熟。</div>';
     if (rest.length) {
@@ -3185,7 +3339,17 @@
     地块: 'home', 家园地块: 'home', 开垦: 'home', 拓地: 'home', 开辟: 'home', plots: 'home', plot: 'home',
     武馆: 'martial', martial: 'martial',
     修炼: 'martial', 炼丹: 'martial', 炼器: 'martial', 画符: 'martial', 制符: 'martial', 布阵: 'martial',
-    符箓: 'martial', 淬体: 'martial', 打坐: 'martial',
+    符箓: 'martial', 淬体: 'martial',
+    /* ⚠️ 这里**不能**放「打坐」。
+       原先写的是 `打坐: 'martial'`，于是玩家在输入框敲「打坐」时，
+       `panelForCmd` 精确命中 → 本地直接把武学面板弹出来，**根本没有打坐**。
+       而教程第 3 步的提示原话就是「敲 lian 练功（『练功』『打坐』都行）」，
+       武学修为面板里也写着「再去『打坐』」—— 教了却点不动，是典型的
+       「该有的反应没有」。
+       （屏幕下方的「打坐」按钮一直用的是英文 `meditate`，正是为了绕开这个坑；
+         敲中文的玩家就没被照顾到。现在统一：`打坐` 一律交给后端。）
+       `修炼` / `淬体` 保留面板跳转：它们后面还要接一个武学名，光敲两个字
+       打开面板让人挑，是说得通的。 */
     /* 练武学（主人 2026-10-10）：屏幕下方快捷键点开，面板上列已学会的武学，点一个就自动练。 */
     practice: 'practice', 练武学: 'practice', 练功房: 'practice',
     sectfounder: 'found', 创宗: 'found', 招贤: 'found', 逐出师门: 'found', 演武: 'found', 大比: 'found', 解散宗门: 'found',
@@ -3538,7 +3702,7 @@
    *
    *  三条规矩，缺一条都会复发：
    *    ① 没有角色的视图，**绝不**覆盖有角色的视图
-   *    ② 反过来要去把角色找回来：先读本地兜底档，再拉云端
+   *    ② 反过来要去把角色找回来：读本地兜底档（autosave_<设备>）
    *    ③ 真找不回来也不留一个空壳界面 —— 说明白 + 回主菜单，进度在存档里
    * ============================================================ */
   let _recovering = false;
@@ -3563,7 +3727,6 @@
       try { d = await api.load(key); } catch (e) { d = null; }
       if (d && d.view && d.view.player) ok = true;
       else S.view = keep;
-      if (!ok) ok = await pullCloudSaveOnce(key);
     } catch (e) { /* 统一在下面收尾 */ }
     _recovering = false;
     if (ok) {
@@ -3573,7 +3736,7 @@
     }
     appendLog([
       { type: 'warn', text: '（一时接不上你的角色 —— 进度都在存档里，没丢。）' },
-      { type: 'hint', text: '（回主菜单点「继续游戏」就能接着走。）' },
+      { type: 'hint', text: '（回主菜单，点「继续游戏」接着走。）' },
     ]);
     toast('接不上角色，请回主菜单点「继续游戏」', 'warn', 4200);
     show('start');
@@ -3583,23 +3746,6 @@
       const btn = $('btn-continue');
       if (btn) btn.style.display = has ? '' : 'none';
     } catch (e) { /* 主菜单自己还会再探一次存档 */ }
-  }
-
-  /* 把云存档拉回本地再读 —— 容器重建过、本地盘也空了的时候，这是唯一活路 */
-  async function pullCloudSaveOnce(key) {
-    const C = global.WXCLOUD;
-    if (!C || !C.saves) return false;
-    try {
-      if (C.init) await C.init();
-      if (C.available && !C.available()) return false;
-      const list = await C.saves.list();
-      const hit = (list || []).find(s => s && s.save_key === key) || (list || [])[0];
-      if (!hit || !hit.data) return false;
-      const k = hit.save_key || key;
-      await api.saveWrite(k, hit.data);
-      const d = await api.load(k);
-      return !!(d && d.view && d.view.player);
-    } catch (e) { return false; }
   }
 
   /* 统一处理一次动作的返回 */
@@ -3672,7 +3818,6 @@
     _autosavePending = true;
     const key = autosaveId();
     api.save(key)
-      .then(d => cloudSave(key, d && d.data))
       .catch(() => { /* 静默，失败不打扰 */ })
       .finally(() => { _autosavePending = false; });
   }
@@ -3696,8 +3841,7 @@
     let saved = false;
     try {
       const key = autosaveId();
-      const d = await api.save(key);
-      cloudSave(key, d && d.data);
+      await api.save(key);
       saved = true;
     } catch (e) {
       /* 存不上也不能把人锁在游戏里 —— 只是老实告诉玩家这次没存成 */
@@ -3718,18 +3862,6 @@
       saved ? 'ok' : 'warn');
   }
 
-  /* 登录态下把存档也落一份到云端（换设备接着玩） */
-  function cloudSave(key, data) {
-    const C = global.WXCLOUD;
-    if (!C || !C.available() || !data) return;
-    C.auth.user().then(user => {
-      if (!user) return;
-      const p = (S.view && S.view.player) || {};
-      C.saves.upsert(key, data, {
-        name: p.name, level: p.level, room: p.room, playTime: data.clockMinutes || 0
-      }).catch(() => { /* 云存失败静默，本地已有 */ });
-    }).catch(() => {});
-  }
   function startAutoSave() {
     /* 兜底：万一玩家挂机不动，也 5 分钟补一次（一步一存是主力） */
     if (_autosaveTimer) clearInterval(_autosaveTimer);
@@ -3809,27 +3941,26 @@
     let items;
 
     if (inCombat) {
+      /* 🔴 主人 2026-10-11：「基本武学又没有『武技』，为什么会在战斗里显示
+         『基本内功』『基本拳脚』？战斗中只显示**已激活武学**的武技。」
+         并且「把战斗中的『全力一击』删掉」。
+         ⇒ 三点口径：
+           ① 删掉「全力一击」（`attack` 光杆指令，跟「普通攻击」重复）；
+           ② 只收**已激活**（挂在槽位上 / 散手已激活）的武学；
+           ③ 基础武学（isBasic，如基本内功 / 基本拳脚）**不摆**，它们本来就没有武技。
+          ⚠️ 也不再拿「整门功夫」兜底当按钮 —— 那正是「基本内功」混进战斗栏的由来。 */
       items = [
         { label: '普通攻击', cmd: 'auto' },
-        { label: '全力一击', cmd: 'attack' },
         { label: '防御', cmd: 'defend' },
         { label: '逃跑', cmd: 'flee' }
       ];
-      /* 武学重制（design/40 P0-4 v1）：把「已激活武学的武技」摆进战斗快捷栏。
-         玩家的诉求原话就是「进战斗后把已激活武学的武技放在快捷栏里点着用」——
-         不用去记武学名再敲 perform。
-         · 零后端改动：perform 早就能用，这里只是给它一个按钮。
-         · 有 moves 的按「招」出按钮，没有的（老数据）退化成整门功夫，一样点得动。
-         · 上限 3 门 × 2 招 —— 再多就把「防御 / 逃跑」挤到屏幕外，反而误事。 */
-      const actives = ((p.skills) || []).filter(s => s.equipped || s.standaloneActive);
+      const actives = ((p.skills) || []).filter(s =>
+        (s.equipped || s.standaloneActive) && !s.isBasic && (s.moves || []).length);
       let added = 0;
       for (const s of actives) {
         if (added >= 3) break;
-        const moves = (s.moves || []).slice(0, 2);
-        if (moves.length) {
-          for (const mv of moves) items.push({ label: mv.name, cmd: 'perform ' + mv.name });
-        } else {
-          items.push({ label: s.name, cmd: 'perform ' + s.name });
+        for (const mv of (s.moves || []).slice(0, 2)) {
+          items.push({ label: mv.name, cmd: 'perform ' + mv.name });
         }
         added++;
       }

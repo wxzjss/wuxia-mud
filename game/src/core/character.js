@@ -108,6 +108,14 @@ function mpRateFor(sd) {
  * ============================================================ */
 const MERIDIAN_NAMES = { 任: '任脉', 督: '督脉', 冲: '冲脉', 带: '带脉', 阴跷: '阴跷脉', 阳跷: '阳跷脉', 阴维: '阴维脉', 阳维: '阳维脉' };
 const MERIDIAN_MAX = 8;
+/* 开脉的**固定顺序**（2026-10-11 重做）：
+   旧的实现是「从未满的脉里随机抽」—— 30 次打坐实测开出 带/阴跷/阴维/阳维，任督二脉不动，
+   而玩家心里「奇经八脉」就是先从任督二脉说起。顺序固定下来，进度才讲得通。
+   顺序按传统：任 → 督 → 冲 → 带 → 阴跷 → 阳跷 → 阴维 → 阳维。 */
+const MERIDIAN_ORDER = ['任', '督', '冲', '带', '阴跷', '阳跷', '阴维', '阳维'];
+
+/** 通下一级需要多少「冲脉进度」（随级数递增：40 / 70 / 100 …） */
+function meridianNeed(level) { return 40 + (level || 0) * 30; }
 function emptyMeridians() { return { 任: 0, 督: 0, 冲: 0, 带: 0, 阴跷: 0, 阳跷: 0, 阴维: 0, 阳维: 0 }; }
 
 /** 性别归一化：数据里两种写法混用（门派 require 写 'male'，创建界面存 '男'） */
@@ -207,6 +215,9 @@ class Character {
 
     // ---- 奇经八脉（内功冲击） ----
     this.meridians = def.meridians ? Object.assign(emptyMeridians(), def.meridians) : emptyMeridians();
+    /* 当前这一脉的冲脉进度（旧版是每次掷骰直接开脉，没有进度这个概念）。
+       ⚠️ 随档走 —— 见 world.js 的 serialize/deserialize。 */
+    this.meridianExp = def.meridianExp || 0;
 
     // ---- 门派 ----
     this.sect = def.sect || null;
@@ -279,8 +290,23 @@ class Character {
     // 基础值派生
     const st = this.attrTotal('根骨'), str = this.attrTotal('力量'), agi = this.attrTotal('身法'), wis = this.attrTotal('悟性');
 
+    /* 上限拆解台账（2026-10-11）—— 主人报「初始最大血 89，没走两步变 149」。
+       涨是该涨的（内功等级 / 通脉），坏在**全仓没有一处告诉玩家这钱从哪儿来**。
+       ⚠️ 台账必须**在下面每一次 maxHp/maxMp 赋值处就地累加**，
+          绝不能另写一份「重算一遍」的公式 —— 那样 recalc 改了、台账没改，
+          玩家看到的拆解加起来就**不等于**顶上写的总数（比不解释更糟）。
+       键：base 底子 / skill 内功与武学 / meridian 奇经八脉 / equip 装备 / other 特质与状态。 */
+    const _vit = {
+      maxHp: { base: 0, skill: 0, meridian: 0, equip: 0, other: 0 },
+      maxMp: { base: 0, skill: 0, meridian: 0, equip: 0, other: 0 },
+    };
+
     let maxHp = this.maxHpBase + st * 12 + (eqStat.maxHp || 0);
     let maxMp = this.maxMpBase + wis * 6 + (eqStat.maxMp || 0);
+    _vit.maxHp.base = this.maxHpBase + st * 12;
+    _vit.maxMp.base = this.maxMpBase + wis * 6;
+    _vit.maxHp.equip = (eqStat.maxHp || 0);
+    _vit.maxMp.equip = (eqStat.maxMp || 0);
     let atk = this.atkBase + Math.floor(str * 1.5) + (eqStat.atk || 0);
     let def = this.defBase + Math.floor(st * 1.2) + (eqStat.def || 0);
     let dodge = this.dodgeBase + Math.floor(agi * 1.2) + (eqStat.dodge || 0);
@@ -296,6 +322,8 @@ class Character {
         const lv = this.skillLevel(neigong);
         maxHp += Math.floor(lv * 1.2);
         maxMp += Math.floor(lv * 1.8) + (s.mpBonus || 0);
+        _vit.maxHp.skill += Math.floor(lv * 1.2);
+        _vit.maxMp.skill += Math.floor(lv * 1.8) + (s.mpBonus || 0);
         def += Math.floor(lv * 0.3);
       }
     }
@@ -328,8 +356,8 @@ class Character {
       for (const bk of Object.keys(s.bonus)) {
         const v = s.bonus[bk];
         if (typeof v !== 'number') continue;
-        if (bk === 'maxHp') maxHp += Math.floor(v * unit);
-        else if (bk === 'maxMp') maxMp += Math.floor(v * unit);
+        if (bk === 'maxHp') { maxHp += Math.floor(v * unit); _vit.maxHp.skill += Math.floor(v * unit); }
+        else if (bk === 'maxMp') { maxMp += Math.floor(v * unit); _vit.maxMp.skill += Math.floor(v * unit); }
         else if (bk === 'atk') atk += Math.floor(v * unit);
         else if (bk === 'def') def += Math.floor(v * unit);
         else if (bk === 'dodge') dodge += Math.floor(v * unit);
@@ -344,6 +372,8 @@ class Character {
     const md = this.meridians || emptyMeridians();
     maxMp += (md.督 || 0) * 15 + (md.阳维 || 0) * 5;
     maxHp += (md.任 || 0) * 12 + (md.阳跷 || 0) * 6;
+    _vit.maxMp.meridian += (md.督 || 0) * 15 + (md.阳维 || 0) * 5;
+    _vit.maxHp.meridian += (md.任 || 0) * 12 + (md.阳跷 || 0) * 6;
     armorPen += (md.冲 || 0) * 0.02 + (md.阴维 || 0) * 0.01;
     critRate += (md.阴跷 || 0) * 0.01;
 
@@ -360,8 +390,8 @@ class Character {
         for (const e of [].concat(td.effects)) {
           if (e.type === 'stat') {
             switch (e.key) {
-              case 'maxHp': maxHp += e.value; break;
-              case 'maxMp': maxMp += e.value; break;
+              case 'maxHp': maxHp += e.value; _vit.maxHp.other += e.value; break;
+              case 'maxMp': maxMp += e.value; _vit.maxMp.other += e.value; break;
               case 'atk': atk += e.value; break;
               case 'def': def += e.value; break;
               case 'dodge': dodge += e.value; break;
@@ -383,8 +413,8 @@ class Character {
         for (const k of Object.keys(b.mods)) {
           const v = b.mods[k];
           switch (k) {
-            case 'maxHp': maxHp += v; break;
-            case 'maxMp': maxMp += v; break;
+            case 'maxHp': maxHp += v; _vit.maxHp.other += v; break;
+            case 'maxMp': maxMp += v; _vit.maxMp.other += v; break;
             case 'atk': atk += v; break;
             case 'def': def += v; break;
             case 'dodge': dodge += v; break;
@@ -429,6 +459,12 @@ class Character {
 
     this.hp = wasFullHp ? this.maxHp : clamp(this.hp, 0, this.maxHp);
     this.mp = wasFullMp ? this.maxMp : clamp(this.mp, 0, this.maxMp);
+
+    /* 台账落账：把浮点四舍五入期间产生的零头塞进 other，
+       保证「各项之和 == 顶上那个总数」——拆解加起来对不上，比不拆更让人不信。 */
+    _vit.maxHp.other += this.maxHp - (_vit.maxHp.base + _vit.maxHp.skill + _vit.maxHp.meridian + _vit.maxHp.equip + _vit.maxHp.other);
+    _vit.maxMp.other += this.maxMp - (_vit.maxMp.base + _vit.maxMp.skill + _vit.maxMp.meridian + _vit.maxMp.equip + _vit.maxMp.other);
+    this._vitals = _vit;
 
     // 进阶属性（高自由度：任何 mod 都能提供 combat 计算）
     this.combatStats = this.world.computeCombatStats ? this.world.computeCombatStats(this) : {};
@@ -547,25 +583,72 @@ class Character {
     return { ok: true, msg: lines.join('') };
   }
 
-  /** 内功冲击奇经八脉（SPRINT2） */
+  /** 内功冲击奇经八脉（2026-10-11 重做）
+   *
+   * 🔴 主人亲报：「为什么我打坐一下就直接显示我冲开了任脉？（有点太小儿科的感觉）」
+   *    旧实现：每次内功修炼掷一次骰（悟性 8 时 ≈ 20%），中了就从**未满的脉里随机抽一条** +1 级。
+   *    两个毛病：
+   *      ① 一次打坐就可能开脉 —— 奇经八脉成了抽奖，玩家自然觉得儿戏；
+   *      ② **随机跳脉**：实测 30 次打坐开的是 带/阴跷/阴维/阳维，任督二脉压根没动 ——
+   *         而玩家的心理顺序是「任督二脉」先通。抽出来的顺序看着就是乱的。
+   *    连带后果：每次开脉都悄悄抬 maxHp/maxMp，玩家看到数字莫名其妙地涨
+   *    （主人报的「89→149」里就有这一份），却没有任何一处告诉他「是经脉涨的」。
+   *
+   * 新实现：**按传统顺序**（任→督→冲→带→阴跷→阳跷→阴维→阳维）一条一条来，
+   *    每次修炼**只积累进度**（必给，不掷骰），攒够阈值才通一级，
+   *    并且**明说涨了多少**（上限构成见 vitalsBreakdown）。
+   */
   tryAssaultMeridian(sd) {
     const md = this.meridians || (this.meridians = emptyMeridians());
-    const open = Object.keys(MERIDIAN_NAMES).filter(k => (md[k] || 0) < MERIDIAN_MAX);
-    if (!open.length) return null;
-    const k = open[Math.floor(this.world.rng.next() * open.length)];
+    /* 当前该冲的那一条 = 顺序里第一条还没满的 */
+    let idx = -1;
+    for (let i = 0; i < MERIDIAN_ORDER.length; i++) {
+      if ((md[MERIDIAN_ORDER[i]] || 0) < MERIDIAN_MAX) { idx = i; break; }
+    }
+    if (idx < 0) return null;                       // 八脉全通
+    const k = MERIDIAN_ORDER[idx];
+    const lv = md[k] || 0;
+    const need = meridianNeed(lv);
+
+    /* 每次修炼必给进度：悟性 + 内功修为 + 内力上限都算「根扎得深」 */
     const wis = this.attrTotal('悟性');
-    const chance = clamp(0.12 + wis * 0.01, 0.05, 0.6);
-    if (this.world.rng.next() < chance) {
-      md[k] = (md[k] || 0) + 1;
-      this.recalc();
-      return `你内息流转，竟冲开了「${MERIDIAN_NAMES[k]}」一脉！`;
+    const ngLv = this.learned[sd.id] ? this.skillLevel(sd.id) : 0;
+    const gain = Math.max(3, Math.round(4 + wis * 0.8 + ngLv * 0.05 + (this.maxMp || 0) / 400));
+    this.meridianExp = (this.meridianExp || 0) + gain;
+
+    if (this.meridianExp < need) {
+      /* 没通就不吭声（修炼结果里已经有一行字了），免得每次打坐刷一屏 */
+      return null;
     }
-    // 冲脉受挫，略损元气（有生命危险由外功淬体承担，这里只小损）
-    if (this.world.rng.next() < 0.2) {
-      this.hp = clamp(this.hp - Math.floor(this.maxHp * 0.03), 1, this.maxHp);
-      return '冲脉受挫，胸口发闷，元气伤了些。';
+    this.meridianExp -= need;
+    md[k] = lv + 1;
+    const before = { hp: this.maxHp, mp: this.maxMp };
+    this.recalc();
+    const dHp = this.maxHp - before.hp, dMp = this.maxMp - before.mp;
+    const up = [];
+    if (dHp) up.push('气血上限 +' + dHp);
+    if (dMp) up.push('内力上限 +' + dMp);
+    const tail = up.length ? '（' + up.join('、') + '）' : '';
+    if (md[k] >= MERIDIAN_MAX) {
+      return `内息一路冲过「${MERIDIAN_NAMES[k]}」最后一关 —— 这一脉**通了**！${tail}`;
     }
-    return null;
+    return `内息沿「${MERIDIAN_NAMES[k]}」上行，通了一关（${md[k]}/${MERIDIAN_MAX}）。${tail}`;
+  }
+
+  /** 上限构成：把「底子 / 内功武学 / 奇经八脉 / 装备 / 其余（特质·状态）」拆开。
+   *  为什么要有这个：主人报「初始 89，没走两步变 149」。涨是**该涨**的（内功升级 + 通脉），
+   *  坏在**没有一处告诉玩家钱是从哪儿来的** —— 一个总数从 89 跳到 149，谁看都像 bug。
+   *
+   *  ⚠️ 数据来自 `recalc()` 里就地累加的 `_vitals` 台账，**不是**在这里重算一遍。
+   *     以前这里是一份照抄 recalc 的公式，结果漏了 `mpBonus` / 特质 / buff 三处，
+   *     拆解加起来 55、顶上写着 75 —— 玩家一算更觉得是 bug。公式只能有一份。 */
+  vitalsBreakdown() {
+    const t = this._vitals;
+    if (!t) return null;
+    const mk = (o, total) => ({
+      base: o.base, skill: o.skill, meridian: o.meridian, equip: o.equip, other: o.other, total,
+    });
+    return { maxHp: mk(t.maxHp, this.maxHp), maxMp: mk(t.maxMp, this.maxMp) };
   }
 
   maxSkillLevelFor(sd) {
@@ -908,7 +991,7 @@ class Character {
 module.exports = {
   Character, BASE_ATTRS, SLOT_ROOT, STANDALONE_MAX,
   PROF_TIERS, profTierIndex, profTierOf, profTierMult, profTierAcc, profTierName,
-  MERIDIAN_NAMES, MERIDIAN_MAX, emptyMeridians,
+  MERIDIAN_NAMES, MERIDIAN_MAX, MERIDIAN_ORDER, meridianNeed, emptyMeridians,
   /* 功法刻度（界面与测试都要读）*/
   needMpOf, mpRateFor, GRADE_MP_RATE, NEED_MP_BY_GRADE,
 };

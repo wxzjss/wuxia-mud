@@ -10,6 +10,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
+const zlib = require('zlib');
 
 const ROOT = path.resolve(__dirname, '..');
 const GAME_DIR = path.join(ROOT, 'game');
@@ -27,6 +28,31 @@ const MIME = {
 
 function json(res, code, data) {
   const body = Buffer.from(JSON.stringify(data), 'utf8');
+  /* ---- 回包 gzip（2026-10-11）----
+     主人报「每走一步、每点一个按钮都卡顿」。查下来**服务端只花 1.3 ms**，
+     卡的是**回包体积**：一张地图 276 KB，整包 310 KB，而且一直没开压缩。
+     中文 JSON 的键名大量重复，gzip 压得极狠（实测能压到十分之一上下），
+     远端（手机网络）这一下就是几百毫秒的差别。
+
+     ⚠️ 三条边界：
+       · 小于 1 KB 的包不压 —— 压缩本身有开销，小包压了反而更慢更大；
+       · 客户端没报 `gzip` 就不压（老浏览器 / 某些代理会去掉这个头），并且回
+         `Vary: Accept-Encoding`，免得中间层把「压缩版」缓存给了不支持的客户端；
+       · `Content-Length` 必须改成压缩后的长度 —— 写错会让浏览器**一直等剩余字节**
+         （表现为「页面卡住不动」，比不压缩还糟）。 */
+  const ae = (res.req && res.req.headers && res.req.headers['accept-encoding']) || '';
+  if (body.length >= 1024 && /\bgzip\b/.test(ae)) {
+    const gz = zlib.gzipSync(body, { level: 5 });
+    res.writeHead(code, {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Content-Encoding': 'gzip',
+      'Content-Length': gz.length,
+      'Cache-Control': 'no-store',
+      'Vary': 'Accept-Encoding',
+    });
+    res.end(gz);
+    return;
+  }
   res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': body.length, 'Cache-Control': 'no-store' });
   res.end(body);
 }
@@ -60,6 +86,26 @@ function cacheHeaderFor(ext) {
   return 'public, max-age=300';
 }
 
+/* 带版本戳的 URL 可以放心长缓存（2026-10-11 主人报「进游戏慢、点按钮卡」）。
+ *
+ * 为什么敢改上面那条「一律 no-store」：
+ *   那条规矩治的是「发了版浏览器还跑旧 ui.js」——根子是**URL 没变**。
+ *   而 index.html 里给每个 js 都挂了 `?v=20261011x`：发版改了 v，URL 就变了，
+ *   浏览器必然重新拉。也就是说**只要 URL 带 v=，长缓存不会造成跑旧代码**。
+ *   css/main.css 没挂 v=，所以它照旧 no-store —— 绝不拿它冒险。
+ *
+ * 收益：ui.js 224 KB / modmaker 80 KB 这些每次进游戏都要重下的东西，
+ *       第一次之后直接走本地缓存（0 字节）。 */
+function isVersioned(urlStr) { return /[?&]v=/.test(String(urlStr || '')); }
+
+/* 需要 gzip 的文本类型（二进制压了反而更大，直接跳过） */
+const GZIP_EXT = ['.html', '.htm', '.js', '.mjs', '.css', '.json', '.map',
+  '.svg', '.txt', '.md', '.webmanifest', '.xml'];
+
+/* 允许「版本戳 URL 长缓存」的类型。刻意不含 .html：
+   HTML 是入口，宁可每次校验一下（它才几 KB），也别让玩家卡在旧壳子里。 */
+const CACHEABLE_EXT = ['.js', '.mjs', '.css', '.svg', '.woff', '.woff2', '.ttf', '.png', '.jpg', '.jpeg', '.gif', '.ico'];
+
 function serveStatic(req, res, baseDir, relPath) {
   let p = path.normalize(path.join(baseDir, decodeURIComponent(relPath)));
   if (!p.startsWith(baseDir)) { res.writeHead(403); res.end('Forbidden'); return; }
@@ -68,6 +114,10 @@ function serveStatic(req, res, baseDir, relPath) {
   const ext = path.extname(p).toLowerCase();
   const stat = fs.statSync(p);
   const type = MIME[ext] || 'application/octet-stream';
+  /* 版本戳 URL（且是代码/文本类）→ 长缓存；其余照旧走 no-store */
+  const cache = (isVersioned(req.url) && CACHEABLE_EXT.indexOf(ext) >= 0)
+    ? 'public, max-age=31536000, immutable'
+    : cacheHeaderFor(ext);
   // 范围请求（音频等）
   const range = req.headers.range;
   if (range && /^bytes=/.test(range)) {
@@ -82,7 +132,22 @@ function serveStatic(req, res, baseDir, relPath) {
     fs.createReadStream(p, { start, end }).pipe(res);
     return;
   }
-  res.writeHead(200, { 'Content-Type': type, 'Content-Length': stat.size, 'Cache-Control': cacheHeaderFor(ext) });
+  /* ---- 静态资源 gzip（2026-10-11）----
+     实测：ui.js 224 KB → 75 KB，main.css 112 KB → 29 KB。
+     ⚠️ 与 Range 二选一 —— 上面已经 return 走了，压过的流给不出正确字节区间。
+     ⚠️ 小于 1 KB 的、以及二进制素材不压。 */
+  const ae = req.headers['accept-encoding'] || '';
+  if (stat.size >= 1024 && /\bgzip\b/.test(ae) && GZIP_EXT.indexOf(ext) >= 0) {
+    const gz = zlib.gzipSync(fs.readFileSync(p), { level: 5 });
+    res.writeHead(200, {
+      'Content-Type': type, 'Content-Encoding': 'gzip', 'Content-Length': gz.length,
+      'Cache-Control': cache, 'Vary': 'Accept-Encoding',
+    });
+    if (req.method === 'HEAD') { res.end(); return; }
+    res.end(gz);
+    return;
+  }
+  res.writeHead(200, { 'Content-Type': type, 'Content-Length': stat.size, 'Cache-Control': cache, 'Vary': 'Accept-Encoding' });
   if (req.method === 'HEAD') { res.end(); return; }
   fs.createReadStream(p).pipe(res);
 }
@@ -216,7 +281,7 @@ async function handleApi(engine, req, res, pn, query, preset) {
       if (c0.indexOf('panel/') === 0) {
         const panel = c0.slice(6);
         const r = engine.exec('__panel__' + panel, {});
-        return json(res, 200, { ok: true, cmd: c0, lines: r.lines || [], log: r.lines || [], action: r.action || 'panel', openPanel: panel, choices: null, modal: null, ending: null, view: r.view || engine.view() });
+        return json(res, 200, { ok: true, cmd: c0, lines: r.lines || [], log: r.lines || [], action: r.action || 'panel', openPanel: panel, choices: null, modal: null, ending: null, view: r.view || engine.view({ map: false }) });
       }
     }
   }
@@ -320,7 +385,7 @@ async function handleApi(engine, req, res, pn, query, preset) {
       case 'panel': {
         const name = (json_body && json_body.panel) || query.panel || '';
         const r = engine.exec('__panel__' + name, {});
-        return json(res, 200, { ok: true, action: 'panel', openPanel: name, lines: r.lines || [], log: r.lines || [], choices: null, modal: null, ending: null, view: r.view || engine.view() });
+        return json(res, 200, { ok: true, action: 'panel', openPanel: name, lines: r.lines || [], log: r.lines || [], choices: null, modal: null, ending: null, view: r.view || engine.view({ map: false }) });
       }
 
       case 'menu': {
@@ -334,7 +399,7 @@ async function handleApi(engine, req, res, pn, query, preset) {
       case 'guide/mark': {
         const flag = json_body && json_body.flag;
         const ok = engine.markTutorialFlag(flag);
-        return json(res, 200, { ok: !!ok, view: engine.view() });
+        return json(res, 200, { ok: !!ok, view: engine.view({ map: false }) });
       }
 
       /* --- 战斗 --- */
@@ -355,7 +420,17 @@ async function handleApi(engine, req, res, pn, query, preset) {
         })().valueOf());
       }
 
-      case 'view': return json(res, 200, { ok: true, view: engine.view({ map: true }) });
+      /* 视图切换（不发指令，只重新取一份渲染数据给某个面板）。
+         🔴 2026-10-11 主人报「点一个按钮就卡」—— 元凶就在这一行：
+           旧写法 `engine.view({ map: true })` **不管开的是哪个面板都拖着整张地图**
+           （276 KB，占整包 88%），于是点「行囊」也要下载、解析一张舆图。
+           现在只在**真要地图**时才带上（前端开地图面板用的就是 `panel: 'map'`）。
+           其余面板拿到的 view 不带 map —— 前端 `afterAction` 会沿用上一份地图，
+           地图数据是「已探索到哪」的快照，晚一代不影响面板点格子。 */
+      case 'view': {
+        const wantMap = String((json_body && json_body.panel) || query.panel || '').toLowerCase() === 'map';
+        return json(res, 200, { ok: true, view: engine.view({ map: wantMap }) });
+      }
 
       /* NPC 详情画像（前端「细看此人」的新界面）。
          `api.view(panel)` 只吃一个 panel 名，传不了「看哪个人」，
@@ -382,11 +457,9 @@ async function handleApi(engine, req, res, pn, query, preset) {
         const r = engine.save(json_body && json_body.id);
         return json(res, 200, Object.assign({ lines: [{ kind: r.ok ? 'sys' : 'warn', text: r.msg }], view: engine.view() }, r));
       }
-      /* 云存档 → 本地落盘（前端从云拉下来后写进本地 saves/） */
-      case 'save/write': {
-        const r = engine.writeSave(json_body && json_body.id, json_body && json_body.data);
-        return json(res, 200, r);
-      }
+      /* ⚠️ `save/write` 已随云存档一并删除（2026-10-11 主人：「把游戏里的云存档
+         相关功能全部删除」）。它原本唯一的作用是「把云端拉回来的存档写进本地」，
+         没有云存档就没有调用方。前端 `api.saveWrite` 也一并拿掉了。 */
       case 'load': {
         const r = engine.loadSave(json_body && json_body.id);
         return json(res, 200, Object.assign({ lines: [{ kind: r.ok ? 'sys' : 'warn', text: r.msg }], view: engine.view() }, r));
@@ -555,7 +628,17 @@ async function handleApi(engine, req, res, pn, query, preset) {
       /* --- 与 Mod 网站通信 --- */
       case 'site/config': {
         const cfg = readSiteConfig();
-        return json(res, 200, { ok: true, config: cfg });
+        /* 把**实际生效**的地址一起回给前端：设置面板据此显示真相。
+           否则玩家看到的是配置里那个 8788，而请求其实发去别处，
+           「明明填对了却传不上」比不显示更折磨人。 */
+        return json(res, 200, {
+          ok: true,
+          config: Object.assign({}, cfg, {
+            effectiveBase: siteBase(cfg),
+            publicBase: sitePublicBase(cfg),
+            combined: process.env.COMBINED === '1',
+          }),
+        });
       }
       case 'site/setconfig': {
         writeSiteConfig(json_body || {});
@@ -589,6 +672,41 @@ function readSiteConfig() {
 function writeSiteConfig(c) {
   fs.mkdirSync(path.dirname(SITE_CFG), { recursive: true });
   fs.writeFileSync(SITE_CFG, JSON.stringify(Object.assign(readSiteConfig(), c), null, 2), 'utf8');
+}
+
+/**
+ * Mod 站地址 —— **服务端转发**用（唯一真相）。
+ *
+ * 🔴 2026-10-11 主人亲报：「mod 制作器的上传你是不是没连到我们的 mod 站」。
+ *    根因：这里原本只有 `cfg.apiBase`，默认写死 `http://127.0.0.1:8788`。
+ *    可**合并部署**（combined.js）下，Mod 站只是同一个进程里的一个内部端口，
+ *    而且 `listenWithFallback` 在端口被占时还会**顺延**，根本不保证是 8788。
+ *    实测（SITE_PORT=8892 起合并服务）：
+ *      POST /api/site/upload → {"ok":false,"error":"connect ECONNREFUSED 127.0.0.1:8788"}
+ *    ——玩家看到的就是「上传卡住 / 白屏」。
+ *
+ * 修法：以 combined.js 注入的 `SITE_INTERNAL_URL`（/ 或真实内部地址）为准，
+ *      它没给（独立跑游戏端）才退回手动配置 → 再退回默认端口。
+ * ⚠️ 顺序不能反：手动配置在合并部署里是**没法填对**的（玩家不知道内部端口），
+ *    所以内部地址优先。独立部署时没有这个变量，行为与从前一致。
+ */
+function siteBase(cfg) {
+  const internal = String(process.env.SITE_INTERNAL_URL || '').trim();
+  if (internal) return internal.replace(/\/+$/, '');
+  return String((cfg && cfg.apiBase) || 'http://127.0.0.1:8788').replace(/\/+$/, '');
+}
+
+/**
+ * Mod 站地址 —— **给玩家看的链接**用。
+ *   合并部署：站挂在公开域的 `/site/`，所以返回相对路径 `/site`；
+ *   独立部署：就是站点自己的地址。
+ * （转发用 internal、展示用 public，两个不是一个东西，别混用。）
+ */
+function sitePublicBase(cfg) {
+  const env = String(process.env.SITE_PUBLIC_BASE || '').trim();
+  if (env) return env.replace(/\/+$/, '');
+  if (process.env.COMBINED === '1') return '/site';
+  return siteBase(cfg);
 }
 
 /**
@@ -716,7 +834,7 @@ async function proxyAccount(engine, req, res, jb, query) {
     pass: src.pass || '',
     token: src.token || (query && query.token) || '',
   };
-  const u = cfg.apiBase + '/api/account/' + action +
+  const u = siteBase(cfg) + '/api/account/' + action +
     (isGet && payload.token ? ('?token=' + encodeURIComponent(payload.token)) : '');
 
   const result = isGet
@@ -764,7 +882,7 @@ async function proxyUpload(engine, req, res, jb) {
     token: jb.token || '',
   };
 
-  const result = await httpRequest(cfg.apiBase + '/api/mods', {
+  const result = await httpRequest(siteBase(cfg) + '/api/mods', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: Buffer.from(JSON.stringify(payload), 'utf8'),
@@ -776,7 +894,7 @@ async function proxyUpload(engine, req, res, jb) {
   /* 站点返回的 url 可能是相对地址（适配 /site/ 前缀部署），这里补全成绝对地址 */
   let pageUrl = (result.data && result.data.url) || '';
   if (pageUrl && !/^https?:/i.test(pageUrl)) {
-    pageUrl = cfg.apiBase.replace(/\/+$/, '') + '/' + pageUrl.replace(/^\/+/, '');
+    pageUrl = sitePublicBase(cfg).replace(/\/+$/, '') + '/' + pageUrl.replace(/^\/+/, '');
   }
   return json(res, 200, {
     ok: true, id: (result.data && result.data.id) || modId,
@@ -784,7 +902,7 @@ async function proxyUpload(engine, req, res, jb) {
     /* 二创标注透传给制作器（主人 2026-10-11）：不是原创就把来源带回前端，
        上传成功的弹窗里明说一句「二创自《X》」。 */
     forkOf: (result.data && result.data.mod && result.data.mod.forkOf) || null,
-    url: pageUrl || (cfg.apiBase + '/mod.html?id=' + encodeURIComponent(modId)),
+    url: pageUrl || (sitePublicBase(cfg) + '/mod.html?id=' + encodeURIComponent(modId)),
   });
 }
 
@@ -800,7 +918,7 @@ async function proxyRemote(engine, req, res, query) {  const cfg = readSiteConfi
     if (query.page) qs.set('page', query.page);
     if (query.size) qs.set('size', query.size);
     const suffix = qs.toString() ? ('?' + qs.toString()) : '';
-    const r = await httpRequest(cfg.apiBase + '/api/mods' + suffix, { method: 'GET' });
+    const r = await httpRequest(siteBase(cfg) + '/api/mods' + suffix, { method: 'GET' });
     if (!r.ok) return json(res, 200, { ok: false, error: r.error || ('HTTP ' + (r.status || '?')), mods: [] });
     const d = r.data || {};
     return json(res, 200, {
@@ -815,7 +933,7 @@ async function proxyRemote(engine, req, res, query) {  const cfg = readSiteConfi
   if (query.action === 'download') {
     const id = query.id;
     if (!id) return json(res, 400, { ok: false, error: '缺少 id' });
-    const r = await httpRequest(cfg.apiBase + '/api/mods/' + encodeURIComponent(id) + '/download', { method: 'GET' });
+    const r = await httpRequest(siteBase(cfg) + '/api/mods/' + encodeURIComponent(id) + '/download', { method: 'GET' });
     if (!r.ok || !r.data || !r.data.ok) {
       return json(res, 200, { ok: false, error: (r.data && r.data.error) || r.error || '下载失败' });
     }
@@ -838,7 +956,7 @@ async function proxyRemote(engine, req, res, query) {  const cfg = readSiteConfi
 
   /* 站点健康检查 */
   if (query.action === 'ping') {
-    const r = await httpRequest(cfg.apiBase + '/api/health', { method: 'GET' });
+    const r = await httpRequest(siteBase(cfg) + '/api/health', { method: 'GET' });
     return json(res, 200, { ok: r.ok, info: r.data || null, error: r.error || null });
   }
 
@@ -847,7 +965,7 @@ async function proxyRemote(engine, req, res, query) {  const cfg = readSiteConfi
   if (query.action === 'detail') {
     const id = query.id;
     if (!id) return json(res, 400, { ok: false, error: '缺少 id' });
-    const r = await httpRequest(cfg.apiBase + '/api/mods/' + encodeURIComponent(id), { method: 'GET' });
+    const r = await httpRequest(siteBase(cfg) + '/api/mods/' + encodeURIComponent(id), { method: 'GET' });
     if (!r.ok || !r.data || r.data.ok === false) {
       return json(res, 200, { ok: false, error: (r.data && r.data.error) || r.error || '取不到这个 Mod' });
     }

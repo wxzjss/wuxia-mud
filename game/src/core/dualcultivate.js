@@ -336,8 +336,8 @@ function start(world, p, npc, kind) {
   lines.push({
     kind: 'hint',
     text: kind === 'drain'
-      ? '（此刻起你脱不开身。再点一次「采补」接着往下引；想收手，点屏幕上任何别的按钮都行。）'
-      : '（此刻起你脱不开身。再点一次「双修」接着往下走；想走开，点屏幕上任何别的按钮都行。）',
+      ? '（此刻起你脱不开身。再点一次「采补」接着往下引；不想继续，点屏幕上随便哪个别的按钮。）'
+      : '（此刻起你脱不开身。再点一次「双修」接着往下走；不想继续，点屏幕上随便哪个别的按钮。）',
   });
   return { ok: true, lines };
 }
@@ -385,7 +385,7 @@ function round(world, p, opts) {
 
   if (st.round < st.rounds) {
     const more = isDrain ? '（再点一次「采补」。）' : '（再点一次「双修」。）';
-    out.push({ kind: 'plain', text: `（第 ${st.round}/${st.rounds} 转。${more}想走开，点别的按钮就行。）` });
+    out.push({ kind: 'plain', text: `（第 ${st.round}/${st.rounds} 转。${more}想走开也行，点屏幕上别的按钮。）` });
     return { ok: true, done: false, lines: out };
   }
 

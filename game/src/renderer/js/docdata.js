@@ -158,7 +158,7 @@
   <div><b>Q：多个 Mod 会冲突吗？</b>
   <p>同名 ID 的后加载的会覆盖前面的。在「Mod 管理器」里调整顺序，越靠下加载越晚，覆盖力越强。</p></div>
   <div><b>Q：想改游戏原有内容怎么办？</b>
-  <p>直接建一个同 ID 的房间/物品，填你想改的字段就行——不用全填，填了的会覆盖，没填的保留原样。这叫「增量覆盖」。</p></div>
+  <p>直接建一个同 ID 的房间/物品，只把要改的字段填上。没填的照旧，填了的盖过去——这叫「增量覆盖」。</p></div>
   <div><b>Q：能写代码吗？</b>
   <p>可以。到「⚙ 源码视图」直接改 JSON。更进阶还可以在 mod 目录里放 <code>main.js</code> 做自定义函数，引擎会加载。</p></div>
 </div>
@@ -224,7 +224,7 @@
     <div class="doc-card"><b>行走</b><p>点房间下方的方向按钮，或输入 <code>n</code> <code>s</code> <code>e</code> <code>w</code>，也可以用中文「往北走」。键盘 QEZC = 四斜角，WASD = 四方。</p></div>
     <div class="doc-card"><b>成长</b><p>武学靠<b>请教</b>师父、参悟石壁、读书识字得来，练得越多越熟。你的强弱只看武学功法等级——练成绝学，<b>境界</b>自升。</p></div>
     <div class="doc-card"><b>武学</b><p>武学分拳脚、剑法、刀法、内功、轻功等。等级越高威力越大。<code>lian 武学名</code> 可以自己练功涨熟练度。</p></div>
-    <div class="doc-card"><b>战斗</b><p><code>kill 目标</code> 出手。战斗面板选「普通攻击 / 全力一击 / 防御 / 逃跑」，也能用 <code>perform 招式名</code> 发绝招。</p></div>
+    <div class="doc-card"><b>战斗</b><p><code>kill 目标</code> 出手。战斗面板选「普通攻击 / 防御 / 逃跑」，已激活的武学还会把它的<b>武技</b>摆成一排按钮，点一下即出招（等同于 <code>perform 招式名</code>）。</p></div>
     <div class="doc-card"><b>门派</b><p>找到门派山门，<code>join 门派名</code> 拜师。做门派贡献可以晋升职位，解锁更高级武学。</p></div>
     <div class="doc-card"><b>任务</b><p>跟 NPC <code>talk</code> 或 <code>ask</code>。接到的任务在右侧「当前任务」可见，完成后回禀报。</p></div>
   </div>

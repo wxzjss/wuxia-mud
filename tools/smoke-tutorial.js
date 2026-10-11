@@ -70,9 +70,14 @@ sec('② 端到端点亮（无 bag/status，纯操作引导）');
 {
   const e = mk();
   e.exec('look');
+  /* 🔴 2026-10-11 主人改口径：第二章「把这地方走一遍」= 走出去**再回到那处位置**
+     才算完成（原来走一步就弹第三章，玩家很懵）。 */
   e.exec('n');
   let { g, map } = steps(e);
-  ok('look/move 已完成', map.look.done && map.move.done, line(map));
+  ok('只走出去一步时 move **未**完成', !map.move.done, line(map));
+  e.exec('s');
+  ({ map } = steps(e));
+  ok('走回来之后 look/move 已完成', map.look.done && map.move.done, line(map));
   ok('第3步（skill）此刻未完成', !map.skill.done, line(map));
 
   ok('markTutorialFlag(did_train) 返回 true', e.markTutorialFlag('did_train') === true);
@@ -128,7 +133,7 @@ sec('④ 顺序游标：不许跳步');
   ok('current 仍是第1步 look', g.current.id === 'look');
   ok('doneCount 为 0', g.doneCount === 0, 'done=' + g.doneCount);
 
-  e.exec('look'); e.exec('n'); e.markTutorialFlag('did_train');
+  e.exec('look'); e.exec('n'); e.exec('s'); e.markTutorialFlag('did_train');
   ({ g, map } = steps(e));
   ok('走完3步后 current 指向第4步 talk', g.current.id === 'talk', 'current=' + g.current.id);
   ok('doneCount=3', g.doneCount === 3, 'done=' + g.doneCount);

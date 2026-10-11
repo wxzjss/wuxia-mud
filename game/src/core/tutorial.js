@@ -43,6 +43,10 @@ const STEPS = [
     title: '看清楚自己',
     goal: '先弄明白自己在哪儿、手里有什么',
     hint: '敲 look（「看」「看看四周」也行）',
+    /* 主人 2026-10-11：「在剧情文本下一行添加一句大白话具体讲现在该做什么」——
+       hint 是给熟手看的速记（『敲 look』），todo 是给第一次进来的人看的：
+       指名道姓说**屏幕上哪个键**，不要求他先学会指令。 */
+    todo: '点屏幕下方的「查看四周」，把你眼下这地方看清楚',
     story: '灶火还温着，锅盖缝里冒白气。这是个什么地方，你身上还剩些什么，走之前总得心里有数。往后没人再替你数家当。',
     say: '老汉蹲在灶前拨火。他抬头看了你一下，又低下去拨他的。',
     at: 'guide_teaman',
@@ -55,10 +59,15 @@ const STEPS = [
     title: '把这地方走一遍',
     goal: '换个落脚的地方',
     hint: '敲 n 往北，或 s / e / w 换方向；点左侧「世界 · 地图」，挑隔壁那间走过去也行',
+    todo: '先往北走一步离开道口，再走回茶摊老汉这儿 —— 走出去了、又回来了，这一章才算完',
     story: '道口往北二里，就是江南城。路得自己走一遍，才算真认得。',
     say: '老汉头也没抬：「道口都没走完，就来问我门路？往北挪两步再说。」',
     at: 'guide_teaman',
     requires: ['look'],
+    /* 主人 2026-10-11：「还有第二章剧情我走一步就能完成，然后弹出第三章就很懵逼
+       （能不能改成走出去再回到那处位置才算完成并显示第三章？）」
+       ⇒ did_move 现在**只由「离开导引处 + 又回到导引处」这一对动作**点亮，
+         单纯抬脚只记 did_step（见 engine.postProcess 里那段）。 */
     test: (p) => p.tutorialFlags.has('did_move'),
   },
   {
@@ -67,6 +76,7 @@ const STEPS = [
     title: '身上得有点底子',
     goal: '练一趟功，身子骨先硬起来',
     hint: '敲 lian 练功（「练功」「打坐」都行）；武学面板里挑一门功法打坐也可',
+    todo: '点屏幕下方的「打坐」，练一趟功',
     story: '练功是件笨事，也是唯一不骗人的事。练了多少，身上就长多少。',
     say: '你回到茶摊，老汉先看你的腿，再看你的手。「就这两条腿，进哪座山门都得让人一脚踹出来。」他把扇子往灶边一搁，「练一趟给我看。」',
     at: 'guide_teaman',
@@ -80,6 +90,7 @@ const STEPS = [
     title: '老汉有话同你说',
     goal: '听茶摊老汉把话说完',
     hint: '敲 talk 卖茶的老汉（「交谈」「询问」也行）',
+    todo: '点屏幕下方的「交谈」，跟卖茶的老汉把话说完',
     story: '一趟拳下来，你喘得像拉风箱。手抖得端不住碗。',
     say: '老汉看了半晌，从怀里摸出一样东西，搁在你面前。是封旧信，封皮上按着个指印。',
     at: 'guide_teaman',
@@ -92,6 +103,7 @@ const STEPS = [
     title: '替人办件事',
     goal: '领一桩旁人托付的活儿',
     hint: '找个人用「接任务 <任务名>」（或 accept）接下；敲「任务」看手里有哪些委托',
+    todo: '打开「任务」面板，挑一桩托付接下来',
     story: '山门不白收人。想让人认你，得先替人办成一件事。',
     say: '老汉又把信收了回去：「先去替人办件小事。办成了，人家才信你不是来混饭吃的。」',
     at: 'guide_teaman',
@@ -105,6 +117,7 @@ const STEPS = [
     title: '递信上山门',
     goal: '拜进门派，学一身真本事',
     hint: '往 {gate} 去，在门口发「拜师 {sect}」（join）。有老汉那封信，山门会破例收你',
+    todo: '往 {gate} 去，走到山门口发「拜师 {sect}」',
     story: '引荐信在你怀里，封皮上那个指印隔着布也摸得出来。',
     say: '老汉把信拍在你手心里：「{sect}。到了{gate}，把信递上去，说是城南茶摊的老汉给的。他们认这个指印。」',
     at: 'guide_teaman',
@@ -122,7 +135,8 @@ const STEPS = [
     title: '手上得有分寸',
     goal: '学两门功夫，再赢下一场架',
     hint: '先跟师父「请教 <人名> <武学名>」学两门功夫；再找山贼、恶狼这类**先动手**的试手'
-      + '（「动手 <人名>」）；打不过就「逃跑」（flee）。别拿路人试刀。',
+      + '（「动手 <人名>」）；打不过，用「逃跑」（flee）脱身。别拿路人试刀。',
+    todo: '先跟师父「请教」学两门功夫，再找山贼动手（打不过就点「逃跑」）',
     story: '有了真功夫，这条道才走得下去。往北不太平，拦路的人不会先跟你讲理。',
     say: '老汉拿火钳指了指北边：「本事攥在手里了，再谈动手。有人拦你的路，你得打得回去；也得知道哪一回不该打。」',
     at: 'guide_teaman',
@@ -135,6 +149,7 @@ const STEPS = [
     title: '留住这一程',
     goal: '下回再来，还从这儿走',
     hint: '敲「存档」（save）；下回点「继续游戏」，接着这条路走',
+    todo: '敲「存档」存一下，下回点「继续游戏」接着走',
     story: '你走出很远才回头。翻过前头那道土坡，江南城的城墙就该露出来了。',
     say: '身后没人喊你。老汉还在扇他的火，头也没抬。',
     at: 'guide_teaman',
@@ -147,6 +162,7 @@ const STEPS = [
     title: '往后的路自己走',
     goal: '自己拿主意',
     hint: '点左侧「世界 · 地图」看舆图，四处走走，寻访五派的信物',
+    todo: '打开左侧「世界 · 地图」，自己挑个方向走',
     story: '',
     requires: [],
     test: () => false,   // 永不完成，作为「毕业」提示
@@ -163,10 +179,15 @@ const CMD_FLAGS = {
   accept: 'did_accept', 接取: 'did_accept', 接任务: 'did_accept',
   get: 'did_get', take: 'did_get', 捡: 'did_get', 拾取: 'did_get', 拿: 'did_get',
   save: 'did_save', 存档: 'did_save',
-  n: 'did_move', s: 'did_move', e: 'did_move', w: 'did_move', u: 'did_move', d: 'did_move',
-  north: 'did_move', south: 'did_move', east: 'did_move', west: 'did_move',
-  北: 'did_move', 南: 'did_move', 东: 'did_move', 西: 'did_move',
-  往北走: 'did_move', 往南走: 'did_move', 往东走: 'did_move', 往西走: 'did_move',
+  /* ⚠️ 移动只记 did_step（「抬过脚」），**不直接**记 did_move。
+     第二章「把这地方走一遍」的完成口径是「走出去**再回到那处位置**」
+     （主人 2026-10-11：「我走一步就能完成，然后弹出第三章就很懵逼」），
+     由 engine.postProcess 拿「移动前后的房间」推出来 —— 那里才分得清
+     「离开了导引处」和「又回到导引处」两件事。 */
+  n: 'did_step', s: 'did_step', e: 'did_step', w: 'did_step', u: 'did_step', d: 'did_step',
+  north: 'did_step', south: 'did_step', east: 'did_step', west: 'did_step',
+  北: 'did_step', 南: 'did_step', 东: 'did_step', 西: 'did_step',
+  往北走: 'did_step', 往南走: 'did_step', 往东走: 'did_step', 往西走: 'did_step',
 };
 
 /* ==========================================================================
@@ -201,7 +222,12 @@ function setCmdAliases(map) {
  * 非指令类的引导标记：由特定流程显式上报，不走 CMD_FLAGS 的「指令→标记」映射。
  * 目前只有 `seen_intro`（看过开场剧情）。markTutorialFlag 的白名单需包含它们。
  */
-const EXTRA_FLAGS = ['seen_intro'];
+const EXTRA_FLAGS = ['seen_intro',
+  /* ⚠️ did_move 是**服务端推导**出来的（须「走出导引处 + 又回到导引处」，
+     见 engine.postProcess），本来不走 CMD_FLAGS 那张「指令→标记」表。
+     但它仍要留在白名单里： 拿它做入参校验，
+     面板与回归测试都可能显式上报这一步。 */
+  'did_move'];
 
 /* ==========================================================================
  *  二、出身 → 该往哪座山门（这是「每个身份一条不同方向」的落点）
@@ -344,11 +370,17 @@ const INTRO_VARIANTS = {
 
   scholar: {
     title: '【楔子】一口旧书箱',
+    /* 🔴 主人 2026-10-11：「楔子里有句『若逢大难，可往武当』，
+       可前文没说遇到什么大难，只说两个混混扒拉箱子 —— 逻辑上接不上。」
+       旧版确实断了一环：信是**一开始就揣着**的，「大难」既没发生也没交代，
+       于是那句嘱咐像凭空冒出来的。补法：把「大难」落到实处（爹被衙门带走），
+       并且让信**到该拆的时候才拆**（爹只说「哪天觉得天要塌了再拆」），
+       岔路口的泼皮就是那根引线 —— 小劫让他明白「天要塌」也可以是这种塌法。 */
     body:
-      '<p class="intro-p">那口书箱比人还沉，压得你肩膀生疼。你是从北边书斋里出来的，家里指望你秋闱中举，你却揣了一封信，要往江南城寻一位旧识。</p>'
-      + '<p class="intro-p">方才在南边岔路口，两个泼皮见你像个读书人，伸手就要翻箱子。你护着书退到这儿，手心还在抖。</p>'
-      + '<p class="intro-p">江南大路边有个茶摊。你没敢过去，只在道旁站着——头一回出远门，连问个路都要在心里先打三遍腹稿。</p>'
-      + '<p class="intro-p">你掏出那封信，纸角已被汗浸软。信上只一句：「若逢大难，可往武当。」盘缠够走三日，名帖一张没有。往北二里是江南城，找不找得着人，就看这三日。</p>',
+      '<p class="intro-p">那口书箱比人还沉，压得你肩膀生疼。你是从北边书斋里出来的，家里供你念书，指望你秋闱中举。</p>'
+      + '<p class="intro-p">两个月前，爹被衙门带走，案由没人肯说。走前他往你怀里塞了一封信，只交代一句：「哪天觉得天要塌了，再拆。」</p>'
+      + '<p class="intro-p">昨日在江南大路的岔路口，两个泼皮见你像个读书人，伸手就要翻箱子。你护着书退到老槐树底下，手心还在抖 —— 原来天要塌，未必是塌一声大的。树旁边支着个卖茶的小摊，你没敢过去，只在道旁站着。</p>'
+      + '<p class="intro-p">你把信拆了。纸上只有一句：「若逢大难，可往武当。」盘缠够走三日，名帖一张没有。北边二里就是江南城，往武当的路，得先从城里过。</p>',
   },
 
   merchant: {
@@ -571,6 +603,8 @@ function guideState(player, tutorialFlags) {
       /* ⚠️ hint 也要填模板位 —— 章节列表里每一章的 hint 都会渲染出来，
          漏填的话玩家会看到「往{gate}去」（首次实现就漏了，被 §E-8 抓住）。 */
       hint: fillStory(s.hint, target, world),
+      /* 「现在该做什么」的大白话（主人 2026-10-11）—— 上屏用，跟 hint 一起填模板位 */
+      todo: fillStory(s.todo || '', target, world),
       /* 剧情旁白：**只在轮到你这一步时**才给，避免剧透后面的章节 */
       story: show ? fullOf(s) : '',
       narr: show ? fillStory(s.story || '', target, world) : '',
@@ -585,6 +619,8 @@ function guideState(player, tutorialFlags) {
   const current = curStep ? {
     id: curStep.id, no: curStep.no || cursor + 1, title: curStep.title, goal: curStep.goal,
     hint: fillStory(curStep.hint, target, world),
+    /* 「现在该做什么」——面板 / 上屏都用这一份，别两处各写一套 */
+    todo: fillStory(curStep.todo || '', target, world),
     story: fullOf(curStep),
     narr: fillStory(curStep.story || '', target, world),
     say: curStep.say ? fillStory(curStep.say, target, world) : '',
@@ -671,7 +707,7 @@ function handOutLetter(world, npc) {
   ];
   if (tgt.pitch) lines.push({ kind: 'say', text: `${npc.name}道：「${tgt.pitch}」` });
   lines.push({ kind: 'sys', text: '　（获得：引荐信。凭这封信，山门会破例收你。）' });
-  lines.push({ kind: 'hint', text: `　（点左侧「新手教程」能看整条路的走法；走完后这封信就不必留着了。）` });
+  lines.push({ kind: 'hint', text: `　（整条路的走法在左边「新手教程」里。这条路走完，信也就没用了。）` });
   return lines;
 }
 
@@ -696,7 +732,7 @@ function flagForCommand(cmd, args) {
   const canon = _alias2canon && (_alias2canon[c] || _alias2canon[raw]);
   if (canon && FLAG_BY_CANON[canon]) return FLAG_BY_CANON[canon];
   /* ③ go <房间名>：地图点击移动走这条路 */
-  if (c === 'go') return 'did_move';
+  if (c === 'go') return 'did_step';
   return null;
 }
 

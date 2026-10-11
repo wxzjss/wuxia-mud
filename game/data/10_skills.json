@@ -1413,7 +1413,7 @@
       "type": "棍",
       "maxLevel": 800,
       "difficulty": 5,
-      "desc": "一开口就是「奉天承运」。听的人通常站不住。",
+      "desc": "还没出声，先来一句「奉天承运」。听的人通常站不住。",
       "damageMult": 1.5,
       "accuracy": 88,
       "mpCost": 60,

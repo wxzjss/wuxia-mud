@@ -982,6 +982,11 @@ body::before {
 .map-edges .edge { fill: none; stroke-linecap: round; }
 .map-edges .edge-dim { stroke: var(--edge-dim); stroke-width: 7; }
 .map-edges .edge-known { stroke: var(--edge-known); stroke-width: 6; }
+/* 跨区域「桥」（2026-10-11 主人：世界地图要首尾相连，合并成一整张）：
+   画成**细虚线**，一眼能跟区域内部的实心走廊区分开 ——
+   实线是「抬脚就到」，虚线是「这道口子通到另一个区域」。 */
+.map-edges .edge-bridge { stroke-dasharray: 3 7; stroke-width: 3; opacity: .8; }
+.map-edges .edge-bridge.edge-known { stroke-width: 3.5; opacity: 1; }
 
 .map-region-box { position: absolute; border: 1.5px solid; border-radius: 8px; z-index: 0; pointer-events: none; }
 /* 城市/区域名：★ 画在**外框之上、框外**（主人 2026-10-10 亲报「名字被框挡住 → 移到框外」）。
@@ -1760,10 +1765,6 @@ body.narrow #scene { flex: 0 0 190px; }
 .ar-name { cursor: help; }
 
 /* ============ 云登录 / 存档 ============ */
-.login-sec { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); }
-.ls-title { font-size: 12.5px; color: var(--ink-3); font-weight: 600; margin-bottom: 7px; }
-.login-row { display: flex; gap: 7px; margin-bottom: 7px; align-items: center; }
-.login-row .modal-input { flex: 1; }
 .btn-login.logged { color: var(--jade-d); border-color: var(--jade); }
 
 /* ---- 练武学面板（主人 2026-10-08）----

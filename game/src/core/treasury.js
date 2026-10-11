@@ -134,7 +134,7 @@ function copy(world, ch, keyword) {
       ok: false,
       lines: [
         { kind: 'warn', text: `你在架子上没找着「${kw}」。` },
-        { kind: 'hint', text: '（要么本门已经教过，要么这一层不够格翻，要么本门用的就是这门功夫。）' },
+        { kind: 'hint', text: '（架上没有这门功夫。或许本门早已教过，或许这一层还不够格翻。）' },
       ],
     };
   }

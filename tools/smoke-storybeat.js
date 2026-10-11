@@ -23,12 +23,15 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
 (async () => {
   const e = new GameEngine({ seed: 606 });
   await e.boot({});
-  e.newGame({ name: '看戏的' });
+  /* 🔴 主人 2026-10-11：「创建完角色进入游戏后**直接触发新手剧情**把第一章发到屏幕上，
+     而不是先『看』才能看见（这样的话会直接完成第一个任务）」
+     ⇒ 第一章现在跟着  的返回一起上屏，不等第一条指令。 */
+  const rNew = e.newGame({ name: '看戏的' });
   const w = e.world, p = w.player;
 
   /* ================= 一、开局第一屏就该有剧情 ================= */
-  section('1 剧情自己走到屏幕上（不用翻面板）');
-  const r0 = await e.exec('look');
+  section('1 剧情自己走到屏幕上（开局即上屏）');
+  const r0 = { lines: (rNew && rNew.lines) || [] };
   const t0 = allText(r0);
   /* ⚠️ 别再钉「茶摊的灶火还温着」这四个字 —— 那是第一章台词的原文，
      主人 2026-10-11 让重写新手剧情，台词一改这条就假红。
@@ -40,9 +43,31 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
          断言只认「老汉 + 动作」这件事，别钉死具体措辞。 */
   ok('★ 老汉的动作也上屏了（他在你跟前的）', kinds(r0, 'say').some(x => /老汉/.test(x) && /拨火|拨柴|没抬头/.test(x)),
     kinds(r0, 'say').join(' | ').slice(0, 60));
+  /* 🔴 主人 2026-10-11：「发到屏幕上的剧情没有『现在要干什么』的提示，
+     建议在剧情文本下一行添加一句大白话具体讲现在该做什么。」 */
+  ok('★ 剧情下一行给了「现在做什么」的大白话',
+    kinds(r0, 'hint').some(x => /现在做什么/.test(x) && /查看四周/.test(x)),
+    kinds(r0, 'hint').join(' | ').slice(0, 70));
+  /* 上屏≠完成：第一章的目标只认「真看了」，不能被这屏文字顺手判掉 */
+  ok('★ 剧情上屏**不**等于做完第一个任务',
+    !(p.tutorialFlags || []).indexOf('did_look') !== true &&
+    require(path.join(ROOT, 'game/src/core/tutorial.js')).guideState(p, p.tutorialFlags).doneCount === 0,
+    'done=' + require(path.join(ROOT, 'game/src/core/tutorial.js')).guideState(p, p.tutorialFlags).doneCount);
   /* 这一章不该复述第二遍 */
   const r0b = await e.exec('score');
-  ok('同一章不重复念', !/茶摊的灶火还温着/.test(allText(r0b)));
+  ok('同一章不重复念', !kinds(r0b, 'subtitle').some(x => /第 1 章/.test(x)), kinds(r0b, 'subtitle').join(','));
+
+  /* —— 客户端那一环：服务端把剧情塞进 view.lines 还不够，**落进日志**才上屏 ——
+     /api/new 只回 view、不回 log，而 renderAll() 不画日志。
+     所以 start.js 必须显式把 view.lines 追加进去（旧代码只 append d.log ⇒ 那一屏是空的，
+     剧情要等玩家敲第一条指令才补讲 —— 正是主人报的「先『看』才能看见」）。 */
+  {
+    const START = require('fs').readFileSync(path.join(ROOT, 'game/src/renderer/js/start.js'), 'utf8');
+    ok('★ 创建角色后把 view.lines 落进日志（开局剧情才上屏）',
+      /const head = \(d\.view && d\.view\.lines\)/.test(START) && /appendLog\(head\)/.test(START));
+    ok('★ 读档后也把这一屏落进日志（不然回来只看到一行字）',
+      /const head2 = \(S\.view && S\.view\.lines\)/.test(START) && /appendLog\(head2\)/.test(START));
+  }
 
   /* ================= 二、人物言行只在场才上屏 ================= */
   section('2 老汉不在跟前，他的话就不该出现');
@@ -54,20 +79,23 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
      断言不看章号（章号会随教程改动漂），只看「有没有出现老汉的话」。 */
   const elderSays = (r) => kinds(r, 'say').filter(t => /老汉/.test(t));
 
+  /* 先把脚挪开，**再**在别处把第 1 章做完 —— 这样第 2 章就是在
+     「老汉不在跟前」的时候讲出来的，正好拿它验在场闸门已撤。 */
   const rMove = await e.exec('北');
   ok('走出去了', p.room !== elderRoom, '现在在 ' + w.data.rooms[p.room].name);
-  ok('★ 章节照讲（旁白哪儿读都通）', kinds(rMove, 'subtitle').length > 0,
-    kinds(rMove, 'subtitle').join(','));
+  const rLook = await e.exec('look');
+  ok('★ 章节照讲（旁白哪儿读都通）', kinds(rLook, 'subtitle').length > 0,
+    kinds(rLook, 'subtitle').join(','));
   /* 口径变更（主人 2026-10-11）：在场闸门已撤 → 他的话**照旧上屏**。
      改的是主人的决定，不是把新功能判成 bug。 */
-  ok('★ 老汉的话**照旧上屏**（在场闸门已撤）', elderSays(rMove).length > 0,
-    elderSays(rMove).join(' | ') || '(没提老汉)');
+  ok('★ 老汉的话**照旧上屏**（在场闸门已撤）', elderSays(rLook).length > 0,
+    elderSays(rLook).join(' | ') || '(没提老汉)');
   /* 并且得证明「这一章本来是有他一句话的」—— 不然闸门在不在都看不出区别 */
   ok('★ 这一章本身是带老汉台词的（闸门确实在干活）',
     (() => {
       const g = require(path.join(ROOT, 'game/src/core/tutorial.js'))
         .guideState(p, p.tutorialFlags);
-      const no = kinds(rMove, 'subtitle').join('').match(/第 (\d+) 章/);
+      const no = kinds(rLook, 'subtitle').join('').match(/第 (\d+) 章/);
       const s = g.steps.find(x => x.no === (no ? +no[1] : -1));
       return !!(s && s.say);
     })(), '');
@@ -81,7 +109,7 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
      §3 / §4（委托人 在场 / 不在场 的对照）各证一次。 */
   const rBack = await e.exec('南');
   ok('回到茶摊', p.room === elderRoom, w.data.rooms[p.room].name);
-  const toldBefore = kinds(rMove, 'subtitle').concat(kinds(rMove2, 'subtitle')).join(',');
+  const toldBefore = kinds(rLook, 'subtitle').concat(kinds(rMove2, 'subtitle')).join(',');
   ok('讲过的不再回头补念', !kinds(rBack, 'subtitle').some(x => toldBefore.includes(x)), toldBefore);
 
   /* ================= 三、任务的剧情也上屏 ================= */

@@ -21,11 +21,79 @@ function innRoomIds(world) {
   return out;
 }
 
-/** BFS 找离 fromRoom 最近的客栈房间 id（找不到返回 null）。 */
-function nearestInn(world, fromRoom) {
+/** 玩家**已经踩过**的区域集合（区域内任一房间被走过，就算见过这片地方）。
+ *  探索记录就是 `p.flags['visited_<房间id>']` —— 与地图「未探索斜纹」、
+ *  「去过的地方才能点着飞过去」用的是同一份账，不另立一套。 */
+function exploredRegions(world, player) {
+  const s = new Set();
+  const rooms = world.data && world.data.rooms;
+  const flags = player && player.flags;
+  if (!rooms || !flags) return s;
+  for (const id of Object.keys(rooms)) {
+    if (!flags['visited_' + id]) continue;
+    const r = rooms[id];
+    if (r && r.region) s.add(r.region);
+  }
+  return s;
+}
+
+/** BFS 找离 fromRoom 最近的客栈房间 id（找不到返回 null）。
+ *
+ *  🔴 主人 2026-10-11：「死亡会在最近客栈复活，指的是**最近且已探索过**区域的客栈，
+ *     不能在未探索区域的客栈复活。」
+ *     旧实现是在**整张世界图**上 BFS，只认距离、不认认不认得 ——
+ *     于是玩家在江南城被打趴，可能一睁眼躺在从未去过的西域客栈里。
+ *     「你没去过那儿，怎么是那儿的伙计把你背回去的？」逻辑上就说不通。
+ *     现在候选客栈先按「区域是否探索过」筛一遍，再在剩下的里面找最近的。
+ *  · player 省略时退化为旧行为（整图最近），供不需要门禁的调用方使用。
+ *  · 一个都没探索过（刚开局连出生地都没记上）时，退回旧行为兜底，
+ *    免得出现「找不到落点」把玩家扔在 noplace。 */
+function nearestInn(world, fromRoom, player) {
   if (!fromRoom) return null;
   const inns = new Set(innRoomIds(world));
   if (!inns.size) return null;
+  /* 只保留「已探索过的区域」里的客栈 */
+  const known = player ? exploredRegions(world, player) : null;
+  const roomsD = (world.data && world.data.rooms) || {};
+  const okInn = (id) => {
+    if (!inns.has(id)) return false;
+    if (!known) return true;
+    const r = roomsD[id] || {};
+    /* 房间没写 region 的（老数据）不拦 —— 按「本来就在本地」处理 */
+    return !r.region || known.has(r.region);
+  };
+  if (okInn(fromRoom)) return fromRoom;
+  const seen = new Set([fromRoom]);
+  const q = [fromRoom];
+  while (q.length) {
+    const id = q.shift();
+    const room = world.getRoom(id);
+    if (!room) continue;
+    for (const d of Object.keys(room.exits || {})) {
+      const ex = room.exits[d];
+      const t = typeof ex === 'string' ? ex : ex.to;
+      if (t && world.getRoom(t) && !seen.has(t)) {
+        if (okInn(t)) return t;
+        seen.add(t);
+        q.push(t);
+      }
+    }
+  }
+  /* 已探索区域里一个客栈都走不到（或一个都没探索过）→ 退回整图最近，保证有落点 */
+  if (known && known.size) {
+    const all = Array.from(inns).filter(id => {
+      const r = roomsD[id] || {};
+      return !r.region || known.has(r.region);
+    });
+    if (all.length) return all[0];
+  }
+  return nearestInnAnyInn(world, fromRoom);
+}
+
+/** 整图最近客栈（旧行为），只作为兜底 ── 不做区域门禁 */
+function nearestInnAnyInn(world, fromRoom) {
+  const inns = new Set(innRoomIds(world));
+  if (!inns.size || !fromRoom) return null;
   if (inns.has(fromRoom)) return fromRoom;
   const seen = new Set([fromRoom]);
   const q = [fromRoom];
@@ -70,7 +138,7 @@ function respawnAtInn(world, lines, opts) {
   const p = world.player;
   const from = p.room;
   const anchor = o.anchor
-    || nearestInn(world, p.room)
+    || nearestInn(world, p.room, p)          /* ⚠️ 必须把玩家传进去：只在「已探索区域」的客栈里挑 */
     || innRoomIds(world)[0]
     || (world.data.meta && world.data.meta.startRoom);
   const roomName = (anchor && (world.getRoom(anchor) || {}).name) || '客栈';
@@ -108,4 +176,4 @@ function respawnAtInn(world, lines, opts) {
   return { room: anchor, name: roomName, lost, expLost, same };
 }
 
-module.exports = { innRoomIds, nearestInn, respawnAtInn };
+module.exports = { innRoomIds, nearestInn, respawnAtInn, exploredRegions };

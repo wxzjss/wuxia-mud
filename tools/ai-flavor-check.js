@@ -63,6 +63,21 @@ const PATTERNS = [
   ['模板句式（看/问/听人先看X）', /(?:看|问|听|见|说|认)人先(?:看|问|听|见|说|认)[^，。；\n]{0,8}/],
   ['悖论对偶（…，又不觉得…）', /[^，。；\n]{2,10}，又不觉得[^，。；\n]{1,10}/],
   ['对称对偶（等…才…）', /等[^，。；\n]{1,12}才[^，。；\n]{1,8}[，。；]/],
+
+  /* 🔴 网文腔「开口就X」—— 主人 2026-10-11 亲报的第三批。
+     原话：「还有像这种『开口就…』这种 ai 味网文句式也留意一下」。
+     源头在生成器的语气池里（`gen-fix-npcs.js` 的 c[] 第一项、
+     `lib-portrait-pools.js` 的 ARC.haoshuang.init），
+     一炮就是 22 个「豪爽」角色共用一句「一开口就是笑，先递茶再说话」。
+     形状特征：把**说话方式**写成条件反射，读着像旁边有人贴标签。 */
+  ['网文腔（开口就/张口就）', /[开张]口就|张嘴就|一开口就/],
+
+  /* 🔴 「一副骨架反复套」—— 比用词更像 AI 的东西。
+     判据不是句式，而是**同一串字在玩家可见文本里出现 ≥4 次**。
+     主人三次亲报（「看人先看腰」×4、22 个豪爽角色同款、11 个读书人同款抄书动作）
+     都是这个病。单个用词没法判，**复用次数**能判，而且几乎零误报。
+     ⚠️ 实体名/台词这类天然会重复的不算 —— 只统计长度 ≥12 且不像专名的串。 */
+  ['模板复用（同一句 ≥4 次）', null, { reuse: 4 }],
 ];
 
 /* ============================================================
@@ -90,7 +105,7 @@ const FIXTURES = [
 {
   let bad = 0;
   for (const [t, want] of FIXTURES) {
-    const got = PATTERNS.some(([, re]) => { re.lastIndex = 0; return re.test(t); });
+    const got = PATTERNS.some(([, re]) => { if (!re) return false; re.lastIndex = 0; return re.test(t); });
     if (got !== want) { bad++; console.log('  ✘ 自证失败：' + JSON.stringify(t.slice(0, 22)) + ' 期望' + want + ' 实得' + got); }
   }
   if (bad) { console.log('\n===== AI 味规则自证失败：有样本判不出来 ====='); process.exit(1); }
@@ -125,6 +140,7 @@ const ALLOW = [
   { re: /使得/, why: '「走镖、看家、砍柴都使得的」＝用得的，地道中文，不是翻译腔' },
   { re: /堪称走运/, why: '「堪称走运」是口语，不是「堪称一绝」那种公文腔' },
   { re: /进而|从而|与此同时/, f: 'world.js', why: '代码里的变量名/字符串，不是玩家可见文案' },
+  { re: /开口就是这一句/, why: '「东坡的《念奴娇》，上半阕开口就是这一句」——讲的是**词的第一句**，事实陈述，不是人物说话习惯的贴标签' },
 ];
 function allowed(h) {
   return ALLOW.some(a => {
@@ -138,6 +154,14 @@ function allowed(h) {
 
 const hits = [];
 const oow = [];
+
+/* ---- 复用台账（「一副骨架反复套」的判据，扫完统一结算） ----
+   为什么单独做：句式正则只能认「长什么样」，认不出「同一句套了多少遍」。
+   主人三次亲报的问题里，有两次是纯粹的数量问题（22 个角色同一句、
+   11 个角色同一个动作），正则一条都抓不到。 */
+const REUSE_MIN = 4;
+const counts = new Map();      // 串 → 出现次数
+const firstSeen = new Map();   // 串 → 第一个出处
 
 /* 台词字段：这些话是**人物在说**，不是旁白在解释 —— 带强调语气的对偶句在这里是人的口吻 */
 const SPEECH_KEYS = new Set(['talk', 'answer', 'say', 'line', 'subtitle', 'ask', 'askDefault']);
@@ -157,7 +181,14 @@ function scanString(str, file, key) {
   /* 去掉明显是代码/标记的串 */
   if (/^[\w_./-]+$/.test(str)) return;
   if (isDsl(str)) return;
+  /* 复用台账：人名/称谓天然会重（"王掌柜" 出现 30 次不是 AI 味），所以按字段排除，
+     并且要求长度 ≥12（短串本就容易撞）。 */
+  if (str.length >= 12 && key !== 'name' && key !== 'title' && key !== 'titles') {
+    counts.set(str, (counts.get(str) || 0) + 1);
+    if (!firstSeen.has(str)) firstSeen.set(str, { file, key: key || '-' });
+  }
   for (const [label, re, opt] of PATTERNS) {
+    if (!re) continue;                       /* 复用档没有正则，见上面的台账 */
     const m = str.match(re);
     if (!m) continue;
     const h = { file, key, label, frag: m[0], text: str.length > 90 ? str.slice(0, 90) + '…' : str };
@@ -222,6 +253,21 @@ for (const f of fs.readdirSync(CORE_DIR)) {
   }
 }
 
+/* ---- 复用结算：同一串 ≥REUSE_MIN 次的进「待办清单」 ----
+   ⚠️ 这一档**不判红**，只列清单。原因：
+     六座城的同一种身份（襄阳的捕快 / 洛阳的捕快）本来就是**同一份画像按城克隆**，
+     重复是数据结构，不是写作偷懒 —— 拿它判红，回归会永远红着，
+     守卫一红就没人看，等于没有守卫。
+     它的用法是：**开局时扫一眼，挑真正会被玩家当面比出来的那几条改**。 */
+const reuseList = [];
+for (const [s, n] of counts) {
+  if (n < REUSE_MIN) continue;
+  if (s.indexOf('${') >= 0) continue;              /* 代码里的模板串，不是文案 */
+  const c = firstSeen.get(s) || { file: '-', key: '-' };
+  reuseList.push({ n, file: c.file, key: c.key, text: s });
+}
+reuseList.sort((a, b) => b.n - a.n);
+
 /* 输出 */
 const byFile = {};
 for (const h of hits) (byFile[h.file] = byFile[h.file] || []).push(h);
@@ -246,6 +292,14 @@ for (const h of oow) {
   console.log('   [' + h.frag + '] ' + h.file + ' @' + h.key);
   console.log('      ' + h.text.replace(/\s+/g, ' '));
 }
+
+/* 复用清单（不判红，当待办看） */
+console.log('\n=== 样板复用清单（同一句 ≥' + REUSE_MIN + ' 次 · 不判红 · 共 ' + reuseList.length + ' 条）===');
+console.log('（六座城的同身份画像按城克隆属结构性重复，不必逐条改；挑玩家会当面比出来的改）\n');
+for (const r of reuseList.slice(0, 40)) {
+  console.log('   ×' + String(r.n).padStart(2) + '  ' + r.text.replace(/\s+/g, ' ').slice(0, 46) + '   @' + r.file);
+}
+if (reuseList.length > 40) console.log('   … 另有 ' + (reuseList.length - 40) + ' 条，同上处理');
 
 /* ---- 判红：两类都算失败 ----
    这个脚本是**回归守卫**（名字带 -check，会被全量回归扫到），

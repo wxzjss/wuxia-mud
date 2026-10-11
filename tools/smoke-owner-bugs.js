@@ -896,13 +896,20 @@ function settle() { return new Promise(r => setImmediate(r)); }
   await settle();
   const qb = env.document.getElementById('quickbar');
   const html = qb.innerHTML || '';
-  ok('FE-3 战斗快捷键条渲染出 4 个按钮', (html.match(/qb-btn/g) || []).length >= 4, (html.match(/qb-btn/g) || []).length + ' 个');
-  ok('FE-3 含「全力一击」', html.includes('全力一击'));
+  /* 🔴 主人 2026-10-11 改口径：战斗栏里「全力一击」删掉，基础武学（基本内功 /
+     基本拳脚，没有武技）也不许出现，只留**已激活武学**的武技。
+     所以这里从「必须含 4 个按钮 + 含全力一击」改成「3 个基础键 + 反向断言」。 */
+  ok('FE-3 战斗快捷键条至少 3 个按钮', (html.match(/qb-btn/g) || []).length >= 3, (html.match(/qb-btn/g) || []).length + ' 个');
+  ok('FE-3 含「普通攻击」', html.includes('普通攻击'));
   ok('FE-3 含「防御」', html.includes('防御'));
   ok('FE-3 含「逃跑」', html.includes('逃跑'));
+  ok('FE-3 已删「全力一击」', !html.includes('全力一击'));
+  /* 基础武学没有武技，不该混进战斗栏（主人点名的「基本内功 / 基本拳脚」） */
+  ok('FE-3 基础武学不上战斗栏（基本内功）', !html.includes('基本内功'));
+  ok('FE-3 基础武学不上战斗栏（基本拳脚）', !html.includes('基本拳脚'));
 
   /* 真点这两个按钮，看发出的指令后端认不认 */
-  for (const label of ['全力一击', '防御']) {
+  for (const label of ['普通攻击', '防御']) {
     const btns = qb.querySelectorAll('.qb-btn[data-cmd]');
     const target = btns.filter(b => String(b._label || '').includes(label))[0];
     ok(`FE-3 找到「${label}」按钮`, !!target, btns.map(b => b._label + '/' + b.getAttribute('data-cmd')).join(' '));

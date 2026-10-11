@@ -2840,7 +2840,7 @@ function buildCommands(world) {
           + (feud ? `　· ${feud}` : ''),
       });
     }
-    lines.push({ kind: 'hint', text: '交恶到 −25 以下，两派弟子照面就会撂狠话（有交情的除外）。' });
+    lines.push({ kind: 'hint', text: '两派交恶到 −25 以下，弟子照面便撂狠话；有交情的另算。' });
     return { lines };
   });
 
@@ -3153,7 +3153,7 @@ function buildCommands(world) {
       const dc = require('./dualcultivate');
       const st = dc.stateOf(p);
       if (st) {
-        if (st.kind !== kind) return { lines: [{ kind: 'warn', text: '你正忙着另一桩事。（要走开，点屏幕上任何别的按钮都行。）' }] };
+        if (st.kind !== kind) return { lines: [{ kind: 'warn', text: '你正忙着另一桩事。（想走开，点屏幕上随便哪个别的按钮。）' }] };
         return { lines: dc.round(w, p).lines };
       }
       const kw = (args || []).join(' ').trim();
@@ -3323,7 +3323,7 @@ function buildCommands(world) {
       { kind: 'combat', text: `你悄没声地绕到${npc.name}身后，一掌拍向他要害！` },
       { kind: 'combat', text: `　【偷袭】一击得手，${npc.name}受创 ${real} 点，踉跄回头（还剩 ${npc.hp} 点气血）。` },
     ];
-    if (real >= before - 1) lines.push({ kind: 'sys', text: '　（他已是强弩之末，再补一下就能放倒。）' });
+    if (real >= before - 1) lines.push({ kind: 'sys', text: '　（他脚下已经发飘，站不住了。再来一下，人就倒。）' });
     lines.push({ kind: 'sys', text: `　（暗算结仇——${npc.name}此刻恨极了你。）` });
     for (const l of (r.lines || [])) lines.push(l);
     return { lines, enterCombat: true };

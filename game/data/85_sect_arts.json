@@ -377,7 +377,7 @@
         "mpCost": 10,
         "baseChance": 0.6,
         "effect": "gift",
-        "desc": "走镖的嘴皮子。江湖上的门道，说开了就是人情。",
+        "desc": "走镖的嘴皮子。江湖上的门道，一半在话头上。",
         "ok": "你说了几句镖行的行话。{name}笑了，塞了些东西给你。",
         "fail": "{name}摆手：「你说的这套我不懂。」",
         "allowStronger": false

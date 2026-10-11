@@ -147,6 +147,15 @@ async function main() {
   const siteServer = modSite.createSiteServer();
   const sitePort = await listenWithFallback(siteServer, SITE_PORT, '网站');
 
+  /* 🔴 把站点的**真实内部地址**告诉游戏端（2026-10-11）。
+     游戏端转发「Mod 上传 / 登录 / 拉列表」时得知道站点在哪儿，
+     原先它自己写死 `http://127.0.0.1:8788` —— 可上面的 listenWithFallback
+     在端口被占时会**顺延**，一旦不是 8788，上传就直接 ECONNREFUSED
+     （主人亲报的「制作器上传没连到 mod 站」就是这个）。
+     必须在 gameServer.createServer() 之前设，它在创建时就会读。 */
+  process.env.SITE_INTERNAL_URL = 'http://127.0.0.1:' + sitePort;
+  if (!process.env.SITE_PUBLIC_BASE) process.env.SITE_PUBLIC_BASE = '/site';
+
   const { server: gameSrv, engine } = gameServer.createServer({});
   const gamePort = await listenWithFallback(gameSrv, GAME_PORT, '游戏');
 

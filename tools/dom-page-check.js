@@ -232,7 +232,9 @@ console.log('==============================================');
 console.log('  站点页面 · 真 DOM 渲染检测（单机版 · 无账号）');
 console.log('==============================================');
 
-const PAGES = ['index.html', 'list.html', 'mod.html', 'tutorial.html', 'examples.html', 'upload.html', 'game.html'];
+/* 2026-10-11：game.html（下载离线版）整个功能已删，它不进页面清单；
+   反过来由 tools/e2e.js 断言它 404（不能复活）。 */
+const PAGES = ['index.html', 'list.html', 'mod.html', 'tutorial.html', 'examples.html', 'upload.html'];
 
 section('① 每个页面脚本都能加载（无语法/引用错误）');
 PAGES.forEach(f => {
@@ -388,7 +390,10 @@ section('⑦ 顶栏导航（无论坛入口）');
   ok('有制作教程入口', /tutorial\.html/.test(src));
   ok('有示例 Mod 入口', /examples\.html/.test(src));
   ok('有发布 Mod 入口', /upload\.html/.test(src));
-  ok('有玩游戏入口', /game\.html/.test(src));
+  /* 2026-10-11：下载离线版（game.html）整个功能已删。
+     顶栏不再有这个入口；「开始游戏」是首页大按钮 + 站内跳转，不靠顶栏。 */
+  ok('顶栏已无「玩游戏 / 下载离线版」入口', !/game\.html/.test(src));
+  ok('有「开始游戏」入口（跳游戏网页）', /hero-play|开始游戏/.test(fs.readFileSync(path.join(PUB, 'index.html'), 'utf8')));
   ok('无论坛入口', !/forum\.html/.test(src));
 }
 

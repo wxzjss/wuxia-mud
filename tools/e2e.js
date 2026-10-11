@@ -62,22 +62,15 @@ function ok(name, cond, extra) {
   r = await req('GET', S + '/upload.html');
   ok('上传页 HTML', r.code === 200 && /发布/.test(r.body));
   r = await req('GET', S + '/game.html');
-  ok('玩game页 HTML', r.code === 200 && /武侠行/.test(r.body));
-  /* 网页优先：主按钮是「开始游戏」（跳游戏网页），离线下载降级为备选 */
-  ok('玩game页有「开始游戏」主按钮', r.code === 200 && /id="btn-play"/.test(r.body));
-  ok('玩game页保留离线下载作备选', r.code === 200 && /离线版/.test(r.body));
-
-  /* 一键下载游戏（核心功能） */
+  /* 玩game页 / 一键下载游戏，都已按主人要求**删除**（游戏只在线游玩）。
+     这里改成反向断言：删干净了、并且别再复活 —— 否则哪天有人顺手加回来，
+     回归不会出声。（/game.html 已在 mod-site.js 的 REMOVED_PAGES 里拉黑。） */
+  r = await req('GET', S + '/game.html');
+  ok('game.html 已下线（404）', r.code === 404, 'code=' + r.code);
   r = await req('GET', S + '/api/game-pack');
-  ok('打包信息接口', r.code === 200 && r.json && r.json.ok && r.json.files > 20,
-    r.json ? ('files=' + r.json.files + ' raw=' + (r.json.rawBytes / 1024).toFixed(0) + 'KB v' + r.json.version) : '');
-
+  ok('打包信息接口已移除（404）', r.code === 404, 'code=' + r.code);
   r = await req('GET', S + '/api/download-game', null, true);
-  const zipOk = r.code === 200 && r.buf && r.buf.length > 10000 &&
-    r.buf[0] === 0x50 && r.buf[1] === 0x4b; /* PK zip 魔数 */
-  ok('一键下载游戏', zipOk, zipOk
-    ? ((r.buf.length / 1024).toFixed(0) + ' KB, ' + (r.headers['x-pack-files'] || '?') + ' 文件')
-    : ('code=' + r.code));
+  ok('下载游戏接口已移除（404）', r.code === 404, 'code=' + r.code);
   ok('下载文件名规范', /jinyong-mud/.test(String(r.headers['content-disposition'] || '')),
     r.headers['content-disposition']);
 

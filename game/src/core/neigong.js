@@ -97,7 +97,7 @@ function start(world, ch) {
     ok: true,
     lines: [
       { kind: 'story', text: '你寻了处安静地方盘膝坐下，把呼吸放慢。起初还听得见外头的动静，后来只剩下自己心跳的声响。' },
-      { kind: 'hint', text: `（这一坐会**自己一轮一轮往下走**，不用一直点。一轮耗内力 ${cost.mp} 点、气血 ${cost.hp} 点，内力见底才收功。想中途起来，点屏幕上任何别的按钮。）` },
+      { kind: 'hint', text: `（这一坐会**自己一轮一轮往下走**，不用一直点。一轮耗内力 ${cost.mp} 点、气血 ${cost.hp} 点，内力见底才收功。想中途起身，点屏幕上随便哪个别的按钮。）` },
     ],
   };
 }
@@ -172,7 +172,7 @@ function round(world, ch) {
         { kind: 'story', text: '丹田里最后那一缕气也散尽了。你睁开眼，手脚发软，可那口气分明比先前宽了一线。' },
         { kind: 'sys', text: `共坐了 ${rounds} 轮。内力上限 +${gainMp}（现 ${Math.floor(ch.maxMp)}）` + (gainHp ? `，气血上限 +${gainHp}` : '') + '。' },
         { kind: 'warn', text: `内力见底（${Math.round(ch.mp)}/${Math.round(ch.maxMp)}），气血也搭进去不少 —— 这口气**不会自己回来**，打坐、服药，或者再等一阵。` },
-        ...(gainMp > 1 ? [{ kind: 'hint', text: '（内功品级越高、练得越熟，这一坐涨得越多。）' }] : [{ kind: 'hint', text: '（学一门内功再来，一次就不止涨这一点了。）' }]),
+        ...(gainMp > 1 ? [{ kind: 'hint', text: '（内功品级越高、练得越熟，这一坐涨得越多。）' }] : [{ kind: 'hint', text: '（身上还没有一门内功，一坐只能涨这么点。学了内功再来。）' }]),
       ],
     };
   }
@@ -214,7 +214,7 @@ function stop(world, ch) {
       },
       {
         kind: 'hint',
-        text: '（要涨上限，得让内力一直耗到见底。中途起来，这一趟就白坐了。）',
+        text: '（上限要涨，得让内力一直耗到见底。中途起身，这一坐白费。）',
       },
     ],
   };
