@@ -3283,7 +3283,13 @@ class World extends EventEmitter {
       if (!q || q.type !== '主线') continue;
       if (q.giver) continue;
       if (q.auto === false) continue;
-      p.setQuestStage(qid, 0);
+      /* `startStage`：开局就接的主线，可以从第 N 步起步（默认 0）。
+         目前只有 `q_main_jianghu` 用它 —— 它的第 0 步是「拜入一个门派」，
+         而**拜师是新手第 6 章「递信上山门」的事**（主人 2026-10-08 点出来的重复：
+         「主线剧情第一章是拜入一个宗门？？新手剧情里面也有一个拜入宗门」）。
+         主线照旧开局就接（在任务簿里，这条不变），但直接站到第 1 步，
+         同一件事不要求玩家做两遍。 */
+      p.setQuestStage(qid, q.startStage || 0);
     }
     // 性格/出身加成
     this.applyBirth(cfg, p);
@@ -3330,6 +3336,9 @@ class World extends EventEmitter {
         /* 主线分化（design/67 §5 P1）——不带上它，读档就把「我走哪条线」丢了 */
         mainline: p.mainline,
         insect: p.insect, quests: p.quests, flags: p.flags, vars: p.vars, tutorialFlags: p.tutorialFlags || [],
+        /* 追踪的任务（主人 2026-10-08 的任务追踪）——不随档走的话，
+           读一次档大框就空了（玩家会以为「我的任务没了」）。 */
+        track: p.track || null,
         /* 奇经八脉 + 冲脉进度（2026-10-11）——**原来这两样都没存**，读档即清空：
            通了脉的人读一次档，maxHp/maxMp 会**掉回去**（recalc 从空经脉重算），
            而玩家只会看到「血上限怎么变少了」。静默的数据丢失。 */
@@ -3572,6 +3581,12 @@ class World extends EventEmitter {
       /* 老存档没有 mainline → 按出身补一条（别让读档的人变成「没有线」） */
       mainline: sd.mainline || require('./mainline').init(sd.birth || null, sd.gender || 'male', {}),
       insect: sd.insect || null, quests: sd.quests || {}, flags: sd.flags || {}, tutorialFlags: sd.tutorialFlags || [],
+      /* 老存档没有 track：一律先当「还在追新手」——
+         读档后 `syncTrack()`（view / exec 每次都会跑）会自动纠正成该追的那条
+         （新手走完 → 挑主线）。这里**不能**直接调 pickAuto：这一行求值时
+         `p.quests` 还没赋上，pickAuto 会看到一本空任务簿、返回 null，
+         于是读一次档大框就空着（玩家以为任务全丢了）。 */
+      track: sd.track !== undefined ? sd.track : require('./storybeat').NEWBIE,
       meridians: Object.assign(require("./character").emptyMeridians(), sd.meridians || {}), meridianExp: sd.meridianExp || 0,
       actionUsed: sd.actionUsed || {}, actionLast: sd.actionLast || {},
       duelLog: sd.duelLog || {}, duelWin: sd.duelWin || {},

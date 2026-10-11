@@ -255,36 +255,19 @@ class GameEngine {
     if (!this.ready) this.boot();
     const p = this.world.createPlayer(cfg);
     this.world.emit('newgame', { player: p });
-    // 触发主线任务
-    p.setQuestStage('q_main_jianghu', 0);
+    /* ⚠️ 主线**不在这里接**（原来这行是 `p.setQuestStage('q_main_jianghu', 0)`）。
+       原因（主人 2026-10-11 亲口点出来的重复）：主线第一幕的第 0 步就是
+       「拜入一个门派」，而新手第 6 章「递信上山门」也是拜师 ——
+       开局就接主线，等于让玩家把拜师做两遍（任务面板里两条并排挂着）。
+       现在改由 `storybeat.handoff()` 在**新手走完那一刻**交接，
+       并且直接站到第 1 步（拜师那一步新手已经办过，不重复要一次）。 */
     p.setFlag('visited_' + p.room, true);
-    /* ⚠️ 这里**刻意不**调 `storybeat.markSeen`：新开一局时第一屏就该有剧情
-       （第 1 章旁白 + 老汉那句话 + 主线开题），正是主人要的那件事。
-       markSeen 只用在「读档」上 —— 老存档没有 `_storyBeat` 这笔账，
-       不补记的话读一次档会把几十桩进行中的任务一口气念一遍。 */
+    /* 主人 2026-10-08：「**初始默认追踪新手剧情任务**」 */
+    p.track = require('./storybeat').NEWBIE;
+    /* 开工第一屏：剧情走**上方大框**（`view.story`），日志里不再塞剧情。
+       见 storybeat 顶部那段「剧情屏」注释。 */
     const v = this.view();
-    /* 🔴 主人 2026-10-11：「创建完角色进入游戏后**直接触发新手剧情**把第一章发到屏幕上，
-       而不是先『看』才能看见（这样的话会直接完成第一个任务）。」
-       旧行为：开局屏幕上只有房间描述，第一章要等**第一条指令**之后由 storybeat 补讲 ——
-       而新手最自然的第一条指令就是「看」，于是「剧情出现」和「第 1 章完成」撞在同一秒，
-       玩家根本分不清哪件事是自己做出来的。
-       现在：开局当场把第一章（旁白 + 老汉那句话 + 「现在做什么」）推上屏幕；
-       而第 1 章的目标（`did_look`）照旧只认「真看了」——
-       这屏文字**不会**顺手把第一个任务判完成（那也是主人点名的毛病）。
-
-       🔴 同日追加：「一进入游戏就显示第一章，**只显示第一章内容**，其他内容不要显示」。
-       ⇒ `v.lines` **整个换掉**（不是接在后面），并且只要教程那一段
-         （`{ tutOnly: true }` 把任务播报拦掉）。
-         于是开局第一屏干净的只剩第一章：没有房间描述、没有天气节气、
-         没有出口与人名清单、也没有「【接取任务】【主线】江湖路远」那一坨。
-         房间信息并没丢 —— 它一直在右侧的 `#room-panel` 里。 */
-    try {
-      const sb = require('./storybeat').reconcile(this.world, p, { tutOnly: true });
-      if (sb && sb.length) {
-        v.lines = sb;
-        v.guide = tutorial.guideState(p, p.tutorialFlags || []);
-      }
-    } catch (e) { /* 剧情发不出来不该挡着开局 */ }
+    try { v.story = storybeat.currentStory(this.world, p); } catch (e) { /* 不算也不挡开局 */ }
     return v;
   }
 
@@ -566,6 +549,19 @@ class GameEngine {
       map: withMap ? this.mapView() : undefined,
       guide: tutorial.guideState(p, p.tutorialFlags || []),
       intro: tutorial.introFor(p, p.tutorialFlags || []),
+      /* 剧情屏（上方大框）：新手当前章 / 新手走完就换成主线当前幕。
+         ⚠️ 每次 view 现算（纯函数、幂等）而不是「攒几行发下去」——
+            玩家走开、读档、跨区回来，大框里照样是当前这一章，不会漏。
+         顺手做一次「新手 → 主线」的交接（幂等，多数时候什么都不做）：
+            读档/旧存档进来时，这里保证大框立刻是对的。 */
+      story: (function () {
+        try {
+          storybeat.syncTrack(this.world, p);
+          return storybeat.currentStory(this.world, p);
+        } catch (e) { return null; }
+      }).call(this),
+      /* 追踪状态（任务面板据此把「追踪」画成「取消追踪」；null = 没在追任何任务） */
+      track: p.track || null,
       marriage: marriage.summary(w),
       kinship: kinship.summary(w),
       home: homeMod.summary(w),
@@ -1581,10 +1577,12 @@ class GameEngine {
        （storyline 产品侧零消费者 —— 以前 onTick / onDayTick 的台词 emit 出去就沉了。） */
     this._drainWorldLines(lines);
     this.postProcess(lines, before, opts);
-    /* 剧情上屏（storybeat）：教程章节 / 任务阶段往前走了一格，就在这一屏补讲出来。
-       放在 postProcess **之后** —— 任务计数刚结算完，这道指令带来的推进当场就能看见，
-       不用玩家再去翻「任务」面板（主人 2026-10-11 追问的就是这个）。
-       ⚠️ 一处接线就全覆盖：面板点出来的、敲指令敲出来的、打架打出来的都走 exec。 */
+    /* 任务追踪的自动规则（新手走完 → 换追主线；追的那条交完了 → 换一条）。
+       放在这里是因为「每一处推进都要走 exec」——面板点出来的、敲指令敲出来的、
+       打架打出来的都经过这儿，切换不会漏。幂等，平时什么都不做。 */
+    try { storybeat.syncTrack(w, p); } catch (e) { /* 追不上不该挡着玩 */ }
+    /* 支线任务的接取 / 阶段推进通知（**不是剧情**，走日志）。
+       剧情章节已经改到上方大框（`view.story`），见 storybeat 顶部注释。 */
     try { lines.push(...storybeat.reconcile(w, p)); } catch (e) { /* 讲不成不该挡着玩 */ }
     const out = { lines, ...res };
     /* ⚠️ 指令回包**不带地图**（`map: false`）。这里是所有指令的总出口 ——

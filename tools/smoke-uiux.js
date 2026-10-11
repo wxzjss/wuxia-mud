@@ -1368,6 +1368,43 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
         fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'index.html'), 'utf8')));
   }
 
+
+  /* ---------- ⑲ 任务面板的追踪按钮（真点击） ---------- */
+  section('⑲ 「任务」面板的追踪按钮（主人 2026-10-08：点一下大框换任务）');
+  {
+    const vv = engine.view();
+    const env = loadUi(makeEnv({ innerWidth: 1280 }));
+    const rec = stubApi(env, vv);
+    closeMasks(env);
+    env.WX.S.view = vv;
+    await env.WXUI.panel('quests');
+    await settle();
+    const mb = String(env.document.getElementById('modal-body').innerHTML || '');
+    const idList = (mb.match(/data-track="[^"]*"/g) || []).map(x => x.slice(12, -1));
+    ok('⑲-1 任务卡上有追踪按钮', idList.length > 0, idList.join(' '));
+    ok('⑲-2 新手剧情那条默认被追着（按钮画成「取消追踪」）',
+      /data-track="__newbie__" data-on="1"/.test(mb), (mb.match(/data-track="__newbie"[^>]*/) || [''])[0]);
+    ok('⑲-3 主线的按钮此刻是「追踪」', /data-track="q_main_jianghu" data-on="0"/.test(mb),
+      (mb.match(/data-track="q_main_jianghu"[^>]*/) || [''])[0]);
+
+    const btn = env.document.querySelectorAll('#modal-body [data-track]')
+      .find(b => b.getAttribute('data-track') === 'q_main_jianghu');
+    ok('⑲-4 抠得到主线那枚按钮（说明 onclick 真绑上了）', !!btn);
+    if (btn) { btn.click(); await settle(); await settle(); }
+    ok('⑲-5 ★ 点了真发出「追踪 q_main_jianghu」',
+      rec.exec.some(x => x.cmd === '追踪 q_main_jianghu'),
+      JSON.stringify(rec.exec.map(x => x.cmd).slice(-3)));
+    /* 取消追踪也走同一条线 */
+    rec.exec.length = 0;
+    const mb2 = String(env.document.getElementById('modal-body').innerHTML || '');
+    const off = env.document.querySelectorAll('#modal-body [data-track]')
+      .find(b => b.getAttribute('data-on') === '1');
+    ok('⑲-6 找得到「取消追踪」那枚', !!off, mb2.slice(0, 0));
+    if (off) { off.click(); await settle(); await settle(); }
+    ok('⑲-7 ★ 点「取消追踪」真发出「取消追踪」',
+      rec.exec.some(x => x.cmd === '取消追踪'), JSON.stringify(rec.exec.map(x => x.cmd).slice(-3)));
+  }
+
   console.log('\n———————————————————————————————');
   console.log(`  批次7 双端与 UI 回归：${pass} 通过 / ${fail} 失败`);
   if (fails.length) console.log('  失败项：' + fails.join('、'));

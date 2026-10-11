@@ -204,6 +204,11 @@
     $('room-region').textContent = room.region ? ('· ' + room.region) : '';
     $('room-env').textContent = room.env || '';
 
+    /* 剧情屏：有 `v.story` 就把大框让给剧情（新手章 / 主线幕），
+       房间描述收起来 —— 想看「此地如何」敲「查看四周」，那一段照旧打在下方日志里
+       （分工：大框=剧情，日志=场面，主人 2026-10-08 的要求）。 */
+    renderStory(v.story || null);
+
     let desc = room.desc || '';
     $('room-desc').innerHTML = esc(desc).replace(/\n/g, '<br>');
 
@@ -217,6 +222,59 @@
        DOM 里没有就整体跳过，绝不再插 DOM 造成第二处。 */
     if ($('exits')) renderExitButtons(v);
     if ($('room-actions')) renderRoomActions(v);
+  }
+
+  /* ============================================================
+   *  剧情屏（上方大框）—— 主人 2026-10-08
+   *
+   *  「把那个大框里面的内容变成新手剧情第一章，后续新手剧情都在那个大框里面显示，
+   *    不在屏幕上和其他人物描写、环境描写之类的一起显示；
+   *    新手剧情结束后无缝衔接主线剧情，大框改为主线剧情。」
+   *
+   *  ⇒ 大框 = **剧情**（新手章 / 主线幕，同一个位置、同一套渲染）；
+   *     下方日志 = **场面**（房间描写、出口、人物动作、战斗、系统提示）。
+   *     两段之间没有任何切屏动作：后端 `view.story` 在新手走完那一刻自然返回
+   *     主线那一幕，前端只是照着重画一遍，所以是「无缝」的。
+   *
+   *  ⚠️ 房间名那一行（`.room-head`：房间 · 区域 · 时令）**保留**：
+   *     它是「你在哪儿」的唯一落点，月亮也挂在这一行（主人上一轮刚指定过位置）。
+   *     剧情正文只占它下面那一块，`#room-desc` 让位。
+   */
+  function storyHtml(s) {
+    /* 抬头那一行文案由**后端**算好（`arcLabel`）：新手是「新手 · 第 3 / 8 章」，
+       主线是「主线 · 第 2 / 6 步」，支线是「支线 · 第 1 / 3 步」。
+       前端不再自己拼 —— 之前按 arc 猜「幕/章」，任务任务类型一多就写不准。 */
+    const head = '<div class="story-head">' +
+      '<span class="sh-arc">' + esc(s.arcLabel || s.arcName || '') + '</span>' +
+      '<b class="sh-title">' + esc(s.title || '') + '</b></div>';
+    let body = '';
+    (s.lines || []).forEach(l => {
+      const t = String(l.text || '');
+      if (!t) return;
+      body += '<div class="sl sl-' + esc(l.kind || 'story') + '">' +
+        esc(t).replace(/\n/g, '<br>') + '</div>';
+    });
+    let todo = '';
+    if (s.todo) todo = '<div class="story-todo"><i>▸</i> 现在做什么：' + esc(s.todo) + '</div>';
+    return head + '<div class="story-body">' + body + '</div>' + todo;
+  }
+
+  /** 有剧情就把大框让给剧情；没有就收起剧情块、把房间描述放回来 */
+  function renderStory(story) {
+    const box = $('story-box');
+    const desc = $('room-desc');
+    if (!box) return;
+    const hasBody = !!(story && ((story.lines || []).length || story.title));
+    if (!hasBody) {
+      box.classList.add('hidden');
+      box.innerHTML = '';
+      if (desc) desc.classList.remove('hidden');
+      return;
+    }
+    box.classList.remove('hidden');
+    box.innerHTML = storyHtml(story);
+    if (desc) desc.classList.add('hidden');
+    box.scrollTop = 0;      /* 换章回时回到开头，别停在上一次的滚动位置 */
   }
 
   /* 出口方向按钮（保底路径：只在 HTML 里仍有 #exits 时才画） */
@@ -2422,6 +2480,19 @@
        （章次 + 剧情 + 目标 + 进度条），不铺开全部章节；
        要看完整流程，点卡片底部那个按钮去「新手教程」面板（那边才是全的）。
        两份内容都来自后端同一份 guide 数据，不在这里另算。 */
+    /* 追踪按钮（主人 2026-10-08）：
+         · 没追这条 → 「追踪」，点了大框换成这桩事；
+         · 正追这条 → 「取消追踪」，点了大框连任务一起收起来。
+       判定读 `v.track`（后端 `p.track` 的原样下发），前端不自己记状态。 */
+    const trackBtn = q => {
+      const id = q.isTutorial ? '__newbie__' : (q.id || '');
+      if (!id) return '';
+      const on = String((v && v.track) || '') === id;
+      return '<button class="q-track' + (on ? ' on' : '') + '"' +
+        ' data-track="' + esc(id) + '" data-on="' + (on ? '1' : '0') + '">' +
+        (on ? '取消追踪' : '追踪') + '</button>';
+    };
+
     const newbieCard = q => {
       const cur = q.cur || 0, tot = q.count || 1;
       const pct = Math.max(4, Math.round(cur / Math.max(1, tot) * 100));
@@ -2434,7 +2505,8 @@
       if (q.goal) s += '<div class="qnb-goal">当前目标：' + esc(q.goal) + '</div>';
       if (q.hint) s += '<div class="qnb-hint">' + esc(q.hint) + '</div>';
       if (q.targetSect) s += '<div class="qnb-sect">这一程的去处：' + esc(q.targetSect) + '</div>';
-      s += '<div class="qnb-foot"><button class="op-btn" data-cmd="guide">看完整流程（新手教程）</button></div>';
+      s += '<div class="qnb-foot">' + trackBtn(q) +
+        '<button class="op-btn" data-cmd="guide">看完整流程（新手教程）</button></div>';
       return s + '</div>';
     };
 
@@ -2458,6 +2530,7 @@
         });
         s += '</div>';
       }
+      s += '<div class="q-foot">' + trackBtn(q) + '</div>';
       return s + '</div>';
     };
 
@@ -3230,6 +3303,21 @@
         const c = b.getAttribute('data-cmd');
         closeModal();
         if (c) doCmd(c, { fromButton: true });
+      };
+    });
+
+    /* 任务追踪（主人 2026-10-08）：点完真改追踪状态，然后把**面板重开一次** ——
+       不重开的话按钮还写着「追踪」，玩家会以为没点着（铁律：该有的反应没有）。
+       ⚠️ 这一类按钮**故意不挂 `op-btn`**：`.op-btn` 的处理只认 `data-cmd`，
+         挂上去会「关掉面板却什么都不做」。 */
+    document.querySelectorAll('#modal-body [data-track]').forEach(b => {
+      b.onclick = async () => {
+        const id = b.getAttribute('data-track');
+        const on = b.getAttribute('data-on') === '1';
+        b.disabled = true;
+        await doCmd(on ? '取消追踪' : ('追踪 ' + id), { fromButton: true });
+        closeModal();
+        panel('quests');
       };
     });
 
@@ -4482,7 +4570,7 @@
    * ============================================================ */
   global.WXUI = {
     show, toast, modal, closeModal, bindModal, choices, closeChoices, confirmBox,
-    renderAll, renderTopbar, renderRoom, renderRoomActions, renderScene, renderCombat, renderQuickbar,
+    renderAll, renderTopbar, renderRoom, renderRoomActions, renderStory, renderScene, renderCombat, renderQuickbar,
     appendLog, paintLog, clearLog, doCmd, panel, panelForCmd, openSaves, openSettings, applySettings,
     quitGame, isQuitCmd,
     centerMapOnHere, fmt1,
@@ -4501,7 +4589,7 @@
        以前只能从真 DOM（modal-body.innerHTML）里读文本，
        写「读字段名对不对」的断言就别扭。
        全是纯函数（view → html 字符串），不碰 DOM 状态，不产生副作用。 */
-    __html: { attrHtml, martialHtml, slavesHtml, npcProfileHtml, questPreviewHtml },
+    __html: { attrHtml, martialHtml, slavesHtml, npcProfileHtml, questPreviewHtml, storyHtml },
   };
 
 })(window);

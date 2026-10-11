@@ -87,58 +87,24 @@ function markSeen(world, p) {
  * @returns {Array<{kind,text}>} 0~N 行（调用方接到 lines 尾部即可）
  */
 function reconcile(world, p, opts) {
+  void opts;   /* `{tutOnly:true}` 那个开关随「教程章节改上大框」一起退休了（见下） */
   if (!p) return [];
-  const o = opts || {};
   const m = memOf(p);
   const out = [];
 
-  /* ① 新手教程：章节往前走一格，就把这一章讲出来
+  /* ① 新手教程的章节 —— **不再从这里往日志里发**。
    *
-   * ⚠️ 逐章**补课**，不是只盯 `current`：玩家可能在别处把某一章的条件做完了
-   *    （比如走到外头的镇上接了个任务），等系统回头看时 `current` 已经跳到下一章 ——
-   *    只盯 current 的话中间那一章**永远讲不出来**。（本模块第一版就这么漏过。）
+   * 2026-10-11 改：主人要求「新手剧情都在那个大框里面显示，不在屏幕上和其他
+   * 人物描写环境描写之类的一起显示」。于是教程章节改由 `currentStory()` 常显在
+   * **上方大框**（`view.story`），日志这一路彻底摘掉。
    *
-   * ⚠️ 人物言行**只筛那一句**，章节本身照讲：
-   *    老汉不在跟前，就只上旁白（「往北二里是江南城…」哪儿读都通），
-   *    他那句「你连道口都没走完」留空 —— 屏幕上演的是**你眼前的江湖**，
-   *    不该出现别处某个人正在说什么。 */
-  try {
-    const g = require('./tutorial').guideState(p, p.tutorialFlags);
-    const steps = (g && g.steps) || [];
-    const curNo = (g && g.current) ? g.current.no : 0;
-    for (const s of steps) {
-      if (s.no <= (m.tut || 0)) continue;
-      /* 还没轮到的（锁着的）不讲；做完的和当前这一章讲 */
-      if (!s.done && s.no !== curNo) continue;
-      if (!s.narr && !s.say) continue;
-      const got = beats(world, p, [
-        { kind: 'story', text: s.narr },
-        { kind: 'say', text: s.say, by: s.at },
-      ]);
-      if (!got.length) continue;
-      out.push({ kind: 'subtitle', text: `第 ${s.no} 章 · ${s.title}` });
-      out.push(...got);
-      /* 🔴 主人 2026-10-11：「我发现发到屏幕上的剧情没有现在要干什么的提示，
-         建议在剧情文本下一行添加一句大白话具体讲现在该做什么
-         （比如说现在要点击屏幕下方的快捷键『查看四周』之类的）」。
-         ⇒ 紧跟剧情补一行 hint。用 `s.todo`（写到「屏幕上哪个键」这一层），
-           而不是 `s.hint`（那是给熟手的速记，写着「敲 look」）——
-           第一次进游戏的人还没学会指令，只会按键。 */
-      if (s.todo) out.push({ kind: 'hint', text: '▸ 现在做什么：' + s.todo });
-      m.tut = s.no;
-      /* 一次只讲一章。第一版是「能补多少补多少」，结果开头一条 look
-         就把第 1、2 章连着倒出来 —— 剧情是给人读的，不是给人刷的。
-         落下的下一章，下一条指令自然就补上了。 */
-      break;
-    }
-  } catch (e) { /* 教程出错不该挡着玩 */ }
-
-  /* `tutOnly`：只要新手教程那一段，跳过下面所有任务播报。
-     开局第一屏用它 —— 主人 2026-10-11：「一进入游戏就显示第一章，**只显示
-     第一章内容**，其他内容不要显示」。不拦的话，同一屏里还会跟出
-     「【接取任务】【主线】江湖路远」那一坨，把第一章埋了。 */
-  if (o.tutOnly) return out;
-
+   * 原来那套「逐章补课 + `_storyBeat` 记账」的病根正好一起消失：
+   * 它得靠「每条指令对一次账」来保证不漏章，而只要有一环没接上（比如人不在场
+   * 被闸门筛掉、或者某章被跳过后又回头补），玩家就可能**永久错过一段剧情**，
+   * 屏幕还不会有任何提示。现在大框显示的是**当前状态算出来的当前一章**，
+   * 走开、读档、跨区回来都还在那儿，天然不会漏。
+   * （`_storyBeat` 字段与 `markSeen()` 保留：旧存档里带着它，删了字段只会让
+   *   读档逻辑多一处分支，留着不读不用，无害。） */
   /* ② 任务：接取 / 阶段推进时讲剧情（委托人的话要看他在不在） */
   for (const qid of Object.keys(p.quests || {})) {
     const st = p.quests[qid];
@@ -146,6 +112,13 @@ function reconcile(world, p, opts) {
     if (m.quests[qid] === st) continue;
     const first = m.quests[qid] === undefined;
     m.quests[qid] = st;
+    /* ⚠️ 「接取新任务就自动追踪」**不在这里**做。
+       这里判「第一次见到」用的是 `_storyBeat.quests` 那本记忆账，它在
+       **开局 / 读档之后是空的** —— 于是手上那些老任务全被当成「刚接的」
+       （实测：开局取消一次追踪，下一条指令就把主线追回来了，玩家一脸懵）。
+       真正的「接取」只有一个入口：`accept` 指令（NPC 菜单的「接取任务」按钮也发它）。
+       规则挂在那里，见 commands.js。 */
+    void first;
     if (st >= 99) continue;                     /* 交完就算了，收尾话由交任务那边说 */
     const qd = world.getQuest ? world.getQuest(qid) : null;
     if (!qd || !qd.name) continue;
@@ -167,4 +140,128 @@ function reconcile(world, p, opts) {
   return out;
 }
 
-module.exports = { reconcile, present, beats, markSeen, MEMO };
+/* ==================================================================
+ *  剧情屏（上方大框）= **任务追踪**
+ *  主人 2026-10-08 定的规则（原话）：
+ *   ·「主线剧情依旧是开局就接这个不变，但不会在屏幕下方显示」
+ *   ·「在『任务』里给任务添加追踪按钮，点击追踪按钮后上方大框内容切换成该追踪任务」
+ *   ·「如果不追踪任务，大框默认是新手剧情任务，直到该任务结束后自动切换追踪其他任务
+ *      （优先追踪主线剧情任务）」
+ *   ·「点击追踪后『追踪』按钮变成『取消追踪』」
+ *   ·「点击取消追踪后，大框里的任务以及大框都消失，直到接取一个新任务或者主动追踪任务」
+ *   ·「初始默认追踪新手剧情任务」
+ *
+ *  ⇒ 状态只有一个：`p.track`
+ *       null          不追踪（大框只留房间信息）
+ *       '__newbie__'  追踪新手剧情任务（开局默认）
+ *       'q_xxx'       追踪某条真任务
+ *
+ *  为什么是「当前状态算出来的」而不是「把新发生的那几行推上去」：
+ *    ① 玩家一进来就该看见**当前这一章/这一步**，而不是上一条指令冒出来的几行；
+ *    ② 走开、读档、跨区回来，大框里照样是它，**不会永久错过**；
+ *    ③ 新手走完的那一刻，同一个函数自然返回主线那一幕，这就是「无缝衔接」。
+ * ================================================================== */
+
+const NEWBIE = '__newbie__';
+
+/** 新手剧情任务那一「章」 */
+function newbieChapter(p) {
+  const g = require('./tutorial').guideState(p, p.tutorialFlags);
+  if (!g || g.finished || !g.current) return null;
+  const s = g.current;
+  const lines = [];
+  if (s.narr) lines.push({ kind: 'story', text: s.narr });
+  if (s.say) lines.push({ kind: 'say', text: s.say });
+  if (s.goal) lines.push({ kind: 'plain', text: '　这一程：' + s.goal });
+  return {
+    arc: 'tutorial', arcName: '入江湖',
+    arcLabel: '新手 · 第 ' + s.no + ' / ' + (g.total || 8) + ' 章',
+    no: s.no, total: g.total || 8,
+    title: s.title,
+    lines, todo: s.todo || '', goal: s.goal || '',
+  };
+}
+
+/** 一条真任务的「当前一步」（主线 / 支线都走这里） */
+function questChapter(world, p, qid) {
+  const qd = (world && world.getQuest) ? world.getQuest(qid) : null;
+  if (!qd) return null;
+  const isMain = String(qd.type || '') === '主线';
+  let idx = p.questStage ? p.questStage(qid) : (p.quests || {})[qid];
+  if (idx === undefined || idx === null) idx = 0;
+  if (idx < 0) idx = 0;
+  if (idx >= 99) idx = Math.max(0, (qd.stages || []).length - 1);
+  const stage = ((qd.stages || [])[idx]) || {};
+  const total = (qd.stages || []).length || 1;
+  const lines = [];
+  if (qd.desc) lines.push({ kind: 'story', text: qd.desc });
+  if (stage.desc) lines.push({ kind: 'plain', text: '　眼下这一步：' + stage.desc });
+  return {
+    arc: isMain ? 'main' : 'side',
+    arcName: isMain ? '主线' : (qd.type || '任务'),
+    arcLabel: (isMain ? '主线 · 第 ' : '支线 · 第 ') + (idx + 1) + ' / ' + total + ' 步',
+    no: idx + 1, total,
+    /* 抬头去掉数据里的『【主线】』前缀 —— 类型已经由 arcLabel 说了 */
+    title: String(qd.name || qid).replace(/^【[^】]*】/, ''),
+    lines, todo: stage.desc || '', goal: stage.desc || '',
+    questId: qid,
+  };
+}
+
+/**
+ * 自动挑一个该追踪的任务。
+ * 主人：「新手剧情任务结束后自动切换追踪其他任务（**优先追踪主线剧情任务**）」。
+ */
+function pickAuto(world, p) {
+  const ml = require('./mainline');
+  const active = qid => {
+    const st = p.questStage ? p.questStage(qid) : (p.quests || {})[qid];
+    return st !== undefined && st >= 0 && st < 99;
+  };
+  for (const qid of ml.ACT_QUESTS.slice(1)) if (active(qid)) return qid;   // 优先主线
+  const rest = Object.keys(p.quests || {}).filter(active).sort();
+  return rest.length ? rest[0] : null;
+}
+
+/**
+ * 把追踪状态收拾到「该追的那条」上（幂等，随便调）。
+ *
+ * 三条自动规则：
+ *   ① 追着新手、新手又走完了 → 自动换一个（优先主线）；
+ *   ② 追着某条、那条交完/掉了 → 自动换一个；
+ *   ③ `p.track` 是 null = **玩家亲手取消的** → 什么也不做。
+ *      主人：「点击取消追踪后，大框里的任务以及大框都消失，直到接取一个新任务
+ *              或者主动追踪任务」——「接取新任务」那条走 reconcile（见下）。
+ */
+function syncTrack(world, p) {
+  if (!p) return;
+  const t = p.track;
+  if (t === NEWBIE) {
+    let g = null;
+    try { g = require('./tutorial').guideState(p, p.tutorialFlags); } catch (e) { return; }
+    if (g && g.finished) p.track = pickAuto(world, p);
+    return;
+  }
+  if (!t) return;                       /* 玩家取消过 —— 不擅自给他追回来 */
+  const st = p.questStage ? p.questStage(t) : (p.quests || {})[t];
+  if (st === undefined || st < 0 || st >= 99 || !(world && world.getQuest && world.getQuest(t))) {
+    p.track = pickAuto(world, p);
+  }
+  void world;
+}
+
+/** 大框此刻该演哪一个（按 `p.track` 算；`null` = 大框只留房间信息） */
+function currentStory(world, p) {
+  if (!p) return null;
+  if (p.track === NEWBIE) {
+    try {
+      const c = newbieChapter(p);
+      if (c) return c;
+    } catch (e) { /* 教程算不出来 → 落到下面按任务算 */ }
+    return null;
+  }
+  if (!p.track) return null;
+  try { return questChapter(world, p, p.track); } catch (e) { return null; }
+}
+
+module.exports = { reconcile, present, beats, markSeen, currentStory, NEWBIE, syncTrack, pickAuto, MEMO };

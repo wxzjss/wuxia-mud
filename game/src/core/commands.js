@@ -4411,6 +4411,44 @@ function buildCommands(world) {
     return { lines };
   });
 
+  /* ---- 任务追踪（主人 2026-10-08）----
+     规则（原话）：
+       ·「在『任务』里给任务添加追踪按钮，点击追踪按钮后上方大框内容切换成该追踪任务」
+       ·「点击追踪后『追踪』按钮变成『取消追踪』」
+       ·「点击取消追踪后，大框里的任务以及大框都消失，直到接取一个新任务或者主动追踪任务」
+       ·「初始默认追踪新手剧情任务」
+     ⇒ 状态只有 `p.track` 一个：null（不追）/ '__newbie__'（新手剧情）/ 'q_xxx'。
+        指令这一层只负责改这个字段，**大框显示什么由 storybeat.currentStory 算**
+        （面板按钮、敲指令、读档三条路进的是同一份数据）。
+     ⚠️ 这两个词**不能**进前端的 PANEL_CMDS —— 进去就变成「开面板」而不是真追踪。 */
+  reg(['track', '追踪', '跟踪'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const sb = require('./storybeat');
+    if (!args.length) return { lines: [{ kind: 'warn', text: '你想追踪哪一桩事？' }] };
+    const key = args.join(' ');
+    if (key === '新手' || key === '新手教程' || key === '新手剧情') {
+      p.track = sb.NEWBIE;
+      return { lines: [{ kind: 'sys', text: '上方改追「新手剧情」了。' }] };
+    }
+    /* 面板按钮发的是**任务 id**（名字里有【主线】前缀、还可能重名），
+       手敲的才是名字 —— 两条都认。 */
+    const qd = w.getQuest(key) || fuzzyFind(Object.values(w.data.quests), key, q => q.name);
+    if (!qd) return { lines: [{ kind: 'warn', text: '没有这一桩事。' }] };
+    if (p.questStage(qd.id) < 0) return { lines: [{ kind: 'warn', text: '你手上没有这桩事。' }] };
+    p.track = qd.id;
+    return { lines: [{ kind: 'sys', text: `上方改追「${qd.name}」了。` }] };
+  });
+
+  reg(['untrack', '取消追踪', '不追踪', '别追了'], (ctx) => {
+    const p = ctx.player;
+    if (!p.track) return { lines: [{ kind: 'warn', text: '本来就没在追。' }] };
+    p.track = null;
+    /* ⚠️ 主人要的是「大框里的任务以及大框都消失」——不是退回新手那一章。
+       所以这里置 null，并且**不要**让 syncTrack 立刻给他补一个回来
+       （syncTrack 只在「追着的那条没了/新手走完」时才自动换）。 */
+    return { lines: [{ kind: 'sys', text: '不追了。想接着看，去「任务」里点一下追踪。' }] };
+  });
+
   reg(['accept', '接取', '接任务'], (ctx, args) => {
     const p = ctx.player, w = ctx.world;
     if (!args.length) return { lines: [{ kind: 'warn', text: '你想接什么任务？' }] };
@@ -4425,6 +4463,14 @@ function buildCommands(world) {
       }
     }
     p.setQuestStage(qd.id, 0);
+    /* 主人 2026-10-08：「点击取消追踪后，大框里的任务以及大框都消失，
+       **直到接取一个新任务**或者主动追踪任务」。
+       ⇒ 手上什么都没追的时候，新接的这桩自动追起来（大框立刻有内容）。
+         正追着别的东西就不抢 —— 那是玩家自己挑的，别给他换掉。
+       ⚠️ 规则挂在这里而不是 storybeat.reconcile：那边判「第一次见到」用的是
+         `_storyBeat` 那本记忆账，开局/读档后它是空的，会把**手上的老任务**
+         当成刚接的（实测：取消追踪后下一条指令又把主线追回来了）。 */
+    if (!p.track) p.track = qd.id;
     /* ⚠️ 这里**不再**自己念 desc / 目标 —— 交给 `storybeat.reconcile`。
        为什么：任务的来历写的就是委托人的做派（「他缠着你去看看」），
        属于「人物的言行」，必须过**在场闸门**（人不在场就不该上屏，主人 2026-10-11 的要求）。

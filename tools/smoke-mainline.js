@@ -51,7 +51,11 @@ const e0 = boot();
   const w = e0.world, p = w.player;
   const q = w.getQuest(Q);
   ok('主线任务存在', !!q, Q);
-  ok('开局自动接到主线', p.questStage(Q) === 0, 'stage=' + p.questStage(Q));
+  /* 🔴 2026-10-08 口径改动：主线**照旧开局就接**（主人明确要求），但**从第 1 步起步** ——
+     第 0 步「拜入一个门派」是新手第 6 章「递信上山门」的事，同一件事不要求做两遍
+     （主人：「主线剧情第一章是拜入一个宗门？？新手剧情里面也有一个拜入宗门」）。
+     数据侧写在 `60_quests.json` 的 `startStage: 1`，`world.createPlayer` 认它。 */
+  ok('开局自动接到主线（从第 1 步起：拜师归新手那一程）', p.questStage(Q) === 1, 'stage=' + p.questStage(Q));
   ok('主线有 6 个阶段', q.stages.length === 6, 'n=' + q.stages.length);
 }
 
@@ -268,7 +272,9 @@ sec('⑥ 真·交任务：找委托人一步步推到完成（99）');
        所以每一轮先把该轮的 lock flag 置上，等价于「前置那桩事已经办过了」。
        锁本身的守卫在 `check-data-load.js` ⑦ 与 `smoke-mainline-expansion.js`。 */
     const round = [
-      ['stage0 入派', () => { p.sect = '少林'; p.setVar('hasSect', 1); }],
+      /* ⚠️ 这里**没有 stage0 那一轮**：主线开局就接、但从第 1 步起步
+         （第 0 步「拜入一个门派」是新手第 6 章办的事，见 §① 的注释）。
+         所以从 stage1 开始逐段推。 */
       ['stage1 武学百级', () => { p.learnSkill('basic_sword', { force: true }); p.learnSkill('huashan_sword', { force: true }); p.gainSkillExp('basic_sword', 1e12); p.gainSkillExp('huashan_sword', 1e12); }],
       ['stage2 五桩支线', () => { p.setFlag('pre_a1_chuan', true); for (const s of Object.keys(w.data.quests).filter(i => /^sq_/.test(i)).slice(0, 5)) p.quests[s] = 99; }],
       ['stage3 击败名宿', () => {

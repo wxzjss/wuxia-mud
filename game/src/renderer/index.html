@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>武侠行 · 江湖再启</title>
-  <link rel="stylesheet" href="css/main.css?v=20261012a">
+  <link rel="stylesheet" href="css/main.css?v=20261012b">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
 </head>
 
@@ -177,6 +177,14 @@
             <span id="room-env" class="room-env"></span>
           </div>
           <div id="room-desc" class="room-desc"></div>
+          <!-- 剧情屏（主人 2026-10-08）：「把那个大框里面的内容变成新手剧情第一章，
+               后续新手剧情都在那个大框里面显示，不在屏幕上和其他人物描写环境描写
+               之类的一起显示；新手剧情结束后无缝衔接主线剧情，大框改为主线剧情」。
+               ⇒ 分工：**大框 = 剧情**（新手章 / 主线幕，同一处渲染）；
+                        **下方 #log = 场面**（房间描写、出口、人物动作、战斗、系统提示）。
+               有剧情时这里展开、`#room-desc` 让位；没有剧情时反过来（回到旧样子）。
+               内容由 `renderStory()` 画，数据来自后端 `view.story`。 -->
+          <div id="story-box" class="story-box hidden"></div>
           <!-- 出口方向按钮 + 「此地可做」按钮原先都挤在这块，
                跟日志流里已有的「出口」/「此地可做」两行完全重复（主人报「屏幕上有两个此地可做」）。
                现在统一收到日志流的「出口」那一行里渲染，这里只留房间名与描述。 -->
@@ -350,12 +358,12 @@
 
   <!-- ?v= 用于缓存穿透：改了这里就等于强制所有浏览器重新拉脚本。
        配合服务端的 no-store，确保发版后不会有人继续跑旧代码。 -->
-  <script src="js/localmods.js?v=20261012a"></script>
-  <script src="js/app.js?v=20261012a"></script>
-  <script src="js/ui.js?v=20261012a"></script>
-  <script src="js/modmaker.js?v=20261012a"></script>
-  <script src="js/docdata.js?v=20261012a"></script>
-  <script src="js/start.js?v=20261012a"></script>
+  <script src="js/localmods.js?v=20261012b"></script>
+  <script src="js/app.js?v=20261012b"></script>
+  <script src="js/ui.js?v=20261012b"></script>
+  <script src="js/modmaker.js?v=20261012b"></script>
+  <script src="js/docdata.js?v=20261012b"></script>
+  <script src="js/start.js?v=20261012b"></script>
 </body>
 
 </html>

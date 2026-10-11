@@ -520,6 +520,44 @@ html.theme-light .room-env { text-shadow: 0 1px 3px rgba(255, 255, 255, .95), 0 
 .room-region { font-size: 12px; color: var(--red); letter-spacing: .04em; }
 .room-env { font-size: 11.5px; color: var(--ink-4); margin-left: auto; }
 .room-desc { font-family: var(--font); font-size: 14px; line-height: 1.85; color: var(--ink-2); margin-bottom: 9px; }
+
+/* ============ 剧情屏（上方大框）============
+   主人 2026-10-08：「把那个大框里面的内容变成新手剧情第一章，后续新手剧情都在
+   那个大框里面显示，不在屏幕上和其他人物描写环境描写之类的一起显示；
+   新手剧情结束后无缝衔接主线剧情，大框改为主线剧情」。
+   ⇒ 这一块是**剧情**的地盘（新手章 / 主线幕同处），下方 #log 是**场面**的地盘。
+   ⚠️ 高度必须封顶并自己滚：一章四五段，不封顶会把下面的日志挤没。
+   ⚠️ 段落**不许 nowrap**（中文窄容器里会逐字竖排，老坑）；
+      只有章回标签那一行短串可以。
+   ⚠️ 颜色一律走既有主题变量（深浅两套都验过），别写死色值。 */
+.story-box { display: flex; flex-direction: column; gap: 6px;
+  max-height: 34vh; overflow-y: auto; overscroll-behavior: contain;
+  margin-bottom: 9px; padding: 10px 12px;
+  border: 1px solid var(--line-2); border-left: 3px solid var(--gold);
+  border-radius: 6px; background: var(--surface-3); }
+.story-box.hidden { display: none; }
+.story-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.story-head .sh-arc { font-size: 11.5px; color: var(--gold); letter-spacing: .05em; white-space: nowrap; }
+/* 剧情屏抬头那一行标签（新手「第 3 / 8 章」/ 主线「第 2 / 6 步」）由后端给 */
+.story-head .sh-title { font-family: var(--font); font-size: 17px; color: var(--ink); letter-spacing: .04em; }
+
+/* 任务面板的追踪按钮（主人 2026-10-08）：
+   没追 = 素按钮；正追 = 金底（跟大框那道金边对得上，一眼看出「大框里就是它」）。 */
+.q-track { padding: 4px 12px; font-size: 12.5px; font-family: var(--font); border-radius: 4px;
+  border: 1px solid var(--line-2); background: var(--card-2); color: var(--ink-3);
+  cursor: pointer; transition: all .14s; }
+.q-track:hover { border-color: var(--gold); color: var(--gold-d); }
+.q-track.on { background: var(--tint-gold); border-color: var(--line-gold); color: var(--gold-d); font-weight: 600; }
+.q-track:disabled { opacity: .55; cursor: default; }
+.q-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+.story-body { display: flex; flex-direction: column; gap: 5px; }
+.story-body .sl { font-family: var(--font); font-size: 13.5px; line-height: 1.85; color: var(--ink-2); }
+/* 旁白与台词分层：台词压暗一档、前面挂一道细线（读起来像「有人在说话」） */
+.story-body .sl-say { color: var(--ink-3); border-left: 2px solid var(--line-2); padding-left: 8px; }
+.story-body .sl-plain { color: var(--ink-3); font-size: 12.5px; }
+.story-todo { font-size: 12.5px; color: var(--gold-d); border-left: 2px solid var(--line-gold);
+  padding-left: 8px; line-height: 1.7; }
+.story-todo i { font-style: normal; color: var(--gold); }
 .exits { display: flex; flex-wrap: wrap; gap: 7px; }
 .exit-btn {
   padding: 5px 13px; font-size: 13px; font-family: var(--font); cursor: pointer;
@@ -1328,6 +1366,11 @@ html.theme-light .room-env { text-shadow: 0 1px 3px rgba(255, 255, 255, .95), 0 
 .mm-add:hover { background: var(--solid); color: #f6f1e4; border-style: solid; border-color: var(--solid); }
 .mm-add.sm { padding: 5px 14px; font-size: 12.5px; font-family: var(--font-ui); margin: 4px 6px 4px 0; }
 .mm-empty { padding: 26px; text-align: center; font-size: 13.5px; color: var(--ink-4); background: var(--card); border: 1px dashed var(--line); border-radius: 7px; font-family: var(--font); }
+/* 空态里的说明与按钮（主人 2026-10-08：「登录/注册的 UI 太大而且没对齐」）：
+   说明另起一行、按钮单独一个**居中**的小排 —— 原来一枚 260px 的主菜单大按钮
+   塞在虚线框里，又大又压不住中。 */
+.mm-empty-sub { margin-top: 8px; font-size: 12.5px; line-height: 1.85; color: var(--ink-4); }
+.mm-empty-acts { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
 .mm-empty-sm { font-size: 12.5px; color: var(--ink-4); padding: 6px 0; font-style: italic; }
 
 /* ---- 制作器「我制作的 Mod」（主人 2026-10-11：上传要登录 + 我的作品）---- */

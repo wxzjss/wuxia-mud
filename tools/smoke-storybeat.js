@@ -29,58 +29,69 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
   const rNew = e.newGame({ name: '看戏的' });
   const w = e.world, p = w.player;
 
-  /* ================= 一、开局第一屏就该有剧情 ================= */
-  section('1 剧情自己走到屏幕上（开局即上屏）');
-  const r0 = { lines: (rNew && rNew.lines) || [] };
-  const t0 = allText(r0);
-  /* ⚠️ 别再钉「茶摊的灶火还温着」这四个字 —— 那是第一章台词的原文，
-     主人 2026-10-11 让重写新手剧情，台词一改这条就假红。
-     改成**与实现同源**：从 tutorial.STEPS 取第一章的 story 原文来比。 */
+  /* ================= 一、剧情走**上方大框**（主人 2026-10-08 改的口径）=================
+     原口径：剧情由 storybeat 逐章「补讲」到**下方日志**里。
+     新口径：大框（`view.story`）**常显当前追踪那一章**，日志只留场面
+            （房间描写 / 出口 / 在场的人 / 战斗 / 系统提示）。
+     为什么更好：常显 = 走开、读档、跨区回来那一章都还在，不会「永久错过」；
+                也不需要「逐章补课」那套记账（它一旦漏环就静默吞剧情）。 */
+  section('1 剧情走大框（开局即显示，且不混进日志）');
+  /* ⚠️ 取剧情的路径两种形状都要认：
+       `newGame()` 返回的就是 view 本身（`r.story`）；
+       `exec()` 返回 `{lines, view, ...}`，剧情在 `r.view.story`（指令回包不带日志之外的东西）。 */
+  const storyOf = r => (r && (r.story || (r.view && r.view.story))) || null;
+  const ST = storyOf(rNew);
+  const storyText = (o) => ((o && o.lines) || []).map(l => l.text || '').join('\n');
+  const t0 = storyText(ST);
+  /* ⚠️ 别再钉台词原文 —— 从 tutorial.STEPS 取第一章的 story 来比（同源）。 */
   const CH1 = require(path.join(ROOT, 'game/src/core/tutorial.js')).STEPS.find(s => s.id === 'look') || {};
-  ok('★ 第 1 章的旁白上屏了', !!(CH1.story && t0.indexOf(CH1.story) >= 0), kinds(r0, 'story').join(' | ').slice(0, 70));
-  ok('★ 有「第 1 章」的章节抬头', kinds(r0, 'subtitle').some(x => /第 1 章/.test(x)), kinds(r0, 'subtitle').join(','));
-  /* 文本在润色里改过（原「没抬头，只把柴拨了拨」是一处 AI 味的'不X只Y'），
-         断言只认「老汉 + 动作」这件事，别钉死具体措辞。 */
-  ok('★ 老汉的动作也上屏了（他在你跟前的）', kinds(r0, 'say').some(x => /老汉/.test(x) && /拨火|拨柴|没抬头/.test(x)),
-    kinds(r0, 'say').join(' | ').slice(0, 60));
-  /* 🔴 主人 2026-10-11：「发到屏幕上的剧情没有『现在要干什么』的提示，
-     建议在剧情文本下一行添加一句大白话具体讲现在该做什么。」 */
-  ok('★ 剧情下一行给了「现在做什么」的大白话',
-    kinds(r0, 'hint').some(x => /现在做什么/.test(x) && /查看四周/.test(x)),
-    kinds(r0, 'hint').join(' | ').slice(0, 70));
-  /* 上屏≠完成：第一章的目标只认「真看了」，不能被这屏文字顺手判掉 */
+  ok('★ 开局大框里就是第 1 章', !!ST && ST.arc === 'tutorial', ST && ST.arc);
+  ok('★ 第 1 章的旁白在大框里', !!(CH1.story && t0.indexOf(CH1.story) >= 0),
+    (ST && ST.lines || []).map(l => l.kind).join(','));
+  ok('★ 大框抬头写着章次（第 1 / 8 章）', !!ST && /第 1 \/ \d+ 章/.test(ST.arcLabel || ''), ST && ST.arcLabel);
+  ok('★ 老汉那句话也在大框里', !!(ST && (ST.lines || []).some(l => l.kind === 'say' && /老汉/.test(l.text))),
+    t0.slice(0, 60));
+  /* 🔴 主人 2026-10-11：「剧情文本下一行加一句大白话具体讲现在该做什么」 */
+  ok('★ 大框给了「现在做什么」的大白话', !!ST && /查看四周/.test(ST.todo || ''), ST && ST.todo);
+  /* 上屏≠完成：第一章的目标只认「真看了」 */
   ok('★ 剧情上屏**不**等于做完第一个任务',
-    !(p.tutorialFlags || []).indexOf('did_look') !== true &&
     require(path.join(ROOT, 'game/src/core/tutorial.js')).guideState(p, p.tutorialFlags).doneCount === 0,
     'done=' + require(path.join(ROOT, 'game/src/core/tutorial.js')).guideState(p, p.tutorialFlags).doneCount);
-  /* 这一章不该复述第二遍 */
-  const r0b = await e.exec('score');
-  ok('同一章不重复念', !kinds(r0b, 'subtitle').some(x => /第 1 章/.test(x)), kinds(r0b, 'subtitle').join(','));
 
-  /* —— 客户端那一环：服务端把剧情塞进 view.lines 还不够，**落进日志**才上屏 ——
-     /api/new 只回 view、不回 log，而 renderAll() 不画日志。
-     所以 start.js 必须显式把 view.lines 追加进去（旧代码只 append d.log ⇒ 那一屏是空的，
-     剧情要等玩家敲第一条指令才补讲 —— 正是主人报的「先『看』才能看见」）。 */
+  /* —— 日志里**不许**有剧情行：主人「不在屏幕上和其他人物描写环境描写之类的一起显示」 —— */
   {
+    const ks = kinds(rNew, 'story').concat(kinds(rNew, 'say'), kinds(rNew, 'subtitle'))
+      .concat(kinds(rNew, 'hint'));
+    ok('★ 开局那屏日志里没有剧情行（旁白/台词/章节抬头）', ks.length === 0,
+      ks.join(' | ').slice(0, 60) || '干净');
+    /* ⚠️ 光看 kind 不够：`subtitle` 别处也在用（score 面板），
+       再加一道「日志文本里不许出现章节抬头样式」的硬判据。 */
+    ok('★ 开局日志文本里也没有「第 N 章 ·」', !/第 \d+ 章 ·/.test(allText(rNew)), allText(rNew).slice(0, 50));
+    ok('★ 日志留的是场面（房间/出口/在场的人）',
+      kinds(rNew, 'desc').length + kinds(rNew, 'exits').length + kinds(rNew, 'npcs').length > 0,
+      [...new Set(kinds(rNew))].join(','));
+  }
+
+  /* 常显：换一条指令之后大框还是同一章，不会叠加、也不会念第二遍 */
+  const r0b = await e.exec('score');
+  ok('★ 大框常显同一章（不重复念、不叠加）',
+    !!storyOf(r0b) && storyOf(r0b).arc === 'tutorial' && storyOf(r0b).no === ST.no,
+    storyOf(r0b) && (storyOf(r0b).arcLabel + ' ' + storyOf(r0b).title));
+  ok('同一章不在日志里复述', !/第 \d+ 章 ·/.test(allText(r0b)), allText(r0b).slice(0, 50));
+
+  /* —— 客户端那一环：大框由 renderAll → renderRoom 画，不靠日志 —— */
+  {
+    const RJS = path.join(ROOT, 'game/src/renderer/js/ui.js');
+    const UI = require('fs').readFileSync(RJS, 'utf8');
+    ok('★ 前端把 view.story 画进大框（renderStory）',
+      /renderStory\(v\.story/.test(UI) && /function renderStory\(/.test(UI));
+    ok('★ 有剧情时房间描述让位、没剧情时放回来',
+      /desc\.classList\.add\('hidden'\)/.test(UI) && /desc\.classList\.remove\('hidden'\)/.test(UI));
     const START = require('fs').readFileSync(path.join(ROOT, 'game/src/renderer/js/start.js'), 'utf8');
-    ok('★ 创建角色后把 view.lines 落进日志（开局剧情才上屏）',
+    ok('★ 创建角色后把开局场面落进日志（房间描写那些）',
       /const head = \(d\.view && d\.view\.lines\)/.test(START) && /appendLog\(head\)/.test(START));
     ok('★ 读档后也把这一屏落进日志（不然回来只看到一行字）',
       /const head2 = \(S\.view && S\.view\.lines\)/.test(START) && /appendLog\(head2\)/.test(START));
-  }
-
-  /* 🔴 主人 2026-10-11 追加：「一进入游戏就显示第一章，**只显示第一章内容**，
-     其他内容不要显示。」⇒ 开局那一屏必须干净得只剩第一章：
-     不许有房间名/描述/节气/出口/在场人名，也不许有「【接取任务】…」那一坨。
-     （房间信息没丢，它一直在右侧 `#room-panel` 里。） */
-  {
-    const ks = kinds(r0);
-    const kindsSet = new Set(ks);
-    const forbidden = ['roomname', 'desc', 'exits', 'npcs', 'npcsact', 'quest', 'ambient'];
-    const leaked = forbidden.filter(k => kindsSet.has(k));
-    ok('★ 开局那屏**没有**房间/节气/出口/人物/任务那些内容', leaked.length === 0, leaked.join('、') || '干净');
-    ok('★ 开局那屏只有教程第一章那几行（≤6 行）', ks.length <= 6, ks.length + ' 行：' + ks.join(','));
-    ok('★ 开局那屏不含「接取任务」', !/接取任务/.test(t0));
   }
 
   /* ================= 二、人物言行只在场才上屏 ================= */
@@ -93,38 +104,21 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
      断言不看章号（章号会随教程改动漂），只看「有没有出现老汉的话」。 */
   const elderSays = (r) => kinds(r, 'say').filter(t => /老汉/.test(t));
 
-  /* 先把脚挪开，**再**在别处把第 1 章做完 —— 这样第 2 章就是在
-     「老汉不在跟前」的时候讲出来的，正好拿它验在场闸门已撤。 */
+  /* 走开之后：剧情**照旧留在大框里**（这是「常显」要证明的事），
+     而日志里依旧不许冒出剧情行。 */
   const rMove = await e.exec('北');
   ok('走出去了', p.room !== elderRoom, '现在在 ' + w.data.rooms[p.room].name);
   const rLook = await e.exec('look');
-  ok('★ 章节照讲（旁白哪儿读都通）', kinds(rLook, 'subtitle').length > 0,
-    kinds(rLook, 'subtitle').join(','));
-  /* 口径变更（主人 2026-10-11）：在场闸门已撤 → 他的话**照旧上屏**。
-     改的是主人的决定，不是把新功能判成 bug。 */
-  ok('★ 老汉的话**照旧上屏**（在场闸门已撤）', elderSays(rLook).length > 0,
-    elderSays(rLook).join(' | ') || '(没提老汉)');
-  /* 并且得证明「这一章本来是有他一句话的」—— 不然闸门在不在都看不出区别 */
-  ok('★ 这一章本身是带老汉台词的（闸门确实在干活）',
-    (() => {
-      const g = require(path.join(ROOT, 'game/src/core/tutorial.js'))
-        .guideState(p, p.tutorialFlags);
-      const no = kinds(rLook, 'subtitle').join('').match(/第 (\d+) 章/);
-      const s = g.steps.find(x => x.no === (no ? +no[1] : -1));
-      return !!(s && s.say);
-    })(), '');
-
-  // 换一条指令，老汉也不可能「隔空说话」
-  const rMove2 = await e.exec('score');
-  ok('他没回来，那句话就始终不出现', elderSays(rMove2).length === 0, elderSays(rMove2).join(' | '));
-
-  /* 回到茶摊：这一章已经讲过了，不会回头补念（剧情是往前走的，不是账本）。
-     「人在场就该有他那句话」的那一半，由 §1（老汉在跟前 → 他开口）与
-     §3 / §4（委托人 在场 / 不在场 的对照）各证一次。 */
-  const rBack = await e.exec('南');
-  ok('回到茶摊', p.room === elderRoom, w.data.rooms[p.room].name);
-  const toldBefore = kinds(rLook, 'subtitle').concat(kinds(rMove2, 'subtitle')).join(',');
-  ok('讲过的不再回头补念', !kinds(rBack, 'subtitle').some(x => toldBefore.includes(x)), toldBefore);
+  ok('★ 走开之后大框里还是那一章（不会因为离开就消失）',
+    !!storyOf(rLook) && storyOf(rLook).arc === 'tutorial' && /第 \d+ \/ \d+ 章/.test(storyOf(rLook).arcLabel || ''),
+    storyOf(rLook) && storyOf(rLook).arcLabel);
+  /* 口径变更（主人 2026-10-11）：在场闸门已撤 → 台词照旧在大框里出现 */
+  ok('★ 老汉的台词照旧在大框里（在场闸门已撤）',
+    !!((storyOf(rLook) || {}).lines || []).some(l => l.kind === 'say' && /老汉/.test(l.text)),
+    ((storyOf(rLook) || {}).lines || []).map(l => l.kind).join(','));
+  ok('★ 换一条指令，日志里还是没有剧情',
+    !/第 \d+ 章 ·/.test(allText(rLook)) && !/老汉/.test(allText(rLook)),
+    allText(rLook).slice(0, 50));
 
   /* ================= 三、任务的剧情也上屏 ================= */
   section('3 任务的剧情：接取 + 阶段推进');
@@ -195,8 +189,13 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
   const lr = e5.loadSave('oldsave');
   ok('读档成功', lr.ok, lr.msg);
   const rAfter = await e5.exec('score');
-  ok('★ 读档后不会把旧章节一口气念一遍', !/第 \d+ 章/.test(allText(rAfter)),
-    kinds(rAfter, 'subtitle').join(',') || '(安静)');
+  /* ⚠️ 判据要认**章节抬头那个样式**（「第 N 章 · 标题」），不能只按 kind 判 ——
+     `subtitle` 这个 kind 别处也在用（score 面板的「装备（2 件）」就是它）。 */
+  ok('★ 读档后日志里没有剧情（不会把旧章节一口气念一遍）',
+    !/第 \d+ 章 ·/.test(allText(rAfter)) && !/老汉/.test(allText(rAfter)),
+    allText(rAfter).slice(0, 60));
+  ok('★ 读档后大框里还有当前那一章（追踪状态随档走 / 老档补追新手）',
+    !!storyOf(rAfter) && !!storyOf(rAfter).title, storyOf(rAfter) ? storyOf(rAfter).arcLabel : '(空)');
   require('child_process').execSync('rm -rf "' + TMP + '"', { stdio: 'ignore' });
 
   /* ================= 六、闸门本身 ================= */

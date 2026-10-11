@@ -119,9 +119,12 @@
           '<div class="up-row"><label>当前账号</label><b>' + esc(S.my.name) + '</b></div>' +
           '<div class="up-tip">你发布过的作品都在「我制作的 Mod」里，随时可以载回来改。</div>' +
           '</div>',
-          '<button class="btn-ink" id="acc-close">关 闭</button>' +
-          '<button class="btn-ink" id="acc-my">我制作的 Mod</button>' +
-          '<button class="btn-ink" id="acc-out">退出登录</button>');
+          /* ⚠️ 这里必须是 `btn-ink small`：不带 small 的是主菜单那套
+             **260px 宽、17px 字**的大按钮，三个并排 = 780px+，
+             弹窗底排直接溢出、还各占一行看着"没对齐"（主人 2026-10-08 亲报）。 */
+          '<button class="btn-ink small" id="acc-close">关 闭</button>' +
+          '<button class="btn-ink small" id="acc-my">我制作的 Mod</button>' +
+          '<button class="btn-ink small" id="acc-out">退出登录</button>');
         const c = $('acc-close'); if (c) c.onclick = () => U.closeModal();
         const my = $('acc-my'); if (my) my.onclick = () => { U.closeModal(); tab('mine'); };
         const out = $('acc-out');
@@ -772,9 +775,10 @@
         '<div class="up-tip" id="acc-msg">第一次来？填好点「注册」；已经有账号就点「登录」。</div>' +
         '</div>';
       U.modal('登录 / 注册 Mod 社区', body,
-        '<button class="btn-ink" id="acc-cancel">取 消</button>' +
-        '<button class="btn-ink" id="acc-reg">注 册</button>' +
-        '<button class="btn-ink primary" id="acc-login">登 录</button>');
+        /* 同上：登录框这一排三个按钮同样要 small，否则弹窗里放不下 */
+        '<button class="btn-ink small" id="acc-cancel">取 消</button>' +
+        '<button class="btn-ink small" id="acc-reg">注 册</button>' +
+        '<button class="btn-ink small primary" id="acc-login">登 录</button>');
 
       let settled = false;
       const fin = v => { if (!settled) { settled = true; resolve(v); } };
@@ -933,9 +937,13 @@
 
   function tabMine() {
     if (!isLoggedIn()) {
-      return '<div class="mm-empty">还没登录。<br><br>' +
-        '发布到 Mod 网站、以及查看你自己发过的作品，都要先登录。<br><br>' +
-        '<button class="btn-ink primary" id="mm-mine-login">登 录 / 注 册</button></div>';
+      /* 空态：文字一行一行居中，按钮单独一个居中的小排 ——
+         原来那枚 260px 的 `btn-ink` 摆在这块虚线框里，又大又压不住中。 */
+      return '<div class="mm-empty">还没登录' +
+        '<div class="mm-empty-sub">发布到 Mod 网站、以及查看你自己发过的作品，都要先登录。</div>' +
+        '<div class="mm-empty-acts">' +
+        '<button class="btn-ink small primary" id="mm-mine-login">登 录 / 注 册</button>' +
+        '</div></div>';
     }
     return '<div class="mm-mine-head"><b>我制作的 Mod</b>' +
       '<span class="mm-hint">共 <span id="mm-mine-count">…</span> 件 · 点「载入编辑」把它读回表单，改完再上传就是更新那一件</span></div>' +
@@ -1459,8 +1467,8 @@
       '</div>';
 
     U.modal('一键上传到 Mod 社区', body,
-      '<button class="btn-ink" onclick="WXUI.closeModal()">取 消</button>' +
-      '<button class="btn-ink primary" id="up-go">上 传</button>');
+      '<button class="btn-ink small" onclick="WXUI.closeModal()">取 消</button>' +
+      '<button class="btn-ink small primary" id="up-go">上 传</button>');
 
     $('up-go').onclick = async () => {
       const note = ($('up-note') || {}).value || '';
@@ -1490,8 +1498,8 @@
             fork +
             (d.forkOf ? '<div class="up-tip">站点上会标出「二创自《' + esc(d.forkOf.name) + '》」—— 这是规矩，不是毛病。</div>' : '') +
             '</div>',
-            '<button class="btn-ink" onclick="WXUI.closeModal()">好 的</button>' +
-            '<button class="btn-ink primary" id="up-open">打开网页看看</button>');
+            '<button class="btn-ink small" onclick="WXUI.closeModal()">好 的</button>' +
+            '<button class="btn-ink small primary" id="up-open">打开网页看看</button>');
           const ob = $('up-open');
           if (ob) ob.onclick = () => { window.open(d.url, '_blank'); U.closeModal(); };
         } else {
