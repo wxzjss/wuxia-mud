@@ -152,6 +152,19 @@
 
       <!-- 中间：文本流 -->
       <section id="stage">
+        <!-- 中屏背景（主人 2026-10-11：「把游戏主菜单界面的背景复制到游戏里面
+             成游戏里中屏幕的背景」）。
+             ⚠️ 它跟全局 `#bg-art` **共用同一套 CSS 配方**（选择器写成
+                `#bg-art .mount, #stage-art .mount` 这种并列形式）——
+                所以两处永远长得一样，改一处两边同时变，不会各自漂移。
+             `aria-hidden` + 造在内容之前：它是纯装饰，读屏不该念它。 -->
+        <div id="stage-art" aria-hidden="true">
+          <div class="mount m1"></div>
+          <div class="mount m2"></div>
+          <div class="mount m3"></div>
+          <div class="moon"></div>
+          <div class="mist"></div>
+        </div>
         <div id="room-panel">
           <div class="room-head">
             <span id="room-name" class="room-name">——</span>

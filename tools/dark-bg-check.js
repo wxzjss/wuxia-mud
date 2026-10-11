@@ -430,7 +430,12 @@ section('【游戏 main.css】⑥b 主人点名的「白框」「透明板」「
   /* 主人 2026-10-11：右上角月亮跟压在上面的浅色字都是白的，看不清 ⇒ 调低透明度。
      ⚠️ 判据要算**实际落在屏幕上的透明度** = 月亮自己那圈最亮的 alpha × 外层 `#bg-art` 的 opacity。
      只看月亮自己的 alpha 会漏掉外层那道 0.5 的折减（或反过来重复扣一次）。 */
-  const iMoon = css.indexOf('#bg-art .moon {');
+  /* ⚠️ 别用  抠：选择器可能是**并列列表**
+     （中屏背景与主菜单共用同一套配方之后就成了
+      ）——
+     写死单选择器会抠到空串，alpha 读成 0，好端端的样式被判成缺陷。 */
+  const iMoonM = css.match(/#bg-art \.moon[^{]*\{/);
+  const iMoon = iMoonM ? iMoonM.index : -1;
   const moonSeg = iMoon < 0 ? '' : css.slice(iMoon, css.indexOf('}', iMoon));
   const moonBg = (moonSeg.match(/background:\s*([^;]+);/) || ['', ''])[1];
   const moonMax = Math.max(0, ...colorsIn(moonBg).map(c => (parseFull(c) || { a: 0 }).a));

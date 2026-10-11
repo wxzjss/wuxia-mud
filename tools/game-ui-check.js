@@ -138,6 +138,31 @@ section('① index.html 首屏结构');
   const allVers = [...html.matchAll(/\?v=(20\d{6}[a-z])/g)].map(m => m[1]);
   ok('所有版本戳完全一致', new Set(allVers).size === 1, [...new Set(allVers)].join(','));
   ok('index.html 不再加载 js/cloud.js（云存档已删）', !/js\/cloud\.js/.test(html));
+
+  /* 中屏水墨背景（主人 2026-10-11：「把游戏主菜单界面的背景复制到游戏里面
+     成游戏里中屏幕的背景」）—— 守四件事，少一件就会「看着像没做」：
+       ① 装饰层真的在 `#stage` 里面（放外面就跑到视口去了）
+       ② `#stage` 是它的定位基准（少了 position:relative，inset:0 会往上找祖先）
+       ③ 与 `#bg-art` **共用同一套配方**（选择器并列，不许各写一份）
+       ④ 正文压在它上面（装饰层 z-index:0，不许盖住字） */
+  {
+    const css = fs.readFileSync(path.join(RJS, '..', 'css', 'main.css'), 'utf8');
+    const iStage = html.indexOf('id="stage"');
+    const iStageArt = html.indexOf('id="stage-art"');
+    const iRoom = html.indexOf('id="room-panel"');
+    ok('★ 中屏背景层在 #stage 内、且在内容之前',
+      iStage >= 0 && iStageArt > iStage && iRoom > iStageArt);
+    ok('★ #stage 是它的定位基准（position: relative）',
+      /#stage \{[^}]*position:\s*relative/.test(css));
+    ok('★ 中屏与主菜单**共用同一套配方**（选择器并列，不是各写一份）',
+      /#bg-art .mount, #stage-art .mount/.test(css)
+      && /#bg-art .moon, #stage-art .moon/.test(css)
+      && /#bg-art .mist, #stage-art .mist/.test(css));
+    ok('★ 浅色主题也成对覆盖（漏了中屏会留两块脏印子）',
+      /html.theme-light #bg-art .mount, html.theme-light #stage-art .mount/.test(css));
+    ok('★ 正文压在装饰层之上（z-index）',
+      /#stage > \*:not\(#stage-art\) \{[^}]*z-index:\s*1/.test(css));
+  }
 }
 
 section('② app.js 单机版导出');

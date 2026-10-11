@@ -103,11 +103,15 @@
 }
 
 /* ---- 浅色主题（原样保留的那一套；设置里切过来就回到从前的手感）---- */
-/* 浅色下把远山 / 雾还原成「深 wash 压浅纸」——默认那套是配暗底的 */
-html.theme-light #bg-art .mount { background: linear-gradient(180deg, rgba(90, 82, 66, .32), rgba(90, 82, 66, .06)); }
-html.theme-light #bg-art .m2 { background: linear-gradient(180deg, rgba(70, 64, 52, .26), rgba(70, 64, 52, .04)); }
-html.theme-light #bg-art .m3 { background: linear-gradient(180deg, rgba(110, 100, 82, .22), rgba(110, 100, 82, .03)); }
-html.theme-light #bg-art .mist { background: linear-gradient(180deg, transparent, rgba(244, 241, 232, .9)); }
+/* 浅色下把远山 / 雾还原成「深 wash 压浅纸」——默认那套是配暗底的。
+   ⚠️ 中屏那份（`#stage-art`）**必须一起换**：漏了它，浅色主题下中屏会留着
+      暗底用的浅灰渐变，看着像两块脏印子（两个容器共用配方，覆盖也要成对）。 */
+html.theme-light #bg-art .mount, html.theme-light #stage-art .mount { background: linear-gradient(180deg, rgba(90, 82, 66, .32), rgba(90, 82, 66, .06)); }
+html.theme-light #bg-art .m2, html.theme-light #stage-art .m2 { background: linear-gradient(180deg, rgba(70, 64, 52, .26), rgba(70, 64, 52, .04)); }
+html.theme-light #bg-art .m3, html.theme-light #stage-art .m3 { background: linear-gradient(180deg, rgba(110, 100, 82, .22), rgba(110, 100, 82, .03)); }
+html.theme-light #bg-art .mist, html.theme-light #stage-art .mist { background: linear-gradient(180deg, transparent, rgba(244, 241, 232, .9)); }
+/* 浅色下中屏的雾同样要浅（对齐上面那条「别把正文压住」的理由） */
+html.theme-light #stage-art .mist { background: linear-gradient(180deg, transparent, rgba(244, 241, 232, .6)); }
 
 html.theme-light {
   color-scheme: light;
@@ -186,31 +190,46 @@ body::before {
   pointer-events: none; z-index: 0;
 }
 
-/* ---------------------------- 水墨背景 ---------------------------- */
+/* ---------------------------- 水墨背景 ----------------------------
+ * ⚠️ 这一套配方**两个地方共用**：
+ *    · `#bg-art`   —— 主菜单 / 全局的固定背景（z-index:0，铺满视口）
+ *    · `#stage-art`—— 游戏内**中屏**的背景（主人 2026-10-11：「把游戏主菜单界面的
+ *                     背景复制到游戏里面成游戏里中屏幕的背景」）
+ *    所以每条规则都写成 `#bg-art X, #stage-art X` 并列 —— 只换定位容器，
+ *    明暗、渐变、模糊全部同源。**别把它拆成两份**，那是「两处各写一套」的老坑。
+ * ------------------------------------------------------------------ */
 #bg-art { position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; opacity: .5; }
-#bg-art .mount {
+/* 中屏那份：跟着 `#stage` 走，透明度比菜单略低一点 ——
+   它底下是**正文**（日志 / 房间描述），不像主菜单那样只有几行大字。 */
+#stage-art { position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; opacity: .5; }
+#bg-art .mount, #stage-art .mount {
   position: absolute; bottom: 0; border-radius: 50% 50% 0 0 / 100% 100% 0 0;
   background: linear-gradient(180deg, rgba(196, 188, 168, .14), rgba(196, 188, 168, .02));
   filter: blur(1.5px);
 }
-#bg-art .m1 { left: -8%; width: 60%; height: 42%; }
-#bg-art .m2 { left: 32%; width: 52%; height: 32%; background: linear-gradient(180deg, rgba(170, 164, 148, .11), rgba(170, 164, 148, .015)); }
-#bg-art .m3 { right: -12%; width: 58%; height: 50%; background: linear-gradient(180deg, rgba(214, 206, 186, .10), rgba(214, 206, 186, .01)); }
+#bg-art .m1, #stage-art .m1 { left: -8%; width: 60%; height: 42%; }
+#bg-art .m2, #stage-art .m2 { left: 32%; width: 52%; height: 32%; background: linear-gradient(180deg, rgba(170, 164, 148, .11), rgba(170, 164, 148, .015)); }
+#bg-art .m3, #stage-art .m3 { right: -12%; width: 58%; height: 50%; background: linear-gradient(180deg, rgba(214, 206, 186, .10), rgba(214, 206, 186, .01)); }
 /* 月亮。主人 2026-10-11：「右上角月亮图案透明度调低一点，
    或与正好在月亮上的白字做出区分，都是白的有点难看清」。
    它就在右上角，而那一带正好压着顶栏 / 房间信息那一行浅色字 —— 两团白糊在一起。
    调低透明度：月亮留一个「夜里有月」的意思就够了，不必抢戏。
-   （再叠上外层 `#bg-art { opacity: .5 }`，实际峰值约 0.26。） */
-#bg-art .moon {
+   （再叠上外层 `opacity: .5`，实际峰值约 0.26。） */
+#bg-art .moon, #stage-art .moon {
   position: absolute; right: 12%; top: 10%; width: 96px; height: 96px; border-radius: 50%;
   background: radial-gradient(circle at 36% 34%,
     rgba(255, 253, 244, .64), rgba(240, 232, 210, .36) 62%, rgba(226, 215, 186, .20));
   box-shadow: 0 0 54px 14px rgba(200, 180, 130, .16);
 }
-#bg-art .mist {
+#bg-art .mist, #stage-art .mist {
   position: absolute; left: 0; right: 0; bottom: 0; height: 30%;
   background: linear-gradient(180deg, transparent, rgba(23, 20, 15, .92));
 }
+/* 中屏底部的雾要比菜单浅：菜单那是一条「收边」，压在正文底下就成了
+   「最后几行看不清」。这里只留一点点压角，正文始终读得清。 */
+#stage-art .mist { height: 22%; background: linear-gradient(180deg, transparent, rgba(23, 20, 15, .45)); }
+/* 中屏内容压在背景之上（背景是 z-index:0 的装饰层，绝不能盖住字）。 */
+#stage > *:not(#stage-art) { position: relative; z-index: 1; }
 
 /* ---------------------------- 屏幕切换 ---------------------------- */
 .screen {
@@ -464,7 +483,10 @@ body::before {
    ⚠️ 用 rem 不用 px：设置里的「字体大小」调的是根字号，rem 会跟着缩放，
       一行的**字数**保持稳定（px 的话字变大时每行挤更多字）。
    ⚠️ 窄屏（≤820px）由下面的媒体查询把 --col-w 覆写成 none → 四块满宽，手机照旧好点。 */
-#stage { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--surface); --col-w: 34rem; }
+/* ⚠️ `position: relative` 是 `#stage-art`（中屏水墨背景）的定位基准 ——
+   少了它，那个 `inset:0` 的装饰层会往上找最近的非 static 祖先，
+   一路跑到视口去，变成「跟主菜单一样的全屏背景」而不是中屏那一块。 */
+#stage { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--surface); --col-w: 34rem; position: relative; }
 
 /* ⚠️ 上限设在**块级卡片本身**上（不是设在里面的文字上）——
    否则底色/边框只包住文字，出现「半截底色」。 */
