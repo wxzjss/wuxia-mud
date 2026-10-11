@@ -3204,6 +3204,13 @@ class World extends EventEmitter {
     p.isPlayer = true;
     p.isNpc = false;
     p.personality = cfg.personality || require('./personality').PLAYER_DEFAULT;
+    /* ---- 主线分化地基（design/67 §5 · P1）----
+       开局按**出身**定一条线（正派 / 反派 / 中立），主线每一步都读它。
+       「mod 出身」= 这个出身 id 不在官方 births 表里（mod 自己加的）——
+       那种出身走**中立线**：玩家不再是天选之人，谁都能合作、谁都能翻脸。 */
+    p.mainline = require('./mainline').init(cfg.birth, cfg.gender || 'male', {
+      fromMod: !!(cfg.birth && !((meta.births || {})[cfg.birth])),
+    });
     p.room = meta.startRoom || 'road_1';
     /* 「楼里新来的」（主人 2026-10-11）：开局人就在醉春楼，牌子还没挂 ——
        身份 = **已卖身、正在学规矩**。所以这里直接落两样东西：
@@ -3311,6 +3318,8 @@ class World extends EventEmitter {
         attr: p.attr, baseAttr: p.baseAttr, learned: p.learned, equippedSkills: p.equippedSkills,
         inventory: p.inventory, equipment: p.equipment, equipmentUid: p.equipmentUid,
         equipped: p.equipped, perks: p.perks, traits: p.traits, titles: p.titles,
+        /* 主线分化（design/67 §5 P1）——不带上它，读档就把「我走哪条线」丢了 */
+        mainline: p.mainline,
         insect: p.insect, quests: p.quests, flags: p.flags, vars: p.vars, tutorialFlags: p.tutorialFlags || [],
         /* 房间动作的限次记账（`once` / `oncePerDay`）。**必须随档走** ——
            不存的话读一次档就能把「一辈子一次」的参悟重新刷一遍。 */
@@ -3547,6 +3556,8 @@ class World extends EventEmitter {
       inventory: sd.inventory || [], equipment: Object.assign(p.equipment, sd.equipment || {}),
       equipmentUid: sd.equipmentUid || {}, equipped: sd.equipped || {},
       perks: sd.perks || [], traits: sd.traits || [], titles: sd.titles || [],
+      /* 老存档没有 mainline → 按出身补一条（别让读档的人变成「没有线」） */
+      mainline: sd.mainline || require('./mainline').init(sd.birth || null, sd.gender || 'male', {}),
       insect: sd.insect || null, quests: sd.quests || {}, flags: sd.flags || {}, tutorialFlags: sd.tutorialFlags || [],
       actionUsed: sd.actionUsed || {}, actionLast: sd.actionLast || {},
       duelLog: sd.duelLog || {}, duelWin: sd.duelWin || {},

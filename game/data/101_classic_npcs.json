@@ -1,0 +1,1273 @@
+{
+  "_note": "金庸四部书的核心人物（tools/gen-classic-npcs.js 生成）。落点取原著里他们本来的地方；画像手写，不套模板。skills 段是这批人身上的绝学里、库里原先没有的那几门。",
+  "skills": {
+    "yugu_nvxinjian": {
+      "id": "yugu_nvxinjian",
+      "name": "玉女心经",
+      "type": "内功",
+      "category": "内功",
+      "base": "basic_force",
+      "maxLevel": 800,
+      "difficulty": 2,
+      "grade": 1,
+      "quality": "rare",
+      "desc": "古墓派的内功根基。两人同修时威力倍增，一个人练，则清冷如冰。",
+      "bonus": {
+        "maxMp": 320,
+        "maxHp": 180,
+        "dodge": 40
+      },
+      "mpCost": 0,
+      "trainCost": 420
+    },
+    "anran_xiaohunzhang": {
+      "id": "anran_xiaohunzhang",
+      "name": "黯然销魂掌",
+      "type": "拳",
+      "category": "外功",
+      "base": "basic_fist",
+      "maxLevel": 900,
+      "difficulty": 2.4,
+      "grade": 1,
+      "quality": "rare",
+      "desc": "心中凄苦时使出来，威力最大。掌法无招，全看使掌的人那一刻心里想着什么。",
+      "damageMult": 2.4,
+      "accuracy": 90,
+      "mpCost": 50,
+      "trainCost": 560,
+      "effects": [
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.35
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "bonus": {
+        "atk": 90
+      }
+    },
+    "hamagong": {
+      "id": "hamagong",
+      "name": "蛤蟆功",
+      "type": "拳",
+      "category": "魔功",
+      "base": "basic_fist",
+      "maxLevel": 900,
+      "difficulty": 2.5,
+      "grade": 1,
+      "quality": "rare",
+      "desc": "蓄势如蟾，一发不可当。练岔了会反噬自身，白驼山历代都有人栽在这上面。",
+      "damageMult": 2.3,
+      "accuracy": 88,
+      "mpCost": 55,
+      "trainCost": 580,
+      "effects": [
+        {
+          "type": "ignoreDef"
+        }
+      ],
+      "bonus": {
+        "atk": 100,
+        "maxHp": 120
+      }
+    },
+    "lingshe_quan": {
+      "id": "lingshe_quan",
+      "name": "灵蛇拳",
+      "type": "拳",
+      "category": "魔功",
+      "base": "basic_fist",
+      "maxLevel": 700,
+      "difficulty": 2,
+      "grade": 1,
+      "quality": "fine",
+      "desc": "手臂像没有骨头。你以为它往左，它偏从右边绕过来。",
+      "damageMult": 1.9,
+      "accuracy": 95,
+      "mpCost": 30,
+      "trainCost": 300,
+      "effects": [
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.3
+          },
+          "then": [
+            {
+              "type": "stun",
+              "chance": 1,
+              "turns": 1
+            }
+          ]
+        }
+      ]
+    },
+    "kongming_quan": {
+      "id": "kongming_quan",
+      "name": "空明拳",
+      "type": "拳",
+      "category": "外功",
+      "base": "basic_fist",
+      "maxLevel": 700,
+      "difficulty": 1.8,
+      "grade": 1,
+      "quality": "fine",
+      "desc": "全用柔劲。看着空空荡荡，打上去却像打在一团棉花里。",
+      "damageMult": 1.8,
+      "accuracy": 93,
+      "mpCost": 25,
+      "trainCost": 280,
+      "effects": [
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.25
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "失力",
+              "turns": 2,
+              "mods": {
+                "atk": -30
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "tianshan_liuyangzhang": {
+      "id": "tianshan_liuyangzhang",
+      "name": "天山六阳掌",
+      "type": "拳",
+      "category": "外功",
+      "base": "basic_fist",
+      "maxLevel": 800,
+      "difficulty": 2.1,
+      "grade": 1,
+      "quality": "rare",
+      "desc": "一掌六变，阳劲贯到底。灵鹫宫的不传之秘。",
+      "damageMult": 2,
+      "accuracy": 92,
+      "mpCost": 40,
+      "trainCost": 460,
+      "effects": [
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.3
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "bonus": {
+        "atk": 70
+      }
+    },
+    "luoying_shenjianzhang": {
+      "id": "luoying_shenjianzhang",
+      "name": "落英神剑掌",
+      "type": "拳",
+      "category": "外功",
+      "base": "basic_fist",
+      "maxLevel": 750,
+      "difficulty": 1.9,
+      "grade": 1,
+      "quality": "fine",
+      "desc": "桃花岛的掌法。掌影如落花，看着好看，落下来才知每一片都是刀。",
+      "damageMult": 1.9,
+      "accuracy": 94,
+      "mpCost": 32,
+      "trainCost": 320,
+      "effects": [
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.28
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "npcs": {
+    "yang_guo": {
+      "id": "yang_guo",
+      "name": "杨过",
+      "gender": "male",
+      "title": "神雕大侠",
+      "room": "gumu_mu",
+      "home": "house:yang_guo",
+      "sect": "gumu",
+      "rank": 5,
+      "desc": "左边的袖子空着，随风摆一下。脸上扣着半张面具，只露出一双眼睛。",
+      "talk": [
+        "我的事，与你无关。",
+        "这世上好人不多，你算一个也好。"
+      ],
+      "personality": "lengmo",
+      "likes": [
+        "wine"
+      ],
+      "age": 36,
+      "level": 78,
+      "hp": 2428,
+      "maxHp": 2428,
+      "atk": 155,
+      "def": 114,
+      "dodge": 98,
+      "speed": 54,
+      "money": 1136,
+      "hostile": false,
+      "tier": "A",
+      "district": "gumu",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [
+        "anran_xiaohunzhang",
+        "yugu_nvxinjian"
+      ],
+      "schedule": {
+        "day": "gumu_mu",
+        "night": "gumu_mu"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "武",
+          "独臂"
+        ],
+        "role": "独臂的游侠，江湖上叫他神雕大侠，他自己从不认这个名号",
+        "origin": "父亲死在自己出生之前，母亲死在客栈里。十四岁被人带上终南山，十八岁断了一条手臂。",
+        "now": "每年这个时候，他都要回终南山一趟，在墓前站一会儿。",
+        "want": "把当年那几件事，一件一件弄明白",
+        "fear": "怕自己到头来变成另一个欧阳锋",
+        "voice": {
+          "tone": "冷淡，不多说一个字",
+          "catchphrase": "不必。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "坐在墓前的石阶上，一只袖管垂着，动也不动"
+          }
+        ]
+      }
+    },
+    "xiao_longnv": {
+      "id": "xiao_longnv",
+      "name": "小龙女",
+      "gender": "female",
+      "title": "古墓派传人",
+      "room": "gumu_mu",
+      "home": "house:xiao_longnv",
+      "sect": "gumu",
+      "rank": 5,
+      "desc": "一身白衣洗得没有一丝杂色，站在暗处，像是从石头里长出来的。",
+      "talk": [
+        "墓里清净。",
+        "你要走，就顺着那条道走。"
+      ],
+      "personality": "lengmo",
+      "likes": [
+        "flower"
+      ],
+      "age": 28,
+      "level": 80,
+      "hp": 2480,
+      "maxHp": 2480,
+      "atk": 158,
+      "def": 116,
+      "dodge": 100,
+      "speed": 55,
+      "money": 1160,
+      "hostile": false,
+      "tier": "A",
+      "district": "gumu",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [
+        "yugu_nvxinjian",
+        "jiuyin_zhenjing"
+      ],
+      "schedule": {
+        "day": "gumu_mu",
+        "night": "gumu_mu"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "武",
+          "白衣"
+        ],
+        "role": "在活死人墓里长大的人，外头的规矩她一条也不知道",
+        "origin": "自幼由师父带大，师父的师父收了一辈子活死人，她也是其中之一。",
+        "now": "墓里少了一味药，她出去找，找了很久。",
+        "want": "把师父留下的话弄懂",
+        "fear": "怕自己在下山这几年里，变成另一个人",
+        "voice": {
+          "tone": "淡淡的，事不关己",
+          "catchphrase": "嗯。"
+        },
+        "routine": [
+          {
+            "at": "dawn",
+            "act": "在寒玉床边上坐着，一动不动"
+          }
+        ]
+      }
+    },
+    "li_mochou": {
+      "id": "li_mochou",
+      "name": "李莫愁",
+      "gender": "female",
+      "title": "赤练仙子",
+      "room": "gumu_shan",
+      "home": "house:li_mochou",
+      "sect": "gumu",
+      "rank": 5,
+      "desc": "道袍洗得发白，那把拂尘的柄上被人刻过字，字被磨掉了。",
+      "talk": [
+        "你也听说过我？",
+        "这世上的情，都是假的。"
+      ],
+      "personality": "baozhao",
+      "likes": [
+        "flower"
+      ],
+      "age": 42,
+      "level": 72,
+      "hp": 2272,
+      "maxHp": 2272,
+      "atk": 145,
+      "def": 106,
+      "dodge": 92,
+      "speed": 51,
+      "money": 1064,
+      "hostile": false,
+      "tier": "A",
+      "district": "gumu",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [
+        "yugu_nvxinjian",
+        "jiuyin_baiguzhao"
+      ],
+      "schedule": {
+        "day": "gumu_shan",
+        "night": "gumu_shan"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "武",
+          "道"
+        ],
+        "role": "在江湖上有个响亮名号的道姑，只是这号听着叫人心里发毛",
+        "origin": "当年也是古墓里的人，为了一个男人走出墓门，再没回去过。",
+        "now": "她要找一本旧谱，找了很多年。",
+        "want": "把那本谱翻出来，把当年那口气出了",
+        "fear": "怕自己其实早就忘了那个人长什么样",
+        "voice": {
+          "tone": "火爆，一句话就顶回来",
+          "catchphrase": "你敢？"
+        },
+        "routine": [
+          {
+            "at": "dusk",
+            "act": "坐在山石上，把拂尘一根一根理过去"
+          }
+        ]
+      }
+    },
+    "guo_xiang": {
+      "id": "guo_xiang",
+      "name": "郭襄",
+      "gender": "female",
+      "title": "峨眉派祖师",
+      "room": "emei_jinding",
+      "home": "house:guo_xiang",
+      "sect": "emei",
+      "rank": 5,
+      "desc": "一头青驴拴在门外，她坐在石阶上啃干粮，啃得很香。",
+      "talk": [
+        "大哥哥，你也是来飘泊的？",
+        "天下这么大，走一走就老了。"
+      ],
+      "personality": "haoshuang",
+      "likes": [
+        "flower"
+      ],
+      "age": 30,
+      "level": 55,
+      "hp": 1830,
+      "maxHp": 1830,
+      "atk": 118,
+      "def": 86,
+      "dodge": 75,
+      "speed": 43,
+      "money": 860,
+      "hostile": false,
+      "tier": "A",
+      "district": "emei",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [
+        "jiuyang_shengong",
+        "emei_atk_1"
+      ],
+      "schedule": {
+        "day": "emei_jinding",
+        "night": "emei_jinding"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "武",
+          "游"
+        ],
+        "role": "一个人走了大半个天下的人，走到哪儿都能坐下啃两口干粮",
+        "origin": "生在襄阳城头的乱军里，名字是取襄阳谐音来的。她记事起，父亲就在守城。",
+        "now": "走遍天涯找一个不知道还在不在的人。",
+        "want": "把走这一路记下来，别让它们随人散了",
+        "fear": "怕回到襄阳那天，城上没人了",
+        "voice": {
+          "tone": "豪爽，笑声先到",
+          "catchphrase": "大哥哥，你去哪儿？"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "牵着头青驴上山，驴走累了就自己背行李"
+          }
+        ]
+      }
+    },
+    "guo_jing": {
+      "id": "guo_jing",
+      "name": "郭靖",
+      "gender": "male",
+      "tag": "swordsman",
+      "title": "襄阳守将",
+      "room": "xiangyang_gate",
+      "home": "house:guo_jing",
+      "desc": "甲胄底下是粗布衣裳，说话慢，一句是一句。",
+      "talk": [
+        "城在，人在。",
+        "我笨，学得慢，可学过的忘不掉。"
+      ],
+      "personality": "mune",
+      "likes": [
+        "wine"
+      ],
+      "age": 50,
+      "level": 88,
+      "hp": 2688,
+      "maxHp": 2688,
+      "atk": 171,
+      "def": 126,
+      "dodge": 108,
+      "speed": 59,
+      "money": 1256,
+      "hostile": false,
+      "tier": "A",
+      "district": "xiangyang",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [
+        "xianglong_zhang",
+        "jiuyin_zhenjing"
+      ],
+      "schedule": {
+        "day": "xiangyang_gate",
+        "night": "xiangyang_gate"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "武",
+          "守"
+        ],
+        "role": "守着襄阳城的人。守了大半辈子，城头哪块砖松了他都知道",
+        "origin": "生在草原上，长在草原上，十八岁才知道自己该是什么人。",
+        "now": "对岸的船比去年多，他夜里睡不踏实。",
+        "want": "把这座城守住，再守一年",
+        "fear": "怕自己一松手，身后就是几万条命",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "这个……我再想想。"
+        },
+        "routine": [
+          {
+            "at": "dawn",
+            "act": "沿着城头走一圈，走到哪面墙都要停下来拍一拍"
+          }
+        ]
+      }
+    },
+    "huang_rong": {
+      "id": "huang_rong",
+      "name": "黄蓉",
+      "gender": "female",
+      "tag": "swordsman",
+      "title": "丐帮帮主",
+      "room": "xiangyang_street",
+      "home": "house:huang_rong",
+      "desc": "一只手提着食盒，一只手拨算盘，两件事同时做。",
+      "talk": [
+        "你这事，我看有三条路。",
+        "先说难听的：钱我不白给。"
+      ],
+      "personality": "youhua",
+      "likes": [
+        "food"
+      ],
+      "age": 46,
+      "level": 75,
+      "hp": 2350,
+      "maxHp": 2350,
+      "atk": 150,
+      "def": 110,
+      "dodge": 95,
+      "speed": 53,
+      "money": 1100,
+      "hostile": false,
+      "tier": "A",
+      "district": "xiangyang",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [
+        "dagou_bangfa",
+        "luoying_shenjianzhang"
+      ],
+      "schedule": {
+        "day": "xiangyang_street",
+        "night": "xiangyang_street"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "智",
+          "帮"
+        ],
+        "role": "襄阳城里管着柴米油盐的人。城里多少张嘴，她心里有本账",
+        "origin": "父亲是桃花岛主。她十六岁离家，再回去已是多年以后。",
+        "now": "粮道上有人做手脚，她查了半个月。",
+        "want": "把这场仗打到不必再打的那天",
+        "fear": "怕自己算无遗策，唯独算漏了最要紧的那一步",
+        "voice": {
+          "tone": "油滑，见人说人话",
+          "catchphrase": "你先别急。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在米铺后头翻账本，翻两页抬眼看一下门外"
+          }
+        ]
+      }
+    },
+    "ouyang_feng": {
+      "id": "ouyang_feng",
+      "name": "欧阳锋",
+      "gender": "male",
+      "title": "西毒",
+      "room": "baituo_gate",
+      "home": "house:ouyang_feng",
+      "sect": "baituo",
+      "rank": 5,
+      "desc": "倒着走路。你跟他说话，他的眼睛始终落在你身后。",
+      "talk": [
+        "你身上有股味道。",
+        "往前走是为了往后退，你懂么？"
+      ],
+      "personality": "yinzhi",
+      "likes": [
+        "incense"
+      ],
+      "age": 62,
+      "level": 90,
+      "hp": 2740,
+      "maxHp": 2740,
+      "atk": 174,
+      "def": 128,
+      "dodge": 110,
+      "speed": 60,
+      "money": 1280,
+      "hostile": false,
+      "tier": "A",
+      "district": "baituo",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [
+        "hamagong",
+        "lingshe_quan"
+      ],
+      "schedule": {
+        "day": "baituo_gate",
+        "night": "baituo_gate"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "毒",
+          "武"
+        ],
+        "role": "白驼山的主人。山上的蛇比人多，他说这样清净",
+        "origin": "一生只败过一次，那次之后他开始倒着走路。",
+        "now": "他在等一个人。等谁来，他不说。",
+        "want": "把当年那部经书弄到手",
+        "fear": "怕自己其实早就练岔了，只是不肯承认",
+        "voice": {
+          "tone": "阴沉，话里总留着半句",
+          "catchphrase": "你想清楚了再答。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "背着手在院里倒着走圈，一圈一圈"
+          }
+        ]
+      }
+    },
+    "zhou_botong": {
+      "id": "zhou_botong",
+      "name": "周伯通",
+      "gender": "male",
+      "title": "老顽童",
+      "room": "taohuadao_forest",
+      "home": "house:zhou_botong",
+      "sect": "taohua",
+      "rank": 5,
+      "desc": "头发花白，衣襟敞着，手里永远在玩什么东西，没有东西就玩自己的手指。",
+      "talk": [
+        "陪我玩一盘！",
+        "不玩？不玩我可要生气了。"
+      ],
+      "personality": "haoshuang",
+      "likes": [
+        "food"
+      ],
+      "age": 70,
+      "level": 85,
+      "hp": 2610,
+      "maxHp": 2610,
+      "atk": 166,
+      "def": 122,
+      "dodge": 105,
+      "speed": 58,
+      "money": 1220,
+      "hostile": false,
+      "tier": "A",
+      "district": "taohuadao",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [
+        "kongming_quan",
+        "jiuyin_zhenjing"
+      ],
+      "schedule": {
+        "day": "taohuadao_forest",
+        "night": "taohuadao_forest"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "武",
+          "顽"
+        ],
+        "role": "住在桃花岛上的老头，正经事一件不做，怪招数一肚子",
+        "origin": "他师兄是天下第一，他偏不肯好好学，自己琢磨出一套左手打右手的功夫。",
+        "now": "岛上没人陪他玩，他把岛上的猴子都教出了规矩。",
+        "want": "找个人陪他玩，玩到天黑",
+        "fear": "怕安静。一安静就想起师兄",
+        "voice": {
+          "tone": "爽快，话里带笑",
+          "catchphrase": "来来来！"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在林子空地上左手打右手，打得尘土飞扬"
+          }
+        ]
+      }
+    },
+    "xiao_feng": {
+      "id": "xiao_feng",
+      "name": "萧峰",
+      "gender": "male",
+      "title": "丐帮帮主",
+      "room": "gaibang_po_miao",
+      "home": "house:xiao_feng",
+      "sect": "gaibang",
+      "rank": 5,
+      "desc": "契丹人的身量，站着像半座山。说话声音不高，屋里就没人再说话。",
+      "talk": [
+        "你来，坐下喝一碗。",
+        "我的事，我自己担。"
+      ],
+      "personality": "haoshuang",
+      "likes": [
+        "wine"
+      ],
+      "age": 34,
+      "level": 92,
+      "hp": 2792,
+      "maxHp": 2792,
+      "atk": 177,
+      "def": 130,
+      "dodge": 112,
+      "speed": 61,
+      "money": 1304,
+      "hostile": false,
+      "tier": "A",
+      "district": "gaibang",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [
+        "xianglong_zhang",
+        "shaolin_atk_1"
+      ],
+      "schedule": {
+        "day": "gaibang_po_miao",
+        "night": "gaibang_po_miao"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "武",
+          "豪"
+        ],
+        "role": "丐帮的帮主，一身粗布，脊梁比谁都直",
+        "origin": "在中原长大，做了三十年的汉人，某一天才知道自己不是。",
+        "now": "他回中原走了一圈，把该见的人都见了。",
+        "want": "弄明白自己到底是谁",
+        "fear": "怕再有一次，两边的人都死在他手上",
+        "voice": {
+          "tone": "豪爽，笑声先到",
+          "catchphrase": "喝。"
+        },
+        "routine": [
+          {
+            "at": "dusk",
+            "act": "坐在破庙门槛上喝酒，一大碗一口气见底"
+          }
+        ]
+      }
+    },
+    "duan_yu": {
+      "id": "duan_yu",
+      "name": "段誉",
+      "gender": "male",
+      "title": "大理世子",
+      "room": "dali_wangfu",
+      "home": "house:duan_yu",
+      "sect": "dali",
+      "rank": 5,
+      "desc": "一身书生长衫，见了人先作个揖，作揖比说话利索。",
+      "talk": [
+        "在下姓段，单名一个誉字。",
+        "这花真好看——啊，姑娘也好看。"
+      ],
+      "personality": "wenwan",
+      "likes": [
+        "flower"
+      ],
+      "age": 22,
+      "level": 62,
+      "hp": 2012,
+      "maxHp": 2012,
+      "atk": 129,
+      "def": 94,
+      "dodge": 82,
+      "speed": 46,
+      "money": 944,
+      "hostile": false,
+      "tier": "A",
+      "district": "dali",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [
+        "liumai_shenjian",
+        "lingbo_weibu"
+      ],
+      "schedule": {
+        "day": "dali_wangfu",
+        "night": "dali_wangfu"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "儒",
+          "王"
+        ],
+        "role": "大理段氏的世子，家里要他做皇帝，他只想读佛经",
+        "origin": "生下来就锦衣玉食，偏偏天生不肯习武，被逼着才学了。",
+        "now": "他一心想下山走一趟，家里拦着。",
+        "want": "看看外头到底是什么样子",
+        "fear": "怕自己这份运气，是替别人受的",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "这个……小节，不值当的。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在廊下读经，一页要读半天"
+          }
+        ]
+      }
+    },
+    "xu_zhu": {
+      "id": "xu_zhu",
+      "name": "虚竹",
+      "gender": "male",
+      "title": "少林僧人",
+      "room": "shaolin_daxiong",
+      "home": "house:xu_zhu",
+      "sect": "shaolin",
+      "rank": 5,
+      "desc": "相貌是难看的，眼神却干净。手大，指甲缝里常年是土。",
+      "talk": [
+        "罪过罪过。",
+        "阿弥陀佛——啊，小僧又说错话了。"
+      ],
+      "personality": "mune",
+      "likes": [
+        "food"
+      ],
+      "age": 26,
+      "level": 80,
+      "hp": 2480,
+      "maxHp": 2480,
+      "atk": 158,
+      "def": 116,
+      "dodge": 100,
+      "speed": 55,
+      "money": 1160,
+      "hostile": false,
+      "tier": "A",
+      "district": "shaolin",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [
+        "tianshan_liuyangzhang",
+        "shaolin_atk_1"
+      ],
+      "schedule": {
+        "day": "shaolin_daxiong",
+        "night": "shaolin_daxiong"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "僧",
+          "憨"
+        ],
+        "role": "少林寺里管杂事的小和尚，扫了十几年地",
+        "origin": "生下来就被放在寺门口，连爹娘是谁都不知道。",
+        "now": "寺里派他下山办一件事，他一路走一路撞见不该见的事。",
+        "want": "把师父交代的事办完，早点回寺里扫地",
+        "fear": "怕自己破了戒，回不去",
+        "voice": {
+          "tone": "钝，问三句答一句",
+          "catchphrase": "罪过，罪过。"
+        },
+        "routine": [
+          {
+            "at": "dawn",
+            "act": "从山门一路扫到大殿，扫完再扫一遍"
+          }
+        ]
+      }
+    },
+    "wang_yuyan": {
+      "id": "wang_yuyan",
+      "name": "王语嫣",
+      "gender": "female",
+      "tag": "swordsman",
+      "title": "慕容家表妹",
+      "room": "gusu_yanzi",
+      "home": "house:wang_yuyan",
+      "desc": "手里攥着一卷书，站得很直，眼睛却跟着人走。",
+      "talk": [
+        "这一招该往左半步——啊，我没练过。",
+        "你别笑我，我只会说。"
+      ],
+      "personality": "wenwan",
+      "likes": [
+        "book"
+      ],
+      "age": 18,
+      "level": 20,
+      "hp": 920,
+      "maxHp": 920,
+      "atk": 62,
+      "def": 44,
+      "dodge": 40,
+      "speed": 25,
+      "money": 440,
+      "hostile": false,
+      "tier": "A",
+      "district": "gusu",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [],
+      "schedule": {
+        "day": "gusu_yanzi",
+        "night": "gusu_yanzi"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "书",
+          "闺"
+        ],
+        "role": "天下的武功她认得出来，自己一步也走不稳",
+        "origin": "自小在藏书的地方长大，书翻遍了几架子，人却只见过那几个。",
+        "now": "表哥走了很久没回来，她每天在门口站一会儿。",
+        "want": "有朝一日，把嘴上的功夫练到手上去",
+        "fear": "怕自己这辈子只是个“会说的”",
+        "voice": {
+          "tone": "轻声细语",
+          "catchphrase": "你会这一招么？"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在廊下翻书，翻到一半抬头看院子"
+          }
+        ]
+      }
+    },
+    "ren_yingying": {
+      "id": "ren_yingying",
+      "name": "任盈盈",
+      "gender": "female",
+      "title": "日月神教圣姑",
+      "room": "mojiao_hall",
+      "home": "house:ren_yingying",
+      "sect": "mojiao",
+      "rank": 5,
+      "desc": "一支短笛插在腰间。进门先看一眼门口，再落座。",
+      "talk": [
+        "坐下说话。",
+        "我要的不是这个，你知道的。"
+      ],
+      "personality": "lengmo",
+      "likes": [
+        "music"
+      ],
+      "age": 24,
+      "level": 70,
+      "hp": 2220,
+      "maxHp": 2220,
+      "atk": 142,
+      "def": 104,
+      "dodge": 90,
+      "speed": 50,
+      "money": 1040,
+      "hostile": false,
+      "tier": "A",
+      "district": "mojiao",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [
+        "xixing_dafa"
+      ],
+      "schedule": {
+        "day": "mojiao_hall",
+        "night": "mojiao_hall"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "教",
+          "笛"
+        ],
+        "role": "日月神教的圣姑。教里的人都怕她，怕的其实是别人",
+        "origin": "生在这个教里。父亲是教主，后来父亲不见了。",
+        "now": "她替教里管着一桩大事，管了几年，越管越不想管。",
+        "want": "把父亲的下落弄明白",
+        "fear": "怕自己有一天变成教里那些人的样子",
+        "voice": {
+          "tone": "冷，一句是一句",
+          "catchphrase": "说。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "在殿后吹笛，吹两句就停下听一听"
+          }
+        ]
+      }
+    },
+    "feng_qingyang": {
+      "id": "feng_qingyang",
+      "name": "风清扬",
+      "gender": "male",
+      "title": "剑宗前辈",
+      "room": "huashan_siguoya",
+      "home": "house:feng_qingyang",
+      "sect": "huashan",
+      "rank": 5,
+      "desc": "在崖上住了几十年，指甲长得像鹰爪，身上却干净。",
+      "talk": [
+        "剑法不是招式，是念头。",
+        "你学会这一招，就别再来。"
+      ],
+      "personality": "lengmo",
+      "likes": [
+        "sword"
+      ],
+      "age": 76,
+      "level": 95,
+      "hp": 2870,
+      "maxHp": 2870,
+      "atk": 182,
+      "def": 134,
+      "dodge": 115,
+      "speed": 63,
+      "money": 1340,
+      "hostile": false,
+      "tier": "A",
+      "district": "huashan",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [
+        "dugu_jiujian"
+      ],
+      "schedule": {
+        "day": "huashan_siguoya",
+        "night": "huashan_siguoya"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "武",
+          "隐"
+        ],
+        "role": "思过崖上那个谁也管不着的人，几十年没下过山",
+        "origin": "当年剑宗气宗之争，他是活下来的那个。死在崖下的师弟，他至今记得名字。",
+        "now": "有个后生常来。他嘴上赶，手上还是教了两招。",
+        "want": "把这套剑法等一个配得上的人",
+        "fear": "怕自己教出去的东西，又惹出一场当年的祸",
+        "voice": {
+          "tone": "冷淡，话不多",
+          "catchphrase": "你走。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在崖边，用一根树枝在石头上划，划的不是字"
+          }
+        ]
+      }
+    },
+    "tian_boguang": {
+      "id": "tian_boguang",
+      "name": "田伯光",
+      "gender": "male",
+      "tag": "swordsman",
+      "title": "万里独行",
+      "room": "changan_lane",
+      "home": "house:tian_boguang",
+      "desc": "刀鞘上刻着自吹自擂的四个字。人不高，脚步却快得看不清。",
+      "talk": [
+        "我这人有个好处，说话算数。",
+        "你要打，我陪你打；你要喝，我陪你喝。"
+      ],
+      "personality": "youhua",
+      "likes": [
+        "wine"
+      ],
+      "age": 38,
+      "level": 60,
+      "hp": 1960,
+      "maxHp": 1960,
+      "atk": 126,
+      "def": 92,
+      "dodge": 80,
+      "speed": 45,
+      "money": 920,
+      "hostile": false,
+      "tier": "A",
+      "district": "changan",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [
+        "kuangfeng_daofa"
+      ],
+      "schedule": {
+        "day": "changan_lane",
+        "night": "changan_lane"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "刀",
+          "浪"
+        ],
+        "role": "一个跑得快的刀客。名声不好，说话倒算数",
+        "origin": "年轻时就这一手快刀，靠它吃饭，也靠它惹祸。",
+        "now": "他答应过一个人不再做那件事，忍了很久。",
+        "want": "把这把刀用在正经事上，用一次",
+        "fear": "怕自己哪天忍不住，又做回从前那个",
+        "voice": {
+          "tone": "滑不留手",
+          "catchphrase": "这么着，咱们打个商量。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "在城墙根下磨刀，磨一下用大拇指试一下"
+          }
+        ]
+      }
+    },
+    "lin_pingzhi": {
+      "id": "lin_pingzhi",
+      "name": "林平之",
+      "gender": "male",
+      "title": "华山弟子",
+      "room": "huashan_qingke",
+      "home": "house:lin_pingzhi",
+      "sect": "huashan",
+      "rank": 5,
+      "desc": "衣冠整齐，手却抖。一开口，嗓子是尖的。",
+      "talk": [
+        "我家的东西，一件也不能落在别人手里。",
+        "你说什么？再说一遍。"
+      ],
+      "personality": "yinzhi",
+      "likes": [
+        "sword"
+      ],
+      "age": 20,
+      "level": 58,
+      "hp": 1908,
+      "maxHp": 1908,
+      "atk": 123,
+      "def": 90,
+      "dodge": 78,
+      "speed": 44,
+      "money": 896,
+      "hostile": false,
+      "tier": "A",
+      "district": "huashan",
+      "homeless": true,
+      "favorBase": 0.6,
+      "favorInit": 0,
+      "favorToLearn": 55,
+      "teach": [
+        "pixie_jianfa"
+      ],
+      "schedule": {
+        "day": "huashan_qingke",
+        "night": "huashan_qingke"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "marks": [
+          "武",
+          "仇"
+        ],
+        "role": "华山门下一个新入门的弟子，衣裳干净得过分",
+        "origin": "家里出过事，一夜之间什么都没了。他记得那天每一个人的脸。",
+        "now": "他在山上练剑，练得比谁都狠。",
+        "want": "把当年那几个人一个一个找出来",
+        "fear": "怕自己变成和他们一样的人，却停不下来",
+        "voice": {
+          "tone": "阴沉，话都想过才说",
+          "catchphrase": "我记着。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "在无人处练剑，练到手腕发青也不停"
+          }
+        ]
+      }
+    }
+  }
+}

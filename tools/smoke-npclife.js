@@ -40,9 +40,13 @@ console.log('===== ① 家底 =====');
 
 console.log('===== ② 日常（该干什么看他自己的状态） =====');
 {
-  /* ⚠️ 内功的基础武学 id 是  不是  ——
-     测试里写错 id，拿它练功时 getSkill 取不到，于是「练了却没涨级」假红一次。 */
-  const 武人 = N.find(n => Object.keys(n.learned || {}).length && (n.maxMp || 0) > 100) || N[0];
+  /* ⚠️ 内功的基础武学 id 是 basic_force 不是别的 ——
+     测试里写错 id，拿它练功时 getSkill 取不到，于是「练了却没涨级」假红一次。
+     ⚠️ 样本**不能**用「第一个满足条件的 NPC」：那会随数据文件的加载顺序漂
+        （2026-10-11 加了 16 位金庸人物后就漂了，断言凭空变红）。
+        固定取一个具名武人，并**去掉门派** —— 测的是 decide() 的逻辑，
+        不是「谁排在第一个」，也不是「有门派的人怎么想」。 */
+  const 武人 = Object.assign({}, w.data.npcs.master_yue || N[0], { sect: null });
   const m = Object.assign({}, 武人);
   m.mp = 0; m.maxMp = 500; m.learned = { basic_force: { level: 100 } };
   ok('内力空了 → 打坐', L.decide(w, m) === 'meditate', L.decide(w, m));

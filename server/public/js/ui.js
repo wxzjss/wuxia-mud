@@ -1765,6 +1765,12 @@
     h += kv('称号', p.title || '—');
     h += kv('性别', genderNoun(p.gender));
     h += kv('境界', p.realm || '不通武艺');
+    /* 主线分化（design/67 §5 P1）：你走的是哪条线、走到第几幕。
+       不给它一个位置，玩家根本不知道自己被分了线。 */
+    if (p.mainline) {
+      h += kv('主线', p.mainline.lineName + ' · 第 ' + p.mainline.act + ' 幕'
+        + (p.mainline.fromMod ? '（mod 出身 · 中立）' : ''));
+    }
     h += kv('门派', p.sectName || '无门无派');
     h += kv('职位', p.rankName || '—');
     h += kv('年龄', p.age ? p.age + ' 岁' : '—');

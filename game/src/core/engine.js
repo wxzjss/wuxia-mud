@@ -721,6 +721,8 @@ class GameEngine {
     const p = this.world.player, w = this.world;
     return {
       name: p.name, gender: p.gender, realm: this.realmName(p),
+      /* 主线分化（design/67 §5 P1）——面板要显示「你走的哪条线、走到第几幕」 */
+      mainline: (function () { try { return require('./mainline').briefOf(p); } catch (e) { return null; } })(),
       hp: p.hp, maxHp: p.maxHp, mp: p.mp, maxMp: p.maxMp,
       food: p.food, water: p.water, maxFood: p.maxFood, maxWater: p.maxWater,
       money: p.money, gold: p.goldText(), karma: p.karma, kills: p.kills,
@@ -899,6 +901,9 @@ class GameEngine {
 
   questList() {
     const p = this.world.player, w = this.world;
+    /* 主线分化（design/67 §5）：阶段描述可以按**线**换说法（`descByLine`）——
+       同一件事，正派/反派/中立读到的字不一样。没写就照旧用 desc。 */
+    const line = (function () { try { return require('./mainline').stateOf(p).line; } catch (e) { return 'neutral'; } })();
     const out = [];
     for (const qid of Object.keys(p.quests)) {
       const st = p.quests[qid];
@@ -913,7 +918,7 @@ class GameEngine {
         else cur = p.getVar(vk) || 0;
         return { desc: t.desc || t.id, cur: Math.min(cur, t.count || 1), count: t.count || 1 };
       });
-      out.push({ id: qid, name: qd.name, type: qd.type, level: qd.level, stage: st, desc: qd.desc, stageDesc: stage ? stage.desc : '', targets });
+      out.push({ id: qid, name: qd.name, type: qd.type, level: qd.level, stage: st, desc: qd.desc, stageDesc: (stage && ((stage.descByLine || {})[line] || stage.desc)) || '', targets });
     }
     // 已完成
     /* ⚠️ 这里原来只给一串 id，前端 `d.name` 取不到 → 「已完成」区列出来全是「✔ 」后面空白。
