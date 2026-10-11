@@ -103,7 +103,15 @@ console.log('===== ⑤ 请教 =====');
   ok('整条 base 链一并给了', Object.keys(p.learned).some(k => (w.getSkill(k) || {}).id === 'basic_sword'), Object.keys(p.learned).map(k => (w.getSkill(k) || {}).name).join(','));
 
   const r3 = engine.exec('请教 岳不群 养吾剑法');
-  ok('已学会的不能再请教', r3.lines.some(l => /已学过/.test(l.text || '')), (r3.lines[0] || {}).text);
+  const t3 = r3.lines.map(l => l.text || '').join(' ');
+  /* ★ 2026-10-08 口径更新：主人补的「潜能可以用来通过『请教』**直接提升武学熟练度**」，
+     把「已学会」这条路从「一句『已学过』打发掉」改成了「花**潜能**请人点拨」。
+     真正该守住的没变：**不能被重复当成新手再学一遍**（级数不会归零重来），
+     而且涨不动时要**明说为什么**（到顶 / 潜能不够），不能静默。 */
+  ok('★ 已学会的再请教走「点拨」，并明说为何涨不动（不静默、不重学）',
+    Object.keys(p.learned).some(k => (w.getSkill(k) || {}).name === '养吾剑法')
+    && /没什么能教你|点拨|上限|潜能/.test(t3),
+    t3.slice(0, 120));
   ok('被拒时不误教别的功夫', !r3.lines.some(l => /你学会了/.test(l.text || '')));
 }
 

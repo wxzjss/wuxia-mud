@@ -49,8 +49,34 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
   ok('★ 第 1 章的旁白在大框里', !!(CH1.story && t0.indexOf(CH1.story) >= 0),
     (ST && ST.lines || []).map(l => l.kind).join(','));
   ok('★ 大框抬头写着章次（第 1 / 8 章）', !!ST && /第 1 \/ \d+ 章/.test(ST.arcLabel || ''), ST && ST.arcLabel);
-  ok('★ 老汉那句话也在大框里', !!(ST && (ST.lines || []).some(l => l.kind === 'say' && /老汉/.test(l.text))),
-    t0.slice(0, 60));
+  /* 🔴 2026-10-08 主人细化：「大框里新手剧情**不要有 NPC 的语言与动作描写**，
+     这些都是属于在屏幕下方显示的，就是那些灰色字体内容」
+     ⇒ 大框只留旁白；老汉那几句改投**下方日志的灰字行**（kind `npcsact`）。 */
+  ok('★ 大框里**没有** NPC 的言行（只留旁白）',
+    !!(ST && (ST.lines || []).every(l => l.kind !== 'say' && l.kind !== 'npcsact')),
+    (ST && ST.lines || []).map(l => l.kind).join(','));
+  ok('★ 老汉的言行进了下方日志（灰字 npcsact）',
+    kinds(rNew, 'npcsact').some(t => /老汉|拨火/.test(t)),
+    kinds(rNew, 'npcsact').join(' | ').slice(0, 60));
+  /* 主人 2026-10-08：「那些灰字上方要写有剧情标签」
+     ⇒ 剧情那几行带 `story` 标记（前端据此打标签）；房间氛围的没有。 */
+  /* ⚠️ 开局那一屏（newGame 的回包）是「房间场面」，剧情言行是**第一条指令**时投的
+     （storybeat.reconcile 挂在 exec 上），所以这里得发一条指令再查。 */
+  {
+    const rTag = await e.exec('score');
+    const tagged = (rTag.lines || []).filter(l => l.story);
+    ok('★ 剧情那段灰字带「剧情」标记（前端据此打标签）', tagged.length > 0,
+      JSON.stringify(tagged.map(l => l.kind + ':' + (l.text || '').slice(0, 12))));
+    ok('房间氛围那种灰字**不带**剧情标记（不是满屏标签）',
+      (rTag.lines || []).filter(l => l.kind === 'npcsact' && !l.story).length >= 0 &&
+      tagged.every(l => l.kind !== 'desc'), '带标记 ' + tagged.length + ' 行');
+  }
+  {
+    const UI = require('fs').readFileSync(path.join(ROOT, 'game/src/renderer/js/ui.js'), 'utf8');
+    const CSS = require('fs').readFileSync(path.join(ROOT, 'game/src/renderer/css/main.css'), 'utf8');
+    ok('★ 前端把标签画出来（log-tag）', /class="log-tag">剧情</.test(UI));
+    ok('★ 标签有样式（主题变量，不是写死色）', /\.log-tag \{[^}]*var\(--tint-gold\)/.test(CSS));
+  }
   /* 🔴 主人 2026-10-11：「剧情文本下一行加一句大白话具体讲现在该做什么」 */
   ok('★ 大框给了「现在做什么」的大白话', !!ST && /查看四周/.test(ST.todo || ''), ST && ST.todo);
   /* 上屏≠完成：第一章的目标只认「真看了」 */
@@ -113,11 +139,22 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
     !!storyOf(rLook) && storyOf(rLook).arc === 'tutorial' && /第 \d+ \/ \d+ 章/.test(storyOf(rLook).arcLabel || ''),
     storyOf(rLook) && storyOf(rLook).arcLabel);
   /* 口径变更（主人 2026-10-11）：在场闸门已撤 → 台词照旧在大框里出现 */
-  ok('★ 老汉的台词照旧在大框里（在场闸门已撤）',
-    !!((storyOf(rLook) || {}).lines || []).some(l => l.kind === 'say' && /老汉/.test(l.text)),
+  ok('★ 大框里始终只有旁白（走开也一样）',
+    !!((storyOf(rLook) || {}).lines || []).every(l => l.kind !== 'say' && l.kind !== 'npcsact'),
     ((storyOf(rLook) || {}).lines || []).map(l => l.kind).join(','));
-  ok('★ 换一条指令，日志里还是没有剧情',
-    !/第 \d+ 章 ·/.test(allText(rLook)) && !/老汉/.test(allText(rLook)),
+  /* ⚠️ 判据要按**章**看：跨章时新章的言行**应该**投一次（第 2 章的台词就这么来的）。
+     所以这里比「同一章内再发指令，不再重复投」。 */
+  {
+    const again = await e.exec('score');
+    const said1 = kinds(rLook, 'npcsact').filter(t => /老汉/.test(t)).length;
+    const said2 = kinds(again, 'npcsact').filter(t => /老汉/.test(t)).length;
+    ok('★ 同一章的言行只投一次（换指令不重复刷屏）', said2 === 0,
+      '上一条投了 ' + said1 + ' 行，这一条又投了 ' + said2 + ' 行');
+  }
+  /* ⚠️ 别再拿「老汉」当剧情判据：NPC 的言行**现在就该**在日志里（灰字那档）。
+     剧情进日志的唯一形态是「第 N 章 · 标题」这种章节抬头 —— 只查它。 */
+  ok('★ 换一条指令，日志里还是没有剧情正文',
+    !/第 \d+ 章 ·/.test(allText(rLook)) && kinds(rLook, 'story').length === 0,
     allText(rLook).slice(0, 50));
 
   /* ================= 三、任务的剧情也上屏 ================= */
@@ -191,8 +228,8 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
   const rAfter = await e5.exec('score');
   /* ⚠️ 判据要认**章节抬头那个样式**（「第 N 章 · 标题」），不能只按 kind 判 ——
      `subtitle` 这个 kind 别处也在用（score 面板的「装备（2 件）」就是它）。 */
-  ok('★ 读档后日志里没有剧情（不会把旧章节一口气念一遍）',
-    !/第 \d+ 章 ·/.test(allText(rAfter)) && !/老汉/.test(allText(rAfter)),
+  ok('★ 读档后日志里没有剧情正文（不会把旧章节一口气念一遍）',
+    !/第 \d+ 章 ·/.test(allText(rAfter)) && kinds(rAfter, 'story').length === 0,
     allText(rAfter).slice(0, 60));
   ok('★ 读档后大框里还有当前那一章（追踪状态随档走 / 老档补追新手）',
     !!storyOf(rAfter) && !!storyOf(rAfter).title, storyOf(rAfter) ? storyOf(rAfter).arcLabel : '(空)');
@@ -210,6 +247,47 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
     sb.beats(w, p, [{ kind: 'say', text: 'x', by: 'master_yue' }]).length === 1);
   ok('没有归属的条目照常过',
     sb.beats(w, p, [{ kind: 'story', text: 'y' }]).length === 1);
+
+  /* ================= 七、主线接取旁白「扣着不讲」=================
+     主人 2026-10-12：「主线剧情一进游戏就接取，但主线剧情需要追踪时才在屏幕上
+     显示原本应该在接取时就应该出现的那些文本。」
+     ⇒ 开局那条主线是**脚本塞的**，接取那几行先扣住（storybeat.hold），
+        玩家去追它的时候才交出去（storybeat.takeHeld，走「追踪」指令）。 */
+  section('7 主线接取旁白：开局扣着，追了才讲');
+  {
+    const e2 = new GameEngine({ seed: 606, saveDir: require('./_test-save-dir') });
+    e2.boot(); e2.newGame({ name: '看戏的' });
+    const w2 = e2.world, p2 = w2.player;
+    const mainId = 'q_main_jianghu';
+    ok('前提：主线开局就接上了（进任务簿）', p2.questStage(mainId) >= 0, String(p2.questStage(mainId)));
+    ok('前提：这条被记成「扣着旁白」（held）', sb.isHeld(p2, mainId) === true);
+
+    /* 第一条指令之后，日志里**不该**出现它的接取文本 */
+    const r1 = e2.exec('look');
+    ok('★ 开局不会把主线接取文本打进日志（先扣着）',
+      !/【接取任务】/.test(allText(r1)),
+      allText(r1).split('\n').filter(x => /接取任务|江湖路远/.test(x)).join(' / ').slice(0, 90));
+
+    /* 去追它 → 那几行这时候才出来 */
+    const r2 = e2.exec('追踪 ' + mainId);
+    ok('★ 玩家一追，接取那几行才讲出来',
+      /【接取任务】/.test(allText(r2)) && /江湖路远/.test(allText(r2)),
+      allText(r2).replace(/\n/g, ' | ').slice(0, 120));
+    ok('　交出之后就摘掉「扣着」的标记（不会反复讲）', sb.isHeld(p2, mainId) === false);
+    ok('　追到了（track 指向它）', p2.track === mainId, String(p2.track));
+
+    /* 取消再追回来：只在**第一次**追的时候讲 */
+    e2.exec('追踪 ' + mainId);                    /* 同一个 id 再点一次 = 取消 */
+    ok('　同一个 id 再点一次是取消（追踪与取消已合成一条）', p2.track === null, String(p2.track));
+    const r4 = e2.exec('追踪 ' + mainId);
+    ok('★ 追回来时不再重复念一遍接取文本（只讲一次）',
+      !/【接取任务】/.test(allText(r4)), allText(r4).replace(/\n/g, ' | ').slice(0, 90));
+    /* 大框那边不受影响：一追就能看见这一章（它本来就是「追谁演谁」） */
+    const story = sb.currentStory(w2, p2);
+    ok('　大框里就是这条主线的当前一步（接取文本的正文在框里常显）',
+      !!story && story.arc === 'main' && story.title.indexOf('江湖路远') >= 0,
+      story ? story.arc + '/' + story.title : '(空)');
+  }
 
   console.log('\n结果：' + pass + ' 通过 / ' + fail + ' 失败');
   process.exit(fail ? 1 : 0);

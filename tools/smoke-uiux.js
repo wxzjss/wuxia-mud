@@ -1394,15 +1394,141 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     ok('⑲-5 ★ 点了真发出「追踪 q_main_jianghu」',
       rec.exec.some(x => x.cmd === '追踪 q_main_jianghu'),
       JSON.stringify(rec.exec.map(x => x.cmd).slice(-3)));
-    /* 取消追踪也走同一条线 */
+    /* ★ 2026-10-12 合并后：两态的按钮发的是**同一条**指令「追踪 <id>」，
+       由后端当开关（追着的再点一次就是取消）。所以这里断的是「两态同指令」，
+       而不是「正追着时发『取消追踪』」——那条契约已经随合并作废了。
+       ⚠️ 合并前的守卫只断「按钮发了什么」，抓不到主人报的那个真 bug
+          （点追踪新手任务 → 后端说「没有这一桩事」）。
+          真行为那半边由 smoke-quest-track 打在后端上，这里只管接线。 */
     rec.exec.length = 0;
     const mb2 = String(env.document.getElementById('modal-body').innerHTML || '');
     const off = env.document.querySelectorAll('#modal-body [data-track]')
       .find(b => b.getAttribute('data-on') === '1');
-    ok('⑲-6 找得到「取消追踪」那枚', !!off, mb2.slice(0, 0));
+    ok('⑲-6 找得到正追着那枚（按钮已写成「取消追踪」）', !!off,
+      /取消追踪/.test(off ? String(off.innerHTML || '') : ''));
     if (off) { off.click(); await settle(); await settle(); }
-    ok('⑲-7 ★ 点「取消追踪」真发出「取消追踪」',
-      rec.exec.some(x => x.cmd === '取消追踪'), JSON.stringify(rec.exec.map(x => x.cmd).slice(-3)));
+    ok('⑲-7 ★ 点它发的是同一条「追踪 <id>」（后端当开关用 = 主人要的合并）',
+      rec.exec.some(x => /^追踪 /.test(x.cmd)),
+      JSON.stringify(rec.exec.map(x => x.cmd).slice(-3)));
+    ok('⑲-8 合并后不再有「取消追踪」这条前端指令（旧契约已废）',
+      !rec.exec.some(x => x.cmd === '取消追踪'),
+      JSON.stringify(rec.exec.map(x => x.cmd).slice(-3)));
+  }
+
+  /* ================================================================
+   *  ⑳ 飞行面板（主人 2026-10-12）
+   *     「在屏幕下方快捷界面增加一个『飞行』，点击即可打开一个面板，
+   *      面板上列出所有玩家去过的区域名称，点击即可去该区域的入口处。」
+   * ================================================================ */
+  section('⑳ 飞行面板：列出去过的区域，点一下真发「飞往」');
+  {
+    const env = loadUi(makeEnv({ innerWidth: 390 }));
+    /* 喂**真引擎**的地图视图（`regions[].canFly` 是后端按「去过没有」算好的）。 */
+    const v = engine.view({ map: true });
+    const regs = (v.map && v.map.regions) || [];
+    /* 全新角色可能一个区域都没去过 —— 那样面板是空态，测不到按钮。
+       这里把**当前区域**标成可飞，保证「有东西可点」的场景一定成立；
+       前端不做判定，只按 canFly 画，所以这么造不改变被测逻辑。 */
+    if (!regs.some(r => r.canFly)) {
+      const cur = (v.map.rooms || []).find(r => r.current);
+      const curReg = cur && regs.find(r => r.id === cur.region);
+      if (curReg) curReg.canFly = true;
+    }
+    const flyRegs = regs.filter(r => r.canFly);
+    ok('⑳-0 前提：视图里至少有 1 个「去过」的区域', flyRegs.length >= 1, flyRegs.length + ' 处');
+
+    const rec = stubApi(env, v);
+    closeMasks(env);
+    env.WX.S.view = v;
+    await env.WXUI.panel('fly');
+    await settle();
+
+    const mb = String(env.document.getElementById('modal-body').innerHTML || '');
+    const mt = String(env.document.getElementById('modal-title').textContent || '');
+    ok('⑳-1 面板标题是「飞行」', mt.indexOf('飞行') >= 0, mt || '(空)');
+    ok('⑳-2 ★ 去过的区域都列成了按钮（带 data-fly-region）',
+      (mb.match(/data-fly-region="/g) || []).length === flyRegs.length,
+      (mb.match(/data-fly-region="/g) || []).length + ' / 应 ' + flyRegs.length);
+    ok('⑳-3 按钮上写的就是区域名（看得懂才敢点）',
+      flyRegs.every(r => mb.indexOf(r.name) >= 0),
+      flyRegs.map(r => r.name).join('、').slice(0, 60));
+
+    /* 真点第一颗 → 必须发出后端真指令「飞往 <区域名>」 */
+    const btns = env.document.querySelectorAll('#modal-body [data-fly-region]');
+    const btn = btns[0];
+    ok('⑳-4 按钮真渲染出来了（不是只有 HTML 字符串）', !!btn);
+    if (btn) {
+      rec.exec.length = 0;
+      btn.click();
+      await settle();
+      const want = '飞往 ' + btn.getAttribute('data-fly-region');
+      ok('⑳-5 ★ 点一下真发出「' + want + '」（落到该区域入口由后端办）',
+        rec.exec.some(x => x.cmd === want),
+        JSON.stringify(rec.exec.map(x => x.cmd)));
+    }
+
+    /* 面板指令要被前端拦成「开面板」而不是往后端发指令（铁律：PANEL_CMDS 那条线） */
+    ok('⑳-6 快捷键里真有「飞行」这一颗', /label: '飞行', cmd: 'fly'/.test(
+      fs.readFileSync(path.join(RJS, 'ui.js'), 'utf8')));
+    ok('⑳-7 「飞行」走的是本地拦截（panelForCmd 认得它）',
+      env.WXUI.panelForCmd('飞行') === 'fly' && env.WXUI.panelForCmd('fly') === 'fly',
+      env.WXUI.panelForCmd('飞往') || '(飞往 不在 PANEL_CMDS)');
+    /* ⚠️ 带参数的「飞往 华山」必须**不被吃掉**，否则玩家永远飞不了 */
+    ok('⑳-8 ★ 带参数的「飞往 华山」不被面板拦截（照旧走后端真指令）',
+      env.WXUI.panelForCmd('飞往 华山') === null,
+      String(env.WXUI.panelForCmd('飞往 华山')));
+  }
+
+  /* ================================================================
+   *  ㉑ NPC 互动页最下方那颗「关闭」（主人 2026-10-12）
+   * ================================================================ */
+  section('㉑ NPC 互动页：最下方单独一排「关闭」');
+  {
+    const env = loadUi(makeEnv({ innerWidth: 390 }));
+    closeMasks(env);
+    /* 真调用 modal()，看两排各自拿到什么。 */
+    env.WXUI.modal('标题', '<p>正文</p>',
+      '<button class="btn-ink" id="npc-prof-look">打 量</button>',
+      '<button class="btn-ink" onclick="WXUI.closeModal()">关 闭</button>');
+    const foot = String(env.document.getElementById('modal-foot').innerHTML || '');
+    const foot2El = env.document.getElementById('modal-foot2');
+    const foot2 = String(foot2El.innerHTML || '');
+    ok('㉑-1 第一排只有动作按钮，没有「关闭」', /打 量/.test(foot) && !/关 闭/.test(foot), foot);
+    ok('㉑-2 ★ 第二排就是那颗「关闭」，且真的能关', /关 闭/.test(foot2) && /closeModal/.test(foot2), foot2);
+    ok('㉑-3 第二排容器真的显示出来了（hidden 摘掉）', !foot2El.classList.contains('hidden'));
+
+    /* 不留幽灵按钮：下一块不带第二排的面板，第二排要自己收回去 */
+    env.WXUI.modal('另一个', '<p>x</p>', '<button class="btn-ink">好</button>');
+    ok('㉑-4 ★ 下一块面板不带第二排时它自动收起（不会挂一个点不动的「关闭」）',
+      foot2El.classList.contains('hidden'));
+
+    /* 真实路径：走**真入口** —— 场景卡片 → NPC 菜单 → 「细看此人」→ 互动面板。
+       （`openNpcProfile` 是闭包内部函数，没有对外导出，所以照 smoke-uiux §1 的老路走。） */
+    const nv = engine.view();
+    const someone = (nv.npcs || [])[0];
+    if (someone) {
+      const rec = stubApi(env, nv);
+      rec;
+      const menu = openNpcMenuHtml(env, nv, someone.name);
+      const profBtn = menu.found
+        ? env.document.getElementById('choices-list').children
+          .find(c => /细看此人/.test(String(c.innerHTML || '')))
+        : null;
+      ok('㉑-5a 前提：从场景卡片能点到「细看此人」', !!profBtn);
+      if (profBtn) {
+        profBtn.click();
+        await settle(); await settle();
+        const f1 = String(env.document.getElementById('modal-foot').innerHTML || '');
+        const f2 = String(env.document.getElementById('modal-foot2').innerHTML || '');
+        ok('㉑-5 ★ 真开一次 NPC 面板：「关闭」在第二排、不在第一排',
+          /关 闭/.test(f2) && !/关 闭/.test(f1),
+          '第一排=' + f1.slice(0, 70) + ' / 第二排=' + f2.slice(0, 40));
+      } else {
+        ok('㉑-5 ★ 真开一次 NPC 面板：「关闭」在第二排、不在第一排', false, '没点到「细看此人」');
+      }
+    } else {
+      ok('㉑-5 ★ 真开一次 NPC 面板：「关闭」在第二排、不在第一排', false, '视野里没人可测');
+    }
   }
 
   console.log('\n———————————————————————————————');

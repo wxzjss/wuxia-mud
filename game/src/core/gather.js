@@ -81,13 +81,14 @@ function butcher(world, corpseId) {
   }
   delete world.instances.corpses[corpseId];
   world.advanceTime(20);
-  return {
-    ok: true, lines: [
-      { kind: 'story', text: '你抄起利器，三下五除二把这头畜生的尸身剖开。' },
-      { kind: 'sys', text: `你得到了：${gains.join('、')}。` },
-      { kind: 'hint', text: '生肉腥臊，须到客栈 / 酒楼「加工」成熟食才能安心吃。' },
-    ],
-  };
+  const out = [
+    { kind: 'story', text: '你抄起利器，三下五除二把这头畜生的尸身剖开。' },
+    { kind: 'sys', text: `你得到了：${gains.join('、')}。` },
+  ];
+  /* 手上的活儿干多了也是长进（主人 2026-10-08 的「其他方式」之一，量小） */
+  try { require('./potential').grant(p, require('./potential').GATHER_REWARD, out, '熟能生巧'); } catch (e) { }
+  out.push({ kind: 'hint', text: '生肉腥臊，须到客栈 / 酒楼「加工」成熟食才能安心吃。' });
+  return { ok: true, lines: out };
 }
 
 /** 生肉/生鱼加工成 熟食（客栈/酒楼） */

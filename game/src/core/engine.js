@@ -149,7 +149,7 @@ class GameEngine {
     const modLog = w.loadMods(modList);
     registerBuiltinFns(w);
     this.cmds = buildCommands(w);
-    this._wireTutorialAliases();
+    this._afterCmdBuild();
     this.ready = true;
     this.bootLog = []
       .concat(modLog.filter(l => l.level !== 'info'))
@@ -193,13 +193,13 @@ class GameEngine {
         this.reloadError = String((e && e.message) || e);
         this.world = prevWorld;
         this.cmds = buildCommands(prevWorld);
-        this._wireTutorialAliases();
+        this._afterCmdBuild();
         return { mods: this.modLoader.mods.length, ok: false, error: this.reloadError };
       }
     }
     this.world = w;
     this.cmds = buildCommands(w);
-    this._wireTutorialAliases();
+    this._afterCmdBuild();
     this.restoreRelations();
     this.reloadError = null;
     return { mods: this.modLoader.mods.length, ok: true };
@@ -578,6 +578,69 @@ class GameEngine {
       masters: (this.world && this.world.player && this.world.player.masters) || {},
       kidnap: this.kidnapView(),
       mods: this.modLoader.mods.map(m => ({ id: m.id, name: m.name, version: m.version, author: m.author, enabled: m.enabled, category: m.category, description: m.description, counts: m.counts })),
+    };
+  }
+
+  /**
+   * 「请教武学」面板的数据（主人 2026-10-08）。
+   *
+   * 主人原话：「NPC 互动页面的『请教武学』按钮点击后应该是一个新界面，
+   *   直接列出该 NPC 的所有武学名字按钮，每个武学名字下面/旁边有个『请教』按钮。
+   *   还有有些武学即便你点击请教了对方也不会教（非特殊情况比如被你绑进地牢里的）。」
+   *
+   * ⇒ 一次把这个人**所有**能教的功夫列全（含已会的 —— 已会走「点拨」，花潜能涨熟练度），
+   *   每条都带上「要多少好感 / 多少钱 / 多少潜能 / 能不能教 / 不能教是为什么」。
+   *   能不能教的判据只有一个来源：`social.wontTeachReason`（面板与指令同源）。
+   */
+  teachView(uid) {
+    const w = this.world, p = w && w.player;
+    if (!p) return null;
+    /* ⚠️ 先找**活实例**（`npcsIn`），再退回「含模板」那份名单：
+       含模板那份对没落地过的名人会临时 spawn 一个，而临时实例上**没有**
+       你刚改过的状态（晕着 / 被绑着）—— 于是「他晕着不该教你」会判不出来。
+       活实例优先，才跟玩家眼前看到的那个人是同一个。 */
+    const live = (w.npcsIn ? w.npcsIn(p.room) : []) || [];
+    const npc = live.find(n => n && ((n.defId || n.id) === uid || n.name === uid))
+      || (w.npcsIncludingTemplates ? w.npcsIncludingTemplates(p.room) : [])
+        .find(n => n && ((n.defId || n.id) === uid || n.name === uid))
+      || null;
+    if (!npc) return null;
+    const potentialMod = require('./potential');
+    const isMaster = !!(p.masters && p.masters[npc.defId || npc.id]);
+    const list = social.teachList(w, npc).map(x => {
+      const sd = w.getSkill(x.id) || {};
+      const cur = p.skillLevel(x.id) || 0;
+      if (x.known) {
+        const teacherLv = potentialMod.teacherLevelOf(npc, x.id);
+        const cap = potentialMod.teachUpCap(p, sd, teacherLv);
+        const gain = potentialMod.teachUpGain(cap, cur);
+        const cost = gain > 0 ? potentialMod.raiseCostOf(sd, gain, cur) : 0;
+        return Object.assign({}, x, {
+          mode: 'up', level: cur, cap, gain, cost,
+          ok: x.can && gain > 0 && (p.potential || 0) >= cost,
+          why: x.why || (gain > 0 ? '' : `已经到他能指点的上限（${cap} 级）了。`),
+          short: (p.potential || 0) < cost ? `潜能不够（要 ${cost}）` : '',
+        });
+      }
+      const cost = potentialMod.teachCostFor(p, sd, 0, isMaster);
+      const potOk = (p.potential || 0) >= cost;
+      /* ⚠️ 不能教的理由要**说全**：潜能够但交情不够，也得讲明白差什么 ——
+         只给一个灰按钮等于「点了没反应」（铁律）。 */
+      let short = '';
+      if (!potOk) short = `潜能不够（要 ${cost}）`;
+      else if (!isMaster && (npc.favor || 0) < x.favorNeed && !(x.money > 0)) {
+        short = `交情不够（需好感 ${x.favorNeed}），他也不收钱`;
+      }
+      return Object.assign({}, x, {
+        mode: 'learn', cost, potOk,
+        ok: x.can && potOk && (isMaster || (npc.favor || 0) >= x.favorNeed || x.money > 0),
+        short,
+      });
+    });
+    return {
+      npc: { id: npc.defId || npc.id, name: npc.name, favor: npc.favor || 0, isMaster },
+      potential: p.potential || 0, money: p.money || 0,
+      list,
     };
   }
 
@@ -1503,6 +1566,68 @@ class GameEngine {
   }
 
   /* ------------------------------------------------------------------ *
+   * 功能 Mod · 宏指令（rules 里 `kind: 'macro'`）
+   *
+   * 制作器里能选「宏指令（一条指令=多条）」、文档也写了，但**从来没有执行入口** ——
+   * 作者照示例写 `{kind:'macro', target:'拾取', effect:'get all'}`，敲「拾取」只会得到
+   * 内置指令表的「我不懂这个指令」（选了白选 = 本项目最忌的静默失效）。
+   *
+   * 字段语义（与制作器「规则」表单一一对应）：
+   *   target  要接管的指令名 —— 玩家敲的**第一个词**，英文 id（getAll）或中文（拾取）都认，大小写不敏感
+   *   effect  展开成什么 —— 字符串按 `;` 分段（也接受数组）；留空则回落到 value
+   *   value   同 effect 的简写（示例 Mod 里的预设用的就是它）
+   *   cond    门槛表达式（`room.items>0` / `!combat` …）—— 不满足就**不展开**，
+   *           由 exec 明确回一句「现在用不了」，而不是让玩家对着「我不懂这个指令」发懵
+   *
+   * 展开走**命令引擎原生的 `a;b;c` 分段**（commands.execute 早就支持），
+   * 所以时间只推进一次、剧情只结算一次。也支持宏套宏（A→B→B 是真指令），
+   * 但用一个 seen 表 + 最大 6 层**硬顶住自指**（A→B→A、A→A 都要能停下）。
+   * ⚠️ 宏名**千万别跟前端 `PANEL_CMDS` 里的面板名撞**（撞了被前端拦成开面板，
+   *    后端根本收不到这条指令）—— 面板名见 ui.js 的 PANEL_CMDS。
+   */
+  _macroOf(input, norm, opts) {
+    const w = this.world;
+    const rules = ((w && w.activeRules) || []).filter(r => r && r.kind === 'macro');
+    if (!rules.length) return null;
+    const head0 = String(norm || '').trim().split(/\s+/)[0];
+    if (!head0) return null;
+    const findRule = (h) => {
+      const key = String(h).trim().toLowerCase();
+      return rules.find(r => String(r.target || '').trim().toLowerCase() === key) || null;
+    };
+    /* 第一跳就查不到 → 这条指令跟宏没关系，直接放行（绝大多数指令走这里） */
+    if (!findRule(head0)) return null;
+
+    const MAX = 6;
+    const seen = [];
+    let cur = String(norm || '').trim();
+    for (let i = 0; i < MAX; i++) {
+      const head = cur.split(/\s+/)[0];
+      if (!head) break;
+      if (seen.indexOf(head.toLowerCase()) >= 0) break;   /* 自指：A→B→A 到此为止 */
+      const r = findRule(head);
+      if (!r) break;
+      if (r.cond && !evalCond(r.cond, { player: w.player, world: w })) {
+        /* 头一跳就没过门槛 → 告诉玩家；后续跳没过 → 保留已展开的前缀，别整条丢掉 */
+        return i === 0
+          ? { norm: null, blocked: { name: r.name || r.target, why: '条件未满足（' + r.cond + '）' }, head: head0 }
+          : { norm: cur, blocked: null, head: head0 };
+      }
+      let exp = r.effect !== undefined && r.effect !== null && String(r.effect).trim() !== ''
+        ? r.effect : r.value;
+      if (Array.isArray(exp)) exp = exp.join(';');
+      exp = String(exp === undefined || exp === null ? '' : exp).trim();
+      if (!exp) break;                                    /* 有规则没效果：当它不存在，别吞指令 */
+      seen.push(String(head).toLowerCase());
+      cur = exp;
+      /* 展开出来的东西跟原指令一模一样 → 到此为止，免得原地打转 */
+      if (cur === String(norm || '').trim()) break;
+    }
+    if (cur === String(norm || '').trim()) return null;
+    return { norm: cur, blocked: null, head: head0 };
+  }
+
+  /* ------------------------------------------------------------------ *
    * 指令执行
    * ------------------------------------------------------------------ */
   exec(input, opts) {
@@ -1529,7 +1654,16 @@ class GameEngine {
     /* B13 连带收尾：读档迁移提示「只顶在下一屏房间描述前」，玩家一动就撤掉，不长期挂描述上。 */
     if (w._migrateNotice) w._migrateNotice = null;
     /* 中文口语归一化：「往北走」→「n」、「查看背包」→「i」 */
-    const norm = normalizeCmd(input);
+    let norm = normalizeCmd(input);
+    /* 功能 Mod · 宏指令（rules 里 kind:'macro'）：把整条指令换成展开结果。
+       排在这里有两个原因：
+       ① 在 markTutorial **之前** —— 宏展开出来的那些指令才点得亮教程标记
+          （不然作者写 `{target:'拾取', effect:'get all'}`，玩家敲「拾取」永远不算「拾取过东西」）；
+       ② 在 cmds.execute **之前**、只做一次 —— 走命令引擎原生的 `a;b;c` 分段，
+          时间只推进一次、剧情只结算一次。**别再写「子指令递归 exec」**：那条路会
+          每条子指令推进一次时间、把回包揉成 N 份，是同类坑里最难查的一种。 */
+    const macro = this._macroOf(input, norm, opts);
+    if (macro && macro.norm) norm = macro.norm;
     this.markTutorial(input, norm);
     /* ★ 通用防线：**一条指令抛异常，不该让整个请求挂掉**。
        第四轮修 `ask`（数据里「话题→答案」映射写法会让 `a.topic.includes` 抛异常）时发现：
@@ -1571,6 +1705,15 @@ class GameEngine {
     /* 退出吐纳 / 双修的那几句，排在**这条指令自己的输出之前** ——
        玩家先看到「醒过来了」，再看「背包里有什么」；顺序反了会以为状态还在。 */
     if (exitBusy.length) lines.unshift(...exitBusy);
+    /* 宏「有规则、但门槛没过」时**必须说话** —— 否则玩家敲下去只会得到
+       内置指令表的「我不懂这个指令」，而作者明明写了这条宏，两边都以为是对方的错
+       （这就是本项目最忌的静默失效）。 */
+    if (macro && macro.blocked) {
+      lines.unshift({
+        kind: 'warn',
+        text: `「${macro.blocked.name || macro.head}」现在还用不了：${macro.blocked.why}。`,
+      });
+    }
     // 后处理
     w.advanceTime(1);
     /* 世界动态 W5/W7：把「推进时间时」世界抛出的 storyline 台词排进玩家输出。
@@ -1590,6 +1733,17 @@ class GameEngine {
        地图 247 KB / 回包 280 KB，只在你打开「地图」面板时才需要。 */
     out.view = res.view || this.view({ map: false });
     return out;
+  }
+
+  /* 建完指令表之后的**统一收尾**：boot / reload（两条分支）/ loadSave 四处都走这里。
+     做两件事：
+     ① 教程别名反向表 —— 手抄表会漂（`打坐` 曾经点不亮第三章），必须从真指令表重建；
+     ② 脚本自定义指令与内置指令的撞名检查 —— 撞了要记日志 + 让位，
+        否则作者以为自己的指令生效了，实际玩家敲的永远是内置那条。
+     ⚠️ 别在这两件事之外再往里塞东西 —— 这里跑在「服务刚起来 / 刚读档」的敏感时刻。 */
+  _afterCmdBuild() {
+    this._wireTutorialAliases();
+    try { this.world.validateScriptCommands(this.cmds); } catch (e) { /* 校验不该挡着起服务 */ }
   }
 
   /* 新手引导：把「指令注册表里的别名」喂给 tutorial，用于「按规范名反查引导标记」。
@@ -1924,6 +2078,10 @@ class GameEngine {
     this.world.deserialize(s, this.modLoader.getEnabledModList());
     registerBuiltinFns(this.world);
     this.cmds = buildCommands(this.world);
+    /* ⚠️ 这里原来**漏了** `_wireTutorialAliases()` —— loadSave 会重建 cmds，
+       教程别名表跟着被冲回手抄的老版本，同一次会话里「先读档再点引导」就漂了。
+       现在统一收口到 _afterCmdBuild()（顺带做脚本指令的撞名检查）。 */
+    this._afterCmdBuild();
     /* 老存档没有 `p.vars._storyBeat` 这笔账 —— 不补记，读档后第一条指令
        会把几十桩进行中的任务和当前教程章节一口气念一遍（剧情上屏的副作用）。
        读档＝「这些早讲过了」，补一笔账最省事也最不打扰。 */

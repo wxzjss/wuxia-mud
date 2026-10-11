@@ -56,9 +56,12 @@ function ok(name, cond, extra) {
   ok('含当前位置', mh.includes(here.name));
   ok('含区域底色块', mh.includes('map-region-box'));
   ok('含房间节点', mh.includes('map-node'));
-  ok('含图例', mh.includes('map-legend'));
+  /* 🔴 2026-10-12 口径改动：主人把图例里的四条逐一删光，整块图例下线。 */
+  ok('图例已整体下线（主人 10-12 要求全部删掉）', !mh.includes('map-legend'));
   ok('含探索进度', mh.includes('本范围') && mh.includes('全江湖'));
-  ok('含相邻房间快捷', mh.includes('一步可达'));
+  /* 🔴 2026-10-12 口径改动：主人「把一步可达删了」——
+     画布上那排「北门 / 客栈 / 药铺」快捷按钮整块下线，地图回归「只看不点」。 */
+  ok('「一步可达」快捷条已下线（主人 2026-10-12 要求删掉）', !mh.includes('一步可达'));
 
   /* —— 地形装饰层（★ 主人第四轮要求**删掉**）——
      原来是每个 terrain 格子画一个 ♣/≈/❄ 之类的符号，看着像贴纸；
@@ -100,25 +103,27 @@ function ok(name, cond, extra) {
     });
     ok('★ 桥都是「图上不相邻」的（不相邻才需要桥）', adjacent.length === 0,
       adjacent.length + ' 条其实相邻');
-    /* 世界模式渲染里确实画了虚线桥 */
+    /* 🔴 2026-10-12 口径改动（主人两句话）：
+       ①「把世界地图的所有虚线删了」—— 跨区那条**兜底折线**（`.edge-bridge`）整段不再画。
+       ②「把两个地块之间的连线换成虚线形式」—— 于是**所有**走廊连线都改成虚线，
+          样式从 `.edge-bridge` 挪到了 `.edge` 上。
+       这一节原来守的是「桥存在 + 是折线 + 是虚线」，现在改守新契约：
+       桥真没了，而走廊线（不论同区还是跨区）都是虚线。 */
+    /* 世界模式渲染（把 mapHtml 抽出来、喂一个 world 视野真跑一遍） */
     const worldBuilt = new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF', 'mapScope',
       grab('mapHtml') + '\n' + grab('shortName') + '\n' + grab('guideHtml') + '\nreturn { mapHtml };')(
         esc, MAP_CELL, MAP_NODE, MAP_PAD, DIR_CN, DIR_OFF, 'world');
     const wh = worldBuilt.mapHtml(v);
-    ok('★ 世界地图渲染出跨区桥（edge-bridge）', wh.indexOf('edge-bridge') >= 0);
-    ok('桥是虚线（跟实心走廊区分开，CSS 有 stroke-dasharray）',
-      /\.map-edges\s+\.edge-bridge\s*\{[^}]*dasharray/.test(
+    ok('★ 跨区兜底长折线已下线（主人 10-12：删掉所有虚线）', wh.indexOf('edge-bridge') < 0);
+    ok('★ 走廊连线全是虚线（主人 10-12：连线换成虚线形式）',
+      /\.map-edges\s+\.edge\s*\{[^}]*stroke-dasharray/.test(
         fs.readFileSync(path.join(ROOT, 'game/src/renderer/css/main.css'), 'utf8')));
-    /* ★ 主人 2026-10-11：「你的连线画法有问题……是不是可以把有连线的两个地块
-       放在相邻的位置」。布局侧已经按真出口咬合（绝大多数边直接相邻、走走廊），
-       前端剩下的这一小撮兜底线也必须**沿格走**（拐一下），不能再两点直连 ——
-       直连就是一条横穿半个屏幕的斜线。
-       断法：桥那段 path 里，每个 M（一条桥起笔）后面必须跟两个 L（横 + 竖两段）。 */
-    const bridgeD = (wh.match(/<path d="([^"]*)" class="[^"]*edge-bridge/) || [])[1] || '';
-    const nb = (bridgeD.match(/M/g) || []).length;
-    const nl = (bridgeD.match(/L/g) || []).length;
-    ok('★ 跨区兜底线是**折线**（沿格走），不是两点直连的斜线',
-      nb > 0 && nl === nb * 2, '桥 ' + nb + ' 条 / L 段 ' + nl + '（应 = 2×桥数）');
+    /* 跨区边仍然要连上 —— 靠的是「布局咬合后本来就相邻」（走走廊那一段），
+       不是靠兜底折线。所以这里改成查「跨区边真的被走廊画到了」：
+       世界地图模式下渲染出的 path 里必须有 M/L 段（= 有走廊）。 */
+    const edgePath = (wh.match(/<path d="([^"]*)" class="edge edge-dim"/) || [])[1] || '';
+    ok('★ 世界地图仍然把地块连成一张网（有走廊段，不是一盘散沙）',
+      (edgePath.match(/M/g) || []).length > 0, (edgePath.match(/M/g) || []).length + ' 段');
   }
 
   /* —— 两级地图视野（默认只看当前区域）—— */
@@ -188,9 +193,16 @@ function ok(name, cond, extra) {
   ok('★ 地块不再有方块框（.map-node 无边框、无底色）',
     nodeRule.indexOf('border: none') >= 0 && nodeRule.indexOf('background: transparent') >= 0,
     nodeRule.slice(0, 100));
-  ok('★ 地块只靠字色区分状态（你在这里=红字 / 一步可达=金字）',
-    cssNow.indexOf('.map-node.here .mn-name') >= 0 && cssNow.indexOf('.map-node.near .mn-name') >= 0 &&
-    cssNow.indexOf('color: var(--red)') >= 0 && cssNow.indexOf('color: var(--gold)') >= 0);
+  /* 🔴 2026-10-12 口径改动：主人「把地图上地块名字的**黄色字体**呈现与**可点击前往**删了」
+     「把玩家当前所在地块的**红色**显示形式换成**黄色**显示形式」。
+     ⇒ 「一步可达」的金字（.near）整套下线；「你在这里」从红改黄。
+     现在地块状态只剩三种：你在这里（黄）/ 去过（墨）/ 没去过（淡墨）。 */
+  ok('★ 你在这里 = 黄字加粗（主人 10-12 从红改黄）',
+    /\.map-node\.here\s+\.mn-name\s*\{[^}]*color:\s*var\(--gold\)/.test(cssNow));
+  ok('★ 「一步可达」的金字与可点整套下线（.near 的样式规则已删）',
+    !/\.map-node\.near\s*\{/.test(cssNow));
+  ok('★ 地块底色框/斜纹那套仍然没有（老契约不变）',
+    nodeRule.indexOf('background: transparent') >= 0);
 
   console.log('\n── 新手引导 ──');
   const p = e.world.player;

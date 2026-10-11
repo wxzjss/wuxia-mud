@@ -685,20 +685,33 @@
 
     h += '<div class="mm-rules">';
     h += (s.rules || []).map((r, i) => {
+      /* 提示语跟着「规则类型」走 —— 同一个「作用目标」框，倍率类填字段名、
+         宏指令填**玩家敲的指令名**、事件类填事件名。以前三种共用一句提示，
+         作者照提示填 `pot` 到宏指令里，就成了「选了白选」。 */
+      const k = r.kind || 'multiply';
+      const tipTarget = k === 'macro' ? '玩家敲的指令名，如：拾取 / 打坐 / look'
+        : k === 'onEvent' ? '事件名：onKill / onTick / onEnter / onDayTick'
+          : '字段名：pot / money / hp / damageTaken';
+      const tipValue = k === 'macro' ? '展开后的指令（简写，留空则用「效果」栏）'
+        : k === 'onEvent' ? '留 1 即可（效果写在「效果」栏）'
+          : '例如：2 表示两倍、-5 表示减五';
+      const tipEffect = k === 'macro' ? '展开成什么，多条用 ; 隔开，如 get all;look'
+        : k === 'onEvent' ? '效果，如 +money:10 / +hp:8'
+          : '（倍率/增减类不用填）';
       const body = '<div class="mm-form-grid">' +
         field('规则名称', input('rules.' + i + '.name', r.name, '例如：双倍经验')) +
-        field('规则类型', select('rules.' + i + '.kind', r.kind || 'multiply',
+        field('规则类型', select('rules.' + i + '.kind', k,
           [{ value: 'multiply', label: '倍数调整（经验/金钱等）' },
           { value: 'additive', label: '数值增减' },
           { value: 'onEvent', label: '事件触发效果' },
           { value: 'macro', label: '宏指令（一条指令=多条）' }])) +
         '</div>' +
         '<div class="mm-form-grid">' +
-        field('作用目标', input('rules.' + i + '.target', r.target, 'pot / money / hp / damage / 或事件名 onKill'), '倍率类填字段名') +
-        field('数值', input('rules.' + i + '.value', r.value != null ? r.value : '', '例如：2 表示两倍', 'text')) +
+        field('作用目标', input('rules.' + i + '.target', r.target, tipTarget), k === 'macro' ? '指令名' : (k === 'onEvent' ? '事件名' : '倍率类填字段名')) +
+        field('数值', input('rules.' + i + '.value', r.value != null ? r.value : '', tipValue, 'text')) +
         '</div>' +
-        field('条件', input('rules.' + i + '.cond', r.cond, '留空=总是生效；如 realm>=1')) +
-        field('效果 / 触发', input('rules.' + i + '.effect', r.effect, 'onEvent 时填效果，如 +money:10'));
+        field('条件', input('rules.' + i + '.cond', r.cond, '留空=总是生效；如 realm>=1 或 room.items>0')) +
+        field('效果 / 触发', input('rules.' + i + '.effect', r.effect, tipEffect));
       return row(r.name || ('规则 ' + (i + 1)), r.kind, i, 'rules', body);
     }).join('') || empty('还没有规则');
     h += '</div>';
@@ -709,7 +722,7 @@
     h += '<div class="mm-section"><h3>常用预设（点一下就加）</h3><div class="mm-presets">' +
       '<button class="mm-add sm" data-preset="exp2">双倍潜能</button>' +
       '<button class="mm-add sm" data-preset="money2">双倍金钱</button>' +
-      '<button class="mm-add sm" data-preset="autopick">自动拾取</button>' +
+      '<button class="mm-add sm" data-preset="autopick">一键捡光（宏指令）</button>' +
       '<button class="mm-add sm" data-preset="hpRegen">脱战回血</button>' +
       '<button class="mm-add sm" data-preset="killReward">击杀额外奖励</button>' +
       '</div></div>';
@@ -1282,7 +1295,10 @@
     const P = {
       exp2: { name: '双倍潜能', kind: 'multiply', target: 'pot', value: 2, cond: '', effect: '' },
       money2: { name: '双倍金钱', kind: 'multiply', target: 'money', value: 2, cond: '', effect: '' },
-      autopick: { name: '自动拾取', kind: 'macro', target: 'getAll', value: 1, cond: 'room.items>0', effect: 'get all' },
+      /* ⚠️ target 必须是**玩家真敲得出来的指令名**。以前这里写的是 `getAll` ——
+         玩家对着键盘敲 `getAll` 才能触发，等于没有。改成一键捡光的真指令名「拾取」
+         （`拾取` 本身就是 `get` 的别名，宏把它接管成 `get all`）。 */
+      autopick: { name: '一键捡光', kind: 'macro', target: '拾取', value: 1, cond: 'room.items>0', effect: 'get all' },
       hpRegen: { name: '脱战回血', kind: 'onEvent', target: 'onTick', value: 1, cond: '!combat', effect: '+hp:5' },
       killReward: { name: '击杀额外奖励', kind: 'onEvent', target: 'onKill', value: 1, cond: '', effect: '+pot:10' }
     };

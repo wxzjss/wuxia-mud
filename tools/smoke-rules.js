@@ -102,6 +102,93 @@ console.log('⑤ 示例 Mod 修复');
   ok('demo_func 无双倍经验规则', !w.activeRules.some(r => r.target === 'exp' && r.__mod === 'demo_func'));
 }
 
+console.log('⑥ 功能 Mod 宏指令（kind: macro —— 一条指令=多条）');
+{
+  const e = new GameEngine({ seed: 20261010 });
+  e.boot(); e.reload();                       // reload 后才有 demo_func 的规则
+  e.newGame({ name: '试剑', gender: 'male' });
+  const w = e.world, p = w.player;
+
+  ok('demo_func 的宏规则进了 activeRules',
+    w.activeRules.some(r => r.kind === 'macro' && r.target === '拾取'));
+  ok('demo_func 的宏规则 effect 是 get all',
+    (w.activeRules.find(r => r.kind === 'macro') || {}).effect === 'get all');
+
+  /* ---- ① 纯展开：_macroOf 一层就换成多条 ---- */
+  w.instances.items = { gi_a: { itemId: 'cloth_robe', room: p.room, count: 1 } };
+  const m1 = e._macroOf('拾取', '拾取', {});
+  ok('地上有东西时「拾取」展开成 get all', m1 && m1.norm === 'get all', m1 && m1.norm);
+  /* 无门槛的宏：一条 → 多条（`;` 分段） */
+  w.activeRules.push({ kind: 'macro', name: '双查', target: '双查', effect: 'look;score', __mod: 'test' });
+  const m2 = e._macroOf('双查', '双查', {});
+  ok('无门槛宏「双查」展开成两条指令', m2 && m2.norm === 'look;score', m2 && m2.norm);
+
+  /* ---- ② 门槛：地上没东西时 room.items>0 不成立 → 不展开且**要说话** ----
+     （旧代码里 `room.items` 不在条件白名单 ⇒ 整条被跳过 ⇒ 恒为真。这里钉住。） */
+  w.instances.items = {};
+  const condHere = e._macroOf('拾取', '拾取', {});
+  ok('地上没东西时宏不展开（room.items>0 真的起作用）',
+    !!condHere && !!condHere.blocked && !condHere.norm,
+    condHere && JSON.stringify(condHere));
+  const r0 = e.exec('拾取');
+  ok('门槛没过时明确回一句「还用不了」，而不是「我不懂这个指令」',
+    (r0.lines || []).some(l => /还用不了/.test(l.text || '')),
+    (r0.lines || []).map(l => l.text).join(' | ').slice(0, 90));
+
+  /* ---- ③ 端到端：地上放一件，敲「拾取」真的捡起来（展开成 get all） ---- */
+  w.instances.items = { gi_macro_t: { itemId: 'cloth_robe', room: p.room, count: 1 } };
+  const before = p.inventory.length;
+  const r1 = e.exec('拾取');
+  ok('宏展开真的执行了（地上那件进了背包）', p.inventory.length === before + 1,
+    before + ' -> ' + p.inventory.length);
+  ok('宏回包里没有「不懂」类报错',
+    !(r1.lines || []).some(l => /不懂|不知道这是什么/.test(l.text || '')));
+
+  /* ---- ④ 一条宏展开成两条指令，两条**都**真的执行了 ---- */
+  const rm = e.exec('双查');
+  ok('宏「双查」的回包不是空（look + score 都跑了）', (rm.lines || []).length > 0,
+    (rm.lines || []).length);
+
+  /* ---- ④ 自指不能死循环（A→A / A→B→A 都要能停） ---- */
+  w.activeRules.push({ kind: 'macro', name: '自指', target: '自指', effect: '自指', __mod: 'test' });
+  let hung = false;
+  const t0 = Date.now();
+  const mSelf = e._macroOf('自指', '自指', {});
+  if (Date.now() - t0 > 2000) hung = true;
+  ok('自指宏不死循环（A→A 立刻收手）', !hung && mSelf === null, JSON.stringify(mSelf));
+  w.activeRules.push({ kind: 'macro', name: '甲', target: '甲', effect: '乙', __mod: 'test' });
+  w.activeRules.push({ kind: 'macro', name: '乙', target: '乙', effect: '甲', __mod: 'test' });
+  const mRing = e._macroOf('甲', '甲', {});
+  ok('互指宏不死循环（甲→乙→甲 立刻收手）', mRing === null, JSON.stringify(mRing));
+
+  /* ---- ⑤ 宏套宏（甲→乙→真指令）能一路展开到位 ---- */
+  w.activeRules.push({ kind: 'macro', name: '丙', target: '丙', effect: 'look' });
+  w.activeRules.push({ kind: 'macro', name: '丁', target: '丁', effect: '丙' });
+  const mChain = e._macroOf('丁', '丁', {});
+  ok('宏套宏一路展开到真指令（丁→丙→look）', mChain && mChain.norm === 'look', mChain && mChain.norm);
+
+  /* ---- ⑥ 宏名对不上时放行（绝大多数指令走这条，别误伤） ---- */
+  ok('无关指令返回 null（不误伤）', e._macroOf('look', 'look', {}) === null);
+
+  /* ---- ⑦ 展开出来的指令要能点亮教程标记（排在 markTutorial 之前的意义） ---- */
+  const mT = e._macroOf('拾取', '拾取', {});
+  ok('展开结果就是要喂给教程标记的那串', mT && mT.norm === 'get all');
+}
+
+console.log('⑦ room.items / room.npcs 条件（以前不在白名单 ⇒ 恒为真）');
+{
+  const e = new GameEngine({ seed: 20261010 });
+  e.boot(); e.newGame({ name: '试剑', gender: 'male' });
+  const w = e.world, p = w.player;
+  w.instances.items = {};
+  ok('地上空时 room.items>0 不成立', !evalCond('room.items>0', { player: p, world: w }));
+  ok('地上空时 roomItems>0 也不成立', !evalCond({ roomItems: '>0' }, { player: p, world: w }));
+  w.instances.items = { gi_c1: { itemId: 'herb', room: p.room, count: 1 } };
+  ok('地上有一件时 room.items>0 成立', evalCond('room.items>0', { player: p, world: w }));
+  ok('对象写法 {"room.items":">0"} 也成立', evalCond({ 'room.items': '>0' }, { player: p, world: w }));
+  ok('room.items > 5 不成立（不是恒真）', !evalCond('room.items>5', { player: p, world: w }));
+}
+
 console.log('\n' + '='.repeat(42));
 console.log('  通过 ' + pass + ' 项，失败 ' + fail + ' 项');
 console.log('='.repeat(42));

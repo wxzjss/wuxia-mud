@@ -7,12 +7,17 @@
  *   ① **画布是主角** —— 原来「你在哪 / 视野切换 / 进度 / 图例 / 飞往 34 键 / 区域总览 34 行」
  *      六块摞在画布上下，手机上一屏根本看不到地图。现在抬头收成两行，
  *      区域清单合并成一块「地名索引」放在画布**下面**。
- *   ② **画布可缩放 + 能回到我** —— 原来格子只有两档（窄屏 52 / 桌面 30），
+ *   ② **画布可缩放** —— 原来格子只有两档（窄屏 52 / 桌面 30），
  *      全图铺开后名字只剩 4 个字；拖远了也找不回自己。现在右上角有工具条。
- *   ③ **出口贴着地图** —— 「一步可达」原来在画布下一屏，看图和点走要来回滑。
- *      现在浮在画布底边。
+ *      🔴 2026-10-12 主人：「把世界地图的『回到我』删了」——
+ *         「回到我」那颗按钮**已下线**（开图自动居中仍在，那是默认行为不是按钮），
+ *         工具条只剩 ± 缩放；同时「一步可达」整块也下线了（见 ③）。
  *
- * 这个脚本守的就是这三条**真能用**，而不是「HTML 里有这几个字」。
+ * 这个脚本守的就是这几条**真能用**，而不是「HTML 里有这几个字」。
+ * ⚠️ 2026-10-12 主人一批地图改动（删一步可达 / 去过 / 出界方向 / 回到我 /
+ *    区域名 / 彩色底色框 / 黄字可点，连线改虚线，区域图＝世界图删其他区域），
+ *    凡是与「已经删掉的东西」有关的断言都改成了**反向判据**（断言它真的不在了）——
+ *    这样才不会「主人删了、守卫还替他守着」。
  * ============================================================ */
 'use strict';
 const fs = require('fs');
@@ -109,17 +114,25 @@ async function renderMap(view) {
   console.log('===== ① 画布是主角：抬头收紧 + 区域清单合并 =====');
   ok('★ 区域清单合成**一块**（旧的重复块不再渲染）',
     html.indexOf('map-region-nav') >= 0 && html.indexOf('map-regions-overview') < 0 && html.indexOf('mro-item') < 0);
-  ok('　抬头两行内：你在哪 / 视野 / 进度 / 图例都在', html.indexOf('map-now') >= 0 && html.indexOf('map-scope') >= 0
-    && html.indexOf('map-progress') >= 0 && html.indexOf('map-legend') >= 0);
-  ok('　图例保留了「出界方向」（那条是有用的）', html.indexOf('dot-edge') >= 0);
+  ok('　抬头两行内：你在哪 / 视野 / 进度都在', html.indexOf('map-now') >= 0 && html.indexOf('map-scope') >= 0
+    && html.indexOf('map-progress') >= 0);
+  /* 🔴 2026-10-12 口径改动（主人两轮删减）：
+     先是「把一步可达删了（连同灰字描述）」「把出界方向删了」「把去过删了」，
+     再是「把地图界面的『你在这里』与『未探索』删了」—— 图例**整个没了**。
+     于是这一条从「图例精简成两条」改成「图例已整体下线」。
+     没有图例之后靠什么读懂地图：名字一律亮色（不分明暗），只有你那一格是金底加粗。 */
+  ok('　图例已整体下线（主人 10-12 把最后两条也删了）',
+    html.indexOf('map-legend') < 0 && html.indexOf('dot-here') < 0
+    && html.indexOf('dot-unknown') < 0 && html.indexOf('ml-tip') < 0);
   ok('★ 地名索引：去过的直接铺、没去过的收进可折叠区',
     html.indexOf('mrn-grid') >= 0 && html.indexOf('mrn-more') >= 0 && /<details[^>]*mrn-more/.test(html));
   ok('　每个地名带着「去过数 / 总数」', html.indexOf('mrn-num') >= 0);
   ok('★ 渲染里没有 undefined 漏出', html.indexOf('undefined') < 0);
 
-  console.log('===== ② 画布能缩放、能回到我（原来做不到） =====');
-  ok('★ 画布工具条在（回到我 + 缩放）',
-    html.indexOf('map-tools') >= 0 && html.indexOf('data-map-tool="here"') >= 0
+  console.log('===== ② 画布能缩放（回到我已在 2026-10-12 按主人要求删掉） =====');
+  ok('★ 画布工具条在（只剩缩放，「回到我」已删）',
+    html.indexOf('map-tools') >= 0
+    && html.indexOf('data-map-tool="here"') < 0
     && html.indexOf('data-map-tool="zin"') >= 0 && html.indexOf('data-map-tool="zout"') >= 0);
   ok('　显示当前缩放百分比', /mt-zoom/.test(html) && /\d+%/.test(html));
   {
@@ -140,43 +153,51 @@ async function renderMap(view) {
        所以直接走「等价路径」：连续两次调用缩放处理器 —— 但处理器在闭包里。
        改用**行为可观测**的判据：把 mapZoom 的档位效果从渲染结果反推 ——
        同一份 view 渲染两次必须一致（确定性），而 UI 源码里必须真的拿 mapZoom 乘进格子尺寸。 */
-    /* 🔴 2026-10-08 口径改动：区域模式现在按弹窗可用宽高**自动放大**格距
-       （`fitCell`），所以格子尺寸不再恒是「(NARROW?52:30)*z」。
-       缩放仍然要真的乘进去 —— 改断「两条赋值都带 * z」：
-         MAP_CELL = Math.round((NARROW ? 52 : 30) * z)   ← 天下全图
-         MAP_CELL = Math.round(fitCell * z)              ← 区域模式（fit 基线 × 缩放） */
+    /* 🔴 2026-10-08 口径改动：区域模式曾经按弹窗可用宽高**自动放大**格距（fitCell）。
+       🔴 2026-10-12 又改回来：主人「把当前区域地图改为在世界地图的基础上删去其他区域的，
+          其他的原模原样复制粘贴即可」⇒ fitCell 整段删掉，两种视野**共用同一个 MAP_CELL**。
+       所以现在只有一条赋值，且它必须真的带 * z。 */
     ok('★ 缩放真的乘进格子尺寸（源码级判据）',
-      /MAP_CELL = Math\.round\(\(NARROW \? 52 : 30\) \* z\)/.test(uisrc)
-      && /MAP_CELL = Math\.round\(fitCell \* z\)/.test(uisrc));
-    ok('　缩放有上下限（0.7~1.4）', /ZMIN = 0\.7, ZMAX = 1\.4/.test(uisrc));
+      /MAP_CELL = Math\.round\(\(NARROW \? 52 : 30\) \* z\)/.test(uisrc));
+    ok('★ 区域模式不再自己算格距（两页共用同一 MAP_CELL，主人 10-12）',
+      !/const fitCell/.test(uisrc));
+    ok('　缩放有上下限（0.7~2.4 —— 上限随 fitCell 下线而放宽）', /ZMIN = 0\.7, ZMAX = 2\.4/.test(uisrc));
     ok('　100% 时两个缩放按钮都可用（没被误禁用）',
       !/data-map-tool="z(in|out)"[^>]*disabled/.test(html));
     ok('　源码里确实有「到顶/到底才禁用」的判据', /ZMIN \+ 1e-6 \? ' disabled'/.test(uisrc) && /ZMAX - 1e-6 \? ' disabled'/.test(uisrc));
     ok('　H0 取到了画布高度（判据有效）', H0 > 0, 'H0=' + H0);
   }
 
-  console.log('===== ③ 出口贴着地图 + 画布可键盘操作 =====');
+  console.log('===== ③ 地图「只看不点」+ 画布可键盘操作 =====');
   {
-    const stageIdx = html.indexOf('map-stage');
-    const quickIdx = html.indexOf('map-quick');
-    const navIdx = html.indexOf('map-region-nav');
-    ok('★「一步可达」在画布区里面（不是画布外下一屏）', quickIdx > stageIdx && (navIdx < 0 || quickIdx < navIdx));
-    ok('　它仍带 data-go（点一下能走过去）', html.indexOf('class="mq-btn" data-go="') >= 0);
+    /* 🔴 2026-10-12 口径改动：主人「把一步可达删了」「把地块……可点击前往删了」。
+       这一节原来守的是「一步可达贴着画布底边、点了能走过去」——
+       那个功能整个没了，所以改守**它真的没了**：
+       不渲染 `map-quick`、地块不带 `data-go`、也不再给「一步可达」单独上色。 */
+    ok('★「一步可达」快捷条已下线（不再渲染 map-quick）', html.indexOf('map-quick') < 0);
+    ok('★ 地块不再可点前往（没有 data-go）', html.indexOf('data-go') < 0);
+    ok('★ 地块也不再给「一步可达」单独上色（没有 .near）', !/class="map-node[^"]*\bnear\b/.test(html));
     ok('★ 画布可聚焦（tabindex）', /class="map-canvas[^"]*" style="[^"]*"[^>]*tabindex="0"/.test(html) || /tabindex="0"/.test(html));
-    ok('★ 方向键 / Home 已绑（键盘平移）', /addEventListener\('keydown'[\s\S]{0,320}ArrowLeft/.test(uisrc) && /Home'\)\s*\{\s*centerMapOnHere/.test(uisrc));
+    /* 方向键平移保留；Home（回到我）随那颗按钮一起撤了 */
+    ok('★ 方向键已绑（键盘平移）', /addEventListener\('keydown'[\s\S]{0,320}ArrowLeft/.test(uisrc));
+    ok('　Home 键已撤（它与被删的「回到我」是同一件事）', !/k === 'Home'/.test(uisrc));
   }
 
   console.log('===== ④ CSS 契约 =====');
   ok('★ .map-canvas 的 max-width / max-height 成对（老铁律）',
     /\.map-canvas[^}]*max-width:\s*100%[^}]*max-height:\s*\d/.test(css));
   ok('★ 拖拽有 panning 光标态（老契约）', /\.map-canvas\.panning/.test(css));
-  /* 🔴 2026-10-08 口径改动：主人要求「把地块里的方块框删掉，用纯地名显示」
-     ⇒ 未探索地块那层**斜纹底**随方块框一起退休了（没有底色可印斜纹了）。
-     它原本要守的是「不能靠把名字涂透明来做迷雾」——这条精神还在，
-     换成断「未探索地块仍给字色（不是透明）+ 只是压暗一档」。 */
-  ok('★ 未探索地块仍显示名字（只压暗一档，不做迷雾）',
-    /\.map-node\.unknown \.mn-name[^}]*color:\s*var\(--ink-4\)/.test(css)
-    && !/\.map-node\.unknown \.mn-name[^}]*color:\s*transparent/.test(css));
+  /* 🔴 2026-10-08 口径改动：主人要求「把地块里的方块框删掉，用纯地名显示」。
+     🔴 2026-10-12 又添一条：「把地图界面所有灰色字体的地名变成已探索后的亮白色」
+        ⇒ 连「未探索压暗一档」也没了，**所有地块名同色**（--ink-1）。
+     原来这条守的是「未探索仍显示名字、只压暗一档，不做迷雾」——
+     精神（不做迷雾）没变，但现在连那一档压暗都取消了，
+     所以改断「名字用最亮那档墨色 + 没有任何按状态分色的规则」。 */
+  ok('★ 地块名一律亮色（主人要求所有地名都一样亮，不做明暗分级）',
+    /\.map-node \.mn-name[^}]*color:\s*var\(--ink-1\)/.test(css));
+  ok('★ 没有按「去过/没去过」分字色的规则了（分色就说明这条没改到位）',
+    !/\.map-node\.(known|unknown|reach)\s+\.mn-name/.test(css)
+    && !/\.map-node\.dim\s+\.mn-name/.test(css));
   ok('　地块没有方块框了（无边框、无底色）',
     /\.map-node \{[\s\S]{0,200}border:\s*none/.test(css)
     && /\.map-node \{[\s\S]{0,200}background:\s*transparent/.test(css));
@@ -184,6 +205,28 @@ async function renderMap(view) {
     /\.mrn-name[^}]*white-space:\s*nowrap/.test(css));
   ok('★ 悬浮工具条用实心底（--solid），不用半透明纸', /\.map-tools[^}]*background:\s*var\(--solid/.test(css));
   ok('　没有把 terrain 装饰画回来', html.indexOf('map-terrain-layer') < 0 && html.indexOf('class="map-terrain ') < 0);
+
+  console.log('===== ⑤ 2026-10-12 主人一批删减：区域名 / 彩色框 / 虚线 =====');
+  /* 这一节是**反向判据**：主人让删的东西，守卫要盯着它真的不在，
+     否则下次谁把它加回来都没人拦。 */
+  ok('★ 区域/城市名不再画（地图上只留地块自己的名字）', html.indexOf('mrb-label') < 0);
+  ok('★ 区域底色框不再上色（元素在，但只是一块看不见的定位锚）',
+    html.indexOf('map-region-box') >= 0 && !/class="map-region-box"[^>]*background:/.test(html));
+  ok('★ 定位锚的 data-cx/cy 还在（「点区域名平移视角」靠它，删了就静默失灵）',
+    /data-region-box="[^"]*"[^>]*data-cx="\d/.test(html));
+  ok('★ CSS 里 .map-region-box 已无边框无底色',
+    /\.map-region-box\s*\{[^}]*border:\s*0[^}]*background:\s*none/.test(css));
+  ok('★ 所有走廊连线都是虚线（主人 10-12：连线换成虚线形式）',
+    /\.map-edges\s+\.edge\s*\{[^}]*stroke-dasharray/.test(css));
+  ok('★ 跨区那条兜底虚线整段下线（没有 edge-bridge 了）',
+    html.indexOf('edge-bridge') < 0 && !/\.map-edges\s+\.edge-bridge\s*\{/.test(css));
+  /* 区域模式＝世界地图裁掉别的区域：两页格距必须一致（主人 10-12 的原话）。
+     判据落在**源码**上：全文件只允许出现一处 `MAP_CELL = Math.round(...)`。
+     两处就是两套尺寸，两页又会「长得不一样」。 */
+  {
+    const cells = (uisrc.match(/MAP_CELL = Math\.round\(/g) || []).length;
+    ok('★ 两种视野共用同一处格距赋值（区域图＝世界图裁掉别处）', cells === 1, cells + ' 处');
+  }
 
   console.log('');
   console.log('地图 UI 重设计：' + pass + ' 通过 / ' + fail + ' 失败');

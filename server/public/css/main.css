@@ -212,39 +212,22 @@ body::before {
 #bg-art .m3, #stage-art .m3 { right: -12%; width: 58%; height: 50%; background: linear-gradient(180deg, rgba(214, 206, 186, .10), rgba(214, 206, 186, .01)); }
 /* 月亮。主人 2026-10-11：「右上角月亮图案透明度调低一点，
    或与正好在月亮上的白字做出区分，都是白的有点难看清」。
-   它就在右上角，而那一带正好压着顶栏 / 房间信息那一行浅色字 —— 两团白糊在一起。
    调低透明度：月亮留一个「夜里有月」的意思就够了，不必抢戏。
    （再叠上外层 `opacity: .5`，实际峰值约 0.26。）
-
-   ⚠️ 月亮有**两处**：主菜单那轮（`#bg-art .moon`，铺满视口的那层）
-      与游戏里「春 · 辰时 · 晴」那一行上的那一轮（`#room-panel .room-moon`）。
-      两者共用这一条渐变配方，只有定位与尺寸各自写（见下）。 */
-#bg-art .moon, #room-panel .room-moon {
+   ★ 2026-10-12 主人：「把游戏内屏幕右上角月亮回滚」——
+     游戏里「春 · 辰时 · 晴」那一行上的那一轮（原 `#room-panel .room-moon`）
+     **整块撤掉**了。所以这里只剩主菜单这一轮，选择器也跟着从
+     「两条并列」退回单条 —— 留着 `#room-panel .room-moon` 只会让人以为那轮还在。 */
+#bg-art .moon {
   position: absolute; right: 12%; top: 10%; width: 96px; height: 96px; border-radius: 50%;
   background: radial-gradient(circle at 36% 34%,
     rgba(255, 253, 244, .64), rgba(240, 232, 210, .36) 62%, rgba(226, 215, 186, .20));
   box-shadow: 0 0 54px 14px rgba(200, 180, 130, .16);
 }
-/* ---- 游戏里那一轮：**正好落在「春 · 辰时 · 晴」上**（主人 2026-10-11）----
-   位置不能再按视口百分比猜，要贴着那行字本身：
-     · 那行字是 `.room-head` 里的 `.room-env`（`margin-left:auto` 顶到行右端），
-       所以「行右端」就是「字右端」；
-     · 月亮圆心落在字的中段 ⇒ 右缘从行右端往左退 `18px`（半个 ~48px 字宽再让一点）；
-     · 竖直方向对齐行中线（`top:50%` + `translateY(-50%)`）。
-   尺寸收到 48px：这一行本身只有 ~22px 高，48px 是「完整看见 + 盖住那行字」
-   的极限，再大就会被 `#main { overflow:hidden }` 切掉上边。
-   z-index 各就各位：月亮 0、行的文字 1 —— 装饰层绝不能盖住字。 */
-.room-head { position: relative; }
-.room-head .room-name, .room-head .room-region, .room-head .room-env { position: relative; z-index: 1; }
-#room-panel .room-moon {
-  right: 18px; top: 50%; transform: translateY(-50%);
-  width: 48px; height: 48px; z-index: 0; pointer-events: none;
-  box-shadow: 0 0 30px 8px rgba(200, 180, 130, .16);
-}
-/* 月亮现在**正好**压在这行字后面 ⇒ 给它一点描边阴影。
-   不然就是主人早就点过的那个毛病：「都是白的有点难看清」。 */
-.room-env { text-shadow: 0 1px 3px rgba(0, 0, 0, .55), 0 0 3px rgba(0, 0, 0, .35); }
-html.theme-light .room-env { text-shadow: 0 1px 3px rgba(255, 255, 255, .95), 0 0 3px rgba(255, 255, 255, .85); }
+/* 游戏内那一轮月亮连同它的定位、`.room-head` 的 position/z-index、
+   以及为「白字压白月」加的 `.room-env` 描边阴影，都在这次回滚里一并撤掉了
+   （它们是同一次改动加进来的，留着就是没人用的死样式）。
+   注：`.room-head` 那几条 z-index 其实无害，但既然月亮没了就没有存在理由。 */
 #bg-art .mist, #stage-art .mist {
   position: absolute; left: 0; right: 0; bottom: 0; height: 30%;
   background: linear-gradient(180deg, transparent, rgba(23, 20, 15, .92));
@@ -543,11 +526,17 @@ html.theme-light .room-env { text-shadow: 0 1px 3px rgba(255, 255, 255, .95), 0 
 
 /* 任务面板的追踪按钮（主人 2026-10-08）：
    没追 = 素按钮；正追 = 金底（跟大框那道金边对得上，一眼看出「大框里就是它」）。 */
+/* 追踪按钮。★ 2026-10-12 主人：「把追踪按钮颜色改成亮白色吧」。
+   ⇒ 文字一律用**最亮那档墨色**（`--ink-1`，暗色主题下就是暖白 #f2ede1）。
+     原来它是「暗金」体系（常态 --ink-3、hover 金、正追着时金底金字），
+     在一屏金字/玉字的任务卡里不够跳 —— 主人一眼没找着那颗按钮。
+     现在常态就是亮白，hover 与「取消追踪」态用**底**来区分（不变字号、不换字色），
+     这样「字亮」和「这一下会取消」两件事互不打架。 */
 .q-track { padding: 4px 12px; font-size: 12.5px; font-family: var(--font); border-radius: 4px;
-  border: 1px solid var(--line-2); background: var(--card-2); color: var(--ink-3);
+  border: 1px solid var(--line-2); background: var(--card-2); color: var(--ink-1);
   cursor: pointer; transition: all .14s; }
-.q-track:hover { border-color: var(--gold); color: var(--gold-d); }
-.q-track.on { background: var(--tint-gold); border-color: var(--line-gold); color: var(--gold-d); font-weight: 600; }
+.q-track:hover { border-color: var(--line-gold); background: var(--tint-gold); }
+.q-track.on { background: var(--tint-gold); border-color: var(--line-gold); color: var(--ink-1); font-weight: 600; }
 .q-track:disabled { opacity: .55; cursor: default; }
 .q-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 .story-body { display: flex; flex-direction: column; gap: 5px; }
@@ -604,6 +593,11 @@ html.theme-light .room-env { text-shadow: 0 1px 3px rgba(255, 255, 255, .95), 0 
 .log-line.warn { color: var(--red-2); }
 .log-line.hint { color: var(--gold); font-size: 13px; }
 .log-line.say { color: var(--blue); }
+/* 剧情标签：压在剧情那段灰字**上方**（主人 2026-10-08：「那些灰字上方要写有剧情标签」）。
+   只给带 `story` 标记的行打（剧情里 NPC 的言行）；房间氛围的路人小动作没有它。 */
+.log-tag { display: inline-block; margin: 0 0 3px; padding: 0 6px; border-radius: 3px;
+  font-family: var(--font-ui); font-size: 10.5px; letter-spacing: .12em; line-height: 1.6;
+  color: var(--gold-d); background: var(--tint-gold); border: 1px solid var(--line-gold); }
 .log-line.me { color: var(--purple); font-style: italic; }
 .log-line.story { color: var(--ink); padding-left: 10px; border-left: 3px solid var(--line); }
 .log-line.narrate { color: var(--ink-3); font-style: italic; }
@@ -847,6 +841,15 @@ html.theme-light .room-env { text-shadow: 0 1px 3px rgba(255, 255, 255, .95), 0 
 .modal-foot::-webkit-scrollbar { height: 5px; }
 .modal-foot::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
 .modal-foot .btn-ink { min-width: auto; padding: 8px 20px; font-size: 14px; }
+/* 弹窗第二排：只放一个「关闭」之类的退出按钮。
+   ★ 2026-10-12 主人：「npc互动页面最下方加一个关闭按钮」。
+   独立一排、居中、不带上边框（视觉上跟上一排合成一个底栏，而不是两块）。
+   ⚠️ 必须把它自己那条 `>*:first-child { margin-left:auto }` 顶掉 ——
+      那条是为「按钮排不下时从左边开始滚」设计的，在这一排放着会把
+      唯一的按钮推到最右边，跟「居中」的意图打架。 */
+.modal-foot-2 { justify-content: center; border-top: 0; padding-top: 0; }
+.modal-foot-2 > *:first-child { margin-left: 0; }
+.modal-foot-2 .btn-ink { min-width: 132px; }
 .modal-text { font-family: var(--font); font-size: 14.5px; line-height: 1.8; color: var(--ink-2); }
 /* 沉浸式开场（楔子）叙事排版 */
 .intro-p { font-family: var(--font); font-size: 14.5px; line-height: 1.95; color: var(--ink-2); margin: 0 0 12px; text-indent: 2em; }
@@ -1027,16 +1030,9 @@ html.theme-light .room-env { text-shadow: 0 1px 3px rgba(255, 255, 255, .95), 0 
 .mp-bar { flex: 0 0 110px; height: 6px; background: var(--line-2); border-radius: 3px; overflow: hidden; }
 .mp-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--jade), var(--gold)); border-radius: 3px; transition: width .35s ease; }
 
-.map-legend { display: flex; gap: 15px; margin-bottom: 9px; font-size: 12.5px; color: var(--ink-3); flex-wrap: wrap; align-items: center; }
-.map-legend .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
-.map-legend .ml-tip { margin-left: auto; color: var(--ink-4); font-size: 12px; }
-.dot-here { background: var(--red); }
-.dot-near { background: var(--gold); }
-.dot-reach { background: var(--reach); }   /* 写死过一个米黄 —— 浅纸下那颗点几乎看不见 */
-.dot-known { background: var(--jade); }
-.dot-unknown { background: var(--line); }
-/* 图例里的「出界方向」：跟地图上的路牌一样用虚线，一眼对得上 */
-.dot-edge { background: transparent; border: 1px dashed var(--jade); }
+/* 地图图例（.map-legend 与那几颗 .dot-*）★ 2026-10-12 主人：
+   「把地图界面的『你在这里』与『未探索』删了」—— 最后两条也没了，整块图例不复存在。
+   样式一并删掉：留着一堆没人用的选择器，下次改的人会以为界面上还有这东西。 */
 
 /* 连续大地图：网格底纸 + 粗走廊 + 密排方块，看起来是一整张图
    ⚠️ max-width 与 max-height 必须**成对**出现（主人报的「手机端地图只能上下滑、
@@ -1069,20 +1065,23 @@ html.theme-light .room-env { text-shadow: 0 1px 3px rgba(255, 255, 255, .95), 0 
   border-radius: 4px;
 }
 .map-edges { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 1; }
-.map-edges .edge { fill: none; stroke-linecap: round; }
+/* ★ 2026-10-12 主人：「把两个地块之间的连线换成虚线形式」。
+   于是**所有**走廊连线都是虚线（原来是实线，只有跨区那条兜底折线画虚线）。
+   注意 dash 的节奏要跟线的粗细配套：虚线太密会糊成一条实线，太疏又像断掉。
+   原来给跨区折线用的 `3 7` 太稀，配 6~7px 的粗线会碎，改成 `7 6`。 */
+.map-edges .edge { fill: none; stroke-linecap: round; stroke-dasharray: 7 6; }
 .map-edges .edge-dim { stroke: var(--edge-dim); stroke-width: 7; }
 .map-edges .edge-known { stroke: var(--edge-known); stroke-width: 6; }
-/* 跨区域「桥」（2026-10-11 主人：世界地图要首尾相连，合并成一整张）：
-   画成**细虚线**，一眼能跟区域内部的实心走廊区分开 ——
-   实线是「抬脚就到」，虚线是「这道口子通到另一个区域」。 */
-.map-edges .edge-bridge { stroke-dasharray: 3 7; stroke-width: 3; opacity: .8; }
-.map-edges .edge-bridge.edge-known { stroke-width: 3.5; opacity: 1; }
+/* （`.edge-bridge` 的样式随「删掉所有虚线折线」一起下线：跨区那条长连线
+   已按主人要求整段不画，只剩相邻地块之间的走廊。详见 ui.js 的 4b 段注释。） */
 
-.map-region-box { position: absolute; border: 1.5px solid; border-radius: 8px; z-index: 0; pointer-events: none; }
-/* 城市/区域名：★ 画在**外框之上、框外**（主人 2026-10-10 亲报「名字被框挡住 → 移到框外」）。
-   left/top 由 mapHtml 内联写入（框顶边再上移一个行高），这里只保证层级最高、不被地块盖。
-   原来它在 .map-region-box（z-index:0 层叠上下文）里，被走廊(1)/方块(2) 盖住 → 看着像被挡。 */
-.mrb-label { position: absolute; z-index: 6; font-size: 11px; font-family: var(--font); background: var(--card-2); padding: 0 4px; border-radius: 3px; letter-spacing: .5px; white-space: nowrap; pointer-events: none; }
+/* 区域底色框 —— ★ 2026-10-12 主人：「把不同区域那些花花绿绿的背景框删了」。
+   所以底色/描边全去掉（`border:0` + `background:none`）。
+   ⚠️ 元素本身**必须留着**：它是「点区域名把视角平移过去」的坐标锚点，
+      平移是从 DOM 反读 `data-cx/cy` 的（见 ui.js 的 centerMapOnRegion）。
+      把这条规则整个删掉，那些按钮会静默失灵（点了没反应）。 */
+.map-region-box { position: absolute; border: 0; background: none; z-index: 0; pointer-events: none; }
+/* 区域/城市名（.mrb-label）已按主人 2026-10-12 要求整体下线，样式一并删除。 */
 
 /* 区域边界路牌：「往这边继续走 → XX」（主人 2026-10-11）。
    贴在两块区域之间那道缝里，比区域名（z-index:6）再高一层，免得被邻块的区域名压住。
@@ -1108,12 +1107,23 @@ html.theme-light .room-env { text-shadow: 0 1px 3px rgba(255, 255, 255, .95), 0 
 /* 地块 = **纯地名**（主人 2026-10-08：「把地块里的方块框删掉，用纯地名显示，
    做成屏幕上那九宫格地名一样的形式」）。
    ⇒ 边框、底色、顶色条一律去掉，一格的面积让给名字；状态靠**字色/字重**区分：
-        你在这里 → 红字加粗 + 下划线（没有框了，总得让人一眼找到自己）
-        一步可达 → 金字（可点，hover 放大）
-        去过     → 玉色
-        附近     → 墨色
-        没去过   → 淡墨（没有迷雾，名字照显示）
+        你在这里 → 黄字加粗 + 下划线（2026-10-12 主人：从红字改成黄字；
+                    没有框了，总得让人一眼找到自己）
+        去过     → 墨色（.known）
+        没去过   → 淡墨（.dim，没有迷雾，名字照显示）
+   ★ 2026-10-12 主人：「把地图上地块名字的黄色字体呈现与可点击前往删了」——
+     「一步可达」的**金字**与**点一下走过去**（`.near` 与 `data-go`）双双下线，
+     地图不再是「快捷移动面板」，就是一张看得懂的地图。
    画布上那张网格底纸还在，所以「一格一地」仍然看得出来。 */
+/* ★ 2026-10-12 主人：「把地图界面所有灰色字体的地名变成已探索后的亮白色」。
+   ⇒ 地块名不再分「去过 / 没去过」两档颜色，**一律用最亮的那一档墨色**
+      （`--ink-1`，暗色主题下就是暖白 #f2ede1）。
+   为什么这么做而不是「把去过那档的颜色抄给没去过」：主人要的是「都亮起来」，
+   而原来「去过」用的是玉色（--jade，偏绿），照抄过去得到一图绿字，不是他要的亮白。
+   现在地图上唯一的颜色差异是**你所在的那一格**（金底加粗 + 下划线），
+   别的一律同色 —— 这也让上一批删掉图例之后，地图仍然一眼能找到自己。
+   ⚠️ 同时删掉 `.reach` / `.known` / `.unknown` 三条字色和 `.dim` 的压暗：
+      留着的话，「没去过」那批还是灰的，等于这条没改。 */
 .map-node { position: absolute; padding: 0; box-sizing: border-box;
   display: flex; align-items: center; justify-content: center;
   border: none; background: transparent; box-shadow: none;
@@ -1122,19 +1132,13 @@ html.theme-light .room-env { text-shadow: 0 1px 3px rgba(255, 255, 255, .95), 0 
 /* 名字下面垫一层画布底色做描边：没有方块托底了，字压在走廊上也得看得清
    （深色/浅色主题都用同一个变量，别写死白色）。 */
 .map-node .mn-name { text-align: center; word-break: break-all; padding: 0 1px;
-  color: var(--ink-3); line-height: 1.05;
+  color: var(--ink-1); line-height: 1.05;
   text-shadow: 0 0 3px var(--card-2), 0 0 3px var(--card-2), 0 0 2px var(--card-2); }
 .map-node.here { z-index: 5; }
-.map-node.here .mn-name { color: var(--red); font-weight: 700;
+.map-node.here .mn-name { color: var(--gold); font-weight: 700;
   text-decoration: underline; text-underline-offset: 2px; }
-.map-node.near { cursor: pointer; z-index: 4; }
-.map-node.near .mn-name { color: var(--gold); font-weight: 600; }
-.map-node.near:hover { transform: scale(1.18); z-index: 9; }
-.map-node.near:hover .mn-name { color: var(--gold-d); }
-.map-node.reach .mn-name { color: var(--ink-2); }
-.map-node.known .mn-name { color: var(--jade); }
-.map-node.unknown .mn-name { color: var(--ink-4); }
-.map-node.dim .mn-name { opacity: .7; }
+/* `.map-node.near` 的整套样式（金字 / pointer / hover 放大）随「删掉可点击前往」下线。 */
+/* `.map-node.reach / .known / .unknown / .dim` 的差异色随「一律亮白」一起下线。 */
 
 .map-quick { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 12;
   display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
@@ -1184,6 +1188,26 @@ html.theme-light .room-env { text-shadow: 0 1px 3px rgba(255, 255, 255, .95), 0 
 .mrn-title { font-size: 12.5px; color: var(--ink-3); font-weight: 600; }
 .mrn-sub { font-size: 11.5px; color: var(--ink-4); }
 .mrn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 6px; }
+
+/* ---------- 飞行面板（主人 2026-10-12）----------
+   「在屏幕下方快捷界面增加一个『飞行』……列出所有玩家去过的区域名称，
+    点击即可去该区域的入口处。」
+   比地图里那份「地名索引」宽一号：那是密集索引里的一个小胶囊，
+   这是**一个独立面板**，目标是「一眼扫到、一下就点」。 */
+.fly-wrap { display: flex; flex-direction: column; gap: 10px; }
+.fly-tip { font-size: 12.5px; color: var(--ink-3); }
+.fly-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); gap: 8px; }
+.fly-btn { display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+  text-align: left; padding: 10px 13px; border-radius: 7px;
+  border: 1px solid var(--line-2); background: var(--surface-3);
+  color: var(--ink-1); font-family: var(--font); font-size: 14.5px; cursor: pointer;
+  transition: border-color .15s, background .15s; }
+.fly-btn:hover { border-color: var(--line-gold); background: var(--tint-gold); }
+/* 你正待着的那个区域：标记一下（点了也白点，人就在这儿） */
+.fly-btn.cur { border-color: var(--line-gold); background: var(--tint-gold); }
+.fly-btn .fly-sub { font-size: 12px; color: var(--ink-3); }
+.fly-empty { font-size: 13px; color: var(--ink-3); line-height: 1.9; }
+
 .mrn-empty { font-size: 12.5px; color: var(--ink-4); padding: 2px 0 4px; }
 .mrn-btn { display: flex; align-items: center; gap: 5px; min-width: 0;
   padding: 5px 11px; border-radius: 14px; border: 1px solid var(--line-2);

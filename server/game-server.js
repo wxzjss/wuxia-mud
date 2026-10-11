@@ -428,8 +428,21 @@ async function handleApi(engine, req, res, pn, query, preset) {
            其余面板拿到的 view 不带 map —— 前端 `afterAction` 会沿用上一份地图，
            地图数据是「已探索到哪」的快照，晚一代不影响面板点格子。 */
       case 'view': {
-        const wantMap = String((json_body && json_body.panel) || query.panel || '').toLowerCase() === 'map';
+        /* ⚠️ 这份名单**必须**跟「真的会用到 v.map 的面板」对齐：
+           少一个 → 那个面板的视图里没有地图数据，前端只能拿上一份缓存或渲染成空，
+           而且**不报错**（静默退化）。2026-10-12 加「飞行」面板时同步加进来了。 */
+        const wmPanel = String((json_body && json_body.panel) || query.panel || '').toLowerCase();
+        const wantMap = wmPanel === 'map' || wmPanel === 'fly';
         return json(res, 200, { ok: true, view: engine.view({ map: wantMap }) });
+      }
+
+      /* 「请教武学」面板（主人 2026-10-08）：列出这个人的**所有**武学 + 能不能教。
+         `api.view(panel)` 只吃一个 panel 名，传不了「请教谁」，所以单开一条。 */
+      case 'teach': {
+        const uid = (json_body && (json_body.uid || json_body.id || json_body.name)) || null;
+        const t = uid == null ? null : engine.teachView(uid);
+        if (!t) return json(res, 404, { ok: false, error: '这里没有这个人。' });
+        return json(res, 200, { ok: true, teach: t });
       }
 
       /* NPC 详情画像（前端「细看此人」的新界面）。

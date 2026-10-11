@@ -1,0 +1,25 @@
+{
+  "id": "demo_script",
+  "_wxTrace": "wxt-official-demo_script",
+  "name": "脚本示例（script.js 高级写法）",
+  "version": "1.0.0",
+  "author": "武侠行官方",
+  "category": "功能",
+  "desc": "演示 script.js：用几行 JavaScript 注册自己的指令、监听世界事件、记住玩家做过什么。json 管内容，script.js 管逻辑，两者可以混着用。",
+  "tags": ["功能", "脚本", "示例"],
+  "gameVersion": "1.0.0",
+  "items": [
+    {
+      "id": "demo_moyu_charm",
+      "name": "摸鱼符",
+      "type": "misc",
+      "price": 1,
+      "weight": 0,
+      "desc": "一张画得歪歪扭扭的符纸，据说是摸鱼摸出来的。揣着它，心里莫名踏实。"
+    }
+  ],
+  "meta": {
+    "playstyle": "轻松",
+    "note": "本 Mod 的内容只有一件小东西，逻辑全在 script.js 里。"
+  }
+}

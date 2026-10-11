@@ -204,6 +204,11 @@
       return await jfetch('/api/npc', { method: 'POST', body: JSON.stringify({ uid }) });
     },
 
+    /* 某个 NPC 的「请教武学」清单（点「请教武学」时开新界面，列出他所有武学） */
+    async teach(uid) {
+      return await jfetch('/api/teach', { method: 'POST', body: JSON.stringify({ uid }) });
+    },
+
     /* 某个任务的详情（点「接取任务」时先弹详情页，玩家看过再决定接不接） */
     async questPreview(qid) {
       return await jfetch('/api/quest', { method: 'POST', body: JSON.stringify({ qid }) });

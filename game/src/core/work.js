@@ -76,12 +76,13 @@ function work(world) {
   p.water = clamp(p.water - job.waterCost, 0, p.maxWater);
   p.money += job.wage;
   world.advanceTime(job.timeCost);
-  return {
-    ok: true, lines: [
-      { kind: 'story', text: `你在${room.name}里${job.name}，忙前忙后，好一阵操劳。` },
-      { kind: 'sys', text: `东家结算工钱，你赚了 ${job.wage} 文钱（饱食 -${job.foodCost}，饮水 -${job.waterCost}）。` },
-    ],
-  };
+  const wl = [
+    { kind: 'story', text: `你在${room.name}里${job.name}，忙前忙后，好一阵操劳。` },
+    { kind: 'sys', text: `东家结算工钱，你赚了 ${job.wage} 文钱（饱食 -${job.foodCost}，饮水 -${job.waterCost}）。` },
+  ];
+  /* 做活儿也在长见识（主人 2026-10-08 的「其他方式」之一，量小） */
+  try { require('./potential').grant(p, require('./potential').WORK_REWARD, wl, '闯练'); } catch (e) { }
+  return { ok: true, lines: wl };
 }
 
 /* ===================== 青楼 ===================== */

@@ -56,7 +56,11 @@ console.log('===== ① 岔路口的路牌 =====');
   /* 走进去真的看得到 */
   const r0 = w.movePlayerTo(p, sample.id, { silent: true });
   const view = engine.exec('look');
-  ok('走到那儿用「看」能看到路牌', /木牌/.test(txt(view)), sample.name);
+  /* 🔴 2026-10-12 口径改动：主人「把游戏里的路牌删了」。
+     路口木牌那句话不再往房间描述里灌（`observe.signpostFor` 本体留着，
+     上面几条直接测它的断言照旧有效 —— 函数还在，只是没接线）。
+     所以这里从「能看到」改成「看不到」。 */
+  ok('走到那儿用「看」**看不到**路牌（主人 10-12 要求删掉）', !/木牌/.test(txt(view)), sample.name);
 }
 
 console.log('===== ② 看人小动作 =====');

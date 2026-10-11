@@ -41,10 +41,28 @@
   /* ============================================================
    *  通用弹窗
    * ============================================================ */
-  function modal(title, bodyHtml, footHtml) {
+  /* 弹窗。
+   * `foot2Html` 是**第二排**按钮（默认没有）。
+   * ★ 2026-10-12 主人：「npc互动页面最下方加一个关闭按钮」——
+   *   单独一排而不是继续往 #modal-foot 里塞：那一条是横向滚动的 flex 行
+   *   （见 main.css 里 .modal-foot 的注释），塞进去要么被挤到最右、
+   *   要么把整排按钮顶得能左右滑。第二排独立、居中、贴底，一眼就是「退出」。
+   * ⚠️ 测试用的 stub DOM 里可能没有 #modal-foot2 —— 取不到就整段跳过，
+   *    不能让一个装饰性容器把面板渲染搞崩。 */
+  function modal(title, bodyHtml, footHtml, foot2Html) {
     $('modal-title').textContent = title || '';
     $('modal-body').innerHTML = bodyHtml || '';
     $('modal-foot').innerHTML = footHtml || '';
+    const f2 = $('modal-foot2');
+    if (f2) {
+      f2.innerHTML = foot2Html || '';
+      /* 用 classList 切显示：第二排是**可选的**，不切的话上一个弹窗
+         留下的「关闭」会跟着出现在不该有的面板底下（幽灵按钮）。 */
+      if (foot2Html) f2.classList.remove('hidden');
+      else f2.classList.add('hidden');
+    }
+    /* ⚠️ 这一行绝不能漏：忘了它，弹窗内容全都填好了、遮罩却还是 hidden ——
+       表现就是「点了按钮什么都没发生」（本项目最经典的症状）。 */
     $('modal-mask').classList.remove('hidden');
   }
   function closeModal() { $('modal-mask').classList.add('hidden'); }
@@ -377,7 +395,12 @@
     _hlRegistry = [];
     el.innerHTML = logLines.map((l, i) => {
       const cls = 'log-line ' + (l.type || 'plain');
-      return '<div class="' + cls + '" data-li="' + i + '">' + renderLogText(l, _hlRegistry) + '</div>';
+      /* 剧情标签（主人 2026-10-08：「那些灰字上方要写有剧情标签」）：
+         带 `story` 标记的行 = 剧情里 NPC 的言行（旁白正文在大框里），
+         在这段灰字**上方**压一行小标签，玩家一眼分得清「这句是剧情」还是「路人在动」。
+         房间氛围那些没有这个标记，不打标签。 */
+      const tag = l.story ? '<span class="log-tag">剧情</span>' : '';
+      return '<div class="' + cls + '" data-li="' + i + '">' + tag + renderLogText(l, _hlRegistry) + '</div>';
     }).join('');
     /* 日志里高亮的可交互名词 -> 弹出「能做什么」的中文菜单 */
     el.querySelectorAll('.hl').forEach(b => {
@@ -840,32 +863,87 @@
    *  ⚠️ `modal()` 里的 `data-cmd` 不会自动绑定（bindModal 只管关窗按钮），
    *     所以这里手动接一次 onclick —— 与面板那边 bindPanelActions 的做法一致。
    * ============================================================ */
-  function openQingjiao(n) {
-    const list = (n && n.teachList) || [];
-    let h = '';
-    if (!list.length) {
-      h = '<div class="modal-text">' + esc(n.name) + '摇摇头：「我这点本事，教不了人。」</div>';
-    } else {
-      h = '<div class="modal-text">点一门功夫，向' + esc(n.name) + '请教。' +
-        '（拜过师的，师父教徒天经地义；没拜师的，看他与你的交情，或者使钱。）</div>';
-      h += '<div class="qj-list">';
-      list.forEach(s => {
-        h += '<div class="qj-row' + (s.can ? '' : ' off') + '">' +
-          '<div class="qj-main"><span class="qj-name">' + esc(s.name) + '</span>' +
-          '<span class="qj-meta">' + esc(s.type || '') + (s.quality ? ' · ' + esc(s.quality) : '') + '</span></div>';
-        if (s.can) {
-          h += '<button class="op-btn" data-cmd="请教 ' + esc(n.name) + ' ' + esc(s.name) + '">请教</button>';
-        } else {
-          h += '<span class="qj-off">不可请教（' + esc(s.why || '') + '）</span>';
-        }
-        h += '</div>';
-      });
-      h += '</div>';
+  /* NPC 互动 →「请教武学」（主人 2026-10-08 升级）
+   *
+   * 主人原话：「NPC 互动页面的『请教武学』按钮点击后应该是**一个新界面**，
+   *   直接列出该 NPC 的**所有武学**名字按钮，每个武学名字下面/旁边有个『请教』按钮。
+   *   还有有些武学即便你点击请教了对方也不会教（非特殊情况比如被你绑进地牢里的）。」
+   *
+   * ⇒ 两点改动：
+   *   ① 数据**向后端要**（`api.teach` → `engine.teachView`）：场景快照会旧
+   *      （刚拜完师、好感刚涨、潜能刚花，快照都还是老样子），而且它不带潜能价与
+   *      「为什么不能教」。不让玩家对着过期数据点。
+   *   ② 每个武学一行一个「请教」按钮，点完**面板重开**（好学下一门，不用一遍遍翻菜单）；
+   *      不能教的**写明理由**（人被你绑着 / 门派传承 / 悟性不到 / 潜能不够…），
+   *      不静默、也不给一个点了没反应的死按钮。
+   */
+  async function openQingjiao(n) {
+    const uid = (n && (n.id || n.defId)) || (n && n.name) || '';
+    let t = null;
+    try {
+      const d = await api.teach(uid);
+      t = d && d.teach;
+    } catch (e) { t = null; }
+    /* 拉不到就退回场景里那份快照（宁可少点信息，也别让玩家点了没反应） */
+    if (!t) {
+      const list = (n && n.teachList) || [];
+      renderQingjiao({ npc: { name: n.name }, potential: 0, list }, n);
+      return;
     }
-    modal('向 ' + n.name + ' 请教', h, '<button class="btn-ink" onclick="WXUI.closeModal()">关 闭</button>');
-    const box = document.querySelector('#modal-body');
-    if (box) box.querySelectorAll('[data-cmd]').forEach(b => {
-      b.onclick = () => { closeModal(); doCmd(b.getAttribute('data-cmd'), { fromButton: true }); };
+    renderQingjiao(t, n);
+  }
+
+  function renderQingjiao(t, n) {
+    const npc = t.npc || {};
+    const name = npc.name || (n && n.name) || '他';
+    const list = t.list || [];
+    let h = '<div class="panel-note">' + esc(name) +
+      (npc.isMaster ? '　<b>你的师父</b>' : '　好感 ' + (npc.favor || 0)) +
+      '　你的潜能 <b>' + (t.potential || 0) + '</b>' +
+      (t.money != null ? '　身上 ' + t.money + ' 文' : '') + '</div>';
+    h += '<div class="modal-text hint-dim">请教要花<b>潜能</b>（品级越高、功夫越深，要得越多）；' +
+      '<b>自己练是不花的</b> —— 用「练武学」一遍遍磨。已会的功夫可以请他<b>点拨</b>，当场涨一截熟练度。</div>';
+    if (!list.length) {
+      h += '<div class="modal-text">' + esc(name) + '摇摇头：「我这点本事，教不了人。」</div>';
+    } else {
+      h += '<table class="data-table"><thead><tr><th>武学</th><th>品级</th><th>强度</th>' +
+        '<th>代价</th><th></th></tr></thead><tbody>';
+      list.forEach(x => {
+        const meta = (x.type || '') + (x.quality ? '　' + x.quality : '') +
+          (x.mode === 'up' ? '　已会 ' + (x.level || 0) + ' 级' : '');
+        let cost = '';
+        if (x.mode === 'up') {
+          cost = x.gain > 0
+            ? '潜能 ' + x.cost + '　可点到 ' + (x.level + x.gain) + ' 级（上限 ' + x.cap + '）'
+            : '已到他能指点的上限（' + x.cap + ' 级）';
+        } else {
+          cost = '潜能 ' + x.cost +
+            (npc.isMaster ? '（师门对折）' : ('　需好感 ' + x.favorNeed + (x.money ? '　或 ' + x.money + ' 文' : '')));
+        }
+        let btn = '';
+        if (x.ok) {
+          btn = '<button class="mini-btn" data-teach-skill="' + esc(x.name) + '" data-who="' + esc(name) + '">' +
+            (x.mode === 'up' ? '请教（+' + x.gain + ' 级）' : '请教') + '</button>';
+        } else {
+          const why = x.why || x.short || '眼下请教不了。';
+          btn = '<span class="qj-off">' + esc(why) + '</span>';
+        }
+        h += '<tr><td class="td-name">' + esc(x.name) + '<br><span class="hint-dim">' + esc(meta) + '</span></td>' +
+          '<td>' + esc(x.quality || '—') + '</td><td>' + (x.power != null ? x.power : '—') + '</td>' +
+          '<td>' + esc(cost) + '</td><td>' + btn + '</td></tr>';
+      });
+      h += '</tbody></table>';
+    }
+    modal('请教武学 · ' + name, h, '<button class="btn-ink small" onclick="WXUI.closeModal()">关 闭</button>');
+    /* 点一条 → 请教 → 面板重开（连着学几门不用来回翻；也顺手刷新潜能与状态） */
+    document.querySelectorAll('#modal-body [data-teach-skill]').forEach(b => {
+      b.onclick = async () => {
+        const who = b.getAttribute('data-who') || '';
+        const sk = b.getAttribute('data-teach-skill') || '';
+        b.disabled = true;
+        await doCmd('请教 ' + who + ' ' + sk, { fromButton: true });
+        openQingjiao({ name: who, id: who });
+      };
     });
   }
 
@@ -980,7 +1058,14 @@
       (pr.drain ? '<button class="btn-ink" id="npc-prof-drain"' + (pr.drain.can ? '' : ' disabled') + '>采 补</button>' : '') +
       (pr.isDisciple ? '<button class="btn-ink" id="npc-prof-teach">传 功</button>' : '') +
       /* 门内争位：同门里位次比你高一位的那位，贡献够就能发起挑战（主人 2026-10-08）。 */
+      /* 门内争位：同门里位次比你高一位的那位，贡献够就能发起挑战（主人 2026-10-08）。 */
       (pr.challenge ? '<button class="btn-ink" id="npc-prof-challenge"' + (pr.challenge.can ? '' : ' disabled') + '>挑 战</button>' : '') +
+      /* ⚠️ 这一排**没有**「关闭」了 —— 它挪到了最下面单独一排
+         （主人 2026-10-12：「npc互动页面最下方加一个关闭按钮」）。
+         这排按钮最多能到 8 个（细看此人），本来就是横着滚的，
+         再加一颗「关闭」会跟别的一起被滚出去，等于没有。 */
+      '',
+      /* 第二排（贴底、居中）：只有「关闭」这一颗。 */
       '<button class="btn-ink" onclick="WXUI.closeModal()">关 闭</button>');
     /* 底部两个快捷动作：复用既有指令，不另起一套 */
     const lk = $('npc-prof-look');
@@ -997,7 +1082,9 @@
     const bs = $('npc-prof-baishi');
     if (bs) bs.onclick = () => { closeModal(); doCmd('拜师 ' + pr.name, { fromButton: true }); };
     const ak = $('npc-prof-ask');
-    if (ak) ak.onclick = () => { closeModal(); doCmd('请教 ' + pr.name, { fromButton: true }); };
+    /* 主人 2026-10-08：点「请教」要开**新界面**列出他所有武学（一门一个「请教」按钮），
+       而不是发一条指令、让玩家在日志里读一长串清单。 */
+    if (ak) ak.onclick = () => { const who = pr.id || pr.name; closeModal(); openQingjiao({ id: who, name: pr.name }); };
     const cb = $('npc-prof-challenge');
     if (cb) {
       cb.onclick = () => {
@@ -1583,6 +1670,11 @@
     } else if (name === 'practice') {
       title = '练武学';
       html = practiceHtml(v);
+    } else if (name === 'fly') {
+      /* 飞行（主人 2026-10-12）：屏幕下方快捷键「飞行」开的就是这个。
+         列出去过的区域，点一下落到该区域入口 —— 实现在 flyHtml。 */
+      title = '飞行';
+      html = flyHtml(v);
     } else if (name === 'auction') {
       title = '拍卖行';
       html = auctionHtml(v);
@@ -1875,8 +1967,11 @@
        否则顶栏修好了、这个「状态一览」面板还印 99.9187） */
     h += kv('饱食', fmt1(p.food) + ' / ' + fmt1(p.maxFood));
     h += kv('饮水', fmt1(p.water) + ' / ' + fmt1(p.maxWater));
-    /* 潜能已废除（2026-10-11）：面板不再显示这个数。
-       原来它与「等级/经验」同栏，三个都是武学重制后的残留；等级/经验仍参与显示，先留着。 */
+    /* 潜能（2026-10-08 主人接回来，并要求「希望状态里能看到潜能多少」）：
+       它是**向人学东西的门槛** —— 请教（学会一门 / 请人点拨熟练度）要花它，
+       自己练一点都不花。所以得摆在显眼处，玩家才知道自己攒到哪了。
+       ⚠️ `kv()` 会对值做 esc()，**别往里塞 HTML**（会原样显示成尖括号）。 */
+    h += kv('潜能', (p.potential || 0) + ' 点（请教要用）');
     h += kv('银两', p.money + ' 文');
     h += kv('杀气', p.karma);
     /* 声望是「键→ 数值」的对象（门派名/恶名等动态键），直接丢给 kv 会变 [object Object] */
@@ -2480,10 +2575,15 @@
        （章次 + 剧情 + 目标 + 进度条），不铺开全部章节；
        要看完整流程，点卡片底部那个按钮去「新手教程」面板（那边才是全的）。
        两份内容都来自后端同一份 guide 数据，不在这里另算。 */
-    /* 追踪按钮（主人 2026-10-08）：
-         · 没追这条 → 「追踪」，点了大框换成这桩事；
-         · 正追这条 → 「取消追踪」，点了大框连任务一起收起来。
-       判定读 `v.track`（后端 `p.track` 的原样下发），前端不自己记状态。 */
+    /* 追踪按钮（主人 2026-10-08，2026-10-12 合并）：
+         ★ 主人：「把追踪与取消追踪合到一起吧」。
+         ⇒ 后端合成**一条** `追踪 <任务>`，点两次就是「追 → 不追」；
+           所以这里两态发的是**同一条指令**，文字仍按下发状态换（追踪 / 取消追踪），
+           让玩家知道这一下会发生什么。
+           以前两态发的是两条不同指令（`追踪 x` / `取消追踪`），后端也是两段实现 ——
+           那种「同一个动作两份代码」正是改了这头忘那头的地方（本项目的老坑）。
+         ⚠️ `data-on` 仍要留着：它现在是**给玩家看的标签依据**，
+           不再是「决定发哪条指令」的依据。判定读 `v.track`（后端 `p.track` 原样下发）。 */
     const trackBtn = q => {
       const id = q.isTutorial ? '__newbie__' : (q.id || '');
       if (!id) return '';
@@ -2710,10 +2810,15 @@
       if (typeof global !== 'undefined' && global && typeof global.innerHeight === 'number') vh = global.innerHeight;
     } catch (e) { vw = 0; vh = 0; }
     const NARROW = vw > 0 && vw < 640;
-    /* 缩放档位（画布右上角工具条切换）。抽取环境里没有 mapZoom → 退回 1。 */
+    /* 缩放档位（画布右上角工具条切换）。抽取环境里没有 mapZoom → 退回 1。
+       ⚠️ 上限 2.4 与 bindPanelActions 里那颗 ＋ 按钮的钳位**手动对齐** ——
+          超出了会被那条钳回 2.4，按钮却显示成"还能再点"，两边就打起来了。
+       为什么从 1.4 抬到 2.4：主人 2026-10-12 要求「当前区域地图＝世界地图删去其他区域」，
+       于是区域模式不再按弹窗尺寸自动放大格距（下面那段 fitCell 已删），
+       桌面端小区域就只有基础格距 —— 想看清只能靠自己放大，± 的范围得给够。 */
     let z = (typeof mapZoom === 'undefined') ? 1 : Number(mapZoom);
     if (!(z > 0)) z = 1;
-    const ZMIN = 0.7, ZMAX = 1.4;
+    const ZMIN = 0.7, ZMAX = 2.4;
     z = Math.min(ZMAX, Math.max(ZMIN, z));
     let MAP_CELL = Math.round((NARROW ? 52 : 30) * z);   // 每格边长（含走廊）
     const MAP_PAD = NARROW ? 30 : 34;     // 画布留白
@@ -2769,23 +2874,19 @@
         b = scopeBox ? { minX: scopeBox.x, minY: scopeBox.y, w: scopeBox.w, h: scopeBox.h } : b0;
       }
     }
-    /* 🔴 主人 2026-10-08-00-02-57：「为什么电脑端看当前区域的地图是**放在左侧**、
-       而且**很小看不清**。」
-       两个原因，一起修：
-         ① 画布是块级元素，宽度写死成「区域紧包围盒」，比弹窗（min(760px, 94vw)）窄得多，
-            又没有 auto 外边距 ⇒ 靠左（CSS 里加 margin auto，见 .map-canvas）；
-         ② 格距写死 30px，小区域（比如 7x10）只有 278px 宽 —— 一个 760px 的弹窗里
-            摆一张 278px 的图，当然「很小」。
-       这里按弹窗**可用宽高**反推一个合适的格距（只用区域模式；天下全图格距保持原样，
-       不然整张图会撑到几万像素）。放大上限 4 倍，避免三间房的小区被拉成巨型方块。 */
-    if (sc === 'region' && curRegion && b.w > 0 && b.h > 0) {
-      const availW = Math.min(760, Math.round((vw || 1280) * 0.94)) - 46;
-      const availH = Math.round((vh || 800) * 0.58) - 24;
-      const fit = Math.min((availW - MAP_PAD * 2) / b.w, (availH - MAP_PAD * 2) / b.h);
-      const base = NARROW ? 52 : 30;
-      const fitCell = Math.max(base, Math.min(Math.round(fit), base * 2));
-      MAP_CELL = Math.round(fitCell * z);
-    }
+    /* 🔴 主人 2026-10-08：「为什么电脑端看当前区域的地图是**放在左侧**、而且**很小看不清**。」
+       当时的两个修法是：① 给 .map-canvas 加 `margin auto` 居中；② 区域模式按弹窗可用宽高
+       反推格距、把小区放大（fitCell）。
+       ★ 2026-10-12 主人：「把当前区域地图改为在世界地图的基础上删去其他区域的，
+       其他的原模原样复制粘贴即可」。
+       ⇒ ② 被主人推翻了，这里**删掉 fitCell**：区域模式不要再自己算一套格距。
+       它有副作用 —— 同一个区域在「当前区域」页里一格 60px、在「天下全图」页里一格 30px，
+       **两页长得不一样**，切来切去像换了两张地图。
+       现在两边共用同一个 MAP_CELL，区域模式 = 世界地图裁掉别的区域，是同一张图；
+       嫌小就点画布右上角的 ＋（缩放范围已放宽到 2.4 倍）。
+       ⚠️ ①（居中）**保留** —— 它跟"两页一致"不冲突，是被删那条的独立一半。
+       `b` 仍然是**本区域的紧包围盒**：那是"裁"的那一刀，不能省，
+       省了就变成一个大画布里缩着一个小区域。 */
     const ex = m.explore || { visited: 0, total: allRooms.length };
     const scopeCount = rooms.length;
     const scopeVisited = rooms.filter(r => r.visited).length;
@@ -2833,14 +2934,11 @@
       '　全江湖 ' + ex.visited + '/' + ex.total + '</span></div>';
     h += '</div>';
 
-    /* --- 图例（收成一行小字） --- */
-    h += '<div class="map-legend">' +
-      '<span><i class="dot dot-here"></i>你在这里</span>' +
-      '<span><i class="dot dot-near"></i>一步可达</span>' +
-      '<span><i class="dot dot-known"></i>去过</span>' +
-      '<span><i class="dot dot-unknown"></i>未探索</span>' +
-      '<span><i class="dot dot-edge"></i>出界方向</span>' +
-      '<span class="ml-tip">点「一步可达」的格子直接走过去；拖动可平移，右上角可缩放</span></div>';
+    /* --- 图例：★ 2026-10-12 主人「把地图界面的『你在这里』与『未探索』删了」，
+       最后两条也撤了，整块图例不复存在。
+       没有图例之后，「一眼看懂」的责任挪回地图本身：
+       名字全部是亮色（不分明暗，见下面地块那段注释），只有**你所在那一格**是金底加粗，
+       颜色差异只剩这一处，不需要解释。 */
 
     /* --- 区域名按钮：点一下就飞过去（主人 2026-10-10 要求）---
        世界地图铺得很大，手机屏翻着累；给一排「区域名」按钮，点谁看谁。
@@ -2861,10 +2959,13 @@
     const W = b.w * MAP_CELL + MAP_PAD * 2;
     const H = b.h * MAP_CELL + MAP_PAD * 2;
     h += '<div class="map-stage">';
-    /* 画布悬浮工具条（重设计新增）：全图铺得很开时，拖远了会找不到自己 ——
-       给一个「回到我」；格子太密/太疏时给 ± 缩放。原来这两件事都没办法做。 */
+    /* 画布悬浮工具条：只剩缩放。
+       ★ 2026-10-12 主人：「把世界地图的『回到我』那部分删了」。
+       删的是**这颗按钮**（连同它的键盘 Home 快捷键）——
+       开图自动把自己摆到视野正中那件事照旧（见 bindPanelActions 末尾的
+       centerMapOnHere 调用），那是修「地图和人物实际对不上」的，
+       和这颗手动按钮是两回事，别一起删了。 */
     h += '<div class="map-tools">' +
-      '<button class="mt-btn" data-map-tool="here" title="把视角拉回你所在的地块">回到我</button>' +
       '<button class="mt-btn mt-z" data-map-tool="zout" title="缩小，看得更远"' + (z <= ZMIN + 1e-6 ? ' disabled' : '') + '>－</button>' +
       '<span class="mt-zoom" title="当前缩放">' + Math.round(z * 100) + '%</span>' +
       '<button class="mt-btn mt-z" data-map-tool="zin" title="放大，看得更清"' + (z >= ZMAX - 1e-6 ? ' disabled' : '') + '>＋</button>' +
@@ -2882,8 +2983,6 @@
        `roomW/roomH` 才是房间实际占的尺寸（且房间就贴着框的左上角铺），
        换过来底色块就只框住有地块的地方。 */
     const boxes2 = scopeBox ? { [curRegion]: scopeBox } : boxes;
-    /* 区域/城市名**单独收集**，最后再画（见下方 regionLabels 的说明） */
-    let regionLabels = '';
     Object.keys(boxes2).forEach(k => {
       const box = boxes[k];
       /* 区域模式下这块底色跟着上面的**紧包围盒**走（不再用后端那个撑大的框），
@@ -2897,23 +2996,19 @@
       const top = (y0 - b.minY) * MAP_CELL + MAP_PAD;
       const bw = bw0 * MAP_CELL;
       const bh = bh0 * MAP_CELL;
-      /* data-cx/data-cy = 该框中心在画布内容坐标系里的像素位置（区域名按钮「飞过去」用） */
+      /* data-cx/data-cy = 该框中心在画布内容坐标系里的像素位置（区域名按钮「飞过去」用）。
+         ★ 2026-10-12 主人：「把不同区域那些花花绿绿的背景框删了」。
+         所以这里**不再给底色与描边**。但元素本身必须留着 ——
+         它是「点区域名把视角平移过去」的坐标锚点，而平移是**从 DOM 反读**的
+         （见 centerMapOnRegion）；把元素整个删掉，那排按钮会静默失灵（点了没反应）。
+         换句话说：现在它是个**看不见的定位框**，不再是装饰。 */
       h += '<div class="map-region-box" style="left:' + left + 'px;top:' + top + 'px;' +
-        'width:' + bw + 'px;height:' + bh + 'px;background:' + esc(box.color) + '14;border-color:' + esc(box.color) + '44"' +
+        'width:' + bw + 'px;height:' + bh + 'px"' +
         ' data-region-box="' + esc(k) + '"' +
         ' data-cx="' + (left + bw / 2) + '" data-cy="' + (top + bh / 2) + '"></div>';
-      /* ★ 城市/区域名**移到外框上方外侧**（主人 2026-10-10 亲报：
-         「城市地块被一个大框框住了，城市名字也在框中间被挡着，把城市名字往上移一下移到框外」）。
-         原来这个 span 在 `.map-region-box` 内部，而该 box 是 z-index:0 的层叠上下文，
-         于是名字被走廊(z-index:1)、房间方块(z-index:2) 层层盖住 —— 看着就像「被挡在框中间」。
-         现在把它拆出来、作为 box 的**兄弟节点**画在框顶边之上（top 再上移一个行高），
-         并以独立 z-index（.mrb-label 里配 6）压在所有地块/连线之上；
-         定位一律用内联 left/top，随便框在哪都不会落回框里。 */
-      const lblFont = NARROW ? 15 : 11;
-      regionLabels += '<span class="mrb-label" style="left:' + left + 'px;top:' +
-        (top - Math.round(lblFont * 1.5)) + 'px;color:' + esc(box.color) +
-        ';font-size:' + lblFont + 'px" data-region-box="' + esc(k) + '">' +
-        esc(box.name) + '</span>';
+      /* ★ 区域/城市名整体下线（2026-10-12 主人：「把世界地图的区域名称删了」）。
+         原来这里会在每块区域框的上方外侧压一个彩色地名（江南 / 桃花岛…）。
+         现在地图上只留**地块自己的名字**，区域名不再画。 */
     });
 
     /* 3) 地形装饰（树石山水…）——★ 主人第四轮要求**删掉**：
@@ -2956,46 +3051,17 @@
         else paths += seg;
       });
     });
-    /* 4b) 跨区域「桥」（2026-10-11 主人）——
-       原话：「我要的世界地图是所有地图首尾连接：如果这个 A 区域地图边缘的地块
-       再往前走一步就是 B 区域，那么这个 A 区域的地块就用线连接那块 B 区域的地块，
-       整个分散的世界地图合并成一个完整的大地图。」
-       后端 2026-10-11 把布局改成了「按真出口咬合 + 松弛」（见 maplayout.packRegions），
-       绝大多数跨区边现在**真的相邻**，走廊直接就连上了（相邻的边不会再进 bridges）；
-       剩下的这一小撮是几何上真摆不平的（一块区域被十几个邻居夹住），
-       才落到这里画虚线兜底。
-       ★ 主人随后又提了「连线画法有问题」：原来是**两点直连的斜线**，
-       横穿半个屏幕、还从别人家地块上压过去。现在改成**沿格走的折线**：
-       先走哪一轴由「拐点那一格有没有房间」决定，拐点压着房间就换另一轴 ——
-       看着就像一条绕过去的土路，而不是一道斜插过去的刀痕。 */
-    const cellOccupied = (gx, gy) => !!idByXY[xyKey(gx, gy)];
-    const routeBridge = (A, B) => {
-      const x1 = cx(A), y1 = cy(A), x2 = cx(B), y2 = cy(B);
-      /* 两个拐点候选：先横后竖 / 先竖后横 */
-      const c1 = { gx: B.x, gy: A.y }, c2 = { gx: A.x, gy: B.y };
-      const bad1 = cellOccupied(c1.gx, c1.gy) ? 1 : 0;
-      const bad2 = cellOccupied(c2.gx, c2.gy) ? 1 : 0;
-      const useH = bad1 <= bad2;
-      const corner = useH ? c1 : c2;
-      const mx = (corner.gx - b.minX) * MAP_CELL + MAP_PAD + MAP_CELL / 2;
-      const my = (corner.gy - b.minY) * MAP_CELL + MAP_PAD + MAP_CELL / 2;
-      return 'M' + x1 + ' ' + y1 + ' L' + mx + ' ' + my + ' L' + x2 + ' ' + y2 + ' ';
-    };
-    let pathsCrossDim = '';
-    let pathsCrossKnown = '';
-    (m.bridges || []).forEach(br => {
-      if (!br.crossRegion) return;
-      const A = shown[br.a], B = shown[br.b];
-      if (!A || !B) return;                 /* 两端都在图上才画（区域模式只画本区） */
-      const seg = routeBridge(A, B);
-      if (A.visited && B.visited) pathsCrossKnown += seg;
-      else pathsCrossDim += seg;
-    });
+    /* 4b) 跨区域「长连线」——★ 2026-10-12 主人：「把世界地图的所有虚线删了」。
+       说的就是这一段：它是当年为了「区域装箱后两块挨不上」而画的**兜底折线**
+       （虚线、横穿半屏，正是主人早先抱怨的「隔了那么远连线」）。
+       现在布局已按真出口咬合（maplayout.packRegions），绝大多数跨区边本来就**相邻**，
+       邻居之间那条线由上面的走廊段画掉了；剩下这一小撮摆不平的，
+       主人宁可它们空着，也不要那条大斜线。所以整段下线，`m.bridges` 数据保留在后端。
+       ★ 同时「两个地块之间的连线改成虚线形式」：样式落在 CSS 的 `.map-edges .edge`
+       上（stroke-dasharray），这里不用管。 */
     h += '<svg class="map-edges" width="' + W + '" height="' + H + '">' +
       '<path d="' + paths + '" class="edge edge-dim"/>' +
-      '<path d="' + pathsKnown + '" class="edge edge-known"/>' +
-      '<path d="' + pathsCrossDim + '" class="edge edge-dim edge-bridge"/>' +
-      '<path d="' + pathsCrossKnown + '" class="edge edge-known edge-bridge"/></svg>';
+      '<path d="' + pathsKnown + '" class="edge edge-known"/></svg>';
 
     /* 4) 地块：★ 主人 2026-10-11：「把地块里的方块框删掉，地块用纯地名显示，
           做成屏幕上那九宫格地名一样的形式」。
@@ -3019,14 +3085,17 @@
     rooms.forEach(r => {
       const left = (r.x - b.minX) * MAP_CELL + MAP_PAD;
       const top = (r.y - b.minY) * MAP_CELL + MAP_PAD;
+      /* ★ 2026-10-12 主人：「把地图上地块名字的黄色字体呈现与可点击前往删了」。
+         ⇒ 不再给「一步可达」单开一个 `.near`（金字 + 手型 + hover 放大），
+            也不再挂 `data-go`（点一下就走过去）。
+         地图上只剩三种状态：你在这里（黄）/ 去过（墨）/ 没去过（淡墨）。
+         ⚠️ `--stripe` 这个内联变量其实早就没人用了（方块顶色条随「纯地名」一起删的），
+            一并拿走 —— 留着会让人以为还有一根色条。 */
       let cls = 'map-node';
       if (r.current) cls += ' here';
-      else if (r.near) cls += ' near';
-      else if (r.reach) cls += ' reach';
       else if (r.visited) cls += ' known';
       else cls += ' unknown';
       const reg = (m.regions || []).find(x => x.id === r.region);
-      const stripe = reg ? reg.color : '#999';
       /* ★ 去掉「战争迷雾」（主人第四轮要求：「地图不要搞那些战争迷雾」）。
          原来是「去过/一步可达才显示名字，没去过的只留一个淡点」——
          世界地图上看过去一片空白小方块，不知道哪儿是哪儿，也没法规划路线。
@@ -3034,19 +3103,15 @@
       const label = r.name || '？';
       h += '<button class="' + cls + (r.visited || r.current ? '' : ' dim') +
         '" style="left:' + left + 'px;top:' + top + 'px;' +
-        'width:' + MAP_CELL + 'px;height:' + MAP_CELL + 'px;' +
-        '--stripe:' + esc(stripe) + '"' +
+        'width:' + MAP_CELL + 'px;height:' + MAP_CELL + 'px"' +
         ' title="' + esc(r.name) + (r.region ? '（' + esc((reg && reg.name) || r.region) + '）' : '') +
         (r.dist >= 0 ? '　' + r.dist + ' 步' : '　很远') + '"' +
-        ' data-room="' + esc(r.id) + '"' +
-        (r.near ? ' data-go="' + esc(r.id) + '"' : '') + '>' +
+        ' data-room="' + esc(r.id) + '">' +
         '<span class="mn-name" style="font-size:' + fontOf(r) + 'px;line-height:' + M_LINE + '">' +
         esc(label) + '</span></button>';
     });
 
-    /* 区域/城市名：压在所有地块之上画（独立于 .map-region-box 的 z-index:0 上下文，
-       名字永远在框外、在最上层，不会被框线或地块挡住）。 */
-    h += regionLabels;
+    /* （区域/城市名已按主人 2026-10-12 要求整体下线，见上方 map-region-box 那段注释。） */
 
     /* 5) 区域边界处的「往这边走是哪儿」（★ 主人 2026-10-11：
        「地图界面每个区域都有边界，能不能在地图上边界处提示该方向继续往前走通往哪个区域」）。
@@ -3093,18 +3158,13 @@
 
     h += '</div>';
 
-    /* --- 快速移动：一步可达（★ 重设计：从画布**下方**挪到画布**里面**贴着底边）
-       为什么挪：玩家看地图时眼睛在画布上，出口按钮却在画布外的下一屏 ——
-       手机上一屏塞不下，得滑下去找，找完再滑回来看地图。
-       贴底之后，看图和点走是同一眼。 */
-    const nears = rooms.filter(r => r.near);
-    if (nears.length) {
-      h += '<div class="map-quick"><span class="mq-title">一步可达</span>';
-      nears.forEach(r => {
-        h += '<button class="mq-btn" data-go="' + esc(r.id) + '">' + esc(r.name) + '</button>';
-      });
-      h += '</div>';
-    }
+    /* --- 「一步可达」快捷条 —— ★ 2026-10-12 主人：「把一步可达删了」。
+       它原来是贴在画布底边的一排「北门 / 客栈 / 药铺…」按钮，点了直接走过去。
+       现在地图不再是快捷移动面板（原因见上方地块那段注释），整块下线。
+       要走路还是用屏幕上的出口九宫格与方向键，那里本来就是干这个的。
+       ⚠️ 别只删前端这一块就完事：`data-go` 的**事件绑定**也要一起删
+          （见 bindPanelActions 里「地图」那一段），否则会留下一个
+          永远不会被触发的空循环（看着无害，下次改的人会以为还有这功能）。 */
     h += '</div>';   /* 关 .map-stage */
 
     /* --- 地名索引（★ 重设计：把原来**三块**重复的区域清单合成一块）---
@@ -3144,6 +3204,58 @@
        只是不再单独铺一层重复列表 —— 上面每个按钮里已经带了同一组数字。 */
     h += '</div>';
 
+    h += '</div>';
+    return h;
+  }
+
+  /* ============================================================
+   *  飞行面板（主人 2026-10-12）
+   *
+   *  主人原话：「在屏幕下方快捷界面增加一个『飞行』，点击即可打开一个面板，
+   *  面板上列出所有玩家去过的区域名称，点击即可去该区域的入口处。」
+   *
+   *  数据源与地图面板的「地名索引」**同一个**：`view.map.regions`，
+   *  其中 `canFly` 是**后端**按「去过没有」算好的。所以这里不自己猜、不自己算 ——
+   *  后端说能飞才画按钮（前端拿不到 visited 旗标，自己判一定判错）。
+   *
+   *  发的是后端真指令 `飞往 <区域名>`，与地图面板那颗 ↗ 完全同一条路，
+   *  后端照旧复核「去过没有」；前端只负责列出来。
+   * ============================================================ */
+  function flyHtml(v) {
+    const m = (v && v.map) || {};
+    const here = (m.rooms || []).find(r => r.current) || null;
+    const curRegion = here ? here.region : null;
+    const regs = (m.regions || []).slice();
+    const can = regs.filter(r => r.canFly);
+    const cant = regs.filter(r => !r.canFly);
+
+    let h = '<div class="fly-wrap">';
+    if (!can.length) {
+      /* 空态要说清楚「为什么空」和「怎么才有」——
+         只写「暂无」的话，玩家会以为这个按钮坏了。 */
+      h += '<div class="fly-empty">你还没有去过别的地方，眼下无处可飞。' +
+        '<br>先靠两条腿把这一带走熟：踏进过一个区域的入口，它就记在这张单子上。</div>';
+      h += '</div>';
+      return h;
+    }
+    h += '<div class="fly-tip">共 ' + can.length + ' 处去过的地方。点一下，人就落在该处的入口。</div>';
+    h += '<div class="fly-grid">';
+    can.forEach(r => {
+      const cur = r.id === curRegion;
+      const tip = '飞往' + r.name + (r.entryName ? '（落在' + r.entryName + '）' : '');
+      h += '<button class="fly-btn' + (cur ? ' cur' : '') + '"' +
+        ' data-fly-region="' + esc(r.name) + '"' +
+        ' title="' + esc(tip) + '">' +
+        '<span class="fly-name">' + esc(r.name) + (cur ? '　（你在这里）' : '') + '</span>' +
+        (r.entryName ? '<span class="fly-sub">落点：' + esc(r.entryName) + '</span>' : '') +
+        '</button>';
+    });
+    h += '</div>';
+    if (cant.length) {
+      /* 没去过的**不列成按钮**（列了也点不动，等于骗人），只报个数 ——
+         让玩家知道「还有得走」，而不是「这面板就这么多」。 */
+      h += '<div class="fly-empty">另有 ' + cant.length + ' 处尚未踏足，去过之后自会出现在上面。</div>';
+    }
     h += '</div>';
     return h;
   }
@@ -3233,6 +3345,10 @@
         '接取 <任务>　接下这件事（中文：接任务）',
         '交任务　回去汇报（中文：交差）',
         '放弃 <任务>　不干了（中文：放弃任务）',
+        /* ★ 2026-10-12：追踪与取消追踪已合成**一条**（再敲一次就是取消），
+           所以这里只写一条，并在括号里点明它是开关 —— 写两条会把人绕进去。
+           「任务」面板里每条旁边那颗按钮走的是同一条指令。 */
+        '追踪 <任务>　把它摆到上方大框（再敲一次就是取消；中文：跟踪）',
       ]],
       ['店铺 · 拍卖', [
         '货 <商人>　看货（中文：买卖）',
@@ -3306,45 +3422,28 @@
       };
     });
 
-    /* 任务追踪（主人 2026-10-08）：点完真改追踪状态，然后把**面板重开一次** ——
-       不重开的话按钮还写着「追踪」，玩家会以为没点着（铁律：该有的反应没有）。
+    /* 任务追踪（主人 2026-10-08；2026-10-12 合并成一条指令）：
+       点完真改追踪状态，然后把**面板重开一次** —— 不重开的话按钮还写着「追踪」，
+       玩家会以为没点着（铁律：该有的反应没有）。
+       ★ 两态发**同一条** `追踪 <id>`：后端是开关（追着的再点一次就是取消）。
+         这正是主人要的「把追踪与取消追踪合到一起」。
        ⚠️ 这一类按钮**故意不挂 `op-btn`**：`.op-btn` 的处理只认 `data-cmd`，
          挂上去会「关掉面板却什么都不做」。 */
     document.querySelectorAll('#modal-body [data-track]').forEach(b => {
       b.onclick = async () => {
         const id = b.getAttribute('data-track');
-        const on = b.getAttribute('data-on') === '1';
         b.disabled = true;
-        await doCmd(on ? '取消追踪' : ('追踪 ' + id), { fromButton: true });
+        await doCmd('追踪 ' + id, { fromButton: true });
         closeModal();
         panel('quests');
       };
     });
 
-    /* 地图：点击一步可达的房间 -> 自动走过去 */
+    /* 地图：★ 2026-10-12 主人：「把地图上地块名字的……可点击前往删了」。
+       原来这里绑的是「点一步可达的格子 → 自动走过去」（`[data-go]`）。
+       格子不再是可点的目的地了，整段绑定撤掉（生成侧也已经不写 data-go）。
+       地图现在只做两件事：看，和拖。 */
     if (name === 'map') {
-      document.querySelectorAll('#modal-body [data-go]').forEach(b => {
-        b.onclick = () => {
-          const id = b.getAttribute('data-go');
-          const room = (S.view && S.view.map && (S.view.map.rooms || []).find(r => r.id === id)) || null;
-          if (!room) return;
-          closeModal();
-          /* ★ 优先用**方向**走，别再只认房间名（主人报的「地图上显示的附近位置与
-             人物实际所在位置不符」）。
-             原来这一步写的是 `doCmd('go ' + room.name)`（注释里写着「优先用方向，
-             否则用房间名」，代码却只做了后半句）。`go <名字>` 是**按名字找**：
-             江湖上同名/近名的房间一多（「客栈」「山道」「小巷」满地都是），
-             点的是地图上紧挨着你的那一格，人却被带去了**另一个同名房间** ——
-             位置自然「对不上」。
-             方向是**当前房间自己的出口**（`view.exits[].dir → to`），一对一，
-             不可能走错。只有「一步可达」的格子才有方向，所以查不到才退回名字。 */
-          const ex = ((S.view && S.view.exits) || [])
-            .find(x => x && x.to === id && !x.locked);
-          if (ex) return doCmd(ex.dir, { fromButton: true });
-          doCmd('go ' + room.name, { fromButton: true });
-        };
-      });
-
       /* 视野切换：当前区域 / 天下全图 */
       document.querySelectorAll('#modal-body [data-scope]').forEach(b => {
         b.onclick = () => {
@@ -3354,16 +3453,20 @@
         };
       });
 
-      /* 画布工具条（重设计新增）：回到我 / 缩放。
-         ⚠️ 缩放要**重渲染**才能生效（格子尺寸是渲染时算的），
-         而「回到我」只是滚动位置，不重渲染（重渲染会把拖动位置也重置，反而更差）。 */
+      /* 画布工具条：只剩缩放。
+         ⚠️ 缩放要**重渲染**才能生效（格子尺寸是渲染时算的）。
+         ★ 2026-10-12 主人：「把世界地图的『回到我』删了」——
+           那颗按钮的 `here` 分支连同按钮一起撤了（开图自动居中的逻辑不在这里，
+           在 bindPanelActions 结尾的 centerMapOnHere 调用，那个照旧保留）。 */
       document.querySelectorAll('#modal-body [data-map-tool]').forEach(b => {
         b.onclick = () => {
           const t = b.getAttribute('data-map-tool');
-          if (t === 'here') { centerMapOnHere(); return; }
           const step = 0.2;
           const next = t === 'zin' ? mapZoom + step : mapZoom - step;
-          mapZoom = Math.min(1.4, Math.max(0.7, Math.round(next * 100) / 100));
+          /* 0.7 / 2.4 要与 mapHtml 里的 ZMIN / ZMAX **手动对齐**。
+             不抽成模块常量是因为 mapHtml 会被多个测试脚本单独抽出来在别的环境跑，
+             外面的常量在那个环境里取不到（老规矩，见 mapHtml 顶部注释）。 */
+          mapZoom = Math.min(2.4, Math.max(0.7, Math.round(next * 100) / 100));
           closeModal();
           panel('map');
         };
@@ -3391,17 +3494,9 @@
         };
       });
 
-      /* ★ 「飞往」：去过的地方真赶路（主人 2026-10-11）。
-         与上面那条的区别 —— 上面是「看地图」，这条是「上路」。
-         发的是后端真指令 `飞往 <地名>`，由后端复核「去过没有」（前端不做安全判定）。 */
-      document.querySelectorAll('#modal-body [data-fly-region]').forEach(b => {
-        b.onclick = () => {
-          const nm = b.getAttribute('data-fly-region');
-          if (!nm) return;
-          closeModal();
-          doCmd('飞往 ' + nm, { fromButton: true });
-        };
-      });
+      /* ★ 「飞往」按钮的绑定**不在这里** —— 见本函数末尾 `name === 'map' || name === 'fly'`
+         那一块。「地图」的「地名索引」与「飞行」面板用的是同一批按钮
+         （同样带 `data-fly-region`），所以统一在外头绑一次。 */
 
       /* 触屏没有 hover，方块上的 title 提示看不到 ——
          点「看得到但走不到」的格子，弹出完整房间名（主人报的「地块名看不全」）。
@@ -3442,6 +3537,23 @@
       } else {
         centerMapOnHere();
       }
+    }
+    /* ★「飞往」按钮：**地图**的「地名索引」与**飞行面板**共用同一批按钮
+       （两边都带 `data-fly-region`），所以绑定放在这一层、两个面板一起管。
+       主人 2026-10-11 的原话：「可以改成玩家去过的城市都可以飞到该城市入口处，
+       门派也是一样入口处，前提是玩家去过那里」。
+       发的是后端真指令 `飞往 <地名>`，由后端复核「去过没有」（前端不做安全判定）。
+       ⚠️ 别把这段挪回 `name === 'map'` 里面 —— 挪回去，飞行面板的按钮就全成了哑巴
+          （点了没反应），而且不报错。 */
+    if (name === 'map' || name === 'fly') {
+      document.querySelectorAll('#modal-body [data-fly-region]').forEach(b => {
+        b.onclick = () => {
+          const nm = b.getAttribute('data-fly-region');
+          if (!nm) return;
+          closeModal();
+          doCmd('飞往 ' + nm, { fromButton: true });
+        };
+      });
     }
     /* 社交面板：点某人 → 看详情 */
     if (name === 'social') {
@@ -3509,6 +3621,11 @@
        打开面板让人挑，是说得通的。 */
     /* 练武学（主人 2026-10-10）：屏幕下方快捷键点开，面板上列已学会的武学，点一个就自动练。 */
     practice: 'practice', 练武学: 'practice', 练功房: 'practice',
+    /* 飞行（主人 2026-10-12）：屏幕下方快捷键点开，面板上列**去过的区域**，点一下落到该处入口。
+       ⚠️ 「飞往」也放进来是给**光敲两个字**的玩家一条路（面板替他列出能飞哪儿）；
+         带参数的「飞往 华山」在 `panelForCmd` 里做的是**整串精确匹配**，匹配不上，
+         照旧走后端真指令，不会被这里吃掉。 */
+    fly: 'fly', 飞行: 'fly', 飞往: 'fly', 飞行图: 'fly',
     sectfounder: 'found', 创宗: 'found', 招贤: 'found', 逐出师门: 'found', 演武: 'found', 大比: 'found', 解散宗门: 'found',
     recruit: 'found', drill: 'found', contest: 'found', disciple: 'found', tutor: 'found', founded: 'found',
     宗门: 'found',
@@ -3606,8 +3723,12 @@
       }
     }, { passive: false });
 
-    /* 键盘：方向键平移、Home 回到我（重设计新增）。
-       画布带 tabindex=0，点一下就能聚焦 —— 桌面端不必非按住鼠标拖。 */
+    /* 键盘：方向键平移。
+       画布带 tabindex=0，点一下就能聚焦 —— 桌面端不必非按住鼠标拖。
+       ★ 2026-10-12 主人：「把世界地图的『回到我』那部分删了」——
+         原来这里还绑了 `Home` 键居中到自己，跟那颗被删的按钮是同一件事，一并撤掉。
+         （开图**自动**居中那一下还在，见 bindPanelActions 末尾的 centerMapOnHere 调用：
+           它不是「用户手动按钮」，是修「地图和人物实际对不上」的默认行为。） */
     el.addEventListener('keydown', e => {
       const step = 60;
       const k = e.key;
@@ -3615,7 +3736,6 @@
       else if (k === 'ArrowRight') { el.scrollLeft += step; }
       else if (k === 'ArrowUp') { el.scrollTop -= step; }
       else if (k === 'ArrowDown') { el.scrollTop += step; }
-      else if (k === 'Home') { centerMapOnHere(); }
       else return;
       if (e.preventDefault) e.preventDefault();
     });
@@ -4060,6 +4180,10 @@
     { label: '打坐', cmd: 'meditate' },
     { label: '运功疗伤', cmd: 'heal' },
     { label: '地图', cmd: 'map' },
+    /* 飞行（主人 2026-10-12）：「在屏幕下方快捷界面增加一个『飞行』，点击即可打开一个面板，
+       面板上列出所有玩家去过的区域名称，点击即可去该区域的入口处。」
+       放在「地图」后面 —— 一个是「看」，一个是「去」，挨着最顺。 */
+    { label: '飞行', cmd: 'fly' },
     { label: '任务', cmd: 'quests' },
     { label: '帮助', cmd: 'help' },
     { label: '新手教程', cmd: 'guide' },

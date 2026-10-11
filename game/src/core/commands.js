@@ -33,6 +33,7 @@ const neigongMod = require('./neigong');
 const tutorialMod = require('./tutorial');
 /* 阶段解析 / 目标判定的**唯一**实现（面板、自动检查、交任务三处共用一份） */
 const queststage = require('./queststage');
+const potential = require('./potential');
 
 /* 中文数字 → 阿拉伯 */
 const CN_NUM = { 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10, 壹: 1, 贰: 2, 叁: 3, 肆: 4, 伍: 5, 陆: 6, 柒: 7, 捌: 8, 玖: 9, 拾: 10 };
@@ -665,14 +666,11 @@ function buildCommands(world) {
       const term = require('./season').termLine(w);
       if (term) lines.push(term);
     }
-    /* ---- 岔路口的路牌（主人 2026-10-08）----
-       有两条以上岔路通向**不同区域**时，路口该立块牌子：东边是什么地方、西边是哪个门派。
-       同城连片的街道不算岔路（那是巷子），所以判据是「跨区域的出口 ≥ 2」。
-       （`observe.signpostFor` 里注释写全了。） */
-    {
-      const sign = require('./observe').signpostFor(w, room);
-      if (sign) lines.push({ kind: 'plain', text: sign.text });
-    }
+    /* ---- 岔路口的路牌 —— ★ 2026-10-12 主人：「把游戏里的路牌删了」，下线。
+       原来走到跨区域岔路口会念一句「路口立着块半人高的木牌……东：江南府　南：少林寺」。
+       ⚠️ `observe.signpostFor()` 本体**留着**（没删函数）：它是纯计算，
+          主人随时可能又要回来；而且 `tools/smoke-observe.js` 直接测它。
+          这里只是不再把结果往房间描述里灌 —— 一句话的取舍，改回来就一行。 */
 
     // NPC
     const npcs = w.npcsIncludingTemplates(p.room);
@@ -1779,36 +1777,84 @@ function buildCommands(world) {
     const w = ctx.world, p = ctx.player;
     if (!args.length) return { lines: [{ kind: 'warn', text: '用法：qingjiao <人名>　看看他愿意教你什么' }] };
     const kw = args.join(' ');
-    let npc = fuzzyFind(w.npcsIncludingTemplates(p.room), kw, n => n.name);
+    let npc = null;
     let skillKw = '';
-    /* `请教 <人名> <武学名>`：整串一起去找人会落空（名字里多了一段武学名），
-       所以退一步 —— 首段找人，剩下的是武学名。 */
-    if (!npc && args.length >= 2) {
-      npc = fuzzyFind(w.npcsIncludingTemplates(p.room), args[0], n => n.name);
-      if (npc) skillKw = args.slice(1).join(' ');
+    /* `请教 <人名> <武学名>`：**先按两段解析**，再退回整串找人。
+       ⚠️ 顺序不能反：`fuzzyFind` 是按包含关系模糊匹配的，
+          "卖茶的老汉 长拳" 这种整串**能**匹配到人（网住了前四个字），
+          于是 skillKw 永远是空 —— 玩家发「请教 某某 某功夫」只会得到一张清单，
+          永远学不到东西（实测踩到）。所以先试两段。 */
+    if (args.length >= 2) {
+      const cand = fuzzyFind(w.npcsIncludingTemplates(p.room), args[0], n => n.name);
+      if (cand) { npc = cand; skillKw = args.slice(1).join(' '); }
     }
+    if (!npc) npc = fuzzyFind(w.npcsIncludingTemplates(p.room), kw, n => n.name);
     if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${kw}」。` }] };
     const list = social.teachList(w, npc);
     if (!list.length) return { lines: [{ kind: 'warn', text: `${npc.name}摇摇头：「我这点本事，教不了人。」` }] };
 
     /* 拜过师的人：师父认了这份名分，他的功夫**必定教你**，不再看好感与银钱
        —— 主人 2026-10-10：「拜师后请教（可选择请教什么武学）必定成功」。
-       ⚠️ 已学会的**不能再请教**（主人点名）：从清单里剔掉，免得点一个空。
-          要精进请走「练武学」那条路。 */
+       ⚠️ 2026-10-08 口径更新：已学会的**不再从清单里剔掉**了 ——
+          主人补的那条「潜能可以用来通过『请教』直接提升武学熟练度」让它们有了去处
+          （花潜能请人点拨，当场涨一截）。所以分成两份：没学过的教你学会，学过的点拨你。 */
     const isMaster = !!(p.masters && p.masters[npc.defId || npc.id]);
     const shown = list.filter(s => !s.known);
+    const known = list.filter(s => s.known);
 
     /* ---- 直接学：`请教 <人名> <武学名>` ---- */
     if (skillKw) {
-      /* ⚠️ 先在**全表**（含已会）里精确找一次：玩家点了一门已经会了的，
-         必须明确回「不必再请教」——否则模糊匹配会把他随手带去**另一门**功夫，
-         他明明点的是养吾剑法，学到的却是华山剑法（第一版就这么错的）。 */
+      /* ⚠️ 先在**全表**（含已会）里精确找一次：
+         已会的**不是**回「不必再请教」了 —— 主人 2026-10-08 补的那条：
+         「潜能可以用来通过『请教』**直接提升武学熟练度**」。
+         所以现在走「点拨」这条路：花潜能当场涨一截熟练度。
+         （旧行为是「要精进请走练武学」，那条路仍然在，只是不再是唯一的路。） */
       const exactAll = list.find(s => s.name === skillKw);
       if (exactAll && exactAll.known) {
-        return { lines: [{ kind: 'warn', text: `你已学过「${exactAll.name}」，不必再请教 —— 要精进请用「练武学」自己磨。` }] };
+        /* 「不肯教」的硬理由（人被你绑着 / 门派传承…）——与面板同源，见 social.wontTeachReason */
+        const whyUp = social.wontTeachReason(w, npc, exactAll.id);
+        if (whyUp) return { lines: [{ kind: 'warn', text: whyUp }] };
+        const sdUp = w.getSkill(exactAll.id) || {};
+        const cur = p.skillLevel(exactAll.id) || 0;
+        const teacherLv = potential.teacherLevelOf(npc, exactAll.id);
+        const cap = potential.teachUpCap(p, sdUp, teacherLv);
+        if (cur >= cap) {
+          return {
+            lines: [
+              { kind: 'warn', text: `${npc.name}摇了摇头：「这一门，我已经没什么能教你的了。」` },
+              { kind: 'hint', text: `（你的「${exactAll.name}」${cur} 级，能指点的上限是 ${cap} 级 —— 上限取**你自己内力/资质撑出来的天花板**与**${npc.name}那门功夫练到的级数**两者中低的一个。想再往上走：练内功吐纳抬自己的天花板，或另找这门功夫更高的人。）` },
+            ],
+          };
+        }
+        const gain = potential.teachUpGain(cap, cur);
+        const cost = potential.raiseCostOf(sdUp, gain, cur);
+        if ((p.potential || 0) < cost) {
+          return {
+            lines: [
+              { kind: 'warn', text: `${npc.name}看了看你：「指点你一场也费精神。」` },
+              { kind: 'hint', text: `（请${pronounOf(npc)}点拨「${exactAll.name}」${gain} 级要 ${cost} 点潜能，你只有 ${p.potential || 0} 点。自己练是**不花潜能**的 —— 用「练武学」一遍遍磨。）` },
+            ],
+          };
+        }
+        let need = 0;
+        for (let lv = cur; lv < cur + gain; lv++) need += p.skillExpNeed(lv);
+        p.potential = Math.max(0, (p.potential || 0) - cost);
+        const up = p.gainSkillExp(exactAll.id, need);
+        const now = p.skillLevel(exactAll.id) || 0;
+        return {
+          lines: [
+            { kind: 'story', text: `${npc.name}让你把架势摆开，一手一手替你纠正过来，边改边说其中的分寸。` },
+            { kind: 'sys', text: `「${exactAll.name}」${cur} → ${now} 级（+${Math.max(0, now - cur)}）。` },
+            { kind: 'plain', text: `（耗去潜能 ${cost} 点，还剩 ${p.potential} 点；这门功夫能指点的上限是 ${cap} 级。）` },
+            (up && up.msg) ? { kind: 'hint', text: up.msg } : null,
+          ].filter(Boolean),
+        };
       }
       const sd = shown.find(s => s.name === skillKw) || fuzzyFind(shown, skillKw, s => s.name);
       if (!sd) return { lines: [{ kind: 'warn', text: `${npc.name}不会「${skillKw}」。` }] };
+      /* 「不肯教」的硬理由（人被你绑着 / 门派传承…）——与面板同源 */
+      const whyLearn = social.wontTeachReason(w, npc, sd.id);
+      if (whyLearn) return { lines: [{ kind: 'warn', text: whyLearn }] };
       const canFavor = (npc.favor || 0) >= sd.favorNeed;
       if (!isMaster && !canFavor && !sd.money) {
         return {
@@ -1823,6 +1869,19 @@ function buildCommands(world) {
          玩家点下去确实学到了，钱却一文没动 —— 铁律里那类「不报错但不生效」的变种，
          直接把武馆变成白送。现在补齐：钱不够就明说，够了就当场扣掉。
          （`learn <人名> <武学名>` 那条路一直是扣钱的，两处口径从此一致。） */
+      /* ---- 潜能门槛（主人 2026-10-08）----
+         「请教会消耗潜能（按武学品级以及等级从低到高消耗增多），但自己练不会消耗」。
+         ⇒ 花潜能 = 走捷径（请人教）；苦练 = 自己磨（一点不花，见练武学/打坐那条路）。
+         师门里打对折：师父教徒弟是本分，不该拿潜能把人拦在门外。 */
+      const potNeed = potential.teachCostFor(p, sd, 0, isMaster);
+      if ((p.potential || 0) < potNeed) {
+        return {
+          lines: [
+            { kind: 'warn', text: `${npc.name}看了看你：「这东西不是白给的。」` },
+            { kind: 'hint', text: `（请教「${sd.name}」要 ${potNeed} 点潜能，你只有 ${p.potential || 0} 点。潜能靠办事、见识、跟人过招攒——杀敌、交差、走没走过的地方，都算。）` },
+          ],
+        };
+      }
       const byMoney = !isMaster && !canFavor && sd.money > 0;
       if (byMoney) {
         const have = p.money || 0;
@@ -1841,9 +1900,12 @@ function buildCommands(world) {
         if (byMoney) p.money += sd.money;     /* 没学成，钱得退回去 */
         return { lines: [{ kind: 'warn', text: r.msg }] };
       }
+      /* 学成了才扣潜能（学不成不扣 —— 上面那条 r.ok 分支已经 return） */
+      p.potential = Math.max(0, (p.potential || 0) - potNeed);
       const out = [
         { kind: 'story', text: `${npc.name}把「${sd.name}」的口诀心法一句句讲与你听，又亲手替你摆正了架子。` },
         { kind: 'sys', text: r.msg },
+        { kind: 'plain', text: `（耗去潜能 ${potNeed} 点，还剩 ${p.potential} 点。自己练不花潜能 —— 往后要精进，用「练武学」一遍遍磨。）` },
       ];
       if (byMoney) out.push({ kind: 'plain', text: `（交了束脩 ${sd.money} 文，还剩 ${p.money} 文。）` });
       /* 师父教徒弟是**从基本功教起**的：这门功夫挂在一条 `base` 链上
@@ -1878,11 +1940,31 @@ function buildCommands(world) {
       if (isMaster) marks.push('师父必教');
       else if (canFavor) marks.push('好感已够');
       if (canMoney) marks.push(`可花钱 ${s.money} 文`);
+      /* 潜能价（主人 2026-10-08）——列在这儿玩家才能算着学，不用点进去才知道不够 */
+      marks.push(`潜能 ${potential.teachCostFor(p, s, 0, isMaster)}`);
       lines.push({
         kind: 'skill',
         text: `${s.name}　【${s.quality}】　${s.type}　强度 ${s.power}　需好感 ${s.favorNeed}${marks.length ? '　' + marks.join(' / ') : ''}`,
         skillId: s.id, favorNeed: s.favorNeed, money: s.money, ok: isMaster || canFavor || canMoney,
       });
+    }
+    /* 已会的功夫：走「点拨」——花潜能当场涨一截熟练度（主人 2026-10-08） */
+    if (known.length) {
+      lines.push({ kind: 'title', text: '【 请他点拨（花潜能，直接涨熟练度） 】' });
+      for (const s of known) {
+        const sdUp = w.getSkill(s.id) || {};
+        const cur = p.skillLevel(s.id) || 0;
+        const cap = potential.teachUpCap(p, sdUp, potential.teacherLevelOf(npc, s.id));
+        const gain = potential.teachUpGain(cap, cur);
+        const cost = gain > 0 ? potential.raiseCostOf(sdUp, gain, cur) : 0;
+        lines.push({
+          kind: 'skill',
+          text: gain > 0
+            ? `${s.name}　${cur} 级 → 可指点到 ${cur + gain} 级（上限 ${cap}）　潜能 ${cost}`
+            : `${s.name}　${cur} 级　已到他能指点的上限 ${cap}（想再高：练内功抬自己天花板，或另寻高人）`,
+          skillId: s.id, potCost: cost, upTo: cur + gain, ok: gain > 0 && (p.potential || 0) >= cost,
+        });
+      }
     }
     lines.push({ kind: 'hint', text: isMaster ? `用「请教 ${npc.name} <武学名>」——师父教你，一句话的事。` : `用「请教 <人名> <武学名>」请教；好感够就免费，不够可花钱（若${pronounOf(npc)}肯收）。` });
     return { lines };
@@ -4421,12 +4503,52 @@ function buildCommands(world) {
         指令这一层只负责改这个字段，**大框显示什么由 storybeat.currentStory 算**
         （面板按钮、敲指令、读档三条路进的是同一份数据）。
      ⚠️ 这两个词**不能**进前端的 PANEL_CMDS —— 进去就变成「开面板」而不是真追踪。 */
-  reg(['track', '追踪', '跟踪'], (ctx, args) => {
+  /* 追踪 / 取消追踪 —— ★ 2026-10-12 主人：「把追踪与取消追踪合到一起吧」。
+     合成**一条**：同一个动作点两次就是「追踪 → 取消」，不必记两个词。
+       · `追踪 <任务>`  正追着这一条 → 取消；没追 → 追起来（**开关**）
+       · `追踪`         手上正追着东西 → 取消它；两手空空 → 提示挑一个
+       · `取消追踪`     强制取消（这个别名**保留**：老按钮、老习惯、别人写的 mod 还在发它）
+     实现只有一份（下面的 `trackCmd`），两个入口的区别只是「要不要强制关」。
+     这点很要紧：以前这是两段各写一遍的代码 —— 改坏一处不会报错，只会静默不生效。
+     ⚠️ `追踪` / `取消追踪` **绝不能进前端 `PANEL_CMDS`**（进去就被拦成「开面板」）。 */
+  const trackCmd = (ctx, args, force) => {
     const p = ctx.player, w = ctx.world;
     const sb = require('./storybeat');
-    if (!args.length) return { lines: [{ kind: 'warn', text: '你想追踪哪一桩事？' }] };
+    const nameOf = id => (id === sb.NEWBIE ? '新手剧情' : ((w.getQuest(id) || {}).name || id));
+    /* 大框里那几行「接取时该讲的话」要到**玩家真去追它**时才讲（见 storybeat.hold）。 */
+    const takeHeld = qid => {
+      try { return sb.takeHeld(w, p, qid) || []; } catch (e) { return []; }
+    };
+    /* ① 强制关：`取消追踪` 走这条 */
+    if (force) {
+      if (!p.track) return { lines: [{ kind: 'warn', text: '本来就没在追。' }] };
+      const was = nameOf(p.track);
+      p.track = null;
+      return { lines: [{ kind: 'sys', text: `不追「${was}」了。再点一次那条任务上的按钮就追回来。` }] };
+    }
+    /* ② 光敲两个字：当成开关用 */
+    if (!args.length) {
+      if (!p.track) return { lines: [{ kind: 'warn', text: '你想追踪哪一桩事？（「任务」里每条旁边都有按钮）' }] };
+      const was = nameOf(p.track);
+      p.track = null;
+      return { lines: [{ kind: 'sys', text: `不追「${was}」了。再敲一次它的名字就追回来。` }] };
+    }
     const key = args.join(' ');
-    if (key === '新手' || key === '新手教程' || key === '新手剧情') {
+    /* 🔴 2026-10-12 主人亲报：「为什么在『任务』里点追踪新手任务却说『没有这一桩事』」。
+       根因：**面板按钮发的是任务 id，不是名字**。新手那条卡片没有真任务 id，
+       前端写死成哨兵值 `__newbie__`（见 ui.js 的 trackBtn），
+       而这里只列了「新手 / 新手教程 / 新手剧情」三个**手敲**的说法 ——
+       于是从按钮点进来的那个 `__newbie__` 一路落到 `w.getQuest('__newbie__')`，
+       查不到 → 一句「没有这一桩事」。
+       ⚠️ 这个坑以前就存在（老代码同样只认那三个词），只是当时没人从按钮点过新手那条。
+          守卫也没抓住它 —— 因为测试只断言「按钮发出去了什么」，
+          没断言「后端真的照做了」。这次**两边都补上**（见 smoke-quest-track / smoke-uiux）。
+       ⇒ 认两种写法：手敲的中文，与前端下发的那两个 id 形式。 */
+    if (key === '新手' || key === '新手教程' || key === '新手剧情' || key === sb.NEWBIE) {
+      if (p.track === sb.NEWBIE) {
+        p.track = null;
+        return { lines: [{ kind: 'sys', text: '不追「新手剧情」了。' }] };
+      }
       p.track = sb.NEWBIE;
       return { lines: [{ kind: 'sys', text: '上方改追「新手剧情」了。' }] };
     }
@@ -4435,19 +4557,23 @@ function buildCommands(world) {
     const qd = w.getQuest(key) || fuzzyFind(Object.values(w.data.quests), key, q => q.name);
     if (!qd) return { lines: [{ kind: 'warn', text: '没有这一桩事。' }] };
     if (p.questStage(qd.id) < 0) return { lines: [{ kind: 'warn', text: '你手上没有这桩事。' }] };
+    /* ③ 开关本体：正追着它，这一下就是「取消」 */
+    if (p.track === qd.id) {
+      p.track = null;
+      return { lines: [{ kind: 'sys', text: `不追「${qd.name}」了。再点一次就追回来。` }] };
+    }
     p.track = qd.id;
-    return { lines: [{ kind: 'sys', text: `上方改追「${qd.name}」了。` }] };
-  });
-
-  reg(['untrack', '取消追踪', '不追踪', '别追了'], (ctx) => {
-    const p = ctx.player;
-    if (!p.track) return { lines: [{ kind: 'warn', text: '本来就没在追。' }] };
-    p.track = null;
-    /* ⚠️ 主人要的是「大框里的任务以及大框都消失」——不是退回新手那一章。
-       所以这里置 null，并且**不要**让 syncTrack 立刻给他补一个回来
-       （syncTrack 只在「追着的那条没了/新手走完」时才自动换）。 */
-    return { lines: [{ kind: 'sys', text: '不追了。想接着看，去「任务」里点一下追踪。' }] };
-  });
+    return {
+      lines: [
+        { kind: 'sys', text: `上方改追「${qd.name}」了。` },
+        /* 开局由脚本直接塞进任务簿的那条（主线起手式），接取旁白一直扣着 ——
+           玩家第一次追它，就在这时候讲出来。 */
+        ...takeHeld(qd.id),
+      ],
+    };
+  };
+  reg(['track', '追踪', '跟踪'], (ctx, args) => trackCmd(ctx, args, false));
+  reg(['untrack', '取消追踪', '不追踪', '别追了'], (ctx, args) => trackCmd(ctx, args, true));
 
   reg(['accept', '接取', '接任务'], (ctx, args) => {
     const p = ctx.player, w = ctx.world;
@@ -4556,6 +4682,9 @@ function buildCommands(world) {
   reg(['__panel__quests'], (ctx) => ({ lines: [], openPanel: 'quests' }));
   reg(['__panel__sect'], (ctx) => ({ lines: [], openPanel: 'sect' }));
   reg(['__panel__help'], (ctx) => ({ lines: [], openPanel: 'help' }));
+  /* 飞行面板（主人 2026-10-12）。有了这一条，走 `/api/panel`（而不是 `/api/view`）
+     那条路进来也不会得到一句「我不懂这个指令」。 */
+  reg(['__panel__fly'], (ctx) => ({ lines: [], openPanel: 'fly' }));
   reg(['__panel__save', '__panel__load'], (ctx, args) => ({ lines: [], openPanel: 'save', action: 'save' }));
   reg(['rebirth', '重开', '重新开始'], () => ({ lines: [], action: 'rebirth' }));
   reg(['sleep', '睡', '休息'], (ctx) => {
@@ -5496,12 +5625,17 @@ function questKeyword(ctx, cmd, args, rawFull) {
       p.setQuestStage(q, 99);
       lines.push({ kind: 'quest', text: `【任务完成】${qd.name}` });
       if (qd.rewards) evalEffects(qd.rewards, ctx).forEach(l => lines.push(l));
+      /* 办事得来的长进（主人 2026-10-08：「给主支线任务…增加潜能获取途径」）。
+         主线给得最多 —— 它是长线，玩家靠它撑过前中期。 */
+      potential.grant(p, potential.questRewardOf(qd, true), lines, '这一趟没白跑');
       if (def.repGainOnQuest) for (const k of Object.keys(def.repGainOnQuest)) p.reputation[k] = (p.reputation[k] || 0) + def.repGainOnQuest[k];
     } else {
       p.setQuestStage(q, next);
       lines.push({ kind: 'quest', text: `【任务进展】${qd.name}` });
       const ns = stages[next];
       if (ns && ns.desc) lines.push({ kind: 'plain', text: `下一步：${ns.desc}` });
+      /* 每推进一步也给一小笔，长任务不至于中途断粮 */
+      potential.grant(p, potential.questRewardOf(qd, false), lines, '事情有了眉目');
     }
     return true;
   }

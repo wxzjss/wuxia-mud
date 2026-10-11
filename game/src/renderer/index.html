@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>武侠行 · 江湖再启</title>
-  <link rel="stylesheet" href="css/main.css?v=20261012b">
+  <link rel="stylesheet" href="css/main.css?v=20261012d">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
 </head>
 
@@ -166,12 +166,11 @@
         </div>
         <div id="room-panel">
           <div class="room-head">
-            <!-- 月亮（主人 2026-10-11：「把右上角月亮正好放到春·辰时·晴那里」）。
-                 ⚠️ 它**不能**留在 `#stage-art` 里 —— `#room-panel` 的底是不透明的
-                    （`--surface-2`），留在背景层会被整块盖住，等于白摆。
-                    放进这一行、压在这行底与文字之间，才是「字正好在月上」。
-                 与主菜单的月亮**共用同一套渐变配方**（选择器并列，见 main.css）。 -->
-            <div class="room-moon" aria-hidden="true"></div>
+            <!-- ★ 2026-10-12 主人：「把游戏内屏幕右上角月亮回滚」。
+                 原来这里放过一轮 `.room-moon`（那是 2026-10-11 从背景层搬进来的，
+                 为了「字正好在月上」）。主人不要了，整块撤掉。
+                 ⚠️ 只回滚**游戏内**这一轮：主菜单那轮 `#bg-art .moon` 保留不动
+                    （主人说的是「游戏内屏幕右上角」）。 -->
             <span id="room-name" class="room-name">——</span>
             <span id="room-region" class="room-region"></span>
             <span id="room-env" class="room-env"></span>
@@ -254,6 +253,10 @@
       </div>
       <div id="modal-body" class="modal-body"></div>
       <div id="modal-foot" class="modal-foot"></div>
+      <!-- 第二排按钮（可选，默认隐藏）。★ 2026-10-12 主人：「npc互动页面最下方加一个关闭按钮」。
+           单独一条 DOM 而不是塞进 #modal-foot —— 那一条是**横向滚动**的 flex 行，
+           塞进去要么被挤到最右、要么把整排按钮顶得能左右滑。 -->
+      <div id="modal-foot2" class="modal-foot modal-foot-2 hidden"></div>
     </div>
   </div>
 
@@ -358,12 +361,12 @@
 
   <!-- ?v= 用于缓存穿透：改了这里就等于强制所有浏览器重新拉脚本。
        配合服务端的 no-store，确保发版后不会有人继续跑旧代码。 -->
-  <script src="js/localmods.js?v=20261012b"></script>
-  <script src="js/app.js?v=20261012b"></script>
-  <script src="js/ui.js?v=20261012b"></script>
-  <script src="js/modmaker.js?v=20261012b"></script>
-  <script src="js/docdata.js?v=20261012b"></script>
-  <script src="js/start.js?v=20261012b"></script>
+  <script src="js/localmods.js?v=20261012d"></script>
+  <script src="js/app.js?v=20261012d"></script>
+  <script src="js/ui.js?v=20261012d"></script>
+  <script src="js/modmaker.js?v=20261012d"></script>
+  <script src="js/docdata.js?v=20261012d"></script>
+  <script src="js/start.js?v=20261012d"></script>
 </body>
 
 </html>

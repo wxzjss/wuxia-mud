@@ -430,47 +430,50 @@ engine.newGame({ name: '试侠', gender: 'male', birth: 'wuxue' });
   }
 
   /* ================================================================
-   *  点击跳房间 vs 拖动，互不干扰
+   *  地图「只看不点」vs 拖动
+   *  🔴 2026-10-12 口径改动：主人「把一步可达删了」「把地图上地块名字的
+   *     黄色字体呈现与可点击前往删了」。
+   *     原来这一节守的是「轻点一步可达方块 → 真发出移动指令」，
+   *     那个功能**已被主人删掉**，所以改守反向契约：
+   *       · 地图上不再有 data-go（没有可点前往的格子）
+   *       · 轻点地块**一条移动指令都不发**
+   *       · 拖动之后那次轻点仍然被吞掉（拖动不误触，这条是独立的，必须留）
    * ================================================================ */
-  section('点击跳房间 vs 拖动（共用触摸事件，必须互不干扰）');
+  section('地图不再可点前往（主人 10-12 删掉「可点击前往」）vs 拖动');
   {
-    /* ① 纯轻点「一步可达」方块 → 真发出 go 指令 */
     const env = loadUi(makeEnv({ innerWidth: 375 }));
     const { modal } = await openMap(env, view);
-    const goStub = modal.querySelectorAll('#modal-body [data-go]')[0];
-    ok('C-0 渲染出「一步可达」方块（有 data-go）', !!goStub);
-    if (goStub) {
+    ok('C-0 ★ 地块不再带 data-go（「一步可达」与可点前往已下线）',
+      modal.querySelectorAll('#modal-body [data-go]').length === 0);
+    ok('C-0b 地块本身照常渲染（地图没有被误删成空画布）',
+      modal.querySelectorAll('#modal-body .map-node[data-room]').length > 0);
+
+    /* ① 轻点任意地块 → 不应发出任何移动指令（现在只弹一下名字） */
+    const nodeStub = modal.querySelectorAll('#modal-body .map-node[data-room]')[0];
+    if (nodeStub) {
       env.sent.length = 0;
-      const goId = goStub.getAttribute('data-go');
-      /* ★ 期望值：该房间是当前房间的直连出口 → 应发**方向**（一对一，不会走错）；
-         非直连才退回 `go <名字>`。这里按真实数据算期望，不写死字面量。 */
-      const dirExp = ((view.exits) || []).find(x => x && x.to === goId && !x.locked);
-      env.__canvas.dispatchClickTo(goStub);
+      env.__canvas.dispatchClickTo(nodeStub);
       await settle();
       const sent = env.sent.map(x => x.cmd);
-      ok('C-1 ★ 纯轻点一步可达方块 → 真发出移动指令（点击功能没坏）',
-        sent.length === 1, sent.join(',') || '(空)');
-      ok('C-1b ★ 直连出口走**方向**而不是房间名（第二轮：按名字走会被同名房间带偏，' +
-        '地图位置就「对不上」）',
-        !!dirExp && sent[0] === dirExp.dir,
-        `点了 ${goId}（方向 ${dirExp ? dirExp.dir : '—'}）→ 实发「${sent[0]}」`);
+      ok('C-1 ★ 轻点地块不发移动指令（不再是快捷移动面板）',
+        sent.length === 0, sent.join(',') || '(空)');
+    } else {
+      ok('C-1 ★ 轻点地块不发移动指令（不再是快捷移动面板）', false, '没找到地块 stub');
     }
 
-    /* ② 先拖动，再点同一方块 → 被吞掉，不发指令 */
+    /* ② 先拖动，再点同一方块 → 被吞掉 */
     const env2 = loadUi(makeEnv({ innerWidth: 375 }));
     const r2 = await openMap(env2, view);
-    const goStub2 = r2.modal.querySelectorAll('#modal-body [data-go]')[0];
+    const nodeStub2 = r2.modal.querySelectorAll('#modal-body .map-node[data-room]')[0];
     const cv2 = env2.__canvas;
     const tEv = (x, y) => ({ touches: [{ clientX: x, clientY: y }], cancelable: true, preventDefault() {} });
     cv2.__bubble('touchstart', tEv(200, 200));
     (env2.__winL.touchmove || []).forEach(f => f(tEv(120, 150)));
     (env2.__winL.touchend || []).forEach(f => f(tEv(120, 150)));
     env2.sent.length = 0;
-    const res = cv2.dispatchClickTo(goStub2);
+    const res = cv2.dispatchClickTo(nodeStub2);
     await settle();
-    /* ⚠️ 判据必须是「一条命令都没发」：直连出口现在发的是**方向**（`n`/`e`…）而不是
-       `go <名字>`，若还按 `/^go /` 过滤，吞不吞掉都会是 0 → 假绿。 */
-    ok('C-2 拖动后点同一方块 → 被捕获层吞掉（不误触走路）',
+    ok('C-2 拖动后点同一方块 → 被捕获层吞掉（不误触）',
       res.stopped === true && env2.sent.length === 0,
       'stopped=' + res.stopped + ' sent=' + (env2.sent.map(x => x.cmd).join(',') || '(空)'));
   }

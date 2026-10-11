@@ -156,18 +156,21 @@ section('① index.html 首屏结构');
       /#stage \{[^}]*position:\s*relative/.test(css));
     ok('★ 中屏与主菜单**共用同一套配方**（选择器并列，不是各写一份）',
       /#bg-art .mount, #stage-art .mount/.test(css)
-      && /#bg-art .mist, #stage-art .mist/.test(css)
-      /* 月亮后来搬到了「春 · 辰时 · 晴」那一行（见下），共用对象换成 .room-moon，
-         但仍然是与主菜单那一轮共用同一条渐变配方。 */
-      && /#bg-art .moon, #room-panel .room-moon/.test(css));
-    /* 月亮必须落在房间信息那一行里、且在文字之前（这样字才压得住它）。
-       ⚠️ 不能留在 `#stage-art`：`#room-panel` 的底是不透明的，放背景层会被整块盖住。 */
-    ok('★ 月亮在「春 · 辰时 · 晴」那一行里、且在文字之前',
-      /class="room-head"[\s\S]{0,400}?class="room-moon"[\s\S]{0,400}?id="room-name"/.test(html));
-    ok('★ 月亮没有留在背景层里（留着会被不透明面板盖住）',
+      && /#bg-art .mist, #stage-art .mist/.test(css));
+    /* ★ 2026-10-12 主人：「把游戏内屏幕右上角月亮回滚」。
+       原来这里守的是「月亮搬进了『春 · 辰时 · 晴』那一行、且与主菜单那轮并列共用配方」。
+       现在改守**反向契约**：
+         · 游戏内（#stage / #room-panel）不再有任何月亮元素；
+         · 主菜单那轮 `#bg-art .moon` 仍在（主人只说游戏内那一轮）；
+         · CSS 里也不该再留着 `#room-panel .room-moon` 这类选择器。 */
+    ok('★ 游戏内那一轮月亮已回滚（房间信息行里没有 room-moon）',
+      !/class="room-head"[\s\S]{0,400}?class="room-moon"/.test(html));
+    ok('★ 中屏背景层里也没有月亮（不是「挪回去」而是整块撤掉）',
       !/id="stage-art"[\s\S]{0,400}?class="moon"/.test(html));
-    ok('★ 那行字有描边阴影（白字压白月的老毛病）',
-      /\.room-env \{[^}]*text-shadow/.test(css));
+    ok('　主菜单那轮月亮仍在（主人说的是游戏内那一轮）',
+      /#bg-art \.moon \{/.test(css) && /class="moon"/.test(html));
+    ok('　CSS 里没有留下没人用的 .room-moon 选择器',
+      !/\.room-moon/.test(css.replace(/\/\*[\s\S]*?\*\//g, '')));
     ok('★ 浅色主题也成对覆盖（漏了中屏会留两块脏印子）',
       /html.theme-light #bg-art .mount, html.theme-light #stage-art .mount/.test(css));
     ok('★ 正文压在装饰层之上（z-index）',

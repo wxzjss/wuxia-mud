@@ -55,7 +55,11 @@ const { clamp, fuzzyFind } = require('./utils');
 
 /* 可直接比较的数值字段 */
 const NUM_FIELDS = ['level', 'money', 'exp', 'pot', 'potential', 'hp', 'maxHp', 'mp', 'maxMp',
-  'karma', 'kills', 'age', 'rank', 'sectContribution', 'day', 'time', 'realm'];
+  'karma', 'kills', 'age', 'rank', 'sectContribution', 'day', 'time', 'realm',
+  /* 「这屋里地上有几件东西」—— 制作器「一键捡光」预设的提示就是 `room.items>0`。
+     不加进白名单的话，`{room: '>0'}` 会因为 key 不在名单里被**整条跳过（恒为真）**，
+     作者以为写了门槛，实际没有门槛（本项目最忌的静默失效）。 */
+  'roomItems'];
 
 /* 武学境界档位（删等级后，衡量玩家进度的统一标准）。
    与 engine.realmName 同一套分档，这里返回数值档位供条件比较：
@@ -89,6 +93,8 @@ function fieldValue(p, w, key, cond) {
     case 'day': return Math.floor(p.timeMinutes / 1440) + 1;
     case 'time': return p.timeMinutes % 1440;
     case 'realm': return realmLevel(p);
+    case 'roomItems': return (w && w.itemsIn && w.itemsIn(p.room) || []).length;
+    case 'roomNpcs': return ((w && w.npcsIn && w.npcsIn(p.room)) || []).length;
     case 'attr': return p.attrTotal(cond.attr || cond.key || '力量');
     case 'skill': return p.skillLevel(cond.skill || cond.key || '');
     case 'rep': return p.reputation[cond.rep || cond.key || '*'] || 0;
@@ -127,17 +133,23 @@ function evalCond(cond, ctx) {
   if (cond === undefined || cond === null) return true;
   if (typeof cond === 'boolean') return cond;
   if (typeof cond === 'string') {
+    /* `room.items>0` / `room.npcs>0` 归一成白名单里的真字段。
+       ⚠️ 不做这一步的后果是**恒为真**（key 不在 NUM_FIELDS ⇒ 整条被跳过），
+       而制作器的示例提示写的正是 `room.items>0` —— 作者照着填等于没填。 */
+    const cs = String(cond)
+      .replace(/^room\.items\b/, 'roomItems')
+      .replace(/^room\.npcs\b/, 'roomNpcs');
     // 简写 "flag:xxx" / "money>=100"
-    const m = String(cond).match(/^([a-zA-Z_]+)\s*(>=|<=|==|!=|>|<)\s*(.+)$/);
+    const m = String(cs).match(/^([a-zA-Z_]+)\s*(>=|<=|==|!=|>|<)\s*(.+)$/);
     if (m) return evalCond({ [m[1]]: `${m[2]}${m[3]}` }, ctx);
     // "!combat" / "!某flag" 简写
-    const n = String(cond).match(/^!([a-zA-Z_]+)$/);
+    const n = String(cs).match(/^!([a-zA-Z_]+)$/);
     if (n) {
       if (n[1] === 'combat') return evalCond({ notCombat: true }, ctx);
       if (n[1] === 'tuning') return evalCond({ notTuning: true }, ctx);
       return evalCond({ notFlag: n[1] }, ctx);
     }
-    return evalCond({ flag: cond }, ctx);
+    return evalCond({ flag: cs }, ctx);
   }
   if (Array.isArray(cond)) return cond.every(c => evalCond(c, ctx));
   const p = ctx.player, w = ctx.world;
@@ -170,7 +182,9 @@ function evalCond(cond, ctx) {
   if (cond.flagsNone) { for (const f of [].concat(cond.flagsNone)) if (p.hasFlag(f)) return false; }
 
   // 简化写法：{ level: ">=10" } / { kills: ">=5" } / { money: 100 }
-  for (const key of Object.keys(cond)) {
+  for (const rawKey of Object.keys(cond)) {
+    /* 对象写法也认 `{'room.items': '>0'}`（与字符串写法同一套别名）。 */
+    const key = rawKey === 'room.items' ? 'roomItems' : rawKey === 'room.npcs' ? 'roomNpcs' : rawKey;
     if (!NUM_FIELDS.includes(key)) continue;
     if (key === 'rank') continue;
     const c = parseCmp(cond[key]);

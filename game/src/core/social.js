@@ -316,6 +316,55 @@ function giftValue(world, npc, itemId) {
  * 请教武学
  * ============================================================ */
 /** 该 NPC 能教的武学列表（已换算强度与好感门槛） */
+/**
+ * 这个人为啥**不肯教**（空字符串 = 肯教）。
+ *
+ * 主人 2026-10-08：「有些武学即便你点击请教了对方也不会教（非特殊情况比如
+ * 被你绑进地牢里的）」——举的就是这条：**人被你制住了，自然教不了**。
+ * 另外一条同源的：**门派传承武学**，你不是这一门的人，人家凭啥教你。
+ *
+ * ⚠️ 判据集中在这里一处，面板（显示为什么不能教）与指令（真拒绝）**同源** ——
+ *    两边各写一份迟早对不上（面板说能教、点下去被拒，是最气人的那种）。
+ *
+ * @returns {string} 中文理由；空串 = 肯教
+ */
+function wontTeachReason(world, npc, skillId) {
+  const p = world && world.player;
+  const def = (npc && (npc.def || npc)) || {};
+  /* ① 人已经倒下 / 被你掳走关着 —— 自身难保，教不了 */
+  if (npc && (npc.knockedOut || npc.dead)) return '他眼下自身难保，哪有心思教你。';
+  const kd = p && p.kidnap;
+  if (kd) {
+    const id = npc && (npc.defId || npc.id);
+    const lists = [].concat(kd.bags || [], kd.slaves || [], kd.captives || [], kd.guards || []);
+    if (id && lists.some(x => x && (x.defId === id || x.id === id))) {
+      return '他如今身不由己，教不了你。';
+    }
+  }
+  /* ② 门派传承：你不是这一门的人 —— **但你的师父例外**。
+   *
+   * 🔴 2026-10-12 回归抓到的真 bug：拜岳不群为师之后，请教「养吾剑法」被一句
+   *   「养吾剑法是华山派的传承，你不是华山派的人，学不得」挡回去。
+   *   于是「拜师」这个动作**毫无意义** —— 拜师就是为了学他门里的东西。
+   *   （smoke-persona-master「请教必定学会」、smoke-wuguan「跟师父学不要钱」
+   *     两条同时红，都是它。测试只断「按钮发了什么」的假绿在这里帮不上忙。）
+   *
+   * 判据：`p.masters` 按 **defId** 记（见 commands.js 的拜师），所以用 defId 比。
+   * 允许的两条路：① 你本来就是这一门的人；② 这个 NPC 是你磕过头拜过的师父。
+   */
+  const sectId = def.sect;
+  if (sectId) {
+    const isMyMaster = !!(p && p.masters && p.masters[npc.defId || npc.id || '']);
+    const sect = (world.data && world.data.sects && world.data.sects[sectId]) || null;
+    const mine = p && p.sect;
+    if (!isMyMaster && sect && (sect.skills || []).indexOf(skillId) >= 0 && mine !== sectId) {
+      const sd0 = world.getSkill(skillId) || {};
+      return `${sd0.name || '这门功夫'}是${sect.name}的传承，你不是${sect.name}的人，学不得。`;
+    }
+  }
+  return '';
+}
+
 function teachList(world, npc) {
   const def = npc.def || {};
   const out = [];
@@ -329,6 +378,7 @@ function teachList(world, npc) {
     if (!sd) continue;
     if (npc.learned && !npc.learned[sid] && !(def.teach || []).includes(sid)) continue;
     const lv = npc.learned && npc.learned[sid] ? npc.learned[sid].level : (npc.level || 20) * 6;
+    const why = wontTeachReason(world, npc, sid);
     out.push({
       id: sid,
       name: sd.name,
@@ -339,6 +389,9 @@ function teachList(world, npc) {
       favorNeed: favorNeedFor(world, npc, sid),
       money: canBuyTeach(npc) ? teachPrice(world, npc, sid) : 0,
       known: !!(world.player && world.player.learned[sid]),
+      /* 「不肯教」的理由（空串 = 肯教）；面板与指令都读它 */
+      why,
+      can: !why,
     });
   }
   out.sort((a, b) => a.power - b.power);
@@ -446,6 +499,7 @@ function trySteal(world, npc, which) {
 }
 
 module.exports = {
+  wontTeachReason,
   LIKE_TYPES,
   FAVOR_TIERS, favorTier, clampFavor, addFavor, favorOk,
   addFavorTo, favorOf, findInst,

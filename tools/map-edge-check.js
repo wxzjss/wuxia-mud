@@ -149,8 +149,14 @@ function section(t) { console.log('\n── ' + t + ' ──'); }
     '越界 ' + out.length + (out.length ? ' 如 ' + JSON.stringify(out[0]) + ' 画布 ' + W + 'x' + H : ''));
   ok('坐标无 NaN', !/left:NaN|top:NaN/.test(mhW));
 
-  /* 图例里要有「出界方向」这一项，不然玩家不认识那排牌子 */
-  ok('图例说明「出界方向」', mhW.includes('出界方向') && mhW.includes('dot-edge'));
+  /* 🔴 2026-10-12 口径改动：主人「把『出界方向』删了」——
+     图例里那一项连同小圆点一起下线，所以这里反过来断「它真的不在了」。
+     ⚠️ 地图上**区域边界那排牌子本身（.map-edge-hint）没删**：
+        那是主人 2026-10-11 亲自要的「走到边界提示通往哪个区域」，
+        这一批只说删图例，没说删牌子，别顺手一起删了。 */
+  ok('图例里的「出界方向」已按主人要求删掉',
+    !mhW.includes('出界方向') && !mhW.includes('dot-edge'));
+  ok('区域边界那排牌子仍在（主人 10-11 要的，别误删）', mhW.includes('map-edge-hint'));
 
   /* region 模式：只画本区一块，邻居不在图上 → 不能画（牌子会挂在画布外） */
   section('4 前端：区域模式不画边界路牌');

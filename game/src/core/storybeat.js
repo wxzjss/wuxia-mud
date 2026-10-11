@@ -66,9 +66,66 @@ function beats(world, p, list) {
 
 function memOf(p) {
   p.vars = p.vars || {};
-  const m = p.vars[MEMO] = p.vars[MEMO] || { tut: 0, quests: {} };
+  /* `sayNo` = 台词/动作**投到日志的最后一章**（大框是常显的，日志只投一次）
+     `held`  = 「接取时该讲、但先扣着不讲」的那些任务（见 hold / takeHeld） */
+  const m = p.vars[MEMO] = p.vars[MEMO] || { tut: 0, sayNo: 0, quests: {}, held: {} };
   if (!m.quests) m.quests = {};
+  if (!m.held) m.held = {};
   return m;
+}
+
+/* ---------------- 接取旁白：先扣着，等玩家来追 ---------------- */
+
+/**
+ * 「这桩事是**脚本直接塞给你的**，接取时该说的那几句话先扣着」。
+ *
+ * 主人 2026-10-12 的原话：
+ *   「主线剧情一进游戏就接取，但主线剧情需要追踪时才在屏幕上显示
+ *     原本应该在接取时就应该出现的那些文本。」
+ *
+ * 为什么需要这个开关：主线是 `world.createPlayer` 开局就写进任务簿的
+ * （不是玩家在 NPC 那儿点「接取任务」接的），而 `reconcile` 判断「这是新接的」
+ * 靠的是 `_storyBeat.quests` 那本账 —— 开局它是空的，于是**第一条指令之后**
+ * 就把「【接取任务】江湖路远 + 委托人的话 + 目标」一股脑打进日志。
+ * 玩家还没弄明白自己在哪，就先被塞了三行主线说明。
+ *
+ * ⇒ 现在这类任务记进 `held`：reconcile 见到它**只记账、不讲话**，
+ *   等玩家在「任务」里点了追踪（或敲了 `追踪 <任务>`）再讲（见 takeHeld）。
+ *   大框那边不受影响 —— 它本来就是「追谁演谁」，一追就看得见。
+ */
+function hold(p, qid) {
+  if (!p || !qid) return;
+  memOf(p).held[qid] = true;
+}
+
+/**
+ * 玩家来追这桩事了 → 把扣着的那几句交出去（**只交一次**）。
+ * @returns {Array<{kind,text}>} 0~N 行；没扣着东西就返回空数组。
+ */
+function takeHeld(world, p, qid) {
+  if (!p || !qid) return [];
+  const m = memOf(p);
+  if (!m.held[qid]) return [];
+  delete m.held[qid];
+  const qd = (world && world.getQuest) ? world.getQuest(qid) : null;
+  if (!qd || !qd.name) return [];
+  const raw = p.questStage ? p.questStage(qid) : (p.quests || {})[qid];
+  let idx = (raw === undefined || raw === null || raw < 0) ? 0 : raw;
+  const stages = qd.stages || [];
+  if (idx >= stages.length) idx = Math.max(0, stages.length - 1);
+  const stage = stages[idx] || {};
+  const out = beats(world, p, [
+    { kind: 'quest', text: `【接取任务】${qd.name}` },
+    /* 任务的 desc 写的就是委托人的做派，所以也算「人物描写」，一并过在场闸门。 */
+    { kind: 'story', text: qd.desc, by: qd.giver },
+  ]);
+  if (stage.desc) out.push({ kind: 'plain', text: '　目标：' + stage.desc });
+  return out;
+}
+
+/** 有没有扣着这桩事的接取旁白（测试与前端提示用） */
+function isHeld(p, qid) {
+  return !!(p && p.vars && p.vars[MEMO] && p.vars[MEMO].held && p.vars[MEMO].held[qid]);
 }
 
 /** 开局时把当前进度记成「已讲」——楔子已经交代过了，别再复述一遍 */
@@ -92,19 +149,30 @@ function reconcile(world, p, opts) {
   const m = memOf(p);
   const out = [];
 
-  /* ① 新手教程的章节 —— **不再从这里往日志里发**。
+  /* ① 新手教程的章节 —— 正文走上大框（`currentStory`），但**NPC 的言行走这里**。
    *
-   * 2026-10-11 改：主人要求「新手剧情都在那个大框里面显示，不在屏幕上和其他
-   * 人物描写环境描写之类的一起显示」。于是教程章节改由 `currentStory()` 常显在
-   * **上方大框**（`view.story`），日志这一路彻底摘掉。
+   * 2026-10-08 主人两句话把它们分开的：
+   *   ·「新手剧情都在那个大框里面显示」→ 旁白（正文）进大框；
+   *   ·「大框里新手剧情不要有 NPC 的语言与动作描写，这些都是属于在屏幕下方显示的，
+   *      就是那些灰色字体内容」→ 台词/动作留下来，打进日志的**灰字**行（`npcsact`）。
    *
-   * 原来那套「逐章补课 + `_storyBeat` 记账」的病根正好一起消失：
-   * 它得靠「每条指令对一次账」来保证不漏章，而只要有一环没接上（比如人不在场
-   * 被闸门筛掉、或者某章被跳过后又回头补），玩家就可能**永久错过一段剧情**，
-   * 屏幕还不会有任何提示。现在大框显示的是**当前状态算出来的当前一章**，
-   * 走开、读档、跨区回来都还在那儿，天然不会漏。
-   * （`_storyBeat` 字段与 `markSeen()` 保留：旧存档里带着它，删了字段只会让
-   *   读档逻辑多一处分支，留着不读不用，无害。） */
+   * ⚠️ 每章**只投一次**（记在 `_storyBeat.sayNo`）：大框是常显的，
+   *    要是每帧都投，日志会被同一句话刷屏。
+   * ⚠️ kind 用 `npcsact` 而不是 `say`：`say` 在日志里是蓝字（对白），
+   *    而这句常常是「他抬头看了你一眼，又低下去拨火」这类**动作描写**，
+   *    归到灰字那一档才对得上主人说的「灰色字体内容」。
+   */
+  try {
+    const g = require('./tutorial').guideState(p, p.tutorialFlags);
+    const cur = g && g.current;
+    if (cur && cur.say && m.sayNo !== cur.no) {
+      m.sayNo = cur.no;
+      /* `story:true` = 「这是剧情里的言行」——前端据此在这段灰字**上方**打一个
+         「剧情」标签（主人 2026-10-08：「那些灰字上方要写有剧情标签」）。
+         房间氛围里那些路人的小动作没有这个标记，不加标签 —— 免得满屏都是标签。 */
+      out.push({ kind: 'npcsact', text: cur.say, story: true });
+    }
+  } catch (e) { /* 教程算不出来就不投 */ }
   /* ② 任务：接取 / 阶段推进时讲剧情（委托人的话要看他在不在） */
   for (const qid of Object.keys(p.quests || {})) {
     const st = p.quests[qid];
@@ -112,6 +180,13 @@ function reconcile(world, p, opts) {
     if (m.quests[qid] === st) continue;
     const first = m.quests[qid] === undefined;
     m.quests[qid] = st;
+    /* ★ 脚本直接塞给你的那条（主线起手式）：接取旁白**先扣着**。
+       主人 2026-10-12：「主线剧情一进游戏就接取，但主线剧情需要追踪时才在屏幕上
+       显示原本应该在接取时就应该出现的那些文本。」
+       ⇒ 这里只记账、不出声；玩家去追它的时候由 `takeHeld()` 讲（见 commands.js 的「追踪」）。
+       ⚠️ 必须放在 `m.quests[qid] = st` **之后**：不然下一条指令又判成「第一次见到」，
+          会反复走这一段（账没记上）。 */
+    if (first && m.held[qid]) continue;
     /* ⚠️ 「接取新任务就自动追踪」**不在这里**做。
        这里判「第一次见到」用的是 `_storyBeat.quests` 那本记忆账，它在
        **开局 / 读档之后是空的** —— 于是手上那些老任务全被当成「刚接的」
@@ -169,9 +244,12 @@ function newbieChapter(p) {
   const g = require('./tutorial').guideState(p, p.tutorialFlags);
   if (!g || g.finished || !g.current) return null;
   const s = g.current;
+  /* ⚠️ 大框里**只放旁白**（主人 2026-10-08：「大框里新手剧情不要有 NPC 的语言
+     与动作描写，这些都是属于在屏幕下方显示的，就是那些灰色字体内容」）。
+     NPC 说了什么做了什么，交给**下方日志**的灰字行（kind `npcsact`）——
+     由 reconcile() 每章投一次，见那边的注释。 */
   const lines = [];
   if (s.narr) lines.push({ kind: 'story', text: s.narr });
-  if (s.say) lines.push({ kind: 'say', text: s.say });
   if (s.goal) lines.push({ kind: 'plain', text: '　这一程：' + s.goal });
   return {
     arc: 'tutorial', arcName: '入江湖',
@@ -264,4 +342,7 @@ function currentStory(world, p) {
   try { return questChapter(world, p, p.track); } catch (e) { return null; }
 }
 
-module.exports = { reconcile, present, beats, markSeen, currentStory, NEWBIE, syncTrack, pickAuto, MEMO };
+module.exports = {
+  reconcile, present, beats, markSeen, currentStory, NEWBIE, syncTrack, pickAuto, MEMO,
+  hold, takeHeld, isHeld,
+};

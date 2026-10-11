@@ -168,18 +168,42 @@ function finishTutorial(p) {
     ok('任务面板里有追踪按钮（data-track）', /data-track="/.test(UI) && /q-track/.test(UI));
     ok('★ 正追着的那条画成「取消追踪」',
       /on \? '取消追踪' : '追踪'/.test(UI));
-    ok('★ 点按钮真发指令（追踪 / 取消追踪）',
-      /doCmd\(on \? '取消追踪' : \('追踪 ' \+ id\)/.test(UI));
+    /* ★ 2026-10-12 主人：「把追踪与取消追踪合到一起吧」——
+       两态现在发的是**同一条**指令（后端是开关）。 */
+    ok('★ 两态发同一条指令「追踪 <id>」（后端当开关用）',
+      /doCmd\('追踪 ' \+ id/.test(UI) && !/doCmd\(on \? '取消追踪'/.test(UI));
     ok('★ 点完重开任务面板（不然按钮还写着「追踪」）', /closeModal\(\);\s*\n\s*panel\('quests'\)/.test(UI));
     ok('大框画在房间面板里（renderRoom → renderStory）',
       /renderStory\(v\.story/.test(UI));
     ok('有剧情时房间描述让位', /desc\.classList\.add\('hidden'\)/.test(UI));
     /* 指令必须**真在后端**（不能只靠前端，纯文本客户端也要能用） */
     const CMD = require('fs').readFileSync(path.join(ROOT, 'game/src/core/commands.js'), 'utf8');
-    ok('后端注册了 追踪 / 取消追踪', /'track', '追踪'/.test(CMD) && /'untrack', '取消追踪'/.test(CMD));
+    ok('后端注册了 追踪 / 取消追踪（取消追踪是保留的兼容别名）',
+      /'track', '追踪'/.test(CMD) && /'untrack', '取消追踪'/.test(CMD));
     /* ⚠️ 这两个词绝不能进 PANEL_CMDS —— 进去就变成「开面板」而不是真追踪 */
     ok('★ 「追踪」不在前端 PANEL_CMDS 里（否则会被吃成开面板）',
       !/追踪: '/.test(UI.split('PANEL_CMDS')[1] || ''));
+
+    /* 🔴 2026-10-12 主人亲报：「在『任务』里点追踪新手任务，却说『没有这一桩事』」。
+       根因是**按钮发的是 id、后端只认中文说法**。这条断言必须打在后端真行为上 ——
+       只断「按钮发了什么」是抓不到它的（老守卫就是这么漏过去的）。
+       ⚠️ 场景要先摆对：**开局默认就追着新手**，那时按钮显示的是「取消追踪」；
+          主人会去点「追踪」，说明他先前已经把追踪取消掉了 —— 先复现那一步。 */
+    const e2 = new GameEngine({ seed: 4242, saveDir: SAVE_DIR });
+    e2.boot(); e2.newGame({ name: '试剑', gender: 'male', identity: 'zhuangyuan' });
+    const p2 = e2.world.player;
+    ok('前提：开局默认追的是新手（所以新手卡上那颗按钮是「取消追踪」）',
+      p2.track === '__newbie__', String(p2.track));
+    e2.exec('取消追踪');                          /* 玩家把它取消掉，按钮这才变回「追踪」 */
+    const r2 = e2.exec('追踪 __newbie__');       /* 前端按钮真实下发的那个 id */
+    ok('★ 点追踪新手任务：后端认这个 id（不再说「没有这一桩事」）',
+      p2.track === '__newbie__'
+      && !(r2.lines || []).some(l => /没有这一桩事/.test(l.text || '')),
+      'track=' + p2.track + ' / ' + (r2.lines || []).map(l => l.text).join('|').slice(0, 60));
+    const r3 = e2.exec('追踪 __newbie__');       /* 同一个 id 再点一次 = 取消（合并后的开关） */
+    ok('★ 同一个 id 再点一次就是取消（追踪与取消已合成一条）',
+      p2.track === null && !(r3.lines || []).some(l => /没有这一桩事/.test(l.text || '')),
+      'track=' + p2.track);
   }
 
   /* ---------- ⑧ 大框渲染（真函数） ---------- */

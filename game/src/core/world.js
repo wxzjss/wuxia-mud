@@ -177,6 +177,8 @@ class World extends EventEmitter {
     this.condFns = {};
     this.customEffects = {};
     this.customCommands = {};
+    /* Mod 沙箱脚本（script.js）的实例；loadMods 里重建，见 loadModScripts() */
+    this._scripts = [];
     this.uiExtensions = [];
     this.player = null;
     this.combat = new CombatEngine(this);
@@ -350,6 +352,11 @@ class World extends EventEmitter {
     this.mods = [];
     this.modLog = [];
     this.activeRules = [];
+    /* ⚠️ 这两样必须一起重置：`reload()` 是「换一个 mod 组合再来一遍」，
+       不清空的话，上一次那个已经被删掉的 mod 注册的指令还挂在 customCommands 里，
+       玩家敲下去会走到一个**已经不该存在**的脚本上（幽灵指令）。 */
+    this._scripts = [];
+    this.customCommands = {};
     for (const m of modList) {
       if (!m.enabled) continue;
       for (const fname of (m.files || ['mod.json'])) {
@@ -380,6 +387,13 @@ class World extends EventEmitter {
       }
     }
     this.buildIndexes();
+    /* Mod 沙箱脚本（mod 目录下的 `script.js`）。
+       挂在这里的理由和 applySpeciesMoves 一样：**boot / reload / deserialize
+       三条加载路径最后都落到 loadMods**，挂一处等于全挂上，不会漏。
+       脚本注册的「自定义指令」写进 `this.customCommands` —— 这个表
+       commands.execute 的第 5 步一直在查，但**以前从来没有人往里写过东西**；
+       事件处理器由 `runModEvent()` 在 fireEvent 尾巴上派发。 */
+    this.loadModScripts(modList);
     /* B3 · 物种专属招式。
        挂在这里（而不是 boot()/deserialize() 里）是因為这是**所有**加载路径的必经点：
        engine.boot() 走 loadMods → buildIndexes，engine.reload() 同样，
@@ -401,6 +415,124 @@ class World extends EventEmitter {
         this.condFns[name] = (args, ctx) => evalCond(Object.assign({}, def.body, args), ctx);
       } else if (def.type === 'effect') {
         this.effectFns[name] = (payload, ctx) => evalEffects(def.body, ctx);
+      }
+    }
+  }
+
+  /* ================================================================== *
+   * Mod 沙箱脚本（script.js）
+   *
+   * 一句话：`modloader` 一直在算 `hasScript`，文档和加载器头注释都写着
+   * 「script.js ← 可选，高级 mod（沙箱执行）」，**但没有执行入口**。
+   * 作者把逻辑写在 script.js 里，装上去世界毫无变化、也不报错。
+   * 这一段把它接上（隔离边界与作者 API 见 modscript.js 头注释）。
+   * ================================================================== */
+
+  /** 加载所有启用 mod 的 script.js（由 loadMods 调用，三条加载路径的必经点） */
+  loadModScripts(modList) {
+    const modscript = require('./modscript');
+    this.customCommands = this.customCommands || {};
+    for (const m of (modList || [])) {
+      if (!m.enabled) continue;
+      let s = null;
+      try {
+        s = modscript.loadModScript(this, m);
+      } catch (e) {
+        /* 加载器本身出问题（磁盘读不到、vm 起不来）也不能让世界起不来 */
+        this.modLog.push({ level: 'error', mod: m.id || '?', msg: `script.js 加载异常：${e && e.message}` });
+        continue;
+      }
+      if (!s) continue;
+      this._scripts.push(s);
+      /* 指令落到 commands.execute 第 5 步认的那张表上 */
+      for (const name of Object.keys(s.scriptCommands || {})) {
+        this.customCommands[name] = (o) => this.runScriptCommand(s, name, o);
+      }
+    }
+    return this._scripts;
+  }
+
+  /** 跑一条脚本自定义指令（commands.js 里 `customCommands[cmd]` 的契约） */
+  runScriptCommand(s, name, o) {
+    const payload = {
+      command: name,
+      args: ((o && o.args) || []).slice(),
+      raw: (o && o.raw) || '',
+      player: true,
+    };
+    const lines = s.runCommand(name, payload) || [];
+    if (!lines.length) {
+      /* ⚠️ 什么都不返回 = 玩家点了没反应。脚本写的指令必须**明说自己没结果**，
+         否则又是一个「不报错就是不生效」。 */
+      return {
+        lines: [{
+          kind: 'warn',
+          text: `（Mod「${s.id}」的指令「${name}」跑完了，但没有输出 —— 脚本里可能漏了 return 或 wx.msg()。）`,
+        }],
+      };
+    }
+    return { lines };
+  }
+
+  /**
+   * 把事件派发给脚本处理器（由 fireEvent 末尾调用）。
+   * 快路径：没有脚本、或没人监听这个事件，直接返回（onTick 上零开销）。
+   */
+  runModEvent(name, payload) {
+    if (!this._scripts || !this._scripts.length) return;
+    let hit = false;
+    for (const s of this._scripts) { if (s.listens(name)) { hit = true; break; } }
+    if (!hit) return;
+    const pl = this._scriptPayload(payload);
+    for (const s of this._scripts) {
+      if (!s.listens(name)) continue;
+      for (const l of s.emit(name, pl)) this.emit('storyline', { line: l });
+    }
+  }
+
+  /**
+   * 给脚本的事件负载**只挑标量**。
+   * 不直接把 `{npc}` / `{ch}` 这些活对象塞进沙箱：它们带着 world 引用，
+   * 等于把整个引擎漏给脚本（沙箱立刻变成摆设）。要查详情走 wx.me()/wx.here()。
+   */
+  _scriptPayload(payload) {
+    const o = {};
+    if (!payload || typeof payload !== 'object') return o;
+    const SCALARS = ['roomId', 'npcId', 'questId', 'day', 'prevDay', 'heal', 'cost',
+      'level', 'realm', 'skill', 'relation', 'itemId'];
+    for (const k of SCALARS) {
+      const v = payload[k];
+      if (v !== undefined && v !== null && typeof v !== 'object') o[k] = v;
+    }
+    if (payload.ch) o.isPlayer = !!payload.ch.isPlayer;
+    if (payload.npc) o.npcName = payload.npc.name || '';
+    if (payload.witness) o.witnessName = payload.witness.name || '';
+    if (payload.victim) o.victimName = payload.victim.name || '';
+    if (payload.rumor && typeof payload.rumor === 'object') o.rumorText = String(payload.rumor.text || '');
+    return o;
+  }
+
+  /**
+   * 脚本注册的指令与**游戏内置指令**撞名时：明确记一笔，然后让位。
+   *
+   * ⚠️ 为什么非要说出来：`commands.execute` 的解析顺序是「内置 → 方向 → 房间动作
+   *   → 任务关键词 → mod 自定义指令」。mod 写 `wx.command('look', ...)` 时，
+   *   玩家敲 look 走的永远是内置那条，作者的指令**永远不会响**，而且没有任何提示 ——
+   *   本项目的头号坑「不报错就是不生效」。
+   *   由 engine 在 `buildCommands()` 之后调用（那时候才拿得到内置指令表）。
+   */
+  validateScriptCommands(cmds) {
+    if (!this._scripts || !this._scripts.length) return;
+    const builtin = new Set(Object.keys((cmds && cmds.CMD) || {}));
+    for (const s of this._scripts) {
+      for (const name of Object.keys(s.scriptCommands || {})) {
+        if (!builtin.has(name)) continue;
+        delete this.customCommands[name];
+        s.scriptCommands[name] = 'conflict';
+        this.modLog.push({
+          level: 'warn', mod: s.id,
+          msg: `自定义指令「${name}」与游戏内置指令重名，已让位（mod 不能覆盖内置指令）。请换个名字。`,
+        });
       }
     }
   }
@@ -2336,6 +2468,17 @@ class World extends EventEmitter {
     /* ⚠️ onRoomEnter 的返回值必须**带出去**：它产出的是「进屋那一刻才有的见闻」
        （门派摩擦的那句话）。原来这里直接丢弃返回值，于是那处文案**一句都没露过面**
        ——典型铁律「只定义不消费」。`extra` 是新增字段，旧调用方只读 ok/msg，不受影响。 */
+    /* 首次踏进一个区域：开眼界也是长进（主人要的「其他方式」之一）。
+       每个区只给一次 —— 记在 `seen_region_<id>`，与地图「已探索」那笔账分开记：
+       地图那个是「这一间屋子去过没」，这个是「这一片地界来过没」。 */
+    try {
+      const rid = room.region;
+      if (rid && ch && typeof ch.setVar === 'function' && !ch.getVar('seen_region_' + rid)) {
+        ch.setVar('seen_region_' + rid, 1);
+        require('./potential').grant(ch, require('./potential').REGION_REWARD, meetLines, '新到一处地界');
+      }
+    } catch (e) { /* 给不成潜能不该挡住走路 */ }
+
     const extra = this.onRoomEnter(ch, room);
     return { ok: true, msg: '', extra: meetLines.concat(extra || []) };
   }
@@ -2757,6 +2900,8 @@ class World extends EventEmitter {
           const gain = 20 + (foe.level || 1) * 2;
           this.player.gainExp(gain);
           lines.push({ kind: 'sys', text: `切磋一场，你颇有所得（经验 +${gain}）。` });
+          /* 跟人过招也是长进（主人 2026-10-08 的「其他方式」） */
+          require('./potential').grant(this.player, require('./potential').DUEL_REWARD, lines, '与人过招');
         } else {
           lines.push({ kind: 'story', text: `${foe.name}扶住踉跄的你：「今日是我占了上风，你的路数却很是有趣。」` });
           lines.push(...social.addFavor(this, foe, 3, '切磋败北').lines);
@@ -3176,6 +3321,9 @@ class World extends EventEmitter {
       if (!eff) continue;
       evalEffects(eff, { player: this.player, world: this, event: payload }).forEach(l => this.emit('storyline', { line: l }));
     }
+    /* Mod 沙箱脚本（script.js）的 wx.on 处理器。放最后：规则先跑，
+       脚本后跑 —— 脚本的返回值同样走 storyline，顺序对玩家可见。 */
+    this.runModEvent(name, payload);
   }
 
   /* ================================================================
@@ -3290,9 +3438,19 @@ class World extends EventEmitter {
          主线照旧开局就接（在任务簿里，这条不变），但直接站到第 1 步，
          同一件事不要求玩家做两遍。 */
       p.setQuestStage(qid, q.startStage || 0);
+      /* ★ 2026-10-12 主人：「主线剧情一进游戏就接取，但主线剧情需要追踪时才在屏幕上
+         显示原本应该在接取时就应该出现的那些文本。」
+         ⇒ 这条是**脚本塞给他的**（不是他在 NPC 那儿点「接取任务」接的），
+            所以接取旁白先扣住，等玩家去「任务」里点追踪再讲。
+            见 storybeat.hold / takeHeld 的注释。 */
+      try { require('./storybeat').hold(p, qid); } catch (e) { /* 扣不住也算不上大事，别挡着开局 */ }
     }
     // 性格/出身加成
     this.applyBirth(cfg, p);
+    /* 开局的一段潜能（主人 2026-10-08 把潜能接回来）。
+       ⚠️ 不能是 0：新手第 7 章就是「跟师父请教学两门功夫」，
+          0 会把教程当场卡在断路里 —— 那不是难度，是 bug。 */
+    if (!(p.potential > 0)) p.potential = require('./potential').START_POTENTIAL;
     p.recalc();
     return p;
   }
