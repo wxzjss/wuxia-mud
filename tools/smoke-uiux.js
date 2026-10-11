@@ -1110,9 +1110,15 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
    * ================================================================ */
   section('⑭ 第四轮 · 「接取任务」先弹详情，确认后才真接');
   {
-    /* 从**真引擎**里挑一个当前真给得出「接取任务」的人（同 smoke-round4 §R 的口径） */
-    let QID = null, QNAME = null;
-    for (const id of Object.keys(w.data.npcs || {})) {
+    /* 从**真引擎**里挑一个当前真给得出「接取任务」的人（同 smoke-round4 §R 的口径）。
+       ⚠️ 两处刻意的写法，都是踩过坑的：
+        ① **先按 id 排序**再挑。原来直接吃 `Object.keys()` 的加载顺序，
+           新加一个带头 NPC 就可能换样本 —— 这是「测试样本随加载顺序漂」的老坑。
+        ② 优先挑**三段齐全**（委托人 / 要办的事 / 办成了给）的那条来验。
+           本段的意图是「详情页把这三段都渲染出来」；随便挑一条「没有可见奖励」的任务，
+           它本来就只该显示两段 —— 拿它去断言三段，是**拿样本的缺陷当 bug**。 */
+    const cands = [];
+    for (const id of Object.keys(w.data.npcs || {}).sort()) {
       const d0 = w.data.npcs[id] || {};
       if (!(Array.isArray(d0.quests) && d0.quests.length) && !d0.sidequest) continue;
       const inst = w.spawnNpc(id, p.room, 1, true);
@@ -1122,8 +1128,14 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
         const h = l.hl.find(x => String(x.text || '').indexOf(inst.name) === 0);
         if (h) { act = (h.actions || []).find(a => a.act === 'acceptquest'); if (act) break; }
       }
-      if (act) { QID = act.qid; QNAME = (engine.questPreviewOf(act.qid) || {}).name; break; }
+      if (act) cands.push({ id, qid: act.qid });
     }
+    const full = cands.find(c => {
+      const pv = engine.questPreviewOf(c.qid) || {};
+      return pv.giver && (pv.targets || []).length && (pv.rewards || []).length;
+    });
+    const pick = full || cands[0] || null;
+    const QID = pick && pick.qid, QNAME = pick && (engine.questPreviewOf(pick.qid) || {}).name;
     ok('⑭-0 前提：真引擎里找得到一个「接取任务」项', !!QID, QID + ' / ' + QNAME);
 
     if (QID) {

@@ -33,7 +33,7 @@ const P = [
   {
     id: 'yang_guo', name: '杨过', gender: 'male', room: 'gumu_mu', region: 'gumu', sect: 'gumu',
     title: '神雕大侠', roleP: '独臂人', personality: 'lengmo', age: 36, likes: ['wine'],
-    desc: '左边的袖子空着，随风摆一下。脸上扣着半张面具，只露出一双眼睛。',
+    desc: '空着的那边袖子，风一过就鼓起来，又瘪下去。脸上扣着半张面具。他也不摘，跟你说话也不摘。',
     talk: ['我的事，与你无关。', '这世上好人不多，你算一个也好。'],
     level: 78, skills: ['anran_xiaohunzhang', 'yugu_nvxinjian'],
     pt: {
@@ -48,7 +48,7 @@ const P = [
   {
     id: 'xiao_longnv', name: '小龙女', gender: 'female', room: 'gumu_mu', region: 'gumu', sect: 'gumu',
     title: '古墓派传人', roleP: '白衣女子', personality: 'lengmo', age: 28, likes: ['flower'],
-    desc: '一身白衣洗得没有一丝杂色，站在暗处，像是从石头里长出来的。',
+    desc: '白衣服。洗得很旧了，还是很白。人站在墙根暗处，你不留神，就看不出那儿还站着个人。',
     talk: ['墓里清净。', '你要走，就顺着那条道走。'],
     level: 80, skills: ['yugu_nvxinjian', 'jiuyin_zhenjing'],
     pt: {
@@ -63,7 +63,7 @@ const P = [
   {
     id: 'li_mochou', name: '李莫愁', gender: 'female', room: 'gumu_shan', region: 'gumu', sect: 'gumu',
     title: '赤练仙子', roleP: '道姑', personality: 'baozhao', age: 42, likes: ['flower'],
-    desc: '道袍洗得发白，那把拂尘的柄上被人刻过字，字被磨掉了。',
+    desc: '拂尘擦得干净，人倒是邋遢。道袍洗得发灰，袖口全是毛边。她看你，先从头看到脚。',
     talk: ['你也听说过我？', '这世上的情，都是假的。'],
     level: 72, skills: ['yugu_nvxinjian', 'jiuyin_baiguzhao'],
     pt: {
@@ -78,7 +78,7 @@ const P = [
   {
     id: 'guo_xiang', name: '郭襄', gender: 'female', room: 'emei_jinding', region: 'emei', sect: 'emei',
     title: '峨眉派祖师', roleP: '女侠', personality: 'haoshuang', age: 30, likes: ['flower'],
-    desc: '一头青驴拴在门外，她坐在石阶上啃干粮，啃得很香。',
+    desc: '青驴拴在门外，绳头随手往驴脖子上一搭。她坐门槛上啃烧饼，掉了渣也不管，拿袖子一抹。',
     talk: ['大哥哥，你也是来飘泊的？', '天下这么大，走一走就老了。'],
     level: 55, skills: ['jiuyang_shengong', 'emei_atk_1'],
     pt: {
@@ -94,7 +94,7 @@ const P = [
   {
     id: 'guo_jing', name: '郭靖', gender: 'male', room: 'xiangyang_gate', region: 'xiangyang', sect: null,
     title: '襄阳守将', roleP: '守城人', personality: 'mune', age: 50, likes: ['wine'],
-    desc: '甲胄底下是粗布衣裳，说话慢，一句是一句。',
+    desc: '甲胄的搭扣有两个是坏的，拿麻绳系着。开口之前，他先看你一会儿，像是要把你这个人看清楚。',
     talk: ['城在，人在。', '我笨，学得慢，可学过的忘不掉。'],
     level: 88, skills: ['xianglong_zhang', 'jiuyin_zhenjing'],
     pt: {
@@ -109,7 +109,7 @@ const P = [
   {
     id: 'huang_rong', name: '黄蓉', gender: 'female', room: 'xiangyang_street', region: 'xiangyang', sect: null,
     title: '丐帮帮主', roleP: '妇人', personality: 'youhua', age: 46, likes: ['food'],
-    desc: '一只手提着食盒，一只手拨算盘，两件事同时做。',
+    desc: '算盘珠子哗啦哗啦响。她一边打，一边招呼你坐，一边把桌上摊着的单子推到一边去。',
     talk: ['你这事，我看有三条路。', '先说难听的：钱我不白给。'],
     level: 75, skills: ['dagou_bangfa', 'luoying_shenjianzhang'],
     pt: {
@@ -124,7 +124,7 @@ const P = [
   {
     id: 'ouyang_feng', name: '欧阳锋', gender: 'male', room: 'baituo_gate', region: 'baituo', sect: 'baituo',
     title: '西毒', roleP: '老毒物', personality: 'yinzhi', age: 62, likes: ['incense'],
-    desc: '倒着走路。你跟他说话，他的眼睛始终落在你身后。',
+    desc: '他走路是倒着走的，边走边往身后看。跟他搭话，他看你身后比看你多。',
     talk: ['你身上有股味道。', '往前走是为了往后退，你懂么？'],
     level: 90, skills: ['hamagong', 'lingshe_quan'],
     pt: {
@@ -139,7 +139,7 @@ const P = [
   {
     id: 'zhou_botong', name: '周伯通', gender: 'male', room: 'taohuadao_forest', region: 'taohuadao', sect: 'taohua',
     title: '老顽童', roleP: '老顽童', personality: 'haoshuang', age: 70, likes: ['food'],
-    desc: '头发花白，衣襟敞着，手里永远在玩什么东西，没有东西就玩自己的手指。',
+    desc: '头发白了一半，衣襟敞着，腰带早不知道丢哪儿去了。手闲不住，这会儿正搓一片树叶，搓碎了，抖抖手，接着搓。',
     talk: ['陪我玩一盘！', '不玩？不玩我可要生气了。'],
     level: 85, skills: ['kongming_quan', 'jiuyin_zhenjing'],
     pt: {
@@ -155,7 +155,7 @@ const P = [
   {
     id: 'xiao_feng', name: '萧峰', gender: 'male', room: 'gaibang_po_miao', region: 'gaibang', sect: 'gaibang',
     title: '丐帮帮主', roleP: '好汉', personality: 'haoshuang', age: 34, likes: ['wine'],
-    desc: '契丹人的身量，站着像半座山。说话声音不高，屋里就没人再说话。',
+    desc: '往门口一站，门框就显得窄了。他坐下之前先看了圈屋子，谁也没漏下。声音不高，可他一开口，打岔的人都闭了嘴。',
     talk: ['你来，坐下喝一碗。', '我的事，我自己担。'],
     level: 92, skills: ['xianglong_zhang', 'shaolin_atk_1'],
     pt: {
@@ -170,7 +170,7 @@ const P = [
   {
     id: 'duan_yu', name: '段誉', gender: 'male', room: 'dali_wangfu', region: 'dali', sect: 'dali',
     title: '大理世子', roleP: '公子', personality: 'wenwan', age: 22, likes: ['flower'],
-    desc: '一身书生长衫，见了人先作个揖，作揖比说话利索。',
+    desc: '长衫是新裁的，下摆还带着褶。见人就拱手，手拱得很圆，话却说得磕绊，他自己也笑。',
     talk: ['在下姓段，单名一个誉字。', '这花真好看——啊，姑娘也好看。'],
     level: 62, skills: ['liumai_shenjian', 'lingbo_weibu'],
     pt: {
@@ -185,7 +185,7 @@ const P = [
   {
     id: 'xu_zhu', name: '虚竹', gender: 'male', room: 'shaolin_daxiong', region: 'shaolin', sect: 'shaolin',
     title: '少林僧人', roleP: '小和尚', personality: 'mune', age: 26, likes: ['food'],
-    desc: '相貌是难看的，眼神却干净。手大，指甲缝里常年是土。',
+    desc: '个头不高，相貌也平常，一笑起来就顺眼多了。手很大。指甲缝里总是黑的，剪得再勤也还是黑的。',
     talk: ['罪过罪过。', '阿弥陀佛——啊，小僧又说错话了。'],
     level: 80, skills: ['tianshan_liuyangzhang', 'shaolin_atk_1'],
     pt: {
@@ -200,7 +200,7 @@ const P = [
   {
     id: 'wang_yuyan', name: '王语嫣', gender: 'female', room: 'gusu_yanzi', region: 'gusu', sect: null,
     title: '慕容家表妹', roleP: '闺秀', personality: 'wenwan', age: 18, likes: ['book'],
-    desc: '手里攥着一卷书，站得很直，眼睛却跟着人走。',
+    desc: '书卷在手里攥着，攥得紧，页都没翻开。人站得笔直。你一动，她的眼就跟着动。',
     talk: ['这一招该往左半步——啊，我没练过。', '你别笑我，我只会说。'],
     level: 20, skills: [],
     pt: {
@@ -216,7 +216,7 @@ const P = [
   {
     id: 'ren_yingying', name: '任盈盈', gender: 'female', room: 'mojiao_hall', region: 'mojiao', sect: 'mojiao',
     title: '日月神教圣姑', roleP: '圣姑', personality: 'lengmo', age: 24, likes: ['music'],
-    desc: '一支短笛插在腰间。进门先看一眼门口，再落座。',
+    desc: '短笛插在腰上，笛穗垂着。进门先站定，把屋子看了一圈才坐，挑的还是个背靠墙的位子。',
     talk: ['坐下说话。', '我要的不是这个，你知道的。'],
     level: 70, skills: ['xixing_dafa'],
     pt: {
@@ -231,7 +231,7 @@ const P = [
   {
     id: 'feng_qingyang', name: '风清扬', gender: 'male', room: 'huashan_siguoya', region: 'huashan', sect: 'huashan',
     title: '剑宗前辈', roleP: '老者', personality: 'lengmo', age: 76, likes: ['sword'],
-    desc: '在崖上住了几十年，指甲长得像鹰爪，身上却干净。',
+    desc: '崖上住了几十年，下山的道怕是都荒了。指甲任由它长，弯得打钩。衣裳旧，可领口平整，没一块油渍。',
     talk: ['剑法不是招式，是念头。', '你学会这一招，就别再来。'],
     level: 95, skills: ['dugu_jiujian'],
     pt: {
@@ -246,7 +246,7 @@ const P = [
   {
     id: 'tian_boguang', name: '田伯光', gender: 'male', room: 'changan_lane', region: 'changan', sect: null,
     title: '万里独行', roleP: '刀客', personality: 'youhua', age: 38, likes: ['wine'],
-    desc: '刀鞘上刻着自吹自擂的四个字。人不高，脚步却快得看不清。',
+    desc: '刀鞘上刻着四个字，自己刻的，刻得歪歪扭扭，写的是「万里独行」。个头中不溜，两条腿倒腾得飞快，一眨眼人就到街那头去了。',
     talk: ['我这人有个好处，说话算数。', '你要打，我陪你打；你要喝，我陪你喝。'],
     level: 60, skills: ['kuangfeng_daofa'],
     pt: {
@@ -261,7 +261,7 @@ const P = [
   {
     id: 'lin_pingzhi', name: '林平之', gender: 'male', room: 'huashan_qingke', region: 'huashan', sect: 'huashan',
     title: '华山弟子', roleP: '少侠', personality: 'yinzhi', age: 20, likes: ['sword'],
-    desc: '衣冠整齐，手却抖。一开口，嗓子是尖的。',
+    desc: '衣裳穿得一丝不苟，连领子都抻得很平。手垂在身侧，一直在抖，他拿衣摆压住。一开口，嗓子提得很高。',
     talk: ['我家的东西，一件也不能落在别人手里。', '你说什么？再说一遍。'],
     level: 58, skills: ['pixie_jianfa'],
     pt: {
