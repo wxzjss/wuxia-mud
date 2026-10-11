@@ -119,7 +119,14 @@ class GameEngine {
     this.gameDir = path.join(projectRoot, 'game');
     this.dataDir = path.join(this.gameDir, 'data');
     this.modsDir = og(opts.modsDir, path.join(projectRoot, 'mods'));
-    this.saveDir = og(opts.saveDir, path.join(projectRoot, 'saves'));
+    /* 🔴 存档目录可用 `WX_SAVE_DIR` 顶掉（2026-10-11 踩过）。
+       `saves/` 是**玩家数据**，而服务端还有一份「活档兜底」`saves/_live.json`
+       （闲置被回收也不丢角色）。问题在于：**服务端启动会把 `_live` 读回来** ——
+       于是「起一个真服务试功能」这个动作会把探针角色写进仓库的 `saves/`，
+       然后**后续所有测试**跑起来都带着那个角色（`smoke-server-guard` 的
+       「未起局不许 5xx」当场变红，查了半天才发现是上一轮探针的锅）。
+       有了这个开关，起真服务试功能时挂 `WX_SAVE_DIR=<临时目录>` 即可互不干扰。 */
+    this.saveDir = og(opts.saveDir, process.env.WX_SAVE_DIR || path.join(projectRoot, 'saves'));
     this.userDataDir = og(opts.userDataDir, path.join(this.gameDir, 'userdata'));
     if (!fs.existsSync(this.saveDir)) fs.mkdirSync(this.saveDir, { recursive: true });
     if (!fs.existsSync(this.userDataDir)) fs.mkdirSync(this.userDataDir, { recursive: true });
