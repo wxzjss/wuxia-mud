@@ -695,15 +695,62 @@
    *   · 这里是「授权一次、长期记住」。之后在 Mod 站下载 Mod 会自动写进这个文件夹，
    *     点本按钮则从这个文件夹把 Mod 扫进来（装到 mods/_local/，带「本地」标签）
    * ------------------------------------------------------------------ */
+  /* 手机/不支持 File System Access 的浏览器：文件夹授权走不通，
+     改走「浏览器能走的那条路」——从手机里挑一个 zip / json 装进来。
+     ⚠️ 移动端点不动 `<input webkitdirectory>`（很多手机浏览器直接忽略），
+        所以这里**不给**「选文件夹」，只给「选文件」，认 zip 与单个 json。 */
+  function installFromPick() {
+    const L = global.WXLOCAL;
+    const mobile = !!(L && L.isMobile && L.isMobile());
+    U.modal('从文件安装',
+      '<div class="modal-text">' +
+      (mobile
+        ? '手机浏览器给不了文件夹权限，所以走「挑一个文件装进来」这条路：<br>'
+        : '直接从电脑里挑一个 Mod 文件装进来：<br>') +
+      '· <b>.zip</b> 整包 Mod（推荐，Mod 站下载的就是 zip）<br>' +
+      '· <b>.json</b> 单文件 Mod<br><br>' +
+      '<span class="dim">想改用文件夹授权（下载 Mod 直接存进本地文件夹），请用电脑版 Chrome / Edge。</span>' +
+      '</div>' +
+      '<input type="file" id="pick-mod-input" accept=".zip,.json,application/zip,application/json" style="margin-top:12px">',
+      '<button class="btn-ink" onclick="WXUI.closeModal()">取 消</button>' +
+      '<button class="btn-ink primary" id="pick-mod-go">读 取 安 装</button>');
+    $('pick-mod-go').onclick = async () => {
+      const inp = $('pick-mod-input');
+      const f = inp && inp.files && inp.files[0];
+      if (!f) { U.toast('还没选文件', 'warn'); return; }
+      const go = $('pick-mod-go');
+      go.disabled = true; go.textContent = '安 装 中…';
+      try {
+        if (/\.zip$/i.test(f.name)) {
+          const b64 = await fileToB64(f);
+          const d = await api.modInstall({ kind: 'zip', name: f.name, base64: b64 });
+          await refreshMods();
+          U.closeModal();
+          U.toast('安装成功：' + ((d.mod && d.mod.name) || f.name), 'ok');
+        } else if (/\.json$/i.test(f.name)) {
+          const text = await f.text();
+          let json;
+          try { json = JSON.parse(text); } catch (e) { throw new Error('JSON 格式错误：' + e.message); }
+          const r = await api.modInstallLocal({ kind: 'json', json, id: json.id || f.name.replace(/\.json$/i, '') });
+          if (r && r.ok === false) throw new Error(r.msg || '安装失败');
+          await refreshMods();
+          U.closeModal();
+          U.toast('安装成功：' + ((json && (json.name || json.id)) || f.name), 'ok');
+        } else {
+          throw new Error('只认 .zip 或 .json');
+        }
+      } catch (e) {
+        go.disabled = false; go.textContent = '读 取 安 装';
+        U.toast('安装失败：' + e.message, 'error', 4200);
+      }
+    };
+  }
+
   async function loadFromLocalDir() {
     const L = global.WXLOCAL;
-    if (!L) { U.toast('当前浏览器不支持本地文件夹，请用 Chrome / Edge', 'warn', 3600); return; }
-    if (!L.supported) {
-      U.modal('浏览器不支持',
-        '<div class="modal-text">你的浏览器不支持「文件系统访问」接口，无法授权本地 Mod 文件夹。<br><br>' +
-        '改用 <b>Chrome</b> 或 <b>Edge</b>，就能把 Mod 直接存进本地文件夹。<br>' +
-        '现在也可以继续用「从文件安装」（选 zip）。</div>',
-        '<button class="btn-ink" onclick="WXUI.closeModal()">知 道 了</button>');
+    /* 不支持就**不摆臭脸**：直接把可用路径端上来 */
+    if (!L || !L.supported || !L.supported()) {
+      installFromPick();
       return;
     }
 
@@ -747,6 +794,14 @@
         const r = await L.pickFolder();
         if (!r || !r.ok) {
           if (r && r.aborted) return;
+          /* 兜底：真到了这一步说明能力探测出错（正常在入口就改走选文件了）。
+             不摆臭脸 —— 直接改成「挑一个文件装」。 */
+          if (r && r.code === 'unsupported') {
+            U.closeModal();
+            U.toast(r.error, 'warn', 4200);
+            installFromPick();
+            return;
+          }
           U.toast((r && r.error) || '没有选择文件夹', 'warn');
           return;
         }

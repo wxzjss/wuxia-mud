@@ -176,6 +176,40 @@ ok('句柄存 IndexedDB（不能存 localStorage）', /indexedDB/.test(LMS));
 ok('有 saveOrDownload', /saveOrDownload/.test(LMS));
 ok('有 isReady / permissionState', /isReady/.test(LMS) && /permissionState/.test(LMS));
 
+/* ── 手机降级（主人 2026-10-12 亲报：「你的浏览器不支持文件夹授权」） ──
+   手机浏览器**一律没有** showDirectoryPicker（移动 Chrome 也没有，官方不打算支持），
+   所以这条路径在手机上永远走不通。要求：不摆臭脸，改走「挑一个文件装」。
+   ⚠️ 反向判据：主人不想要的是「只弹一句不支持就结束」，所以这里断的是
+      「存在可用的替代路径」，不是断文案长什么样。 */
+group('③b 手机/不支持浏览器的降级通路');
+ok('localmods 有 isMobile 能力探测', /function isMobile\(/.test(LMS));
+ok('isMobile 已导出', /supported,\s*isMobile/.test(LMS));
+ok('pickFolder 不支持时回 code:"unsupported"（可判别，不再只有一句文案）',
+  /code:\s*'unsupported'/.test(LMS));
+ok('不支持时的文案点明手机不行，并指向「从文件安装」',
+  /手机浏览器不支持文件夹授权/.test(LMS) && /从文件安装/.test(LMS));
+
+const STJ = fs.readFileSync(path.join(ROOT, 'game/src/renderer/js/start.js'), 'utf8');
+ok('start.js 有 installFromPick（挑文件安装）', /function installFromPick\(/.test(STJ));
+ok('挑文件同时认 zip 与 json',
+  /\.zip\$\/i\.test\(f\.name\)/.test(STJ) && /\.json\$\/i\.test\(f\.name\)/.test(STJ));
+ok('zip 走 api.modInstall', /kind:\s*'zip'/.test(STJ) && /api\.modInstall\(/.test(STJ));
+ok('json 走 api.modInstallLocal', /kind:\s*'json'/.test(STJ) && /api\.modInstallLocal\(/.test(STJ));
+ok('loadFromLocalDir 不支持时**改道** installFromPick（不是弹窗打发人）',
+  /if \(!L \|\| !L\.supported \|\| !L\.supported\(\)\) \{\s*\n\s*installFromPick\(\);/m.test(STJ));
+ok('lm-pick 兜底也改道（code==="unsupported" → installFromPick）',
+  /r\.code === 'unsupported'[\s\S]{0,200}installFromPick\(\)/.test(STJ));
+ok('不支持分支不再有「请用 Chrome / Edge」这种纯打发文案',
+  !/U\.modal\('浏览器不支持'/.test(STJ));
+
+const HOME = fs.readFileSync(path.join(ROOT, 'server/public/index.html'), 'utf8');
+ok('站点首页 detect 不到时**不 hide** 按钮（改成 fallback 用途）',
+  /pick\.dataset\.fallback = '1'/.test(HOME) && !/badge\.textContent = '不可用'/.test(HOME));
+ok('首页按钮在 fallback 模式下走选文件', /pick\.dataset\.fallback === '1'/.test(HOME));
+const TUT = fs.readFileSync(path.join(ROOT, 'server/public/tutorial.html'), 'utf8');
+ok('教程 FAQ 点明「手机浏览器一律不行」', /手机浏览器一律不行/.test(TUT));
+ok('教程 FAQ 给出「从文件安装」替代路径', /从文件安装/.test(TUT));
+
 /* ══════════════════════════════════════════════════════════════
  *  ④ 官方示例自动播种（云端重建的关键机制）
  * ══════════════════════════════════════════════════════════════ */

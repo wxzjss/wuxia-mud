@@ -22,10 +22,26 @@
 
   /* ------------------------------------------------------------------ *
    *  能力检测
+   *
+   *  ⚠️ 手机浏览器**一律没有** showDirectoryPicker（移动端 Chrome 也没有，
+   *     官方明确不打算支持），所以「文件夹授权」在手机上永远走不通。
+   *     别把它当 bug，检测到不支持就走**挑文件**那条路（见 start.js）。
    * ------------------------------------------------------------------ */
   function supported() {
     return typeof global.showDirectoryPicker === 'function' &&
       typeof global.indexedDB !== 'undefined';
+  }
+
+  /** 是否是触屏 / 移动端（用来改文案，不改行为） */
+  function isMobile() {
+    try {
+      if (global.navigator && global.navigator.userAgentData &&
+        typeof global.navigator.userAgentData.mobile === 'boolean') {
+        return global.navigator.userAgentData.mobile;
+      }
+      const ua = (global.navigator && global.navigator.userAgent) || '';
+      return /Android|iPhone|iPad|iPod|Mobile|HarmonyOS|MicroMessenger|QQ\//i.test(ua);
+    } catch (e) { return false; }
   }
 
   /* ------------------------------------------------------------------ *
@@ -110,11 +126,18 @@
 
   /**
    * 让用户挑一个文件夹并申请读写权限。
-   * @returns {{ok:boolean, name?:string, error?:string, aborted?:boolean}}
+   * ⚠️ 手机浏览器没有 showDirectoryPicker，返回**可读的**错误码 `unsupported`，
+   *    调用方据此改走「挑文件」（别只弹一句「不支持」就完事）。
+   * @returns {{ok:boolean, name?:string, error?:string, code?:string, aborted?:boolean}}
    */
   async function pickFolder() {
     if (!supported()) {
-      return { ok: false, error: '当前浏览器不支持文件夹授权（建议 Chrome / Edge）' };
+      return {
+        ok: false, code: 'unsupported',
+        error: isMobile()
+          ? '手机浏览器不支持文件夹授权，请改用「从文件安装」（挑 zIP/json）'
+          : '当前浏览器不支持文件夹授权（请用电脑版 Chrome / Edge）'
+      };
     }
     let handle;
     try {
@@ -339,7 +362,7 @@
    *  导出
    * ------------------------------------------------------------------ */
   global.WXLOCAL = {
-    supported, permissionState, isReady, folderName,
+    supported, isMobile, permissionState, isReady, folderName,
     pickFolder, restore, forget,
     writeFile, readFile, saveOrDownload, scanMods, collectFiles, listDir,
     ensureDir

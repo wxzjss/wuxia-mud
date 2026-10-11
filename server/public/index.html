@@ -113,11 +113,13 @@
         var list = document.getElementById('lm-list');
 
         if (!window.WXLOCAL || !window.WXLOCAL.supported()) {
-          badge.textContent = '不可用';
+          badge.textContent = '本机不支持';
           badge.className = 'lm-badge off';
-          desc.innerHTML = '你的浏览器不支持文件夹授权（<b>Chrome / Edge 支持</b>）。<br>' +
-            '没关系 —— 下载 Mod 时会照常存到你的「下载」文件夹，手动拖进 <code>mods/</code> 一样能用。';
-          pick.style.display = 'none';
+          desc.innerHTML = '你用的浏览器不开放「文件夹授权」（<b>只有电脑版 Chrome / Edge 支持</b>，手机一律不行）。<br>' +
+            '不影响玩 —— Mod 站下的 Mod 走普通下载，想装进游戏用下面的「选文件安装」。';
+          pick.textContent = '选文件安装（zip / json）';
+          pick.classList.add('primary');
+          pick.dataset.fallback = '1';
           return;
         }
 
@@ -149,6 +151,19 @@
         }
 
         pick.addEventListener('click', async function () {
+          /* 不支持文件夹授权的浏览器：这个按钮改当「选文件安装」用
+             （手机点它不至于吃闭门羹） */
+          if (pick.dataset.fallback === '1') {
+            var inp = document.createElement('input');
+            inp.type = 'file';
+            inp.accept = '.zip,.json';
+            inp.onchange = function () {
+              var f = inp.files && inp.files[0];
+              if (f) SITE.toast('已选中 ' + f.name + ' —— 请在游戏里的「MOD 管理器」用同一个文件安装', 'ok', 5200);
+            };
+            inp.click();
+            return;
+          }
           /* prompt 状态说明之前授权过，先试无感恢复 */
           if ((await window.WXLOCAL.permissionState()) === 'prompt') {
             var r = await window.WXLOCAL.restore(true);
