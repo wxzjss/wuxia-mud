@@ -87,10 +87,7 @@ const OPP = { n: 's', s: 'n', e: 'w', w: 'e', ne: 'sw', sw: 'ne', nw: 'se', se: 
  *    把 sect 撑到 17×17、wild 撑到 21×21 —— 而房间数不会跟着等比翻倍
  *    （那叫堆砌，不叫山）。填充率必然下滑，区间跟着下移，但**保留上限**：
  *    上限才是有用的那一半（防有人把 box 撑到离谱大）。 */
-const FILLED = {
-  capital: [0.20, 0.80], town: [0.20, 0.80], court: [0.20, 0.80], fun: [0.25, 0.70], village: [0.25, 0.70],
-  sect: [0.12, 0.70], mad: [0.14, 0.65], wild: [0.08, 0.45], realm: [0.10, 0.45], secret: [0.15, 0.60],
-};
+/* （旧的「按 tier 分档的填充率区间」表随大陆模型一起退休了，见 §7 的注释） */
 function targetOf(v) { return typeof v === 'string' ? v : (v && v.to); }
 const oneWayEdges = [];
 section('2 出口目标存在且严格双向可回', () => {
@@ -184,35 +181,50 @@ section('5 住宅 owner 真实存在', () => {
 });
 
 /* 6 terrain 合法 + 布局不越界 */
-section('6 terrain 不越 region box / 不压房间', () => {
+section('6 terrain 不压房间 / 挨着本区（大陆模型：不再看 box 边界）', () => {
   const L = layout.layoutAll(rooms, regions, null, terrain);
   ok(L.terrain, 'layoutAll 未返回 terrain');
   const boxes = L.regionBoxes || {};
-  let out = 0, onRoom = 0, cnt = 0;
+  let onRoom = 0, cnt = 0, far = 0, maxD = 0;
   const cellAt = {};
   for (const id in L.cells) { const c = L.cells[id]; cellAt[c.x + ',' + c.y] = id; }
+  /* 每个区域自己的房间坐标 —— 用来量「装饰格离本区多远」 */
+  const own = {};
+  for (const id in L.cells) {
+    const rid = (rooms[id] && rooms[id].region) || 'wild';
+    (own[rid] = own[rid] || []).push([L.cells[id].x, L.cells[id].y]);
+  }
+  /* 🔴 §6 的口径 2026-10-11 改过（世界地图合并成一整片大陆）：
+     原来查「terrain 是否越出 region box」—— 那时候各区域被推开、各自一个方框，
+     terrain 是往框里填的填充物，越框就等于飘到别人家地盘上。
+     现在各区的房间是**按真出口咬合**在一起的（框 = 房间真实范围），
+     包围一圈的山林旷野**本来就该在框外**。所以改查两条真不变量：
+       ① 不许压在任何一个房间上（自家的也不行）；
+       ② 不许飘离本区太远（离本区最近房间 > 30 格 = 那是别人家的地界了）。 */
   for (const rid in (L.terrain || {})) {
-    const b = boxes[rid];
-    ok(!!b, 'terrain 所属区域 ' + rid + ' 没有布局 box');
-    if (!b) continue;
+    ok(!!boxes[rid], 'terrain 所属区域 ' + rid + ' 没有布局 box');
+    if (!boxes[rid]) continue;
     for (const t of L.terrain[rid]) {
       cnt++;
-      ok(t.x >= b.x && t.y >= b.y && t.x < b.x + b.w && t.y < b.y + b.h,
-        'terrain 越出 ' + rid + ' box：(' + t.x + ',' + t.y + ')');
-      ok(!cellAt[t.x + ',' + t.y], 'terrain 压在房间 ' + cellAt[t.x + ',' + t.y] + ' 上');
-      if (!(t.x >= b.x && t.y >= b.y && t.x < b.x + b.w && t.y < b.y + b.h)) out++;
-      if (cellAt[t.x + ',' + t.y]) onRoom++;
+      if (cellAt[t.x + ',' + t.y]) { onRoom++; ok(false, 'terrain 压在房间 ' + cellAt[t.x + ',' + t.y] + ' 上'); }
+      let d = Infinity;
+      (own[rid] || []).forEach(([x, y]) => { d = Math.min(d, Math.abs(x - t.x) + Math.abs(y - t.y)); });
+      if (d > maxD) maxD = d;
+      if (d > 30) { far++; ok(false, 'terrain 飘到本区之外：(' + t.x + ',' + t.y + ') 距本区最近房间 ' + d + ' 格'); }
     }
   }
   ok(cnt > 200, 'terrain 落地数量偏少：' + cnt);
+  ok(onRoom === 0, 'terrain 压房格数：' + onRoom);
+  ok(far === 0, 'terrain 飘走的格数：' + far);
   const b = L.bounds;
   const ratio = b.h === 0 ? 0 : Math.min(b.w, b.h) / Math.max(b.w, b.h);
-  console.log('     地图 ' + b.w + 'x' + b.h + '，terrain ' + cnt + ' 格，越界 ' + out + '，压房 ' + onRoom);
+  console.log('     地图 ' + b.w + 'x' + b.h + '，terrain ' + cnt + ' 格，压房 ' + onRoom +
+    '，飘走 ' + far + '，离本区最远 ' + maxD + ' 格');
   ok(ratio >= 0.6, '地图未接近方形：' + b.w + 'x' + b.h);
 });
 
 /* 7 面积与密度：不再看绝对格数，看填充率与边长合理性 */
-section('7 区域尺寸与填充率合理', () => {
+section('7 区域尺寸与密度合理', () => {
   const L = layout.layoutAll(rooms, regions, null, terrain);
   const boxes = L.regionBoxes || {};
   const terr = L.terrain || {};
@@ -227,15 +239,25 @@ section('7 区域尺寸与填充率合理', () => {
     if (!b) return;
     const spec = regions[rid];
     const area = b.w * b.h;
-    const used = (rc[rid] || 0) + (terr[rid] || []).length;
-    const fill = used / area;
-    const range = FILLED[spec.tier] || [10, 75];
-    ok(fill >= range[0] && fill <= range[1],
-      rid + '(' + spec.tier + ') 填充率 ' + (fill * 100).toFixed(0) +
-      '% 超出合理区间 ' + (range[0] * 100) + '~' + (range[1] * 100) + '%');
-    ok(b.w >= 6 && b.w <= 22 && b.h >= 6 && b.h <= 22,
+    /* 🔴 2026-10-11 口径改动（世界地图合并成一整片大陆）：
+       原来填充率 = (房间 + terrain) / **被 minW/minH 撑大过的框**，
+       并按 tier 分档（village 25~70% 等）—— 那是「各区域推开、各自一个方框、
+       框里空的地方用旷野山林填满」的模型。
+       现在各区的房间按真出口咬合在一起，框就是房间的真实范围，
+       terrain 是**框外**那一圈山野，不再属于这个框。
+       所以这里改成量「这片地块里有多少真房间」（房间 / 框面积），
+       它守的仍是同一件事：**别出现一大片空框**（主人亲口抱怨过「框外那么大一片
+       空地块留着做什么」），只是尺子跟着模型换了一把。 */
+    const fill = (rc[rid] || 0) / area;
+    ok(fill >= 0.12 && fill <= 0.92,
+      rid + '(' + spec.tier + ') 房间密度 ' + (fill * 100).toFixed(0) +
+      '% 超出合理区间 12~92%');
+    /* ⚠️ 高度下限是 2 不是 3：数据里真有三间房的迷你区（haitan/many/secret），
+       3 间房压紧了就是个 3x2 —— 那是**真实尺寸**，不是布局塌了。 */
+    ok(b.w >= 3 && b.h >= 2 && b.w <= 22 && b.h <= 22,
       rid + ' 边长不合理：' + b.w + 'x' + b.h);
-    ok(spec.minW <= b.w + 1, rid + ' box 比 minW 还小');
+    ok(b.w === (b.roomW || b.w) && b.h === (b.roomH || b.h),
+      rid + ' box 与房间实际范围不一致（框虚胖了）');
   });
 });
 
@@ -376,6 +398,52 @@ section('12 城镇/都城密度 >= 0.8 人/房', () => {
     const d = x.npc / x.rooms;
     ok(d >= 0.8, `${reg}（${x.name}）人口密度 ${d.toFixed(2)}/房 < 0.8（${x.npc} 人 / ${x.rooms} 房）`);
   }
+});
+
+/* ============================================================
+ * 13 世界地图「合并成一整片大陆」（主人 2026-10-11）
+ * ============================================================ */
+section('13 跨区连线够短 + 布局与玩家位置无关', () => {
+  const L = layout.layoutAll(rooms, regions, null, terrain);
+  const DD = layout.DIR_DELTA || {};
+  const cells = L.cells;
+  let cross = 0, adj = 0;
+  const dists = [];
+  Object.keys(rooms).forEach(id => {
+    const c1 = cells[id];
+    if (!c1) return;
+    Object.keys(rooms[id].exits || {}).forEach(dir => {
+      const tid = rooms[id].exits[dir];
+      const t = rooms[tid], c2 = cells[tid];
+      if (!t || !c2 || t.region === rooms[id].region) return;
+      const d = DD[String(dir).toLowerCase()];
+      if (!d || (!d[0] && !d[1])) return;          /* 上下楼不参与平面相邻 */
+      cross++;
+      if (c1.x + d[0] === c2.x && c1.y + d[1] === c2.y) adj++;
+      dists.push(Math.abs(c2.x - c1.x) + Math.abs(c2.y - c1.y));
+    });
+  });
+  dists.sort((a, b) => a - b);
+  const med = dists[Math.floor(dists.length / 2)];
+  const avg = dists.reduce((a, b) => a + b, 0) / (dists.length || 1);
+  console.log('     跨区边 ' + cross + ' 条，图上相邻 ' + adj + ' 条，距离中位 ' + med +
+    ' 均值 ' + avg.toFixed(1) + ' 最长 ' + dists[dists.length - 1]);
+  /* 老做法（各区域货架式推开）实测：相邻 0 条、距离中位 33、均值 32 ——
+     满图都是横穿半个屏幕的斜虚线，正是主人说的「连线画法有问题」。
+     新做法（按真出口咬合 + 松弛）实测：中位 9、均值 12。
+     这里卡在「中位 ≤ 15」：合格线以内，退回老做法必然判红。 */
+  ok(dists.length > 50, '跨区边太少（数据不对劲）：' + dists.length);
+  ok(med <= 15, '跨区连线太长（中位 ' + med + ' 格，应 ≤15）—— 世界地图没合并成一片');
+  ok(avg <= 20, '跨区连线平均太长（' + avg.toFixed(1) + ' 格，应 ≤20）');
+  /* 🔴 地图是**世界**的属性，不是玩家位置的函数：
+     同一份数据，换个「当前房间」布局必须逐字一样。
+     （原来布局以玩家所在区域排在最前，玩家一跨区整张世界地图就重排。） */
+  const L2 = layout.layoutAll(rooms, regions, Object.keys(rooms).sort()[0], terrain);
+  let same = true;
+  Object.keys(cells).forEach(id => {
+    if (!L2.cells[id] || L2.cells[id].x !== cells[id].x || L2.cells[id].y !== cells[id].y) same = false;
+  });
+  ok(same, '布局随「当前房间」变了（玩家跨区会导致世界地图重排）');
 });
 
 console.log('\n' + (fail ? 'FAILED' : 'PASSED') + '  ' + pass + ' 通过 / ' + fail + ' 失败');if (fail) {

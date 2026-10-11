@@ -69,6 +69,20 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
       /const head2 = \(S\.view && S\.view\.lines\)/.test(START) && /appendLog\(head2\)/.test(START));
   }
 
+  /* 🔴 主人 2026-10-11 追加：「一进入游戏就显示第一章，**只显示第一章内容**，
+     其他内容不要显示。」⇒ 开局那一屏必须干净得只剩第一章：
+     不许有房间名/描述/节气/出口/在场人名，也不许有「【接取任务】…」那一坨。
+     （房间信息没丢，它一直在右侧 `#room-panel` 里。） */
+  {
+    const ks = kinds(r0);
+    const kindsSet = new Set(ks);
+    const forbidden = ['roomname', 'desc', 'exits', 'npcs', 'npcsact', 'quest', 'ambient'];
+    const leaked = forbidden.filter(k => kindsSet.has(k));
+    ok('★ 开局那屏**没有**房间/节气/出口/人物/任务那些内容', leaked.length === 0, leaked.join('、') || '干净');
+    ok('★ 开局那屏只有教程第一章那几行（≤6 行）', ks.length <= 6, ks.length + ' 行：' + ks.join(','));
+    ok('★ 开局那屏不含「接取任务」', !/接取任务/.test(t0));
+  }
+
   /* ================= 二、人物言行只在场才上屏 ================= */
   section('2 老汉不在跟前，他的话就不该出现');
   const elderRoom = 'road_jiangnan_1';

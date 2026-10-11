@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>武侠行 · 江湖再启</title>
-  <link rel="stylesheet" href="css/main.css?v=20261011y">
+  <link rel="stylesheet" href="css/main.css?v=20261012a">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
 </head>
 
@@ -162,11 +162,16 @@
           <div class="mount m1"></div>
           <div class="mount m2"></div>
           <div class="mount m3"></div>
-          <div class="moon"></div>
           <div class="mist"></div>
         </div>
         <div id="room-panel">
           <div class="room-head">
+            <!-- 月亮（主人 2026-10-11：「把右上角月亮正好放到春·辰时·晴那里」）。
+                 ⚠️ 它**不能**留在 `#stage-art` 里 —— `#room-panel` 的底是不透明的
+                    （`--surface-2`），留在背景层会被整块盖住，等于白摆。
+                    放进这一行、压在这行底与文字之间，才是「字正好在月上」。
+                 与主菜单的月亮**共用同一套渐变配方**（选择器并列，见 main.css）。 -->
+            <div class="room-moon" aria-hidden="true"></div>
             <span id="room-name" class="room-name">——</span>
             <span id="room-region" class="room-region"></span>
             <span id="room-env" class="room-env"></span>
@@ -345,12 +350,12 @@
 
   <!-- ?v= 用于缓存穿透：改了这里就等于强制所有浏览器重新拉脚本。
        配合服务端的 no-store，确保发版后不会有人继续跑旧代码。 -->
-  <script src="js/localmods.js?v=20261011y"></script>
-  <script src="js/app.js?v=20261011y"></script>
-  <script src="js/ui.js?v=20261011y"></script>
-  <script src="js/modmaker.js?v=20261011y"></script>
-  <script src="js/docdata.js?v=20261011y"></script>
-  <script src="js/start.js?v=20261011y"></script>
+  <script src="js/localmods.js?v=20261012a"></script>
+  <script src="js/app.js?v=20261012a"></script>
+  <script src="js/ui.js?v=20261012a"></script>
+  <script src="js/modmaker.js?v=20261012a"></script>
+  <script src="js/docdata.js?v=20261012a"></script>
+  <script src="js/start.js?v=20261012a"></script>
 </body>
 
 </html>

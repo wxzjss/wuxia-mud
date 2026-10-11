@@ -1325,6 +1325,49 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
       (gb.match(/\{[^}\n]{1,20}\}/) || ['(无)'])[0]);
   }
 
+  /* ---------- ⑱ 「武学」面板 → 「武学修为」真点击 ---------- */
+  section('⑱ 「武学」面板里的「武学修为」按钮（主人 2026-10-11 口径）');
+  {
+    /* 主人口径（原话）：「在『武学』里面增加一个『武学修为』按钮，
+       点击即可打开原来左侧快捷键的『武学修为』界面。」
+       ⇒ 侧栏那个按钮不动，这里只加一扇门。
+       ⚠️ 必须**真点**：光断言 HTML 里有按钮，测不出 onclick 绑没绑上
+       （铁律：点了没反应三查之一）。所以走 `.op-btn` 真点击 → 看弹窗标题。 */
+    const env = loadUi(makeEnv({ innerWidth: 390 }));
+    stubApi(env, VIEW);
+    closeMasks(env);
+    env.WX.api.view = async () => ({ ok: true, view: VIEW });
+    env.WX.S.view = VIEW;
+    const mb = env.document.getElementById('modal-body');
+    const mt = env.document.getElementById('modal-title');
+    mb.innerHTML = '';
+    await env.WXUI.panel('skills');
+    await settle();
+    ok('⑱-1 「武学」面板标题就叫「武学」（不再跟「武学修为」撞名）',
+      mt.textContent === '武学', mt.textContent);
+    const skHtml = mb.innerHTML || '';
+    ok('⑱-2 「武学」面板里有「武学修为」按钮',
+      /data-cmd="武学修为"/.test(skHtml),
+      (skHtml.match(/data-cmd="武学修为"[^>]*/) || ['(没有)'])[0]);
+
+    const jump = env.document.querySelectorAll('#modal-body .op-btn')
+      .find(b => b.getAttribute('data-cmd') === '武学修为');
+    ok('⑱-3 按钮真的绑上了 onclick（不是画上去的）', !!jump);
+    if (jump) { jump.click(); await settle(); await settle(); }
+
+    ok('⑱-4 ★ 点完弹出的是「武学修为」面板（侧栏那个同一份）',
+      mt.textContent === '武学修为', mt.textContent);
+    const mHtml = mb.innerHTML || '';
+    ok('⑱-5 ★ 新弹窗里真有奇经八脉/经脉内容（不是空壳）',
+      /奇经八脉|任脉|冲脉/.test(mHtml),
+      (mHtml.match(/.{0,12}(奇经八脉|任脉|冲脉)/) || ['(没有)'])[0]);
+    ok('⑱-6 ★ 两处进口进的是同一个面板（不是各画一份）',
+      env.WXUI.panelForCmd('武学修为') === 'martial' && env.WXUI.panelForCmd('武馆') === 'martial');
+    ok('⑱-7 侧栏那个「武学修为」按钮仍在（主人："不" = 不删）',
+      /data-panel="martial">武学修为</.test(
+        fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'index.html'), 'utf8')));
+  }
+
   console.log('\n———————————————————————————————');
   console.log(`  批次7 双端与 UI 回归：${pass} 通过 / ${fail} 失败`);
   if (fails.length) console.log('  失败项：' + fails.join('、'));

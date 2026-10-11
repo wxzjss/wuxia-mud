@@ -295,22 +295,36 @@ engine.newGame({ name: '试侠', gender: 'male', birth: 'wuxue' });
     ok('A-2 窄屏画布带 map-narrow 类（触发自适应放大）', /class="map-canvas map-narrow"/.test(html));
     ok('A-3 渲染出房间方块', nodes.length > 0, nodes.length + ' 个');
 
-    const wrongW = nodes.filter(n => n.width !== 46 || n.height !== 46);
-    ok('A-4 窄屏方块放大到 46×46', wrongW.length === 0, wrongW.length ? JSON.stringify(wrongW[0]) : '全部 46×46');
+    /* 🔴 2026-10-08 口径改动（主人三条地图要求）：
+       ① 地块**不再画方块框**（「把地块里的方块框删掉，用纯地名显示」）
+          ⇒ 节点的 width/height 就是**整格**（原来还差 4px 的缝 + 方块）；
+       ② 名字**不再截断**（原来桌面 4 字 / 窄屏 6 字）⇒ 直接断「显示的就是全名」；
+       ③ 区域模式**按弹窗可用宽高自动放大格距**（原来恒 30/52）。
+       所以这一段的断法跟着换：格距从画布宽反推，名字断全名。 */
+    const cell = nodes.length ? nodes[0].width : 0;
+    const badW = nodes.filter(n => n.width !== cell || n.height !== cell);
+    ok('A-4 窄屏节点占满整格（无方块框后尺寸=格距）', badW.length === 0 && cell > 0,
+      badW.length ? JSON.stringify(badW[0]) : '全部 ' + cell + 'x' + cell);
 
-    /* 几何步长 = 52（cell 自适应）：left = (x-minX)*52 + 30(pad) + 3(off) → (left-33)%52==0 */
-    const badGeo = nodes.filter(n => n.left == null || ((n.left - 33) % 52 + 52) % 52 !== 0 || ((n.top - 33) % 52 + 52) % 52 !== 0);
-    ok('A-5 窄屏格距=52px（几何随尺寸自适应，无错位）', badGeo.length === 0,
-      badGeo.length ? JSON.stringify(badGeo[0]) : '全部对齐 52 格');
+    const pad = 30;   /* 窄屏 MAP_PAD */
+    const badGeo = nodes.filter(n => n.left == null ||
+      ((n.left - pad) % cell + cell) % cell !== 0 || ((n.top - pad) % cell + cell) % cell !== 0);
+    ok('A-5 窄屏几何随格距自适应（无错位）', badGeo.length === 0,
+      badGeo.length ? JSON.stringify(badGeo[0]) : '格距 ' + cell + 'px');
 
-    const named = nodes.filter(n => n.label && n.label !== '你');
-    const over = named.filter(n => String(n.label).length > 6);
-    ok('A-6 窄屏方块名长度 ≤ 6（小屏阈值内）', over.length === 0,
-      over.length ? '超长：' + over.map(n => n.label).join('、') : `最长 ${named.reduce((a, n) => Math.max(a, String(n.label).length), 0)} 字`);
+    /* 名字：不再截断 —— 断「画上去的地名与后端真实房间名逐字一致」
+       （截过名的必然对不上，比断「≤N 字」更贴新口径）。 */
+    const named = nodes.filter(n => n.label);
+    const nameOf = {};
+    (view.map.rooms || []).forEach(r => { nameOf[r.id] = r.name; });
+    const mism = nodes.filter(n => n.room && nameOf[n.room] && n.label !== nameOf[n.room]);
+    ok('A-6 地名与真实房间名逐字一致（不再截断）', named.length > 0 && mism.length === 0,
+      mism.length ? (mism[0].room + ' 显示「' + mism[0].label + '」应为「' + nameOf[mism[0].room] + '」')
+        : '共 ' + named.length + ' 格，例：' + named.slice(0, 3).map(n => n.label).join('、'));
 
-    const expect6 = LONG_NAME.slice(0, Math.min(LONG_NAME.length, 6));
-    ok('A-7 窄屏「>4 字」房间名显示到 6 字（不再一律砍成 4 字）',
-      LONG_NAME.length > 4 && nodes.some(n => n.label === expect6), `期望有「${expect6}」`);
+    ok('A-7 ★ 长名房间窄屏也显示全名（原来砍到 6 字）',
+      LONG_NAME.length > 4 && nodes.some(n => n.label === LONG_NAME),
+      '期望有「' + LONG_NAME + '」，实际最长 ' + named.reduce((a, n) => Math.max(a, String(n.label).length), 0) + ' 字');
 
     /* ⚠️ 别假设「style 紧跟在 class 后面」——属性顺序是我这边可以随时调整的自由
        （重设计时在中间插了个 tabindex，这条就假红了一次）。
@@ -323,28 +337,37 @@ engine.newGame({ name: '试侠', gender: 'male', birth: 'wuxue' });
   /* ================================================================
    *  B14-a （宽屏）桌面观感零改动
    * ================================================================ */
-  section('B14-a · 桌面宽屏（innerWidth=1280）观感不变');
+  section('B14-a · 桌面宽屏（innerWidth=1280）');
   {
     const env = loadUi(makeEnv({ innerWidth: 1280 }));
     const { html } = await openMap(env, view);
     const nodes = nodesFromHtml(html);
 
     ok('A-9 宽屏画布无 map-narrow 类', !/class="map-canvas map-narrow"/.test(html));
-    const wrongW = nodes.filter(n => n.width !== 26 || n.height !== 26);
-    ok('A-10 宽屏方块维持 26×26（原样）', wrongW.length === 0, wrongW.length ? JSON.stringify(wrongW[0]) : '全部 26×26');
-    const named = nodes.filter(n => n.label && n.label !== '你');
-    const over = named.filter(n => String(n.label).length > 4);
-    ok('A-11 宽屏方块名长度 ≤ 4（原样）', over.length === 0, over.length ? over.map(n => n.label).join('、') : '全部 ≤4 字');
+    const cell = nodes.length ? nodes[0].width : 0;
+    const badW = nodes.filter(n => n.width !== cell || n.height !== cell);
+    ok('A-10 宽屏节点同样占满整格', badW.length === 0 && cell > 0,
+      badW.length ? JSON.stringify(badW[0]) : '全部 ' + cell + 'x' + cell);
+
+    const named = nodes.filter(n => n.label);
+    const nameOf2 = {};
+    (view.map.rooms || []).forEach(r => { nameOf2[r.id] = r.name; });
+    const mism2 = nodes.filter(n => n.room && nameOf2[n.room] && n.label !== nameOf2[n.room]);
+    ok('A-11 宽屏地名同样是全名（原来只留 4 字）', named.length > 0 && mism2.length === 0,
+      mism2.length ? (mism2[0].label + ' → ' + nameOf2[mism2[0].room]) : '共 ' + named.length + ' 格');
     const fonts = [...new Set(named.map(n => n.fontSize))];
-    ok('A-12 宽屏名字字号仍在 8px（原样，未放大）', fonts.length > 0 && fonts.every(f => f === 8 || f === 9), '字号=' + JSON.stringify(fonts));
+    /* 字号现在跟着名字长度收缩（长名降字号挤进格子），只要落在可读区间即可 */
+    ok('A-12 宽屏字号在 6~13px 之间（长名自动缩字号）',
+      fonts.length > 0 && fonts.every(f => f >= 6 && f <= 13), '字号=' + JSON.stringify(fonts));
 
-    /* 几何：宽屏仍是 30px 格 + 34px 留白 → left = (x-minX)*30 + 34 + 2 → (left-36)%30==0 */
-    const badGeo = nodes.filter(n => ((n.left - 36) % 30 + 30) % 30 !== 0);
-    ok('A-13 宽屏格距仍为 30px（几何未改）', badGeo.length === 0, badGeo.length ? JSON.stringify(badGeo[0]) : '全部对齐 30 格');
+    /* 几何：格距从节点宽度反推（区域模式会按弹窗放大，不再恒 30px） */
+    const pad = 34;
+    const badGeo = nodes.filter(n => ((n.left - pad) % cell + cell) % cell !== 0);
+    ok('A-13 宽屏几何随格距自适应（格距 ≥ 30px）', badGeo.length === 0 && cell >= 30,
+      badGeo.length ? JSON.stringify(badGeo[0]) : '格距 ' + cell + 'px');
 
-    ok('A-14 同一长名房间：宽屏只到 4 字（对比窄屏 6 字）',
-      nodes.some(n => n.label === LONG_NAME.slice(0, Math.min(LONG_NAME.length, 4))),
-      `「${LONG_NAME}」→ 宽屏「${LONG_NAME.slice(0, 4)}」`);
+    ok('A-14 ★ 同一长名房间：宽窄屏都显示全名（原来宽屏砍到 4 字）',
+      nodes.some(n => n.label === LONG_NAME), `「${LONG_NAME}」`);
   }
 
   /* ================================================================

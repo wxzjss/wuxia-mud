@@ -86,8 +86,9 @@ function markSeen(world, p) {
  * 每条指令之后对一次账，把「本该讲、还没讲」的剧情推出来。
  * @returns {Array<{kind,text}>} 0~N 行（调用方接到 lines 尾部即可）
  */
-function reconcile(world, p) {
+function reconcile(world, p, opts) {
   if (!p) return [];
+  const o = opts || {};
   const m = memOf(p);
   const out = [];
 
@@ -131,6 +132,12 @@ function reconcile(world, p) {
       break;
     }
   } catch (e) { /* 教程出错不该挡着玩 */ }
+
+  /* `tutOnly`：只要新手教程那一段，跳过下面所有任务播报。
+     开局第一屏用它 —— 主人 2026-10-11：「一进入游戏就显示第一章，**只显示
+     第一章内容**，其他内容不要显示」。不拦的话，同一屏里还会跟出
+     「【接取任务】【主线】江湖路远」那一坨，把第一章埋了。 */
+  if (o.tutOnly) return out;
 
   /* ② 任务：接取 / 阶段推进时讲剧情（委托人的话要看他在不在） */
   for (const qid of Object.keys(p.quests || {})) {

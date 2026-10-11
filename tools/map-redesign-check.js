@@ -140,9 +140,14 @@ async function renderMap(view) {
        所以直接走「等价路径」：连续两次调用缩放处理器 —— 但处理器在闭包里。
        改用**行为可观测**的判据：把 mapZoom 的档位效果从渲染结果反推 ——
        同一份 view 渲染两次必须一致（确定性），而 UI 源码里必须真的拿 mapZoom 乘进格子尺寸。 */
+    /* 🔴 2026-10-08 口径改动：区域模式现在按弹窗可用宽高**自动放大**格距
+       （`fitCell`），所以格子尺寸不再恒是「(NARROW?52:30)*z」。
+       缩放仍然要真的乘进去 —— 改断「两条赋值都带 * z」：
+         MAP_CELL = Math.round((NARROW ? 52 : 30) * z)   ← 天下全图
+         MAP_CELL = Math.round(fitCell * z)              ← 区域模式（fit 基线 × 缩放） */
     ok('★ 缩放真的乘进格子尺寸（源码级判据）',
-      /const MAP_CELL = Math\.round\(\(NARROW \? 52 : 30\) \* z\)/.test(uisrc)
-      && /const MAP_NODE = Math\.round\(\(NARROW \? 46 : 26\) \* z\)/.test(uisrc));
+      /MAP_CELL = Math\.round\(\(NARROW \? 52 : 30\) \* z\)/.test(uisrc)
+      && /MAP_CELL = Math\.round\(fitCell \* z\)/.test(uisrc));
     ok('　缩放有上下限（0.7~1.4）', /ZMIN = 0\.7, ZMAX = 1\.4/.test(uisrc));
     ok('　100% 时两个缩放按钮都可用（没被误禁用）',
       !/data-map-tool="z(in|out)"[^>]*disabled/.test(html));
@@ -165,8 +170,16 @@ async function renderMap(view) {
   ok('★ .map-canvas 的 max-width / max-height 成对（老铁律）',
     /\.map-canvas[^}]*max-width:\s*100%[^}]*max-height:\s*\d/.test(css));
   ok('★ 拖拽有 panning 光标态（老契约）', /\.map-canvas\.panning/.test(css));
-  ok('★ 未探索地块有斜纹质感（不是迷雾：名字照显示）',
-    /\.map-node\.unknown[^}]*repeating-linear-gradient/.test(css));
+  /* 🔴 2026-10-08 口径改动：主人要求「把地块里的方块框删掉，用纯地名显示」
+     ⇒ 未探索地块那层**斜纹底**随方块框一起退休了（没有底色可印斜纹了）。
+     它原本要守的是「不能靠把名字涂透明来做迷雾」——这条精神还在，
+     换成断「未探索地块仍给字色（不是透明）+ 只是压暗一档」。 */
+  ok('★ 未探索地块仍显示名字（只压暗一档，不做迷雾）',
+    /\.map-node\.unknown \.mn-name[^}]*color:\s*var\(--ink-4\)/.test(css)
+    && !/\.map-node\.unknown \.mn-name[^}]*color:\s*transparent/.test(css));
+  ok('　地块没有方块框了（无边框、无底色）',
+    /\.map-node \{[\s\S]{0,200}border:\s*none/.test(css)
+    && /\.map-node \{[\s\S]{0,200}background:\s*transparent/.test(css));
   ok('★ 地名按钮的名字 nowrap（中文窄容器会逐字竖排 —— 老坑）',
     /\.mrn-name[^}]*white-space:\s*nowrap/.test(css));
   ok('★ 悬浮工具条用实心底（--solid），不用半透明纸', /\.map-tools[^}]*background:\s*var\(--solid/.test(css));

@@ -270,11 +270,18 @@ class GameEngine {
        玩家根本分不清哪件事是自己做出来的。
        现在：开局当场把第一章（旁白 + 老汉那句话 + 「现在做什么」）推上屏幕；
        而第 1 章的目标（`did_look`）照旧只认「真看了」——
-       这屏文字**不会**顺手把第一个任务判完成（那也是主人点名的毛病）。 */
+       这屏文字**不会**顺手把第一个任务判完成（那也是主人点名的毛病）。
+
+       🔴 同日追加：「一进入游戏就显示第一章，**只显示第一章内容**，其他内容不要显示」。
+       ⇒ `v.lines` **整个换掉**（不是接在后面），并且只要教程那一段
+         （`{ tutOnly: true }` 把任务播报拦掉）。
+         于是开局第一屏干净的只剩第一章：没有房间描述、没有天气节气、
+         没有出口与人名清单、也没有「【接取任务】【主线】江湖路远」那一坨。
+         房间信息并没丢 —— 它一直在右侧的 `#room-panel` 里。 */
     try {
-      const sb = require('./storybeat').reconcile(this.world, p);
+      const sb = require('./storybeat').reconcile(this.world, p, { tutOnly: true });
       if (sb && sb.length) {
-        v.lines = (v.lines || []).concat(sb);
+        v.lines = sb;
         v.guide = tutorial.guideState(p, p.tutorialFlags || []);
       }
     } catch (e) { /* 剧情发不出来不该挡着开局 */ }
@@ -1086,12 +1093,16 @@ class GameEngine {
     }
 
     /* --- 布局：区域装箱，每个区域内部按出口方向排布 --- */
-    if (!this._mapLayout || this._mapLayoutFor !== allRooms) {
+    /* ⚠️ 缓存键必须用**数据对象本身**（`w.data.rooms` 在 boot 之后是同一个对象）。
+       原来比的是每次现搓的 `allRooms` 快照 —— 它每次都是新对象，
+       所以这个 if **永远成立**，地图布局每请求一次就重算一遍（含松弛迭代）。
+       改造后布局只与数据有关、**与玩家位置无关**（见 maplayout.packRegions 的注释），
+       所以缓存是安全的：数据不变，图就不变。 */
+    if (!this._mapLayout || this._mapLayoutFor !== w.data.rooms) {
       this._mapLayout = mapLayout.layoutAll(
         allRooms, w.data.regions, room.id, w.data.terrain || {}
       );
-      this._mapLayoutFor = allRooms;
-      this._mapLayoutFor = allRooms;
+      this._mapLayoutFor = w.data.rooms;
     }
     const layout = this._mapLayout;
 

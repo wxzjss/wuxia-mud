@@ -214,13 +214,37 @@ body::before {
    或与正好在月亮上的白字做出区分，都是白的有点难看清」。
    它就在右上角，而那一带正好压着顶栏 / 房间信息那一行浅色字 —— 两团白糊在一起。
    调低透明度：月亮留一个「夜里有月」的意思就够了，不必抢戏。
-   （再叠上外层 `opacity: .5`，实际峰值约 0.26。） */
-#bg-art .moon, #stage-art .moon {
+   （再叠上外层 `opacity: .5`，实际峰值约 0.26。）
+
+   ⚠️ 月亮有**两处**：主菜单那轮（`#bg-art .moon`，铺满视口的那层）
+      与游戏里「春 · 辰时 · 晴」那一行上的那一轮（`#room-panel .room-moon`）。
+      两者共用这一条渐变配方，只有定位与尺寸各自写（见下）。 */
+#bg-art .moon, #room-panel .room-moon {
   position: absolute; right: 12%; top: 10%; width: 96px; height: 96px; border-radius: 50%;
   background: radial-gradient(circle at 36% 34%,
     rgba(255, 253, 244, .64), rgba(240, 232, 210, .36) 62%, rgba(226, 215, 186, .20));
   box-shadow: 0 0 54px 14px rgba(200, 180, 130, .16);
 }
+/* ---- 游戏里那一轮：**正好落在「春 · 辰时 · 晴」上**（主人 2026-10-11）----
+   位置不能再按视口百分比猜，要贴着那行字本身：
+     · 那行字是 `.room-head` 里的 `.room-env`（`margin-left:auto` 顶到行右端），
+       所以「行右端」就是「字右端」；
+     · 月亮圆心落在字的中段 ⇒ 右缘从行右端往左退 `18px`（半个 ~48px 字宽再让一点）；
+     · 竖直方向对齐行中线（`top:50%` + `translateY(-50%)`）。
+   尺寸收到 48px：这一行本身只有 ~22px 高，48px 是「完整看见 + 盖住那行字」
+   的极限，再大就会被 `#main { overflow:hidden }` 切掉上边。
+   z-index 各就各位：月亮 0、行的文字 1 —— 装饰层绝不能盖住字。 */
+.room-head { position: relative; }
+.room-head .room-name, .room-head .room-region, .room-head .room-env { position: relative; z-index: 1; }
+#room-panel .room-moon {
+  right: 18px; top: 50%; transform: translateY(-50%);
+  width: 48px; height: 48px; z-index: 0; pointer-events: none;
+  box-shadow: 0 0 30px 8px rgba(200, 180, 130, .16);
+}
+/* 月亮现在**正好**压在这行字后面 ⇒ 给它一点描边阴影。
+   不然就是主人早就点过的那个毛病：「都是白的有点难看清」。 */
+.room-env { text-shadow: 0 1px 3px rgba(0, 0, 0, .55), 0 0 3px rgba(0, 0, 0, .35); }
+html.theme-light .room-env { text-shadow: 0 1px 3px rgba(255, 255, 255, .95), 0 0 3px rgba(255, 255, 255, .85); }
 #bg-art .mist, #stage-art .mist {
   position: absolute; left: 0; right: 0; bottom: 0; height: 30%;
   background: linear-gradient(180deg, transparent, rgba(23, 20, 15, .92));
@@ -989,7 +1013,13 @@ body::before {
             外层 .map-wrap 也没法靠原生滚动横向走。
    补上 max-width:100% 后，画布被压到容器宽（手机约 343px），892px 的内容溢出
    **在画布内部**，scrollLeft 才有可动范围 —— 上下、左右、斜向于是都通。 */
+/* ★ 画布居中（主人 2026-10-08：「为什么电脑端看当前区域的地图是**放在左侧**」）：
+   画布宽是内联写死的（区域模式 = 本区紧包围盒 × 格距），比弹窗窄时块级元素默认靠左 ——
+   一个 300px 的图贴在 760px 弹窗的左边，看着像没画完。
+   auto 外边距只在**画布比容器窄**时起作用；宽图（天下全图 / 手动放大）时
+   `max-width:100%` 已经把宽度压到容器宽，auto 自动失效，横竖照旧能拖。 */
 .map-canvas { position: relative; background: var(--card-2); border: 1px solid var(--line); border-radius: 7px; overflow: auto; max-width: 100%; max-height: 58vh; margin-bottom: 0;
+  margin-left: auto; margin-right: auto;
   /* 斜向平移：自己处理手势，禁掉浏览器一次只走一个轴的原生滚动 */
   touch-action: none; cursor: grab; -webkit-overflow-scrolling: auto; }
 .map-canvas.panning { cursor: grabbing; user-select: none; -webkit-user-select: none; }
@@ -1037,30 +1067,36 @@ body::before {
 .tr-road { color: #c4b391; } .tr-wall { color: #a8a094; }
 .tr-farm { color: #b3a24e; } .tr-cloud { color: #c6cad0; }
 
-/* 房间方块：26px 密排，缝只有 4px —— 连起来就是一片大陆 */
-.map-node { position: absolute; width: 26px; height: 26px; padding: 0; box-sizing: border-box;
-  border: 1px solid var(--line-2); border-top: 3px solid var(--stripe, #999); border-radius: 4px;
-  background: var(--card-2); cursor: default; z-index: 2; display: flex; align-items: center; justify-content: center;
-  overflow: hidden; transition: transform .12s, box-shadow .12s, background .12s; }
-.map-node .mn-name { font-size: 8px; line-height: 1; color: var(--ink-4); text-align: center; word-break: break-all; padding: 0 1px; }
-.map-node.here { background: var(--red); border-color: var(--red); box-shadow: 0 0 0 3px rgba(180,60,60,.2); z-index: 5; }
-.map-node.here .mn-name { color: #fff; font-weight: 700; font-size: 9px; }
-.map-node.near { background: var(--tint-gold); border-color: var(--line-gold); cursor: pointer; z-index: 4; }
-.map-node.near .mn-name { color: var(--gold); font-size: 8px; }
-.map-node.near:hover { transform: scale(1.25); box-shadow: 0 3px 10px rgba(0,0,0,.18); z-index: 9; }
-.map-node.reach { background: var(--surface-3); border-color: #ddd0ab; }
-.map-node.reach .mn-name { color: var(--ink-3); }
-.map-node.known { background: var(--tint-jade); border-color: var(--line-jade); }
+/* 地块 = **纯地名**（主人 2026-10-08：「把地块里的方块框删掉，用纯地名显示，
+   做成屏幕上那九宫格地名一样的形式」）。
+   ⇒ 边框、底色、顶色条一律去掉，一格的面积让给名字；状态靠**字色/字重**区分：
+        你在这里 → 红字加粗 + 下划线（没有框了，总得让人一眼找到自己）
+        一步可达 → 金字（可点，hover 放大）
+        去过     → 玉色
+        附近     → 墨色
+        没去过   → 淡墨（没有迷雾，名字照显示）
+   画布上那张网格底纸还在，所以「一格一地」仍然看得出来。 */
+.map-node { position: absolute; padding: 0; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  border: none; background: transparent; box-shadow: none;
+  cursor: default; z-index: 2; overflow: visible; font-family: var(--font);
+  transition: transform .12s; }
+/* 名字下面垫一层画布底色做描边：没有方块托底了，字压在走廊上也得看得清
+   （深色/浅色主题都用同一个变量，别写死白色）。 */
+.map-node .mn-name { text-align: center; word-break: break-all; padding: 0 1px;
+  color: var(--ink-3); line-height: 1.05;
+  text-shadow: 0 0 3px var(--card-2), 0 0 3px var(--card-2), 0 0 2px var(--card-2); }
+.map-node.here { z-index: 5; }
+.map-node.here .mn-name { color: var(--red); font-weight: 700;
+  text-decoration: underline; text-underline-offset: 2px; }
+.map-node.near { cursor: pointer; z-index: 4; }
+.map-node.near .mn-name { color: var(--gold); font-weight: 600; }
+.map-node.near:hover { transform: scale(1.18); z-index: 9; }
+.map-node.near:hover .mn-name { color: var(--gold-d); }
+.map-node.reach .mn-name { color: var(--ink-2); }
 .map-node.known .mn-name { color: var(--jade); }
-.map-node.unknown { background: var(--surface-2); border-color: #e5ded0;
-  /* 重设计：未探索的地块给一道**斜纹**质感（不是迷雾 —— 名字照显示）。
-     有质感的「没去过」一眼就分得出，也能撑住「这张图还没走完」的感觉。 */
-  background-image: repeating-linear-gradient(45deg, transparent 0 4px, rgba(0,0,0,.045) 4px 8px); }
-/* ★ 不再有「战争迷雾」（主人 2026-10-10 再次强调「地图不要战争迷雾」）。
-   这里原来是 `color: transparent` —— 未探索地块的名字被涂成透明 = 视觉上仍是迷雾，
-   与「所有地块都显示名字，只用深浅区分去过 / 没去过」相矛盾（见 ui.js mapHtml 的注释）。
-   改成一个**看得清**的浅灰：没去过也认得出是哪，只是比去过的淡一点。 */
-.map-node.unknown .mn-name { color: var(--ink-3); opacity: .72; }
+.map-node.unknown .mn-name { color: var(--ink-4); }
+.map-node.dim .mn-name { opacity: .7; }
 
 .map-quick { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 12;
   display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
@@ -1656,6 +1692,10 @@ body.narrow #scene { flex: 0 0 190px; }
 .panel-sec { font-family: var(--font); font-size: 13px; color: var(--gold-d);
   margin: 14px 0 7px; padding-bottom: 4px; border-bottom: 1px solid var(--line); font-weight: 600; }
 .panel-sec:first-child { margin-top: 2px; }
+/* 面板之间的「再开一扇门」按钮（如「武学」→「武学修为」）。
+   窄屏别让它溢出：显式 flex:1 1 auto + min-width:0。 */
+.panel-jump { display: flex; margin: 2px 0 12px; }
+.panel-jump .op-btn { flex: 1 1 auto; min-width: 0; text-align: center; }
 .love-sub { font-size: 12px; color: var(--ink-3); margin: 9px 0 5px; font-weight: 600; }
 
 .love-card { border: 1px solid var(--line); border-left: 3px solid var(--gold);

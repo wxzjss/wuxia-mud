@@ -1517,7 +1517,10 @@
       title = '属性详情';
       html = attrHtml(v);
     } else if (name === 'skills') {
-      title = '武学修为';
+      /* 主人 2026-10-11：屏幕下方那个「武学」按钮开的就是这个面板，
+         标题得跟着叫「武学」—— 原来写成「武学修为」，跟侧栏那个真·武学修为
+         面板**撞名**，玩家点进去只看到一串武学列表，一头雾水。 */
+      title = '武学';
       html = skillsHtml(v);
     } else if (name === 'practice') {
       title = '练武学';
@@ -1972,6 +1975,19 @@
     const stand = list.filter(s => s.standaloneActive);
     const rest = list.filter(s => !s.equipped && !s.standaloneActive);
     let h = '';
+
+    /* 主人 2026-10-11：「在『武学』里面增加一个『武学修为』按钮，点击即可打开
+       原来左侧快捷键的『武学修为』界面。」
+       ⇒ 侧栏那个 `data-panel="martial"` 按钮照旧留着，这里只是**再开一扇门**：
+       玩家是从屏幕下方的「武学」进来的，练着练着要打坐 / 冲经脉 / 开炉炼丹，
+       不该逼他回头去找侧栏。两处进的是**同一个面板**（`martial`），
+       别在这里另画一份经脉 —— 那正是「两份实现各自漂移」的老坑。
+       ⚠️ 走 `op-btn` + `data-cmd`（不是 `data-panel`）：`bindPanelActions` 只认
+       `#modal-body .op-btn`，走它才会「关掉当前弹窗 → 执行指令 → 开新弹窗」。
+       指令名靠 `PANEL_CMDS` 里的 `武学修为: 'martial'` 接线。 */
+    h += '<div class="panel-jump">' +
+      '<button class="op-btn primary" data-cmd="武学修为">武学修为 · 奇经八脉 / 打坐冲关 →</button>' +
+      '</div>';
 
     h += '<div class="panel-sec">已激活</div>';
     if (active.length) {
@@ -2615,22 +2631,22 @@
        视口宽度 < 640 视为手机窄屏：把格子与字号一起放大，
        名字从「最多 4 字」放宽到「最多 6 字」，46px 方块两行塞得下。
        桌面端（≥640）维持原值 30/26/8，观感零改动。 */
-    let vw = 0;
+    let vw = 0, vh = 0;
     try {
       if (typeof global !== 'undefined' && global && typeof global.innerWidth === 'number') vw = global.innerWidth;
-    } catch (e) { vw = 0; }
+      if (typeof global !== 'undefined' && global && typeof global.innerHeight === 'number') vh = global.innerHeight;
+    } catch (e) { vw = 0; vh = 0; }
     const NARROW = vw > 0 && vw < 640;
     /* 缩放档位（画布右上角工具条切换）。抽取环境里没有 mapZoom → 退回 1。 */
     let z = (typeof mapZoom === 'undefined') ? 1 : Number(mapZoom);
     if (!(z > 0)) z = 1;
     const ZMIN = 0.7, ZMAX = 1.4;
     z = Math.min(ZMAX, Math.max(ZMIN, z));
-    const MAP_CELL = Math.round((NARROW ? 52 : 30) * z);   // 每格边长（含走廊）
-    const MAP_NODE = Math.round((NARROW ? 46 : 26) * z);   // 格子方块边长
+    let MAP_CELL = Math.round((NARROW ? 52 : 30) * z);   // 每格边长（含走廊）
     const MAP_PAD = NARROW ? 30 : 34;     // 画布留白
     const M_LINE = NARROW ? 1.15 : 1;     // 名字行距
-    /* 名字最多显示几个字：跟着缩放走（放大就能多塞两个字，缩小就砍短些） */
-    const M_NAME_MAX = Math.max(3, Math.round((NARROW ? 6 : 4) * z));
+    /* （名字上限 `M_NAME_MAX` 已随「纯地名」一起退休：现在一律显示全名，
+        长名靠 fontOf() 缩字号塞进格子，不再按字数砍。） */
     const mFont = r => Math.max(7, Math.round((NARROW ? (r.current ? 14 : 13) : (r.current ? 9 : 8)) * z));
 
     const m = v.map || {};
@@ -2679,6 +2695,23 @@
       } else {
         b = scopeBox ? { minX: scopeBox.x, minY: scopeBox.y, w: scopeBox.w, h: scopeBox.h } : b0;
       }
+    }
+    /* 🔴 主人 2026-10-08-00-02-57：「为什么电脑端看当前区域的地图是**放在左侧**、
+       而且**很小看不清**。」
+       两个原因，一起修：
+         ① 画布是块级元素，宽度写死成「区域紧包围盒」，比弹窗（min(760px, 94vw)）窄得多，
+            又没有 auto 外边距 ⇒ 靠左（CSS 里加 margin auto，见 .map-canvas）；
+         ② 格距写死 30px，小区域（比如 7x10）只有 278px 宽 —— 一个 760px 的弹窗里
+            摆一张 278px 的图，当然「很小」。
+       这里按弹窗**可用宽高**反推一个合适的格距（只用区域模式；天下全图格距保持原样，
+       不然整张图会撑到几万像素）。放大上限 4 倍，避免三间房的小区被拉成巨型方块。 */
+    if (sc === 'region' && curRegion && b.w > 0 && b.h > 0) {
+      const availW = Math.min(760, Math.round((vw || 1280) * 0.94)) - 46;
+      const availH = Math.round((vh || 800) * 0.58) - 24;
+      const fit = Math.min((availW - MAP_PAD * 2) / b.w, (availH - MAP_PAD * 2) / b.h);
+      const base = NARROW ? 52 : 30;
+      const fitCell = Math.max(base, Math.min(Math.round(fit), base * 2));
+      MAP_CELL = Math.round(fitCell * z);
     }
     const ex = m.explore || { visited: 0, total: allRooms.length };
     const scopeCount = rooms.length;
@@ -2854,20 +2887,34 @@
        原话：「我要的世界地图是所有地图首尾连接：如果这个 A 区域地图边缘的地块
        再往前走一步就是 B 区域，那么这个 A 区域的地块就用线连接那块 B 区域的地块，
        整个分散的世界地图合并成一个完整的大地图。」
-       上面那条走廊逻辑只在**坐标相邻**时才连线，而 `packRegions` 把各区域推开、
-       中间留了空当 —— 跨区域的两个房间在图上不相邻，走廊永远连不上。
-       所以后端把这类边单独算成 `m.bridges` 下发（见 engine.mapView），
-       这里只负责画：一条虚线，把两端的格子牵起来。
-       ⚠️ **只画跨区域的**（`crossRegion`）。同区域但图上不相邻的还有一百多条
-          （斜向出口 / 上下层 / 区域内部留空），全画出来整张图会变成蛛网，
-          而主人要解决的是「区域与区域之间断开」这件事。 */
+       后端 2026-10-11 把布局改成了「按真出口咬合 + 松弛」（见 maplayout.packRegions），
+       绝大多数跨区边现在**真的相邻**，走廊直接就连上了（相邻的边不会再进 bridges）；
+       剩下的这一小撮是几何上真摆不平的（一块区域被十几个邻居夹住），
+       才落到这里画虚线兜底。
+       ★ 主人随后又提了「连线画法有问题」：原来是**两点直连的斜线**，
+       横穿半个屏幕、还从别人家地块上压过去。现在改成**沿格走的折线**：
+       先走哪一轴由「拐点那一格有没有房间」决定，拐点压着房间就换另一轴 ——
+       看着就像一条绕过去的土路，而不是一道斜插过去的刀痕。 */
+    const cellOccupied = (gx, gy) => !!idByXY[xyKey(gx, gy)];
+    const routeBridge = (A, B) => {
+      const x1 = cx(A), y1 = cy(A), x2 = cx(B), y2 = cy(B);
+      /* 两个拐点候选：先横后竖 / 先竖后横 */
+      const c1 = { gx: B.x, gy: A.y }, c2 = { gx: A.x, gy: B.y };
+      const bad1 = cellOccupied(c1.gx, c1.gy) ? 1 : 0;
+      const bad2 = cellOccupied(c2.gx, c2.gy) ? 1 : 0;
+      const useH = bad1 <= bad2;
+      const corner = useH ? c1 : c2;
+      const mx = (corner.gx - b.minX) * MAP_CELL + MAP_PAD + MAP_CELL / 2;
+      const my = (corner.gy - b.minY) * MAP_CELL + MAP_PAD + MAP_CELL / 2;
+      return 'M' + x1 + ' ' + y1 + ' L' + mx + ' ' + my + ' L' + x2 + ' ' + y2 + ' ';
+    };
     let pathsCrossDim = '';
     let pathsCrossKnown = '';
     (m.bridges || []).forEach(br => {
       if (!br.crossRegion) return;
       const A = shown[br.a], B = shown[br.b];
       if (!A || !B) return;                 /* 两端都在图上才画（区域模式只画本区） */
-      const seg = 'M' + cx(A) + ' ' + cy(A) + ' L' + cx(B) + ' ' + cy(B) + ' ';
+      const seg = routeBridge(A, B);
       if (A.visited && B.visited) pathsCrossKnown += seg;
       else pathsCrossDim += seg;
     });
@@ -2877,11 +2924,28 @@
       '<path d="' + pathsCrossDim + '" class="edge edge-dim edge-bridge"/>' +
       '<path d="' + pathsCrossKnown + '" class="edge edge-known edge-bridge"/></svg>';
 
-    /* 4) 房间格子：方块填满格子，连成一整片 */
-    const off = (MAP_CELL - MAP_NODE) / 2;
+    /* 4) 地块：★ 主人 2026-10-11：「把地块里的方块框删掉，地块用纯地名显示，
+          做成屏幕上那九宫格地名一样的形式」。
+       ⇒ 不再画 26px 方块（那圈边框 + 底色就是「方块框」），每格只留**地名文字**，
+          居中摆在格心上 —— 跟日志里出口九宫格（`.exit-map`）一个样：
+          格子里就是一行（或两行）字，靠颜色/字重区分状态，不靠框。
+          · 你在这里 → 红字加粗（.here）
+          · 一步可达 → 金字（.near，可点）
+          · 去过     → 墨色（.known）
+          · 没去过   → 淡墨（.dim）
+       名字**不再截断**：原来 desktop 只留 4 字、窄屏 6 字（`shortName`），
+       于是满图「华山派·玉」「长安城·朱」这种半截名。现在按格宽自动换算字号，
+       两到三行放下全名；实在长的（>9 字）才降字号压到三行内。 */
+    const fontOf = r => {
+      const len = String(r.name || '').length;
+      let f = mFont(r);
+      const perLine = MAP_CELL * 0.95;
+      while (f > 6 && Math.ceil(len * f / perLine) > 3) f--;
+      return f;
+    };
     rooms.forEach(r => {
-      const left = (r.x - b.minX) * MAP_CELL + MAP_PAD + off;
-      const top = (r.y - b.minY) * MAP_CELL + MAP_PAD + off;
+      const left = (r.x - b.minX) * MAP_CELL + MAP_PAD;
+      const top = (r.y - b.minY) * MAP_CELL + MAP_PAD;
       let cls = 'map-node';
       if (r.current) cls += ' here';
       else if (r.near) cls += ' near';
@@ -2893,21 +2957,18 @@
       /* ★ 去掉「战争迷雾」（主人第四轮要求：「地图不要搞那些战争迷雾」）。
          原来是「去过/一步可达才显示名字，没去过的只留一个淡点」——
          世界地图上看过去一片空白小方块，不知道哪儿是哪儿，也没法规划路线。
-         现在**所有地块都显示名字**，只用样式区分「去过 / 没去过」：
-           · 去过 → 正常白底
-           · 没去过 → 淡一些（`dim`）但仍看得清名字
-         仍保留「一步可达 / 附近」这两种**功能性**高亮（点一下能走过去），
-         那不是迷雾、是有用的信息。 */
-      const label = r.current ? '你' : shortName(r.name, M_NAME_MAX);
+         现在**所有地块都显示名字**，只用颜色区分「去过 / 没去过」。 */
+      const label = r.name || '？';
       h += '<button class="' + cls + (r.visited || r.current ? '' : ' dim') +
         '" style="left:' + left + 'px;top:' + top + 'px;' +
-        'width:' + MAP_NODE + 'px;height:' + MAP_NODE + 'px;' +
+        'width:' + MAP_CELL + 'px;height:' + MAP_CELL + 'px;' +
         '--stripe:' + esc(stripe) + '"' +
         ' title="' + esc(r.name) + (r.region ? '（' + esc((reg && reg.name) || r.region) + '）' : '') +
         (r.dist >= 0 ? '　' + r.dist + ' 步' : '　很远') + '"' +
         ' data-room="' + esc(r.id) + '"' +
         (r.near ? ' data-go="' + esc(r.id) + '"' : '') + '>' +
-        '<span class="mn-name" style="font-size:' + mFont(r) + 'px;line-height:' + M_LINE + '">' + esc(label) + '</span></button>';
+        '<span class="mn-name" style="font-size:' + fontOf(r) + 'px;line-height:' + M_LINE + '">' +
+        esc(label) + '</span></button>';
     });
 
     /* 区域/城市名：压在所有地块之上画（独立于 .map-region-box 的 z-index:0 上下文，
@@ -3015,7 +3076,11 @@
   }
 
   /* 房间名太长就砍一刀，格子里塞得下。
-     max = 小屏可放宽（窄屏 6 字、桌面 4 字）；不传时保持老行为（4 字）。 */
+     max = 小屏可放宽（窄屏 6 字、桌面 4 字）；不传时保持老行为（4 字）。
+     ⚠️ 2026-10-08 起**地图不再用它**（主人：「地块用纯地名显示」——
+        名字一律显示全名，长名靠自动缩字号塞进格子，见 mapHtml 的 fontOf）。
+        保留是因为 `tools/map-edge-check.js` / `map-snapshot.js` /
+        `mapguide-check.js` 还在 grab 它来跑地图渲染，删了那几个工具会直接抛错。 */
   function shortName(n, max) {
     n = String(n || '');
     const cap = max || 4;
@@ -3338,6 +3403,10 @@
     home: 'home', 家宅: 'home', 房产: 'home', 我的家: 'home', 我的家宅: 'home', 家园: 'home',
     地块: 'home', 家园地块: 'home', 开垦: 'home', 拓地: 'home', 开辟: 'home', plots: 'home', plot: 'home',
     武馆: 'martial', martial: 'martial',
+    /* 主人 2026-10-11：屏幕下方「武学」面板里那个「武学修为」按钮要走这条线。
+       侧栏按钮是 `data-panel="martial"` 直连，不经过这里；加上这一条，
+       敲「武学修为」四个字的玩家也进得去，两边同一个面板。 */
+    武学修为: 'martial',
     修炼: 'martial', 炼丹: 'martial', 炼器: 'martial', 画符: 'martial', 制符: 'martial', 布阵: 'martial',
     符箓: 'martial', 淬体: 'martial',
     /* ⚠️ 这里**不能**放「打坐」。

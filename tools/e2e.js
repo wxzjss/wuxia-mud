@@ -71,8 +71,10 @@ function ok(name, cond, extra) {
   ok('打包信息接口已移除（404）', r.code === 404, 'code=' + r.code);
   r = await req('GET', S + '/api/download-game', null, true);
   ok('下载游戏接口已移除（404）', r.code === 404, 'code=' + r.code);
-  ok('下载文件名规范', /jinyong-mud/.test(String(r.headers['content-disposition'] || '')),
-    r.headers['content-disposition']);
+  /* 下载游戏那条「文件名规范」断言已随功能一起删掉：`/api/download-game` 现在 404，
+     没有 content-disposition 可言。改成守「那个页面真的不再提供下载」。 */
+  r = await req('GET', S + '/game.html');
+  ok('原下载页不再提供「下载完整游戏」', r.code === 404 || !/下载完整游戏/.test(r.body), 'code=' + r.code);
 
   /* 首页主入口也改成「开始游戏」（网页优先），并带本地 Mod 文件夹卡片 */
   r = await req('GET', S + '/');
@@ -105,7 +107,21 @@ function ok(name, cond, extra) {
     ok('localmods 契约完整', missing.length === 0, missing.length ? ('缺 ' + missing.join(',')) : (need.length + ' 个方法'));
   })();
 
-  /* 上传一个测试 Mod */
+  /* 上传一个测试 Mod。
+     🔴 2026-10-11 起**上传必须登录**（服务端拿 token 认人、署名也以账号名为准），
+     所以先注册/登录一个测试账号拿 token —— 不登录走的是「请先登录」那条拒收分支，
+     整套上传联调会全部假红（之前就是这么红的）。
+     ⚠️ 账号会落进站点数据目录：跑之前把 `WX_SITE_DATA` 指到临时目录，
+        别往开发者的真 `site-data/` 里塞假用户。 */
+  r = await req('POST', S + '/api/account/register', { name: 'e2e_tester', pass: 'e2e_pass_2026' });
+  let e2eToken = (r.json && r.json.token) || '';
+  if (!e2eToken) {
+    r = await req('POST', S + '/api/account/login', { name: 'e2e_tester', pass: 'e2e_pass_2026' });
+    e2eToken = (r.json && r.json.token) || '';
+  }
+  ok('拿到测试账号 token（上传要登录）', !!e2eToken,
+    e2eToken ? e2eToken.slice(0, 8) + '…' : String((r.json && r.json.error) || ''));
+
   const testMod = {
     id: 'e2e_test_mod',
     name: 'E2E 测试 Mod',
@@ -116,7 +132,7 @@ function ok(name, cond, extra) {
     tags: ['测试'],
     rooms: [{ id: 'e2e_room', name: '测试房间', desc: '一个用于测试的房间。', exits: { s: 'jiangnan_street' } }]
   };
-  r = await req('POST', S + '/api/mods', { json: JSON.stringify(testMod), note: '自动化测试' });
+  r = await req('POST', S + '/api/mods', { json: JSON.stringify(testMod), note: '自动化测试', token: e2eToken });
   ok('上传 Mod', r.code === 200 && r.json && r.json.ok, r.json ? (r.json.id || r.json.error) : '');
   const upOk = r.json && r.json.ok;
 
@@ -441,6 +457,8 @@ function ok(name, cond, extra) {
     r = await req('POST', G + '/api/site/upload', {
       spec: { id: 'e2e_cross', name: '跨服测试', category: '功能', desc: '联调', rules: [{ name: 'r', kind: 'multiply', target: 'exp', value: 3 }] },
       json: JSON.stringify({ id: 'e2e_cross', name: '跨服测试', category: '功能', desc: '联调', rules: [{ name: 'r', kind: 'multiply', target: 'exp', value: 3 }] }),
+      /* 这条链路同样要登录（游戏服把 token 原样转给站点）。 */
+      token: e2eToken,
       note: '跨服务联调'
     });
     ok('游戏→网站 一键上传', r.code === 200 && r.json && r.json.ok, r.json ? (r.json.url || r.json.error) : '');

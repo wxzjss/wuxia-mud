@@ -109,6 +109,16 @@ function ok(name, cond, extra) {
     ok('桥是虚线（跟实心走廊区分开，CSS 有 stroke-dasharray）',
       /\.map-edges\s+\.edge-bridge\s*\{[^}]*dasharray/.test(
         fs.readFileSync(path.join(ROOT, 'game/src/renderer/css/main.css'), 'utf8')));
+    /* ★ 主人 2026-10-11：「你的连线画法有问题……是不是可以把有连线的两个地块
+       放在相邻的位置」。布局侧已经按真出口咬合（绝大多数边直接相邻、走走廊），
+       前端剩下的这一小撮兜底线也必须**沿格走**（拐一下），不能再两点直连 ——
+       直连就是一条横穿半个屏幕的斜线。
+       断法：桥那段 path 里，每个 M（一条桥起笔）后面必须跟两个 L（横 + 竖两段）。 */
+    const bridgeD = (wh.match(/<path d="([^"]*)" class="[^"]*edge-bridge/) || [])[1] || '';
+    const nb = (bridgeD.match(/M/g) || []).length;
+    const nl = (bridgeD.match(/L/g) || []).length;
+    ok('★ 跨区兜底线是**折线**（沿格走），不是两点直连的斜线',
+      nb > 0 && nl === nb * 2, '桥 ' + nb + ' 条 / L 段 ' + nl + '（应 = 2×桥数）');
   }
 
   /* —— 两级地图视野（默认只看当前区域）—— */
@@ -131,10 +141,24 @@ function ok(name, cond, extra) {
   const tMaxX = Math.max.apply(null, inReg.map(r => r.x));
   const tMaxY = Math.max.apply(null, inReg.map(r => r.y));
   const tw = tMaxX - tMinX + 1, th = tMaxY - tMinY + 1;
-  const cw = (tw * 30 + 68) + 'px', chh = (th * 30 + 68) + 'px';
-  ok('region 模式画布=本区域房间的紧包围盒',
-    mh.includes('width:' + cw + ';height:' + chh),
-    '区域 ' + curRoom.region + ' 实际 ' + tw + 'x' + th + ' → 期望 ' + cw + 'x' + chh);
+  const cw0 = (tw * 30 + 68) + 'px', chh0 = (th * 30 + 68) + 'px';
+  /* 🔴 2026-10-08 口径改动（主人：「电脑端看当前区域的地图放在左侧、而且很小看不清」）：
+     区域模式现在会**按弹窗可用宽高自动放大格距**（`mapHtml` 里的 fitCell），
+     所以画布不再恒等于「紧包围盒 × 30px」。这里改成断两条更本质的事：
+       ① 画布宽高比 = 本区域紧包围盒的宽高比（还是「只框住本区房间」）；
+       ② 格距**只增不减**（≥30px 桌面基准）—— 也就是真的放大了。 */
+  const cvTag = (mh.match(/<div class="map-canvas[^"]*"[^>]*style="([^"]*)"/) || [])[1] || '';
+  const cwPx = parseFloat((cvTag.match(/width:\s*(\d+)px/) || [])[1] || '0');
+  const chPx = parseFloat((cvTag.match(/height:\s*(\d+)px/) || [])[1] || '0');
+  const cellPx = (cwPx - 68) / tw;
+  ok('region 模式画布宽高比 = 本区域紧包围盒（仍是「只框本区」）',
+    Math.abs((cwPx / chPx) - (tw / th)) < 0.06,
+    '画布 ' + cwPx + 'x' + chPx + ' vs 区域 ' + tw + 'x' + th);
+  ok('★ region 模式格距自动放大（≥30px 桌面基准）', cellPx >= 29.5,
+    '格距 ' + cellPx.toFixed(1) + 'px（旧的固定值就是 30px）');
+  ok('★ 区域地图在弹窗里居中（.map-canvas 有 auto 外边距）',
+    /\.map-canvas\s*\{[^}]*margin-left:\s*auto/.test(
+      fs.readFileSync(path.join(ROOT, 'game/src/renderer/css/main.css'), 'utf8')));
   ok('★ 画布不再包含框外那圈空地块（严格小于后端撑大的 box）',
     tw <= cb.w && th <= cb.h, '实际 ' + tw + 'x' + th + ' vs 后端框 ' + cb.w + 'x' + cb.h);
   const shownNodes = (mh.match(/class="map-node/g) || []).length;
@@ -144,7 +168,7 @@ function ok(name, cond, extra) {
   ok('region 模式只画本区域底色块', (mh.match(/map-region-box/g) || []).length === 1,
     '底色块 ' + (mh.match(/map-region-box/g) || []).length);
   ok('画布远小于全图（不会一打开就看老远）',
-    parseInt(cw, 10) < 900, '画布宽 ' + cw + '（全图约 2178px）');
+    cwPx < 900, '画布宽 ' + cwPx + 'px（全图约 2178px）');
   ok('探索度分开显示（本范围 + 全江湖）', mh.includes('本范围') && mh.includes('全江湖'));
 
   /* —— 连续大地图断言（本轮修复「被分割成很多房间」）—— */
@@ -155,6 +179,18 @@ function ok(name, cond, extra) {
   const gap = MAP_CELL - MAP_NODE;
   ok('格子缝极小（视觉连片）', gap <= 6, 'gap=' + gap + 'px');
   ok('已探索房间有名字', mh.includes('>江南') || /mn-name">[^<]/.test(mh));
+  /* ★ 主人 2026-10-08：「把地块里的方块框删掉，地块用纯地名显示」——
+     边框与底色必须真的没了（一格的面积让给名字）。
+     ⚠️ 用 indexOf 而不是正则：这个文件里正则的反斜杠很容易被脚本改写坏。 */
+  const cssNow = fs.readFileSync(path.join(ROOT, 'game/src/renderer/css/main.css'), 'utf8');
+  const iNode = cssNow.indexOf('.map-node {');
+  const nodeRule = iNode < 0 ? '' : cssNow.slice(iNode, cssNow.indexOf('}', iNode) + 1);
+  ok('★ 地块不再有方块框（.map-node 无边框、无底色）',
+    nodeRule.indexOf('border: none') >= 0 && nodeRule.indexOf('background: transparent') >= 0,
+    nodeRule.slice(0, 100));
+  ok('★ 地块只靠字色区分状态（你在这里=红字 / 一步可达=金字）',
+    cssNow.indexOf('.map-node.here .mn-name') >= 0 && cssNow.indexOf('.map-node.near .mn-name') >= 0 &&
+    cssNow.indexOf('color: var(--red)') >= 0 && cssNow.indexOf('color: var(--gold)') >= 0);
 
   console.log('\n── 新手引导 ──');
   const p = e.world.player;

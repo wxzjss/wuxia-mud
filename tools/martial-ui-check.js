@@ -262,6 +262,17 @@ section('⑥ 面板指令映射接上了');
   ok('「大比」→ sect 面板', env.WXUI.panelForCmd('大比') === 'found');
 }
 
+section('⑦ 「武学」面板 → 「武学修为」入口（主人 2026-10-11 口径）');
+{
+  const r = await grabPanel(env, view, 'skills');
+  ok('「武学」面板标题是「武学」', r.title === '武学', r.title);
+  ok('面板里有「武学修为」按钮', /data-cmd="武学修为"/.test(r.html),
+    (r.html.match(/data-cmd="武学修为"[^>]*/) || ['(没有)'])[0]);
+  ok('「武学修为」这条指令映射到 martial 面板', env.WXUI.panelForCmd('武学修为') === 'martial');
+  ok('侧栏那个「武学修为」按钮没被删（data-panel="martial"）',
+    /data-panel="martial">武学修为</.test(fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'index.html'), 'utf8')));
+}
+
 console.log('\n  通过 ' + pass + ' 项，失败 ' + fail + ' 项');
 console.log('==============================================');
 if (fail) { console.log('\n失败项：'); fails.forEach(f => console.log('  - ' + f)); }
