@@ -1377,7 +1377,7 @@
       "type": "拳",
       "maxLevel": 800,
       "difficulty": 5,
-      "desc": "不是分身，是让人看见分身。真正的拳还在原处。",
+      "desc": "让人看见身外还有身。真正的拳还在原处。",
       "damageMult": 1.7,
       "accuracy": 97,
       "mpCost": 40,

@@ -280,7 +280,9 @@ t('当着人面装人 → 恶名上涨', () => {
     const wit = w.spawnNpc('npcv_001', w.player.room, 1, true);
     wit.personality = 'xiayi';   // 侠义：见义勇为必报官
   }
-  eq(kidnap.witnesses(w, w.player.room).filter(n => n.personality === 'xiayi').length, 3, '目击者没站进来');
+  /* ⚠️ 用 >= 而不是 ==：房里**本来可能就站着**侠义的人（性格按画像重播之后更是如此），
+     逼它恰好 3 个，等于假设「这间屋子里除了我 spawn 的没别人」——那是脆断言。 */
+  ok(kidnap.witnesses(w, w.player.room).filter(n => n.personality === 'xiayi').length >= 3, '目击者没站进来');
   const n = knockDown(w, 'mob_bandit');
   const before = kidnap.data(w).wanted;
   kidnap.packNpc(w, n.name);

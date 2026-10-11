@@ -252,11 +252,25 @@ function ensureNearbyNpcs(world, depth) {
     }
   }
   let n = 0;
+  /* 🔴 先算一份**全局「还活着」的 defId 集合** —— 这是本函数曾经最致命的一处漏判：
+     `spawnNpc` 只对**名人**「已有就返回那位」，对**非名人每次都新建实例**。
+     原先这里没有任何「已经活着」的判断，于是**每个 worldTick（30 分钟）**
+     都替玩家周围的每个常驻 NPC 再 spawn 一份 —— 玩得越久副本越多，
+     房间行变成「这里有：张掌柜（商人） x7、…」，而且**副本会随存档写下去**，
+     重进也修不掉（主人 2026-10-10 亲报的「所有人名字后面 ×7 / ×6」，就是这个）。
+     ⚠️ `_npcsByRoom[rid]` 收录的是「常驻本房、不游走」的人（每 defId 一条），
+        所以对这些人**全局只该有一个活实例**；用全局集合判，既不会漏，
+        也不会误伤「一个房间故意放 3 只山贼」那种（那些走 `room.respawn`，不在此表里）。 */
+  const alive = new Set();
+  for (const inst of Object.values(world.instances.npcs || {})) {
+    if (inst && inst.defId && !inst.dead) alive.add(inst.defId);
+  }
   for (const rid of want) {
     for (const defId of (world._npcsByRoom[rid] || [])) {
+      if (alive.has(defId)) continue;          // 已经活着 → 绝不再 spawn（防副本）
       const before = Object.keys(world.instances.npcs).length;
       try { world.spawnNpc(defId, rid, 1, true); } catch (e) { /* 单个 NPC 坏了不拖垮世界 */ }
-      if (Object.keys(world.instances.npcs).length > before) n++;
+      if (Object.keys(world.instances.npcs).length > before) { alive.add(defId); n++; }
     }
   }
   return n;

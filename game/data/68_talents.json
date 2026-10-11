@@ -1,0 +1,106 @@
+{
+  "_mod": {
+    "id": "core_talents_68",
+    "name": "天赋体系改造",
+    "version": "1.0.0"
+  },
+
+  "traits": {
+    "genius": { "_delete": true },
+    "ironbone": { "_delete": true },
+    "swift": { "_delete": true },
+    "iron_bone": { "_delete": true },
+    "powerful": { "_delete": true },
+    "martial_prodigy": { "_delete": true },
+
+    "silver_tongue": {
+      "id": "silver_tongue",
+      "name": "口才便给",
+      "desc": "你自市井里滚大，见人说人话，见鬼说鬼话。同样一句好话，从你嘴里出来，总比旁人多几分分量。",
+      "effects": [
+        { "type": "favorGain", "value": 0.5 }
+      ]
+    },
+
+    "flee_master": {
+      "id": "flee_master",
+      "name": "脚底抹油",
+      "desc": "打不过就跑，你从不为一张脸皮硬撑。一双快腿，江湖上没几个人追得上你。",
+      "effects": [
+        { "type": "fleeAlways" }
+      ]
+    },
+
+    "sword_heart": {
+      "id": "sword_heart",
+      "name": "剑心通明",
+      "desc": "你握剑时，剑便不再是块铁——它自己知道该往哪里去。凡使剑的功夫，到你手里都快半分、狠半分。",
+      "effects": [
+        { "type": "skillBonus", "slot": "剑", "value": 0.15 }
+      ]
+    },
+
+    "insect_master": {
+      "id": "insect_master",
+      "name": "蛊道天赋",
+      "desc": "你身上有一种旁人闻不出的气息，蛊虫见了你，像是见了旧主。旁门左道的路数，你一上手就通。",
+      "effects": [
+        { "type": "skillBonus", "category": "旁门", "value": 0.2 }
+      ]
+    },
+
+    "iron_will": {
+      "id": "iron_will",
+      "name": "心如铁石",
+      "desc": "刀架在脖子上，你眼皮都不抬一下。乱人心神的眩晕、迷幻手段，于你如清风过耳。",
+      "effects": [
+        { "type": "immune", "tags": ["stun", "confuse"] }
+      ]
+    },
+
+    "poison_body": {
+      "id": "poison_body",
+      "name": "百毒不侵",
+      "desc": "你自幼误食百草，五脏六腑早炼成一副毒不坏的身子。寻常毒物入体，如泥牛入海。",
+      "effects": [
+        { "type": "immune", "tags": ["poison"] }
+      ]
+    },
+
+    "merchant_born": {
+      "id": "merchant_born",
+      "name": "经商奇才",
+      "desc": "你打小在柜台后头拨算盘，一文钱能在你手里翻三个弯。买进卖出，你总能占到便宜。",
+      "effects": [
+        { "type": "shopDiscount", "value": 0.15 }
+      ]
+    },
+
+    "wanderer": {
+      "id": "wanderer",
+      "name": "浪子情怀",
+      "desc": "你四海为家，风餐露宿惯了。别人走一天要吃的干粮，够你走两天。",
+      "effects": [
+        { "type": "consumption", "value": -0.5 }
+      ]
+    },
+
+    "lucky": {
+      "id": "lucky",
+      "name": "福星高照",
+      "desc": "你这条命硬得出奇。旁人一辈子撞不上的巧事，总在你迈步进门的那一刻遇上。",
+      "attr": null,
+      "effects": [
+        { "type": "encounterBonus", "value": 0.5 }
+      ]
+    }
+  },
+
+  "meta": {
+    "births": {
+      "nun_ward": { "gender": "female" },
+      "monastic": { "gender": "male" },
+      "tomb_keep": { "gender": "female" }
+    }
+  }
+}

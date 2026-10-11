@@ -1,0 +1,304 @@
+{
+  "culture": {
+    "exam": {
+      "studyMinutes": 60,
+      "studyCost": 20,
+      "studyGain": [
+        1,
+        3
+      ],
+      "cooldownDays": 30,
+      "levels": [
+        {
+          "id": "xiangshi",
+          "name": "乡试",
+          "title": "秀才",
+          "need": {
+            "wencai": 30,
+            "attr": "悟性",
+            ">=": 12
+          },
+          "fee": 100,
+          "prize": {
+            "money": 200,
+            "rep": 5,
+            "flag": "keju_xiangshi"
+          },
+          "room": "jn_gongyuan_hall",
+          "openLine": "贡院里坐满了人，考棚一溜排到墙根。有人在袖子里藏小抄，被巡场的一眼揪了出去。",
+          "failLine": "卷子交上去，你自己心里有数。放榜那日，红纸上没有你的名字。",
+          "passLine": "放榜那日，人堆里有人念到了你的名字。有人拍你肩膀道贺，也有人哼了一声走开。"
+        },
+        {
+          "id": "huishi",
+          "name": "会试",
+          "title": "举人",
+          "need": {
+            "wencai": 60,
+            "flag": "keju_xiangshi"
+          },
+          "fee": 300,
+          "prize": {
+            "money": 800,
+            "rep": 15,
+            "flag": "keju_huishi"
+          },
+          "room": "jn_gongyuan_hall",
+          "openLine": "这一场比乡试严得多。进场要解衣搜检，连笔管都拆开看过。",
+          "failLine": "三场下来，你写到手腕发酸。发榜时名字在三甲之外。",
+          "passLine": "「中了！」有人在门外喊。你成了举人，从此见县官不必下跪。"
+        },
+        {
+          "id": "dianshi",
+          "name": "殿试",
+          "title": "进士",
+          "need": {
+            "wencai": 90,
+            "flag": "keju_huishi"
+          },
+          "fee": 500,
+          "prize": {
+            "money": 2000,
+            "rep": 40,
+            "flag": "keju_dianshi"
+          },
+          "room": "jn_gongyuan_hall",
+          "openLine": "殿上点着几十盏灯。你跪在丹墀之下，听见上头有人在念你的卷子。",
+          "failLine": "策论写得急了些。同进士出身，排在榜末。",
+          "passLine": "一甲一名——你听见自己的名字被头一个念出来。"
+        }
+      ],
+      "rankTitles": {
+        "1": "状元",
+        "2": "榜眼",
+        "3": "探花"
+      }
+    },
+    "songs": [
+      {
+        "id": "song_yulin",
+        "name": "雨霖铃",
+        "price": 30,
+        "mood": 6,
+        "wencai": 1,
+        "favor": 1,
+        "desc": "一支慢曲，唱的是长亭送别。唱到「执手相看泪眼」，台下没人说话。"
+      },
+      {
+        "id": "song_yangguan",
+        "name": "阳关三叠",
+        "price": 40,
+        "mood": 7,
+        "wencai": 1,
+        "favor": 1,
+        "desc": "三叠一叠比一叠慢。有人跟着哼，哼到第二叠就停了。"
+      },
+      {
+        "id": "song_shimian",
+        "name": "十面埋伏",
+        "price": 120,
+        "mood": 5,
+        "wencai": 2,
+        "favor": 2,
+        "desc": "琵琶一响，满堂的酒杯都跟着颤。这是武人爱听的曲子。"
+      },
+      {
+        "id": "song_chunjiang",
+        "name": "春江花月夜",
+        "price": 80,
+        "mood": 9,
+        "wencai": 2,
+        "favor": 2,
+        "desc": "曲子长得像江面，一层一层地铺开。听完了人不想走。"
+      },
+      {
+        "id": "song_guangling",
+        "name": "广陵散",
+        "price": 200,
+        "mood": 4,
+        "wencai": 3,
+        "favor": 3,
+        "desc": "据说嵇康死后这曲就绝了。台上这位弹得未必是原调，但杀气是真的。"
+      },
+      {
+        "id": "song_pingsha",
+        "name": "平沙落雁",
+        "price": 60,
+        "mood": 8,
+        "wencai": 2,
+        "favor": 1,
+        "desc": "琴音淡淡地，像一群雁落在沙上，又飞走。"
+      },
+      {
+        "id": "song_meihua",
+        "name": "梅花三弄",
+        "price": 70,
+        "mood": 7,
+        "wencai": 2,
+        "favor": 2,
+        "desc": "箫声一起，堂里那股脂粉气好像也淡了三分。"
+      },
+      {
+        "id": "song_hanjiang",
+        "name": "汉江韵",
+        "price": 50,
+        "mood": 6,
+        "wencai": 1,
+        "favor": 1,
+        "desc": "撑船的调子，被搬到了台上来听。"
+      },
+      {
+        "id": "song_nishang",
+        "name": "霓裳羽衣曲",
+        "price": 300,
+        "mood": 12,
+        "wencai": 4,
+        "favor": 4,
+        "desc": "只听说过，没几个人真听过。据说这是当年宫里流出来的半阕。"
+      },
+      {
+        "id": "song_jiangjin",
+        "name": "将进酒",
+        "price": 90,
+        "mood": 6,
+        "wencai": 2,
+        "favor": 2,
+        "desc": "唱曲的是个女子，唱的是「会须一饮三百杯」。台下的汉子们拍着桌子叫好。"
+      }
+    ],
+    "poems": [
+      {
+        "id": "poem_1",
+        "upper": "两个黄鹂鸣翠柳",
+        "options": [
+          "一行白鹭上青天",
+          "孤舟一系故园心",
+          "落花时节又逢君"
+        ],
+        "answer": 0,
+        "hint": "这一句是杜工部的《绝句》，底下接着的也是白鹭。"
+      },
+      {
+        "id": "poem_2",
+        "upper": "海内存知己",
+        "options": [
+          "天涯若比邻",
+          "明月照沟渠",
+          "各在天一涯"
+        ],
+        "answer": 0,
+        "hint": "王勃送杜少府那首，末句比前句更有名。"
+      },
+      {
+        "id": "poem_3",
+        "upper": "大江东去",
+        "options": [
+          "浪淘尽、千古风流人物",
+          "不尽长江滚滚来",
+          "孤帆远影碧空尽"
+        ],
+        "answer": 0,
+        "hint": "东坡的《念奴娇》，上半阕开口就是这一句。"
+      },
+      {
+        "id": "poem_4",
+        "upper": "人生得意须尽欢",
+        "options": [
+          "莫使金樽空对月",
+          "举杯消愁愁更愁",
+          "明日愁来明日愁"
+        ],
+        "answer": 0,
+        "hint": "《将进酒》里紧接着这一句。"
+      },
+      {
+        "id": "poem_5",
+        "upper": "落霞与孤鹜齐飞",
+        "options": [
+          "秋水共长天一色",
+          "青山依旧在",
+          "明月几时有"
+        ],
+        "answer": 0,
+        "hint": "《滕王阁序》里最有名的那两行。"
+      },
+      {
+        "id": "poem_6",
+        "upper": "疏影横斜水清浅",
+        "options": [
+          "暗香浮动月黄昏",
+          "一枝红杏出墙来",
+          "凌寒独自开"
+        ],
+        "answer": 0,
+        "hint": "林和靖写梅，这两句是千古绝唱。"
+      },
+      {
+        "id": "poem_7",
+        "upper": "落花人独立",
+        "options": [
+          "微雨燕双飞",
+          "芳草萋萋鹦鹉洲",
+          "旧时王谢堂前燕"
+        ],
+        "answer": 0,
+        "hint": "晏几道的句子，人与燕对得极工。"
+      },
+      {
+        "id": "poem_8",
+        "upper": "十年生死两茫茫",
+        "options": [
+          "不思量，自难忘",
+          "天涯何处无芳草",
+          "此恨绵绵无绝期"
+        ],
+        "answer": 0,
+        "hint": "东坡悼亡妻那首。"
+      },
+      {
+        "id": "poem_9",
+        "upper": "飞流直下三千尺",
+        "options": [
+          "疑是银河落九天",
+          "一片冰心在玉壶",
+          "万里悲秋常作客"
+        ],
+        "answer": 0,
+        "hint": "太白望庐山瀑布。"
+      },
+      {
+        "id": "poem_10",
+        "upper": "千山鸟飞绝",
+        "options": [
+          "万径人踪灭",
+          "独钓寒江雪",
+          "孤舟蓑笠翁"
+        ],
+        "answer": 0,
+        "hint": "柳宗元《江雪》，四句要连起来读。"
+      }
+    ],
+    "poemMeet": {
+      "intervalDays": 15,
+      "reward": {
+        "money": 300,
+        "favor": 6,
+        "wencai": 2
+      },
+      "failFavor": -2,
+      "hintWencai": 50
+    },
+    "marriageMeet": {
+      "intervalDays": 30,
+      "room": "luoyang_arena",
+      "rounds": 3,
+      "minRep": 20,
+      "prize": {
+        "money": 1000,
+        "rep": 20,
+        "favor": 20
+      }
+    },
+    "note": "文化项目配置：科举 / 勾栏听曲 / 青楼诗会 / 比武招亲。数值以本文件为准。"
+  }
+}

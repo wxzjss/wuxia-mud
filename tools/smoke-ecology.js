@@ -20,10 +20,16 @@ section('1. 性格系统');
   // 不同身份 NPC 不同性格
   const n1 = w.spawnNpc('npcv_111', 'jiangnan_street', 1, true); // child → 豪爽
   const n2 = w.spawnNpc('npcv_009', 'jiangnan_street', 1, true); // merchant → 油滑
-  ok('child 性格豪爽', n1.personality === 'haoshuang', n1.personality);
-  ok('merchant 性格油滑', n2.personality === 'youhua', n2.personality);
+  /* ⚠️ 性格规则 2026-10-08 升级了：**画像语气优先**，其次才是身份 tag。
+     原来这里直接断言「child → 豪爽」，可 npcv_111 的画像写的是「讷」——
+     画像比 tag 猜得准（主人：『npc 性格与其画像背景性格核对了吗』），所以断言跟着规则走。 */
+  const ruleOf = n => personality.personaFromVoice(n) || personality.TAG_PERSONALITY[n.tag] || 'mune';
+  ok('child 性格与规则一致（画像优先、其次身份）', n1.personality === ruleOf(n1), n1.personality + ' vs ' + ruleOf(n1));
+  ok('merchant 性格与规则一致', n2.personality === ruleOf(n2), n2.personality + ' vs ' + ruleOf(n2));
   // 说话动词不同
-  ok('豪爽说哈哈笑道', personality.sayVerb(n1) === '哈哈笑道', personality.sayVerb(n1));
+  /* 说话动词必须**跟着这个人实际的性格**走（不再假设 n1 一定是豪爽） */
+  const per1 = personality.PERSONALITIES[n1.personality];
+  ok('说话动词跟性格走', !per1 || personality.sayVerb(n1) === per1.say, personality.sayVerb(n1) + ' / ' + (per1 && per1.say));
   ok('油滑说嘻嘻笑道', personality.sayVerb(n2) === '嘻嘻笑道', personality.sayVerb(n2));
 }
 

@@ -1,0 +1,743 @@
+{
+  "sectArts": {
+    "note": "各门派/势力的专属互动功法（NPC 交互界面使用）",
+    "list": [
+      {
+        "id": "sart_shaolin",
+        "name": "醍醐灌顶",
+        "cat": "内功",
+        "needSkills": [
+          "shaolin_force_1"
+        ],
+        "mpCost": 30,
+        "baseChance": 0.85,
+        "effect": "mp_gift",
+        "desc": "以自家真气替人疏通经脉。少林僧替香客做这一手，分文不取。",
+        "ok": "你掌心贴上{name}的后心，一股暖流过去。他长出一口气，脸色红润了些。",
+        "fail": "{name}身子一偏，避开了你的手：「不必。」",
+        "allowStronger": true,
+        "val": 6,
+        "favor": 22
+      },
+      {
+        "id": "sart_wudang",
+        "name": "太极化劲",
+        "cat": "内功",
+        "needSkills": [
+          "wudang_force_1"
+        ],
+        "mpCost": 24,
+        "baseChance": 0.8,
+        "effect": "soothe",
+        "desc": "不与人争，只把人身上那点戾气化掉。武当道长劝架，多半用这个。",
+        "ok": "你手腕轻轻一转，{name}身上那股紧绷的劲儿散了，呼吸也平了。",
+        "fail": "{name}把胳膊一缩，没让你搭上手。",
+        "allowStronger": true
+      },
+      {
+        "id": "sart_huashan",
+        "name": "剑意示人",
+        "cat": "剑",
+        "needSkills": [
+          "huashan_atk_1"
+        ],
+        "mpCost": 26,
+        "baseChance": 0.6,
+        "effect": "awe",
+        "desc": "不必出剑。剑意在，对面就知道深浅了。",
+        "ok": "你按剑而立，没有出手。{name}的额角见汗，退了半步。",
+        "fail": "{name}盯着你的手看了半晌，忽然笑了：「虚的。」",
+        "allowStronger": false,
+        "seconds": 10800
+      },
+      {
+        "id": "sart_emei",
+        "name": "佛光渡厄",
+        "cat": "内功",
+        "needSkills": [
+          "emei_force_1"
+        ],
+        "mpCost": 28,
+        "baseChance": 0.85,
+        "effect": "heal_npc",
+        "desc": "替人包扎上药，顺手把经脉里的滞气推一推。",
+        "ok": "你替{name}处理了伤处。他活动了下手脚，说轻快多了。",
+        "fail": "{name}把袖子一抽：「不用你管。」",
+        "allowStronger": true,
+        "favor": 18
+      },
+      {
+        "id": "sart_gaibang",
+        "name": "江湖规矩",
+        "cat": "旁门",
+        "needSkills": [
+          "gaibang_qimen_1"
+        ],
+        "mpCost": 12,
+        "baseChance": 0.62,
+        "effect": "gift",
+        "desc": "丐帮讨东西从不硬来。他讲的是规矩，你要是不给，往后在同道里就不好看。",
+        "ok": "你拱了拱手，把话说得漂亮。{name}叹了口气，摸出些东西来。",
+        "fail": "{name}两手一摊：「今天真没有。」",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_mojiao",
+        "name": "摄魂夺魄",
+        "cat": "魔功",
+        "needSkills": [
+          "mojiao_qimen_1"
+        ],
+        "mpCost": 44,
+        "baseChance": 0.42,
+        "effect": "interrogate",
+        "desc": "教中不传之秘。被问了的人事后只记得自己说过话，记不得说了什么。",
+        "ok": "你盯着{name}的眼睛说了几句。他眼神发直，把不该说的也说了。",
+        "fail": "{name}猛地咬了下舌尖，回过神来，把你瞪了一眼。",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_dali",
+        "name": "一阳指封穴",
+        "cat": "拳",
+        "needSkills": [
+          "dali_atk_1"
+        ],
+        "mpCost": 30,
+        "baseChance": 0.55,
+        "effect": "awe",
+        "desc": "指力点到即止。中了这一指，连「动手」这个念头都提不起来。",
+        "ok": "你抬手虚点。{name}浑身一僵——他知道那一指要是实的，自己现在已经躺下了。",
+        "fail": "{name}侧身让开，脸色却更沉了。",
+        "allowStronger": false,
+        "seconds": 7200
+      },
+      {
+        "id": "sart_tangmen",
+        "name": "无影毒",
+        "cat": "暗器",
+        "needSkills": [
+          "tangmen_qimen_1"
+        ],
+        "mpCost": 22,
+        "baseChance": 0.62,
+        "effect": "poison",
+        "desc": "这毒不杀人。它就教你记住一句话：还欠唐门一笔。解药在唐门手上。",
+        "ok": "你替{name}添了茶。他喝了。往后几天他会一直觉得身上不得劲。",
+        "fail": "{name}端着杯子没动：「我不渴。」",
+        "allowStronger": false,
+        "seconds": 2400,
+        "dot": 26,
+        "turns": 40
+      },
+      {
+        "id": "sart_miaojiang",
+        "name": "蛊惑",
+        "cat": "暗器",
+        "needSkills": [
+          "miaojiang_qimen_1"
+        ],
+        "mpCost": 36,
+        "baseChance": 0.45,
+        "effect": "lure",
+        "desc": "小东西钻进人身上，那人就会觉得「跟着他去」是件很自然的事。",
+        "ok": "你袖口一抖。{name}忽然站住，回头看了看你，像是想起了什么，跟了上来。",
+        "fail": "{name}烦躁地揉了揉胳膊，把袖子放了下来。",
+        "allowStronger": false,
+        "minutes": 240
+      },
+      {
+        "id": "sart_taohua",
+        "name": "迷魂曲",
+        "cat": "音波",
+        "needSkills": [
+          "taohua_qimen_1"
+        ],
+        "mpCost": 34,
+        "baseChance": 0.5,
+        "effect": "lure",
+        "desc": "一支笛曲。听的人自己会走过来，不觉得是被谁叫的。",
+        "ok": "你吹了两句就把笛子收了。{name}怔怔地朝你这边走了几步才停住。",
+        "fail": "{name}皱起眉：「别吹了，吵。」",
+        "allowStronger": false,
+        "minutes": 180
+      },
+      {
+        "id": "sart_gumu",
+        "name": "寒玉定神",
+        "cat": "内功",
+        "needSkills": [
+          "gumu_force_1"
+        ],
+        "mpCost": 26,
+        "baseChance": 0.7,
+        "effect": "soothe",
+        "desc": "寒玉床上练出的功夫，按在人心口上，能把人的火气冻住。",
+        "ok": "你手背贴上{name}的额头。他打了个激灵，随即安静下来。",
+        "fail": "{name}一把打开你的手：「凉。」",
+        "allowStronger": true
+      },
+      {
+        "id": "sart_xingxiu",
+        "name": "化功",
+        "cat": "魔功",
+        "needSkills": [
+          "xingxiu_qimen_1"
+        ],
+        "mpCost": 40,
+        "baseChance": 0.45,
+        "effect": "curse",
+        "desc": "星宿派的看家本领。不伤人，化人的内力 —— 化掉就回不来了。",
+        "ok": "你在他腕上搭了一下。{name}只觉得那口气提不上来了，却说不出哪里不对。",
+        "fail": "{name}把手抽回去，狐疑地看着你。",
+        "allowStronger": false,
+        "val": 8
+      },
+      {
+        "id": "sart_xuedao",
+        "name": "血刀威压",
+        "cat": "刀",
+        "needSkills": [
+          "xuedao_atk_1"
+        ],
+        "mpCost": 24,
+        "baseChance": 0.65,
+        "effect": "awe",
+        "desc": "血刀门的法子。不用讲道理，刀往那儿一插，道理就来了。",
+        "ok": "你把刀往地上一顿。{name}的声音立刻低了下去。",
+        "fail": "{name}嗤了一声：「吓唬谁呢。」",
+        "allowStronger": false,
+        "seconds": 14400
+      },
+      {
+        "id": "sart_taishan",
+        "name": "泰山压顶",
+        "cat": "拳",
+        "needSkills": [
+          "taishan_atk_1"
+        ],
+        "mpCost": 28,
+        "baseChance": 0.58,
+        "effect": "awe",
+        "desc": "泰山派的架子起手就是一座山。人站不住，心先矮半截。",
+        "ok": "你往那儿一立，{name}不自觉地退了半步。",
+        "fail": "{name}梗着脖子没退。",
+        "allowStronger": false,
+        "seconds": 9000
+      },
+      {
+        "id": "sart_hengshan",
+        "name": "琴音问心",
+        "cat": "音波",
+        "needSkills": [
+          "hengshan_qimen_1"
+        ],
+        "mpCost": 32,
+        "baseChance": 0.5,
+        "effect": "interrogate",
+        "desc": "衡山派用琴问话。曲子跟人走，人心里的事会自己浮上来。",
+        "ok": "你拨了半阕就停手。{name}愣愣地看着琴，把心里那桩事说了。",
+        "fail": "{name}按住琴弦：「别弹了。」",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_hengshanN",
+        "name": "佛前许愿",
+        "cat": "内功",
+        "needSkills": [
+          "hengshanN_force_1"
+        ],
+        "mpCost": 30,
+        "baseChance": 0.8,
+        "effect": "heal_npc",
+        "desc": "庵堂里的尼姑替人上药，从不问这个伤是怎么来的。",
+        "ok": "你替{name}敷了药，又念了句佛。他低头道了声谢。",
+        "fail": "{name}摇头：「我这点伤不碍事。」",
+        "allowStronger": true,
+        "favor": 20
+      },
+      {
+        "id": "sart_qingcheng",
+        "name": "摧心暗劲",
+        "cat": "拳",
+        "needSkills": [
+          "qingcheng_qimen_1"
+        ],
+        "mpCost": 28,
+        "baseChance": 0.55,
+        "effect": "poison",
+        "desc": "青城的手法伤在内里，外头一点痕迹也没有。",
+        "ok": "你替{name}拍了拍背上的灰。他当时没觉出什么。",
+        "fail": "{name}让开了半步。",
+        "allowStronger": false,
+        "seconds": 2160,
+        "dot": 34,
+        "turns": 36
+      },
+      {
+        "id": "sart_kongtong",
+        "name": "七伤示警",
+        "cat": "拳",
+        "needSkills": [
+          "kongtong_atk_1"
+        ],
+        "mpCost": 36,
+        "baseChance": 0.6,
+        "effect": "awe",
+        "desc": "先伤己，再伤人。崆峒派当众打一套七伤拳，比说什么都管用。",
+        "ok": "你对着石桩打了一拳，石桩裂了，你的手也渗了血。{name}脸色变了。",
+        "fail": "{name}看着你手上的血，什么也没说。",
+        "allowStronger": false,
+        "seconds": 12000
+      },
+      {
+        "id": "sart_kunlun",
+        "name": "两仪剑势",
+        "cat": "剑",
+        "needSkills": [
+          "kunlun_atk_1"
+        ],
+        "mpCost": 30,
+        "baseChance": 0.6,
+        "effect": "awe",
+        "desc": "一柄剑使两个人的招式，看的人只顾着数剑，忘了自己也要动手。",
+        "ok": "你剑势一分，{name}的眼睛跟着两边看，脖子都僵了。",
+        "fail": "{name}眯起眼：「花架子。」",
+        "allowStronger": false,
+        "seconds": 9600
+      },
+      {
+        "id": "sart_diancang",
+        "name": "渔樵点破",
+        "cat": "剑",
+        "needSkills": [
+          "diancang_qimen_1"
+        ],
+        "mpCost": 30,
+        "baseChance": 0.48,
+        "effect": "interrogate",
+        "desc": "点苍派不逼供，只把你话里的破绽点出来。人一慌，自己就说了。",
+        "ok": "你说了一句话，把{name}噎住了。他急着辩解，越辩越多。",
+        "fail": "{name}把嘴闭得死紧。",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_tiezhang",
+        "name": "铁掌拍肩",
+        "cat": "拳",
+        "needSkills": [
+          "tiezhang_atk_1"
+        ],
+        "mpCost": 20,
+        "baseChance": 0.6,
+        "effect": "gift",
+        "desc": "铁掌帮讲交情的方式：一巴掌拍在肩上，那人就把东西拿出来了。",
+        "ok": "你一巴掌拍在{name}肩上，他龇着牙笑了，从怀里掏了东西出来。",
+        "fail": "{name}的肩膀硬得像块石头，没理你。",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_jindao",
+        "name": "亮刀子",
+        "cat": "刀",
+        "needSkills": [
+          "jindao_atk_1"
+        ],
+        "mpCost": 14,
+        "baseChance": 0.55,
+        "effect": "gift",
+        "desc": "把刀在桌上磕一下，比说什么都直接。",
+        "ok": "你把刀往桌上一磕。{name}把身上值钱的摸了出来。",
+        "fail": "{name}瞅了你一眼，把口袋翻出来给你看——空的。",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_wuhu",
+        "name": "断门刀势",
+        "cat": "刀",
+        "needSkills": [
+          "wuhu_atk_1"
+        ],
+        "mpCost": 18,
+        "baseChance": 0.5,
+        "effect": "awe",
+        "desc": "五招使完，人还在，胆子没了。",
+        "ok": "你刀势一收，{name}的腿肚子在抖。",
+        "fail": "{name}看得津津有味：「就这？」",
+        "allowStronger": false,
+        "seconds": 7200
+      },
+      {
+        "id": "sart_feihu",
+        "name": "趟子话",
+        "cat": "旁门",
+        "needSkills": [
+          "feihu_qimen_1"
+        ],
+        "mpCost": 10,
+        "baseChance": 0.6,
+        "effect": "gift",
+        "desc": "走镖的嘴皮子。江湖上的门道，说开了就是人情。",
+        "ok": "你说了几句镖行的行话。{name}笑了，塞了些东西给你。",
+        "fail": "{name}摆手：「你说的这套我不懂。」",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_zhenyuan",
+        "name": "老镖局的面子",
+        "cat": "旁门",
+        "needSkills": [
+          "zhenyuan_qimen_1"
+        ],
+        "mpCost": 10,
+        "baseChance": 0.62,
+        "effect": "gift",
+        "desc": "报上镇远镖局的名号，多少给几分薄面。",
+        "ok": "你报了名号。{name}点了点头，取了些东西出来。",
+        "fail": "{name}摇头：「镖局的面子在这条街上不管用。」",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_shenquan",
+        "name": "老兵的规矩",
+        "cat": "拳",
+        "needSkills": [
+          "shenquan_atk_1"
+        ],
+        "mpCost": 12,
+        "baseChance": 0.65,
+        "effect": "soothe",
+        "desc": "当过兵的人劝架：先让人把拳头放下。",
+        "ok": "你按住{name}的手腕，话说得很慢。他到底把拳头松开了。",
+        "fail": "{name}甩开了你的手。",
+        "allowStronger": true
+      },
+      {
+        "id": "sart_tieqiang",
+        "name": "枪杆子横过来",
+        "cat": "棍",
+        "needSkills": [
+          "tieqiang_atk_1"
+        ],
+        "mpCost": 16,
+        "baseChance": 0.52,
+        "effect": "awe",
+        "desc": "一杆铁枪横在门口，进来的人得先掂量掂量。",
+        "ok": "你把枪横在门框上。{name}在门口站住了。",
+        "fail": "{name}从枪底下钻了过去。",
+        "allowStronger": false,
+        "seconds": 7200
+      },
+      {
+        "id": "sart_kuaidao",
+        "name": "快手一刀",
+        "cat": "刀",
+        "needSkills": [
+          "kuaidao_atk_1"
+        ],
+        "mpCost": 18,
+        "baseChance": 0.55,
+        "effect": "awe",
+        "desc": "刀出鞘再回鞘，看的人只听见一声响。",
+        "ok": "你刀已在鞘中，{name}的发带断了一截。他摸着头，不说话了。",
+        "fail": "{name}低头看了看发带，笑了。",
+        "allowStronger": false,
+        "seconds": 6000
+      },
+      {
+        "id": "sart_luohan",
+        "name": "扎马步",
+        "cat": "拳",
+        "needSkills": [
+          "luohan_atk_1"
+        ],
+        "mpCost": 10,
+        "baseChance": 0.6,
+        "effect": "soothe",
+        "desc": "罗汉门的法子：讲不成理就一起站着，站到气消。",
+        "ok": "你陪{name}站了一炷香。他先开的口，语气软了。",
+        "fail": "{name}转身就走。",
+        "allowStronger": true
+      },
+      {
+        "id": "sart_wuyun",
+        "name": "皮货行的暗手",
+        "cat": "拳",
+        "needSkills": [
+          "wuyun_qimen_1"
+        ],
+        "mpCost": 16,
+        "baseChance": 0.6,
+        "effect": "mark",
+        "desc": "五云手温家的门道：拍你一下，你身上就有股味，狗能找到你。",
+        "ok": "你替{name}掸了掸衣领。他道了谢——那点味道跟了他三天。",
+        "fail": "{name}自己拍了拍衣领。",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_dafeng",
+        "name": "插科打诨",
+        "cat": "轻功",
+        "needSkills": [
+          "dafeng_qimen_1"
+        ],
+        "mpCost": 12,
+        "baseChance": 0.62,
+        "effect": "soothe",
+        "desc": "大风云飞门的看家本事其实是嘴。一通闲扯，气就散了。",
+        "ok": "你扯了几句闲话。{name}被逗笑了，先前那点脾气没了。",
+        "fail": "{name}不吃这一套。",
+        "allowStronger": true
+      },
+      {
+        "id": "sart_huanghe",
+        "name": "摆码头",
+        "cat": "棍",
+        "needSkills": [
+          "huanghe_atk_1"
+        ],
+        "mpCost": 14,
+        "baseChance": 0.55,
+        "effect": "gift",
+        "desc": "黄河帮的规矩：这块水面是我的，你要过，得留点东西。",
+        "ok": "你说了句话，{name}就懂了。他解下些东西放在地上。",
+        "fail": "{name}装傻：「什么码头？」",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_taihu",
+        "name": "水上的路子",
+        "cat": "刀",
+        "needSkills": [
+          "taihu_qimen_1"
+        ],
+        "mpCost": 20,
+        "baseChance": 0.5,
+        "effect": "lure",
+        "desc": "太湖帮拉人上船，靠的是一句「顺路」。",
+        "ok": "{name}想了想，觉得顺路，就跟着走了。",
+        "fail": "{name}摇头：「我不上船。」",
+        "allowStronger": false,
+        "minutes": 120
+      },
+      {
+        "id": "sart_poyang",
+        "name": "撞船",
+        "cat": "棍",
+        "needSkills": [
+          "poyang_atk_1"
+        ],
+        "mpCost": 18,
+        "baseChance": 0.5,
+        "effect": "awe",
+        "desc": "鄱阳帮不跟你讲理，船头就横过来了。",
+        "ok": "你把家伙往地上一杵。{name}把话咽了回去。",
+        "fail": "{name}没退。",
+        "allowStronger": false,
+        "seconds": 7200
+      },
+      {
+        "id": "sart_qingzhu",
+        "name": "竹梆子",
+        "cat": "刀",
+        "needSkills": [
+          "qingzhu_qimen_1"
+        ],
+        "mpCost": 12,
+        "baseChance": 0.6,
+        "effect": "mark",
+        "desc": "青竹帮在货上盖个记号，全帮的人就都认得。",
+        "ok": "你让{name}在册子上按了个手印。往后这条街上的人都认得他。",
+        "fail": "{name}把手缩回去了。",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_jujing",
+        "name": "海上的话",
+        "cat": "刀",
+        "needSkills": [
+          "jujing_qimen_1"
+        ],
+        "mpCost": 24,
+        "baseChance": 0.5,
+        "effect": "interrogate",
+        "desc": "巨鲸帮的人出过海。他们说的事，岸上的人没听过。",
+        "ok": "你讲了件海上的事。{name}听得入神，话也多了起来。",
+        "fail": "{name}不感兴趣。",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_jinlong",
+        "name": "堂口的架子",
+        "cat": "拳",
+        "needSkills": [
+          "jinlong_qimen_1"
+        ],
+        "mpCost": 14,
+        "baseChance": 0.58,
+        "effect": "gift",
+        "desc": "金龙帮堂口修得气派。人在里头坐一坐，口气就软了。",
+        "ok": "你把{name}让到堂口的椅子上坐下。他坐了一会儿，自己开口了。",
+        "fail": "{name}不坐。",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_wuliang",
+        "name": "走个过场",
+        "cat": "剑",
+        "needSkills": [
+          "wuliang_atk_1"
+        ],
+        "mpCost": 16,
+        "baseChance": 0.65,
+        "effect": "soothe",
+        "desc": "无量剑派东宗西宗比了几十年，比出个道理：过场走完，气也消了。",
+        "ok": "你陪{name}比划了几下，谁也没赢。他反而笑了。",
+        "fail": "{name}不肯下场。",
+        "allowStronger": true
+      },
+      {
+        "id": "sart_funiu",
+        "name": "按牛的法子",
+        "cat": "拳",
+        "needSkills": [
+          "funiu_atk_1"
+        ],
+        "mpCost": 18,
+        "baseChance": 0.55,
+        "effect": "awe",
+        "desc": "伏牛派按得住一头牛，自然也按得住人。",
+        "ok": "你搭住{name}的肩膀往下按了按。他动弹不得。",
+        "fail": "{name}一屁股坐地上了，却没服。",
+        "allowStronger": false,
+        "seconds": 7200
+      },
+      {
+        "id": "sart_baisheng",
+        "name": "百胜的招牌",
+        "cat": "刀",
+        "needSkills": [
+          "baisheng_atk_1"
+        ],
+        "mpCost": 12,
+        "baseChance": 0.55,
+        "effect": "gift",
+        "desc": "「百胜」两个字挂出去，多少唬得住人。",
+        "ok": "你报了招牌。{name}犹豫了一下，还是给了。",
+        "fail": "{name}说没听说过。",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_baituo",
+        "name": "袖里的蛇",
+        "cat": "拳",
+        "needSkills": [
+          "baituo_qimen_1"
+        ],
+        "mpCost": 24,
+        "baseChance": 0.6,
+        "effect": "awe",
+        "desc": "白驼山的人不用动手。袖子动一下，对面的汗就下来了。",
+        "ok": "你的袖子动了动。{name}的脸白了。",
+        "fail": "{name}没看见。",
+        "allowStronger": false,
+        "seconds": 12000
+      },
+      {
+        "id": "sart_court",
+        "name": "出示腰牌",
+        "cat": "旁门",
+        "needSkills": [
+          "con_xuanjia_fist",
+          "con_jinyi_neigong"
+        ],
+        "mpCost": 16,
+        "baseChance": 0.75,
+        "effect": "awe",
+        "desc": "一块腰牌，比十把刀好用。官家的人走到哪儿都吃这一套。",
+        "ok": "你把腰牌亮出来。{name}的腰立刻弯下去半寸。",
+        "fail": "{name}眯着眼看那块牌子：「假的吧。」",
+        "allowStronger": false,
+        "seconds": 18000
+      },
+      {
+        "id": "sart_dongchang",
+        "name": "番子手段",
+        "cat": "魔功",
+        "needSkills": [
+          "dongchang_soul",
+          "xunchun_blade_art"
+        ],
+        "mpCost": 40,
+        "baseChance": 0.5,
+        "effect": "interrogate",
+        "desc": "东厂问话从不用刑。他们有的是让人自己开口的法子。",
+        "ok": "你说了几句很轻的话。{name}把知道的全倒了出来。",
+        "fail": "{name}把嘴闭上了。",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_biao",
+        "name": "保人平安",
+        "cat": "刀",
+        "needSkills": [
+          "biao_escort_blade"
+        ],
+        "mpCost": 22,
+        "baseChance": 0.8,
+        "effect": "heal_npc",
+        "desc": "镖行的规矩：路上遇见受伤的，先治，别问。",
+        "ok": "你替{name}裹了伤，还把随身的水给了他。",
+        "fail": "{name}摆手不用。",
+        "allowStronger": true,
+        "favor": 16
+      },
+      {
+        "id": "sart_bang",
+        "name": "帮里的交情",
+        "cat": "棍",
+        "needSkills": [
+          "bang_wharf_staff",
+          "bang_river_force"
+        ],
+        "mpCost": 12,
+        "baseChance": 0.6,
+        "effect": "gift",
+        "desc": "帮会的人认人不认理。报上堂口，多少有几分情面。",
+        "ok": "你报了自己堂口的名号。{name}笑了笑，拿了东西出来。",
+        "fail": "{name}说跟你们帮没来往。",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_salt",
+        "name": "盐引人情",
+        "cat": "旁门",
+        "needSkills": [
+          "salt_iron_palm"
+        ],
+        "mpCost": 14,
+        "baseChance": 0.62,
+        "effect": "gift",
+        "desc": "盐帮手上过的是盐引。给不给货，一句话的事。",
+        "ok": "你提了句盐引上的事。{name}犹豫半晌，还是点了头。",
+        "fail": "{name}说这事他做不了主。",
+        "allowStronger": false
+      },
+      {
+        "id": "sart_merchant",
+        "name": "算盘珠子",
+        "cat": "旁门",
+        "needSkills": [
+          "merchant_sleeve"
+        ],
+        "mpCost": 20,
+        "baseChance": 0.6,
+        "effect": "interrogate",
+        "desc": "商会不问你秘密，只跟你算账。账算到第三笔，人就自己说漏了。",
+        "ok": "你替{name}算了笔账。他为了辩驳，把底细露了出来。",
+        "fail": "{name}摆手：「不跟你算。」",
+        "allowStronger": false
+      }
+    ]
+  }
+}

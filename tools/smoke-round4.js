@@ -443,10 +443,17 @@ section('§S 「询问」→ 他认识的人：名单与回答同源');
       (() => {
         inst.favor = 30;
         const r3 = e.exec('ask ' + inst.name + ' about ' + first.name);
-        const t3 = txt(r3.lines);
-        return t3.length > t.length && t3.includes(first.name);
+        /* ⚠️ 只量**他说出来的话**（kind==='say'）。
+           整行计数会掺进别的渠道：第一次 exec 会顺带把新手教程那一章讲上屏
+           （storybeat），一条就是几十上百字 —— 与「交情深浅」毫无关系。 */
+        const sayOnly = L => (L || []).filter(l => l.kind === 'say').map(l => l.text || '').join('');
+        const t0 = sayOnly(r.lines);
+        const t3 = sayOnly(r3.lines);
+        return t3.length > t0.length && t3.includes(first.name);
       })(),
-      '生人 ' + t.length + ' 字 → 熟人 ' + txt(e.exec('ask ' + inst.name + ' about ' + first.name).lines).length + ' 字');
+      '生人 ' + (r.lines || []).filter(l => l.kind === 'say').map(l => l.text || '').join('').length
+      + ' 字 → 熟人 ' + (e.exec('ask ' + inst.name + ' about ' + first.name).lines || [])
+        .filter(l => l.kind === 'say').map(l => l.text || '').join('').length + ' 字');
 
     /* ③ 单字名不该乱撞（防「江湖消息」被单字名截胡） */
     const r2 = e.exec('ask ' + inst.name + ' about 江湖消息');

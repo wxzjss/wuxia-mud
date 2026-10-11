@@ -1,0 +1,1384 @@
+{
+  "npcs": {
+    "baisheng_disciple": {
+      "personality": "haoshuang"
+    },
+    "baisheng_keeper": {
+      "personality": "baozhao"
+    },
+    "baisheng_master": {
+      "personality": "yinzhi"
+    },
+    "baituo_disciple": {
+      "personality": "baozhao"
+    },
+    "baituo_keeper": {
+      "personality": "lengmo"
+    },
+    "baituo_master": {
+      "personality": "wenwan"
+    },
+    "beggar_boy": {
+      "personality": "youhua"
+    },
+    "beggar_info": {
+      "personality": "lengmo"
+    },
+    "blood_saber": {
+      "personality": "baozhao"
+    },
+    "bureau_clerk": {
+      "personality": "qienuo"
+    },
+    "dafeng_disciple": {
+      "personality": "mune"
+    },
+    "dafeng_keeper": {
+      "personality": "lengmo"
+    },
+    "dafeng_master": {
+      "personality": "yinzhi"
+    },
+    "dali_keeper": {
+      "personality": "mune"
+    },
+    "demo_swordman": {
+      "personality": "baozhao"
+    },
+    "depot_master": {
+      "personality": "yinzhi"
+    },
+    "depot_shadow": {
+      "personality": "lengmo"
+    },
+    "diancang_disciple": {
+      "personality": "baozhao"
+    },
+    "diancang_keeper": {
+      "personality": "yinzhi"
+    },
+    "diancang_master": {
+      "personality": "baozhao"
+    },
+    "du_mu": {
+      "personality": "mune"
+    },
+    "duan_yu": {
+      "personality": "wenwan"
+    },
+    "emei_keeper": {
+      "personality": "mune"
+    },
+    "emei_miejue": {
+      "personality": "baozhao"
+    },
+    "feihu_disciple": {
+      "personality": "mune"
+    },
+    "feihu_keeper": {
+      "personality": "yinzhi"
+    },
+    "feihu_master": {
+      "personality": "haoshuang"
+    },
+    "fisher_old": {
+      "personality": "wenwan"
+    },
+    "funiu_disciple": {
+      "personality": "xiayi"
+    },
+    "funiu_keeper": {
+      "personality": "qienuo"
+    },
+    "funiu_master": {
+      "personality": "youhua"
+    },
+    "gaibang_hong": {
+      "personality": "haoshuang"
+    },
+    "gaibang_keeper": {
+      "personality": "xiayi"
+    },
+    "gambler_boss": {
+      "personality": "youhua"
+    },
+    "guard_blulu": {
+      "personality": "xiayi"
+    },
+    "guard_city": {
+      "personality": "xiayi"
+    },
+    "guard_huashan": {
+      "personality": "xiayi"
+    },
+    "guard_jinywei": {
+      "personality": "xiayi"
+    },
+    "guard_palace": {
+      "personality": "xiayi"
+    },
+    "guard_shaolin": {
+      "personality": "xiayi"
+    },
+    "guard_yamen": {
+      "personality": "xiayi"
+    },
+    "gumu_keeper": {
+      "personality": "wenwan"
+    },
+    "gumu_master": {
+      "personality": "lengmo"
+    },
+    "hehuan_disciple": {
+      "personality": "wenwan"
+    },
+    "hehuan_keeper": {
+      "personality": "wenwan"
+    },
+    "hehuan_master": {
+      "personality": "wenwan"
+    },
+    "hengshanN_disciple": {
+      "personality": "yinzhi"
+    },
+    "hengshanN_keeper": {
+      "personality": "qienuo"
+    },
+    "hengshanN_master": {
+      "personality": "baozhao"
+    },
+    "hengshan_disciple": {
+      "personality": "wenwan"
+    },
+    "hengshan_keeper": {
+      "personality": "mune"
+    },
+    "hengshan_master": {
+      "personality": "wenwan"
+    },
+    "hk_storyteller": {
+      "personality": "mune"
+    },
+    "huanghe_disciple": {
+      "personality": "baozhao"
+    },
+    "huanghe_keeper": {
+      "personality": "xiayi"
+    },
+    "huanghe_master": {
+      "personality": "yinzhi"
+    },
+    "huashan_keeper": {
+      "personality": "xiayi"
+    },
+    "jindao_disciple": {
+      "personality": "haoshuang"
+    },
+    "jindao_keeper": {
+      "personality": "xiayi"
+    },
+    "jindao_master": {
+      "personality": "haoshuang"
+    },
+    "jinlong_disciple": {
+      "personality": "baozhao"
+    },
+    "jinlong_keeper": {
+      "personality": "youhua"
+    },
+    "jinlong_master": {
+      "personality": "haoshuang"
+    },
+    "jn_apothecary": {
+      "personality": "wenwan"
+    },
+    "jn_bookman": {
+      "personality": "wenwan"
+    },
+    "jn_diviner": {
+      "personality": "yinzhi"
+    },
+    "jn_fruitman": {
+      "personality": "youhua"
+    },
+    "jn_grocer": {
+      "personality": "youhua"
+    },
+    "jn_pawnclerk": {
+      "personality": "youhua"
+    },
+    "jn_porter": {
+      "personality": "mune"
+    },
+    "jn_silkkeeper": {
+      "personality": "youhua"
+    },
+    "jn_smithman": {
+      "personality": "haoshuang"
+    },
+    "jn_tutor": {
+      "personality": "wenwan"
+    },
+    "jn_villagekeep": {
+      "personality": "youhua"
+    },
+    "jn_winewaiter": {
+      "personality": "youhua"
+    },
+    "jujing_disciple": {
+      "personality": "yinzhi"
+    },
+    "jujing_keeper": {
+      "personality": "qienuo"
+    },
+    "jujing_master": {
+      "personality": "qienuo"
+    },
+    "kongtong_disciple": {
+      "personality": "qienuo"
+    },
+    "kongtong_keeper": {
+      "personality": "wenwan"
+    },
+    "kongtong_master": {
+      "personality": "baozhao"
+    },
+    "kuaidao_disciple": {
+      "personality": "baozhao"
+    },
+    "kuaidao_keeper": {
+      "personality": "lengmo"
+    },
+    "kuaidao_master": {
+      "personality": "haoshuang"
+    },
+    "kunlun_disciple": {
+      "personality": "youhua"
+    },
+    "kunlun_keeper": {
+      "personality": "youhua"
+    },
+    "kunlun_master": {
+      "personality": "baozhao"
+    },
+    "linghu": {
+      "personality": "haoshuang"
+    },
+    "liu_hanyan": {
+      "personality": "wenwan"
+    },
+    "luohan_disciple": {
+      "personality": "xiayi"
+    },
+    "luohan_keeper": {
+      "personality": "haoshuang"
+    },
+    "luohan_master": {
+      "personality": "xiayi"
+    },
+    "master_yue": {
+      "personality": "yinzhi"
+    },
+    "miao_lan": {
+      "personality": "xiayi"
+    },
+    "miaojiang_keeper": {
+      "personality": "yinzhi"
+    },
+    "mob_assassin": {
+      "personality": "youhua"
+    },
+    "mob_bandit": {
+      "personality": "wenwan"
+    },
+    "mob_bandit_chief": {
+      "personality": "baozhao"
+    },
+    "mob_black_bear": {
+      "personality": "mune"
+    },
+    "mob_boar": {
+      "personality": "lengmo"
+    },
+    "mob_mo_disciple": {
+      "personality": "lengmo"
+    },
+    "mob_snake": {
+      "personality": "yinzhi"
+    },
+    "mob_soldier": {
+      "personality": "lengmo"
+    },
+    "mob_tiger": {
+      "personality": "mune"
+    },
+    "mob_wolf": {
+      "personality": "lengmo"
+    },
+    "mojiao_dongfang": {
+      "personality": "yinzhi"
+    },
+    "mojiao_keeper": {
+      "personality": "haoshuang"
+    },
+    "npcv_001": {
+      "personality": "mune"
+    },
+    "npcv_002": {
+      "personality": "youhua"
+    },
+    "npcv_003": {
+      "personality": "wenwan"
+    },
+    "npcv_004": {
+      "personality": "baozhao"
+    },
+    "npcv_005": {
+      "personality": "haoshuang"
+    },
+    "npcv_006": {
+      "personality": "wenwan"
+    },
+    "npcv_007": {
+      "personality": "haoshuang"
+    },
+    "npcv_008": {
+      "personality": "youhua"
+    },
+    "npcv_009": {
+      "personality": "youhua"
+    },
+    "npcv_010": {
+      "personality": "youhua"
+    },
+    "npcv_011": {
+      "personality": "mune"
+    },
+    "npcv_012": {
+      "personality": "mune"
+    },
+    "npcv_013": {
+      "personality": "youhua"
+    },
+    "npcv_014": {
+      "personality": "mune"
+    },
+    "npcv_015": {
+      "personality": "xiayi"
+    },
+    "npcv_016": {
+      "personality": "xiayi"
+    },
+    "npcv_017": {
+      "personality": "lengmo"
+    },
+    "npcv_018": {
+      "personality": "youhua"
+    },
+    "npcv_019": {
+      "personality": "lengmo"
+    },
+    "npcv_020": {
+      "personality": "wenwan"
+    },
+    "npcv_021": {
+      "personality": "wenwan"
+    },
+    "npcv_022": {
+      "personality": "youhua"
+    },
+    "npcv_023": {
+      "personality": "mune"
+    },
+    "npcv_024": {
+      "personality": "lengmo"
+    },
+    "npcv_025": {
+      "personality": "youhua"
+    },
+    "npcv_026": {
+      "personality": "haoshuang"
+    },
+    "npcv_027": {
+      "personality": "mune"
+    },
+    "npcv_028": {
+      "personality": "wenwan"
+    },
+    "npcv_029": {
+      "personality": "mune"
+    },
+    "npcv_030": {
+      "personality": "youhua"
+    },
+    "npcv_031": {
+      "personality": "yinzhi"
+    },
+    "npcv_032": {
+      "personality": "youhua"
+    },
+    "npcv_033": {
+      "personality": "mune"
+    },
+    "npcv_034": {
+      "personality": "youhua"
+    },
+    "npcv_035": {
+      "personality": "youhua"
+    },
+    "npcv_036": {
+      "personality": "youhua"
+    },
+    "npcv_037": {
+      "personality": "mune"
+    },
+    "npcv_038": {
+      "personality": "haoshuang"
+    },
+    "npcv_039": {
+      "personality": "wenwan"
+    },
+    "npcv_040": {
+      "personality": "haoshuang"
+    },
+    "npcv_041": {
+      "personality": "youhua"
+    },
+    "npcv_042": {
+      "personality": "youhua"
+    },
+    "npcv_043": {
+      "personality": "lengmo"
+    },
+    "npcv_044": {
+      "personality": "yinzhi"
+    },
+    "npcv_045": {
+      "personality": "mune"
+    },
+    "npcv_046": {
+      "personality": "youhua"
+    },
+    "npcv_047": {
+      "personality": "mune"
+    },
+    "npcv_048": {
+      "personality": "xiayi"
+    },
+    "npcv_049": {
+      "personality": "xiayi"
+    },
+    "npcv_050": {
+      "personality": "lengmo"
+    },
+    "npcv_051": {
+      "personality": "lengmo"
+    },
+    "npcv_052": {
+      "personality": "mune"
+    },
+    "npcv_053": {
+      "personality": "mune"
+    },
+    "npcv_054": {
+      "personality": "wenwan"
+    },
+    "npcv_055": {
+      "personality": "youhua"
+    },
+    "npcv_056": {
+      "personality": "mune"
+    },
+    "npcv_057": {
+      "personality": "xiayi"
+    },
+    "npcv_058": {
+      "personality": "youhua"
+    },
+    "npcv_059": {
+      "personality": "haoshuang"
+    },
+    "npcv_060": {
+      "personality": "haoshuang"
+    },
+    "npcv_061": {
+      "personality": "wenwan"
+    },
+    "npcv_062": {
+      "personality": "mune"
+    },
+    "npcv_063": {
+      "personality": "youhua"
+    },
+    "npcv_064": {
+      "personality": "wenwan"
+    },
+    "npcv_065": {
+      "personality": "youhua"
+    },
+    "npcv_066": {
+      "personality": "mune"
+    },
+    "npcv_067": {
+      "personality": "baozhao"
+    },
+    "npcv_068": {
+      "personality": "youhua"
+    },
+    "npcv_069": {
+      "personality": "wenwan"
+    },
+    "npcv_070": {
+      "personality": "qienuo"
+    },
+    "npcv_071": {
+      "personality": "haoshuang"
+    },
+    "npcv_072": {
+      "personality": "wenwan"
+    },
+    "npcv_073": {
+      "personality": "youhua"
+    },
+    "npcv_074": {
+      "personality": "youhua"
+    },
+    "npcv_075": {
+      "personality": "youhua"
+    },
+    "npcv_076": {
+      "personality": "lengmo"
+    },
+    "npcv_077": {
+      "personality": "haoshuang"
+    },
+    "npcv_078": {
+      "personality": "mune"
+    },
+    "npcv_079": {
+      "personality": "mune"
+    },
+    "npcv_080": {
+      "personality": "mune"
+    },
+    "npcv_081": {
+      "personality": "lengmo"
+    },
+    "npcv_082": {
+      "personality": "mune"
+    },
+    "npcv_083": {
+      "personality": "youhua"
+    },
+    "npcv_084": {
+      "personality": "youhua"
+    },
+    "npcv_085": {
+      "personality": "mune"
+    },
+    "npcv_086": {
+      "personality": "lengmo"
+    },
+    "npcv_087": {
+      "personality": "youhua"
+    },
+    "npcv_088": {
+      "personality": "youhua"
+    },
+    "npcv_089": {
+      "personality": "mune"
+    },
+    "npcv_090": {
+      "personality": "lengmo"
+    },
+    "npcv_091": {
+      "personality": "youhua"
+    },
+    "npcv_092": {
+      "personality": "haoshuang"
+    },
+    "npcv_093": {
+      "personality": "mune"
+    },
+    "npcv_094": {
+      "personality": "wenwan"
+    },
+    "npcv_095": {
+      "personality": "wenwan"
+    },
+    "npcv_096": {
+      "personality": "youhua"
+    },
+    "npcv_097": {
+      "personality": "qienuo"
+    },
+    "npcv_098": {
+      "personality": "youhua"
+    },
+    "npcv_099": {
+      "personality": "mune"
+    },
+    "npcv_100": {
+      "personality": "mune"
+    },
+    "npcv_101": {
+      "personality": "youhua"
+    },
+    "npcv_102": {
+      "personality": "youhua"
+    },
+    "npcv_103": {
+      "personality": "mune"
+    },
+    "npcv_104": {
+      "personality": "haoshuang"
+    },
+    "npcv_105": {
+      "personality": "wenwan"
+    },
+    "npcv_106": {
+      "personality": "haoshuang"
+    },
+    "npcv_107": {
+      "personality": "youhua"
+    },
+    "npcv_108": {
+      "personality": "youhua"
+    },
+    "npcv_109": {
+      "personality": "lengmo"
+    },
+    "npcv_110": {
+      "personality": "youhua"
+    },
+    "npcv_111": {
+      "personality": "mune"
+    },
+    "npcv_112": {
+      "personality": "mune"
+    },
+    "npcv_113": {
+      "personality": "mune"
+    },
+    "npcv_114": {
+      "personality": "xiayi"
+    },
+    "npcv_115": {
+      "personality": "lengmo"
+    },
+    "npcv_116": {
+      "personality": "lengmo"
+    },
+    "npcv_117": {
+      "personality": "youhua"
+    },
+    "npcv_118": {
+      "personality": "lengmo"
+    },
+    "npcv_119": {
+      "personality": "lengmo"
+    },
+    "npcv_120": {
+      "personality": "wenwan"
+    },
+    "npcv_121": {
+      "personality": "youhua"
+    },
+    "npcv_122": {
+      "personality": "mune"
+    },
+    "npcv_123": {
+      "personality": "xiayi"
+    },
+    "npcv_124": {
+      "personality": "youhua"
+    },
+    "npcv_125": {
+      "personality": "haoshuang"
+    },
+    "npcv_126": {
+      "personality": "youhua"
+    },
+    "npcv_127": {
+      "personality": "wenwan"
+    },
+    "npcv_128": {
+      "personality": "haoshuang"
+    },
+    "npcv_129": {
+      "personality": "youhua"
+    },
+    "npcv_130": {
+      "personality": "yinzhi"
+    },
+    "npcv_131": {
+      "personality": "youhua"
+    },
+    "npcv_132": {
+      "personality": "mune"
+    },
+    "npcv_133": {
+      "personality": "mune"
+    },
+    "npcv_134": {
+      "personality": "youhua"
+    },
+    "npcv_135": {
+      "personality": "wenwan"
+    },
+    "npcv_136": {
+      "personality": "qienuo"
+    },
+    "npcv_137": {
+      "personality": "haoshuang"
+    },
+    "npcv_138": {
+      "personality": "wenwan"
+    },
+    "npcv_139": {
+      "personality": "haoshuang"
+    },
+    "npcv_140": {
+      "personality": "youhua"
+    },
+    "npcv_141": {
+      "personality": "youhua"
+    },
+    "npcv_142": {
+      "personality": "lengmo"
+    },
+    "npcv_143": {
+      "personality": "haoshuang"
+    },
+    "npcv_144": {
+      "personality": "mune"
+    },
+    "npcv_145": {
+      "personality": "mune"
+    },
+    "npcv_146": {
+      "personality": "mune"
+    },
+    "npcv_147": {
+      "personality": "xiayi"
+    },
+    "npcv_148": {
+      "personality": "xiayi"
+    },
+    "npcv_149": {
+      "personality": "lengmo"
+    },
+    "npcv_150": {
+      "personality": "lengmo"
+    },
+    "npcv_151": {
+      "personality": "lengmo"
+    },
+    "npcv_152": {
+      "personality": "mune"
+    },
+    "npcv_153": {
+      "personality": "youhua"
+    },
+    "npcv_154": {
+      "personality": "baozhao"
+    },
+    "npcv_155": {
+      "personality": "youhua"
+    },
+    "npcv_156": {
+      "personality": "xiayi"
+    },
+    "npcv_157": {
+      "personality": "youhua"
+    },
+    "npcv_158": {
+      "personality": "haoshuang"
+    },
+    "npcv_159": {
+      "personality": "haoshuang"
+    },
+    "npcv_160": {
+      "personality": "wenwan"
+    },
+    "npcv_161": {
+      "personality": "wenwan"
+    },
+    "npcv_162": {
+      "personality": "youhua"
+    },
+    "npcv_163": {
+      "personality": "baozhao"
+    },
+    "npcv_164": {
+      "personality": "baozhao"
+    },
+    "npcv_165": {
+      "personality": "youhua"
+    },
+    "npcv_166": {
+      "personality": "mune"
+    },
+    "npcv_167": {
+      "personality": "youhua"
+    },
+    "npcv_168": {
+      "personality": "wenwan"
+    },
+    "npcv_169": {
+      "personality": "lengmo"
+    },
+    "npcv_170": {
+      "personality": "haoshuang"
+    },
+    "npcv_171": {
+      "personality": "wenwan"
+    },
+    "npcv_172": {
+      "personality": "haoshuang"
+    },
+    "npcv_173": {
+      "personality": "youhua"
+    },
+    "npcv_174": {
+      "personality": "youhua"
+    },
+    "npcv_175": {
+      "personality": "lengmo"
+    },
+    "npcv_176": {
+      "personality": "lengmo"
+    },
+    "npcv_177": {
+      "personality": "mune"
+    },
+    "npcv_178": {
+      "personality": "mune"
+    },
+    "npcv_179": {
+      "personality": "mune"
+    },
+    "npcv_180": {
+      "personality": "lengmo"
+    },
+    "npcv_181": {
+      "personality": "lengmo"
+    },
+    "npcv_182": {
+      "personality": "lengmo"
+    },
+    "npcv_183": {
+      "personality": "mune"
+    },
+    "npcv_184": {
+      "personality": "lengmo"
+    },
+    "npcv_185": {
+      "personality": "mune"
+    },
+    "npcv_186": {
+      "personality": "wenwan"
+    },
+    "npcv_187": {
+      "personality": "youhua"
+    },
+    "npcv_188": {
+      "personality": "mune"
+    },
+    "npcv_189": {
+      "personality": "xiayi"
+    },
+    "npcv_190": {
+      "personality": "youhua"
+    },
+    "npcv_191": {
+      "personality": "haoshuang"
+    },
+    "npcv_192": {
+      "personality": "mune"
+    },
+    "npcv_193": {
+      "personality": "wenwan"
+    },
+    "npcv_194": {
+      "personality": "lengmo"
+    },
+    "npcv_195": {
+      "personality": "youhua"
+    },
+    "npcv_196": {
+      "personality": "yinzhi"
+    },
+    "npcv_197": {
+      "personality": "youhua"
+    },
+    "npcv_198": {
+      "personality": "mune"
+    },
+    "npcv_199": {
+      "personality": "mune"
+    },
+    "npcv_200": {
+      "personality": "youhua"
+    },
+    "npcv_201": {
+      "personality": "wenwan"
+    },
+    "npcv_202": {
+      "personality": "wenwan"
+    },
+    "npcv_203": {
+      "personality": "haoshuang"
+    },
+    "npcv_204": {
+      "personality": "wenwan"
+    },
+    "npcv_205": {
+      "personality": "haoshuang"
+    },
+    "npcv_206": {
+      "personality": "youhua"
+    },
+    "npcv_207": {
+      "personality": "youhua"
+    },
+    "npcv_208": {
+      "personality": "lengmo"
+    },
+    "npcv_209": {
+      "personality": "xiayi"
+    },
+    "npcv_210": {
+      "personality": "mune"
+    },
+    "npcv_211": {
+      "personality": "mune"
+    },
+    "npcv_212": {
+      "personality": "mune"
+    },
+    "npcv_213": {
+      "personality": "xiayi"
+    },
+    "npcv_214": {
+      "personality": "xiayi"
+    },
+    "npcv_215": {
+      "personality": "baozhao"
+    },
+    "npcv_216": {
+      "personality": "mune"
+    },
+    "npcv_217": {
+      "personality": "mune"
+    },
+    "npcv_218": {
+      "personality": "wenwan"
+    },
+    "npcv_219": {
+      "personality": "wenwan"
+    },
+    "npcv_220": {
+      "personality": "youhua"
+    },
+    "npcv_221": {
+      "personality": "mune"
+    },
+    "npcv_222": {
+      "personality": "xiayi"
+    },
+    "npcv_223": {
+      "personality": "mune"
+    },
+    "npcv_224": {
+      "personality": "haoshuang"
+    },
+    "npcv_225": {
+      "personality": "qienuo"
+    },
+    "npcv_226": {
+      "personality": "wenwan"
+    },
+    "npcv_227": {
+      "personality": "haoshuang"
+    },
+    "npcv_228": {
+      "personality": "youhua"
+    },
+    "npcv_229": {
+      "personality": "yinzhi"
+    },
+    "npcv_230": {
+      "personality": "youhua"
+    },
+    "npcv_231": {
+      "personality": "mune"
+    },
+    "npcv_232": {
+      "personality": "mune"
+    },
+    "npcv_233": {
+      "personality": "youhua"
+    },
+    "npcv_234": {
+      "personality": "wenwan"
+    },
+    "npcv_235": {
+      "personality": "haoshuang"
+    },
+    "npcv_236": {
+      "personality": "haoshuang"
+    },
+    "npcv_237": {
+      "personality": "mune"
+    },
+    "npcv_238": {
+      "personality": "haoshuang"
+    },
+    "npcv_239": {
+      "personality": "youhua"
+    },
+    "npcv_240": {
+      "personality": "youhua"
+    },
+    "npcv_241": {
+      "personality": "lengmo"
+    },
+    "npcv_242": {
+      "personality": "haoshuang"
+    },
+    "npcv_243": {
+      "personality": "mune"
+    },
+    "npcv_244": {
+      "personality": "youhua"
+    },
+    "npcv_245": {
+      "personality": "mune"
+    },
+    "npcv_246": {
+      "personality": "xiayi"
+    },
+    "npcv_247": {
+      "personality": "xiayi"
+    },
+    "npcv_248": {
+      "personality": "lengmo"
+    },
+    "npcv_249": {
+      "personality": "mune"
+    },
+    "npcv_250": {
+      "personality": "mune"
+    },
+    "npcv_251": {
+      "personality": "youhua"
+    },
+    "npcv_252": {
+      "personality": "wenwan"
+    },
+    "npcv_253": {
+      "personality": "youhua"
+    },
+    "npcv_254": {
+      "personality": "mune"
+    },
+    "npcv_255": {
+      "personality": "xiayi"
+    },
+    "npcv_256": {
+      "personality": "youhua"
+    },
+    "npcv_257": {
+      "personality": "haoshuang"
+    },
+    "npcv_258": {
+      "personality": "baozhao"
+    },
+    "npcv_259": {
+      "personality": "wenwan"
+    },
+    "npcv_260": {
+      "personality": "xiayi"
+    },
+    "npcv_261": {
+      "personality": "youhua"
+    },
+    "npcv_262": {
+      "personality": "yinzhi"
+    },
+    "npcv_263": {
+      "personality": "youhua"
+    },
+    "npcv_264": {
+      "personality": "mune"
+    },
+    "npcv_265": {
+      "personality": "mune"
+    },
+    "npcv_266": {
+      "personality": "youhua"
+    },
+    "npcv_267": {
+      "personality": "wenwan"
+    },
+    "npcv_268": {
+      "personality": "wenwan"
+    },
+    "npcv_269": {
+      "personality": "haoshuang"
+    },
+    "npcv_270": {
+      "personality": "wenwan"
+    },
+    "npcv_271": {
+      "personality": "haoshuang"
+    },
+    "npcv_272": {
+      "personality": "youhua"
+    },
+    "npcv_273": {
+      "personality": "youhua"
+    },
+    "npcv_274": {
+      "personality": "lengmo"
+    },
+    "npcv_275": {
+      "personality": "baozhao"
+    },
+    "npcv_276": {
+      "personality": "mune"
+    },
+    "npcv_277": {
+      "personality": "mune"
+    },
+    "npcv_278": {
+      "personality": "mune"
+    },
+    "npcv_279": {
+      "personality": "xiayi"
+    },
+    "npcv_280": {
+      "personality": "xiayi"
+    },
+    "npcv_281": {
+      "personality": "lengmo"
+    },
+    "npcv_282": {
+      "personality": "youhua"
+    },
+    "npcv_283": {
+      "personality": "mune"
+    },
+    "npcv_284": {
+      "personality": "mune"
+    },
+    "npcv_285": {
+      "personality": "mune"
+    },
+    "npcv_286": {
+      "personality": "youhua"
+    },
+    "npcv_287": {
+      "personality": "mune"
+    },
+    "npcv_288": {
+      "personality": "xiayi"
+    },
+    "nv_huang": {
+      "personality": "lengmo"
+    },
+    "nv_yue": {
+      "personality": "haoshuang"
+    },
+    "old_herbalist": {
+      "personality": "wenwan"
+    },
+    "poyang_disciple": {
+      "personality": "wenwan"
+    },
+    "poyang_keeper": {
+      "personality": "haoshuang"
+    },
+    "poyang_master": {
+      "personality": "xiayi"
+    },
+    "qingcheng_disciple": {
+      "personality": "youhua"
+    },
+    "qingcheng_keeper": {
+      "personality": "haoshuang"
+    },
+    "qingcheng_master": {
+      "personality": "baozhao"
+    },
+    "qingzhu_disciple": {
+      "personality": "yinzhi"
+    },
+    "qingzhu_keeper": {
+      "personality": "mune"
+    },
+    "qingzhu_master": {
+      "personality": "baozhao"
+    },
+    "ren_woxing": {
+      "personality": "yinzhi"
+    },
+    "royal_keeper": {
+      "personality": "wenwan"
+    },
+    "shaolin_fangzheng": {
+      "personality": "mune"
+    },
+    "shaolin_keeper": {
+      "personality": "mune"
+    },
+    "shenni": {
+      "personality": "yinzhi"
+    },
+    "shenquan_disciple": {
+      "personality": "yinzhi"
+    },
+    "shenquan_keeper": {
+      "personality": "qienuo"
+    },
+    "shenquan_master": {
+      "personality": "yinzhi"
+    },
+    "swordman_wander": {
+      "personality": "xiayi"
+    },
+    "taihu_disciple": {
+      "personality": "lengmo"
+    },
+    "taihu_keeper": {
+      "personality": "lengmo"
+    },
+    "taihu_master": {
+      "personality": "mune"
+    },
+    "taishan_disciple": {
+      "personality": "mune"
+    },
+    "taishan_keeper": {
+      "personality": "mune"
+    },
+    "taishan_master": {
+      "personality": "mune"
+    },
+    "tang_bohu": {
+      "personality": "haoshuang"
+    },
+    "tangmen_keeper": {
+      "personality": "yinzhi"
+    },
+    "tangmen_master": {
+      "personality": "mune"
+    },
+    "taohua_keeper": {
+      "personality": "wenwan"
+    },
+    "test_npc": {
+      "personality": "qienuo"
+    },
+    "tieqiang_disciple": {
+      "personality": "haoshuang"
+    },
+    "tieqiang_keeper": {
+      "personality": "mune"
+    },
+    "tieqiang_master": {
+      "personality": "wenwan"
+    },
+    "tiezhang_disciple": {
+      "personality": "wenwan"
+    },
+    "tiezhang_keeper": {
+      "personality": "wenwan"
+    },
+    "tiezhang_master": {
+      "personality": "baozhao"
+    },
+    "wen_black": {
+      "personality": "xiayi"
+    },
+    "wen_huashan_shop": {
+      "personality": "mune"
+    },
+    "wen_jiangnan": {
+      "personality": "haoshuang"
+    },
+    "wen_zhengming": {
+      "personality": "wenwan"
+    },
+    "wudang_chongxu": {
+      "personality": "mune"
+    },
+    "wudang_keeper": {
+      "personality": "mune"
+    },
+    "wuhu_disciple": {
+      "personality": "qienuo"
+    },
+    "wuhu_keeper": {
+      "personality": "haoshuang"
+    },
+    "wuhu_master": {
+      "personality": "wenwan"
+    },
+    "wuliang_disciple": {
+      "personality": "xiayi"
+    },
+    "wuliang_keeper": {
+      "personality": "baozhao"
+    },
+    "wuliang_master": {
+      "personality": "haoshuang"
+    },
+    "wuyun_disciple": {
+      "personality": "wenwan"
+    },
+    "wuyun_keeper": {
+      "personality": "wenwan"
+    },
+    "wuyun_master": {
+      "personality": "wenwan"
+    },
+    "xingxiu_keeper": {
+      "personality": "youhua"
+    },
+    "xingxiu_laoxian": {
+      "personality": "yinzhi"
+    },
+    "xu_zhenqing": {
+      "personality": "mune"
+    },
+    "xue_zheng": {
+      "personality": "youhua"
+    },
+    "xuedao_keeper": {
+      "personality": "baozhao"
+    },
+    "yamen_store_keeper": {
+      "personality": "xiayi"
+    },
+    "zhang_ling": {
+      "personality": "haoshuang"
+    },
+    "zhenyuan_disciple": {
+      "personality": "youhua"
+    },
+    "zhenyuan_keeper": {
+      "personality": "wenwan"
+    },
+    "zhenyuan_master": {
+      "personality": "baozhao"
+    },
+    "zhou_wenbin": {
+      "personality": "youhua"
+    },
+    "zhu_zhishan": {
+      "personality": "youhua"
+    }
+  }
+}

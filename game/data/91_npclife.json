@@ -1,0 +1,1068 @@
+{
+  "npcs": {
+    "master_yue": {
+      "carry": {
+        "money": 605,
+        "items": [
+          "iron_spear"
+        ]
+      }
+    },
+    "nv_yue": {
+      "carry": {
+        "money": 1738,
+        "items": [
+          "iron_spear"
+        ]
+      }
+    },
+    "linghu": {
+      "carry": {
+        "money": 452,
+        "items": [
+          "fine_sword",
+          "iron_spear"
+        ]
+      }
+    },
+    "shaolin_fangzheng": {
+      "carry": {
+        "money": 499,
+        "items": [
+          "fine_sword",
+          "iron_spear"
+        ]
+      }
+    },
+    "wudang_chongxu": {
+      "carry": {
+        "money": 232,
+        "items": [
+          "incense_agarwood",
+          "jade_talisman"
+        ]
+      }
+    },
+    "emei_miejue": {
+      "carry": {
+        "money": 1783,
+        "items": [
+          "fine_sword",
+          "iron_spear"
+        ]
+      }
+    },
+    "gaibang_hong": {
+      "carry": {
+        "money": 1218,
+        "items": [
+          "iron_spear"
+        ]
+      }
+    },
+    "mojiao_dongfang": {
+      "carry": {
+        "money": 860,
+        "items": [
+          "jinchuang_yao"
+        ]
+      }
+    },
+    "nv_huang": {
+      "carry": {
+        "money": 1829,
+        "items": [
+          "herb_lingzhi",
+          "herb_ginseng"
+        ]
+      }
+    },
+    "miao_lan": {
+      "carry": {
+        "money": 253,
+        "items": [
+          "iron_spear",
+          "fine_sword"
+        ]
+      }
+    },
+    "duan_yu": {
+      "carry": {
+        "money": 475,
+        "items": [
+          "fine_sword",
+          "iron_spear"
+        ]
+      }
+    },
+    "blood_saber": {
+      "carry": {
+        "money": 457,
+        "items": [
+          "iron_spear"
+        ]
+      }
+    },
+    "xingxiu_laoxian": {
+      "carry": {
+        "money": 1559,
+        "items": [
+          "fine_sword",
+          "iron_spear"
+        ]
+      }
+    },
+    "mob_bandit": {
+      "carry": {
+        "money": 22
+      }
+    },
+    "mob_bandit_chief": {
+      "carry": {
+        "money": 17
+      }
+    },
+    "mob_wolf": {
+      "carry": {
+        "money": 38
+      }
+    },
+    "mob_boar": {
+      "carry": {
+        "money": 12
+      }
+    },
+    "mob_snake": {
+      "carry": {
+        "money": 21
+      }
+    },
+    "mob_black_bear": {
+      "carry": {
+        "money": 46
+      }
+    },
+    "mob_tiger": {
+      "carry": {
+        "money": 14
+      }
+    },
+    "mob_mo_disciple": {
+      "carry": {
+        "money": 45
+      }
+    },
+    "mob_soldier": {
+      "carry": {
+        "money": 24
+      }
+    },
+    "mob_assassin": {
+      "carry": {
+        "money": 8
+      }
+    },
+    "wen_jiangnan": {
+      "carry": {
+        "money": 1812,
+        "items": [
+          "porcelain_bowl"
+        ]
+      }
+    },
+    "wen_black": {
+      "carry": {
+        "money": 665,
+        "items": [
+          "fine_sword",
+          "iron_spear"
+        ]
+      }
+    },
+    "wen_huashan_shop": {
+      "carry": {
+        "money": 1231,
+        "items": [
+          "herb_ginseng"
+        ]
+      }
+    },
+    "beggar_info": {
+      "carry": {
+        "money": 4,
+        "items": [
+          "steamed_bun"
+        ]
+      }
+    },
+    "old_herbalist": {
+      "carry": {
+        "money": 1077,
+        "items": [
+          "herb_lingzhi"
+        ]
+      }
+    },
+    "beggar_boy": {
+      "carry": {
+        "money": 6,
+        "items": [
+          "steamed_bun"
+        ]
+      }
+    },
+    "guard_city": {
+      "carry": {
+        "money": 691,
+        "items": [
+          "iron_spear"
+        ]
+      }
+    },
+    "swordman_wander": {
+      "carry": {
+        "money": 463,
+        "items": [
+          "iron_spear",
+          "fine_sword"
+        ]
+      }
+    },
+    "shenni": {
+      "carry": {
+        "money": 8,
+        "items": [
+          "incense_agarwood"
+        ]
+      }
+    },
+    "npcv_016": {
+      "carry": {
+        "money": 283,
+        "items": [
+          "iron_blade"
+        ]
+      }
+    },
+    "npcv_060": {
+      "carry": {
+        "money": 31,
+        "items": [
+          "jinchuang_yao"
+        ]
+      }
+    },
+    "npcv_082": {
+      "carry": {
+        "money": 105,
+        "items": [
+          "iron_blade"
+        ]
+      }
+    },
+    "npcv_095": {
+      "carry": {
+        "money": 33,
+        "items": [
+          "jinchuang_yao"
+        ]
+      }
+    },
+    "npcv_129": {
+      "carry": {
+        "money": 42,
+        "items": [
+          "wine_jar"
+        ]
+      }
+    },
+    "npcv_146": {
+      "carry": {
+        "money": 2,
+        "items": [
+          "steamed_bun"
+        ]
+      }
+    },
+    "npcv_147": {
+      "carry": {
+        "money": 159,
+        "items": [
+          "jinchuang_yao"
+        ]
+      }
+    },
+    "npcv_156": {
+      "carry": {
+        "money": 310,
+        "items": [
+          "jinchuang_yao"
+        ]
+      }
+    },
+    "npcv_195": {
+      "carry": {
+        "money": 149,
+        "items": [
+          "wine_jar"
+        ]
+      }
+    },
+    "npcv_210": {
+      "carry": {
+        "money": 0,
+        "items": [
+          "clay_figure",
+          "wood_whistle"
+        ]
+      }
+    },
+    "npcv_228": {
+      "carry": {
+        "money": 63,
+        "items": [
+          "wine_jar"
+        ]
+      }
+    },
+    "npcv_236": {
+      "carry": {
+        "money": 101,
+        "items": [
+          "iron_blade"
+        ]
+      }
+    },
+    "npcv_247": {
+      "carry": {
+        "money": 164,
+        "items": [
+          "iron_blade"
+        ]
+      }
+    },
+    "npcv_258": {
+      "carry": {
+        "money": 28,
+        "items": [
+          "jinchuang_yao"
+        ]
+      }
+    },
+    "npcv_260": {
+      "carry": {
+        "money": 70,
+        "items": [
+          "jinchuang_yao"
+        ]
+      }
+    },
+    "depot_shadow": {
+      "carry": {
+        "money": 52794
+      }
+    },
+    "guard_palace": {
+      "carry": {
+        "money": 120,
+        "items": [
+          "jinchuang_yao"
+        ]
+      }
+    },
+    "guard_yamen": {
+      "carry": {
+        "money": 60,
+        "items": [
+          "jinchuang_yao"
+        ]
+      }
+    },
+    "guard_shaolin": {
+      "carry": {
+        "money": 40,
+        "items": [
+          "jinchuang_yao"
+        ]
+      }
+    },
+    "guard_jinywei": {
+      "carry": {
+        "money": 300,
+        "items": [
+          "jinchuang_yao"
+        ]
+      }
+    },
+    "guard_huashan": {
+      "carry": {
+        "money": 50,
+        "items": [
+          "jinchuang_yao"
+        ]
+      }
+    },
+    "guard_blulu": {
+      "carry": {
+        "money": 80,
+        "items": [
+          "jinchuang_yao"
+        ]
+      }
+    },
+    "jn_apothecary": {
+      "carry": {
+        "money": 167,
+        "items": [
+          "jinchuang_yao"
+        ]
+      }
+    },
+    "jn_silkkeeper": {
+      "carry": {
+        "money": 582
+      }
+    },
+    "jn_winewaiter": {
+      "carry": {
+        "money": 71
+      }
+    },
+    "jn_bookman": {
+      "carry": {
+        "money": 253
+      }
+    },
+    "jn_tutor": {
+      "carry": {
+        "money": 79
+      }
+    },
+    "jn_smithman": {
+      "carry": {
+        "money": 558,
+        "items": [
+          "iron_blade"
+        ]
+      }
+    },
+    "jn_grocer": {
+      "carry": {
+        "money": 687
+      }
+    },
+    "jn_villagekeep": {
+      "carry": {
+        "money": 405
+      }
+    },
+    "jn_fruitman": {
+      "carry": {
+        "money": 412
+      }
+    },
+    "jn_diviner": {
+      "carry": {
+        "money": 65
+      }
+    },
+    "jn_porter": {
+      "carry": {
+        "money": 45
+      }
+    },
+    "jn_pawnclerk": {
+      "carry": {
+        "money": 617
+      }
+    },
+    "ren_woxing": {
+      "carry": {
+        "money": 192,
+        "items": [
+          "jinchuang_yao"
+        ]
+      }
+    },
+    "taishan_master": {
+      "carry": {
+        "money": 40
+      }
+    },
+    "taishan_disciple": {
+      "carry": {
+        "money": 29
+      }
+    },
+    "hengshan_master": {
+      "carry": {
+        "money": 279
+      }
+    },
+    "hengshan_disciple": {
+      "carry": {
+        "money": 69
+      }
+    },
+    "hengshanN_master": {
+      "carry": {
+        "money": 193
+      }
+    },
+    "hengshanN_disciple": {
+      "carry": {
+        "money": 55
+      }
+    },
+    "qingcheng_master": {
+      "carry": {
+        "money": 42
+      }
+    },
+    "qingcheng_disciple": {
+      "carry": {
+        "money": 37
+      }
+    },
+    "kongtong_master": {
+      "carry": {
+        "money": 234
+      }
+    },
+    "kongtong_disciple": {
+      "carry": {
+        "money": 19
+      }
+    },
+    "kunlun_master": {
+      "carry": {
+        "money": 136
+      }
+    },
+    "kunlun_disciple": {
+      "carry": {
+        "money": 78
+      }
+    },
+    "diancang_master": {
+      "carry": {
+        "money": 101
+      }
+    },
+    "diancang_disciple": {
+      "carry": {
+        "money": 103
+      }
+    },
+    "tiezhang_master": {
+      "carry": {
+        "money": 114
+      }
+    },
+    "tiezhang_disciple": {
+      "carry": {
+        "money": 105
+      }
+    },
+    "jindao_master": {
+      "carry": {
+        "money": 53
+      }
+    },
+    "jindao_disciple": {
+      "carry": {
+        "money": 104
+      }
+    },
+    "wuhu_master": {
+      "carry": {
+        "money": 51
+      }
+    },
+    "wuhu_disciple": {
+      "carry": {
+        "money": 13
+      }
+    },
+    "feihu_master": {
+      "carry": {
+        "money": 115
+      }
+    },
+    "feihu_disciple": {
+      "carry": {
+        "money": 40
+      }
+    },
+    "zhenyuan_master": {
+      "carry": {
+        "money": 113
+      }
+    },
+    "zhenyuan_disciple": {
+      "carry": {
+        "money": 44
+      }
+    },
+    "shenquan_master": {
+      "carry": {
+        "money": 116
+      }
+    },
+    "shenquan_disciple": {
+      "carry": {
+        "money": 51
+      }
+    },
+    "tieqiang_master": {
+      "carry": {
+        "money": 104
+      }
+    },
+    "tieqiang_disciple": {
+      "carry": {
+        "money": 31
+      }
+    },
+    "kuaidao_master": {
+      "carry": {
+        "money": 113
+      }
+    },
+    "kuaidao_disciple": {
+      "carry": {
+        "money": 119
+      }
+    },
+    "luohan_master": {
+      "carry": {
+        "money": 107
+      }
+    },
+    "luohan_disciple": {
+      "carry": {
+        "money": 116
+      }
+    },
+    "wuyun_master": {
+      "carry": {
+        "money": 17
+      }
+    },
+    "wuyun_disciple": {
+      "carry": {
+        "money": 60
+      }
+    },
+    "dafeng_master": {
+      "carry": {
+        "money": 85
+      }
+    },
+    "dafeng_disciple": {
+      "carry": {
+        "money": 81
+      }
+    },
+    "huanghe_master": {
+      "carry": {
+        "money": 73
+      }
+    },
+    "huanghe_disciple": {
+      "carry": {
+        "money": 72
+      }
+    },
+    "taihu_master": {
+      "carry": {
+        "money": 106
+      }
+    },
+    "taihu_disciple": {
+      "carry": {
+        "money": 20
+      }
+    },
+    "poyang_master": {
+      "carry": {
+        "money": 47
+      }
+    },
+    "poyang_disciple": {
+      "carry": {
+        "money": 39
+      }
+    },
+    "qingzhu_master": {
+      "carry": {
+        "money": 78
+      }
+    },
+    "qingzhu_disciple": {
+      "carry": {
+        "money": 62
+      }
+    },
+    "jujing_master": {
+      "carry": {
+        "money": 111
+      }
+    },
+    "jujing_disciple": {
+      "carry": {
+        "money": 106
+      }
+    },
+    "jinlong_master": {
+      "carry": {
+        "money": 13
+      }
+    },
+    "jinlong_disciple": {
+      "carry": {
+        "money": 56
+      }
+    },
+    "wuliang_master": {
+      "carry": {
+        "money": 97
+      }
+    },
+    "wuliang_disciple": {
+      "carry": {
+        "money": 69
+      }
+    },
+    "funiu_master": {
+      "carry": {
+        "money": 89
+      }
+    },
+    "funiu_disciple": {
+      "carry": {
+        "money": 90
+      }
+    },
+    "baisheng_master": {
+      "carry": {
+        "money": 43
+      }
+    },
+    "baisheng_disciple": {
+      "carry": {
+        "money": 17
+      }
+    },
+    "baituo_master": {
+      "carry": {
+        "money": 114
+      }
+    },
+    "baituo_disciple": {
+      "carry": {
+        "money": 26
+      }
+    },
+    "hehuan_master": {
+      "carry": {
+        "money": 126
+      }
+    },
+    "hehuan_disciple": {
+      "carry": {
+        "money": 71
+      }
+    },
+    "tangmen_master": {
+      "carry": {
+        "money": 86
+      }
+    },
+    "gumu_master": {
+      "carry": {
+        "money": 160
+      }
+    },
+    "fisher_old": {
+      "carry": {
+        "money": 99
+      }
+    },
+    "test_npc": {
+      "carry": {
+        "money": 59
+      }
+    },
+    "demo_swordman": {
+      "carry": {
+        "money": 89
+      }
+    },
+    "tang_bohu": {
+      "carry": {
+        "money": 154
+      }
+    },
+    "zhu_zhishan": {
+      "carry": {
+        "money": 239
+      }
+    },
+    "wen_zhengming": {
+      "carry": {
+        "money": 506
+      }
+    },
+    "zhou_wenbin": {
+      "carry": {
+        "money": 413
+      }
+    },
+    "xu_zhenqing": {
+      "carry": {
+        "money": 114
+      }
+    },
+    "zhang_ling": {
+      "carry": {
+        "money": 547
+      }
+    },
+    "du_mu": {
+      "carry": {
+        "money": 586
+      }
+    },
+    "liu_hanyan": {
+      "carry": {
+        "money": 582
+      }
+    },
+    "xue_zheng": {
+      "carry": {
+        "money": 295
+      }
+    },
+    "huashan_keeper": {
+      "carry": {
+        "money": 125
+      }
+    },
+    "shaolin_keeper": {
+      "carry": {
+        "money": 162
+      }
+    },
+    "wudang_keeper": {
+      "carry": {
+        "money": 230
+      }
+    },
+    "emei_keeper": {
+      "carry": {
+        "money": 130
+      }
+    },
+    "gaibang_keeper": {
+      "carry": {
+        "money": 525
+      }
+    },
+    "tangmen_keeper": {
+      "carry": {
+        "money": 166
+      }
+    },
+    "mojiao_keeper": {
+      "carry": {
+        "money": 467
+      }
+    },
+    "miaojiang_keeper": {
+      "carry": {
+        "money": 212
+      }
+    },
+    "dali_keeper": {
+      "carry": {
+        "money": 463
+      }
+    },
+    "xingxiu_keeper": {
+      "carry": {
+        "money": 70
+      }
+    },
+    "gumu_keeper": {
+      "carry": {
+        "money": 176
+      }
+    },
+    "taohua_keeper": {
+      "carry": {
+        "money": 169
+      }
+    },
+    "xuedao_keeper": {
+      "carry": {
+        "money": 197
+      }
+    },
+    "taishan_keeper": {
+      "carry": {
+        "money": 141
+      }
+    },
+    "hengshan_keeper": {
+      "carry": {
+        "money": 191
+      }
+    },
+    "hengshanN_keeper": {
+      "carry": {
+        "money": 206
+      }
+    },
+    "qingcheng_keeper": {
+      "carry": {
+        "money": 196
+      }
+    },
+    "kongtong_keeper": {
+      "carry": {
+        "money": 37
+      }
+    },
+    "kunlun_keeper": {
+      "carry": {
+        "money": 149
+      }
+    },
+    "diancang_keeper": {
+      "carry": {
+        "money": 138
+      }
+    },
+    "tiezhang_keeper": {
+      "carry": {
+        "money": 38
+      }
+    },
+    "hehuan_keeper": {
+      "carry": {
+        "money": 274
+      }
+    },
+    "jindao_keeper": {
+      "carry": {
+        "money": 107
+      }
+    },
+    "wuhu_keeper": {
+      "carry": {
+        "money": 100
+      }
+    },
+    "feihu_keeper": {
+      "carry": {
+        "money": 81
+      }
+    },
+    "zhenyuan_keeper": {
+      "carry": {
+        "money": 107
+      }
+    },
+    "shenquan_keeper": {
+      "carry": {
+        "money": 98
+      }
+    },
+    "tieqiang_keeper": {
+      "carry": {
+        "money": 47
+      }
+    },
+    "kuaidao_keeper": {
+      "carry": {
+        "money": 71
+      }
+    },
+    "luohan_keeper": {
+      "carry": {
+        "money": 70
+      }
+    },
+    "wuyun_keeper": {
+      "carry": {
+        "money": 28
+      }
+    },
+    "dafeng_keeper": {
+      "carry": {
+        "money": 109
+      }
+    },
+    "huanghe_keeper": {
+      "carry": {
+        "money": 49
+      }
+    },
+    "taihu_keeper": {
+      "carry": {
+        "money": 53
+      }
+    },
+    "poyang_keeper": {
+      "carry": {
+        "money": 70
+      }
+    },
+    "qingzhu_keeper": {
+      "carry": {
+        "money": 53
+      }
+    },
+    "jujing_keeper": {
+      "carry": {
+        "money": 29
+      }
+    },
+    "jinlong_keeper": {
+      "carry": {
+        "money": 41
+      }
+    },
+    "wuliang_keeper": {
+      "carry": {
+        "money": 70
+      }
+    },
+    "funiu_keeper": {
+      "carry": {
+        "money": 66
+      }
+    },
+    "baisheng_keeper": {
+      "carry": {
+        "money": 17
+      }
+    },
+    "baituo_keeper": {
+      "carry": {
+        "money": 12
+      }
+    },
+    "royal_keeper": {
+      "carry": {
+        "money": 102
+      }
+    },
+    "yamen_store_keeper": {
+      "carry": {
+        "money": 83
+      }
+    }
+  }
+}

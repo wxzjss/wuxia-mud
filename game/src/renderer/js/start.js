@@ -229,6 +229,30 @@
   /* ============================================================
    *  主菜单按钮
    * ============================================================ */
+  /**
+   * 顶栏右上角挂一个「回 Mod 客栈」的入口。
+   *
+   * 只在**合并部署**时出现（后端 `/api/boot` 会带 `site` 字段）——
+   * Mod 站顶栏有「▶ 开始游戏」，游戏这边也该有路回去，两边才像一家。
+   * 单独起 `game-server.js` 时后端不带这个字段，这里就不注入，
+   * 免得玩家点到一个 404 的死链。
+   */
+  function mountSiteLink(site) {
+    const bar = document.getElementById('topbar');
+    if (!bar || document.getElementById('tb-site')) return;
+    const a = document.createElement('a');
+    a.id = 'tb-site';
+    a.className = 'tb-site';
+    a.href = site.url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.title = '回 Mod 客栈：逛别人做的 Mod、下载，或发布你自己的';
+    a.textContent = '⌂ ' + (site.name || 'Mod 站');
+    const right = bar.querySelector('.tb-right');
+    if (right) right.appendChild(a);
+    else bar.appendChild(a);
+  }
+
   function bindStartScreen() {
     document.querySelectorAll('#screen-start [data-act]').forEach(b => {
       const a = b.getAttribute('data-act');
@@ -267,20 +291,14 @@
    * ============================================================ */
   let BIRTHS = [];
   let PERKS = [];
-  let ATTRS = [];
-  const ALLOC = { bonus: 10, base: {} };
   let curGender = 'male';
   let curBirth = '';
 
   async function openCreate() {
     U.show('create');
     try {
-      const [births, meta] = await Promise.all([
-        api.births(),
-        api.editorMeta()
-      ]);
+      const births = await api.births();
       BIRTHS = births || [];
-      ATTRS = (meta && meta.attrs) || [];
       PERKS = await loadPerks();
     } catch (e) {
       U.toast('加载失败：' + e.message, 'error');
@@ -288,8 +306,6 @@
     }
     renderBirths();
     renderPerks();
-    initAttrs();
-    renderAttrs();
     bindCreateActions();
   }
 
@@ -308,31 +324,64 @@
     return [];
   }
 
+  /* 按当前性别的合法身份：
+     与性别强绑定的身份在数据里带 `gender`（见 63_births.json + 68_talents.json
+     的 meta.births：庵堂孤儿→女 · 山门弃婴→男 · 守墓人之后→女）；
+     其余身份不带 gender = 男女皆可。后端 createPlayer 也会再挡一次。 */
+  function birthsForGender() {
+    return BIRTHS.filter(b => !b.gender || b.gender === curGender);
+  }
+
   function renderBirths() {
     const box = $('c-births');
-    box.innerHTML = BIRTHS.map(b => {
+    const list = birthsForGender();
+    box.innerHTML = list.map(b => {
       const parts = [];
       if (b.attr) parts.push(Object.keys(b.attr).map(k => k + '+' + b.attr[k]).join('　'));
       if (b.money != null) parts.push('银两 ' + b.money + ' 文');
       if (b.items && b.items.length) parts.push('赠：' + b.items.slice(0, 3).join('、'));
       if (b.skills && b.skills.length) parts.push('武学：' + b.skills.join('、'));
       if (b.traits && b.traits.length) parts.push('天赋：' + b.traits.join('、'));
-      return '<button class="birth-card" data-birth="' + esc(b.id) + '">' +
+      /* 卡里只放名字（药丸），长文进详情条 —— 见 index.html 里那段注释。
+         `title` 留着，桌面端鼠标悬停能先扫一眼，不必逐张点。 */
+      const tip = [b.name, b.desc || '', parts.join('　')].filter(Boolean).join('\n');
+      return '<button class="birth-card" data-birth="' + esc(b.id) + '" title="' + esc(tip) + '">' +
         '<div class="bc-name">' + esc(b.name) + '</div>' +
         '<div class="bc-desc">' + esc(b.desc || '') + '</div>' +
         '<div class="bc-bonus">' + parts.join('　') + '</div></button>';
     }).join('');
+    /* 选中项 → 详情条（描述 + 加成）。这是玩家做选择的唯一依据，必须完整可见。 */
+    const detail = $('c-birth-detail');
+    const paintDetail = () => {
+      if (!detail) return;
+      const b = BIRTHS.find(x => x.id === curBirth);
+      if (!b) { detail.innerHTML = ''; return; }
+      const parts = [];
+      if (b.attr) parts.push(Object.keys(b.attr).map(k => k + '+' + b.attr[k]).join('　'));
+      if (b.money != null) parts.push('银两 ' + b.money + ' 文');
+      if (b.items && b.items.length) parts.push('赠：' + b.items.slice(0, 3).join('、'));
+      if (b.skills && b.skills.length) parts.push('武学：' + b.skills.join('、'));
+      if (b.traits && b.traits.length) parts.push('天赋：' + b.traits.join('、'));
+      detail.innerHTML = '<b>' + esc(b.name) + '</b>' + esc(b.desc || '') +
+        (parts.length ? '<span class="pd-bonus">' + esc(parts.join('　')) + '</span>' : '');
+    };
     box.querySelectorAll('.birth-card').forEach(c => {
       c.onclick = () => {
         curBirth = c.getAttribute('data-birth');
         box.querySelectorAll('.birth-card').forEach(x => x.classList.remove('active'));
         c.classList.add('active');
+        paintDetail();
       };
     });
-    if (BIRTHS.length) {
-      curBirth = BIRTHS[0].id;
-      box.querySelector('.birth-card').classList.add('active');
+    /* 当前选中的身份在新性别下若已不合法 → 清掉，自动落到第一个合法的。
+       否则「切了性别、选中的还是上一性别专属身份」——后端会直接拒绝创建。 */
+    if (!list.some(b => b.id === curBirth)) curBirth = '';
+    if (!curBirth && list.length) curBirth = list[0].id;
+    if (curBirth) {
+      const el = box.querySelector('.birth-card[data-birth="' + curBirth + '"]');
+      if (el) el.classList.add('active');
     }
+    paintDetail();
   }
 
   function renderPerks() {
@@ -346,16 +395,37 @@
         (eff.length ? '<div class="pc-eff">' + eff.map(esc).join('　') + '</div>' : '') +
         '</button>';
     }).join('');
+    /* 「已选 1/2」：天赋是多选，卡片上又看不到总数，
+       不给计数玩家会不知道自己还能不能再点一个。 */
+    const paintCount = () => {
+      const el = $('c-perk-count');
+      if (!el) return;
+      const n = box.querySelectorAll('.perk-card.active').length;
+      el.textContent = '已选 ' + n + '/2';
+    };
     box.querySelectorAll('.perk-card').forEach(c => {
       c.onclick = () => {
-        const on = c.classList.toggle('active');
+        c.classList.toggle('active');
         const sel = box.querySelectorAll('.perk-card.active');
         if (sel.length > 2) { c.classList.remove('active'); U.toast('最多选 2 个天赋', 'warn', 1500); }
+        paintCount();
       };
     });
+    paintCount();
   }
 
-  /* 把天赋的 attr（{悟性:5}）和 effects（stat +N）转成「悟性+5 气血+60」这种可读文字 */
+  /* 把天赋的 attr（{悟性:5}）与 effects 转成「悟性+5　剑法威力 +15%」这种可读文字。
+     effects 的解释权在后端 world.traitEffects / 各消费点；这里只负责**把数据翻译成人话**，
+     每一条类型都要有对应文案，否则玩家看到的是一个「对不上效果」的天赋。
+     对应关系（见 data/68_talents.json）：
+       stat         → 「攻击+12」这种（老类型）
+       favorGain    → 好感增长 +50%
+       fleeAlways   → 逃跑必定成功
+       skillBonus   → 剑法威力 +15% / 旁门武学威力 +20%
+       immune       → 免疫眩晕与迷幻 / 百毒不侵
+       shopDiscount → 买卖价格更划算
+       consumption  → 行走消耗 -50%
+       encounterBonus→ 奇遇几率 +50% */
   function fmtTraitEffects(p) {
     const bits = [];
     if (p.attr) {
@@ -367,100 +437,64 @@
     const STAT_CN = { atk: '攻击', def: '防御', dodge: '闪避', parry: '招架', speed: '速度', maxHp: '气血上限', maxMp: '内力上限', critRate: '暴击率', lifesteal: '吸血', reflect: '反伤', armorPen: '破防' };
     /* 百分比类属性：critRate/lifesteal/reflect/armorPen 是 0~1 小数，要 ×100 转成 % */
     const PERCENT = { critRate: true, lifesteal: true, reflect: true, armorPen: true };
+    const pct = v => (v > 0 ? '+' : '') + Math.round(Math.abs(v) * 100) + '%';
+    const IMMUNE_CN = { poison: '百毒不侵', stun: '眩晕', confuse: '迷幻' };
     (p.effects || []).forEach(e => {
-      if (e && e.type === 'stat' && e.key) {
-        const v = e.value || 0;
-        const cn = STAT_CN[e.key] || e.key;
-        if (PERCENT[e.key]) {
-          bits.push(cn + (v > 0 ? '+' : '') + Math.round(v * 100) + '%');
-        } else {
-          bits.push(cn + (v > 0 ? '+' + v : v));
+      if (!e || !e.type) return;
+      switch (e.type) {
+        case 'stat':
+          if (!e.key) break;
+          {
+            const v = e.value || 0;
+            const cn = STAT_CN[e.key] || e.key;
+            bits.push(PERCENT[e.key] ? cn + pct(v) : cn + (v > 0 ? '+' + v : v));
+          }
+          break;
+        case 'favorGain':
+          bits.push('好感增长 ' + pct(e.value || 0));
+          break;
+        case 'fleeAlways':
+          bits.push('逃跑必定成功');
+          break;
+        case 'skillBonus':
+          if (e.slot) bits.push(e.slot + '法威力 ' + pct(e.value || 0));
+          else if (e.category) bits.push(e.category + '武学威力 ' + pct(e.value || 0));
+          break;
+        case 'immune': {
+          const tags = (e.tags || []).map(t => IMMUNE_CN[t] || t);
+          /* 「百毒不侵」本身就是一句完整的话，不与别的免疫并列时直接用它 */
+          if (tags.length === 1) bits.push(tags[0]);
+          else if (tags.length) bits.push('免疫' + tags.join('与'));
+          break;
         }
+        case 'shopDiscount':
+          bits.push('买卖价格 ' + (e.value >= 0 ? '下浮 ' + Math.round(e.value * 100) + '%' : '上浮'));
+          break;
+        case 'consumption':
+          bits.push('行走消耗 ' + (e.value < 0 ? Math.round(e.value * 100) + '%' : '+' + Math.round(e.value * 100) + '%'));
+          break;
+        case 'encounterBonus':
+          bits.push('奇遇几率 ' + pct(e.value || 0));
+          break;
+        default:
+          break;
       }
     });
     return bits;
   }
 
-  function initAttrs() {
-    ALLOC.base = {};
-    ATTRS.forEach(a => { ALLOC.base[a] = 10; });
-    ALLOC.bonus = 10;
-  }
-
-  function renderAttrs() {
-    const box = $('c-attrs');
-    box.innerHTML = ATTRS.map(a =>
-      '<div class="alloc-row"><span class="ar-name">' + esc(a) + '</span>' +
-      '<button class="ar-btn" data-dd="' + esc(a) + '">−</button>' +
-      '<span class="ar-val" id="ar-' + esc(a) + '">' + ALLOC.base[a] + '</span>' +
-      '<button class="ar-btn" data-ii="' + esc(a) + '">＋</button>' +
-      '<input class="ar-range" type="range" min="10" max="30" value="' + ALLOC.base[a] + '" data-rr="' + esc(a) + '">' +
-      '</div>').join('');
-    $('c-points').textContent = ALLOC.bonus;
-
-    box.querySelectorAll('[data-ii]').forEach(b => b.onclick = () => adjust(b.getAttribute('data-ii'), 1));
-    box.querySelectorAll('[data-dd]').forEach(b => b.onclick = () => adjust(b.getAttribute('data-dd'), -1));
-    box.querySelectorAll('[data-rr]').forEach(r => {
-      r.oninput = () => {
-        const a = r.getAttribute('data-rr');
-        const want = +r.value;
-        const cur = ALLOC.base[a];
-        const diff = want - cur;
-        if (diff > 0 && diff > ALLOC.bonus) { r.value = cur; return; }
-        ALLOC.base[a] = want;
-        ALLOC.bonus -= diff;
-        syncAttrs();
-      };
-    });
-  }
-
-  function adjust(a, d) {
-    if (d > 0) {
-      if (ALLOC.bonus <= 0) { U.toast('没有剩余点数了', 'warn', 1200); return; }
-      if (ALLOC.base[a] >= 30) { U.toast('属性上限 30', 'warn', 1200); return; }
-      ALLOC.base[a]++; ALLOC.bonus--;
-    } else {
-      if (ALLOC.base[a] <= 10) return;
-      ALLOC.base[a]--; ALLOC.bonus++;
-    }
-    syncAttrs();
-  }
-
-  function syncAttrs() {
-    ATTRS.forEach(a => {
-      const el = $('ar-' + a);
-      if (el) el.textContent = ALLOC.base[a];
-    });
-    $('c-points').textContent = ALLOC.bonus;
-    document.querySelectorAll('[data-rr]').forEach(r => {
-      r.value = ALLOC.base[r.getAttribute('data-rr')];
-    });
-  }
-
   function bindCreateActions() {
-    /* 性别 */
+    /* 性别：切换后**按新性别重出身份列表**。
+       与性别强绑定的身份（庵堂孤儿/山门弃婴/守墓人之后）要跟着变；
+       renderBirths 内部会处理「原选中身份在新性别下不合法 → 自动换掉」。 */
     document.querySelectorAll('#c-gender .seg-btn').forEach(b => {
       b.onclick = () => {
         curGender = b.getAttribute('data-v');
         document.querySelectorAll('#c-gender .seg-btn').forEach(x => x.classList.remove('active'));
         b.classList.add('active');
+        renderBirths();
       };
     });
-
-    /* 随机分配 */
-    $('c-roll').onclick = () => {
-      let left = 10;
-      ATTRS.forEach(a => ALLOC.base[a] = 10);
-      while (left > 0) {
-        const a = ATTRS[Math.floor(Math.random() * ATTRS.length)];
-        if (ALLOC.base[a] < 30) { ALLOC.base[a]++; left--; }
-      }
-      ALLOC.bonus = 0;
-      syncAttrs();
-    };
-
-    /* 重置 */
-    $('c-reset').onclick = () => { initAttrs(); syncAttrs(); };
 
     /* 返回 */
     const back = document.querySelector('#screen-create [data-act="back"]');
@@ -478,16 +512,14 @@
     const perks = Array.from(document.querySelectorAll('#c-perks .perk-card.active'))
       .map(c => c.getAttribute('data-perk'));
 
-    const extra = {};
-    ATTRS.forEach(a => { extra[a] = ALLOC.base[a] - 10; });
-
     try {
+      /* 属性加点界面已下线：不再计算/上送 attrBonus（后端 createPlayer 仍兼容该入参，
+         只是前端不再发）。属性由身份加成 + 天赋决定。 */
       const d = await api.newGame({
         name,
         gender: curGender,
         birth: curBirth,
-        perks,
-        attrBonus: extra
+        perks
       });
       U.clearLog();
       U.appendLog([{ type: 'title', text: '武 侠 行' }, { type: 'subtitle', text: '江湖路远，就此启程。' }, { type: 'plain', text: '' }]);
@@ -914,10 +946,14 @@
     const ok = await U.confirmBox('重载 Mod', '重载会重新载入全部 Mod 与世界数据。当前进度若未保存将丢失，确定继续吗？', '重 载');
     if (!ok) return;
     try {
-      await api.reload();
+      const d = await api.reload();
       await refreshMods();
-      U.toast('已重载', 'ok');
+      /* ⚠️ 后端会如实回 ok:false（读档失败时它已退回旧世界，进度没丢）——
+         这里必须**说清楚**，不能让玩家以为「重载成功了但界面怎么空了」。 */
+      if (d && d.ok === false) U.toast('重载没成功（已保留原进度）：' + (d.error || '未知原因'), 'warn', 4000);
+      else U.toast('已重载', 'ok');
       if (S.view && S.view.player) U.renderAll(S.view);
+      else if (U.renderAll && document.getElementById('screen-game')) U.renderAll(S.view);
     } catch (e) { U.toast('重载失败：' + e.message, 'error'); }
   }
 

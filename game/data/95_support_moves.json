@@ -1,0 +1,269 @@
+{
+  "skills": [
+    {
+      "id": "sup_huti_zhenqi",
+      "name": "护体真气",
+      "type": "内功",
+      "category": "内功",
+      "grade": 7,
+      "maxLevel": 500,
+      "difficulty": 1.1,
+      "mpCost": 0,
+      "desc": "把一身真气逼到皮肉之外，硬受几下。打不还手的那几息，靠的就是这个。",
+      "base": "basic_force",
+      "moves": [
+        {
+          "id": "sup_huti_1",
+          "name": "气墙",
+          "trigger": "active",
+          "mpCost": 24,
+          "cooldown": 3,
+          "support": {
+            "kind": "def",
+            "value": 26,
+            "turns": 3,
+            "text": "你把气沉到脚下，一层无形的东西绷在身外。对方的拳脚落上来，像打在湿牛皮上。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sup_guiyuan",
+      "name": "归元诀",
+      "type": "内功",
+      "category": "内功",
+      "grade": 7,
+      "maxLevel": 500,
+      "difficulty": 1.15,
+      "mpCost": 0,
+      "desc": "短促地换一口丹田气，把散掉的劲儿拢回来。撑久了的人最知道这一口有多要紧。",
+      "base": "basic_force",
+      "moves": [
+        {
+          "id": "sup_guiyuan_1",
+          "name": "回气",
+          "trigger": "active",
+          "mpCost": 0,
+          "cooldown": 4,
+          "support": {
+            "kind": "mp",
+            "value": 26,
+            "turns": 0,
+            "text": "你退开半步，猛吸一口气压进丹田。那口散了的力气又回来了些。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sup_hunyuan_qi",
+      "name": "混元一气功",
+      "type": "内功",
+      "category": "内功",
+      "grade": 6,
+      "maxLevel": 450,
+      "difficulty": 1.05,
+      "mpCost": 0,
+      "desc": "把气血匀开的一门笨功夫。它不治病，只是把那口要散的气重新压住。",
+      "base": "basic_force",
+      "moves": [
+        {
+          "id": "sup_hunyuan_1",
+          "name": "续命",
+          "trigger": "active",
+          "mpCost": 30,
+          "cooldown": 5,
+          "support": {
+            "kind": "heal",
+            "value": 34,
+            "turns": 0,
+            "text": "你按住肋下那处，把气一点点顶回去。血止住了些，眼前也亮了些。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sup_yanzi_sanchaoshui",
+      "name": "燕子三抄水",
+      "type": "轻功",
+      "category": "外功",
+      "grade": 7,
+      "maxLevel": 500,
+      "difficulty": 1.15,
+      "mpCost": 0,
+      "desc": "三起三落，脚下像踩着水面。练熟的人挨不着打，倒不是因为他跑得快。",
+      "base": "basic_dodge",
+      "moves": [
+        {
+          "id": "sup_yanzi_1",
+          "name": "掠影",
+          "trigger": "active",
+          "mpCost": 18,
+          "cooldown": 3,
+          "support": {
+            "kind": "dodge",
+            "value": 30,
+            "turns": 3,
+            "text": "你脚下一错，人已经在半丈之外。对方的招式全落了空。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sup_ta_xue",
+      "name": "踏雪无痕",
+      "type": "轻功",
+      "category": "外功",
+      "grade": 7,
+      "maxLevel": 500,
+      "difficulty": 1.2,
+      "mpCost": 0,
+      "desc": "雪上走一路，回头看没有脚印。它教的是怎么把自己从一场架里摘出去。",
+      "base": "basic_dodge",
+      "moves": [
+        {
+          "id": "sup_taxue_1",
+          "name": "抽身",
+          "trigger": "active",
+          "mpCost": 26,
+          "cooldown": 6,
+          "support": {
+            "kind": "escape",
+            "value": 0,
+            "turns": 0,
+            "text": "你虚晃一招，人已翻上墙头。底下那几位追了两步就停了。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sup_wuying_bu",
+      "name": "无影步",
+      "type": "轻功",
+      "category": "外功",
+      "grade": 6,
+      "maxLevel": 450,
+      "difficulty": 1.1,
+      "mpCost": 0,
+      "desc": "步子碎而快，看着还是走在原地。躲不躲得开，全在那半步上。",
+      "base": "basic_dodge",
+      "moves": [
+        {
+          "id": "sup_wuying_1",
+          "name": "错步",
+          "trigger": "active",
+          "mpCost": 16,
+          "cooldown": 3,
+          "support": {
+            "kind": "dodge",
+            "value": 22,
+            "turns": 2,
+            "text": "你踩着乱步往后一带，对方的准头偏了半分。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sup_xieli_fa",
+      "name": "卸力法",
+      "type": "招架",
+      "category": "外功",
+      "grade": 7,
+      "maxLevel": 500,
+      "difficulty": 1.1,
+      "mpCost": 0,
+      "desc": "受力的那一瞬顺着他来的方向让开半寸。硬扛是扛不住的，让开才扛得住。",
+      "base": "basic_parry",
+      "moves": [
+        {
+          "id": "sup_xieli_1",
+          "name": "卸力",
+          "trigger": "active",
+          "mpCost": 14,
+          "cooldown": 3,
+          "support": {
+            "kind": "guard",
+            "value": 0,
+            "turns": 1,
+            "text": "你顺着他发力的方向一让，那一记重手落了空处。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sup_tieqiao",
+      "name": "铁桥功",
+      "type": "招架",
+      "category": "外功",
+      "grade": 6,
+      "maxLevel": 450,
+      "difficulty": 1.05,
+      "mpCost": 0,
+      "desc": "两臂架起一座桥，来的东西都从桥上过。架住了，对手自己就撞上来。",
+      "base": "basic_parry",
+      "moves": [
+        {
+          "id": "sup_tieqiao_1",
+          "name": "架梁",
+          "trigger": "active",
+          "mpCost": 20,
+          "cooldown": 4,
+          "support": {
+            "kind": "def",
+            "value": 20,
+            "turns": 4,
+            "text": "两臂一架，格开当面那两下。手臂是麻的，人却没退。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sup_fengzhao",
+      "name": "封招手",
+      "type": "招架",
+      "category": "外功",
+      "grade": 8,
+      "maxLevel": 400,
+      "difficulty": 0.95,
+      "mpCost": 0,
+      "desc": "专拿对方出手的半路上。招式一起就废了，比等着挨打好得多。",
+      "base": "basic_parry",
+      "moves": [
+        {
+          "id": "sup_fengzhao_1",
+          "name": "封手",
+          "trigger": "active",
+          "mpCost": 12,
+          "cooldown": 4,
+          "support": {
+            "kind": "dodge",
+            "value": 18,
+            "turns": 2,
+            "text": "你抬手搭住他的腕子，那半招硬生生被你按了回去。"
+          }
+        }
+      ]
+    }
+  ],
+
+  "_note": "上面 9 门是战斗辅助武技（内功/轻功/招架各 3），走 mv.support 那条通路。下面把这 9 门分派给六城武馆教头 —— 玩家在武馆「请教 <教头> <招法名>」花束脩就能学到。⚠️ teach 是数组（replace 语义），必须写全量，否则教头原来那 12 项基础功夫会被整段冲掉。",
+  "npcs": {
+    "wg_zhou": {
+      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing", "sup_tieqiao", "sup_guiyuan"]
+    },
+    "wg_lu": {
+      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing", "sup_yanzi_sanchaoshui", "sup_ta_xue"]
+    },
+    "wg_pei": {
+      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing", "sup_xieli_fa", "sup_fengzhao"]
+    },
+    "wg_ma": {
+      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing", "sup_huti_zhenqi"]
+    },
+    "wg_tang": {
+      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing", "sup_hunyuan_qi"]
+    },
+    "wg_han": {
+      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing", "sup_wuying_bu"]
+    }
+  }
+}

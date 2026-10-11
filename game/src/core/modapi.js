@@ -134,6 +134,7 @@ function evalCond(cond, ctx) {
     const n = String(cond).match(/^!([a-zA-Z_]+)$/);
     if (n) {
       if (n[1] === 'combat') return evalCond({ notCombat: true }, ctx);
+      if (n[1] === 'tuning') return evalCond({ notTuning: true }, ctx);
       return evalCond({ notFlag: n[1] }, ctx);
     }
     return evalCond({ flag: cond }, ctx);
@@ -154,6 +155,15 @@ function evalCond(cond, ctx) {
   // 战斗状态（功能 Mod「脱战回血」等用）
   if (cond.notCombat && (w.battle || p.inCombat)) return false;
   if (cond.combat && !(w.battle || p.inCombat)) return false;
+  /* 是否「正坐着吐纳」（主人 2026-10-11 追加）。
+     为什么需要这一条：官方示例「轻松江湖」的「脱战回血」是 `onTick +hp:8`，
+     而吐纳恰好一轮 = 30 分钟 = 一个 tick —— 于是每轮回 8 点，
+     把吐纳本身扣的那点气血**整整齐齐补回去**，玩家一点消耗都感觉不到
+     （实测「吐纳三轮血一点没掉」，就是这么来的）。
+     现在那条规则的条件是 `!combat && !tuning`：坐着熬气不算「歇着」，不该回血。
+     写成通用条件而不是只改那一个 mod，是因为别人写的回血/回气规则同样会踩这个坑。 */
+  if (cond.notTuning && p.vars && p.vars.tuning) return false;
+  if (cond.tuning && !(p.vars && p.vars.tuning)) return false;
   // 多标记
   if (cond.flagsAll) { for (const f of [].concat(cond.flagsAll)) if (!p.hasFlag(f)) return false; }
   if (cond.flagsAny) { if (![].concat(cond.flagsAny).some(f => p.hasFlag(f))) return false; }
@@ -404,6 +414,19 @@ function evalEffect(eff, ctx) {
     case '+hp': p.hp = clamp(p.hp + num(0, 0), 0, p.maxHp); break;
     case '-hp': p.hp = clamp(p.hp - num(0, 0), 0, p.maxHp); break;
     case '+mp': p.mp = clamp(p.mp + num(0, 0), 0, p.maxMp); break;
+    /* 内力**上限**（走 maxMpBase，与吐纳/采补同一根轴）。
+       加它是为了让那 16 处「参悟石壁 / 观景顿悟」有个真正落地的收益 ——
+       主人亲定的规矩是「内力关乎武学等级上限」，而吐纳一次只涨 1 点，
+       所以参悟一次给几点上限是既有体系内的东西，不是新开一套。
+       单次设上限 50，防着数据写错一冲就破表。 */
+    case '+maxmp': case 'maxmp+': {
+      const add = Math.max(0, Math.min(50, num(0, 0)));
+      p.maxMpBase = (p.maxMpBase || 50) + add;
+      p.recalc();
+      p.mp = Math.min(p.maxMp, p.mp + add);
+      out.push({ kind: 'sys', text: `你只觉内息绵长了一些（内力上限 +${add}）。` });
+      break;
+    }
     case '-mp': p.mp = clamp(p.mp - num(0, 0), 0, p.maxMp); break;
     case 'sethp': p.hp = clamp(num(0, 1), 0, p.maxHp); break;
     case 'heal': p.hp = p.maxHp; p.mp = p.maxMp; out.push({ kind: 'sys', text: '你感觉全身经脉畅通，伤痛尽去。' }); break;
@@ -453,7 +476,12 @@ function evalEffect(eff, ctx) {
       out.push({ kind: 'sys', text: r.msg }); break;
     }
     case 'learnskill': {
-      const r = p.learnSkill(args[0]);
+      /* ⚠️ 这里必须 force：`learnskill` 效果 = **有人把功夫交到你手上**
+         （奇遇高人授艺 / 剧情传承 / 秘籍直接传功），不是玩家自己照着图谱练。
+         若在这里卡「须先学会基础武学」，大量奇遇会**静默变成一句提示**，
+         玩家根本不知道绝世武学为什么没到手。
+         玩家自学那两条路（读书 `teach`、`train`）照旧走校验，一点没松。 */
+      const r = p.learnSkill(args[0], { force: true });
       out.push({ kind: 'sys', text: r.msg }); break;
     }
     case 'forgetskill': p.forgetSkill(args[0]); break;
@@ -613,8 +641,20 @@ function evalEffect(eff, ctx) {
 
     // NPC 好感
     case 'favor': {
-      const npc = w.getNpc(args[0]);
-      if (npc) { npc.favor = (npc.favor || 0) + num(1, 1); }
+      /* ⚠️ B29：这里原先只写 `w.getNpc(args[0])` —— 而 `World.getNpc` 同名两处定义、
+         后者覆盖前者，真正查的是 `instances.npcs`（键 = `npc_xxx` 实例 id）。
+         效果数据里写的是 **defId**（如 `favor:npcv_180:5`）→ 取到 undefined →
+         `if (npc)` 静默 false → **给指定 NPC 加好感全部打空**
+         （连累 262 条 `sq_npcv_*` 支线的好感奖励，且不报错）。
+         改用 `findLiveNpc(defId)`：按 defId 跨房间取场上活实例，找不到才就地 spawn。 */
+      const npc = w.findLiveNpc(args[0]);
+      if (npc) {
+        /* 走 world.gainFavor：正向好感会过「口才便给」天赋倍率（B3） */
+        if (typeof w.gainFavor === 'function') w.gainFavor(npc, num(1, 1));
+        else npc.favor = (npc.favor || 0) + num(1, 1);
+        /* 有画像的人给个情绪反馈（与「送礼」同一口径），没有画像就静默加数值 */
+        if (npc.pstate) npc.pstate.met = true;
+      }
       break;
     }
 

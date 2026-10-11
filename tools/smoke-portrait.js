@@ -243,7 +243,16 @@ for (const id of noPortrait.slice(0, 60)) {
 ok('无画像 NPC 跑 look/talk/ask/look<npc> 不抛异常', crashed === 0, crashed + ' 个崩');
 ok('输出里没有 undefined / NaN / [object Object]', undef === 0, undef + ' 个脏输出');
 ok('无画像 NPC 不会多出 npcsact 行',
-  (() => { const d = w.data.npcs[noPortrait[0]]; const n = w.spawnNpc(noPortrait[0], d.room, 1, true); p.room = n.room; return !run('look').lines.some(l => l.kind === 'npcsact'); })());
+  (() => {
+    const d = w.data.npcs[noPortrait[0]];
+    const n = w.spawnNpc(noPortrait[0], d.room, 1, true);
+    p.room = n.room;
+    /* ⚠️ 2026-10-11 修：`look` 打的是**整个房间**的日常行为，同屋若站着一位
+       **有画像**的 NPC（#112 补员后这种人一下子多了），那一行也会出现在输出里 ——
+       于是这条断言会「因为别人有画像而红」。要验的明明是**这个人自己**有没有那行，
+       所以按名字过滤：无画像的人，输出里不该有以他名字开头的 npcsact 行。 */
+    return !run('look').lines.some(l => l.kind === 'npcsact' && (l.text || '').includes(n.name));
+  })());
 
 section('⑥ 规格书 §0 的 4 个数据 Bug 已修');
 /* 用原始 JSON 自检（w.data.npcs 里还混着 mod 加的 NPC，不该算进来） */

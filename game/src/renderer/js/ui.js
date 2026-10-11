@@ -79,8 +79,12 @@
     (list || []).forEach((it, i) => {
       const b = document.createElement('button');
       b.className = 'choice-btn';
+      /* `it.rate` = 靠右那颗百分比（主人 2026-10-11：「『绑架』按钮**右侧**显示成功率」）。
+         `.c-label` 是 flex:1，所以 rate 自然被挤到右边；高/低两档换个颜色，一眼能分辨。 */
+      const rateCls = it.rate == null ? '' : (it.rate >= 90 ? ' high' : (it.rate <= 25 ? ' low' : ''));
       b.innerHTML = '<span class="c-idx">' + (i + 1) + '</span><span class="c-label">' + esc(it.label || it.text || '') +
-        '</span>' + (it.hint ? '<span class="c-hint">' + esc(it.hint) + '</span>' : '');
+        '</span>' + (it.rate == null ? '' : '<span class="c-rate' + rateCls + '">' + esc(String(it.rate)) + '%</span>') +
+        (it.hint ? '<span class="c-hint">' + esc(it.hint) + '</span>' : '');
       b.onclick = () => { closeChoices(); onPick && onPick(it, i); };
       box.appendChild(b);
     });
@@ -131,7 +135,10 @@
     const realm = p.realm || '不通武艺';
     $('bar-exp').style.width = '100%';
     $('txt-exp').textContent = '境界 · ' + realm;
-    $('tb-money').textContent = p.moneyText || (p.money + ' 文');
+    /* ⚠️ 兜底：字段缺失时宁可显示「—」，也**不许**拼出「undefined 文」
+       （玩家视角这叫「我的钱没了」，其实只是这个视图没带玩家）。 */
+    $('tb-money').textContent = p.moneyText
+      || (typeof p.money === 'number' ? p.money + ' 文' : '—');
     $('tb-time').textContent = (p.timeText || '');
 
     /* 饱食 / 饮水（第三批：生存）
@@ -260,10 +267,25 @@
       if (l.exitMap) item.exitMap = l.exitMap;
       if (l.exitBtns && l.exitBtns.length) item.exitBtns = l.exitBtns;
       if (l.roomName) item.roomName = l.roomName;
+      /* 服务端来的「选择」（如匪类掠过时的「拦不拦」）—— 日志照常落一行，
+         弹窗排到 paintLog 之后弹（不然会被随后的日志盖掉）。 */
+      if (l.choices && l.choices.length) _pendingChoices.push({ title: l.choicesTitle || '', list: l.choices });
       logLines.push(item);
     });
     if (logLines.length > MAX_LOG) logLines = logLines.slice(logLines.length - MAX_LOG);
     paintLog();
+    flushChoices();
+  }
+
+  /* 排队的服务端选择（一次只弹一个，剩下的等下一次） */
+  let _pendingChoices = [];
+  function flushChoices() {
+    if (!_pendingChoices.length) return;
+    const q = _pendingChoices.shift();
+    choices(q.title || '怎么办？', q.list.map(c => ({ label: c.label, hint: c.hint })), (it) => {
+      const hit = q.list.find(c => c.label === it.label);
+      if (hit && hit.cmd) doCmd(hit.cmd, { fromButton: true });
+    });
   }
 
   /* 日志里 hl 的完整信息（含 actions 数组，不能塞进 DOM，用索引关联） */
@@ -640,6 +662,10 @@
     const kdHasSack = !!kd.hasSack;
     const kdFull = (kd.bags || []).length >= 3;
     const kdReady = !!n.knockedOut && kdHasSack && !kdFull;
+    /* 绑架成功率：后端算好的那一份（`view().npcs[].kidnap`），前端只负责显示 ——
+       两边各算一套迟早「写着 70% 却输十次」。 */
+    const kdRate = (n.kidnap && typeof n.kidnap.pct === 'number') ? n.kidnap.pct : null;
+    const kdWhy = (n.kidnap && n.kidnap.why) ? n.kidnap.why : '';
 
     choices(n.name + (n.title ? ' · ' + n.title : ''), [
       /* ⚠️ 第一项从「查看 (look)」换成「细看此人」——
@@ -675,26 +701,30 @@
            · 他站得好好的 → **先打**（真进战斗），打完晕了再回来点，就能装。
          没带麻袋也**照给**（点了给明确指引「得有条粗麻袋，杂货铺有卖」）——
          把入口藏起来才是「互动少」的病根。 */
-      { label: '绑架 (kidnap)', action: 'kidnap',
+      /* 绑架（主人 2026-10-11）：按钮**右侧显示成功率**，判定与掷骰都在后端同一处
+         （`kidnap.assess` / `kidnapAttempt`）。晕着的是 100%（必定成功）；
+         站着的最多 95% —— 得手就当场套袋，不成就开打。 */
+      { label: '绑架 (kidnap)', action: 'kidnap', rate: kdRate,
         hint: kdReady ? '装进麻袋带走'
           : (n.knockedOut
             ? (kdHasSack ? '麻袋满了，先安置一下' : '得先有条粗麻袋（杂货铺有卖）')
-            : '打晕他，再装袋') },
+            : (kdWhy || '打晕他，再装袋')) },
       canKidnap(n) ? { label: '卖了他 (sellnpc)', action: 'sellnpc', hint: '知情转卖，重罪' } : null,
       (!n.following && (n.favor || 0) > 60) ? { label: '邀他跟随 (follow)', action: 'follow', hint: '他会跟着，但也有自己的事要办' } : null,
       { label: '动手厮杀 (kill)', action: 'kill', hint: '可能致死，谨慎' }
     ].filter(Boolean), it => {
       const BTN = { fromButton: true };
       if (it.action === 'profile') openNpcProfile(n);
-      /** 「绑架」：晕着就直接装，站着就先打（主人要的统一入口） */
+      /** 「绑架」（主人 2026-10-11 改）：
+       *  **一条路走完** —— 晕着的直接装（必成）；站着的先按成功率掷一次，
+       *  得手就当场套袋（不开打），没成才动手。判定与掷骰都在后端同一处
+       *  （`kidnap.kidnapAttempt`），前端只负责把按钮上的百分比显示出来。
+       *  跟以前不一样的地方：以前站着的人点这个只会 toast 一句「先打晕他」，
+       *  等于把最要紧的那一步（成 / 不成的骰子）藏起来了。 */
       else if (it.action === 'kidnap') {
-        if (n.knockedOut) {
-          if (kdReady) doCmd('装人 ' + n.name, BTN);
-          else toast(kdHasSack ? '麻袋满了，先把里头的人安置好。' : '要把人扛走，得先有条粗麻袋（杂货铺有卖）。', 'warn', 2000);
-        } else {
-          toast('先把他打晕，再回来装袋。', 'warn', 1600);
-          doCmd('kill ' + n.name, BTN);
-        }
+        if (!kdHasSack) { toast('要把人扛走，得先有条粗麻袋（杂货铺有卖）。', 'warn', 2200); return; }
+        if (kdFull) { toast('麻袋满了，先把里头的人安置好。', 'warn', 2000); return; }
+        doCmd('绑架 ' + n.name, BTN);
       }
       else if (it.action === 'look') doCmd('look ' + n.name, BTN);
       else if (it.action === 'pack') doCmd('装人 ' + n.name, BTN);
@@ -801,22 +831,231 @@
         '，换个人试试。', 'warn');
       return;
     }
+    /* 「点名字开互动面板」这一步，日志里先落一句「你看了他一眼」（主人 2026-10-08）——
+       面板是「细看」，这一句是「搭眼」；顺序上先抬眼、再细看，读着才顺。 */
+    if (pr.glance && pr.glance.text) appendLog([{ type: 'plain', text: pr.glance.text }]);
     modal(pr.name + (pr.title ? ' · ' + pr.title : ''),
       npcProfileHtml(pr),
       '<button class="btn-ink" id="npc-prof-look">打 量</button>' +
       '<button class="btn-ink" id="npc-prof-talk">交 谈</button>' +
+      /* 战斗外秘技（迷晕/致幻/暗劲/下毒/催眠/采补/双修）与结缘线（表白/结义/结婚/纳妾） */
+      '<button class="btn-ink" id="npc-prof-art">秘 技</button>' +
+      '<button class="btn-ink" id="npc-prof-bond">结 缘</button>' +
+      '<button class="btn-ink" id="npc-prof-story">人物故事</button>' +
+      /* 拜师 / 请教（主人 2026-10-08）：不是师父 → 「拜 师」；已经是师父 → 「请 教」。
+         两者互斥，同一位置只出现一个。 */
+      (pr.isMaster
+        ? '<button class="btn-ink" id="npc-prof-ask">请 教</button>'
+        : '<button class="btn-ink" id="npc-prof-baishi">拜 师</button>') +
+      /* 师父才有：出师（好聚好散，涨好感）/ 退出师门（断得难看，掉好感 + 收走门派传承武学）。
+         ⚠️ 门派师父不出「出师」—— 门内换人是去向职位更高的人「拜师」（主人 2026-10-11）。 */
+      (pr.isMaster && !pr.sectMaster
+        ? '<button class="btn-ink" id="npc-prof-graduate"' + (pr.graduate && pr.graduate.can ? '' : ' disabled') + '>出 师</button>'
+        : '') +
+      (pr.isMaster ? '<button class="btn-ink danger" id="npc-prof-quit">退出师门</button>' : '') +
+      /* 双修 / 采补（主人 2026-10-11：从「秘技」搬到这里来的）。
+         能不能的判定全在后端（晚上 / 旁边有没有人 / 关系 / 家世 / 好感 / 冷却），
+         前端只画按钮并原样转述那句 why。 */
+      (pr.dual ? '<button class="btn-ink" id="npc-prof-dual"' + (pr.dual.can ? '' : ' disabled') + '>双 修</button>' : '') +
+      (pr.drain ? '<button class="btn-ink" id="npc-prof-drain"' + (pr.drain.can ? '' : ' disabled') + '>采 补</button>' : '') +
+      (pr.isDisciple ? '<button class="btn-ink" id="npc-prof-teach">传 功</button>' : '') +
+      /* 门内争位：同门里位次比你高一位的那位，贡献够就能发起挑战（主人 2026-10-08）。 */
+      (pr.challenge ? '<button class="btn-ink" id="npc-prof-challenge"' + (pr.challenge.can ? '' : ' disabled') + '>挑 战</button>' : '') +
       '<button class="btn-ink" onclick="WXUI.closeModal()">关 闭</button>');
     /* 底部两个快捷动作：复用既有指令，不另起一套 */
     const lk = $('npc-prof-look');
     if (lk) lk.onclick = () => { closeModal(); doCmd('look ' + pr.name, { fromButton: true }); };
     const tk = $('npc-prof-talk');
     if (tk) tk.onclick = () => { closeModal(); doCmd('talk ' + pr.name, { fromButton: true }); };
+    const ab = $('npc-prof-art');
+    if (ab) ab.onclick = () => openArtsPanel(pr);
+    const bb = $('npc-prof-bond');
+    if (bb) bb.onclick = () => openBondPanel(pr);
+    const sb = $('npc-prof-story');
+    if (sb) sb.onclick = () => openStoryPanel(pr);
+    /* 拜师 = 磕头认师父；请教 = 让师父把功夫教给你。都是既有指令，不另起一套。 */
+    const bs = $('npc-prof-baishi');
+    if (bs) bs.onclick = () => { closeModal(); doCmd('拜师 ' + pr.name, { fromButton: true }); };
+    const ak = $('npc-prof-ask');
+    if (ak) ak.onclick = () => { closeModal(); doCmd('请教 ' + pr.name, { fromButton: true }); };
+    const cb = $('npc-prof-challenge');
+    if (cb) {
+      cb.onclick = () => {
+        if (pr.challenge && !pr.challenge.can) { toast(pr.challenge.why || '现在还挑不得。', 'warn'); return; }
+        closeModal(); doCmd('挑战 ' + pr.name, { fromButton: true });
+      };
+    }
+    const tb = $('npc-prof-teach');
+    if (tb) tb.onclick = () => openDisciplePanel(pr);
+    /* 出师：门槛不到时按钮是灰的 —— 点它就把差什么说清楚，别让玩家干瞪眼 */
+    const gb = $('npc-prof-graduate');
+    if (gb) {
+      gb.onclick = () => {
+        if (pr.graduate && !pr.graduate.can) { toast(pr.graduate.why || '还出不得师。', 'warn', 3200); return; }
+        closeModal(); doCmd('出师 ' + pr.name, { fromButton: true });
+      };
+    }
+    /* 双修 / 采补：都是要脱开身的事，先问一句；门槛不到就把差什么原样说出来 */
+    for (const [btnId, key, cmd, label] of [
+      ['npc-prof-dual', 'dual', '双修', '双 修'],
+      ['npc-prof-drain', 'drain', '采补', '采 补'],
+    ]) {
+      const b = $(btnId);
+      if (!b) continue;
+      b.onclick = async () => {
+        const v = pr[key];
+        if (v && !v.can) { toast(v.why || '这会儿不成。', 'warn', 3600); return; }
+        const yes = await confirmBox(label,
+          '这是一件脱不开身的事：起手之后就得一轮一轮往下走。' +
+          '中途要走开，点屏幕上任何别的按钮就行（只是上头那点功夫就白费了）。' +
+          '屋里若有人经过，场面会很难看。确定吗？', '就 这 么 办');
+        if (!yes) return;
+        closeModal();
+        doCmd(cmd + ' ' + pr.name, { fromButton: true });
+      };
+    }
+    /* 退出师门：断得难看，先问一句（掉好感 + 收走门派传承武学，不能手一滑就点掉） */
+    const qb = $('npc-prof-quit');
+    if (qb) {
+      qb.onclick = async () => {
+        const yes = await confirmBox('退出师门',
+          '退出师门要与他断得干干净净：好感大掉；若这份师承挂在门派上，' +
+          '门里传给你的功夫也会被收回去（别处学的跟基本功夫不受影响）。确定？', '退 出 师 门');
+        if (!yes) return;
+        closeModal();
+        doCmd('退出师门 ' + pr.name, { fromButton: true });
+      };
+    }
     /* 点「恩怨」里提到的名字 → 看那个人（若你认得他） */
     document.querySelectorAll('#modal-body [data-npcname]').forEach(b => {
       b.onclick = () => {
         const nm = b.getAttribute('data-npcname');
         closeModal();
         doCmd('look ' + nm, { fromButton: true });
+      };
+    });
+  }
+
+  /* ============================================================
+   * 秘技面板（战斗外功法）：迷晕 / 致幻 / 暗劲 / 下毒 / 催眠 / 采补 / 双修
+   *   数据是全的（后端 arts.listFor 已经算好「能不能用 / 几成」），
+   *   前端只负责画按钮 —— 别在这儿再算一遍门槛，两处口径一定会分家。
+   * ============================================================ */
+  function openArtsPanel(pr) {
+    const list = pr.arts || [];
+    let h = '';
+    if (!list.length) {
+      h = '<div class="modal-text">你身上没有能对他使的手段。</div>';
+    } else {
+      h = '<div class="modal-text">只能对<b>实力不如你</b>的人下手；差得越远越稳。</div>';
+      list.forEach(a => {
+        const st = a.can ? `可成 ${a.chance}%` : '不可用';
+        h += '<div class="np-row"><span class="np-k">' + esc(a.name) + '</span>'
+          + '<span class="np-v">' + esc(st)
+          + (a.can ? '' : '<br><i class="hint-dim">' + esc(a.why || '') + '</i>')
+          + '<br><button class="mini-btn" data-art="' + esc(a.id) + '"' + (a.can ? '' : ' disabled') + '>用</button></span></div>';
+      });
+    }
+    const marks = pr.marks || [];
+    if (marks.length) h += '<div class="modal-text hint-dim">他身上：' + esc(marks.join('、')) + '</div>';
+    modal('秘技 · ' + pr.name, h, '<button class="btn-ink" onclick="WXUI.closeModal()">关 闭</button>');
+    document.querySelectorAll('#modal-body [data-art]').forEach(b => {
+      b.onclick = () => {
+        const id = b.getAttribute('data-art');
+        const a = list.find(x => x.id === id);
+        if (!a) return;
+        closeModal();
+        doCmd('秘技 ' + pr.name + ' ' + a.name, { fromButton: true });
+      };
+    });
+  }
+
+  /* ============================================================
+   * 结缘面板：表白 → 男女朋友 → 才有结婚 / 纳妾；另有结义
+   *   「必须先表白」这条门禁在后端（指令层）也有一道，前端只是把不该出现的
+   *   按钮藏起来 —— 两处都做，是因为直接敲指令的人也得被拦住。
+   * ============================================================ */
+  function openBondPanel(pr) {
+    const b = pr.bonds || {};
+    const lover = !!b.isLover;
+    const same = (pr.gender || '') === ((S.view && S.view.player && S.view.player.gender) || '');
+    let h = '';
+    if (lover) {
+      h += '<div class="modal-text">你与' + esc(pr.name) + '已经说开了。往后的名分，从这里接着走。</div>';
+      h += '<button class="mini-btn" data-bond="marry">结 婚</button>';
+      h += '<button class="mini-btn" data-bond="concubine">纳 妾</button>';
+    } else if (same) {
+      h += '<div class="modal-text">这条路走不通 —— 这一层意思，对方接不住。</div>';
+    } else {
+      h += '<div class="modal-text">话还没说出口。要谈婚嫁，先得把这一层意思说明白。</div>';
+      h += '<button class="mini-btn" data-bond="love">表 白</button>';
+    }
+    if (b.takenByOther) h += '<div class="modal-text hint-dim">' + esc(pr.name) + '已与' + esc(b.takenByOther) + '有约。</div>';
+    h += '<hr><div class="modal-text">不涉名分，只论义气：</div>';
+    h += '<button class="mini-btn" data-bond="bond">结 义</button>';
+    modal('结缘 · ' + pr.name, h, '<button class="btn-ink" onclick="WXUI.closeModal()">关 闭</button>');
+    document.querySelectorAll('#modal-body [data-bond]').forEach(btn => {
+      btn.onclick = () => {
+        const k = btn.getAttribute('data-bond');
+        const cmd = k === 'love' ? '表白 ' + pr.name
+          : k === 'marry' ? '提亲 ' + pr.name
+            : k === 'concubine' ? '纳妾 ' + pr.name
+              : '结缘 ' + pr.name;
+        closeModal();
+        doCmd(cmd, { fromButton: true });
+      };
+    });
+  }
+
+  /* ============================================================
+   * 人物故事（好感 > 60 解锁）—— 内容就是画像里写的那几段
+   *   门槛不到时**不藏入口**，点进去明说「他还信不过你」，
+   *   玩家才知道该去把交情处出来，而不是以为这人没故事。
+   * ============================================================ */
+  function openStoryPanel(pr) {
+    const s = pr.lifeStory || {};
+    const fav = Math.round((pr.relation && pr.relation.favor) || 0);
+    let h = '';
+    if (!s.unlocked) {
+      h = '<div class="modal-text">你试着问起他的旧事，' + esc(pr.name) + '笑了一下，把话头岔到别处去了。</div>'
+        + '<div class="modal-text hint-dim">交情还不够（好感 ' + fav + ' / 需要 ' + (s.need || 60) + ' 以上）。</div>';
+    } else {
+      if (s.origin) h += '<div class="panel-sec">来历</div><div class="modal-text">' + esc(s.origin) + '</div>';
+      if (s.now) h += '<div class="panel-sec">如今</div><div class="modal-text">' + esc(s.now) + '</div>';
+      if (s.want) h += '<div class="panel-sec">想要的</div><div class="modal-text">' + esc(s.want) + '</div>';
+      if (s.fear) h += '<div class="panel-sec">怕的</div><div class="modal-text">' + esc(s.fear) + '</div>';
+      if (!s.origin && !s.now && !s.want) h += '<div class="modal-text">他不肯多说自己。</div>';
+    }
+    modal('人物故事 · ' + pr.name, h, '<button class="btn-ink" onclick="WXUI.closeModal()">关 闭</button>');
+  }
+
+  /* ============================================================
+   * 徒弟：传功 / 灌顶
+   *   传功 —— 把自身功法教下去（传下去只剩六成火候）
+   *   灌顶 —— 拿自己十点内力上限换他十点（内力就是实力上限）
+   * ============================================================ */
+  function openDisciplePanel(pr) {
+    const list = pr.teachables || [];
+    let h = '<div class="modal-text">' + esc(pr.name) + '是你门下的弟子。内力上限 <b>' + (pr.maxMp || 0) + '</b>。</div>';
+    h += '<div class="panel-sec">传功</div>';
+    if (!list.length) h += '<div class="modal-text hint-dim">你自己还没学成什么，没得可传。</div>';
+    else {
+      h += '<div class="modal-text hint-dim">传下去只剩六成火候；他已经会的、比你熟的，就传不进去了。</div>';
+      list.slice(0, 24).forEach(sk => {
+        h += '<div class="np-row"><span class="np-k">' + esc(sk.name) + '</span>'
+          + '<span class="np-v">' + sk.level + ' 级 <button class="mini-btn" data-teach="' + esc(sk.name) + '">传</button></span></div>';
+      });
+    }
+    h += '<div class="panel-sec">灌顶</div>';
+    h += '<div class="modal-text">拿自己的内力上限换他的 —— 传功是教招式，灌顶是把自己的底子分他一截。</div>'
+      + '<button class="mini-btn" data-teach="__guanding__">为他灌顶</button>';
+    modal('传功 · ' + pr.name, h, '<button class="btn-ink" onclick="WXUI.closeModal()">关 闭</button>');
+    document.querySelectorAll('#modal-body [data-teach]').forEach(b => {
+      b.onclick = () => {
+        const k = b.getAttribute('data-teach');
+        const cmd = k === '__guanding__' ? '灌顶 ' + pr.name : ('传功 ' + pr.name + ' ' + k);
+        closeModal();
+        doCmd(cmd, { fromButton: true });
       };
     });
   }
@@ -1218,6 +1457,12 @@
     } else if (name === 'skills') {
       title = '武学修为';
       html = skillsHtml(v);
+    } else if (name === 'practice') {
+      title = '练武学';
+      html = practiceHtml(v);
+    } else if (name === 'auction') {
+      title = '拍卖行';
+      html = auctionHtml(v);
     } else if (name === 'quests') {
       title = '任务日志';
       html = questsHtml(v);
@@ -1489,6 +1734,11 @@
        主人要求玩家不会死，只是力竭昏过去、在最近客栈醒转）。
        原来这个数字从来没在界面上露过面，玩家不知道自己昏过几次。 */
     h += kv('昏倒', (p.deathCount || 0) + ' 次');
+    /* 文采 / 功名（科举那条线）：不给它一个位置，玩家根本不知道有这回事 */
+    if (v.culture) {
+      h += kv('文采', v.culture.wencai + (v.culture.nextExam ? '（下一场：' + v.culture.nextExam.name + '）' : ''));
+      h += kv('功名', v.culture.gongming || '白身');
+    }
     h += '</div><div class="pc-col">';
     h += kv('气血', p.hp + ' / ' + p.maxHp);
     h += kv('内力', p.mp + ' / ' + p.maxMp);
@@ -1496,7 +1746,8 @@
        否则顶栏修好了、这个「状态一览」面板还印 99.9187） */
     h += kv('饱食', fmt1(p.food) + ' / ' + fmt1(p.maxFood));
     h += kv('饮水', fmt1(p.water) + ' / ' + fmt1(p.maxWater));
-    h += kv('潜能', p.potential);
+    /* 潜能已废除（2026-10-11）：面板不再显示这个数。
+       原来它与「等级/经验」同栏，三个都是武学重制后的残留；等级/经验仍参与显示，先留着。 */
     h += kv('银两', p.money + ' 文');
     h += kv('杀气', p.karma);
     /* 声望是「键→ 数值」的对象（门派名/恶名等动态键），直接丢给 kv 会变 [object Object] */
@@ -1556,20 +1807,144 @@
     return h;
   }
 
+  /* ============================================================
+   * 武学面板（武学重制 §2.6）
+   *   分三块：已激活 / 散手（无根基，至多三路）/ 所学未激活。
+   *   必须显示「品级」「绑在哪门基础武学（及它的等级）」「上限是谁卡的」——
+   *   缺了这三项，玩家只会看到「练不动了」却不知道为什么，这是需求②的可玩性命门。
+   * ============================================================ */
+  const GRADE_CN = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+  function gradeTag(g) { return g ? '<i class="tag-grade">' + (GRADE_CN[g] || g) + '品</i>' : ''; }
+  function limitHint(s) {
+    if (!s.canTrain) {
+      return s.limitBy === '基础武学'
+        ? '<span class="hint-warn">已至上限（受《' + esc(s.baseName || '') + '》' + s.baseLevel + ' 级所限，先练基础武学）</span>'
+        : '<span class="hint-warn">已至上限</span>';
+    }
+    if (s.limitBy === '基础武学') return '<span class="hint-dim">上限 ' + s.maxLevel + '（依《' + esc(s.baseName || '') + '》' + s.baseLevel + ' 级）</span>';
+    return '<span class="hint-dim">上限 ' + s.maxLevel + '</span>';
+  }
+  /* 练武学（主人 2026-10-08）：已学会的武学排成一列，点一个就自动耗内力练。
+     按钮走 data-cmd（bindPanelActions 统一绑），别自己 addEventListener。 */
+  function practiceHtml(v) {
+    const list = (v && v.practice) || [];
+    if (!list.length) {
+      return '<div class="modal-text">你手上一门功夫都没有。<br><br>' +
+        '先去<b>拜师</b>：屋子里找个人，点「细看此人」→「拜 师」，' +
+        '成了师徒再「请教」他的功夫——一学就会。往后精进就靠这一面板。</div>';
+    }
+    let h = '<div class="modal-text">点一门就练：<b>自动耗内力</b>，内力够就一直练下去。' +
+      '<br><span class="hint-dim">内力上限越高、这门功夫等级越低，练得越快。</span></div>';
+    h += '<div class="prac-grid">';
+    for (const s of list) {
+      const full = !!s.full;
+      h += '<button class="btn-ink prac-btn' + (full ? ' prac-full' : '') + '" data-cmd="练武学 ' + esc(s.name) + '"' +
+        (full ? ' title="已至上限"' : '') + '>' +
+        esc(s.name) + '<span class="prac-lv">' + s.level + '/' + s.cap + (full ? '·满' : '') + '</span>' +
+        (s.type ? '<span class="prac-type">' + esc(s.type) + '</span>' : '') +
+        '</button>';
+    }
+    h += '</div>';
+    return h;
+  }
+
   function skillsHtml(v) {
     const list = (v.player && v.player.skills) || v.skills || [];
     if (!list.length) return '<div class="modal-text">尚未习得任何武学。</div>';
-    let h = '<table class="data-table"><thead><tr><th>武学</th><th>门类</th><th>类型</th><th>等级</th><th>熟练度</th><th>威力</th></tr></thead><tbody>';
-    list.forEach(s => {
-      const pctStr = s.level >= s.maxLevel ? '圆满' : util.pct(s.exp, s.expNeed) + '%';
-      h += '<tr><td class="td-name">' + esc(s.name) + (s.equipped || s.enabled ? ' <i class="tag-on">已启用</i>' : '') + '</td>' +
-        '<td>' + esc(s.category || s.typeName || s.type) + '</td>' +
-        '<td>' + esc(s.typeName || s.type) + (s.weaponType ? '（需' + esc(s.weaponType) + '）' : '') + '</td>' +
-        '<td>' + s.level + ' / ' + s.maxLevel + '</td>' +
-        '<td>' + pctStr + '</td>' +
-        '<td>' + (s.power != null ? s.power : '—') + '</td></tr>';
-    });
-    h += '</tbody></table>';
+    const active = list.filter(s => s.equipped);
+    const stand = list.filter(s => s.standaloneActive);
+    const rest = list.filter(s => !s.equipped && !s.standaloneActive);
+    let h = '';
+
+    h += '<div class="panel-sec">已激活</div>';
+    if (active.length) {
+      h += '<table class="data-table"><thead><tr><th>槽位</th><th>武学</th><th>品级</th><th>等级</th><th>熟练度</th></tr></thead><tbody>';
+      active.forEach(s => {
+        const pctStr = s.level >= s.maxLevel ? '圆满' : util.pct(s.exp, s.expNeed) + '%';
+        h += '<tr><td>' + esc(s.slot || s.type) + '</td>' +
+          '<td class="td-name">' + esc(s.name) + gradeTag(s.grade) +
+          (s.baseName ? ' <span class="hint-dim">← 依《' + esc(s.baseName) + '》' + s.baseLevel + '</span>' : '') + '</td>' +
+          '<td>' + (s.grade || '—') + '</td>' +
+          '<td>' + s.level + ' / ' + s.maxLevel + '</td>' +
+          '<td>' + pctStr + '</td></tr>';
+      });
+      h += '</tbody></table>';
+    } else {
+      h += '<div class="modal-text">还没有激活任何武学。用「装备武学 &lt;槽位&gt; &lt;武学名&gt;」装上，或者在下表点「激活」。</div>';
+    }
+
+    h += '<div class="panel-sec">散手 · 无根基（' + stand.length + '/3）</div>';
+    if (stand.length) {
+      h += '<table class="data-table"><thead><tr><th>散手</th><th>品级</th><th>等级</th><th>熟练度</th></tr></thead><tbody>';
+      stand.forEach(s => {
+        const pctStr = s.level >= s.maxLevel ? '圆满' : util.pct(s.exp, s.expNeed) + '%';
+        h += '<tr><td class="td-name">' + esc(s.name) + gradeTag(s.grade) + '</td>' +
+          '<td>' + (s.grade || '—') + '</td><td>' + s.level + ' / ' + s.maxLevel + '</td><td>' + pctStr + '</td></tr>';
+      });
+      h += '</tbody></table>';
+      h += '<div class="modal-text hint-dim">散手不属于任何基础武学一系，不占槽位，最多同时运起三路。</div>';
+    } else {
+      h += '<div class="modal-text hint-dim">暂无散手。这类功夫没有师承的根基，只能自己揣着。</div>';
+    }
+
+    h += '<div class="panel-sec">所学未激活</div>';
+    if (rest.length) {
+      h += '<table class="data-table"><thead><tr><th>武学</th><th>品级</th><th>等级</th><th>熟练度</th><th></th></tr></thead><tbody>';
+      rest.forEach(s => {
+        const pctStr = s.level >= s.maxLevel ? '圆满' : util.pct(s.exp, s.expNeed) + '%';
+        h += '<tr><td class="td-name">' + esc(s.name) + gradeTag(s.grade) +
+          (s.baseName ? ' <span class="hint-dim">依《' + esc(s.baseName) + '》</span>' : '') +
+          '<br>' + limitHint(s) + '</td>' +
+          '<td>' + (s.grade || '—') + '</td>' +
+          '<td>' + s.level + ' / ' + s.maxLevel + '</td>' +
+          '<td>' + pctStr + '</td>' +
+          '<td><button class="mini-btn" data-cmd="enable ' + esc((s.base && s.type) || s.type || '') + ' ' + esc(s.name) + '">激活</button></td></tr>';
+      });
+      h += '</tbody></table>';
+    } else {
+      h += '<div class="modal-text hint-dim">所学的功夫都已安排妥当。</div>';
+    }
+    h += '<div class="modal-text hint-dim">内功只能绑《基本内功》·招架只能绑《基本招架》·以此类推，每门基础武学同时只挂一门；基础武学练到几级，其所系的其它武学最多也练到几级。</div>';
+    return h;
+  }
+
+  /* ============================================================
+   * 拍卖行面板（design/40 §6.3）：当前拍品 / 后续拍品 / 我的寄拍
+   * ============================================================ */
+  function auctionHtml(v) {
+    const a = v.auction;
+    if (!a) return '<div class="modal-text">这里没有拍卖行。大城的市集上才有。</div>';
+    let h = '';
+    h += '<div class="modal-text">第 <b>' + (a.session + 1) + '</b> 期 · 每 ' + a.intervalDays + ' 日一场 · 距下一场还有 <b>' + a.daysToNext + '</b> 日　身上银钱：' + a.money + ' 文</div>';
+    if (a.news && a.news.length) {
+      h += '<div class="panel-sec">上期寄拍结算</div>';
+      a.news.forEach(n => { h += '<div class="modal-text">' + esc(n) + '</div>'; });
+    }
+    h += '<div class="panel-sec">正在拍</div>';
+    if (a.current) {
+      const c = a.current;
+      h += '<div class="modal-text"><b>' + esc(c.name) + '</b>' + (c.isHigh ? ' <i class="tag-grade">重器</i>' : '') +
+        '<br>' + esc(c.desc || '') + '<br>当前价 <b>' + c.price + '</b> 文　加价 ' + c.step + ' 文' +
+        (c.leaderName ? '　领先：' + esc(c.leaderName) : '') +
+        '<br><span class="hint-dim">用「出价 &lt;价钱&gt;」出价，例：出价 ' + (c.price + c.step) + '</span></div>';
+    } else {
+      h += '<div class="modal-text">本期的东西都拍完了。</div>';
+    }
+    h += '<div class="panel-sec">本期书画（' + (a.lots || []).length + ' 件）</div>';
+    if ((a.lots || []).length) {
+      h += '<table class="data-table"><thead><tr><th>拍品</th><th>价</th><th>状态</th></tr></thead><tbody>';
+      a.lots.forEach(l => {
+        h += '<tr><td class="td-name">' + esc(l.name) + (l.isHigh ? ' <i class="tag-on">重器</i>' : '') + '</td>' +
+          '<td>' + l.price + '</td><td>' + (l.sold ? ('落槌·' + esc(l.leaderName || '')) : '待拍') + '</td></tr>';
+      });
+      h += '</tbody></table>';
+    }
+    h += '<div class="panel-sec">我的寄拍</div>';
+    if ((a.pending || []).length) {
+      a.pending.forEach(p => { h += '<div class="modal-text">' + esc(p.name) + '（下一场替你出手，落槌抽 8% 佣金）</div>'; });
+    } else {
+      h += '<div class="modal-text hint-dim">还没寄拍东西。用「寄拍 &lt;物品名&gt;」交给柜上（须值 500 文以上）。</div>';
+    }
     return h;
   }
 
@@ -2039,6 +2414,9 @@
      主人明确要求：打开地图默认显示**当前区域**，另有开关看全部区域。
      用模块级变量记住选择，重开面板时保持。 */
   let mapScope = 'region';   // 'region' | 'world'
+  /* 点了「区域名按钮」后要飞过去的目标区域 id。
+     因为切到世界地图要重开面板（重渲染），跨渲染记住目标，渲染完再平移。 */
+  let pendingPanRegion = null;
 
   function mapHtml(v) {
     /* ---- 尺寸自适应（主人报的 bug：手机上地块名看不清 / 看不全）----
@@ -2102,7 +2480,18 @@
     h += '<div class="map-head">';
     h += '<div class="map-now">你在 <b>' + esc(here ? here.name : '未知') + '</b>';
     if (here && here.exits && here.exits.length) {
-      h += '　出口：' + here.exits.map(d => DIR_CN[d] || d).join(' / ');
+      /* 出口列表里，**跨出本区域**的那几个额外标一句「→ XX」——
+         站在区域边上时，光看方向名不知道会走出界（主人 2026-10-11：
+         「能否提示该方向继续往前走通往哪个区域」）。同区域内的出口不标，
+         免得一行字被括号塞满。 */
+      /* ⚠️ 跨区域出口由**后端从真出口**算好（`crossExits`），前端别拿坐标去反查
+         隔壁是谁 —— 区域装箱在区域之间留了 2 格空当，跨区域的房间在图上从不相邻。 */
+      const regNameOf = rid => ((m.regions || []).find(x => x.id === rid) || {}).name || rid;
+      const ce = here.crossExits || {};
+      h += '　出口：' + here.exits.map(d => {
+        const cn = DIR_CN[d] || d;
+        return ce[d] ? cn + '<span class="map-out">→' + esc(regNameOf(ce[d])) + '</span>' : cn;
+      }).join(' / ');
     }
     h += '</div>';
     /* --- 视野切换：当前区域 / 天下全图 --- */
@@ -2129,7 +2518,34 @@
       '<span><i class="dot dot-near"></i>一步可达</span>' +
       '<span><i class="dot dot-known"></i>去过</span>' +
       '<span><i class="dot dot-unknown"></i>未探索</span>' +
+      '<span><i class="dot dot-edge"></i>出界方向</span>' +
       '<span class="ml-tip">点「一步可达」的格子直接走过去</span></div>';
+
+    /* --- 区域名按钮：点一下就飞过去（主人 2026-10-10 要求）---
+       世界地图铺得很大，手机屏翻着累；给一排「区域名」按钮，点谁看谁。
+       ⚠️ 区域清单**从后端 m.regions 取**，前端不硬编码名单（后端加了区域自动跟上）。
+       点按钮 → 切到世界地图（区域模式只画本区，飞不过去）→ 把视角平移到该区中心。 */
+    /* 「飞往」（主人 2026-10-11）：
+       「可以改成玩家去过的城市都可以飞到该城市入口处，门派也是一样入口处，
+         前提是玩家去过那里」。
+       所以这里一分为二 —— **去过的地方点了是真赶路**（落到该区域 entry 房间），
+       没去过的保持原样（只把视角平移过去看看）。两者长得不一样，免得误点：
+       能飞的带一个 ↗ 与金边，不能飞的压暗。判定（canFly）由后端算好下发，
+       前端不自己猜 —— 它拿不到 visited 旗标。 */
+    h += '<div class="map-region-nav" title="去过的地方点一下就飞过去；没去过的只能先看看地图">';
+    h += '<span class="mrn-title">飞往</span>';
+    (m.regions || []).forEach(r => {
+      const can = !!r.canFly;
+      const tip = can
+        ? ('飞往' + r.name + (r.entryName ? '（落在' + r.entryName + '）' : ''))
+        : ('没去过' + r.name + '，点了只是把视角移过去');
+      h += '<button class="mrn-btn' + (r.id === curRegion ? ' cur' : '') + (can ? ' canfly' : ' nofly') + '"' +
+        (can ? ' data-fly-region="' + esc(r.name) + '"' : ' data-pan-region="' + esc(r.id) + '"') +
+        ' title="' + esc(tip) + '">' +
+        '<i class="mrn-dot" style="background:' + esc(r.color || '#999') + '"></i>' +
+        esc(r.name) + (can ? '<i class="mrn-fly">↗</i>' : '') + '</button>';
+    });
+    h += '</div>';
 
     /* --- 画布 --- */
     const W = b.w * MAP_CELL + MAP_PAD * 2;
@@ -2147,6 +2563,8 @@
        `roomW/roomH` 才是房间实际占的尺寸（且房间就贴着框的左上角铺），
        换过来底色块就只框住有地块的地方。 */
     const boxes2 = scopeBox ? { [curRegion]: scopeBox } : boxes;
+    /* 区域/城市名**单独收集**，最后再画（见下方 regionLabels 的说明） */
+    let regionLabels = '';
     Object.keys(boxes2).forEach(k => {
       const box = boxes[k];
       const bw0 = box.roomW || box.w;
@@ -2155,9 +2573,23 @@
       const top = (box.y - b.minY) * MAP_CELL + MAP_PAD;
       const bw = bw0 * MAP_CELL;
       const bh = bh0 * MAP_CELL;
+      /* data-cx/data-cy = 该框中心在画布内容坐标系里的像素位置（区域名按钮「飞过去」用） */
       h += '<div class="map-region-box" style="left:' + left + 'px;top:' + top + 'px;' +
-        'width:' + bw + 'px;height:' + bh + 'px;background:' + esc(box.color) + '14;border-color:' + esc(box.color) + '44">' +
-        '<span class="mrb-label" style="color:' + esc(box.color) + ';font-size:' + (NARROW ? 15 : 11) + 'px">' + esc(box.name) + '</span></div>';
+        'width:' + bw + 'px;height:' + bh + 'px;background:' + esc(box.color) + '14;border-color:' + esc(box.color) + '44"' +
+        ' data-region-box="' + esc(k) + '"' +
+        ' data-cx="' + (left + bw / 2) + '" data-cy="' + (top + bh / 2) + '"></div>';
+      /* ★ 城市/区域名**移到外框上方外侧**（主人 2026-10-10 亲报：
+         「城市地块被一个大框框住了，城市名字也在框中间被挡着，把城市名字往上移一下移到框外」）。
+         原来这个 span 在 `.map-region-box` 内部，而该 box 是 z-index:0 的层叠上下文，
+         于是名字被走廊(z-index:1)、房间方块(z-index:2) 层层盖住 —— 看着就像「被挡在框中间」。
+         现在把它拆出来、作为 box 的**兄弟节点**画在框顶边之上（top 再上移一个行高），
+         并以独立 z-index（.mrb-label 里配 6）压在所有地块/连线之上；
+         定位一律用内联 left/top，随便框在哪都不会落回框里。 */
+      const lblFont = NARROW ? 15 : 11;
+      regionLabels += '<span class="mrb-label" style="left:' + left + 'px;top:' +
+        (top - Math.round(lblFont * 1.5)) + 'px;color:' + esc(box.color) +
+        ';font-size:' + lblFont + 'px" data-region-box="' + esc(k) + '">' +
+        esc(box.name) + '</span>';
     });
 
     /* 3) 地形装饰（树石山水…）——★ 主人第四轮要求**删掉**：
@@ -2237,6 +2669,53 @@
         '<span class="mn-name" style="font-size:' + mFont(r) + 'px;line-height:' + M_LINE + '">' + esc(label) + '</span></button>';
     });
 
+    /* 区域/城市名：压在所有地块之上画（独立于 .map-region-box 的 z-index:0 上下文，
+       名字永远在框外、在最上层，不会被框线或地块挡住）。 */
+    h += regionLabels;
+
+    /* 5) 区域边界处的「往这边走是哪儿」（★ 主人 2026-10-11：
+       「地图界面每个区域都有边界，能不能在地图上边界处提示该方向继续往前走通往哪个区域」）。
+       邻居关系由后端算好（`regionBoxes[x].neighbors`，见 maplayout.computeRegionNeighbors），
+       前端只管把牌子贴到两块之间那道缝里。
+
+       ⚠️ 只画东 / 南两个方向：A 在东边的邻居是 B，等价于 B 在西边的邻居是 A，
+       两个方向画出来是**同一道缝上的同一件事**，画两遍就是叠字。
+       同理区域模式下只画本区一块、邻居不在图上，不画（画了牌子会挂在画布外被裁掉）。 */
+    /* 一块牌子。定义在 mapHtml 内部：多个测试脚本会把 mapHtml 源码单独抽出来跑，
+       抽出去的环境里没有模块级函数 —— 挂在外面就是 ReferenceError。 */
+    const edgeHintHtml = (px, py, arrow, box) =>
+      '<span class="map-edge-hint" style="left:' + px + 'px;top:' + py + 'px;' +
+      'font-size:' + (NARROW ? 13 : 11) + 'px;' +     /* 手机上一格就小，牌子字号跟着放大 */
+      'border-color:' + esc(box.color) + '66" title="往这个方向继续走，就是' + esc(box.name) + '">' +
+      '<i class="meh-arrow" style="color:' + esc(box.color) + '">' + arrow + '</i>' +
+      esc(box.name) + '</span>';
+
+    let edgeHints = '';
+    if (!scopeBox) {
+      const xPx = gx => (gx - b.minX) * MAP_CELL + MAP_PAD;
+      const yPx = gy => (gy - b.minY) * MAP_CELL + MAP_PAD;
+      Object.keys(boxes).forEach(k => {
+        const a = boxes[k];
+        const nb = a.neighbors || {};
+        /* 东：贴在两块之间那道竖缝里，纵向对齐两块的重叠段中点 */
+        if (nb.e && boxes[nb.e]) {
+          const bx = boxes[nb.e];
+          const midY = (Math.max(a.y, bx.y) + Math.min(a.y + a.h, bx.y + bx.h)) / 2;
+          edgeHints += edgeHintHtml(xPx((a.x + a.w + bx.x) / 2), yPx(midY), '→', bx);
+        }
+        /* 南：贴在两块之间那道横缝里，横向上对齐重叠段中点。
+           位置上**靠近上边那块**（34% 处）—— 下边那块自己的区域名就写在它框顶上方，
+           居中的话两块牌子会撞一起。 */
+        if (nb.s && boxes[nb.s]) {
+          const bx = boxes[nb.s];
+          const y0 = a.y + a.h, y1 = bx.y;
+          const midX = (Math.max(a.x, bx.x) + Math.min(a.x + a.w, bx.x + bx.w)) / 2;
+          edgeHints += edgeHintHtml(xPx(midX), yPx(y0 + (y1 - y0) * 0.34), '↓', bx);
+        }
+      });
+    }
+    h += edgeHints;
+
     h += '</div>';
 
     /* --- 快速移动：一步可达 --- */
@@ -2271,43 +2750,51 @@
     return n.length > cap ? n.slice(0, cap) : n;
   }
 
+  /* 指令帮助
+   * ⚠️ 主人 2026-10-11：「把游戏里一些英文指令的教程改成中文指令，
+   *    比如拍卖行界面的 bid 教程改成『出价』这种」。
+   *    所以这张表**中文在前，英文一律不写进正文** ——
+   *    英文别名在后端照旧认（commands.js 的 reg 都还在），只是不再往教程里写，
+   *    免得玩家以为非敲英文不可。
+   *    ⚠️ 改动时请对着 commands.js 的 reg([...]) 抄中文别名，
+   *      别自己编 —— 教程里写一个不存在的命令，玩家点不着就是「静默失效」。 */
   function helpHtml() {
     const groups = [
       ['行走', [
-        'n / s / e / w / u / d　（中文：北 南 东 西 上 下）',
-        'go <方向|房间名>　（中文：去 / 前往 / 走）',
-        'look / l　查看四周（中文：看 / 观察 / 周围）',
-        'look <人物|物品>　细看',
+        '北 南 东 西 上 下　（也可写「往北走」「朝东」）',
+        '去 <方向|房间名>　前往某处（中文：前往 / 走）',
+        '看　查看四周（中文：观察 / 周围）',
+        '看 <人物|物品>　细看',
         '爬山坡 / 跳崖 / 渡河　互动出口（看四周时会提示）',
       ]],
       ['交流', [
-        'say <内容>　说话（中文：说）',
-        'me <动作>　做动作（中文：动作）',
-        'shout <内容>　大喊（中文：喊）',
-        'tell <人物> <内容>　密语（中文：密语）',
-        'nick <称号>　改称号（中文：称号）',
+        '说 <内容>　开口说话（中文：说道）',
+        '动作 <动作>　做个动作',
+        '喊 <内容>　大声喊（中文：喊话）',
+        '密语 <人物> <内容>　只给一个人听',
+        '称号 <称号>　换个称号',
       ]],
       ['物品', [
-        'i / inventory　背包（中文：背包 / 行囊）',
-        'get <物品>　拾取（中文：捡 / 拿 / 拾取）',
-        'drop <物品>　丢弃（中文：丢 / 放下）',
-        'use <物品>　使用（中文：吃 / 喝 / 使用）',
-        'wear <装备> / wield <武器>　穿戴（中文：穿 / 装备上 / 持）',
-        'remove <装备>　卸下（中文：卸下 / 脱）',
+        '背包　看身上有什么（中文：物品）',
+        '捡 <物品>　拾起来（中文：拿 / 拾取）',
+        '丢 <物品>　扔下（中文：丢弃 / 放下）',
+        '用 <物品>　使用（中文：吃 / 喝 / 服用）',
+        '穿 <装备>　穿上身（中文：装备上 / 持）',
+        '卸下 <装备>　脱下来（中文：脱）',
       ]],
       ['武学', [
-        'skills　武学列表（中文：武学 / 武功）',
-        'learn <人物> <武学>　请教（中文：学 / 学习）',
-        'lian / train <武学>　修炼（耗内力；内功可冲奇经八脉）',
-        'lian / train　打坐（恢复内力）（中文：练 / 练功 / 打坐）',
-        'cuti <武学>　淬体（外功根基，伤气血耗体力，宜备丹药）',
+        '武学　武学列表（中文：功夫）',
+        '学 <人物> <武学>　向人请教（中文：学习）',
+        '练 <武学>　修炼（耗内力；内功可冲奇经八脉）',
+        '练　打坐养气（恢复内力）（中文：练功 / 修炼）',
+        '淬体 <武学>　外功根基，伤气血耗体力，宜备丹药（中文：淬炼 / 炼体）',
         '炼丹 <方> / 炼器 <方> / 画符 <方>　须有对应器具与材料',
-        'enable <武学>　启用',
-        'perform / pf <招式>　出招（刀枪棍剑类须持对应兵刃）',
-        'forget <武学>　遗忘',
+        '装备武学 <槽位> <武学名>　把一门武学放到身上',
+        '绝招 <招式>　出手绝招（中文：施展；刀枪棍剑类须持对应兵刃）',
+        '忘记 <武学>　忘掉一门',
       ]],
       ['师承 · 宗门', [
-        '收徒 <人名>　收徒（须好感≥30 且你有武学）',
+        '收徒 <人名>　须好感≥30 且你有武学',
         '弟子　列弟子',
         '授艺 <人名> <武学>　传艺',
         '逐出师门 <人名>　逐出弟子',
@@ -2320,27 +2807,29 @@
         '资助 <人名> [档位]　替 NPC 盖宅（中文：建家）',
       ]],
       ['门派', [
-        'sect　门派信息（中文：门派）',
-        'join <门派>　拜师（中文：拜师 / 入门）',
-        'leave　叛出师门',
-        'promote　晋升',
-        'contribute　贡献',
+        '门派　门派信息',
+        '拜师 <门派>　入门（中文：入门）',
+        '脱离门派　叛出师门（中文：叛门）',
+        '升职　晋升（中文：晋级）',
+        '贡献　捐献（中文：捐献）',
       ]],
       ['战斗', [
-        'kill <人物>　出手（中文：动手）',
-        'flee　逃跑',
-        'auto　自动战斗',
+        '杀 <人物>　出手（中文：攻击 / 打）',
+        '逃跑　走为上策（中文：跑）',
+        '自动战斗　交给脚本来打',
       ]],
       ['任务', [
-        'quests　任务日志（中文：任务）',
-        'accept <任务>　接任务（中文：接取 / 接任务）',
-        'report　汇报（中文：交任务 / 交差）',
-        'abandon <任务>　放弃（中文：放弃 / 放弃任务）',
+        '任务　任务日志',
+        '接取 <任务>　接下这件事（中文：接任务）',
+        '交任务　回去汇报（中文：交差）',
+        '放弃 <任务>　不干了（中文：放弃任务）',
       ]],
-      ['店铺', [
-        'list <商人>　看货',
-        'buy <物品> [数量]　购买',
-        'sell <物品> [数量]　出售',
+      ['店铺 · 拍卖', [
+        '货 <商人>　看货（中文：买卖）',
+        '买 <物品> [数量]　购买',
+        '卖 <物品> [数量]　出售',
+        '出价 <价钱>　在拍卖行加价（中文：叫价）',
+        '寄拍 <物品名>　交给柜上代拍（中文：寄卖）',
       ]],
       ['姻缘', [
         '提亲 <人名> [酒楼|家中]　议亲下聘',
@@ -2364,7 +2853,7 @@
         '家宅　查看名下产业',
       ]],
       ['营生', [
-        '打工 / work　酒楼跑堂、药店抓药赚钱（费饱食/饮水）',
+        '打工　酒楼跑堂、药店抓药赚钱（费饱食/饮水）',
         '卖身　卖身青楼换银钱（仅女子，去青楼）',
         '接客　应酬攒赎身钱（卖身后）',
         '赎身　凑钱脱籍',
@@ -2379,12 +2868,12 @@
         '偷庄稼　偷别人田（被发现会通缉）',
       ]],
       ['系统', [
-        'save / load　存读档（中文：存档 / 读档）',
-        'mods　模组',
-        'map　地图（中文：地图 / 舆图）',
-        'score / sc　状态（中文：状态）',
-        'attr　属性（中文：属性）',
-        'time　时辰（中文：时间）',
+        '存档 / 读档　存读档',
+        '模组　看装了哪些模组',
+        '地图　江湖舆图（中文：舆图）',
+        '状态　自身状态（中文：查看状态）',
+        '属性　属性详情',
+        '时间　现在什么时辰（中文：时辰）',
       ]],
       ['中文口语', ['「往北走」「看看四周」「查看背包」「打坐」「练功」等自然语言均可识别']]
     ];
@@ -2449,6 +2938,35 @@
         };
       });
 
+      /* ★ 区域名按钮：点一下视角直接飞到该区域（居中显示）（主人 2026-10-10）。
+         区域模式只画本区，飞不过去 → 先切世界地图再飞；已在世界地图则当场平移。 */
+      document.querySelectorAll('#modal-body [data-pan-region]').forEach(b => {
+        b.onclick = () => {
+          const rid = b.getAttribute('data-pan-region');
+          if (!rid) return;
+          if (mapScope !== 'world') {
+            mapScope = 'world';
+            pendingPanRegion = rid;      /* 跨渲染记住：重开面板后按它平移 */
+            closeModal();
+            panel('map');
+            return;
+          }
+          centerMapOnRegion(rid);
+        };
+      });
+
+      /* ★ 「飞往」：去过的地方真赶路（主人 2026-10-11）。
+         与上面那条的区别 —— 上面是「看地图」，这条是「上路」。
+         发的是后端真指令 `飞往 <地名>`，由后端复核「去过没有」（前端不做安全判定）。 */
+      document.querySelectorAll('#modal-body [data-fly-region]').forEach(b => {
+        b.onclick = () => {
+          const nm = b.getAttribute('data-fly-region');
+          if (!nm) return;
+          closeModal();
+          doCmd('飞往 ' + nm, { fromButton: true });
+        };
+      });
+
       /* 触屏没有 hover，方块上的 title 提示看不到 ——
          点「看得到但走不到」的格子，弹出完整房间名（主人报的「地块名看不全」）。
          可走的格子（data-go）已另有 onclick，跳过，别抢它的「走过去」。
@@ -2477,8 +2995,17 @@
          ~343×400。不居中的话，开图停在左上角：玩家自己的格子大概率在视野外，
          眼前看到的全是「别处」，自然觉得地图和实际对不上 —— 再加当时横向还划不动
          （见 .map-canvas 的 max-width 注释），等于永远找不到自己。
-         居中后「你在这里」的红点就在正中，「一步可达」的房间自然落在它四周。 */
-      centerMapOnHere();
+         居中后「你在这里」的红点就在正中，「一步可达」的房间自然落在它四周。
+         ★ 视角**自动追随玩家**：本函数在每次地图重渲染时都会跑（开图 / 切视野 / 走一步再开），
+         始终把玩家所在格摆在视野中央。
+         例外：点了「区域名按钮」要飞往某区域时（pendingPanRegion），本次改为居中到那个区域。 */
+      if (pendingPanRegion) {
+        const rid = pendingPanRegion;
+        pendingPanRegion = null;
+        centerMapOnRegion(rid);
+      } else {
+        centerMapOnHere();
+      }
     }
     /* 社交面板：点某人 → 看详情 */
     if (name === 'social') {
@@ -2516,6 +3043,7 @@
     score: 'score', sc: 'score', 状态: 'score', 查看状态: 'score', 状态一览: 'score',
     attr: 'attr', 属性: 'attr', 属性详情: 'attr',
     skills: 'skills', skill: 'skills', 武学: 'skills', 武功: 'skills', 查看武学: 'skills',
+    auction: 'auction', 拍卖: 'auction', 拍卖行: 'auction', 竞价: 'auction',
     quests: 'quests', quest: 'quests', 任务: 'quests', 任务日志: 'quests',
     sect: 'sect', 门派: 'sect',
     equipment: 'equipment', eq: 'equipment', 装备: 'equipment', 穿戴: 'equipment',
@@ -2528,6 +3056,8 @@
     武馆: 'martial', martial: 'martial',
     修炼: 'martial', 炼丹: 'martial', 炼器: 'martial', 画符: 'martial', 制符: 'martial', 布阵: 'martial',
     符箓: 'martial', 淬体: 'martial', 打坐: 'martial',
+    /* 练武学（主人 2026-10-10）：屏幕下方快捷键点开，面板上列已学会的武学，点一个就自动练。 */
+    practice: 'practice', 练武学: 'practice', 练功房: 'practice',
     sectfounder: 'found', 创宗: 'found', 招贤: 'found', 逐出师门: 'found', 演武: 'found', 大比: 'found', 解散宗门: 'found',
     recruit: 'found', drill: 'found', contest: 'found', disciple: 'found', tutor: 'found', founded: 'found',
     宗门: 'found',
@@ -2657,6 +3187,30 @@
     return true;
   }
 
+  /* 把视角平移到「某个区域」的正中（区域名按钮「飞过去」）。
+     区域框中心在画布内容坐标系里的位置，由 mapHtml 写进 `data-cx / data-cy`
+     （见区域底色块那段），这里**从 DOM 反读**，不重算布局几何。
+     ⚠️ region 模式只画当前区域一个框 → 找不到目标框时返回 false（调用方已在切世界地图）。 */
+  function centerMapOnRegion(regionId) {
+    const canvas = document.querySelector('#modal-body .map-canvas');
+    if (!canvas) return false;
+    const boxes = document.querySelectorAll('#modal-body .map-region-box') || [];
+    let box = null;
+    for (let i = 0; i < boxes.length; i++) {
+      const b = boxes[i];
+      if (b && b.getAttribute && b.getAttribute('data-region-box') === regionId) { box = b; break; }
+    }
+    if (!box) return false;
+    const ccx = parseFloat(box.getAttribute('data-cx'));
+    const ccy = parseFloat(box.getAttribute('data-cy'));
+    if (!isFinite(ccx) || !isFinite(ccy)) return false;
+    const vw = canvas.clientWidth || (typeof innerWidth === 'number' ? innerWidth : 0);
+    const vh = canvas.clientHeight || 0;
+    if (vw > 0 && canvas.scrollWidth > vw) canvas.scrollLeft = Math.max(0, ccx - vw / 2);
+    if (vh > 0 && canvas.scrollHeight > vh) canvas.scrollTop = Math.max(0, ccy - vh / 2);
+    return true;
+  }
+
   let cmdHistory = [];
   let histIdx = -1;
 
@@ -2705,6 +3259,62 @@
     }, 80);
   }
 
+  /* ---- 「脱不开身」的状态：吐纳 / 双修 / 采补 ----
+     主人 2026-10-11：不要「收功」按钮，**点页面上任何别的按钮就该退出这个状态**。
+     走后端的指令由服务端统一处理（`engine.exec` 认出这不是「继续」指令，
+     自动收状态再执行），但**本地面板指令压根不过服务端** —— 所以这里要补一趟，
+     否则点「背包」只在前端弹个面板，人还坐在那儿吐纳。 */
+  function busyState() {
+    const v = S.view || {};
+    return (v.player && v.player.busy) || null;
+  }
+  async function exitBusyState() {
+    try {
+      const d = await api.exec('收功');
+      if (d) afterAction(d);
+    } catch (e) { /* 退不成也不该挡着开面板 */ }
+  }
+
+  /* ============================================================
+   *  「脱不开身」的那几件事：点一次就自己往下走（主人 2026-10-11）
+   *
+   *  主人两轮的说法合起来是：
+   *    ·「『吐纳』要求是点击一次后会自动持续吐纳（间隔 1 秒或者你觉得间隔多少秒），
+   *       而不是每点一下吐纳一轮」；
+   *    ·「双修是要和吐纳一样，点击一下然后间隔多久自动弹出剧情的」。
+   *  ⇒ 所以**吐纳、双修、采补三条都自动连发**，一律 1 秒一轮，
+   *    剧情会一轮一轮自己弹出来，玩家不用一直点。
+   *
+   *  ⚠️ 驱动放在**前端**而不是后端：后端一轮就是一轮（指令语义没变），
+   *     「自动连发」是界面行为。好处是玩家点别的按钮退出时天然就停了 ——
+   *     不用在后端多养一个「谁在自动走」的状态。
+   *  ⚠️ 采补也一并接上：它和双修是同一套流程（`dualcultivate.round`），
+   *     漏掉它会出现「双修自动、采补还得手点」这种不一致。
+   * ============================================================ */
+  const AUTO_MS = 1000;
+  /* 状态 → 「再走一轮」要发的指令 */
+  const AUTO_CMDS = { tune: '吐纳', dual: '双修', drain: '采补' };
+  let autoTimer = null;
+
+  function stopAuto() {
+    if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+  }
+  /** 每道指令跑完都问一句：还脱不开身吗？是就排下一轮 */
+  function tickAuto() {
+    stopAuto();
+    const b = busyState();
+    if (!b) return;
+    const cmd = AUTO_CMDS[b.kind];
+    if (!cmd) return;
+    autoTimer = setTimeout(() => {
+      autoTimer = null;
+      /* 这一秒里状态可能已经没了（挨打散功 / 走完四轮 / 玩家点了别的按钮）→ 停 */
+      const b2 = busyState();
+      if (!b2 || b2.kind !== b.kind) return;
+      doCmd(cmd, { fromButton: true });
+    }, AUTO_MS);
+  }
+
   async function doCmd(cmd, opts) {
     cmd = String(cmd || '').trim();
     if (!cmd) return;
@@ -2713,12 +3323,15 @@
     if (S.busy) { toast('上一道指令还在执行…', 'warn', 1200); return; }
 
     /* 面板类指令：本地开面板，不打扰后端。
-       新手教程标记由 panel() 内部统一上报，这里不再重复上报。 */
+       新手教程标记由 panel() 内部统一上报，这里不再重复上报。
+       ⚠️ 吐纳 / 双修 / 采补 当中点面板键，要先把这个状态收掉（见 busyState 注释）。 */
     const pn = panelForCmd(cmd);
     if (pn) {
       pushHistory(cmd);
       appendLog([{ type: 'cmd', text: '> ' + cmd }]);
       if (fromButton) blurCmdInput();
+      if (busyState()) await exitBusyState();
+      tickAuto();              /* 退出之后（或本来就没在）自动连发自然停 */
       return panel(pn);
     }
 
@@ -2728,6 +3341,7 @@
       pushHistory(cmd);
       appendLog([{ type: 'cmd', text: '> ' + cmd }]);
       if (fromButton) blurCmdInput();
+      stopAuto();                     /* 退出游戏，勾着的定时器要清掉 */
       return quitGame();
     }
 
@@ -2752,6 +3366,8 @@
       /* 只在「本来就是从输入框敲回车来的」时才把焦点还回去。
          按钮来的绝不在这里 focus，否则手机键盘又弹出来（就是主人报的这个 bug）。 */
       if (inp && !fromButton) inp.focus();
+      /* 还在吐纳/双修/采补里的话，排下一轮（别的指令一律不排） */
+      tickAuto();
     }
   }
 
@@ -2767,19 +3383,104 @@
     if (btn) btn.disabled = !on;
   }
 
+  /* ============================================================
+   *  视图替换的**唯一入口**（主人亲报 bug 的正面修法）
+   *
+   *  老写法是 `S.view = d.view; renderAll(d.view)` —— 无条件覆盖。
+   *  线上沙箱闲置会回收进程，重启后服务端 `world.player` 是 null；
+   *  这时玩家随手点一个按钮，返回的就是「没有 player 的视图」：
+   *  名字没了、气血 0/1、内力 0/1、金钱 undefined，外加一行「请先创建角色」。
+   *  界面看着像进度全丢，其实只是**服务端断了一下**。
+   *
+   *  三条规矩，缺一条都会复发：
+   *    ① 没有角色的视图，**绝不**覆盖有角色的视图
+   *    ② 反过来要去把角色找回来：先读本地兜底档，再拉云端
+   *    ③ 真找不回来也不留一个空壳界面 —— 说明白 + 回主菜单，进度在存档里
+   * ============================================================ */
+  let _recovering = false;
+  function applyView(v) {
+    if (!v) return;
+    if (!v.player && S.view && S.view.player) { recoverLostPlayer(); return; }
+    S.view = v;
+    renderAll(v);
+  }
+
+  async function recoverLostPlayer() {
+    if (_recovering) return;
+    _recovering = true;
+    toast('跟江湖断了线，正在接回来……', 'warn', 2600);
+    const key = autosaveId();
+    let ok = false;
+    try {
+      /* ⚠️ `api.load` 内部会写 `S.view`。读档失败时服务端回的是**空视图**，
+         不把旧 view 存回来的话，这一次「抢救」反而会再清一次界面。 */
+      const keep = S.view;
+      let d = null;
+      try { d = await api.load(key); } catch (e) { d = null; }
+      if (d && d.view && d.view.player) ok = true;
+      else S.view = keep;
+      if (!ok) ok = await pullCloudSaveOnce(key);
+    } catch (e) { /* 统一在下面收尾 */ }
+    _recovering = false;
+    if (ok) {
+      renderAll(S.view);
+      appendLog([{ type: 'sys', text: '（接上了。江湖还在原处等你。）' }]);
+      return;
+    }
+    appendLog([
+      { type: 'warn', text: '（一时接不上你的角色 —— 进度都在存档里，没丢。）' },
+      { type: 'hint', text: '（回主菜单点「继续游戏」就能接着走。）' },
+    ]);
+    toast('接不上角色，请回主菜单点「继续游戏」', 'warn', 4200);
+    show('start');
+    try {
+      const d2 = await api.saves();
+      const has = ((d2 && d2.saves) || []).length > 0;
+      const btn = $('btn-continue');
+      if (btn) btn.style.display = has ? '' : 'none';
+    } catch (e) { /* 主菜单自己还会再探一次存档 */ }
+  }
+
+  /* 把云存档拉回本地再读 —— 容器重建过、本地盘也空了的时候，这是唯一活路 */
+  async function pullCloudSaveOnce(key) {
+    const C = global.WXCLOUD;
+    if (!C || !C.saves) return false;
+    try {
+      if (C.init) await C.init();
+      if (C.available && !C.available()) return false;
+      const list = await C.saves.list();
+      const hit = (list || []).find(s => s && s.save_key === key) || (list || [])[0];
+      if (!hit || !hit.data) return false;
+      const k = hit.save_key || key;
+      await api.saveWrite(k, hit.data);
+      const d = await api.load(k);
+      return !!(d && d.view && d.view.player);
+    } catch (e) { return false; }
+  }
+
   /* 统一处理一次动作的返回 */
   function afterAction(d) {
     if (!d) return;
     const v = d.view || (d.ok !== undefined ? d : null);
 
+    /* 服务端说「角色不在」：**不落日志、不换视图**，直接去接人。
+       照旧往下走的话，玩家看到的就是那句「请先创建角色」加一屏归零的属性。 */
+    if (d.noPlayer) { recoverLostPlayer(); return; }
+
     /* 新的一批日志 */
     if (d.log && d.log.length) appendLog(d.log);
     else if (d.lines && d.lines.length) appendLog(d.lines);
 
-    /* 视图 */
+    /* 视图（走统一入口，别自己赋值）
+       ⚠️ 指令回包**故意不带整张地图**（它是 247 KB，占回包的 88%，
+          正是主人报的「点按钮卡半秒」的元凶，见 engine.view(opts) 的注释）。
+          地图只在打开「地图」面板时由 `/api/view` 单独取。
+          但面板点格子时要读 `S.view.map`，万一这中间跑过一条指令（视图被换掉），
+          地图就丢了 —— 所以这里**沿用上一次的地图**，别把它冲成 undefined。
+          （地图数据是「已探索到哪」的快照，晚一代没有影响；重开面板会重新取。） */
     if (d.view) {
-      S.view = d.view;
-      renderAll(d.view);
+      if (!d.view.map && S.view && S.view.map) d.view.map = S.view.map;
+      applyView(d.view);
     }
 
     /* 需要弹选择框 */
@@ -2896,7 +3597,15 @@
    * ============================================================ */
   function renderAll(v) {
     if (!v) return;
-    renderTopbar(v.player || {});
+    /* 🔴 视图里**没有玩家**时，绝不许把顶栏渲染成空壳。
+       原先写的是 `renderTopbar(v.player || {})` —— 一旦某个响应没带玩家
+       （历史根因：`engine.reload` 静默吞掉读档异常 + `app.js` 无条件 `S.view = d.view`），
+       顶栏立刻变成「名字空 / 气血 0/1 / 内力 0/1 / 金钱 undefined 文」，
+       玩家看到的是「我的角色没了」（主人亲报）。
+       正确做法：**已经有过玩家视图 → 保留旧顶栏**（只更新房间/场景等其它区块），
+       真的从头到尾没玩家（未开局）才渲染空壳。 */
+    if (v.player) renderTopbar(v.player);
+    else if (!(S.view && S.view.player)) renderTopbar({});
     renderRoom(v);
     renderScene(v);
     renderCombat(v);
@@ -2910,6 +3619,9 @@
   const DEFAULT_QUICKBAR = [
     { label: '查看四周', cmd: 'look' },
     { label: '背包', cmd: 'i' },
+    /* 主人 2026-10-11：「玩家没有装备界面吗？屏幕下方增加快捷键『装备』」。
+       面板本来就有（`equipment`），缺的是**一个看得见的手**——它原来只藏在 ☰ 菜单里。 */
+    { label: '装备', cmd: 'equipment' },
     { label: '武学', cmd: 'skills' },
     { label: '状态', cmd: 'sc' },
     { label: '打坐', cmd: 'meditate' },
@@ -2925,7 +3637,18 @@
       const s = localStorage.getItem('wx_quickbar');
       if (s) {
         const arr = JSON.parse(s);
-        if (Array.isArray(arr) && arr.length) return arr.filter(x => x && x.cmd);
+        if (Array.isArray(arr) && arr.length) {
+          const mine = arr.filter(x => x && x.cmd);
+          /* 老玩家的快捷键存在 localStorage 里，**默认表加了新按钮他们也看不到**。
+             这里把「默认有、他这份没有」的补到末尾（不覆盖他自己改过的顺序与文字）——
+             不然每次加按钮都只有新号玩家见过。 */
+          const have = {};
+          mine.forEach(x => { have[x.cmd] = true; });
+          DEFAULT_QUICKBAR.forEach(x => {
+            if (!have[x.cmd]) mine.push({ label: x.label, cmd: x.cmd });
+          });
+          return mine;
+        }
       }
     } catch (e) { }
     return DEFAULT_QUICKBAR.map(x => ({ label: x.label, cmd: x.cmd }));
@@ -2948,9 +3671,35 @@
         { label: '防御', cmd: 'defend' },
         { label: '逃跑', cmd: 'flee' }
       ];
+      /* 武学重制（design/40 P0-4 v1）：把「已激活武学的武技」摆进战斗快捷栏。
+         玩家的诉求原话就是「进战斗后把已激活武学的武技放在快捷栏里点着用」——
+         不用去记武学名再敲 perform。
+         · 零后端改动：perform 早就能用，这里只是给它一个按钮。
+         · 有 moves 的按「招」出按钮，没有的（老数据）退化成整门功夫，一样点得动。
+         · 上限 3 门 × 2 招 —— 再多就把「防御 / 逃跑」挤到屏幕外，反而误事。 */
+      const actives = ((p.skills) || []).filter(s => s.equipped || s.standaloneActive);
+      let added = 0;
+      for (const s of actives) {
+        if (added >= 3) break;
+        const moves = (s.moves || []).slice(0, 2);
+        if (moves.length) {
+          for (const mv of moves) items.push({ label: mv.name, cmd: 'perform ' + mv.name });
+        } else {
+          items.push({ label: s.name, cmd: 'perform ' + s.name });
+        }
+        added++;
+      }
     } else {
       items = loadQuickbar();
       if (p.sectName) items.push({ label: '门派', cmd: 'sect' });
+      /* 吐纳：练内力上限的唯一路子（主人要求放在屏幕下方快捷键里）。
+         吐纳中再点它就是「接着熬一轮」，所以同一个键在两态下都说得通。 */
+      items.push({ label: '吐纳', cmd: '吐纳' });
+      /* 练武学（主人 2026-10-08）：点开面板，上面是已学会的各门武学，点一门就自动练。 */
+      items.push({ label: '练武学', cmd: '练武学' });
+      /* 拍卖行：常驻按钮。不在市集点了也只会得到一句「这儿没有拍卖行」，
+         比「只有站在市集才冒出来」更好找 —— 玩家不必先记住哪几间房有。 */
+      items.push({ label: '拍卖', cmd: 'auction' });
     }
 
     box.innerHTML = items.map(it =>
@@ -3065,6 +3814,11 @@
       '<div class="set-row"><label>界面动画</label><button class="switch' + (s.anim ? ' on' : '') + '" id="set-anim">' + (s.anim ? '开' : '关') + '</button></div>' +
       '<div class="set-row"><label>自动存档</label><button class="switch' + (s.autosave ? ' on' : '') + '" id="set-auto">' + (s.autosave ? '开' : '关') + '</button></div>' +
       '<div class="set-row"><label>紧凑模式</label><button class="switch' + (s.narrow ? ' on' : '') + '" id="set-narrow">' + (s.narrow ? '开' : '关') + '</button></div>' +
+      /* 外观：默认暗色（主人 2026-10-11 要的「浏览器强制暗色」那种整页暗），
+         但浅色那套没删 —— 想切回来随时切，不用再改代码。 */
+      '<div class="set-row"><label>界面配色</label>' +
+      '<button class="switch' + (themeOf(s) === 'dark' ? ' on' : '') + '" id="set-theme">' +
+      (themeOf(s) === 'dark' ? '暗色' : '浅色') + '</button></div>' +
       '<div class="set-row"><label>Mod 网站地址</label><input type="text" id="set-site" class="modal-input" value="' + esc((S.siteConfig && S.siteConfig.apiBase) || 'http://127.0.0.1:8788') + '"></div>' +
       '</div>',
       '<button class="btn-ink" onclick="WXUI.closeModal()">关 闭</button>' +
@@ -3084,6 +3838,14 @@
         if (k === 'narrow') applySettings();
       };
     });
+    /* 界面配色：暗 / 浅 两套（切换立刻生效，方便一边看一边挑） */
+    const th = $('set-theme');
+    if (th) th.onclick = () => {
+      S.settings.theme = themeOf(S.settings) === 'dark' ? 'light' : 'dark';
+      th.classList.toggle('on', themeOf(S.settings) === 'dark');
+      th.textContent = themeOf(S.settings) === 'dark' ? '暗色' : '浅色';
+      applySettings();
+    };
     $('set-save').onclick = async () => {
       const site = $('set-site').value.trim();
       global.WX.saveSettings();
@@ -3099,10 +3861,15 @@
     };
   }
 
+  /** 当前配色（老存档的 settings 里没有 theme —— 一律当暗色，也就是新的默认） */
+  function themeOf(s) { return (s && s.theme === 'light') ? 'light' : 'dark'; }
+
   function applySettings() {
     const s = S.settings;
     document.documentElement.style.fontSize = (16 * s.font / 100) + 'px';
     document.body.classList.toggle('narrow', !!s.narrow);
+    /* 配色：`html.theme-light` 是浅色那一套；不加类就是暗色（默认） */
+    document.documentElement.classList.toggle('theme-light', themeOf(s) === 'light');
     const bg = $('bg-art');
     if (bg) bg.style.display = s.anim ? '' : 'none';
   }
@@ -3129,9 +3896,21 @@
     } else {
       h += '<div class="save-list">';
       list.forEach(s => {
+        /* 🔴 存档时刻要用 **savedAt**，不是 `s.time`。
+           `s.time` 是**游戏内的分钟数**（开局 481 分钟之类），拿去 new Date()
+           就得到 1970-01-01 08:01 —— 主人亲报「所有存档时间一模一样」的根因。
+           `savedAt` 才是 `world.serialize()` 里写的 Date.now()。
+           顺手把游戏内天数也标出来：老存档没有 savedAt 时也不至于显示成 1970。 */
+        const when = s.savedAt ? util.fmtTime(s.savedAt) : '时间不详';
+        const dayNo = (typeof s.time === 'number' && s.time >= 0) ? Math.floor(s.time / 1440) + 1 : null;
+        const bits = [];
+        if (s.summary) bits.push(esc(s.summary));
+        if (s.room) bits.push(esc(s.room));
+        bits.push('存于 ' + when);
+        if (dayNo) bits.push('游戏内第 ' + dayNo + ' 天');
         h += '<div class="save-item"><div class="sv-info">' +
           '<div class="sv-name">' + esc(s.name || s.id) + '</div>' +
-          '<div class="sv-meta">' + esc(s.summary || '') + ' · ' + util.fmtTime(s.time || Date.now()) + '</div>' +
+          '<div class="sv-meta">' + bits.join(' · ') + '</div>' +
           '</div><div class="sv-ops">' +
           (mode === 'load' ? '<button class="op-btn primary" data-load="' + esc(s.id) + '">读取</button>' : '') +
           (mode === 'save' ? '<button class="op-btn primary" data-save="' + esc(s.id) + '">覆盖</button>' : '') +

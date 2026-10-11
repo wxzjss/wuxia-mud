@@ -219,7 +219,10 @@
 
     return '<div class="mod-card' + (m.official ? ' official' : '') + '">' +
       '<div class="mc-head"><span class="mc-name">' + esc(m.name || m.id) +
-      (m.official ? '<span class="mc-official" title="官方随游戏发布的示例 Mod">官方示例</span>' : '') + '</span>' +
+      (m.official ? '<span class="mc-official" title="官方随游戏发布的示例 Mod">官方示例</span>' : '') +
+      /* 二创标注（主人 2026-10-11）：来源是服务端钉在记录里的，作者自己删不掉 */
+      (m.forkOf ? '<span class="mc-fork" title="二创自《' + esc(m.forkOf.name) + '》（' +
+        esc(m.forkOf.official ? '官方' : m.forkOf.owner) + '）">二创</span>' : '') + '</span>' +
       '<span class="mc-cat">' + esc(m.category || '综合') + '</span></div>' +
       '<div class="mc-desc">' + esc(m.desc || '（这位作者很神秘，没有留下简介）') + '</div>' +
       (counts.length ? '<div class="mc-counts">' + counts.join('') + '</div>' : '') +

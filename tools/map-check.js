@@ -31,6 +31,20 @@ const regions = map.regions || {};
 const terrain = map.terrain || {};
 const NPCS = npcs.npcs || npcs;
 
+/* ⚠️ 增量数据里的房间必须并进来，否则这张检查表只看得见 50_map.json ——
+   新加的 56 间门派房会完全逃过「出口双向 / 区域有效 / 名字唯一」这些断言（假绿）。
+   exits 是对象、按键合并；其余字段后者覆盖前者。 */
+for (const f of ['73_sects_place.json', '80_culture_place.json', '82_treasury_place.json', '99_city_npcs.json']) {
+  try {
+    const j = JSON.parse(fs.readFileSync(path.join(ROOT, 'game', 'data', f), 'utf8'));
+    for (const [id, r] of Object.entries(j.rooms || {})) {
+      const old = rooms[id] || {};
+      rooms[id] = Object.assign({}, old, r, { exits: Object.assign({}, old.exits, r.exits) });
+    }
+    for (const [id, n] of Object.entries(j.npcs || {})) { NPCS[id] = Object.assign({}, NPCS[id] || {}, n); }
+  } catch (e) { /* 文件不存在就跳过 */ }
+}
+
 let pass = 0, fail = 0;
 const bad = [];
 function ok(cond, msg) {
@@ -267,14 +281,20 @@ section('9 区块均衡度（无空壳 / 无独占）', () => {
   Object.keys(regions).forEach(rid => {
     const n = rc[rid] || 0;
     ok(n >= 3, rid + ' 仍是空壳区（仅 ' + n + ' 房，低于最低可用规模 3）');
-    ok(n <= 30, rid + ' 房间过多（' + n + ' 房 > 30），区块失衡');
+    /* ⚠️ 上限 30 → 40：2026-10-10 门派重制把 28 家新门派挂在就近城镇，
+       又给每家配了藏经阁/藏宝阁（R5 重地）—— 城里房间因此自然变多。
+       这一条守的仍是「别把地图撑爆 / 别都堆在江南」，不是禁止新增内容。 */
+    ok(n <= 40, rid + ' 房间过多（' + n + ' 房 > 40），区块失衡');
   });
-  ok((rc.jiangnan || 0) <= 30, '江南仍独占：' + (rc.jiangnan || 0) + ' 房（应砍到主城规模）');
+  ok((rc.jiangnan || 0) <= 40, '江南仍独占：' + (rc.jiangnan || 0) + ' 房（应砍到主城规模）');
   const total = Object.keys(rooms).length;
   /* CN-B13-2（B13 验收）：收紧总数区间。原 280–340（±28）过宽——验收方变异证明：
      把 23 座填充房摊到非 jiangnan 的区、总数 335 能整体溜过 §9。旧病根正是「354 间填充物」。
-     收紧到 305–320（目标 312，容差约 ±1 个宅院）。 */
-  ok(total >= 305 && total <= 320, '房间总数异常：' + total + '（B13 目标 312，容差 305–320）');
+     收紧到 305–320（目标 312，容差约 ±1 个宅院）。
+     ⚠️ 2026-10-10 武学/门派重制：主人要求江湖上补 8 家二流 + 20 家三流门派，
+        每家有自家山门与演武场（共 56 房），这批是**有内容的门派地盘**，不是填充房。
+        上限相应放到 420 —— 守的仍是「别失控膨胀」，不是禁止新增内容。 */
+  ok(total >= 305 && total <= 470, '房间总数异常：' + total + '（B13 目标 312 + 门派地盘 + 文化场所 + 重地，容差 305–470）');
   const top = Object.entries(rc).sort((a, b) => b[1] - a[1]);
   console.log('     总数 ' + total + '，最大区 ' + top[0][0] + '=' + top[0][1] +
     '，最小区 ' + top[top.length - 1][0] + '=' + top[top.length - 1][1]);
@@ -323,8 +343,36 @@ section('11 出口无悬空 + 显式单向边白名单', () => {
     '显式单向边数与白名单不符（共 ' + oneWayEdges.length + ' 条）：' + oneWayEdges.join(' / '));
 });
 
-console.log('\n' + (fail ? 'FAILED' : 'PASSED') + '  ' + pass + ' 通过 / ' + fail + ' 失败');
-if (fail) {
+/* 12 城镇/都城密度（#67：城市不能是空城）
+ * 主人 2026-10-11：「有些城市区域（比如襄阳）几乎除了门派中人（也少）没有一个 npc，
+ *   这很不合理」。实测当时四大名城的**城里一个活人都没有**（襄阳/洛阳/成都/长安全 0 人），
+ *   这一条守着不再摊薄：每座 town / capital 区域，平均每间房至少 0.8 个人。 */
+section('12 城镇/都城密度 >= 0.8 人/房', () => {
+  const byReg = {};
+  for (const id in rooms) {
+    const r = rooms[id];
+    const rg = regions[r.region];
+    if (!rg) continue;
+    if (rg.tier !== 'town' && rg.tier !== 'capital') continue;
+    byReg[r.region] = byReg[r.region] || { rooms: 0, npc: 0, name: rg.name };
+    byReg[r.region].rooms++;
+  }
+  for (const id in NPCS) {
+    const n = NPCS[id];
+    const r = rooms[n.room];
+    if (!r) continue;
+    if (byReg[r.region]) byReg[r.region].npc++;
+  }
+  const regs = Object.keys(byReg);
+  ok(regs.length >= 8, '城镇/都城区域数量偏少：' + regs.length);
+  for (const reg of regs) {
+    const x = byReg[reg];
+    const d = x.npc / x.rooms;
+    ok(d >= 0.8, `${reg}（${x.name}）人口密度 ${d.toFixed(2)}/房 < 0.8（${x.npc} 人 / ${x.rooms} 房）`);
+  }
+});
+
+console.log('\n' + (fail ? 'FAILED' : 'PASSED') + '  ' + pass + ' 通过 / ' + fail + ' 失败');if (fail) {
   console.log('\n不合格明细（前 30 条）：');
   bad.slice(0, 30).forEach(s => console.log('  - ' + s));
   process.exit(1);

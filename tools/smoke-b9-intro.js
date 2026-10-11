@@ -48,7 +48,13 @@ const SEED = 20261010;
 function boot(birth) {
   const e = new GameEngine({ seed: SEED, saveDir: SAVE_DIR });
   e.boot();
-  e.newGame({ name: '试侠', gender: 'male', birth });
+  /* ⚠️ **按身份自己的性别开局**，别写死 male ——
+     2026-10-10 起「与性别强绑定的身份」带 gender 门槛（庵堂孤儿/守墓人之后只收女、
+     山门弃婴只收男），`World.createPlayer` 会**硬校验**并抛错。
+     写死 male 再传女身身份 = 在测一个**不合法的组合**，根本跑不出结果（本测试曾因此整块崩）。
+     从数据读 gender，既跟着数据走，也不会因为以后新增性别门槛而再红。 */
+  const bd = (((e.world.data || {}).meta || {}).births || {})[birth] || {};
+  e.newGame({ name: '试侠', gender: bd.gender || 'male', birth });
   return e;
 }
 /** 直接调 introFor：验证「函数本身」的取版逻辑（数组 flags） */
@@ -165,9 +171,11 @@ section('② 文本禁令（13 版逐一硬钉）');
     const em = (body.match(/class="intro-p intro-em"/g) || []).length;
     if (n !== 5) struct.push(id + '(段数 ' + n + ')');
     else if (em !== 1) struct.push(id + '(intro-em ' + em + ')');
-    else if (!/class="intro-p intro-em"[^>]*>[\s\S]*卖茶的小摊/.test(body)) struct.push(id + '(强调段不是交接段)');
+    /* 「楼里新来的」的强调段是苗春那句话，不是茶摊交接段（她人就在楼里）——
+       结构（5 段 / 末段唯一强调）照守，只不要求强调段必须是交接段。 */
+    else if (id !== 'brothel_sold' && !/class="intro-p intro-em"[^>]*>[\s\S]*卖茶的小摊/.test(body)) struct.push(id + '(强调段不是交接段)');
   }
-  ok('② ★ 每版 5 段 intro-p，末段为唯一的 intro-em 强调段（＝交接段）',
+  ok('② ★ 每版 5 段 intro-p，末段为唯一的 intro-em 强调段（＝交接段；楼里新来的用自己的强调段）',
     struct.length === 0, struct.join(',') || '全通');
 }
 
@@ -178,12 +186,16 @@ section('③ 舞台一致：文本 = 真实出生房间（road_jiangnan_1）');
 {
   const bad = [];
   for (const id of BIRTH_IDS) {
+    /* ⚠️ 「楼里新来的」（主人 2026-10-11 加的女身）**不在江南大路开局** ——
+       她人就在醉春楼，楔子讲的是楼里的事。强求她也站在老槐树底下，
+       等于把「出身各不同」这件事改回「出身都一个样」。 */
+    if (id === 'brothel_sold') continue;
     const text = stripTags(intro(id).body);
     if (text.indexOf('江南大路') < 0) bad.push(id + '(无江南大路)');
     if (text.indexOf('老槐树') < 0) bad.push(id + '(无老槐树)');
     if (!/茶摊|卖茶/.test(text)) bad.push(id + '(无茶摊)');
   }
-  ok('③ ★ 13 版舞台都是「江南大路 · 老槐树 · 茶摊」（与出生房间同源）',
+  ok('③ ★ 各版舞台都是「江南大路 · 老槐树 · 茶摊」（与出生房间同源；楼里新来的除外）',
     bad.length === 0, bad.join(',') || '全通');
   const roomText = String(ROOM.desc || '');
   ok('③ 真实房间 desc 也含「老槐树」（同源而非文本自造）', roomText.indexOf('老槐树') >= 0, roomText);
@@ -197,11 +209,15 @@ section('④ 握手：楔子结尾交给茶摊老汉（旧版讲完就断了）'
 {
   const bad = [];
   for (const id of BIRTH_IDS) {
+    /* 「楼里新来的」不接茶摊那段收束（`introFor` 里 handoff:false）——
+       她人就在楼里，老汉那碗茶轮不到她喝。 */
+    if (id === 'brothel_sold') continue;
     const text = stripTags(intro(id).body);
     if (!/卖茶的小摊/.test(text) || !/老汉/.test(text)) bad.push(id + '(没有老汉)');
     else if (!/坐下/.test(text)) bad.push(id + '(老汉没开口)');
   }
-  ok('④ ★ 13 版结尾都把玩家递给茶摊老汉，并让他开口', bad.length === 0, bad.join(',') || '全通');
+  ok('④ ★ 各版结尾都把玩家递给茶摊老汉，并让他开口（楼里新来的除外）',
+    bad.length === 0, bad.join(',') || '全通');
 
   /* 老汉这个人真的在出生房里（不是旁白里编的） */
   const w = boot('orphan').world;
@@ -264,6 +280,41 @@ section('⑥ tutorial.js 的导出面');
   ok('⑥ 每个身份都在 BIRTH_SECT 里有映射（漏一个，那条新手线就断了）',
     BIRTH_IDS.every(id => Array.isArray(tutorial.BIRTH_SECT[id]) && tutorial.BIRTH_SECT[id].length),
     BIRTH_IDS.filter(id => !tutorial.BIRTH_SECT[id]).join(',') || '全通');
+}
+
+/* ================================================================
+ * ⑦ ★ 反「句法模具」守卫（2026-10-10 新增，补 ai-flavor-check 的盲区）
+ *
+ * 为什么单开一条：`tools/ai-flavor-check.js` **抓词不抓句法** —— 它在
+ * 「13 版楔子 13/13 都以『江南大路的日头…』开头、11/13 中段收尾逐字相同」
+ * 的时候**照样 0 命中**（主人报「楔子 AI 味太重」时，脚本是绿的）。
+ * 句法同构是最典型的 AI 味，却只有靠人眼/靠这条守卫才抓得住：
+ *   ⇒ 断言 **13 版的首句两两互异**（去 HTML、去空白后比较）。
+ * 日后谁再把楔子写成同一个模具倒出来的，这条会立刻红。
+ * ================================================================ */
+{
+  const strip = s => String(s || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+  const seen = new Map();
+  const dup = [];
+  for (const id of BIRTH_IDS) {
+    const r = tutorial.introFor({ birth: id }, []);
+    const txt = strip(r && r.body);
+    const first = (txt.split(/(?<=[。！？])/).filter(x => x.trim())[0] || '').trim();
+    if (!first) { dup.push(id + '(空)'); continue; }
+    if (seen.has(first)) dup.push(`${id} 与 ${seen.get(first)} 首句相同`);
+    else seen.set(first, id);
+  }
+  ok('★ 13 版楔子的**首句两两互异**（反「同一模具倒 13 次」；ai-flavor-check 抓不到句法模具）',
+    dup.length === 0, dup.slice(0, 4).join(' ; '));
+
+  /* 顺带：每版正文至少 3 段（短到一段就不成戏了），且都不是纯机制说明 */
+  const tooShort = [];
+  for (const id of BIRTH_IDS) {
+    const r = tutorial.introFor({ birth: id }, []);
+    const paras = String(r && r.body || '').match(/<p[ >]/g) || [];
+    if (paras.length < 3) tooShort.push(id + ':' + paras.length);
+  }
+  ok('  每版楔子正文 ≥3 段', tooShort.length === 0, tooShort.join(','));
 }
 
 /* ================================================================ */

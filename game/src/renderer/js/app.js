@@ -19,7 +19,10 @@
       font: 100,
       anim: true,
       autosave: true,
-      narrow: false
+      narrow: false,
+      /* 界面配色：`dark`（默认，主人 2026-10-11 要的整页暗）/ `light`。
+         老存档里没有这一项 —— ui.js 的 themeOf() 一律当 dark，也就是新默认。 */
+      theme: 'dark'
     },
     my: null               // 当前登录（本站简易身份，存 localStorage）
   };
@@ -101,6 +104,22 @@
   }
 
   /* ---------------- API ---------------- */
+  /**
+   * 视图替换的守卫（唯一入口，别在 api 各方法里自己 `S.view = d.view`）。
+   *
+   * 为什么要有：线上沙箱闲置会回收进程，重启后服务端 `world.player` 为 null，
+   * 这时调用**任何**接口回来的都是「没有角色的视图」。原先十来处写法都是
+   * 「只要回来的对象带 view 就直接赋值」，会把有角色的视图盖成空视图 ——
+   * 玩家看到名字消失、属性归零，外加一句「请先创建角色」（主人亲报）。
+   *
+   * 规矩：**没有角色的视图不许覆盖有角色的视图**；反过来（本来就没角色）照常。
+   * 真把角色弄丢了，由 ui.js 的 `recoverLostPlayer()` 负责接人。
+   */
+  function keepView(d) {
+    if (d && d.view && (d.view.player || !(S.view && S.view.player))) S.view = d.view;
+    return d;
+  }
+
   const api = {
     /* 启动信息 */
     async boot() {
@@ -125,14 +144,14 @@
     /* 当前状态快照 */
     async state() {
       const d = await jfetch('/api/state');
-      if (d.view) S.view = d.view;
+      keepView(d);
       return d;
     },
 
     /* 执行任意指令 */
     async exec(cmd) {
       const d = await jfetch('/api/exec', { method: 'POST', body: JSON.stringify({ cmd }) });
-      if (d.view) S.view = d.view;
+      keepView(d);
       return d;
     },
 
@@ -141,7 +160,7 @@
     async markGuide(flag) {
       try {
         const d = await jfetch('/api/guide/mark', { method: 'POST', body: JSON.stringify({ flag }) });
-        if (d.view) S.view = d.view;
+        keepView(d);
         return d;
       } catch (e) {
         /* 上报失败不该影响玩家看面板，静默忽略 */
@@ -152,14 +171,14 @@
     /* 弹窗中的选项（对话树 / 商店 / 出厂菜单等） */
     async menu(payload) {
       const d = await jfetch('/api/menu', { method: 'POST', body: JSON.stringify(payload) });
-      if (d.view) S.view = d.view;
+      keepView(d);
       return d;
     },
 
     /* 战斗动作 */
     async combat(payload) {
       const d = await jfetch('/api/combat', { method: 'POST', body: JSON.stringify(payload || {}) });
-      if (d.view) S.view = d.view;
+      keepView(d);
       return d;
     },
 
@@ -169,14 +188,14 @@
         method: 'POST',
         body: JSON.stringify(Object.assign({ action, uid }, extra || {}))
       });
-      if (d.view) S.view = d.view;
+      keepView(d);
       return d;
     },
 
     /* 视图切换（不发指令，只重新取一份渲染数据） */
     async view(panel) {
       const d = await jfetch('/api/view' + q({ panel }));
-      if (d.view) S.view = d.view;
+      keepView(d);
       return d;
     },
 
@@ -194,7 +213,7 @@
     async saves() { return await jfetch('/api/saves'); },
     async save(id) { const d = await jfetch('/api/save', { method: 'POST', body: JSON.stringify({ id }) }); return d; },
     async saveWrite(id, data) { return await jfetch('/api/save/write', { method: 'POST', body: JSON.stringify({ id, data }) }); },
-    async load(id) { const d = await jfetch('/api/load', { method: 'POST', body: JSON.stringify({ id }) }); if (d.view) S.view = d.view; return d; },
+    async load(id) { const d = await jfetch('/api/load', { method: 'POST', body: JSON.stringify({ id }) }); keepView(d); return d; },
     async delSave(id) { return await jfetch('/api/deletesave', { method: 'POST', body: JSON.stringify({ id }) }); },
 
     /* Mod 管理 */
@@ -206,13 +225,13 @@
     async modToggle(id, enabled) {
       const d = await jfetch('/api/mod:toggle', { method: 'POST', body: JSON.stringify({ id, enabled }) });
       S.modList = d.mods || S.modList;
-      if (d.view) S.view = d.view;
+      keepView(d);
       return d;
     },
     async modOrder(order) {
       const d = await jfetch('/api/mod:order', { method: 'POST', body: JSON.stringify({ order }) });
       S.modList = d.mods || S.modList;
-      if (d.view) S.view = d.view;
+      keepView(d);
       return d;
     },
     async modRemove(id) {
@@ -262,7 +281,7 @@
     },
     async editorTestRun(spec) {
       const d = await jfetch('/api/editor/testrun', { method: 'POST', body: JSON.stringify({ spec }) });
-      if (d.view) S.view = d.view;
+      keepView(d);
       return d;
     },
 
@@ -278,8 +297,37 @@
       return d;
     },
     async siteUpload(payload) {
-      const d = await jfetch('/api/site/upload', { method: 'POST', body: JSON.stringify(payload) });
+      /* 上传必须带登录 token（主人 2026-10-11：一键上传要登录才能用）。
+         token 存在 S.my 里（localStorage），不再让玩家临时填个昵称就发。 */
+      const body = Object.assign({}, payload, { token: (S.my && S.my.token) || '' });
+      const d = await jfetch('/api/site/upload', { method: 'POST', body: JSON.stringify(body) });
       return d;
+    },
+
+    /* ---- 本站账号（登录 / 注册 / 登出 / 我的作品）----
+       走的是游戏服 → Mod 站点的转发，前端只需要认 `ok` 与 `needLogin`。 */
+    async account(action, payload) {
+      const d = await jfetch('/api/site/account', {
+        method: 'POST',
+        body: JSON.stringify(Object.assign({ action }, payload || {})),
+      });
+      return d;
+    },
+    async accountMine() {
+      const d = await jfetch('/api/site/account?action=mods&token=' +
+        encodeURIComponent((S.my && S.my.token) || ''));
+      return d;
+    },
+
+    /* 游戏内各类事物的 ID（制作器「游戏内 ID」用；带 id 就取那一件的完整内容） */
+    async gamedata(kind, opts) {
+      try {
+        return await jfetch('/api/gamedata' + q(Object.assign({ kind }, opts || {})));
+      } catch (e) {
+        /* 读不到就回一个 ok:false —— 制作器那边统一按「读不到」渲染，
+           不要让异常冒到调用点去（那会变成一个没有提示的空白页）。 */
+        return { ok: false, error: e.message || String(e) };
+      }
     },
     async siteRemote(query) {
       const d = await jfetch('/api/site/remote' + q(query || {}));
@@ -292,7 +340,16 @@
     /* 引擎重载（启用 mod 后重新载入世界） */
     async reload() {
       const d = await jfetch('/api/reload', { method: 'POST', body: JSON.stringify({}) });
-      if (d.view) S.view = d.view;
+      /* 🔴 **只在「新视图真的有角色」时才替换当前视图**。
+         原先是无条件 `S.view = d.view`：一旦后端因读档失败返回了「没有玩家」的视图
+         （历史上 engine.reload 会静默吞掉读档异常），顶栏立刻变成
+         「名字空 / 气血 0/1 / 内力 0/1 / 金钱 undefined 文」——
+         主人亲报的现象就是这么来的。宁可**保留旧视图**，也别把界面渲染成假的。 */
+      if (d && d.view && d.view.player) S.view = d.view;
+      else if (d && d.ok === false) {
+        /* 后端已经退回旧世界了，这里只提示，不动视图 */
+        try { if (global.WXUI && WXUI.toast) WXUI.toast('重载失败，已保留原进度：' + (d.error || '未知原因'), 'error', 4000); } catch (e) { /* 提示失败不影响主流程 */ }
+      }
       return d;
     },
 

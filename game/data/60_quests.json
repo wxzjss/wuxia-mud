@@ -1110,7 +1110,14 @@
         {
           "desc": "胜过一位成名高手（灭绝师太 / 太虚居士 / 神秘老僧）",
           "cond": {
-            "fn": "defeatLegend"
+            "and": [
+              {
+                "fn": "defeatLegend"
+              },
+              {
+                "flag": "act4_done"
+              }
+            ]
           },
           "next": 4
         },
@@ -1157,30 +1164,6 @@
         {
           "type": "say",
           "raw": "你立于山巅，回望来路。江湖依旧，而你已经不再是当初那个无名少年。"
-        },
-        {
-          "type": "flag",
-          "args": [
-            "know_east_depot"
-          ]
-        },
-        {
-          "type": "narrate",
-          "raw": "那名将死之人塞给你的半块铜牌，还带着他掌心的汗。"
-        },
-        {
-          "type": "+item",
-          "args": [
-            "depot_token_half",
-            1
-          ]
-        },
-        {
-          "type": "quest",
-          "args": [
-            "q_main_sect",
-            0
-          ]
         }
       ]
     },
@@ -2509,7 +2492,7 @@
         },
         {
           "type": "say",
-          "raw": "老僧没抬头，只把扫帚往边上挪了挪，让出你脚下的路。"
+          "raw": "老僧扫着地，见你过来，把扫帚往边上让了让。"
         }
       ]
     },
@@ -17192,6 +17175,10 @@
       "type": "主线",
       "giver": "wudang_chongxu",
       "desc": "一个将死之人塞给你的半块铜牌，一个认得这标记的老道士。东厂要抓人，为什么没人拦？——这一问，比打得过谁都难。",
+      "require": {
+        "flag": "know_east_depot"
+      },
+      "requireMsg": "冲虚道长看了你一眼，又看了看你空着的那只手：「东西呢？空着手来，我同你说不着。」",
       "stages": [
         {
           "desc": "把半块东厂铜牌带回武当，交给冲虚道长过目",
@@ -17426,7 +17413,11 @@
       "name": "江湖路远",
       "desc": "完成主线剧情",
       "cond": {
-        "flag": "ending_jianghu_end"
+        "flagsAny": [
+          "ending_jiaojuan",
+          "ending_jujiao",
+          "ending_banjiao"
+        ]
       }
     }
   }

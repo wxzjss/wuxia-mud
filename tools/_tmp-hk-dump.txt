@@ -1,0 +1,839 @@
+========== hk_npcv_241_yinzi | 绸缎庄的窟窿 | giver=npcv_241 和放 | lv5
+desc: 绸缎庄的东家跑了，柜上短了三百两。和放让你去看看，那笔亏空断在哪一段。
+PORTRAIT origin: 祖上开当铺，到他手里只剩一间。他年轻时替人跑腿收账，被赖过三回；第三回他把赖账那家的门板卸下来抵了债。打那以后，这条街上再没人敢赖他的账。字他不识几个，账却记得比谁都清。
+PORTRAIT now: 街口绸缎庄的东家跑了，留下三百两的窟窿，和一家老小五口。
+PORTRAIT want: 把绸缎庄的房契拿到手，出的利钱越少越好。
+PORTRAIT fear: 怕有一天，所有欠他钱的人一起站在他门外。
+PORTRAIT secret: {"text":"他放出去的账，有一半是拿街坊寄在他这儿的棺材本转借的。","tier":2,"leakTo":["npcv_010","npcv_064"],"ifLeaked":"街坊挤兑；屈疏回头咬他一口；和放 mood −50"}
+PORTRAIT feuds: [{"id":"npcv_010","kind":"友","why":"屈疏替他放账，也替他挨官面上的骂，两人是一条藤上的","since":"十年前"},{"id":"npcv_064","kind":"亲","why":"康守是他船上的老艄公，也是唯一敢当面劝他收手的人","since":"三十年前"},{"id":"npcv_208","kind":"友","why":"孔拾月在码头收头钱，他管陆上的分摊，井水不犯河水","since":"八年前"}]
+PORTRAIT hooks: ["hk_npcv_241_yinzi","hk_npcv_241_guancai"]
+  stage0 desc: 去东市·绸缎庄，问掌柜的那笔亏空断在哪一段
+  stage0 targets: ["room:jn_silk_shop"]
+  stage0 +item: ["ledger_yinzi",1]
+  stage0 narrate: 他把印子账翻到折角那页，指腹压着一行小字，没念出来。
+  stage0 say: 「白纸黑字，你我都在上头。」
+  stage0 MENU: 这一笔，怎么处理|替他把账做平>flag:hk_npcv_241_yinzi_hide;+karma:-15;+money:300;+exp:150;+pot:40;favor:npcv_241:15;incvar:favor_npcv_241:15;;留一份底，原样交官府>flag:hk_npcv_241_yinzi_report;+rep:朝廷:20;+exp:120;+pot:40;favor:npcv_241:-30;incvar:favor_npcv_241:-30
+  reward say: 和放合上账本，没再抬眼看你。
+
+========== hk_npcv_241_guancai | 寄在他这儿的棺材本 | giver=npcv_241 和放 | lv8
+desc: 街坊把钱寄在和放这里当棺材本，有三笔他一次没动过。数目不大，他记了很多年。
+PORTRAIT origin: 祖上开当铺，到他手里只剩一间。他年轻时替人跑腿收账，被赖过三回；第三回他把赖账那家的门板卸下来抵了债。打那以后，这条街上再没人敢赖他的账。字他不识几个，账却记得比谁都清。
+PORTRAIT now: 街口绸缎庄的东家跑了，留下三百两的窟窿，和一家老小五口。
+PORTRAIT want: 把绸缎庄的房契拿到手，出的利钱越少越好。
+PORTRAIT fear: 怕有一天，所有欠他钱的人一起站在他门外。
+PORTRAIT secret: {"text":"他放出去的账，有一半是拿街坊寄在他这儿的棺材本转借的。","tier":2,"leakTo":["npcv_010","npcv_064"],"ifLeaked":"街坊挤兑；屈疏回头咬他一口；和放 mood −50"}
+PORTRAIT feuds: [{"id":"npcv_010","kind":"友","why":"屈疏替他放账，也替他挨官面上的骂，两人是一条藤上的","since":"十年前"},{"id":"npcv_064","kind":"亲","why":"康守是他船上的老艄公，也是唯一敢当面劝他收手的人","since":"三十年前"},{"id":"npcv_208","kind":"友","why":"孔拾月在码头收头钱，他管陆上的分摊，井水不犯河水","since":"八年前"}]
+PORTRAIT hooks: ["hk_npcv_241_yinzi","hk_npcv_241_guancai"]
+  stage0 desc: 去江南城·杏花巷，找老艄公康守，问那三笔没动的账
+  stage0 targets: ["room:jn_resident_2"]
+  stage0 narrate: 康守说，那三笔钱他替人存了二十年，一分利没要过。
+  stage0 say: 「那三笔，我留着。」（停了很久）「你别问为什么。」
+  stage0 MENU: 康守那三笔|替康守赎回那三笔>+karma:12;favor:npcv_064:40;incvar:favor_npcv_064:40;+exp:200;+pot:60;flag:hk_npcv_241_guancai_done;;不劝，把话咽回去>+exp:80;favor:npcv_241:10;incvar:favor_npcv_241:10
+  reward say: 和放把那本账往桌角推了推，压上一块镇纸。
+
+========== hk_npcv_154_maishen | 妆匣最底下那张纸 | giver=npcv_154 穆逢 | lv6
+desc: 醉仙楼一楼那间房里，姑娘绝食到第三天。穆逢不吭声，只说她「不懂事」。
+PORTRAIT origin: 她自己就是被卖进来的，十四岁那年被人牙子牵过了江。攒了七年赎身钱，临了没赎自己，盘下了这间楼。她说，买自己太亏，买下一间楼才够本。
+PORTRAIT now: 楼上新来的姑娘绝食到第三天，请了郎中，却没一个敢开方子。
+PORTRAIT want: 把这姑娘的性子磨软，磨到她自己认命。
+PORTRAIT fear: 怕自己哪天心一软，把这一辈子的规矩都塌了。
+PORTRAIT secret: {"text":"她当年那张卖身契没烧，锁在妆匣最底下，名字那一栏是她自己划掉的。","tier":2,"leakTo":["npcv_088","npcv_121"],"ifLeaked":"同行传遍；楼里姑娘离心；穆逢 mood −50"}
+PORTRAIT feuds: [{"id":"npcv_022","kind":"仇","why":"臧落梅抢过她的熟客，还在背后说她心黑","since":"六年前"},{"id":"npcv_088","kind":"友","why":"王若兰早年替她挡过一场官司，两人面上有过往","since":"十年前"},{"id":"npcv_187","kind":"友","why":"何落梅跟她一样是从楼里熬出来的，见面只说半句","since":"十二年前"}]
+PORTRAIT hooks: ["hk_npcv_154_maishen","hk_npcv_154_suoyin"]
+  stage0 desc: 去醉仙楼一楼，看看那间房和那只妆匣
+  stage0 targets: ["room:jn_wine_house"]
+  stage0 +item: ["deed_girl",1]
+  stage0 narrate: 妆匣最底下压着一张纸，边角磨得起了毛——是张卖身契，落款是三年前。
+  stage0 say: 「楼里的姑娘，个个都有一张。」
+  stage0 MENU: 这张纸，怎么办|还那姑娘>-item:deed_girl;+karma:15;+exp:180;+pot:50;favor:npcv_154:-40;incvar:favor_npcv_154:-40;flag:hk_npcv_154_maishen_free;;交回穆逢>+money:200;+karma:-10;+exp:120;favor:npcv_154:20;incvar:favor_npcv_154:20;flag:hk_npcv_154_maishen_crush
+  reward say: 穆逢把算盘拨了一串，得数和你说的两样。
+
+========== hk_npcv_154_suoyin | 素银簪 | giver=npcv_154 穆逢 | lv9
+desc: 醉仙楼三位姑娘的妆匣里，各压着一支一模一样的素银簪。穆逢送的东西，从没重过样。
+PORTRAIT origin: 她自己就是被卖进来的，十四岁那年被人牙子牵过了江。攒了七年赎身钱，临了没赎自己，盘下了这间楼。她说，买自己太亏，买下一间楼才够本。
+PORTRAIT now: 楼上新来的姑娘绝食到第三天，请了郎中，却没一个敢开方子。
+PORTRAIT want: 把这姑娘的性子磨软，磨到她自己认命。
+PORTRAIT fear: 怕自己哪天心一软，把这一辈子的规矩都塌了。
+PORTRAIT secret: {"text":"她当年那张卖身契没烧，锁在妆匣最底下，名字那一栏是她自己划掉的。","tier":2,"leakTo":["npcv_088","npcv_121"],"ifLeaked":"同行传遍；楼里姑娘离心；穆逢 mood −50"}
+PORTRAIT feuds: [{"id":"npcv_022","kind":"仇","why":"臧落梅抢过她的熟客，还在背后说她心黑","since":"六年前"},{"id":"npcv_088","kind":"友","why":"王若兰早年替她挡过一场官司，两人面上有过往","since":"十年前"},{"id":"npcv_187","kind":"友","why":"何落梅跟她一样是从楼里熬出来的，见面只说半句","since":"十二年前"}]
+PORTRAIT hooks: ["hk_npcv_154_maishen","hk_npcv_154_suoyin"]
+  stage0 desc: 在二楼向王若兰、花无、何落梅打听同款的簪子
+  stage0 targets: ["room:jn_wine_room"]
+  stage0 narrate: 三位姑娘妆匣里的簪子摆在一处，连簪头的划痕都同。
+  stage0 say: 「一根簪子，我能记三年。」
+  stage0 MENU: 同款的簪子|替她把那张纸找出来>+karma:12;+exp:220;+pot:50;flag:hk_npcv_154_suoyin_grey;;不问>+exp:100;favor:npcv_154:10;incvar:favor_npcv_154:10
+  reward say: 她把那三支簪子收进一只木匣，上了锁。
+
+========== hk_npcv_010_haosun | 账上那笔耗损 | giver=npcv_010 屈疏 | lv6
+desc: 米行的账上挂着一笔「耗损」，数目对不上仓里的米。屈疏让你去书院那边问一句行情。
+PORTRAIT origin: 他爹是粮行的伙计，他自己从称粮的学徒做起。替庞听管货栈那年，官面上来查，他被推出去顶了一遭，出来后就学会一件事——脏事，要隔着人做。
+PORTRAIT now: 庞听要他在开仓前把米价再抬两成，他嘴上应了，心里发怵。
+PORTRAIT want: 把儿子送进府学读书，离这门生意越远越好。
+PORTRAIT fear: 怕庞听先倒下去，把他一并拖进那潭水里。
+PORTRAIT secret: {"text":"他账上有一笔米，是以耗损报掉的，其实卖了出去，钱他一个人吞了。","tier":2,"leakTo":["npcv_241","npcv_076"],"ifLeaked":"庞听清算；郭轻拿住把柄；屈疏 mood −40"}
+PORTRAIT feuds: [{"id":"npcv_109","kind":"仇","why":"庞听把他推出去顶过官面上的一遭，账却记在庞听名下","since":"十年前"},{"id":"npcv_241","kind":"友","why":"他跟和放一起放账，藤缠着藤，谁也甩不开谁","since":"十年前"},{"id":"npcv_076","kind":"友","why":"庞轻舟手里有货栈，两家在粮路上各让一步","since":"八年前"}]
+PORTRAIT hooks: ["hk_npcv_010_haosun","hk_npcv_010_fuxue"]
+  stage0 desc: 去白鹿书院，侧访这两月的米价行情
+  stage0 targets: ["room:jn_school"]
+  stage0 +item: ["ledger_haosun",1]
+  stage0 say: 「米是会自己少的。少多少，看谁在记账。」
+  stage0 narrate: 他翻开账底，指着一行没有日期的数目，笔画比别处用力。
+  stage0 MENU: 这笔耗损|替他做平>+karma:-10;+money:250;+exp:200;+pot:60;favor:npcv_010:20;incvar:favor_npcv_010:20;flag:hk_npcv_010_haosun_hide;;留一份底>+rep:*:20;+exp:160;favor:npcv_010:-20;incvar:favor_npcv_010:-20;flag:hk_npcv_010_haosun_hold
+  reward say: 屈疏把账底折起来，塞进袖口，没再提这笔。
+
+========== hk_npcv_010_fuxue | 府学门口那道门 | giver=npcv_010 屈疏 | lv8
+desc: 屈疏的儿子被府学门房拦了三回。这个靠粮价吃人的东家，头一回问人「该怎么办」。
+PORTRAIT origin: 他爹是粮行的伙计，他自己从称粮的学徒做起。替庞听管货栈那年，官面上来查，他被推出去顶了一遭，出来后就学会一件事——脏事，要隔着人做。
+PORTRAIT now: 庞听要他在开仓前把米价再抬两成，他嘴上应了，心里发怵。
+PORTRAIT want: 把儿子送进府学读书，离这门生意越远越好。
+PORTRAIT fear: 怕庞听先倒下去，把他一并拖进那潭水里。
+PORTRAIT secret: {"text":"他账上有一笔米，是以耗损报掉的，其实卖了出去，钱他一个人吞了。","tier":2,"leakTo":["npcv_241","npcv_076"],"ifLeaked":"庞听清算；郭轻拿住把柄；屈疏 mood −40"}
+PORTRAIT feuds: [{"id":"npcv_109","kind":"仇","why":"庞听把他推出去顶过官面上的一遭，账却记在庞听名下","since":"十年前"},{"id":"npcv_241","kind":"友","why":"他跟和放一起放账，藤缠着藤，谁也甩不开谁","since":"十年前"},{"id":"npcv_076","kind":"友","why":"庞轻舟手里有货栈，两家在粮路上各让一步","since":"八年前"}]
+PORTRAIT hooks: ["hk_npcv_010_haosun","hk_npcv_010_fuxue"]
+  stage0 desc: 去白鹿书院门口，找门房问个明白
+  stage0 targets: ["room:jn_school"]
+  stage0 narrate: 门房说，那孩子连来三回，回回被一句「名额满了」挡在外头。
+  stage0 say: 「我这辈子没求过人。」
+  stage0 MENU: 这道门|使钱>-money:80;+karma:8;+exp:140;favor:npcv_010:30;incvar:favor_npcv_010:30;flag:hk_npcv_010_fuxue_money;;凭他的名声去说>+karma:8;+exp:180;favor:npcv_010:30;incvar:favor_npcv_010:30;flag:hk_npcv_010_fuxue_fame;;不管>+exp:60;favor:npcv_010:-20;incvar:favor_npcv_010:-20;flag:hk_npcv_010_fuxue_none
+  reward say: 屈疏点了点头，转身去翻那本米行的账。
+
+========== hk_npcv_208_feng | 江上那三条船 | giver=npcv_208 孔拾月 | lv7
+desc: 江上三条船停在河心，不肯靠岸。孔拾月要你去问问那三户船家，为什么。
+PORTRAIT origin: 她男人死在江上那年，她二十七，怀里抱着个吃奶的孩子。船行要吞她的股，她抱着账本在码头坐了三天三夜，把那份股一个子一个子讨了回来——孩子没留住，股本留住了。
+PORTRAIT now: 江上起了风，有三条船不敢进港，货在船上烂。
+PORTRAIT want: 让那三条船今夜靠岸，抽头一文不少。
+PORTRAIT fear: 怕自己在码头上说话不响了——响不响，全看手里的船。
+PORTRAIT secret: {"text":"十年前她凿沉过一条不肯抽头的货船，船上有人。她给那家人送过三年的米。","tier":3,"leakTo":["npcv_274"],"ifLeaked":"官府翻旧案；船户离心；孔拾月 mood −60"}
+PORTRAIT feuds: [{"id":"npcv_004","kind":"亲","why":"柯修是她船上的老舵手，当年陪她在码头坐了三天三夜","since":"十七年前"},{"id":"npcv_241","kind":"友","why":"和放管陆上的账，她管水上的，二十年没红过脸","since":"二十年前"},{"id":"npcv_274","kind":"友","why":"史倦客的货走她的船，两人信得过","since":"十二年前"}]
+PORTRAIT hooks: ["hk_npcv_208_feng","hk_npcv_208_shaochuan"]
+  stage0 desc: 去码头·栈桥，说服那三户船家靠岸
+  stage0 targets: ["room:jn_harbor_wharf"]
+  stage0 say: 「船靠不靠岸，不看水，看抽头几成。」
+  stage0 narrate: 她把手里的头钱串子往桌上一搁，铜钱散开又收拢。
+  stage0 MENU: 这三条船|替她压船户>+rep:*:20;+money:200;+exp:220;+pot:60;favor:npcv_208:25;incvar:favor_npcv_208:25;flag:hk_npcv_208_feng_press;;帮船户抗抽头>+rep:丐帮:15;+karma:10;+exp:180;favor:npcv_208:-25;incvar:favor_npcv_208:-25;flag:hk_npcv_208_feng_loose
+  reward say: 孔拾月收了头钱串子，码头的算盘声又响起来。
+
+========== hk_npcv_208_shaochuan | 十年前那条船 | giver=npcv_208 孔拾月 | lv10
+desc: 孔拾月每年清明在码头烧一叠纸。烧的是什么，码头上没人问过。
+PORTRAIT origin: 她男人死在江上那年，她二十七，怀里抱着个吃奶的孩子。船行要吞她的股，她抱着账本在码头坐了三天三夜，把那份股一个子一个子讨了回来——孩子没留住，股本留住了。
+PORTRAIT now: 江上起了风，有三条船不敢进港，货在船上烂。
+PORTRAIT want: 让那三条船今夜靠岸，抽头一文不少。
+PORTRAIT fear: 怕自己在码头上说话不响了——响不响，全看手里的船。
+PORTRAIT secret: {"text":"十年前她凿沉过一条不肯抽头的货船，船上有人。她给那家人送过三年的米。","tier":3,"leakTo":["npcv_274"],"ifLeaked":"官府翻旧案；船户离心；孔拾月 mood −60"}
+PORTRAIT feuds: [{"id":"npcv_004","kind":"亲","why":"柯修是她船上的老舵手，当年陪她在码头坐了三天三夜","since":"十七年前"},{"id":"npcv_241","kind":"友","why":"和放管陆上的账，她管水上的，二十年没红过脸","since":"二十年前"},{"id":"npcv_274","kind":"友","why":"史倦客的货走她的船，两人信得过","since":"十二年前"}]
+PORTRAIT hooks: ["hk_npcv_208_feng","hk_npcv_208_shaochuan"]
+  stage0 desc: 在货栈打听十年前那条沉船
+  stage0 targets: ["room:jn_harbor_shed"]
+  stage0 narrate: 纸灰落进江里，随浪散开，她盯着水面没挪眼。
+  stage0 say: 「十年前那条船，是我押的。名字我没报全。」
+  stage0 MENU: 十年前那条船|替她瞒下>+karma:5;+exp:200;+pot:50;flag:hk_npcv_208_shaochuan_hold;;报到官上>+rep:朝廷:25;+exp:240;favor:npcv_208:-60;incvar:favor_npcv_208:-60;flag:hk_npcv_208_shaochuan_report
+  reward say: 她把最后一把纸灰撒进江里，转身上了货栈。
+
+========== hk_npcv_091_xiangzi | 府衙那只箱子 | giver=npcv_091 樊过 | lv6
+desc: 衙门后院抬进一口箱子，樊过盯了三天。他说只要你去看一眼：那箱子什么时候出。
+PORTRAIT origin: 他年幼时在当铺门口被人扒了身上唯一的棉袄，冻了一夜。打那以后他认定一条：这街上谁不是拿别人的东西活；慢一步的，就穿不上棉袄。
+PORTRAIT now: 他盯上一票大的——府衙后院送出来的一只箱子，跟了三天。
+PORTRAIT want: 摸清那只箱子的来路，独个儿吞了它。
+PORTRAIT fear: 怕这只箱子背后是官面上放的钩子，专等他去咬。
+PORTRAIT secret: {"text":"他养着两个没爹没娘的小子，是当年那场冻里，与他一样的孩子的弟弟。","tier":2,"leakTo":["npcv_237"],"ifLeaked":"道上人笑他心软；李无咎上门劝他收手；樊过 mood −30"}
+PORTRAIT feuds: [{"id":"npcv_237","kind":"友","why":"李无咎的药铺是他藏东西的地方，也是他唯一敢说实话的地方","since":"五年前"},{"id":"npcv_025","kind":"友","why":"毕若跟他搭过几趟手，手脚干净，嘴也紧","since":"三年前"},{"id":"npcv_124","kind":"友","why":"余听涛替他把风，两人分一个院子躲官","since":"两年前"}]
+PORTRAIT hooks: ["hk_npcv_091_xiangzi","hk_npcv_091_mianao"]
+  stage0 desc: 去衙门·后衙，看那口箱子什么时候抬出去
+  stage0 targets: ["room:jn_yamen_back"]
+  stage0 narrate: 箱子贴着封条，锁口是新的，抬进去的两个人一句话没说。
+  stage0 say: 「锁新，说明里头的旧东西急着走。」
+  stage0 MENU: 那只箱子|替他探明白>+karma:-5;+pot:60;+exp:200;flag:hk_npcv_091_xiangzi_open;;劝他收手>+karma:10;+exp:240;favor:npcv_091:30;incvar:favor_npcv_091:30;flag:hk_npcv_091_xiangzi_stop
+  reward say: 樊过把那把新锁的样子画在纸上，折起来收好。
+
+========== hk_npcv_091_mianao | 两个小子的棉袄 | giver=npcv_091 樊过 | lv8
+desc: 当铺后屋堆着两件没人来赎的旧棉袄，樊过每天收摊前都要摸一遍。
+PORTRAIT origin: 他年幼时在当铺门口被人扒了身上唯一的棉袄，冻了一夜。打那以后他认定一条：这街上谁不是拿别人的东西活；慢一步的，就穿不上棉袄。
+PORTRAIT now: 他盯上一票大的——府衙后院送出来的一只箱子，跟了三天。
+PORTRAIT want: 摸清那只箱子的来路，独个儿吞了它。
+PORTRAIT fear: 怕这只箱子背后是官面上放的钩子，专等他去咬。
+PORTRAIT secret: {"text":"他养着两个没爹没娘的小子，是当年那场冻里，与他一样的孩子的弟弟。","tier":2,"leakTo":["npcv_237"],"ifLeaked":"道上人笑他心软；李无咎上门劝他收手；樊过 mood −30"}
+PORTRAIT feuds: [{"id":"npcv_237","kind":"友","why":"李无咎的药铺是他藏东西的地方，也是他唯一敢说实话的地方","since":"五年前"},{"id":"npcv_025","kind":"友","why":"毕若跟他搭过几趟手，手脚干净，嘴也紧","since":"三年前"},{"id":"npcv_124","kind":"友","why":"余听涛替他把风，两人分一个院子躲官","since":"两年前"}]
+PORTRAIT hooks: ["hk_npcv_091_xiangzi","hk_npcv_091_mianao"]
+  stage0 desc: 在当铺里，撞见樊过缝那两件棉袄
+  stage0 targets: ["room:jn_pawnshop"]
+  stage0 narrate: 棉袄的领口拆了又缝，针脚是新的。
+  stage0 say: 「两个小子，捡来的。一件一个。」
+  stage0 MENU: 两件棉袄|送小子去书院>-money:60;+karma:12;+exp:200;favor:npcv_091:20;incvar:favor_npcv_091:20;flag:hk_npcv_091_mianao_school;;不问>+exp:100;favor:npcv_091:10;incvar:favor_npcv_091:10
+  reward say: 樊过收好针线，把那两件棉袄重新压回箱底。
+
+========== hk_npcv_065_siqiliang | 元若那四十七两 | giver=npcv_065 杜听涛 | lv5
+desc: 杜听涛在茶馆赊了元若三年，四十七两。两个老头隔着一张桌子，谁也不先开口。
+PORTRAIT origin: 他原是粮行的账房，一手好算盘。有一年他替东家押一批银子去赌坊翻本，输了个精光，从此算盘收了，赌袋没离过身。
+PORTRAIT now: 他又欠了刁立一注，刁立逼他三天内还，不然就把他押到雅间那些人面前。
+PORTRAIT want: 把元若那四十七两再赊一回，翻本还债。
+PORTRAIT fear: 怕元若哪天狠了心，把他赶出茶馆——那是他唯一能坐着的地方。
+PORTRAIT secret: {"text":"当年那批输掉的官银，是东家让他去赌的，字据还在他怀里揣着。","tier":2,"leakTo":["npcv_074","npcv_073"],"ifLeaked":"旧案翻出；元若看清他；杜听涛 mood −40"}
+PORTRAIT feuds: [{"id":"npcv_073","kind":"仇","why":"元若赊了他三年，其实是要他一句实话；他躲了三年","since":"三年前"},{"id":"npcv_098","kind":"友","why":"刁立借他钱，也捏着他，两人谁也离不开谁","since":"半年前"},{"id":"npcv_074","kind":"友","why":"和归鸿常陪他喝闷酒，从不要他还","since":"两年前"}]
+PORTRAIT hooks: ["hk_npcv_065_siqiliang","hk_npcv_065_ziju"]
+  stage0 desc: 就在茶馆里，找元若替杜听涛说句话
+  stage0 targets: ["room:jn_teahouse"]
+  stage0 say: 元若：「我这四十七两，不催他。我就等他自己开口。」
+  stage0 narrate: 杜听涛听完，端着茶碗没喝，碗沿上磕了个小口。
+  stage0 MENU: 这四十七两|替他还>-money:47;+exp:200;+pot:50;favor:npcv_065:30;incvar:favor_npcv_065:30;flag:hk_npcv_065_siqiliang_paid;;逼他开口>+money:47;+exp:120;favor:npcv_065:-30;incvar:favor_npcv_065:-30;flag:hk_npcv_065_siqiliang_press;;替他把话说透>+karma:10;+exp:260;favor:npcv_073:20;incvar:favor_npcv_073:20;flag:hk_npcv_065_siqiliang_truth
+  reward say: 杜听涛把茶碗搁下，起身往元若那张桌子走了过去。
+
+========== hk_npcv_065_ziju | 怀里那张字据 | giver=npcv_065 杜听涛 | lv9
+desc: 杜听涛怀里揣着一张字据，揣了三十年，边都磨圆了。
+PORTRAIT origin: 他原是粮行的账房，一手好算盘。有一年他替东家押一批银子去赌坊翻本，输了个精光，从此算盘收了，赌袋没离过身。
+PORTRAIT now: 他又欠了刁立一注，刁立逼他三天内还，不然就把他押到雅间那些人面前。
+PORTRAIT want: 把元若那四十七两再赊一回，翻本还债。
+PORTRAIT fear: 怕元若哪天狠了心，把他赶出茶馆——那是他唯一能坐着的地方。
+PORTRAIT secret: {"text":"当年那批输掉的官银，是东家让他去赌的，字据还在他怀里揣着。","tier":2,"leakTo":["npcv_074","npcv_073"],"ifLeaked":"旧案翻出；元若看清他；杜听涛 mood −40"}
+PORTRAIT feuds: [{"id":"npcv_073","kind":"仇","why":"元若赊了他三年，其实是要他一句实话；他躲了三年","since":"三年前"},{"id":"npcv_098","kind":"友","why":"刁立借他钱，也捏着他，两人谁也离不开谁","since":"半年前"},{"id":"npcv_074","kind":"友","why":"和归鸿常陪他喝闷酒，从不要他还","since":"两年前"}]
+PORTRAIT hooks: ["hk_npcv_065_siqiliang","hk_npcv_065_ziju"]
+  stage0 desc: 在茶馆逼出那张字据的来路
+  stage0 targets: ["room:jn_teahouse"]
+  stage0 +item: ["iou_du",1]
+  stage0 narrate: 字据上墨色发褐，落款人死了三十年。
+  stage0 say: 「这钱不是他的，是那批官银的。」
+  stage0 MENU: 这张字据|交给元若>-item:iou_du;favor:npcv_073:30;incvar:favor_npcv_073:30;favor:npcv_065:-50;incvar:favor_npcv_065:-50;+exp:240;;替他烧了>-item:iou_du;+karma:5;favor:npcv_065:40;incvar:favor_npcv_065:40;+exp:220;flag:hk_jiuzhangfang
+  reward say: 杜听涛把茶钱压在碗底下，拱了拱手走了。
+
+========== hk_npcv_223_meimei | 枫桥那个人贩子 | giver=npcv_223 蓝若愚 | lv8
+desc: 蓝若愚翻了十二年的乱葬岗，为的是找一个人。那个人贩子的名字，他从旁人嘴里听过。
+PORTRAIT origin: 他八岁被人贩子挑了脚筋，学会了这门手艺才活得下来。教他手艺的老扒手临终只说了一句：眼睛别看人，看了就下不去手。
+PORTRAIT now: 他打听到当年贩他的人如今落脚在枫桥一带，就在这条巷子里进进出出。
+PORTRAIT want: 找到那个人贩子，问一句妹妹被卖去了哪里。
+PORTRAIT fear: 怕问出来的答案是妹妹早不在了。
+PORTRAIT secret: {"text":"他偷来的钱一分没花，全托人带给城外一个瞎婆——那是他当年救下的、不敢相认的人。","tier":3,"leakTo":["npcv_190"],"ifLeaked":"人贩子寻仇；余采被牵连；蓝若愚 mood −40"}
+PORTRAIT feuds: [{"id":"npcv_072","kind":"仇","why":"毛清撞见过他翻墙，一状告到官上，两人就此结了梁子","since":"去年"},{"id":"npcv_190","kind":"友","why":"余采跟他一起进过苦窑，是唯一不问他这条腿的人","since":"三年前"}]
+PORTRAIT hooks: ["hk_npcv_223_meimei","hk_npcv_223_laoxiapo"]
+  stage0 desc: 去姑苏·世家巷，打听那个人贩子的落脚处
+  stage0 targets: ["room:gusu_zhai_lane"]
+  stage1 desc: 去姑苏·枫桥，跟那个人对质
+  stage1 targets: ["room:gusu_fengqiao"]
+  stage1 narrate: 枫桥底下停了条小船，船里堆着旧衣裳，大小不一。
+  stage1 say: 「我不是要杀他。我是要问一句话。」
+  stage1 MENU: 那个人|问出妹妹的下落>+karma:15;+exp:260;+pot:70;favor:npcv_223:40;incvar:favor_npcv_223:40;flag:hk_npcv_223_meimei_found;;收钱闭嘴>+money:300;+karma:-15;+exp:120;flag:hk_npcv_223_meimei_silent;;动手>combat:mob_bandit;+exp:200;flag:hk_npcv_223_meimei_fight
+  reward say: 蓝若愚朝枫桥那头望了一眼，没再说什么。
+
+========== hk_npcv_223_laoxiapo | 城外那个瞎婆 | giver=npcv_223 蓝若愚 | lv10
+desc: 蓝若愚偷来的钱，一分没花，全给了城外一个瞎婆。
+PORTRAIT origin: 他八岁被人贩子挑了脚筋，学会了这门手艺才活得下来。教他手艺的老扒手临终只说了一句：眼睛别看人，看了就下不去手。
+PORTRAIT now: 他打听到当年贩他的人如今落脚在枫桥一带，就在这条巷子里进进出出。
+PORTRAIT want: 找到那个人贩子，问一句妹妹被卖去了哪里。
+PORTRAIT fear: 怕问出来的答案是妹妹早不在了。
+PORTRAIT secret: {"text":"他偷来的钱一分没花，全托人带给城外一个瞎婆——那是他当年救下的、不敢相认的人。","tier":3,"leakTo":["npcv_190"],"ifLeaked":"人贩子寻仇；余采被牵连；蓝若愚 mood −40"}
+PORTRAIT feuds: [{"id":"npcv_072","kind":"仇","why":"毛清撞见过他翻墙，一状告到官上，两人就此结了梁子","since":"去年"},{"id":"npcv_190","kind":"友","why":"余采跟他一起进过苦窑，是唯一不问他这条腿的人","since":"三年前"}]
+PORTRAIT hooks: ["hk_npcv_223_meimei","hk_npcv_223_laoxiapo"]
+  stage0 desc: 去姑苏城外，找到那个瞎婆，对一对蓝若愚给的信物
+  stage0 targets: ["room:gusu_town"]
+  stage0 narrate: 瞎婆摸索着那枚旧铜钱，摸得很久，才说「他还活着」。
+  stage0 say: 「我不敢认她。认了，就是十二年前那桩事的证。」
+  stage0 MENU: 那位瞎婆|替蓝若愚认下她>+karma:10;+exp:200;favor:npcv_223:30;incvar:favor_npcv_223:30;flag:hk_npcv_223_laoxiapo_ack;;什么都不说>+exp:80;favor:npcv_223:-10;incvar:favor_npcv_223:-10
+  reward say: 蓝若愚把那枚旧铜钱又收回了贴身的口袋里。
+
+========== hk_npcv_174_tuntang | 仓里那三个月 | giver=npcv_174 蒋倦 | lv7
+desc: 城里旱象已起。蒋倦仓里那批米，掺过一遍沙土，他要你再走一趟粮仓。
+PORTRAIT origin: 他十四岁在大户的货栈扛包，夜里替东家算囤货的账，算着算着就明白了一件事：粮不怕贵，怕的是没人抢。他攒了十年，盘下了第一间行。
+PORTRAIT now: 城里起了旱象，他仓里的米已压了三个月，只等一个价。
+PORTRAIT want: 等米价翻过三倍的那一天，好把仓底清干净。
+PORTRAIT fear: 怕庞听和屈疏先动手，把他的仓腾空。
+PORTRAIT secret: {"text":"他那批米有一半是陈年的，掺了新米充数，吃不死人，却压秤。","tier":2,"leakTo":["npcv_069","npcv_074"],"ifLeaked":"米行声名扫地；官府查仓；蒋倦 mood −50"}
+PORTRAIT feuds: [{"id":"npcv_042","kind":"友","why":"蔡南给他供蜀中的货，两人分利，从不明账","since":"十五年前"},{"id":"npcv_069","kind":"亲","why":"奚静是他外甥女，在他行里管账本","since":"自幼"},{"id":"npcv_074","kind":"亲","why":"和归鸿是他远房侄，在茶馆替他递话","since":"六年前"}]
+PORTRAIT hooks: ["hk_npcv_174_tuntang","hk_npcv_174_zhangxin"]
+  stage0 desc: 去东市·粮仓，看蒋倦那批米掺了多少
+  stage0 targets: ["room:jn_granary"]
+  stage0 narrate: 仓角的米堆比别处浅一截，底下垫着细沙。
+  stage0 say: 「掺过一遍的米，今晚就得多一碗饭，少一碗饭。」
+  stage0 MENU: 这批米|替他掺了>+karma:-20;+money:400;+exp:200;+pot:70;flag:hk_npcv_174_tuntang_mix;;报到官上>+rep:朝廷:25;+exp:240;favor:npcv_174:-50;incvar:favor_npcv_174:-50;flag:hk_npcv_174_tuntang_report
+  reward say: 蒋倦把那袋米挪到仓角，填回一层整米进了门面。
+
+========== hk_npcv_174_zhangxin | 掌心里那把米 | giver=npcv_174 蒋倦 | lv10
+desc: 蒋倦抓米搓手，搓了三十年。他说这动作是娘教的。
+PORTRAIT origin: 他十四岁在大户的货栈扛包，夜里替东家算囤货的账，算着算着就明白了一件事：粮不怕贵，怕的是没人抢。他攒了十年，盘下了第一间行。
+PORTRAIT now: 城里起了旱象，他仓里的米已压了三个月，只等一个价。
+PORTRAIT want: 等米价翻过三倍的那一天，好把仓底清干净。
+PORTRAIT fear: 怕庞听和屈疏先动手，把他的仓腾空。
+PORTRAIT secret: {"text":"他那批米有一半是陈年的，掺了新米充数，吃不死人，却压秤。","tier":2,"leakTo":["npcv_069","npcv_074"],"ifLeaked":"米行声名扫地；官府查仓；蒋倦 mood −50"}
+PORTRAIT feuds: [{"id":"npcv_042","kind":"友","why":"蔡南给他供蜀中的货，两人分利，从不明账","since":"十五年前"},{"id":"npcv_069","kind":"亲","why":"奚静是他外甥女，在他行里管账本","since":"自幼"},{"id":"npcv_074","kind":"亲","why":"和归鸿是他远房侄，在茶馆替他递话","since":"六年前"}]
+PORTRAIT hooks: ["hk_npcv_174_tuntang","hk_npcv_174_zhangxin"]
+  stage0 desc: 在窑场看他开仓抓米
+  stage0 targets: ["room:jn_pottery"]
+  stage0 narrate: 他抓一把米，摊开，又攥上，指缝里漏下来的比留下的多。
+  stage0 say: 「我娘说，搓得出声的米才是好米。搓了三十年我才知道，她是骗我的。」
+  stage0 MENU: 他搓的那把米|劝他改>+karma:10;+exp:200;favor:npcv_174:20;incvar:favor_npcv_174:20;flag:hk_npcv_174_zhangxin_grey;;接着合伙>+money:200;+exp:120;flag:hk_npcv_174_zhangxin_partner
+  reward say: 蒋倦把掌心那把米倒回仓里，拍了拍手。
+
+========== hk_npcv_240_laocaifeng | 三年攒的那匹绸 | giver=npcv_240 邬修远 | lv6
+desc: 邬修远进了一批绸，价钱低得反常。打开那匹料子，得用剪子。
+PORTRAIT origin: 头一趟货他被人骗了个精光，蹲在客栈门口哭了半宿。哭完他想通一件事——这行里，先学会骗人，才轮得到你不被骗。
+PORTRAIT now: 有个老裁缝攒了三年，上门来买他那匹上等杭绸。
+PORTRAIT want: 把这匹掺了麻的绸卖出去，还卖个绝好的价。
+PORTRAIT fear: 怕那老裁缝拿回去一剪，就露出麻线来。
+PORTRAIT secret: {"text":"他早年卖过一户人家一匹好料，是做寿衣的，穿了三日就烂了；他赔了钱，却把那家的名字记了二十年。","tier":2,"leakTo":["npcv_101","npcv_273"],"ifLeaked":"老裁缝上门；行里人议论；邬修远 mood −40"}
+PORTRAIT feuds: [{"id":"npcv_101","kind":"友","why":"姜朝替他销最次的货，两人分账","since":"八年前"},{"id":"npcv_273","kind":"友","why":"廉苇是他的下家，也是唯一知道他底细的人","since":"五年前"}]
+PORTRAIT hooks: ["hk_npcv_240_laocaifeng","hk_npcv_240_shouyi"]
+  stage0 desc: 去东市·绸缎庄，剪开那匹绸验货
+  stage0 targets: ["room:jn_silk_shop"]
+  stage0 +item: ["fake_silk",1]
+  stage0 narrate: 剪口里掺着麻丝，捋一把，扎手。
+  stage0 say: 「买的人一辈子摸不到里头。」
+  stage0 MENU: 这匹绸|劝他换真货>+karma:10;+exp:220;+pot:50;favor:npcv_240:30;incvar:favor_npcv_240:30;flag:hk_npcv_240_laocaifeng_honest;;帮他把货卖出>+money:200;+karma:-10;+exp:140;flag:hk_npcv_240_laocaifeng_sold
+  reward say: 邬修远把剪开的那匹绸卷回去，露出一截没掺麻的边。
+
+========== hk_npcv_240_shouyi | 箱底那件料子 | giver=npcv_240 邬修远 | lv9
+desc: 邬修远每年腊月裁一件料子，裁了不穿，压在箱底。
+PORTRAIT origin: 头一趟货他被人骗了个精光，蹲在客栈门口哭了半宿。哭完他想通一件事——这行里，先学会骗人，才轮得到你不被骗。
+PORTRAIT now: 有个老裁缝攒了三年，上门来买他那匹上等杭绸。
+PORTRAIT want: 把这匹掺了麻的绸卖出去，还卖个绝好的价。
+PORTRAIT fear: 怕那老裁缝拿回去一剪，就露出麻线来。
+PORTRAIT secret: {"text":"他早年卖过一户人家一匹好料，是做寿衣的，穿了三日就烂了；他赔了钱，却把那家的名字记了二十年。","tier":2,"leakTo":["npcv_101","npcv_273"],"ifLeaked":"老裁缝上门；行里人议论；邬修远 mood −40"}
+PORTRAIT feuds: [{"id":"npcv_101","kind":"友","why":"姜朝替他销最次的货，两人分账","since":"八年前"},{"id":"npcv_273","kind":"友","why":"廉苇是他的下家，也是唯一知道他底细的人","since":"五年前"}]
+PORTRAIT hooks: ["hk_npcv_240_laocaifeng","hk_npcv_240_shouyi"]
+  stage0 desc: 在北巷翻出他箱底那件料子
+  stage0 targets: ["room:jn_market_north"]
+  stage0 narrate: 箱底那件料子叠得整整齐齐，针脚细得不像出自一个卖假料的手。
+  stage0 say: 「这是给我自己的。卖出去的都是假货，这件不能假。」
+  stage0 MENU: 箱底那件料子|劝他穿上>+karma:8;+exp:200;favor:npcv_240:25;incvar:favor_npcv_240:25;flag:hk_npcv_240_shouyi_wear;;不问>+exp:90;favor:npcv_240:10;incvar:favor_npcv_240:10
+  reward say: 邬修远把那件料子抖开又叠好，压回箱底最上头。
+
+========== hk_npcv_009_baizi | 那幅百子图 | giver=npcv_009 熊时 | lv7
+desc: 绣娘喻凝绣了三年的百子图，抵九两债，押在熊时手里。
+PORTRAIT origin: 「熊半城的账，三辈子还不清」——这话是城里放账的行当传出来的。她娘家败落那年，手里只剩一本旧账本；她照着账本一笔笔去讨，讨回来的第一笔钱，就把自己从当票里赎了出来。
+PORTRAIT now: 有个绣娘欠她九两还不上，想拿一幅绣了一半的百子图来抵。
+PORTRAIT want: 让那幅百子图卖出十两，多出的一两算作利钱。
+PORTRAIT fear: 怕自己哪天讨账讨到熟人家门口，下不去手。
+PORTRAIT secret: {"text":"她放账从不写字据，全记在脑子里；谁赖账，她就把那人的名字说给街头的说书人听。","tier":2,"leakTo":["npcv_011","npcv_002"],"ifLeaked":"说书人反口；债户联名告她；熊时 mood −40"}
+PORTRAIT feuds: [{"id":"npcv_011","kind":"仇","why":"喻凝欠她九两还想赖，两人当街吵过一回","since":"去年"},{"id":"npcv_002","kind":"友","why":"鲍立的货郎担子是她出钱置的，那男人替她跑腿收账","since":"五年前"},{"id":"npcv_006","kind":"友","why":"许清看病不要她的钱，她记这个人情","since":"三年前"}]
+PORTRAIT hooks: ["hk_npcv_009_baizi","hk_npcv_009_shuoshu"]
+  stage0 desc: 去江南城市集，找绣娘喻凝看那幅百子图
+  stage0 targets: ["room:jiangnan_market"]
+  stage0 narrate: 百子图上九十九个孩子，独缺一个，线头还留着没收。
+  stage0 say: 「我不写字据。名字，我记在脑子里。」
+  stage0 MENU: 那幅图|替她卖出去>+money:10;+karma:-5;+exp:150;favor:npcv_009:20;incvar:favor_npcv_009:20;flag:hk_npcv_009_baizi_sell;;替绣娘说情>+karma:10;+exp:200;+pot:40;favor:npcv_009:-10;incvar:favor_npcv_009:-10;flag:hk_npcv_009_baizi_grey
+  reward say: 熊时把算珠一推，说这幅图她先收着。
+
+========== hk_npcv_009_shuoshu | 说书人那张嘴 | giver=npcv_009 熊时 | lv9
+desc: 熊时不识字，可全城欠钱的人，名字一个跑不掉——跑不掉，是因为有人的嘴。
+PORTRAIT origin: 「熊半城的账，三辈子还不清」——这话是城里放账的行当传出来的。她娘家败落那年，手里只剩一本旧账本；她照着账本一笔笔去讨，讨回来的第一笔钱，就把自己从当票里赎了出来。
+PORTRAIT now: 有个绣娘欠她九两还不上，想拿一幅绣了一半的百子图来抵。
+PORTRAIT want: 让那幅百子图卖出十两，多出的一两算作利钱。
+PORTRAIT fear: 怕自己哪天讨账讨到熟人家门口，下不去手。
+PORTRAIT secret: {"text":"她放账从不写字据，全记在脑子里；谁赖账，她就把那人的名字说给街头的说书人听。","tier":2,"leakTo":["npcv_011","npcv_002"],"ifLeaked":"说书人反口；债户联名告她；熊时 mood −40"}
+PORTRAIT feuds: [{"id":"npcv_011","kind":"仇","why":"喻凝欠她九两还想赖，两人当街吵过一回","since":"去年"},{"id":"npcv_002","kind":"友","why":"鲍立的货郎担子是她出钱置的，那男人替她跑腿收账","since":"五年前"},{"id":"npcv_006","kind":"友","why":"许清看病不要她的钱，她记这个人情","since":"三年前"}]
+PORTRAIT hooks: ["hk_npcv_009_baizi","hk_npcv_009_shuoshu"]
+  stage0 desc: 去老茶馆，听听说书人念的是哪几个名字
+  stage0 targets: ["room:jn_teahouse"]
+  stage0 narrate: 醒木一响，唱词里三个名字串成一句，堂下有人红了脸。
+  stage0 say: 「我记不住字，记得住嘴。」
+  stage0 MENU: 说书人那张嘴|买断他>-money:120;+exp:220;+pot:50;favor:npcv_009:30;incvar:favor_npcv_009:30;flag:hk_npcv_009_shuoshu_buy;;让债户知晓>+rep:*:15;+exp:260;favor:npcv_009:-40;incvar:favor_npcv_009:-40;flag:hk_npcv_009_shuoshu_liang
+  reward say: 熊时听完那三个名字，笑了一声，又数起她的珠子。
+
+========== hk_npcv_237_daoshang | 那口刀伤 | giver=npcv_237 李无咎 | lv7
+desc: 有人半夜来当铺求郎中治刀伤。李无咎收了钱，第二天那人的通缉就上了墙。
+PORTRAIT origin: 他嘴边常挂一句：药不分好坏，看人吃不吃得起。早年他在城外义庄给人验伤，验了十年，见惯了穷人死在没钱的份上；往后他给自己定了个价——先收钱，再抓药。没钱的，赊着，赊到死。
+PORTRAIT now: 昨夜有人来敲他的门，抬进来一个中了刀伤的年轻人。他一看伤口，就知动刀的是什么路数。
+PORTRAIT want: 让那年轻人活着养好，别在他铺子里咽气。
+PORTRAIT fear: 怕官面上顺着这口刀，找到他门上。
+PORTRAIT secret: {"text":"他替城里几路盗贼治伤，治好了不报官，收的诊金比官面上的赏格还高。","tier":2,"leakTo":["npcv_091","npcv_090"],"ifLeaked":"官面上门；盗贼灭口；李无咎 mood −50"}
+PORTRAIT feuds: [{"id":"npcv_090","kind":"亲","why":"阮听是他表侄，那孩子走上邪路，他一直没有脸说","since":"二十年前"},{"id":"npcv_091","kind":"友","why":"樊过替他挡过一回官面上的查铺","since":"五年前"}]
+PORTRAIT hooks: ["hk_npcv_237_daoshang","hk_npcv_237_cheng"]
+  stage0 desc: 去东市·地下黑市，打听那口刀路是谁的
+  stage0 targets: ["room:jm_underground"]
+  stage0 narrate: 他把药箱合上，扣搭一响，像是替那口刀伤收了尾。
+  stage0 say: 「治好了不报官——这是我抓药的规矩。」
+  stage0 MENU: 那口刀伤|替他递话>+exp:200;+pot:50;favor:npcv_237:30;incvar:favor_npcv_237:30;favor:npcv_091:20;incvar:favor_npcv_091:20;flag:hk_daolu;;报到官上>+rep:朝廷:25;+exp:180;favor:npcv_237:-50;incvar:favor_npcv_237:-50
+  reward say: 李无咎把药箱挂回墙上，没再接那桩生意。
+
+========== hk_npcv_237_cheng | 秤砣上那点尘 | giver=npcv_237 李无咎 | lv10
+desc: 李无咎擦那杆秤，擦得秤砣不见一点尘。他擦的不是秤砣。
+PORTRAIT origin: 他嘴边常挂一句：药不分好坏，看人吃不吃得起。早年他在城外义庄给人验伤，验了十年，见惯了穷人死在没钱的份上；往后他给自己定了个价——先收钱，再抓药。没钱的，赊着，赊到死。
+PORTRAIT now: 昨夜有人来敲他的门，抬进来一个中了刀伤的年轻人。他一看伤口，就知动刀的是什么路数。
+PORTRAIT want: 让那年轻人活着养好，别在他铺子里咽气。
+PORTRAIT fear: 怕官面上顺着这口刀，找到他门上。
+PORTRAIT secret: {"text":"他替城里几路盗贼治伤，治好了不报官，收的诊金比官面上的赏格还高。","tier":2,"leakTo":["npcv_091","npcv_090"],"ifLeaked":"官面上门；盗贼灭口；李无咎 mood −50"}
+PORTRAIT feuds: [{"id":"npcv_090","kind":"亲","why":"阮听是他表侄，那孩子走上邪路，他一直没有脸说","since":"二十年前"},{"id":"npcv_091","kind":"友","why":"樊过替他挡过一回官面上的查铺","since":"五年前"}]
+PORTRAIT hooks: ["hk_npcv_237_daoshang","hk_npcv_237_cheng"]
+  stage0 desc: 陪李无咎去城西义庄旧址走一趟
+  stage0 targets: ["room:jn_yizhuang"]
+  stage0 narrate: 义庄门口的青砖上，留着几道旧验伤的划痕。
+  stage0 say: 「那年我验过一个孩子。他娘抱着他来的，说只是睡着了。」
+  stage0 MENU: 那杆秤|陪他在义庄门口站一会儿>+karma:8;+exp:200;favor:npcv_237:25;incvar:favor_npcv_237:25;flag:hk_npcv_237_cheng_grey;;不问>+exp:90;favor:npcv_237:10;incvar:favor_npcv_237:10
+  reward say: 李无咎把那杆秤取下来，用布裹好，收进了柜子最里头。
+
+========== hk_npcv_248_jiushui | 三年前那一笔 | giver=npcv_248 俞初 | lv9
+desc: 西夏官道那间冰窖，锁着三年前一批卷宗。俞初自己不敢去开。
+PORTRAIT origin: 边镇的商队背地里叫她“俞三秤”——一杆秤，三种称法。她上任头一年，把一笔税银如数报了上去，反被上官调去了更苦的边镇。那年冬天她守着空衙门，看商队一队队过，把“如数”两个字嚼碎了咽下去。第二年开春，她换了秤。
+PORTRAIT now: 一支中原来的商队在关外停了三天，车上的货单她认得，来路不干净。
+PORTRAIT want: 把这支商队安安稳稳放过去，抽了该抽的，不惊动人。
+PORTRAIT fear: 怕身后那个当年查过她账的小捕快，有一天翻了身。
+PORTRAIT secret: {"text":"三年前她做了一笔假账，把吞下的税银记成一个死人的欠款，害得查账的常拂顶了罪名。","tier":2,"leakTo":["npcv_043","npcv_049"],"ifLeaked":"常拂复职；俞初停职查办；触发事件「旧税案」"}
+PORTRAIT feuds: [{"id":"npcv_049","kind":"仇","why":"常拂查出她账里那一笔，她把黑锅扣在了这个十七岁的孩子头上","since":"三年前"},{"id":"npcv_043","kind":"亲","why":"谈绿萼是她的旧主，钱府替她销过那批货","since":"十二年前"}]
+PORTRAIT hooks: ["hk_npcv_248_jiushui","hk_npcv_248_changfu"]
+  stage0 desc: 去西夏·冰窖，抽出三年前那张假账
+  stage0 targets: ["room:xixia_ice"]
+  stage0 narrate: 卷宗里那一页，户头写着一个死人，墨色比别处新。
+  stage0 say: 「她那年才十七。我记得。」
+  stage0 MENU: 这张假账|把抄本留在手上>+rep:朝廷:30;+money:200;+exp:230;+pot:60;flag:hk_npcv_248_jiushui_copy;;当她的面烧了>+karma:-20;+money:400;+exp:220;flag:hk_npcv_248_jiushui_burn
+  reward say: 俞初把那页卷宗折起，塞回袖子里，拢了拢领口。
+
+========== hk_npcv_248_changfu | 关外那个孩子 | giver=npcv_248 俞初 | lv11
+desc: 捕快常拂跟俞初同住一间驿舍。一个知道全部，一个什么都不知道。
+PORTRAIT origin: 边镇的商队背地里叫她“俞三秤”——一杆秤，三种称法。她上任头一年，把一笔税银如数报了上去，反被上官调去了更苦的边镇。那年冬天她守着空衙门，看商队一队队过，把“如数”两个字嚼碎了咽下去。第二年开春，她换了秤。
+PORTRAIT now: 一支中原来的商队在关外停了三天，车上的货单她认得，来路不干净。
+PORTRAIT want: 把这支商队安安稳稳放过去，抽了该抽的，不惊动人。
+PORTRAIT fear: 怕身后那个当年查过她账的小捕快，有一天翻了身。
+PORTRAIT secret: {"text":"三年前她做了一笔假账，把吞下的税银记成一个死人的欠款，害得查账的常拂顶了罪名。","tier":2,"leakTo":["npcv_043","npcv_049"],"ifLeaked":"常拂复职；俞初停职查办；触发事件「旧税案」"}
+PORTRAIT feuds: [{"id":"npcv_049","kind":"仇","why":"常拂查出她账里那一笔，她把黑锅扣在了这个十七岁的孩子头上","since":"三年前"},{"id":"npcv_043","kind":"亲","why":"谈绿萼是她的旧主，钱府替她销过那批货","since":"十二年前"}]
+PORTRAIT hooks: ["hk_npcv_248_jiushui","hk_npcv_248_changfu"]
+  stage0 desc: 在西夏官道找常拂，听她说当年那桩事
+  stage0 targets: ["room:road_xixia_1"]
+  stage0 say: 常拂：「那年我查出一笔账，第二天就被革了。我一直没弄明白是谁。」
+  stage0 narrate: 俞初就在隔一道墙的地方，捏着茶碗，没出声。
+  stage0 MENU: 关外那个孩子|替她讨回清白>+karma:15;+exp:240;favor:npcv_049:40;incvar:favor_npcv_049:40;flag:hk_npcv_248_changfu_clear;;不插手>+exp:100;favor:npcv_248:10;incvar:favor_npcv_248:10
+  reward say: 俞初隔墙听完了，起身给常拂续了一碗茶。
+
+========== hk_npcv_215_yanyin | 那半张盐引 | giver=npcv_215 闵春晓 | lv8
+desc: 闵春晓烧了十年那半张盐引，每回都举到灶口，又收回来。
+PORTRAIT origin: 她爹是挑盐的脚夫，压死在盐包底下，尸首抬回来时怀里还攥着半张盐引。她那年十四，把半张盐引收了起来，发誓要坐到能改盐价的位置上去。后来她真坐上了，那半张盐引，还压在箱底。
+PORTRAIT now: 盐商送来新一季的孝敬，她没退，只让人搁在偏厅，摆了一夜。
+PORTRAIT want: 把今年的盐引批出去，既让盐商过得去，也给自己留一条退路。
+PORTRAIT fear: 怕她爹那半张盐引，有一天被人翻出来，成了她吃盐商的凭据。
+PORTRAIT secret: {"text":"她给店伙孟明的娘留过一笔钱，孟明至今不知道；那笔钱，是她头一回收下的盐商孝敬。","tier":2,"leakTo":["npcv_206","npcv_134"],"ifLeaked":"孟明离心；盐商拿住把柄；闵春晓 mood −45"}
+PORTRAIT feuds: [{"id":"npcv_206","kind":"亲","why":"孟明的娘是她当年一起挑盐的姐妹，她替孟明谋了这份差事","since":"八年前"},{"id":"npcv_138","kind":"亲","why":"郝秋是蜀中有名的郎中，替她看过心口的病，两人无话不谈","since":"十年前"},{"id":"npcv_016","kind":"友","why":"戴青是蜀中的捕快，查盐案时卖过她一次面子","since":"六年前"}]
+PORTRAIT hooks: ["hk_npcv_215_yanyin","hk_npcv_215_mengming"]
+  stage0 desc: 去唐门前厅，找祁疏打听盐引旧事
+  stage0 targets: ["room:tangmen_hall"]
+  stage0 narrate: 她把那半张盐引举到灶前，火起来又灭——纸边焦了，她没烧。
+  stage0 say: 「烧了十年，粘不回原样。」
+  stage0 MENU: 那半张盐引|替她烧干净>+karma:12;+exp:240;+pot:60;favor:npcv_215:40;incvar:favor_npcv_215:40;flag:hk_npcv_215_yanyin_done;;留底要挟>+money:500;+karma:-25;+exp:140;flag:hk_npcv_215_yanyin_hold
+  reward say: 闵春晓把那半张盐引收进贴身的荷包，没再举到灶口。
+
+========== hk_npcv_215_mengming | 孟明亡母那笔钱 | giver=npcv_215 闵春晓 | lv10
+desc: 孟明在苗疆守着一间小店。问起他亡母那副药，他只说遇上了好人。
+PORTRAIT origin: 她爹是挑盐的脚夫，压死在盐包底下，尸首抬回来时怀里还攥着半张盐引。她那年十四，把半张盐引收了起来，发誓要坐到能改盐价的位置上去。后来她真坐上了，那半张盐引，还压在箱底。
+PORTRAIT now: 盐商送来新一季的孝敬，她没退，只让人搁在偏厅，摆了一夜。
+PORTRAIT want: 把今年的盐引批出去，既让盐商过得去，也给自己留一条退路。
+PORTRAIT fear: 怕她爹那半张盐引，有一天被人翻出来，成了她吃盐商的凭据。
+PORTRAIT secret: {"text":"她给店伙孟明的娘留过一笔钱，孟明至今不知道；那笔钱，是她头一回收下的盐商孝敬。","tier":2,"leakTo":["npcv_206","npcv_134"],"ifLeaked":"孟明离心；盐商拿住把柄；闵春晓 mood −45"}
+PORTRAIT feuds: [{"id":"npcv_206","kind":"亲","why":"孟明的娘是她当年一起挑盐的姐妹，她替孟明谋了这份差事","since":"八年前"},{"id":"npcv_138","kind":"亲","why":"郝秋是蜀中有名的郎中，替她看过心口的病，两人无话不谈","since":"十年前"},{"id":"npcv_016","kind":"友","why":"戴青是蜀中的捕快，查盐案时卖过她一次面子","since":"六年前"}]
+PORTRAIT hooks: ["hk_npcv_215_yanyin","hk_npcv_215_mengming"]
+  stage0 desc: 去苗疆圣地，找店伙孟明，问他亡母那副药
+  stage0 targets: ["room:miaojiang_sheng"]
+  stage0 say: 孟明：「我娘那副药，我一直不知道是谁出的钱。问她，她只说遇上了好人。」
+  stage0 narrate: 闵春晓听完，把袖里那本盐册按平了。
+  stage0 MENU: 那副药|告诉他>+karma:10;+exp:220;favor:npcv_215:-10;incvar:favor_npcv_215:-10;flag:hk_npcv_215_mengming_tell;;替他保密>+exp:100;favor:npcv_215:10;incvar:favor_npcv_215:10
+  reward say: 闵春晓把盐册合上，收进了行囊。
+
+========== hk_npcv_180_beibian | 北边那趟镖 | giver=npcv_180 乐知 | lv8
+desc: 乐知的镖车上有一口箱子，货单上没写。她头一回先把箱子拆开看。
+PORTRAIT origin: 同行都说，乐知的镖车走得稳，是因为车上插着华山的旗——头一趟镖，她借了华山的名头，道上没人敢劫。二十年过去，她早不靠华山了，那面旗却还挂在车上。她没摘。
+PORTRAIT now: 有人出高价，要她押一趟不写货单、不走官道的镖，去北边。
+PORTRAIT want: 把这趟镖押完，钱到手，把镖行盘出去，回乡下养老。
+PORTRAIT fear: 怕岳不群哪天找上门，跟她算当年借旗的那笔账。
+PORTRAIT secret: {"text":"二十年前她押丢过一趟镖，为赔镖，她把货主的名头报给了劫匪，害得那户人家破人亡。","tier":3,"leakTo":["npcv_081"],"ifLeaked":"镖行除名；岳不群寻衅；乐知 mood −55"}
+PORTRAIT feuds: [{"id":"master_yue","kind":"仇","why":"她借华山的名头押镖，让岳不群被同道笑了半年，两人结怨","since":"去年"},{"id":"nv_yue","kind":"友","why":"岳灵珊待她真好，是唯一拿她当人看的人","since":"三年前"}]
+PORTRAIT hooks: ["hk_npcv_180_beibian","hk_npcv_180_qi"]
+  stage0 desc: 在东市大街，验那口不写货单的箱子
+  stage0 targets: ["room:jn_market_main"]
+  stage0 narrate: 箱子里糊着两层棉，压角处留着一块没撕净的旧封条。
+  stage0 say: 「不写货单的镖，我接过大半辈子。这一趟，我头一回想先看一眼。」
+  stage0 MENU: 北边那趟镖|替她验货>+exp:200;+pot:60;flag:hk_heibiao;;劝她退镖>+karma:10;+exp:240;favor:npcv_180:30;incvar:favor_npcv_180:30;flag:hk_npcv_180_beibian_stop
+  reward say: 乐知把那口箱子重新捆好，绳结收得比原先还紧。
+
+========== hk_npcv_180_qi | 车上那面旧旗 | giver=npcv_180 乐知 | lv11
+desc: 乐知的镖车上挂着一面旧旗，挂了二十年，褪得看不出颜色。
+PORTRAIT origin: 同行都说，乐知的镖车走得稳，是因为车上插着华山的旗——头一趟镖，她借了华山的名头，道上没人敢劫。二十年过去，她早不靠华山了，那面旗却还挂在车上。她没摘。
+PORTRAIT now: 有人出高价，要她押一趟不写货单、不走官道的镖，去北边。
+PORTRAIT want: 把这趟镖押完，钱到手，把镖行盘出去，回乡下养老。
+PORTRAIT fear: 怕岳不群哪天找上门，跟她算当年借旗的那笔账。
+PORTRAIT secret: {"text":"二十年前她押丢过一趟镖，为赔镖，她把货主的名头报给了劫匪，害得那户人家破人亡。","tier":3,"leakTo":["npcv_081"],"ifLeaked":"镖行除名；岳不群寻衅；乐知 mood −55"}
+PORTRAIT feuds: [{"id":"master_yue","kind":"仇","why":"她借华山的名头押镖，让岳不群被同道笑了半年，两人结怨","since":"去年"},{"id":"nv_yue","kind":"友","why":"岳灵珊待她真好，是唯一拿她当人看的人","since":"三年前"}]
+PORTRAIT hooks: ["hk_npcv_180_beibian","hk_npcv_180_qi"]
+  stage0 desc: 在东市大街，与她一同把车上那面旧旗摘下来
+  stage0 targets: ["room:jn_market_main"]
+  stage0 narrate: 旗子落地，她盯着旗角那处补丁，手指在上面停了一下。
+  stage0 say: 「二十年前我押丢过一趟镖。我把货主的名头，报给了劫道的。那户人家，我记得姓什么。」
+  stage0 MENU: 车上那面旧旗|陪她认下旧账>+karma:12;+exp:260;+pot:70;favor:npcv_180:40;incvar:favor_npcv_180:40;flag:hk_npcv_180_qi_grey;;只摘旗，不深问>+exp:120;favor:npcv_180:10;incvar:favor_npcv_180:10
+  reward say: 乐知把那面旧旗叠成一方，压在了车板最底下。
+
+========== hk_npcv_115_mingan | 这桩命案 | giver=npcv_115 费守 | lv8
+desc: 费守管着一本结案册子。蜀道上这桩命案，苦主还没找到，真凶更没影。
+PORTRAIT origin: 他当了二十多年捕快。头十年他抓贼，后十年他学会了抓什么人、放什么人。他有一本册子，记着这一路上所有人的把柄——不抓人的时候，那本册子比刀有用。
+PORTRAIT now: 上头压下来一桩“命案”，要他三天内结案。结给谁看，他心里清楚。
+PORTRAIT want: 从册子里挑一个该死又没人管的，把这桩命案结干净。
+PORTRAIT fear: 怕自己哪天一不留神，册子上记的名字换成了他自己的。
+PORTRAIT secret: {"text":"册子上有一个名字，是二十年前一个被他冤枉的货郎，那货郎死在牢里，他一直没敢划掉。","tier":3,"leakTo":["npcv_016"],"ifLeaked":"冤案翻出；蜀中捕快震动；费守 mood −60"}
+PORTRAIT feuds: [{"id":"npcv_280","kind":"友","why":"夏青是他一手带出来的徒弟，学的就是他那套本事","since":"十年前"},{"id":"npcv_016","kind":"友","why":"戴青是他手下的捕快，也是他唯一没算过的人","since":"八年前"}]
+PORTRAIT hooks: ["hk_npcv_115_mingan","hk_npcv_115_ce"]
+  stage0 desc: 去唐门前厅，查这桩命案的苦主与真凶
+  stage0 targets: ["room:tangmen_hall"]
+  stage0 narrate: 他把册子翻到某一页，蘸了墨，笔尖悬着——没落下去。
+  stage0 say: 「随便挑一个结案，我干过。有一回之后，我不干了。」
+  stage0 MENU: 这桩命案|揪出真凶>+karma:15;+exp:260;+pot:70;favor:npcv_115:40;incvar:favor_npcv_115:40;flag:hk_npcv_115_mingan_true;;由他随便结案>+karma:-20;+money:200;+exp:140;flag:hk_npcv_115_mingan_fake
+  reward say: 费守把册子合上，压在了案头那方旧砚底下。
+
+========== hk_npcv_115_ce | 册子上那个名字 | giver=npcv_115 费守 | lv10
+desc: 费守的册子上有一个名字，二十年没划过。
+PORTRAIT origin: 他当了二十多年捕快。头十年他抓贼，后十年他学会了抓什么人、放什么人。他有一本册子，记着这一路上所有人的把柄——不抓人的时候，那本册子比刀有用。
+PORTRAIT now: 上头压下来一桩“命案”，要他三天内结案。结给谁看，他心里清楚。
+PORTRAIT want: 从册子里挑一个该死又没人管的，把这桩命案结干净。
+PORTRAIT fear: 怕自己哪天一不留神，册子上记的名字换成了他自己的。
+PORTRAIT secret: {"text":"册子上有一个名字，是二十年前一个被他冤枉的货郎，那货郎死在牢里，他一直没敢划掉。","tier":3,"leakTo":["npcv_016"],"ifLeaked":"冤案翻出；蜀中捕快震动；费守 mood −60"}
+PORTRAIT feuds: [{"id":"npcv_280","kind":"友","why":"夏青是他一手带出来的徒弟，学的就是他那套本事","since":"十年前"},{"id":"npcv_016","kind":"友","why":"戴青是他手下的捕快，也是他唯一没算过的人","since":"八年前"}]
+PORTRAIT hooks: ["hk_npcv_115_mingan","hk_npcv_115_ce"]
+  stage0 desc: 在入蜀官道，逼他把册子翻到那一页
+  stage0 targets: ["room:road_tangmen_1"]
+  stage0 say: 「二十年前有个货郎，是我办的。他死在牢里。这名字，我二十年没划。」
+  stage0 narrate: 笔尖落在那一页上，抖了一下，划出一道不直的线。
+  stage0 MENU: 册子上那个名字|替货郎翻案>+karma:20;+exp:280;favor:npcv_115:20;incvar:favor_npcv_115:20;flag:hk_npcv_115_ce_grey;;把册子烧了>+exp:160;favor:npcv_115:30;incvar:favor_npcv_115:30;+karma:-5
+  reward say: 费守把划下去的那一页吹了吹，等墨干。
+
+========== hk_npcv_083_guben | 那册孤本 | giver=npcv_083 毕元 | lv8
+desc: 架阁库一册宋版孤本压在判词底下，成了毕元给自己定的价。
+PORTRAIT origin: 他寒门出身，考了半辈子功名，一直没中。进了公门他才明白，一支笔比一柄刀快——刀杀人要偿命，笔杀人不用。从此他安心写字，把官的官气都写进了判词里。
+PORTRAIT now: 堂上有一桩命案，苦主塞来的，是一册他找了十年的孤本。
+PORTRAIT want: 把该偿命的那行字改成流放，既不脏手，也不亏那一册书。
+PORTRAIT fear: 怕自己改的这一行，将来被人翻出来，成了他自己的案。
+PORTRAIT secret: {"text":"他替一桩命案改过一行字，把该偿命的改成了流放，只因那家人给了他一册找了十年的孤本。","tier":2,"leakTo":["npcv_017","npcv_182"],"ifLeaked":"冤魂翻案；毕元革职；触发事件「笔下人命」"}
+PORTRAIT feuds: [{"id":"npcv_017","kind":"亲","why":"莫时与他同僚多年，两人互相递过话","since":"十五年前"},{"id":"npcv_182","kind":"友","why":"凤凝霜管女监，与他同衙办事，最信得过","since":"十二年前"},{"id":"npcv_204","kind":"亲","why":"湛拾月替他配过一副药，治好了他写字时的抖","since":"八年前"}]
+PORTRAIT hooks: ["hk_npcv_083_guben","hk_npcv_083_gaizi"]
+  stage0 desc: 去翰墨斋，寻一册好书换下那本孤本
+  stage0 targets: ["room:jn_bookshop"]
+  stage0 +item: ["book_rare",1]
+  stage0 narrate: 他写完判词，把笔在清水里洗了三遍，洗得笔尖不剩一点墨。
+  stage0 say: 「这一行字，是要人命的。我改过一行。」
+  stage0 MENU: 这册孤本|拿好书换下它>-item:book_rare;+karma:10;+exp:220;+pot:60;favor:npcv_083:30;incvar:favor_npcv_083:30;flag:hk_npcv_083_guben_swap;;逼他改判>+karma:-15;+money:300;+exp:140;flag:hk_npcv_083_guben_force
+  reward say: 毕元把那册孤本搁进了换回来的书堆里，没看成色。
+
+========== hk_npcv_083_gaizi | 改过的那行字 | giver=npcv_083 毕元 | lv10
+desc: 毕元写判词从不改第二遍，只有一桩案的卷宗上留着刮改的痕。
+PORTRAIT origin: 他寒门出身，考了半辈子功名，一直没中。进了公门他才明白，一支笔比一柄刀快——刀杀人要偿命，笔杀人不用。从此他安心写字，把官的官气都写进了判词里。
+PORTRAIT now: 堂上有一桩命案，苦主塞来的，是一册他找了十年的孤本。
+PORTRAIT want: 把该偿命的那行字改成流放，既不脏手，也不亏那一册书。
+PORTRAIT fear: 怕自己改的这一行，将来被人翻出来，成了他自己的案。
+PORTRAIT secret: {"text":"他替一桩命案改过一行字，把该偿命的改成了流放，只因那家人给了他一册找了十年的孤本。","tier":2,"leakTo":["npcv_017","npcv_182"],"ifLeaked":"冤魂翻案；毕元革职；触发事件「笔下人命」"}
+PORTRAIT feuds: [{"id":"npcv_017","kind":"亲","why":"莫时与他同僚多年，两人互相递过话","since":"十五年前"},{"id":"npcv_182","kind":"友","why":"凤凝霜管女监，与他同衙办事，最信得过","since":"十二年前"},{"id":"npcv_204","kind":"亲","why":"湛拾月替他配过一副药，治好了他写字时的抖","since":"八年前"}]
+PORTRAIT hooks: ["hk_npcv_083_guben","hk_npcv_083_gaizi"]
+  stage0 desc: 去衙门·刑房，调出那卷旧案，找那处刮改
+  stage0 targets: ["room:jn_yamen_wt"]
+  stage0 narrate: 那一行字底下的纸面是毛的——刮过，又写上去。
+  stage0 say: 「刮一回，就得记一辈子。」
+  stage0 MENU: 改过的那行字|替冤者翻案>+karma:15;+exp:260;favor:npcv_083:-30;incvar:favor_npcv_083:-30;flag:hk_npcv_083_gaizi_clear;;替他压下>+exp:120;favor:npcv_083:20;incvar:favor_npcv_083:20
+  reward say: 毕元把那卷旧案重新捆好，放回了架阁库最里一档。
+
+========== hk_npcv_126_xianghuo | 功德箱里那点钱 | giver=npcv_126 和苍 | lv6
+desc: 破庙功德箱里的钱，和苍数得比念经还熟。
+PORTRAIT origin: 庙里另一个人这样说他：和苍师父的佛号念得比谁都响，功德箱的钥匙也攥得比谁都紧。他年轻时要过饭，后来剃度做了和尚，始终把这座破庙当成自己的。屈弘来了十一年，在他眼里就是十一年的眼中钉。
+PORTRAIT now: 庙里来了个出手阔绰的香客，他盘算着怎么把这笔香火留下，又不让屈弘分去半文。
+PORTRAIT want: 把屈弘赶出破庙，让这庙从头到尾姓佛不姓道。
+PORTRAIT fear: 怕哪天香客看穿了他——他只是个嘴上念佛的俗人。
+PORTRAIT secret: {"text":"他早年要饭时，从一座道观里偷过一尊铜像去换钱；那道观，正是屈弘的师门。","tier":2,"leakTo":["npcv_094","npcv_060"],"ifLeaked":"屈弘知道真相；庙产判给道门；和苍 mood −50"}
+PORTRAIT feuds: [{"id":"npcv_062","kind":"仇","why":"他说屈弘是骗子，要赶他走，两人斗过嘴，谁也没赢","since":"六年前"},{"id":"npcv_060","kind":"友","why":"柯云是唯一肯听他念完经的人，虽然听不懂","since":"十一 年前"},{"id":"npcv_027","kind":"友","why":"任停与他同在庙里挂单，两人面上过得去","since":"三年前"},{"id":"npcv_028","kind":"友","why":"鲍凝常送米来庙里，他待她客气","since":"五年前"}]
+PORTRAIT hooks: ["hk_npcv_126_xianghuo","hk_npcv_126_tongxiang"]
+  stage0 desc: 在破庙和他一起清点功德箱
+  stage0 targets: ["room:gaibang_po_miao"]
+  stage0 say: 屈弘：「我这庙里，本有一尊铜像。后来没了。」
+  stage0 narrate: 和苍数钱的手停了一下，又数下去。
+  stage0 MENU: 这点香火|分给庙里众人>+karma:10;+exp:200;+pot:50;favor:npcv_126:-10;incvar:favor_npcv_126:-10;flag:hk_npcv_126_xianghuo_share;;替他独吞>+money:200;+karma:-15;+exp:130;favor:npcv_126:30;incvar:favor_npcv_126:30;flag:hk_npcv_126_xianghuo_keep
+  reward say: 和苍把功德箱锁上，钥匙照旧挂在自己腰里。
+
+========== hk_npcv_126_tongxiang | 那尊铜像 | giver=npcv_126 和苍 | lv9
+desc: 和苍骂屈弘是骗子，骂了六年。骂得越响，越像在掩什么。
+PORTRAIT origin: 庙里另一个人这样说他：和苍师父的佛号念得比谁都响，功德箱的钥匙也攥得比谁都紧。他年轻时要过饭，后来剃度做了和尚，始终把这座破庙当成自己的。屈弘来了十一年，在他眼里就是十一年的眼中钉。
+PORTRAIT now: 庙里来了个出手阔绰的香客，他盘算着怎么把这笔香火留下，又不让屈弘分去半文。
+PORTRAIT want: 把屈弘赶出破庙，让这庙从头到尾姓佛不姓道。
+PORTRAIT fear: 怕哪天香客看穿了他——他只是个嘴上念佛的俗人。
+PORTRAIT secret: {"text":"他早年要饭时，从一座道观里偷过一尊铜像去换钱；那道观，正是屈弘的师门。","tier":2,"leakTo":["npcv_094","npcv_060"],"ifLeaked":"屈弘知道真相；庙产判给道门；和苍 mood −50"}
+PORTRAIT feuds: [{"id":"npcv_062","kind":"仇","why":"他说屈弘是骗子，要赶他走，两人斗过嘴，谁也没赢","since":"六年前"},{"id":"npcv_060","kind":"友","why":"柯云是唯一肯听他念完经的人，虽然听不懂","since":"十一 年前"},{"id":"npcv_027","kind":"友","why":"任停与他同在庙里挂单，两人面上过得去","since":"三年前"},{"id":"npcv_028","kind":"友","why":"鲍凝常送米来庙里，他待她客气","since":"五年前"}]
+PORTRAIT hooks: ["hk_npcv_126_xianghuo","hk_npcv_126_tongxiang"]
+  stage0 desc: 在破庙向屈弘问师门那尊铜像的旧事
+  stage0 targets: ["room:gaibang_po_miao"]
+  stage0 say: 「那年我要饭，从那道观里拿了尊像去换钱。那道观……是他的师门。」
+  stage0 narrate: 他说完这句，把手里的念珠绕了两圈，没再数。
+  stage0 MENU: 那尊铜像|逼他还像>+karma:15;+exp:260;+pot:60;favor:npcv_062:40;incvar:favor_npcv_062:40;favor:npcv_126:-40;incvar:favor_npcv_126:-40;flag:hk_npcv_126_tongxiang_back;;不问>+exp:100;favor:npcv_126:10;incvar:favor_npcv_126:10
+  reward say: 和苍把念珠收了，背过身去扫院子里的落叶。
+
+========== hk_npcv_164_yinzi | 那笔周转银子 | giver=npcv_164 皮朝颜 | lv9
+desc: 黑木崖的账从皮朝颜手里过。她说崖后有口井，井里的银子一枚没动。
+PORTRAIT origin: 她原是山下赌坊的东家。赌客里有人输了还不起，欠了她一屁股债，那人竟是教里的。她上门去讨，讨着讨着，自己也进了教——教里的债，教里还。这话她信了，也把命搭了进去。
+PORTRAIT now: 教中拨给她一笔银子，要她周转。她摸着那银子的成色，心里发凉。
+PORTRAIT want: 把这笔银子的来路摸清楚，别把自己搭进去。
+PORTRAIT fear: 怕教主哪天清算起来，头一个要灭口的就是她这个管账的。
+PORTRAIT secret: {"text":"她替教中放过一笔“死人账”，那笔钱买过一批孩子的命，账上只写着“采买”两个字。","tier":3,"leakTo":["npcv_263"],"ifLeaked":"教中灭口；皮朝颜 mood −60；触发事件「死人账」"}
+PORTRAIT feuds: [{"id":"npcv_263","kind":"友","why":"熊天行是山下赌坊的常客，也是她放进教里的眼线","since":"七年前"},{"id":"npcv_032","kind":"友","why":"鲍轻欠她赌债，两人半友半债","since":"三年前"}]
+PORTRAIT hooks: ["hk_npcv_164_yinzi","hk_npcv_164_sirenzhang"]
+  stage0 desc: 去黑木崖大殿，找教中旧账房打听那笔银子的成色
+  stage0 targets: ["room:mojiao_hall"]
+  stage0 narrate: 账房翻出那本旧账，纸角上留着一圈茶渍。
+  stage0 say: 「崖后有口井。我这辈子的银子，都在里头。一枚没动。」
+  stage0 MENU: 那笔银子|替她查账>+exp:240;+pot:70;flag:hk_sirenzhang;;回报教中>+rep:日月神教:20;+exp:180;favor:npcv_164:-30;incvar:favor_npcv_164:-30
+  reward say: 皮朝颜把账本合上，用一根青布条重新捆紧。
+
+========== hk_npcv_164_sirenzhang | 死人账 | giver=npcv_164 皮朝颜 | lv12
+desc: 皮朝颜管了半辈子账，攒了一井银子。账本上「采买」两个字，她记了很多年。
+PORTRAIT origin: 她原是山下赌坊的东家。赌客里有人输了还不起，欠了她一屁股债，那人竟是教里的。她上门去讨，讨着讨着，自己也进了教——教里的债，教里还。这话她信了，也把命搭了进去。
+PORTRAIT now: 教中拨给她一笔银子，要她周转。她摸着那银子的成色，心里发凉。
+PORTRAIT want: 把这笔银子的来路摸清楚，别把自己搭进去。
+PORTRAIT fear: 怕教主哪天清算起来，头一个要灭口的就是她这个管账的。
+PORTRAIT secret: {"text":"她替教中放过一笔“死人账”，那笔钱买过一批孩子的命，账上只写着“采买”两个字。","tier":3,"leakTo":["npcv_263"],"ifLeaked":"教中灭口；皮朝颜 mood −60；触发事件「死人账」"}
+PORTRAIT feuds: [{"id":"npcv_263","kind":"友","why":"熊天行是山下赌坊的常客，也是她放进教里的眼线","since":"七年前"},{"id":"npcv_032","kind":"友","why":"鲍轻欠她赌债，两人半友半债","since":"三年前"}]
+PORTRAIT hooks: ["hk_npcv_164_yinzi","hk_npcv_164_sirenzhang"]
+  stage0 desc: 随皮朝颜下崖，看那口枯井
+  stage0 targets: ["room:mojiao_shanmen"]
+  stage0 narrate: 账本上一笔写着「采买」两个字。日期她也记得——那批孩子，是她经手的。
+  stage0 say: 「那笔钱，买过一批孩子的命。」
+  stage0 MENU: 井里那些银子|揭发出去>+karma:20;+exp:280;+pot:80;flag:hk_npcv_164_sirenzhang_expose;;替她掩盖>+exp:160;favor:npcv_164:40;incvar:favor_npcv_164:40;+karma:-10
+  reward say: 皮朝颜站在井口往下看，井底黑黢黢的，什么都没有。
+
+========== hk_npcv_186_zuihua | 雅间里那句醉话 | giver=npcv_186 鲁半夏 | lv9
+desc: 醉春楼花厅里，一个官儿喝多了，把不该说的说了。鲁半夏听见了。
+PORTRAIT origin: 楼里的姑娘都说她话里有话。她原是教中被逐的弟子，被东方不败留了一条命，代价是替神教在城里做眼。她答应得快——活着总比死了强。往后她学唱曲、学斟酒、学把人灌醉，学得比谁都上心。
+PORTRAIT now: 雅间里来了个官面上的人，喝到一半说了句醉话。她记下了，却不知该不该往上递。
+PORTRAIT want: 攒够钱，离开这座楼，也离开日月神教。
+PORTRAIT fear: 怕东方不败知道她想走——神教留过的人，没一个走得成。
+PORTRAIT secret: {"text":"她曾在汪秋的酒里下过一味哑药，害汪秋被教主带走。事后她吐了一整夜。","tier":3,"leakTo":["npcv_054"],"ifLeaked":"汪秋的旧账翻出；教主清算；鲁半夏 mood −55"}
+PORTRAIT feuds: [{"id":"npcv_021","kind":"仇","why":"两人当年同为教中弟子，汪秋出身比她正，她记恨至今","since":"八年前"},{"id":"mojiao_dongfang","kind":"友","why":"东方不败留了她的命，也攥着她的命","since":"六年前"},{"id":"npcv_054","kind":"仇","why":"方朝颜抢过她的客，还在背后编排她","since":"两年前"}]
+PORTRAIT hooks: ["hk_npcv_186_zuihua","hk_npcv_186_yao"]
+  stage0 desc: 在醉春楼花厅，听鲁半夏转述雅间那句醉话
+  stage0 targets: ["room:jn_brothel_hall"]
+  stage0 say: 「我这条命是捡的。捡来的命，多活一天赚一天。」
+  stage0 narrate: 她说这话时，手里那只酒盏一直没放下，也没喝。
+  stage0 MENU: 那句话|替她压下不递>+karma:15;+exp:240;+pot:70;favor:npcv_186:40;incvar:favor_npcv_186:40;flag:hk_npcv_186_zuihua_hold;;替她递上去>+rep:日月神教:25;+exp:180;favor:npcv_186:-20;incvar:favor_npcv_186:-20;flag:hk_npcv_186_zuihua_send
+  reward say: 鲁半夏把那只酒盏搁下，起身去伺候下一桌客人。
+
+========== hk_npcv_186_yao | 那味哑药 | giver=npcv_186 鲁半夏 | lv11
+desc: 六年前一杯酒，汪秋被带走，鲁半夏烧了六年纸。
+PORTRAIT origin: 楼里的姑娘都说她话里有话。她原是教中被逐的弟子，被东方不败留了一条命，代价是替神教在城里做眼。她答应得快——活着总比死了强。往后她学唱曲、学斟酒、学把人灌醉，学得比谁都上心。
+PORTRAIT now: 雅间里来了个官面上的人，喝到一半说了句醉话。她记下了，却不知该不该往上递。
+PORTRAIT want: 攒够钱，离开这座楼，也离开日月神教。
+PORTRAIT fear: 怕东方不败知道她想走——神教留过的人，没一个走得成。
+PORTRAIT secret: {"text":"她曾在汪秋的酒里下过一味哑药，害汪秋被教主带走。事后她吐了一整夜。","tier":3,"leakTo":["npcv_054"],"ifLeaked":"汪秋的旧账翻出；教主清算；鲁半夏 mood −55"}
+PORTRAIT feuds: [{"id":"npcv_021","kind":"仇","why":"两人当年同为教中弟子，汪秋出身比她正，她记恨至今","since":"八年前"},{"id":"mojiao_dongfang","kind":"友","why":"东方不败留了她的命，也攥着她的命","since":"六年前"},{"id":"npcv_054","kind":"仇","why":"方朝颜抢过她的客，还在背后编排她","since":"两年前"}]
+PORTRAIT hooks: ["hk_npcv_186_zuihua","hk_npcv_186_yao"]
+  stage0 desc: 在花厅找汪秋，把六年前那杯酒问清楚
+  stage0 targets: ["room:jn_brothel_hall"]
+  stage0 say: 「六年前那杯酒，是我端的。汪秋被带走那天，我吐了一整夜。」
+  stage0 narrate: 她说完，把袖子往上撸了撸，露出腕上一道旧疤。
+  stage0 MENU: 那味哑药|助汪秋翻旧账>+karma:10;+exp:240;favor:npcv_021:30;incvar:favor_npcv_021:30;flag:hk_npcv_186_yao_clear;;不问>+exp:100;favor:npcv_186:10;incvar:favor_npcv_186:10
+  reward say: 鲁半夏把灶里最后一张纸拨了拨，火苗暗下去。
+
+========== hk_npcv_090_jieyao | 丁春秋的解药 | giver=npcv_090 阮听 | lv9
+desc: 阮听在果子摊后坐着，手一按腕子，话就停。丁春秋种在他身上的蛊，发了七年。
+PORTRAIT origin: 他年轻时是个正经游侠，替人押货、替人打抱不平。后来栽在丁春秋手里，被种了蛊——毒发时五脏像被虫咬。为活下去，他接了头一件脏活；从此那五个字，他再说不出口：我是被逼的。
+PORTRAIT now: 蛊又快到了发作的时候。他得赶在下个月初一前，把手里的东西送到星宿海去。
+PORTRAIT want: 从丁春秋手里换到解药，撑到把亲妹妹嫁出去。
+PORTRAIT fear: 怕自己没撑住，把毒发在妹妹眼前。
+PORTRAIT secret: {"text":"他曾给自己的亲妹妹下一味不会死的毒，只为让丁春秋信他还有用、肯续解药。","tier":3,"leakTo":["npcv_072"],"ifLeaked":"妹妹知道真相；阮听 mood −70；触发事件「蛊」"}
+PORTRAIT feuds: [{"id":"xingxiu_laoxian","kind":"友","why":"丁春秋种了他的蛊，也攥着他的命","since":"七年前"},{"id":"npcv_072","kind":"亲","why":"毛清是唯一肯替他辨毒的人，也是他最不敢见的人","since":"五年前"},{"id":"npcv_237","kind":"亲","why":"李无咎是他表叔，那孩子走上邪路，他心里一直有愧","since":"二十年前"}]
+PORTRAIT hooks: ["hk_npcv_090_jieyao","hk_npcv_090_meimei"]
+  stage0 desc: 在果子摊听他讲蛊发时的样子
+  stage0 targets: ["room:jn_fruit_stall"]
+  stage0 narrate: 他讲到一半，手忽然按住腕子，指节发白，话停了。
+  stage0 say: 「一年一续。续不上，就烂在这里。」
+  stage0 MENU: 那味解药|替他再跑一趟星宿海>+exp:260;+pot:70;favor:npcv_090:40;incvar:favor_npcv_090:40;flag:hk_gu;;劝他离开丁春秋>+karma:10;+exp:240;favor:npcv_090:20;incvar:favor_npcv_090:20;flag:hk_npcv_090_jieyao_leave
+  reward say: 阮听松开按着腕子的手，把摊上那筐果子摆正了些。
+
+========== hk_npcv_090_meimei | 妹妹那碗药 | giver=npcv_090 阮听 | lv12
+desc: 阮听有个亲妹妹，也中着毒。碗是谁端的，他从没说过。
+PORTRAIT origin: 他年轻时是个正经游侠，替人押货、替人打抱不平。后来栽在丁春秋手里，被种了蛊——毒发时五脏像被虫咬。为活下去，他接了头一件脏活；从此那五个字，他再说不出口：我是被逼的。
+PORTRAIT now: 蛊又快到了发作的时候。他得赶在下个月初一前，把手里的东西送到星宿海去。
+PORTRAIT want: 从丁春秋手里换到解药，撑到把亲妹妹嫁出去。
+PORTRAIT fear: 怕自己没撑住，把毒发在妹妹眼前。
+PORTRAIT secret: {"text":"他曾给自己的亲妹妹下一味不会死的毒，只为让丁春秋信他还有用、肯续解药。","tier":3,"leakTo":["npcv_072"],"ifLeaked":"妹妹知道真相；阮听 mood −70；触发事件「蛊」"}
+PORTRAIT feuds: [{"id":"xingxiu_laoxian","kind":"友","why":"丁春秋种了他的蛊，也攥着他的命","since":"七年前"},{"id":"npcv_072","kind":"亲","why":"毛清是唯一肯替他辨毒的人，也是他最不敢见的人","since":"五年前"},{"id":"npcv_237","kind":"亲","why":"李无咎是他表叔，那孩子走上邪路，他心里一直有愧","since":"二十年前"}]
+PORTRAIT hooks: ["hk_npcv_090_jieyao","hk_npcv_090_meimei"]
+  stage0 desc: 去姑苏·燕子坞，找郎中毛清辨那碗药的毒
+  stage0 targets: ["room:gusu_yanzi"]
+  stage0 say: 「我给她下过一味不会死的毒。就为了丁春秋信我还有用，肯续我的解药。」
+  stage0 narrate: 他摊开手掌，掌心里一道旧疤，是常年攥着药包磨出来的。
+  stage0 MENU: 妹妹那碗药|替他妹妹解蛊并告知真相>+karma:15;+pot:70;+exp:280;favor:npcv_090:-30;incvar:favor_npcv_090:-30;flag:hk_npcv_090_meimei_tell;;瞒下>+karma:-5;+exp:140;favor:npcv_090:20;incvar:favor_npcv_090:20
+  reward say: 阮听把摊子收了半扇，说今天不做生意了。
+
+========== hk_npcv_074_yajian | 雅间那句话 | giver=npcv_074 和归鸿 | lv7
+desc: 和归鸿替雅间传了三十回话，一两银子一回。第三十一回，他坐着没动。
+PORTRAIT origin: 他是元若从雪天里捡回来的弃儿，十八年端茶倒水没出过错。元若待他如子，可他心里有一笔账，怎么算都算不平——他姓和，元若姓元；他是伙计，不是儿子。这道坎，他跨了十八年没跨过去。
+PORTRAIT now: 雅间那些人要他传话，传一句，给一两银子。他传了三十回。
+PORTRAIT want: 攒钱赎回自己的身契，搬出茶馆，让元若再没资格管他。
+PORTRAIT fear: 怕元若知道，他这些年在替雅间做什么。
+PORTRAIT secret: {"text":"雅间里倒卖官粮的凭据，经他的手递出去过一次；他还偷换过强秋的酒，害人误了镖期。","tier":2,"leakTo":["npcv_065","npcv_066"],"ifLeaked":"元若看清他；强秋寻仇；和归鸿 mood −60"}
+PORTRAIT feuds: [{"id":"npcv_081","kind":"仇","why":"他偷换强秋的酒，害人误了镖期，两人自此结仇","since":"两年前"},{"id":"npcv_073","kind":"友","why":"元若养他十八年，他却越来越怕见元若","since":"自幼"},{"id":"npcv_066","kind":"仇","why":"凌青荷撞见过他往雅间送东西，两人翻过脸","since":"去年"},{"id":"npcv_065","kind":"友","why":"杜听涛常拉他赌钱，是唯一叫他「和兄弟」的人","since":"三年前"}]
+PORTRAIT hooks: ["hk_npcv_074_yajian","hk_npcv_074_qian"]
+  stage0 desc: 在老茶馆，看他这三十回话是怎么传的
+  stage0 targets: ["room:jn_teahouse"]
+  stage0 say: 「我传了三十回话，一两银子一回。这一回，我不想传了。」
+  stage0 narrate: 他把茶钱一文一文数出来，压在碗底，数到一半停了。
+  stage0 MENU: 那句话|替他把话断了>+karma:12;+exp:240;+pot:60;favor:npcv_074:40;incvar:favor_npcv_074:40;flag:hk_npcv_074_yajian_stop;;替他继续传>+money:200;+karma:-15;+exp:150;favor:npcv_074:20;incvar:favor_npcv_074:20;flag:hk_npcv_074_yajian_go
+  reward say: 和归鸿把数到一半的茶钱推回去，起身出了茶馆。
+
+========== hk_npcv_074_qian | 偷换的那坛酒 | giver=npcv_074 和归鸿 | lv9
+desc: 镖师强秋在老茶馆坐了很久，等一个说法。那趟误期的镖，坏在一坛酒上。
+PORTRAIT origin: 他是元若从雪天里捡回来的弃儿，十八年端茶倒水没出过错。元若待他如子，可他心里有一笔账，怎么算都算不平——他姓和，元若姓元；他是伙计，不是儿子。这道坎，他跨了十八年没跨过去。
+PORTRAIT now: 雅间那些人要他传话，传一句，给一两银子。他传了三十回。
+PORTRAIT want: 攒钱赎回自己的身契，搬出茶馆，让元若再没资格管他。
+PORTRAIT fear: 怕元若知道，他这些年在替雅间做什么。
+PORTRAIT secret: {"text":"雅间里倒卖官粮的凭据，经他的手递出去过一次；他还偷换过强秋的酒，害人误了镖期。","tier":2,"leakTo":["npcv_065","npcv_066"],"ifLeaked":"元若看清他；强秋寻仇；和归鸿 mood −60"}
+PORTRAIT feuds: [{"id":"npcv_081","kind":"仇","why":"他偷换强秋的酒，害人误了镖期，两人自此结仇","since":"两年前"},{"id":"npcv_073","kind":"友","why":"元若养他十八年，他却越来越怕见元若","since":"自幼"},{"id":"npcv_066","kind":"仇","why":"凌青荷撞见过他往雅间送东西，两人翻过脸","since":"去年"},{"id":"npcv_065","kind":"友","why":"杜听涛常拉他赌钱，是唯一叫他「和兄弟」的人","since":"三年前"}]
+PORTRAIT hooks: ["hk_npcv_074_yajian","hk_npcv_074_qian"]
+  stage0 desc: 在老茶馆找强秋，问那趟误期的镖
+  stage0 targets: ["room:jn_teahouse"]
+  stage0 say: 「强秋那晚的酒，是我换的。他在门外站了半宿，我在屋里没敢开门。」
+  stage0 narrate: 他说完，往强秋常坐的那张桌子看了一眼。
+  stage0 MENU: 那坛酒|替他还强秋一个说法>+karma:10;+exp:260;+pot:60;favor:npcv_081:40;incvar:favor_npcv_081:40;flag:hk_npcv_074_qian_clear;;不问>+exp:100;favor:npcv_074:10;incvar:favor_npcv_074:10
+  reward say: 和归鸿给强秋斟了一碗茶，坐到了他对面。
+
+========== hk_npcv_252_minge | 那个名额 | giver=npcv_252 陈语冰 | lv8
+desc: 醉春楼一年一个脱籍的名额。教陈语冰认字的那个人，跟她抢同一个。
+PORTRAIT origin: 她十三岁被卖进醉春楼，是梅拾教她认字、替她挨过打。她本该最感激梅拾。可她也最清楚：楼里只有一个能出去的名额，而梅拾比她识字早，也比她聪明。她怕了——怕到先动了手。
+PORTRAIT now: 老鸨许了她一个好处：只要她盯着梅拾，赎身的名额就给她。
+PORTRAIT want: 拿到那个赎身的名额，离开这座楼，哪怕踩着梅拾。
+PORTRAIT fear: 怕自己有一天变成梅拾，被人用自己教的字害死。
+PORTRAIT secret: {"text":"她抄下了梅拾藏在胭脂盒里物事的位置，又不敢全交；抄到一半，她把纸烧了又捡回来。","tier":2,"leakTo":["npcv_285"],"ifLeaked":"梅拾被搜；陈语冰 mood −50；触发事件「买卖」"}
+PORTRAIT feuds: [{"id":"npcv_219","kind":"仇","why":"两人争同一个赎身名额，她心里有愧，嘴上却硬","since":"今年春"},{"id":"npcv_285","kind":"友","why":"俞语是楼里唯一不问她心事的人","since":"两年前"},{"id":"npcv_120","kind":"友","why":"姜疏常替她遮掩出去的事","since":"去年"}]
+PORTRAIT hooks: ["hk_npcv_252_minge","hk_npcv_252_zi"]
+  stage0 desc: 去醉春楼花厅，找梅拾问名额的事
+  stage0 targets: ["room:jn_brothel_hall"]
+  stage0 say: 「梅拾教我认字那天，我记着呢。楼里就一个名额。」
+  stage0 narrate: 她把桌上的字帖翻过去，压在底下。
+  stage0 MENU: 那个名额|劝她让贤>+karma:15;+exp:240;+pot:60;favor:npcv_219:40;incvar:favor_npcv_219:40;favor:npcv_252:-20;incvar:favor_npcv_252:-20;flag:hk_npcv_252_minge_yield;;替她争到>+money:200;+karma:-15;+exp:150;favor:npcv_252:30;incvar:favor_npcv_252:30;flag:hk_npcv_252_minge_win
+  reward say: 陈语冰把字帖又翻回来，指腹在第一个字上停了停。
+
+========== hk_npcv_252_zi | 枕下那个字 | giver=npcv_252 陈语冰 | lv11
+desc: 陈语冰枕下压着一张纸，压了很久。
+PORTRAIT origin: 她十三岁被卖进醉春楼，是梅拾教她认字、替她挨过打。她本该最感激梅拾。可她也最清楚：楼里只有一个能出去的名额，而梅拾比她识字早，也比她聪明。她怕了——怕到先动了手。
+PORTRAIT now: 老鸨许了她一个好处：只要她盯着梅拾，赎身的名额就给她。
+PORTRAIT want: 拿到那个赎身的名额，离开这座楼，哪怕踩着梅拾。
+PORTRAIT fear: 怕自己有一天变成梅拾，被人用自己教的字害死。
+PORTRAIT secret: {"text":"她抄下了梅拾藏在胭脂盒里物事的位置，又不敢全交；抄到一半，她把纸烧了又捡回来。","tier":2,"leakTo":["npcv_285"],"ifLeaked":"梅拾被搜；陈语冰 mood −50；触发事件「买卖」"}
+PORTRAIT feuds: [{"id":"npcv_219","kind":"仇","why":"两人争同一个赎身名额，她心里有愧，嘴上却硬","since":"今年春"},{"id":"npcv_285","kind":"友","why":"俞语是楼里唯一不问她心事的人","since":"两年前"},{"id":"npcv_120","kind":"友","why":"姜疏常替她遮掩出去的事","since":"去年"}]
+PORTRAIT hooks: ["hk_npcv_252_minge","hk_npcv_252_zi"]
+  stage0 desc: 在房里，看她枕下那张纸
+  stage0 targets: ["room:jn_brothel_room"]
+  stage0 narrate: 她从枕下抽出一张纸，上面只有一个字，笔画歪歪扭扭——是梅拾教她写的头一个。
+  stage0 say: 「恨得越狠，这张纸越舍不得烧。」
+  stage0 MENU: 枕下那个字|让梅拾知晓>+karma:5;+exp:220;favor:npcv_219:30;incvar:favor_npcv_219:30;favor:npcv_252:-20;incvar:favor_npcv_252:-20;flag:hk_npcv_252_zi_tell;;什么都不说>+exp:100;favor:npcv_252:10;incvar:favor_npcv_252:10
+  reward say: 陈语冰把那张纸重新压回枕下，抹平了枕面。
+
+========== hk_npcv_178_fangzi | 方子卖给谁了 | giver=npcv_178 钱疏 | lv7
+desc: 钱疏手里半张方子，是药婆婆救她命时给的。后来方子到了山下。
+PORTRAIT origin: 她病倒在药婆婆门口那年，浑身是疮。药婆婆给她治了半年，还教她认药、认字。她认得快，学得也快——快到有一天她发现，山下的药铺肯花钱收药婆婆的方子，比她讨一年饭还多。
+PORTRAIT now: 山下来了个收药的贩子，出的价比药婆婆的方子还高。
+PORTRAIT want: 攒钱离开华山脚下这个连冬天都透风的地方。
+PORTRAIT fear: 怕药婆婆哪天认出来，她卖出去的药里有一味是偷的。
+PORTRAIT secret: {"text":"药婆婆给她的方子，她抄了一份卖给山下的药铺；她造谣药婆婆下毒，只为没人敢去找药婆婆。","tier":2,"leakTo":["npcv_046","npcv_112"],"ifLeaked":"药婆婆的药方外流；钱疏被赶下山；触发事件「偷方」"}
+PORTRAIT feuds: [{"id":"wen_huashan_shop","kind":"友","why":"药婆婆救过她的命，她嘴上说「她欠我的」，心里知道不是","since":"三年前"},{"id":"npcv_112","kind":"友","why":"汪半是山道上另一个乞丐，两人搭伙过冬","since":"五年前"},{"id":"npcv_046","kind":"友","why":"雷白露远在桃花岛，两人一年只见一回","since":"七年前"}]
+PORTRAIT hooks: ["hk_npcv_178_fangzi","hk_npcv_178_jiao"]
+  stage0 desc: 在华山脚下，看钱疏那半张方子
+  stage0 targets: ["room:huashan_shanxia"]
+  stage0 say: 「山下的人，心比天冷。她不缺这点药。」
+  stage0 narrate: 她说这话时，眼睛看着别处。
+  stage0 MENU: 那半张方子|替她把方子收回来>+karma:15;+exp:240;+pot:60;favor:wen_huashan_shop:40;incvar:favor_wen_huashan_shop:40;flag:hk_npcv_178_fangzi_back;;替她卖出去>+money:150;+karma:-15;+exp:150;favor:npcv_178:20;incvar:favor_npcv_178:20;flag:hk_npcv_178_fangzi_sell
+  reward say: 钱疏把那半张方子折起来，塞进袖里。
+
+========== hk_npcv_178_jiao | 剩下的那半个角 | giver=npcv_178 钱疏 | lv9
+desc: 钱疏撕方子撕了三年，撕剩半个角。
+PORTRAIT origin: 她病倒在药婆婆门口那年，浑身是疮。药婆婆给她治了半年，还教她认药、认字。她认得快，学得也快——快到有一天她发现，山下的药铺肯花钱收药婆婆的方子，比她讨一年饭还多。
+PORTRAIT now: 山下来了个收药的贩子，出的价比药婆婆的方子还高。
+PORTRAIT want: 攒钱离开华山脚下这个连冬天都透风的地方。
+PORTRAIT fear: 怕药婆婆哪天认出来，她卖出去的药里有一味是偷的。
+PORTRAIT secret: {"text":"药婆婆给她的方子，她抄了一份卖给山下的药铺；她造谣药婆婆下毒，只为没人敢去找药婆婆。","tier":2,"leakTo":["npcv_046","npcv_112"],"ifLeaked":"药婆婆的药方外流；钱疏被赶下山；触发事件「偷方」"}
+PORTRAIT feuds: [{"id":"wen_huashan_shop","kind":"友","why":"药婆婆救过她的命，她嘴上说「她欠我的」，心里知道不是","since":"三年前"},{"id":"npcv_112","kind":"友","why":"汪半是山道上另一个乞丐，两人搭伙过冬","since":"五年前"},{"id":"npcv_046","kind":"友","why":"雷白露远在桃花岛，两人一年只见一回","since":"七年前"}]
+PORTRAIT hooks: ["hk_npcv_178_fangzi","hk_npcv_178_jiao"]
+  stage0 desc: 在华山脚下，看她掏出那半个角
+  stage0 targets: ["room:huashan_shanxia"]
+  stage0 narrate: 她看了三年，撕了三年。剩下的那半个角，她一直没舍得撕。
+  stage0 say: 「撕得动纸，撕不动这个角。」
+  stage0 MENU: 那半个角|带她向药婆婆认错>+karma:12;+exp:260;+pot:60;favor:wen_huashan_shop:30;incvar:favor_wen_huashan_shop:30;flag:hk_npcv_178_jiao_grey;;不问>+exp:100;favor:npcv_178:10;incvar:favor_npcv_178:10
+  reward say: 钱疏把那半个角收进贴身的小袋，没再撕。
+
+========== hk_npcv_095_qi | 半张契 | giver=npcv_095 庞南枝 | lv8
+desc: 城西破庙，出家人斗了七年庙产。庞南枝手里那半张契，年份是后添的。
+PORTRAIT origin: 她师祖当年在这里盖过小道观，观塌了，地基上让人起了庙。她师父临终把半张旧契交到她手里，只说去讨回来。那年她十九岁，跪在师父灵前应的，比谁都响。
+PORTRAIT now: 县衙要清一批旧档，那半张契上的年份，眼看要对不上了。
+PORTRAIT want: 赶在旧档清理之前，让庙归道门——哪怕只归一个名分。
+PORTRAIT fear: 怕有人把契举到灯下，看出一处不该有的添改。
+PORTRAIT secret: {"text":"那半张旧契上的年份，是她自己用淡墨添上去的；真年限，比庙里的和尚还晚二十年。","tier":3,"leakTo":["npcv_029"],"ifLeaked":"庙产归僧；庞南枝 mood −60；触发事件「伪契」"}
+PORTRAIT feuds: [{"id":"npcv_027","kind":"仇","why":"任停说这地基是寺里施舍的，两人七年没说过一句整话","since":"七年前"},{"id":"npcv_029","kind":"友","why":"和青荷是唯一待她真的同门，也是唯一没看过那半张契的人","since":"六年前"}]
+PORTRAIT hooks: ["hk_npcv_095_qi","hk_npcv_095_shifu"]
+  stage0 desc: 去衙门·架阁库，调那批庙产的旧档
+  stage0 targets: ["room:jn_yamen_arch"]
+  stage0 narrate: 她把那半张契举到日头底下——年份那两个字的墨色，比别处新。
+  stage0 say: 「我师父说过莫争。我争了七年，一次没下过狠手。」
+  stage0 MENU: 那半张契|替她压下>+karma:-15;+exp:240;+pot:60;flag:hk_npcv_095_qi_hide;;把旧档原样呈上>+rep:朝廷:20;+exp:260;flag:hk_npcv_095_qi_show
+  reward say: 庞南枝把契收进佛龛后头，压在一部经书上。
+
+========== hk_npcv_095_shifu | 师父那句「莫争」 | giver=npcv_095 庞南枝 | lv10
+desc: 庞南枝的师父临走留了一句「莫把心思用在争上」。她记了七年。
+PORTRAIT origin: 她师祖当年在这里盖过小道观，观塌了，地基上让人起了庙。她师父临终把半张旧契交到她手里，只说去讨回来。那年她十九岁，跪在师父灵前应的，比谁都响。
+PORTRAIT now: 县衙要清一批旧档，那半张契上的年份，眼看要对不上了。
+PORTRAIT want: 赶在旧档清理之前，让庙归道门——哪怕只归一个名分。
+PORTRAIT fear: 怕有人把契举到灯下，看出一处不该有的添改。
+PORTRAIT secret: {"text":"那半张旧契上的年份，是她自己用淡墨添上去的；真年限，比庙里的和尚还晚二十年。","tier":3,"leakTo":["npcv_029"],"ifLeaked":"庙产归僧；庞南枝 mood −60；触发事件「伪契」"}
+PORTRAIT feuds: [{"id":"npcv_027","kind":"仇","why":"任停说这地基是寺里施舍的，两人七年没说过一句整话","since":"七年前"},{"id":"npcv_029","kind":"友","why":"和青荷是唯一待她真的同门，也是唯一没看过那半张契的人","since":"六年前"}]
+PORTRAIT hooks: ["hk_npcv_095_qi","hk_npcv_095_shifu"]
+  stage0 desc: 在破庙找任停、和青荷，问这桩争端的旧底
+  stage0 targets: ["room:jiangnan_temple"]
+  stage0 say: 「我争了七年，一次没下过狠手——我知道为什么。那半张契，是我添的。」
+  stage0 narrate: 她说完，把那半张契拿出来，当着你的面撕了。
+  stage0 MENU: 七年了|替她与任停了断>+karma:12;+exp:280;+pot:70;flag:hk_npcv_095_shifu_end;;不问>+exp:100;favor:npcv_095:10;incvar:favor_npcv_095:10
+  reward say: 庞南枝扫起了佛前的碎纸，扫得很慢。
+
+========== hk_npcv_036_juanzi | 樊湘那一页 | giver=npcv_036 鲁拂衣 | lv8
+desc: 翰墨斋后堂收着一页考卷。樊湘落第那年，这一页不见了。
+PORTRAIT origin: 书院里的人都说她清高。她考了四届不中，眼看同窗一个个出头。她把落第的卷子烧了一摞，烧完，把《论语》又抄了一遍——抄的时候她信了，只要够用功，总有出头那天。可她比谁都清楚，她压别人的手段，比她的文章高明。
+PORTRAIT now: 这一届乡试的名额下来，书院里只有一个；和她争的，是同窗樊湘。
+PORTRAIT want: 让樊湘在这一届出不了头，好让名额落到自己头上。
+PORTRAIT fear: 怕自己写的文章，永远比不上自己做的手脚。
+PORTRAIT secret: {"text":"她把樊湘的考卷藏过一页，害樊湘落第，那页纸至今夹在她自己那本书里。","tier":2,"leakTo":["npcv_168"],"ifLeaked":"书院震动；樊湘翻案；鲁拂衣 mood −60"}
+PORTRAIT feuds: [{"id":"npcv_234","kind":"仇","why":"两人争同一个乡试名额，她藏了樊湘的考卷","since":"三年前"},{"id":"npcv_102","kind":"友","why":"闵守也是落第的，两人同病相怜，互相不提落第二字","since":"五年前"},{"id":"npcv_168","kind":"友","why":"岑元替她抄过书，分过她一半工钱","since":"两年前"},{"id":"npcv_177","kind":"亲","why":"阿宝是她收留的小童，是她唯一不设防的人","since":"四年前"}]
+PORTRAIT hooks: ["hk_npcv_036_juanzi","hk_npcv_036_kai"]
+  stage0 desc: 在后堂找樊湘、岑元，问落第那年的考卷
+  stage0 targets: ["room:jn_study_1"]
+  stage0 say: 「读书人的事，算不得手段。」
+  stage0 narrate: 她说「手段」两个字时，声音低了些。
+  stage0 MENU: 那一页考卷|替她还回去>+karma:15;+exp:240;+pot:60;favor:npcv_234:40;incvar:favor_npcv_234:40;flag:hk_npcv_036_juanzi_back;;替她压下>+rep:*:10;+karma:-15;+exp:150;favor:npcv_036:20;incvar:favor_npcv_036:20;flag:hk_npcv_036_juanzi_hold
+  reward say: 鲁拂衣把那一页夹回了原处，压得很平。
+
+========== hk_npcv_036_kai | 书里夹着的那页纸 | giver=npcv_036 鲁拂衣 | lv10
+desc: 鲁拂衣的书里夹着一张纸，她从没敢翻到那一页。
+PORTRAIT origin: 书院里的人都说她清高。她考了四届不中，眼看同窗一个个出头。她把落第的卷子烧了一摞，烧完，把《论语》又抄了一遍——抄的时候她信了，只要够用功，总有出头那天。可她比谁都清楚，她压别人的手段，比她的文章高明。
+PORTRAIT now: 这一届乡试的名额下来，书院里只有一个；和她争的，是同窗樊湘。
+PORTRAIT want: 让樊湘在这一届出不了头，好让名额落到自己头上。
+PORTRAIT fear: 怕自己写的文章，永远比不上自己做的手脚。
+PORTRAIT secret: {"text":"她把樊湘的考卷藏过一页，害樊湘落第，那页纸至今夹在她自己那本书里。","tier":2,"leakTo":["npcv_168"],"ifLeaked":"书院震动；樊湘翻案；鲁拂衣 mood −60"}
+PORTRAIT feuds: [{"id":"npcv_234","kind":"仇","why":"两人争同一个乡试名额，她藏了樊湘的考卷","since":"三年前"},{"id":"npcv_102","kind":"友","why":"闵守也是落第的，两人同病相怜，互相不提落第二字","since":"五年前"},{"id":"npcv_168","kind":"友","why":"岑元替她抄过书，分过她一半工钱","since":"两年前"},{"id":"npcv_177","kind":"亲","why":"阿宝是她收留的小童，是她唯一不设防的人","since":"四年前"}]
+PORTRAIT hooks: ["hk_npcv_036_juanzi","hk_npcv_036_kai"]
+  stage0 desc: 在后堂看鲁拂衣自己翻出夹着的那页纸
+  stage0 targets: ["room:jn_study_1"]
+  stage0 narrate: 她抽出一本书，翻到某一页——里面夹着的，是樊湘那一页考卷。
+  stage0 say: 「我自认清高。这页纸，我一直不敢翻这本。」
+  stage0 MENU: 那页纸|助樊湘翻落第>+karma:12;+exp:260;favor:npcv_234:40;incvar:favor_npcv_234:40;favor:npcv_036:-30;incvar:favor_npcv_036:-30;flag:hk_npcv_036_kai_grey;;不问>+exp:100;favor:npcv_036:10;incvar:favor_npcv_036:10
+  reward say: 鲁拂衣把那本书合上，插回了书架最里一排。
+
+========== hk_npcv_082_mibao | 埋在院里那份副本 | giver=npcv_082 夏承志 | lv9
+desc: 天牢里那个老仆，每递一回密报，就在院里埋一份副本。
+PORTRAIT origin: 他是元怀瑾从家乡带出来的唯一一个人。元怀瑾做官三十年，他跟前跟后三十年，元怀瑾读过什么书、见过什么人、书房里挂过什么画，他全知道。知道得太多，东厂就找上了他——他捏着一封信，捏了三天没敢烧。
+PORTRAIT now: 东厂又来了人，要他盯住元怀瑾这几天见的人。
+PORTRAIT want: 两头都瞒着——瞒着元怀瑾他有把柄落人手，也瞒着东厂他其实下不去手。
+PORTRAIT fear: 怕哪天东厂逼他，只能在元怀瑾和他自己之间选一个活。
+PORTRAIT secret: {"text":"他给东厂写过三回元怀瑾的行止；每一回，他都把密报的副本埋在自家院里，等哪天能替元怀瑾证清白。","tier":3,"leakTo":["npcv_281"],"ifLeaked":"元怀瑾受查；夏承志两头不是人；触发事件「旧仆」"}
+PORTRAIT feuds: [{"id":"npcv_149","kind":"亲","why":"他跟着元怀瑾四十年，知根知底，也最怕对不起他","since":"四十年前"},{"id":"npcv_281","kind":"友","why":"庞怀是京里来的人，两人都是替上头办事的","since":"三年前"}]
+PORTRAIT hooks: ["hk_npcv_082_mibao","hk_npcv_082_hua"]
+  stage0 desc: 去衙门·大堂，见元怀瑾，问那份副本的下落
+  stage0 targets: ["room:jn_yamen_court"]
+  stage0 narrate: 他领你到院角，蹲下来刨开一层土，露出一角油纸包。
+  stage0 say: 「我每递一回，就埋一份。不是留证据——是留后路。」
+  stage0 MENU: 院里那份副本|替他收好>+exp:260;+pot:70;favor:npcv_082:40;incvar:favor_npcv_082:40;flag:hk_npcv_082_mibao_keep;;交给东厂>+rep:朝廷:20;+exp:200;favor:npcv_149:-50;incvar:favor_npcv_149:-50;flag:hk_npcv_082_mibao_give
+  reward say: 夏承志把那个油纸包重新埋回土里，把土踩实了。
+
+========== hk_npcv_082_hua | 书房里那幅画 | giver=npcv_082 夏承志 | lv11
+desc: 元怀瑾书房挂着一幅画，夏承志理了三十年，一次没敢多看。
+PORTRAIT origin: 他是元怀瑾从家乡带出来的唯一一个人。元怀瑾做官三十年，他跟前跟后三十年，元怀瑾读过什么书、见过什么人、书房里挂过什么画，他全知道。知道得太多，东厂就找上了他——他捏着一封信，捏了三天没敢烧。
+PORTRAIT now: 东厂又来了人，要他盯住元怀瑾这几天见的人。
+PORTRAIT want: 两头都瞒着——瞒着元怀瑾他有把柄落人手，也瞒着东厂他其实下不去手。
+PORTRAIT fear: 怕哪天东厂逼他，只能在元怀瑾和他自己之间选一个活。
+PORTRAIT secret: {"text":"他给东厂写过三回元怀瑾的行止；每一回，他都把密报的副本埋在自家院里，等哪天能替元怀瑾证清白。","tier":3,"leakTo":["npcv_281"],"ifLeaked":"元怀瑾受查；夏承志两头不是人；触发事件「旧仆」"}
+PORTRAIT feuds: [{"id":"npcv_149","kind":"亲","why":"他跟着元怀瑾四十年，知根知底，也最怕对不起他","since":"四十年前"},{"id":"npcv_281","kind":"友","why":"庞怀是京里来的人，两人都是替上头办事的","since":"三年前"}]
+PORTRAIT hooks: ["hk_npcv_082_mibao","hk_npcv_082_hua"]
+  stage0 desc: 在天牢，随夏承志去看那幅画
+  stage0 targets: ["room:palace_prison"]
+  stage0 say: 「老爷书房那幅画，我理了三十年，一次没敢多看。可那幅画上记的事，是我写进去的。」
+  stage0 narrate: 他说到「写进去」三个字，手在袖子里攥了一下。
+  stage0 MENU: 书房里那幅画|助元怀瑾自清>+karma:15;+exp:280;+pot:70;favor:npcv_149:40;incvar:favor_npcv_149:40;flag:hk_npcv_082_hua_clear;;不问>+exp:100;favor:npcv_082:10;incvar:favor_npcv_082:10
+  reward say: 夏承志把牢门掩上，退回到廊下那张旧凳上坐着。

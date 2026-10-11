@@ -18,6 +18,9 @@
       <br>（在游戏「MOD 制作器」里点「一键上传」会更省事，这里是没有游戏时的手动通道。）
     </p>
 
+    <!-- 发布要登录（主人 2026-10-11）：服务端认 token 不认昵称，没登录发不出去 -->
+    <div class="acct-bar" id="acct-bar"></div>
+
     <div class="toolbar">
       <button class="chip active" data-mode="json">粘贴 mod.json</button>
       <button class="chip" data-mode="zip">上传 .zip 包</button>
@@ -107,6 +110,48 @@
       SITE.renderFoot();
 
       const CATS = SITE.CATEGORIES;
+
+      /* ---- 发布要登录（主人 2026-10-11）----
+         服务端只认 token，不认前端填的昵称。这里给网页版补一条最简登录通道，
+         免得上传时对着「发布失败」发呆却不知道差什么。 */
+      const LS_ACC = 'wxsite.acct.v1';
+      const readAcc = () => { try { return JSON.parse(localStorage.getItem(LS_ACC)) || null; } catch (e) { return null; } };
+      const writeAcc = a => { try { localStorage.setItem(LS_ACC, JSON.stringify(a)); } catch (e) { /* 存不下就只在本次会话里用 */ } };
+      const acctToken = () => { const a = readAcc(); return (a && a.token) || ''; };
+
+      function paintAcct() {
+        const box = document.getElementById('acct-bar');
+        if (!box) return;
+        const a = readAcc();
+        if (a && a.token) {
+          box.innerHTML = '<span class="acct-hint">已登录：<b>' + SITE.esc(a.name) + '</b></span>' +
+            '<button class="chip" id="acct-out">退出登录</button>';
+          document.getElementById('acct-out').onclick = () => {
+            writeAcc(null); paintAcct(); SITE.toast('已退出登录', 'ok');
+          };
+          return;
+        }
+        box.innerHTML = '<span class="acct-hint">发布前要先登录 —— 别人这才认得出作者是谁：</span>' +
+          '<input id="acct-name" maxlength="16" placeholder="昵称（2~16 字）">' +
+          '<input id="acct-pass" type="password" maxlength="32" placeholder="口令（至少 6 位）">' +
+          '<button class="chip active" id="acct-login">登 录</button>' +
+          '<button class="chip" id="acct-reg">注 册</button>';
+        const go = async (act) => {
+          const n = ((document.getElementById('acct-name') || {}).value || '').trim();
+          const p = (document.getElementById('acct-pass') || {}).value || '';
+          if (!n || !p) { SITE.toast('昵称和口令都要填', 'err'); return; }
+          try {
+            const d = await SITE.jpost('/api/account/' + act, { name: n, pass: p });
+            if (!d || !d.ok) { SITE.toast((d && d.error) || '没成，再试一次', 'err', 3200); return; }
+            writeAcc({ name: d.name, token: d.token });
+            paintAcct();
+            SITE.toast((act === 'login' ? '登录成功：' : '注册成功：') + d.name, 'ok');
+          } catch (e) { SITE.toast('连不上站点：' + e.message, 'err', 3200); }
+        };
+        document.getElementById('acct-login').onclick = () => go('login');
+        document.getElementById('acct-reg').onclick = () => go('register');
+      }
+      paintAcct();
       let zipB64 = null, zipName = '';
 
       /* 模式切换 */
@@ -254,6 +299,13 @@
           return;
         }
         if (!r.zip && !r.json) { SITE.toast('还没有填写内容', 'err'); return; }
+        /* 发布前必须登录（主人 2026-10-11）——云端与本地服务端两条路都要求 */
+        if (!acctToken()) {
+          paintAcct();
+          SITE.toast('发布前请先在上面登录（没有账号就注册一个）', 'err', 3600);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
 
         const note = document.getElementById('note').value.trim();
         const cloudOn = global.WXCLOUD && global.WXCLOUD.available();
@@ -294,7 +346,12 @@
             out = { id: spec.id, updated: res.updated, url: 'mod.html?id=' + encodeURIComponent(spec.id) };
           } else {
             /* ---- 本地服务端发布（云服务不可用时兜底） ---- */
-            const payload = { note: note, author: (r.json && r.json.author) || '匿名侠客' };
+            const payload = {
+              note: note,
+              /* ⚠️ author 只是兜底署名；服务端会用**登录账号名**覆盖它 */
+              author: (r.json && r.json.author) || '匿名侠客',
+              token: acctToken()
+            };
             if (r.zip) {
               payload.base64 = zipB64;
               payload.name = zipName;
@@ -303,7 +360,13 @@
               payload.id = r.json.id;
             }
             const d = await SITE.jpost('/api/mods', payload);
-            if (!d.ok) throw new Error(d.error || '发布失败');
+            if (!d.ok) {
+              if (d.needLogin) {
+                paintAcct();
+                throw new Error('请先登录（口令可能已经过期），再发一次。');
+              }
+              throw new Error(d.error || '发布失败');
+            }
             out = { id: d.id, updated: d.updated, url: d.url || ('mod.html?id=' + d.id) };
           }
 

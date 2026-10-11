@@ -52,11 +52,30 @@
         "attr": { "悟性": 3, "身法": 2 },
         "money": 25,
         "items": ["cloth_robe", "buddha_bead"]
+      },
+      "brothel_sold": {
+        "id": "brothel_sold",
+        "name": "楼里新来的",
+        "gender": "female",
+        "desc": "你是被人牙子卖进醉春楼的。契已经画了押，牌子还没挂——鸨母要先教规矩，再放你见客。",
+        "attr": { "悟性": 2, "定力": 2, "福缘": 2 },
+        "money": 0,
+        "items": ["brothel_contract"],
+        "skills": []
       }
     }
   },
 
   "items": {
+    "brothel_contract": {
+      "id": "brothel_contract",
+      "name": "卖身契",
+      "type": "misc",
+      "value": 0,
+      "tags": ["quest", "letter"],
+      "quality": "common",
+      "desc": "一张写了字的契纸，边角被摩挲得发毛。上头是你自己的名字和指印——按下去那天，你没看清写的是什么。"
+    },
     "letter_intro": {
       "id": "letter_intro",
       "name": "引荐信",
@@ -64,7 +83,7 @@
       "value": 0,
       "tags": ["quest", "letter"],
       "quality": "common",
-      "desc": "一封封了口的旧信，封皮上没写字，只按了个指印。老汉说，递到山门上，自有人认得这个指印。"
+      "desc": "一封封了口的旧信，封皮上没写字，按着个指印。老汉说，递到山门上，自有人认得这个指印。"
     }
   },
 
@@ -75,7 +94,7 @@
       "gender": "male",
       "tag": "vendor",
       "title": "茶摊老汉",
-      "desc": "蹲在灶前扇火的老汉，袖子挽到手肘，脸被灶烟熏得发黄，看人先看鞋。",
+      "desc": "蹲在灶前扇火的老汉，袖子挽到手肘上。脸被灶烟熏得发黄，眼却还亮。他看人，是从脚上那双鞋看起的。",
       "room": "road_jiangnan_1",
       "level": 14,
       "hp": 240,

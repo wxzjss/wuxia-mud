@@ -18,3 +18,6 @@ mods/e2e_cross/
 mods/test_mod/
 # NPC 数据核对用的临时表
 _tmp_npc_table.txt
+
+# 临时备份
+.prose-backup/

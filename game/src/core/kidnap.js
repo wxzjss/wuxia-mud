@@ -232,7 +232,7 @@ function wickednessOf(npc) {
   let w = 0;
   const tag = npc.tag || def.tag || '';
   w += TAG_WICKED[tag] || 0;
-  const per = npc.personality || personality.personalityForTag(tag);
+  const per = personality.personaIdOf(npc);
   w += PERSON_WICKED[per] || 0;
   /* hostile 的（山贼/魔教）默认就是亡命之徒 */
   if (def.hostile || BANDIT_PATTERN.test(npc.name || '')) w += 30;
@@ -246,7 +246,7 @@ function greedOf(npc) {
   if (typeof def.greed === 'number') return clamp(def.greed, 0, 100);
   const tag = npc.tag || def.tag || '';
   let g = (TAG_WICKED[tag] || 0) * 0.5;
-  const per = npc.personality || personality.personalityForTag(tag);
+  const per = personality.personaIdOf(npc);
   g += PERSON_GREED[per] || 0;
   if (def.hostile || BANDIT_PATTERN.test(npc.name || '')) g += 20;
   return clamp(g, 0, 100);
@@ -293,10 +293,16 @@ function witnesses(world, roomId, excludeId) {
 }
 
 /** 找屋里有武艺、可能拦下玩家的 NPC */
-function interceptor(world, roomId, player) {
+/* ⚠️ ：被绑的那个人**不算拦路的**。
+   老路子只处理「已经晕倒」的目标（witnesses 会把倒下的人滤掉，撞不上），
+   但「绑架」新增了**站着硬掳**这一路 —— 不排除的话，目标本人会跳出来
+   「一声暴喝：住手！你扛的是什么！」，自己拦自己。 */
+function interceptor(world, roomId, player, excludeId) {
   const mine = martialPower(player);
   let best = null;
   for (const n of witnesses(world, roomId)) {
+    if (excludeId && n.id === excludeId) continue;
+    if (excludeId && n.defId === excludeId) continue;
     if (martialPower(n) <= mine * 0.8) continue;
     if (!best || martialPower(n) > martialPower(best)) best = n;
   }
@@ -475,11 +481,142 @@ function reviveFromSnapshot(world, snap, roomId) {
  *
  * @returns {ok, lines, bag?}
  */
-function packNpc(world, kw) {
+/* ================================================================== *
+ *  一之三、「绑架」成功率（主人 2026-10-11）
+ *
+ *  主人原话：「npc 互动页面的『绑架』按钮右侧会显示成功率（根据该 npc 是否处于昏迷
+ *  状态（如果是的话必定成功）、双方实力以及当前血量状态以及身上是否有负面 buff
+ *  之类的判断）；判定成功会在屏幕上显示将该 npc 掳进麻袋的剧情，判定失败才会进入战斗
+ *  （战斗胜利会把该 npc 打昏迷过去）。」
+ *
+ *  ⚠️ 这份判定**只写在这里一份**：面板上显示的那行百分比，与真动手时掷的那次骰子
+ *     必须走同一个函数。两处各写一套，迟早出现「写着 70% 却打十次输十次」。
+ * ================================================================== */
+
+/** 他身上的负面状态有几个（中毒／受伤／眩晕／封穴之类）
+ *  判据：显式 debuff 标记 > 名字/tag 里带坏词 > 任何一项 mod 为负。
+ *  ⚠️ 三条任一命中就算 —— 各模块造 buff 的写法不统一，只认一条会漏一大半。 */
+function debuffCount(npc) {
+  const BAD = /毒|伤|晕|封|迷|乱|麻|虚|弱|惧|残|debuff|blind|stun|poison|weak|slow/i;
+  return ((npc && npc.buffs) || []).filter(b => {
+    if (!b) return false;
+    if (b.debuff === true) return true;
+    if (typeof b.tag === 'string' && BAD.test(b.tag)) return true;
+    if (typeof b.name === 'string' && BAD.test(b.name)) return true;
+    const mods = b.mods || {};
+    return Object.keys(mods).some(k => typeof mods[k] === 'number' && mods[k] < 0);
+  }).length;
+}
+
+/** 一个角色的「斤两」（与门派争位那套口径同源：攻×2 + 气血×0.12 + 内力×0.2 + 属性×3） */
+function heftOf(ch) {
+  if (!ch) return 0;
+  return (ch.atk || 0) * 2 + (ch.maxHp || 0) * 0.12 + (ch.maxMp || 0) * 0.2
+    + (ch.attrTotal ? (ch.attrTotal('根骨') + ch.attrTotal('力量')) * 3 : 0);
+}
+
+/**
+ * 能不能绑得成、几成把握。
+ * @returns {{chance:number, pct:number, why:string, knocked:boolean, reasons:string[]}}
+ */
+function assess(world, p, npc) {
+  if (!p || !npc) return { chance: 0, pct: 0, why: '无人可绑。', knocked: false, reasons: [] };
+  if (npc.knockedOut) {
+    return { chance: 1, pct: 100, why: '他已不省人事，套上袋就走。', knocked: true, reasons: ['昏迷（必成）'] };
+  }
+  const mine = heftOf(p), his = heftOf(npc);
+  const reasons = [];
+  let c = 0.18;
+  const ratio = his > 0 ? mine / his : 2;
+  const byPower = Math.max(-0.25, Math.min(0.42, (ratio - 1) * 0.3));
+  c += byPower;
+  reasons.push(byPower >= 0 ? `你比他壮（${(ratio * 100).toFixed(0)}%）` : `他比你壮（${(ratio * 100).toFixed(0)}%）`);
+  const hpRatio = (npc.maxHp || 1) > 0 ? Math.max(0, Math.min(1, (npc.hp || 0) / npc.maxHp)) : 1;
+  const byHp = (1 - hpRatio) * 0.45;
+  c += byHp;
+  if (byHp > 0.04) reasons.push(`他只剩 ${Math.round(hpRatio * 100)}% 气血`);
+  const db = debuffCount(npc);
+  const byBuff = Math.min(0.24, db * 0.08);
+  c += byBuff;
+  if (db) reasons.push(`身上带着 ${db} 处负面状态`);
+  c = Math.max(0.05, Math.min(0.95, c));
+  const pct = Math.round(c * 100);
+  return {
+    chance: c, pct, knocked: false, reasons,
+    why: reasons.join('；') || '全看手上功夫',
+  };
+}
+
+/**
+ * 「绑架」：一条路走完 —— 晕着的直接装；站着的先掷一次骰子，
+ * **成了就当场掳进麻袋（不开打）**，没成才动手。
+ */
+function kidnapAttempt(world, kw) {
+  const p = world.player, k = data(world);
+  if (!p || !k) return { ok: false, lines: [{ kind: 'warn', text: '你还没上路。' }] };
+  /* 袋子的两道前置，与 packNpc 同一套话（先说了再动手） */
+  if (p.countItem(SACK_ID) < 1) {
+    return { ok: false, lines: [{ kind: 'warn', text: '你没有麻袋。得先弄一只（集市、杂货铺都有卖）。' }] };
+  }
+  if (k.bags.length >= MAX_BAGS) {
+    return { ok: false, lines: [{ kind: 'warn', text: `你已经扛着 ${k.bags.length} 只麻袋了，扛不动更多。` }] };
+  }
+  if (world.battle) return { ok: false, lines: [{ kind: 'warn', text: '交着手呢，手上腾不开。' }] };
+
+  const here = (world.npcsIn(p.room) || []).filter(n => !n.isPlayer);
+  const standing = kw
+    ? here.find(n => (n.name || '').includes(kw) || kw.includes(n.name || ''))
+    : null;
+  /* 找不到站着的人（或没给名字）→ 交给老路：晕着的直接装，别的给指引 */
+  if (!standing) return packNpc(world, kw);
+
+  const a = assess(world, p, standing);
+  /* 骰子用 world.rng（测试里钉得住） */
+  const roll = world.rng ? world.rng.next() : Math.random();
+  if (roll < a.chance) {
+    const r = packNpc(world, kw, { target: standing, grab: true });
+    if (r && r.lines && !r.battle) {
+      /* 得手那一句要写在最前头 —— 让「你怎么得的手」先落进玩家眼里 */
+      r.lines.unshift({
+        kind: 'story',
+        text: pickGrab(world, standing, a).replace(/\{a\}/g, standing.name),
+      });
+    }
+    return r;
+  }
+
+  /* 没扣住 → 撕破脸开打。战斗赢了对方自然会晕（onNpcDown 会标 knockedOut），
+     回来再点一次「绑架」就是必成的了。 */
+  standing.hostile = true;
+  world.startCombat(p, standing);
+  return {
+    ok: false, battle: true,
+    lines: [
+      { kind: 'story', text: `你从背后欺上去，手刚要搭上${standing.name}的肩 —— 他像是背后长了眼，侧身让开了。` },
+      { kind: 'warn', text: `${standing.name}回头看你，脸沉了下来。（动手吧；打倒了再装袋。）` },
+    ],
+  };
+}
+
+/** 得手那一句（几种写法，别每次都一个样） */
+function pickGrab(world, npc, a) {
+  const pool = npc.knockedOut
+    ? ['你把他拦腰一抄，塞进麻袋，扎紧了袋口。']
+    : [
+      '你从他侧后方出手，一手捂嘴一手扣腕，他没来得及喊出声，人就软了。麻袋往头上一套，绳头咬在牙里一抽，扎紧。',
+      '你假装侧身让路，错身那一下手腕一翻，正扣住他的脉门。他挣了两下，麻袋已经套到了肩上。',
+      '你没给他机会转身。膝弯一顶，人往下一软，麻袋顺势而下，从头罩到脚。',
+      '他刚开口喊了半个字，你的肘已经到了。剩下半声咽回去，人跟着倒进袋里。',
+    ];
+  return pool[Math.abs(npc.name.length + Math.round(a.chance * 100)) % pool.length];
+}
+
+function packNpc(world, kw, opts) {
   const p = world.player;
   const k = data(world);
   if (!p || !k) return { ok: false, lines: [{ kind: 'warn', text: '你还没上路。' }] };
   const lines = [];
+  opts = opts || {};
 
   /* ---- 前置 1：得先有袋子 ---- */
   if (p.countItem(SACK_ID) < 1) {
@@ -490,23 +627,27 @@ function packNpc(world, kw) {
     return { ok: false, lines: [{ kind: 'warn', text: `你已经扛着 ${k.bags.length} 只麻袋了，扛不动更多。` }] };
   }
 
-  /* ---- 找目标：同房间、已晕倒的 NPC ----
-   * 用 downedIn 而不是 npcsIn：npcsIn 过滤 dead，而被打倒的人恰好是
-   * knockedOut=true + dead=true（战斗层面算「倒下」），用 npcsIn 会一个都找不到。 */
-  const room = world.getRoom(p.room);
-  const downed = world.downedIn(p.room);
-  if (!downed.length) {
-    return { ok: false, lines: [{ kind: 'warn', text: '这屋里没有昏倒的人。麻袋只装得下失去知觉的。' }] };
-  }
-  const target = kw ? downed.find(n => (n.name || '').includes(kw) || kw.includes(n.name || '')) : downed[0];
+  /* ---- 找目标 ----
+   * 默认找同房间里**已晕倒**的：用 downedIn 而不是 npcsIn —— npcsIn 过滤 dead，
+   * 而被打倒的人恰好是 knockedOut=true + dead=true（战斗层面算「倒下」），
+   * 用 npcsIn 会一个都找不到。
+   * `opts.target` 是「绑架」判定成功那条路传进来的（那人还站着，是硬掳的）。 */
+  let target = opts.target || null;
   if (!target) {
-    return {
-      ok: false,
-      lines: [
-        { kind: 'warn', text: `这里没有叫「${kw}」的昏倒之人。` },
-        { kind: 'hint', text: '可装的人：' + downed.map(n => n.name).join('、') },
-      ],
-    };
+    const downed = world.downedIn(p.room);
+    if (!downed.length) {
+      return { ok: false, lines: [{ kind: 'warn', text: '这屋里没有昏倒的人。麻袋只装得下失去知觉的。' }] };
+    }
+    target = kw ? downed.find(n => (n.name || '').includes(kw) || kw.includes(n.name || '')) : downed[0];
+    if (!target) {
+      return {
+        ok: false,
+        lines: [
+          { kind: 'warn', text: `这里没有叫「${kw}」的昏倒之人。` },
+          { kind: 'hint', text: '可装的人：' + downed.map(n => n.name).join('、') },
+        ],
+      };
+    }
   }
   /* ---- 前置 3：关键 NPC 不许装（BOSS / 有任务的） ---- */
   const tdef = target.def || {};
@@ -515,7 +656,7 @@ function packNpc(world, kw) {
   }
 
   /* ---- 拦路：有武艺且强过玩家的 NPC 会拦（主人规则） ---- */
-  const guard = interceptor(world, p.room, p);
+  const guard = interceptor(world, p.room, p, opts.target ? (opts.target.id || opts.target.defId) : null);
   if (guard) {
     guard.hostile = true;
     world.startCombat(p, guard);
@@ -545,7 +686,7 @@ function packNpc(world, kw) {
     /* 按性格分流 */
     let reported = 0;
     for (const n of wit) {
-      const per = n.personality || 'mune';
+      const per = personality.personaIdOf(n);
       const r = WITNESS_REACTIONS[per] || WITNESS_REACTIONS.mune;
       lines.push({ kind: 'sys', text: `　${n.name}${r.text}` });
       /* 「必定报官」：侠义/油滑/温婉这几类当场告发；其余是概率 */
@@ -950,7 +1091,7 @@ function wakeUp(world, bag) {
   const p = world.player;
   const lines = [];
   bag.state = 'struggling';
-  const per = bag.personality || 'mune';
+  const per = personality.personaIdOf(bag);
   const r = WAKE_REACTIONS[per] || WAKE_REACTIONS.mune;
   const minutesIn = world.clockMinutes - (bag.putAt || world.clockMinutes);
 
@@ -1021,7 +1162,7 @@ function onTimeTick(world, minutes) {
       }
       let reported = 0;
       for (const n of wit) {
-        const r = WITNESS_REACTIONS[n.personality || 'mune'] || WITNESS_REACTIONS.mune;
+        const r = WITNESS_REACTIONS[personality.personaIdOf(n)] || WITNESS_REACTIONS.mune;
         lines.push({ kind: 'sys', text: `　${n.name}${r.text}` });
         if (r.report && world.rng.chance(r.chance)) reported++;
       }
@@ -1847,7 +1988,8 @@ module.exports = {
   blackMarketAt, nearestBlackRoom, waitingRoom,
   snapshot, reviveFromSnapshot,
   /* 流程 */
-  packNpc, listBags, releaseBag, onTimeTick, wakeRate, wakeUp,
+  packNpc, kidnapAttempt, assess, debuffCount, heftOf,
+  listBags, releaseBag, onTimeTick, wakeRate, wakeUp,
   hireGuard, settleWages, payWages, supervise,
   buySlave, sellNpc, redeemPerson, assignTask, settleTasks, checkEscape,
   /* 家园地牢（关押 / 提审 / 陪练 / 放出） */

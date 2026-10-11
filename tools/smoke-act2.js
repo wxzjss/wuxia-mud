@@ -79,6 +79,17 @@ sec('② 全库 flag 悬空扫描（第一道保险）');
   const D = w.data;
   const setFlags = new Set();
   const walk = o => {
+    /* ⚠️ 字符串要**先**判 —— `menu` 的 `raw` 是一整串效果文本
+       （`menu:标题|A>flag:xxx;narrate:…;;B>flag:yyy`）。
+       若按「非对象直接 return」写在前面，字符串永远走不到这一支，
+       menu 里置的 flag 全漏 → 假报「悬空 flag」
+       （三~五幕落地实测踩到：know_east_depot / pass_shankou /
+       blood_saber_down / taohua_passed 全在 menu 里置）。
+       —— 这个 bug 的第一版就是这么写错的，特此留注。 */
+    if (typeof o === 'string') {
+      for (const m of o.matchAll(/\b(?:set)?flag:([A-Za-z0-9_]+)/g)) setFlags.add(m[1]);
+      return;
+    }
     if (!o || typeof o !== 'object') return;
     if ((o.type === 'flag' || o.type === 'setflag') && o.args && o.args[0]) setFlags.add(o.args[0]);
     for (const k in o) walk(o[k]);

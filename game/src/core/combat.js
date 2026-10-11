@@ -57,10 +57,16 @@ const DEFAULT_HOOKS = {
   },
   // 伤害计算
   damage(attacker, defender, base, ctx) {
-    const pen = ctx.armorPen || 0;
+    const pen = Math.min(0.7, ctx.armorPen || 0);
     let d = base * (ctx.mult || 1);
-    /* 走 defenseOf()，别直接读 defender 上的 def —— 那是 NPC 模板对象，乘出来是 NaN */
-    d = d * (100 / (100 + defenseOf(defender) * (1 - Math.min(0.7, pen))));
+    /* 走 defenseOf()，别直接读 defender 上的 def —— 那是 NPC 模板对象，乘出来是 NaN。
+       ⚠️ 减伤封顶 75%（2026-10-10 数值体检）：原来的 100/(100+def) 没有上限，
+         神秘老僧 def=732 时减伤 88%，玩家每一刀只剩一成伤害 → 打它要 276 刀，
+         高防人物直接变成「打不动的肉墙」。封顶后 def ≥ 300 一律按 75% 减，
+         穿甲（armorPen）仍能把有效防御压下来，破防流依旧有戏。 */
+    const dEff = defenseOf(defender) * (1 - pen);
+    const red = Math.min(0.75, dEff / (dEff + 100));
+    d = d * (1 - red);
     // 随机浮动
     d *= 0.85 + ctx.world.rng.next() * 0.3;
     return Math.max(1, Math.floor(d));
@@ -126,14 +132,31 @@ class CombatEngine {
          buff 的 turns 会被 tickBuffs 减一，阶段 buff 是 9999 回合的常驻不受影响） */
       this.tickBossPhase(u, lines, battle);
 
+      /* 被震慑（awe）：这一回合不敢动手。回合数用完自然恢复。 */
+      if (u.vars && u.vars.awe && u.vars.awe.left > 0) {
+        u.vars.awe.left--;
+        if (u.isPlayer) lines.push({ kind: 'combat', text: '你被对方的气势压着，一时提不起手。' });
+        else lines.push({ kind: 'combat', text: `${u.name}看了看你，终究没敢动手。` });
+        continue;
+      }
       const enemies = this.enemiesOf(all, ent);
       if (!enemies.length) continue;
-      const targetEnt = this.pickTarget(u, enemies, battle);
+      /* 迷幻（confuse，`design/40` §4.3 P1-1）：中了迷魂香的会朝自己人动手。
+         没有同伴（单挑）时照常打敌人 —— 否则会「愣住不打」，比不中招还怪。 */
+      let pool = enemies;
+      if (this.isConfused(u)) {
+        const mates = this.alliesOf(all, ent);
+        if (mates.length) {
+          pool = mates;
+          lines.push({ kind: 'combat', text: `${u.name}双目赤红，竟朝自己人递招！` });
+        }
+      }
+      const targetEnt = this.pickTarget(u, pool, battle);
       if (!targetEnt) continue;
       const t = targetEnt.u;
 
       const isPlayerSide = ent.side === 'attackers';
-      // 是否用武学
+      // 是否用武学（封穴时 pickSkill 会返回 null → 只能普攻）
       const useSkill = this.pickSkill(u, t);
       const attacks = useSkill && useSkill.hits ? useSkill.hits : this.baseAttackCount(u, t);
 
@@ -292,6 +315,14 @@ class CombatEngine {
   enemiesOf(all, ent) {
     return all.filter(x => x.side !== ent.side && x.u.hp > 0 && !x.u.dead);
   }
+  /** 同侧的人（用于「迷幻」：敌人神智昏乱时会朝自己人递招） */
+  alliesOf(all, ent) {
+    return all.filter(x => x.side === ent.side && x.u !== ent.u && x.u.hp > 0 && !x.u.dead);
+  }
+  /** 迷幻：godless 的「心神被迷」——只认 buff 标签，不认效果来源 */
+  isConfused(u) { return !!(u.buffs && u.buffs.some(b => b.tag === 'confuse')); }
+  /** 封穴：被点了穴道，这一回合只能干挨（pickSkill 直接放弃用招） */
+  isSilenced(u) { return !!(u.buffs && u.buffs.some(b => b.tag === 'silence')); }
   pickTarget(u, enemies, battle) {
     // 优先玩家的当前目标
     if (u.isPlayer && u.combatTarget) {
@@ -313,6 +344,9 @@ class CombatEngine {
     return n;
   }
   pickSkill(u, t) {
+    /* 封穴（silence，P1-2）：被点了穴的人这一回合用不出招，只能干瞪眼。
+       判据放在最前面 —— 连 boss 的阶段招也一并封住，这才是「点穴」该有的分量。 */
+    if (this.isSilenced(u)) return null;
     /* ---- B3 · 物种专属招式优先 ----
        蛇/狼这类动物没有「装备槽」意义上的武学：它们只会speciesMoves 里那几招。
        所以这里**先**在 speciesMoves 里随机取一招（取不到才落回下面的槽位逻辑）。
@@ -345,7 +379,7 @@ class CombatEngine {
       }
     }
     // 选择已装备的武器武学；若无，用拳法
-    const slots = ['剑', '刀', '棍', '鞭', '暗器', '拳'];
+    const slots = ['剑', '刀', '棍', '鞭', '暗器', '音波', '拳'];
     for (const s of slots) {
       const id = u.equippedSkills[s];
       if (id && u.learned[id]) {
@@ -358,28 +392,33 @@ class CombatEngine {
     return null;
   }
 
-  oneAttack(u, t, skill, battle, idx) {
+  oneAttack(u, t, skill, battle, idx, move) {
     const w = this.world;
-    const sName = skill ? skill.name : '普通攻击';
+    const sName = move ? move.name : (skill ? skill.name : '普通攻击');
     const lv = skill ? u.skillLevel(skill.id) : 0;
     const tier = skill ? profTierOf(u, skill.id) : 0;
 
-    // 内力消耗
-    if (skill && skill.mpCost) {
-      if (u.mp < skill.mpCost) {
+    // 内力消耗（武技的 mpCost 是**额外**叠加在武学之上的）
+    const mpNeed = (skill && skill.mpCost ? skill.mpCost : 0) + (move && move.mpCost ? move.mpCost : 0);
+    if (mpNeed) {
+      if (u.mp < mpNeed) {
         if (idx === 0) return { kind: 'combat', text: `${u.name}内力不济，只能以拳脚相搏。` };
         return null;
       }
-      u.mp -= skill.mpCost;
+      u.mp -= mpNeed;
+    }
+    // 体力消耗（武技专属，玩家才有体力池；NPC 无 stamina 就跳过）
+    if (move && move.staminaCost && typeof u.stamina === 'number') {
+      u.stamina = Math.max(0, u.stamina - move.staminaCost);
     }
 
     const ctx = {
       world: w,
       skill,
       // 去等级化（SPRINT2）：命中/伤害由「熟练度档位」而非角色等级驱动
-      acc: skill ? (skill.accuracy || 80) + profTierAcc(tier) : 85,
-      mult: skill ? (skill.damageMult || 1) * profTierMult(tier) : 1,
-      armorPen: u.armorPen,
+      acc: (skill ? (skill.accuracy || 80) + profTierAcc(tier) : 85) + (move && move.accuracy ? move.accuracy : 0),
+      mult: (skill ? (skill.damageMult || 1) * profTierMult(tier) : 1) * (move && move.damageMult ? move.damageMult : 1),
+      armorPen: u.armorPen + (move && move.armorPen ? move.armorPen : 0),
       critRate: u.critRate + (skill ? (skill.critBonus || 0) : 0),
       critDmg: u.critDmg + (skill ? (skill.critDmgBonus || 0) : 0),
     };
@@ -389,6 +428,10 @@ class CombatEngine {
       ctx.mult *= pen.mult;
       ctx.acc += pen.acc;
     }
+    /* 天赋：武学类别加成（剑心通明按 slot「剑」、蛊道天赋按 category「旁门」）。
+       挂在最终 mult 上——武器折扣之后，保证「有天赋 +15%/20%」是实打实的总倍率。 */
+    const sbMult = w.skillBonusMult ? w.skillBonusMult(u, skill) : 1;
+    if (sbMult !== 1) ctx.mult *= sbMult;
     if (w.combatHooks.hitRoll) {
       const hitFn = w.combatHooks.hitRoll;
       if (!hitFn(u, t, skill, ctx)) {
@@ -398,7 +441,11 @@ class CombatEngine {
 
     // 去等级化：基础 = 攻击力（已含属性派生）；不再叠加任何等级放大项
     const base = u.atk;
-    const dmgRaw = w.combatHooks.damage ? w.combatHooks.damage(u, t, base, ctx) : base * (ctx.mult || 1);
+    let dmgRaw = w.combatHooks.damage ? w.combatHooks.damage(u, t, base, ctx) : base * (ctx.mult || 1);
+    /* 暗劲（arts.js「注入暗劲」）：经脉里埋着别人一缕内劲，一动真力就吃大亏。
+       挂在中招者身上（`vars.hiddenForce`），所以是**任何打他的人**都能占这个便宜。 */
+    const hf = t.vars && t.vars.hiddenForce;
+    if (hf && hf.left > 0) dmgRaw *= (hf.mult || 1.6);
     let dmg = Math.max(1, Math.floor(dmgRaw));
 
     // 暴击
@@ -408,13 +455,15 @@ class CombatEngine {
       dmg = Math.floor(dmg * ctx.critDmg);
     }
 
-    // 特殊效果
+    /* 特殊效果：`skill.effects` 是「打中就有」的底子（老数据全靠它，不能动），
+       `move.effects` 是指定武技时的额外加成 —— 两层叠加，向后兼容。 */
     let extraText = '';
-    if (skill && skill.effects) {
-      for (const eff of [].concat(skill.effects)) {
-        const r = this.applySkillEffect(eff, u, t, skill, battle);
-        if (r && r.text) extraText += r.text;
-      }
+    const effList = [];
+    if (skill && skill.effects) effList.push(...[].concat(skill.effects));
+    if (move && move.effects) effList.push(...[].concat(move.effects));
+    for (const eff of effList) {
+      const r = this.applySkillEffect(eff, u, t, skill, battle);
+      if (r && r.text) extraText += r.text;
     }
 
     // 功能 Mod 规则：玩家受击增减（additive damageTaken，负值=减伤）
@@ -446,7 +495,7 @@ class CombatEngine {
 
     const name = u.isPlayer ? '你' : u.name;
     const tname = t.isPlayer ? '你' : t.name;
-    let text = `${name}${skill ? '使出一招「' + skill.name + '」' : '挥拳'}，击中${tname}`;
+    let text = `${name}${move ? '使出一式「' + move.name + '」' : skill ? '使出一招「' + skill.name + '」' : '挥拳'}，击中${tname}`;
     if (crit) text += `，正中要害（暴击）`;
     text += `，造成 ${dmg} 点伤害。`;
     if (pen.note && idx === 0) text += `（${pen.note}）`;
@@ -465,6 +514,19 @@ class CombatEngine {
   applySkillEffect(eff, u, t, skill, battle) {
     const w = this.world;
     let text = '';
+    /* 天赋免疫判定（百毒不侵 / 心如铁石）：武技效果先过一遍「受击者是不是免疫这类」。
+       引擎里没有专门的毒/眩晕字段，标签由 world.effectTags 从效果的类型与名字推出来
+       （stun→眩晕；名字含「毒」的 dot→毒）。命中免疫就直接吞掉，不落 buff / 不生效。 */
+    if (w.isImmune && w.effectTags) {
+      const tags = w.effectTags(eff);
+      for (const tg of tags) {
+        if (w.isImmune(t, tg)) {
+          const cn = tg === 'poison' ? '百毒不侵' : tg === 'stun' ? '心如铁石'
+            : tg === 'confuse' ? '心境澄明' : '浑然不觉';
+          return { text: ` ${t.name}${cn}，这一手伤不了分毫。` };
+        }
+      }
+    }
     switch (eff.type) {
       case 'dot': {
         t.addBuff({ name: eff.name || '持伤', turns: eff.turns || 3, mods: {}, tag: 'dot_' + (eff.name || 'x'), dot: { value: eff.value || 5, source: u.id } });
@@ -472,7 +534,7 @@ class CombatEngine {
         break;
       }
       case 'stun':
-        if (w.rng.next() < (eff.chance || 0.2)) { t.addBuff({ name: '暈眩', turns: eff.turns || 1, tag: 'stun' }); text += ` ${t.name}被打得气血翻涌，动作一滞。`; }
+        if (w.rng.next() < (eff.chance || 0.2)) { t.addBuff({ name: '暈眩', turns: eff.turns || 1, tag: 'stun' }); text += ` ${t.name}被打得闷哼一声，动作一滞。`; }
         break;
       case 'slow':
         t.addBuff({ name: '迟缓', turns: eff.turns || 2, mods: { speed: -(eff.value || 5) }, tag: 'slow' });
@@ -492,6 +554,37 @@ class CombatEngine {
         text += ''; break;
       case 'heal':
         u.hp = clamp(u.hp + (eff.value || 20), 0, u.maxHp); text += ` ${u.name}真气流转，伤势略复。`; break;
+      /* 回内力（P1-5）：老引擎只有 heal（回血），没有回内的武技效果。
+         走这条而不是 custom，是因为「回气」是内功类武技的通用需求，数据侧不该各写一个函数。 */
+      case 'mp':
+        u.mp = clamp(u.mp + (eff.value || 20), 0, u.maxMp); text += ` ${u.name}真气稍复。`; break;
+      /* 迷幻（P1-1）：中了就敌我不分 —— 真正的表现层在 step/pickTarget（会调头打自己人） */
+      case 'confuse':
+        if (w.rng.next() < (eff.chance || 0.35)) {
+          t.addBuff({ name: '迷乱', turns: eff.turns || 2, tag: 'confuse' });
+          text += ` ${t.name}眼神一散，竟辨不清敌我。`;
+        }
+        break;
+      /* 封穴（P1-2）：不能出招 —— 表现层在 pickSkill（返回 null → 只能普攻） */
+      case 'silence':
+        if (w.rng.next() < (eff.chance || 0.4)) {
+          t.addBuff({ name: '封穴', turns: eff.turns || 2, tag: 'silence' });
+          text += ` ${t.name}穴道受制，一时提不起内力。`;
+        }
+        break;
+      /* 群攻/溅射（P1-3）：余劲扫及同侧其他人。
+         ⚠️ 副目标走 `oneAttack(u, o, null, ...)` —— **故意不传 skill**，
+            否则每个副目标都会再把 effects 跑一遍，aoe 里套 aoe，无限递归。 */
+      case 'aoe': {
+        if (!battle) break;
+        const dside = [].concat(battle.defenders).some(x => x === t || (x && x.members && x.members.indexOf(t) >= 0)) ? 'defenders' : 'attackers';
+        const others = [].concat(battle[dside]).filter(x => x && x !== t && x.hp > 0 && !x.dead);
+        for (const o of others) {
+          const r = this.oneAttack(u, o, null, battle, 1);
+          if (r) text += ' ' + r.text;
+        }
+        break;
+      }
       case 'extraHit': {
         const n = eff.value || 1;
         for (let i = 0; i < n; i++) {
@@ -557,8 +650,29 @@ class CombatEngine {
   }
 
   onDeath(t, battle, lines, tIsDefender) {
-    t.dead = true; t.hp = 0; t.buffs = [];
     const w = this.world;
+    /* ---- 切磋：点到为止，**谁都不会死**（主人 2026-10-11）----
+       「切磋和正常战斗一样（会掉血但不会死亡、会保留 1 滴血晕倒过去，醒来还是在原地）」。
+       🔴 这里必须拦在**所有致死逻辑之前**（玩家那条 playerDeath → 客栈醒转、
+          NPC 那条 onNpcDown/onNpcKilled 都在下面）。放晚了就会出现
+          「切磋输一场，人被抬到客栈去了」或者「切磋把人打死了」。
+       做法：血量按到 1、双方都留在原地、当场判出胜负。
+       「晕倒 → 醒来还在原地」这两句写在 duel 结算里（world.js），
+       这里只负责别让人真的倒下/走掉。 */
+    if (battle && battle.duel) {
+      t.hp = 1;
+      t.buffs = [];
+      t.duelLose = true;
+      if (t.isPlayer) {
+        lines.push({ kind: 'combat', text: '你招式一散，踉跄半步，撑着膝盖喘气，摆手认了输。' });
+      } else {
+        lines.push({ kind: 'combat', text: `${t.name}晃了晃，跌坐在地，随即又撑着站了起来。` });
+      }
+      battle.over = true;
+      battle.winner = t.isPlayer ? 'defenders' : 'attackers';
+      return;
+    }
+    t.dead = true; t.hp = 0; t.buffs = [];
     if (t.isPlayer) {
       /* 玩家**不会死，只是力竭昏过去**（主人明确要求：昏倒 → 最近客栈醒转）。
          文案与计数都走这条唯一口径：

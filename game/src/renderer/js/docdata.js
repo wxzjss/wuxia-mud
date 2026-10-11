@@ -93,7 +93,7 @@
 <tr><td><code>+hp:100</code></td><td>恢复 100 点气血（负数则扣血）</td></tr>
 <tr><td><code>+mp:50</code> / <code>-mp:20</code></td><td>内力增减</td></tr>
 <tr><td><code>+money:500</code></td><td>给 500 文钱</td></tr>
-<tr><td><code>+pot:50</code></td><td>潜能（请教武学用）</td></tr>
+<tr><td><code>+pot:50</code></td><td>潜能（引擎已不用它；留给 Mod 自己造经济，玩家面板不显示）</td></tr>
 <tr><td><code>+item:长剑:2</code></td><td>获得 2 把长剑</td></tr>
 <tr><td><code>-item:长剑:1</code></td><td>拿走 1 把长剑</td></tr>
 <tr><td><code>learn:basic_sword</code></td><td>学会一门武学</td></tr>
@@ -222,7 +222,7 @@
   <h3>四、核心玩法</h3>
   <div class="doc-grid">
     <div class="doc-card"><b>行走</b><p>点房间下方的方向按钮，或输入 <code>n</code> <code>s</code> <code>e</code> <code>w</code>，也可以用中文「往北走」。键盘 QEZC = 四斜角，WASD = 四方。</p></div>
-    <div class="doc-card"><b>成长</b><p>杀敌得潜能，潜能用来跟师父<b>请教</b>武学。你的强弱只看武学功法等级——练成绝学，<b>境界</b>自升。</p></div>
+    <div class="doc-card"><b>成长</b><p>武学靠<b>请教</b>师父、参悟石壁、读书识字得来，练得越多越熟。你的强弱只看武学功法等级——练成绝学，<b>境界</b>自升。</p></div>
     <div class="doc-card"><b>武学</b><p>武学分拳脚、剑法、刀法、内功、轻功等。等级越高威力越大。<code>lian 武学名</code> 可以自己练功涨熟练度。</p></div>
     <div class="doc-card"><b>战斗</b><p><code>kill 目标</code> 出手。战斗面板选「普通攻击 / 全力一击 / 防御 / 逃跑」，也能用 <code>perform 招式名</code> 发绝招。</p></div>
     <div class="doc-card"><b>门派</b><p>找到门派山门，<code>join 门派名</code> 拜师。做门派贡献可以晋升职位，解锁更高级武学。</p></div>
@@ -423,7 +423,7 @@
           {
             id: 'taixu_jianyi',
             name: '太虚剑意',
-            type: 'sword',
+            type: '剑',
             maxLevel: 180,
             difficulty: 4,
             damageMult: 2.1,
@@ -440,7 +440,7 @@
           {
             id: 'taixu_xinfa',
             name: '太虚心法',
-            type: 'force',
+            type: '内功',
             maxLevel: 200,
             difficulty: 4,
             damageMult: 1,
@@ -483,12 +483,12 @@
             desc: '服下后气血翻涌，外伤立愈。', use: '+hp:500', stackable: true
           },
           {
-            id: 'wugou_jian', name: '无垢剑', type: 'weapon', slot: 'weapon',
+            id: 'wugou_jian', name: '无垢剑', type: 'weapon', slot: '武器',
             price: 2400, weight: 3, atk: 45, dodge: 5,
             desc: '一柄通体莹白的软剑，出鞘无声。'
           },
           {
-            id: 'qingyun_pao', name: '青云袍', type: 'armor', slot: 'body',
+            id: 'qingyun_pao', name: '青云袍', type: 'armor', slot: '身体',
             price: 1800, weight: 2, def: 32, hp: 80,
             desc: '青缎裁成，轻软透气，内衬软甲。'
           }

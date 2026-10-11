@@ -1,0 +1,106 @@
+{
+  "arts": {
+    "note": "战斗外秘技（在 NPC 交互界面使用）。共同规矩：只对**实力弱于自己**的人使得出，且按实力差距掷骰——差得越远越稳。",
+    "powerNote": "实力对比用 powerOf()：气血/内力/攻防身法加权，不看等级（等级早已废除）。",
+    "list": [
+      {
+        "id": "art_knockout",
+        "name": "迷晕",
+        "cat": "旁门",
+        "needSkills": ["basic_poison", "tangmen_du", "hehuan_qimen_1"],
+        "mpCost": 18,
+        "baseChance": 0.55,
+        "effect": "knockout",
+        "minutes": 240,
+        "desc": "袖里弹一点药粉，或者后颈上不轻不重地一按。人倒下去是没声音的。",
+        "ok": "你借着递酒的动作探了探手。{name}的眼神散了，身子一软，顺着墙根滑下去。",
+        "fail": "{name}猛地一侧头，避了开去，回头盯了你一眼——这一眼里的意思不太好看。"
+      },
+      {
+        "id": "art_stray",
+        "name": "致幻",
+        "cat": "奇门",
+        "needSkills": ["miao_gu", "hehuan_qimen_1", "sa_qimen_escape"],
+        "mpCost": 26,
+        "baseChance": 0.5,
+        "effect": "stray",
+        "minutes": 240,
+        "desc": "不伤人，只让他认不得路。中了这一手的人会在附近几条街上来回打转，转得自己都不明白。",
+        "ok": "你在{name}肩上轻轻一拍。他站住了，左右看了看，像是忽然想不起自己是要往哪儿去。",
+        "fail": "{name}把肩一沉，把你的手抖开了：「做什么？」"
+      },
+      {
+        "id": "art_hiddenforce",
+        "name": "注入暗劲",
+        "cat": "内功",
+        "needSkills": ["basic_force", "hehuan_force_1", "con_jinyi_neigong"],
+        "mpCost": 30,
+        "baseChance": 0.5,
+        "effect": "hiddenforce",
+        "seconds": 1800,
+        "mult": 1.6,
+        "desc": "把一缕内力按进对方经脉里，当时不觉。等他一动真力，那缕劲就开始扯他的旧伤。",
+        "ok": "你扶了{name}一把，顺手把一缕内劲按了进去。他道了谢，什么也没察觉。",
+        "fail": "{name}的手腕一翻，把你的手拨开了：「不必扶。」"
+      },
+      {
+        "id": "art_poison",
+        "name": "暗中下毒",
+        "cat": "旁门",
+        "needSkills": ["basic_poison", "tangmen_du", "miao_gu"],
+        "mpCost": 20,
+        "baseChance": 0.6,
+        "effect": "poison",
+        "dot": 22,
+        "turns": 40,
+        "desc": "毒不在多，在于下在哪儿。酒里、茶里、衣袖拂过的那一瞬。",
+        "ok": "你替{name}斟了酒，指尖在杯沿上抹了一下。他一口喝干。",
+        "fail": "{name}把杯子搁下了，没喝：「今日不渴。」"
+      },
+      {
+        "id": "art_hypno",
+        "name": "催眠",
+        "cat": "旁门",
+        "needSkills": ["hehuan_qimen_2", "hehuan_qimen_1", "sa_face_change"],
+        "mpCost": 34,
+        "baseChance": 0.42,
+        "effect": "charm",
+        "minutes": 120,
+        "desc": "话要说得很慢，眼睛不能眨。等他自己把注意力交出来，再提要求就容易了。",
+        "ok": "你看着{name}的眼睛，把话说得很慢。他的目光渐渐直了，你说什么，他都点头。",
+        "fail": "{name}皱起眉，往后退了半步：「你这是什么眼神。」"
+      },
+      {
+        "id": "art_drain",
+        "name": "采补",
+        "cat": "合欢",
+        "sectOnly": "hehuan",
+        "needSkills": ["hehuan_force_3"],
+        "mpCost": 40,
+        "baseChance": 0.48,
+        "effect": "drain",
+        "ratio": 0.1,
+        "perNpcMax": 10,
+        "minutes": 360,
+        "desc": "取人内力以为己用。取走的是**内力上限**，不是当下的余量——被取过的人会一直觉得气不够用。",
+        "ok": "{name}只觉得一阵倦意上涌，靠在椅背上闭了眼。等他睁开眼，什么都没少，只是胸口那口气比先前难提了。",
+        "fail": "{name}忽然坐直了身子，把你的手从腕上拿开：「你的手很凉。」"
+      },
+      {
+        "id": "art_dual",
+        "name": "双修",
+        "cat": "合欢",
+        "sectOnly": "hehuan",
+        "needSkills": ["hehuan_force_2", "hehuan_force_3"],
+        "mpCost": 20,
+        "baseChance": 0.7,
+        "favorNeed": 40,
+        "effect": "dual",
+        "gain": 8,
+        "desc": "两气相引。这一桩对方是知情的——没有这一步，宗里不认。",
+        "ok": "你与{name}相对坐了半宿。等窗纸发白时，两个人的气息都比先前沉了些。",
+        "fail": "{name}摇了摇头：「这样不好。」"
+      }
+    ]
+  }
+}

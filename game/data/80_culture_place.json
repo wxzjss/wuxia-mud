@@ -1,0 +1,156 @@
+{
+  "rooms": {
+    "jn_wenmo_zhai": {
+      "id": "jn_wenmo_zhai",
+      "name": "文墨斋",
+      "region": "shuyuan",
+      "desc": "一间敞厅，摆着七张案。案上墨迹新旧不一，墙上挂着几张画，最旧的那张已经泛黄。窗下有人在对句，声音压得很低。",
+      "exits": {
+        "n": "jn_school"
+      },
+      "actions": [
+        {
+          "label": "看墙上的画",
+          "cmd": "look 画",
+          "keywords": [
+            "画",
+            "看画"
+          ],
+          "desc": "看墙上挂的那几张"
+        }
+      ]
+    },
+    "jn_gongyuan_gate": {
+      "id": "jn_gongyuan_gate",
+      "name": "贡院·门厅",
+      "region": "yamen",
+      "desc": "门厅里挂着历科的榜文，纸都黄了。几张长桌拼在一处，坐着两个书办，手边是厚厚的名册。要应考的在这里报名，考棚在里头。",
+      "exits": {
+        "u": "jn_gongyuan_hall",
+        "w": "jn_yamen_gate"
+      },
+      "actions": [
+        {
+          "label": "报名应考",
+          "cmd": "应试",
+          "keywords": [
+            "应试",
+            "报考",
+            "科考"
+          ],
+          "desc": "报名这一场"
+        }
+      ]
+    },
+    "jn_gongyuan_hall": {
+      "id": "jn_gongyuan_hall",
+      "name": "贡院·考棚",
+      "region": "yamen",
+      "desc": "考棚一溜排到墙根，每间只容一人一桌。四角站着巡场，谁抬手多看一眼都要被喝住。空气里全是墨与汗的味道。",
+      "exits": {
+        "d": "jn_gongyuan_gate"
+      },
+      "actions": [
+        {
+          "label": "应考",
+          "cmd": "应试",
+          "keywords": [
+            "应试",
+            "答题",
+            "考试"
+          ],
+          "desc": "坐下，摊开卷子"
+        },
+        {
+          "label": "温书",
+          "cmd": "温书",
+          "keywords": [
+            "温书",
+            "读书"
+          ],
+          "desc": "考前来不及了，临时抱佛脚"
+        }
+      ]
+    },
+    "luoyang_arena": {
+      "id": "luoyang_arena",
+      "name": "洛阳·擂台",
+      "region": "luoyang",
+      "desc": "一座丈许高的木台，四角缠着红绸。台边的彩棚挂着灯笼，棚里坐的人看不清脸。台板被踩得发亮。",
+      "exits": {
+        "w": "luoyang_gate"
+      },
+      "actions": [
+        {
+          "label": "上台应试",
+          "cmd": "比武招亲",
+          "keywords": [
+            "招亲",
+            "应试",
+            "上台"
+          ],
+          "desc": "登台"
+        }
+      ]
+    },
+    "jn_brothel_stage": {
+      "id": "jn_brothel_stage",
+      "region": "qinglou",
+      "actions": [
+        {
+          "label": "戏台",
+          "cmd": "listen 戏",
+          "keywords": [
+            "戏",
+            "唱"
+          ],
+          "desc": "听一折戏"
+        },
+        {
+          "label": "听曲",
+          "cmd": "听曲",
+          "keywords": [
+            "听曲",
+            "点曲",
+            "曲子"
+          ],
+          "desc": "点一支曲子（可「听曲 <曲牌>」）"
+        }
+      ]
+    },
+    "jn_brothel_2": {
+      "id": "jn_brothel_2",
+      "region": "qinglou",
+      "actions": [
+        {
+          "label": "赴诗会",
+          "cmd": "赋诗",
+          "keywords": [
+            "诗会",
+            "赋诗",
+            "对句"
+          ],
+          "desc": "席上有人出题"
+        }
+      ]
+    },
+    "jn_school": {
+      "id": "jn_school",
+      "exits": {
+        "s": "jn_wenmo_zhai"
+      }
+    },
+    "jn_yamen_gate": {
+      "id": "jn_yamen_gate",
+      "exits": {
+        "e": "jn_gongyuan_gate"
+      }
+    },
+    "luoyang_gate": {
+      "id": "luoyang_gate",
+      "exits": {
+        "e": "luoyang_arena"
+      }
+    }
+  }
+}

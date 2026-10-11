@@ -1,0 +1,1864 @@
+{
+  "npcs": {
+    "ren_woxing": {
+      "id": "ren_woxing",
+      "name": "任我行",
+      "title": "日月神教前教主",
+      "gender": "male",
+      "tier": "A",
+      "unique": true,
+      "tag": "swordsman",
+      "sect": "mojiao",
+      "rank": 5,
+      "room": "mojiao_hall",
+      "level": 55,
+      "hp": 6200,
+      "hostile": true,
+      "leavesCorpse": false,
+      "desc": "一个背对着你站在空交椅旁边的人。他看的是墙上那幅画——画的是一片水，水里的圈，和绣阁绷子上那幅，是同一张底稿。他说话很慢，像是每一个字都在心里关了很多年。",
+      "skills": {
+        "内功": "xixing_dafa",
+        "拳": "heimu_zhang"
+      },
+      "learned": {
+        "xixing_dafa": {
+          "level": 700
+        },
+        "heimu_zhang": {
+          "level": 680
+        }
+      },
+      "quests": [],
+      "bossPhases": [
+        {
+          "at": 1,
+          "name": "吸星",
+          "skill": "xixing_dafa",
+          "line": "（他伸出手。你发现自己的手掌先凉了。）「内力这东西，存在别人身上，才是浪费。」",
+          "desc": "他不打你。他在取你。",
+          "mult": {
+            "atk": 1.1,
+            "speed": 1.05
+          }
+        },
+        {
+          "at": 0.6,
+          "name": "夺功",
+          "skill": "xixing_dafa",
+          "line": "「你这一身，正好补我这些年的亏空。」",
+          "desc": "他每出一掌，你身上就少一样东西——先是力气，后来是话。",
+          "mult": {
+            "atk": 1.1,
+            "def": 1.15,
+            "lifesteal": 0.4
+          }
+        },
+        {
+          "at": 0.3,
+          "name": "反噬",
+          "line": "（他的脸色白了一下——吸进去的太杂。）「……不够。」",
+          "desc": "他吞得太急了。你看见他手背上的青筋在跳。",
+          "mult": {
+            "atk": 1.3,
+            "def": 0.8,
+            "dodge": 0.9
+          }
+        }
+      ],
+      "portrait": {
+        "v": 1,
+        "tier": "A",
+        "lock": false,
+        "role": "日月神教前教主，被关在地底十二年的那个人",
+        "origin": "他年轻时从别人身上拿了一身内力，又把教主之位交了出去。他以为把东西交出去就没人再找他算账。他错了一半——位置交出去了，账还留着。",
+        "now": "他在地底待了十二年。出来以后，他没有先去找仇人，也没有先去找旧部，先去找那半卷纸。",
+        "want": "他要那卷《武林真意》，是想弄明白：当年替他抄书的那个人，到底抄给他的是哪一半。",
+        "fear": "他怕的不是死。他怕自己吸进来的一身东西，到死也拼不成一个整的。",
+        "secret": {
+          "text": "他在地底的十二年，靠默背从前看过的半卷书活着。他默出的那半卷，字句和真本分毫不差——只有最后一页，他怎么也想不起来。",
+          "tier": 3,
+          "leakTo": [
+            "mojiao_dongfang"
+          ],
+          "ifLeaked": "东方不败若知道这事，只会淡淡说一句：「原来你也只记得半篇。」"
+        },
+        "obsession": "每天用指尖在墙上写一遍那半卷书。写完，再用袖子擦掉。他不许自己写在纸上。",
+        "feuds": [
+          {
+            "id": "mojiao_dongfang",
+            "kind": "仇",
+            "why": "他坐过的那把交椅，如今坐着别人",
+            "since": "十二年"
+          },
+          {
+            "id": "depot_master",
+            "kind": "仇",
+            "why": "他在地底最深的那些天，是东厂的人在门口守着",
+            "since": "十一年"
+          }
+        ],
+        "voice": {
+          "tone": "慢，低，像在数着什么",
+          "catchphrase": "把欠他的，一样一样拿回来。",
+          "taboo": [
+            "十二年",
+            "地底",
+            "亏空"
+          ],
+          "style": "一句一顿，先问后说；从不解释，只说结论；把「拿」字挂在嘴边——东西、账、人，都用同一个动词。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在空交椅的侧边，不坐正中的那把，只是坐着看墙上的画"
+          },
+          {
+            "at": "dusk",
+            "act": "沿大殿走一圈，数柱子，数到第七根就停"
+          },
+          {
+            "at": "night",
+            "act": "借着灯影在墙上写那半卷书，写完用袖子擦掉"
+          }
+        ],
+        "arc": {
+          "init": "打量",
+          "warm": "把绣绷夹层替他拆开 +15；答应替他把纸上的名字带出去 +25",
+          "cold": "把他和东厂的旧账当众说破 −30；拿他默不出的那半篇逼他 −50",
+          "break": "把他的名字和他那半卷书一起交给朝廷"
+        },
+        "hooks": [
+          {
+            "id": "hk_ren_woxing_banjuan",
+            "title": "默不出的那一页",
+            "type": "task",
+            "trigger": {
+              "var": "trust_ren_woxing",
+              "op": "<=",
+              "value": 10
+            },
+            "seed": "他说漏了嘴：「我在墙上写过一万遍。最后一页，我怎么也想不起来。」",
+            "rewardHint": "+主线推进；呼应 ending「半交」"
+          }
+        ],
+        "marks": [
+          "空交椅",
+          "墙上的画",
+          "十二年",
+          "吸星",
+          "只在墙上写字"
+        ]
+      }
+    },
+    "mojiao_dongfang": {
+      "quests": [
+        "q_main_moye"
+      ]
+    },
+    "nv_huang": {
+      "quests": [
+        "q_taohua_entry",
+        "q_main_end"
+      ]
+    }
+  },
+  "items": {
+    "wulin_zhenyi_canjuan": {
+      "id": "wulin_zhenyi_canjuan",
+      "name": "武林真意·残卷",
+      "type": "book",
+      "value": 0,
+      "noSell": true,
+      "tags": [
+        "mainline",
+        "clue",
+        "legend"
+      ],
+      "quality": "legend",
+      "desc": "绣绷夹层里取出的半卷。一半被人剪走了——剩下的这半，字还认得，理接不上。断口很齐，剪它的人手上没有抖过。残缺，只够看半篇。"
+    },
+    "wulin_zhenyi_chaoben": {
+      "id": "wulin_zhenyi_chaoben",
+      "name": "武林真意·抄本",
+      "type": "book",
+      "value": 0,
+      "noSell": true,
+      "tags": [
+        "mainline",
+        "clue"
+      ],
+      "quality": "rare",
+      "desc": "纸是新的，字是别人的手笔——抄的人手很稳。通篇没有一处涂改。翻到一半，你会发现：抄的人也不懂他抄的是什么。"
+    },
+    "yuanhuai_stub": {
+      "id": "yuanhuai_stub",
+      "name": "元怀瑾的书房副本",
+      "type": "quest",
+      "value": 0,
+      "noSell": true,
+      "tags": [
+        "mainline",
+        "clue"
+      ],
+      "quality": "fine",
+      "desc": "一份拿在手里就知道不该拿的东西。纸的边角裁得极齐，落款处被人用小刀刮去了一个字。"
+    }
+  },
+  "quests": {
+    "q_main_moye": {
+      "id": "q_main_moye",
+      "name": "【主线】黑木之崖",
+      "level": 50,
+      "type": "主线",
+      "giver": "mojiao_dongfang",
+      "desc": "三幕截下的那封信说：残卷在绣阁，请东方教主亲自验收。你上了黑木崖。崖上的人告诉你：收秘典的，从来不在江湖里。",
+      "require": {
+        "flag": "act3_done"
+      },
+      "stages": [
+        {
+          "desc": "上崖：过黑木崖三道哨卡（山门 → 前殿 → 绣楼）",
+          "cond": {
+            "flag": "moye_sentinel"
+          },
+          "next": 1
+        },
+        {
+          "desc": "绣阁：听东方教主把话说完",
+          "cond": {
+            "flag": "dongfang_talks"
+          },
+          "next": 2
+        },
+        {
+          "desc": "绣阁：与他见个高低",
+          "cond": {
+            "flag": "dongfang_down"
+          },
+          "next": 3
+        },
+        {
+          "desc": "大殿：见那个等了你三十年的人",
+          "cond": {
+            "flag": "ren_appears"
+          },
+          "next": 4
+        },
+        {
+          "desc": "绣阁：翻出绣绷夹层里的残卷",
+          "cond": {
+            "flag": "has_canjuan"
+          },
+          "next": 5
+        },
+        {
+          "desc": "绣阁：下崖——朝堂的回音到了",
+          "cond": {
+            "flag": "know_depot_master"
+          },
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "flag",
+          "args": [
+            "know_depot_master"
+          ]
+        },
+        {
+          "type": "flag",
+          "args": [
+            "act4_done"
+          ]
+        },
+        {
+          "type": "quest",
+          "args": [
+            "q_main_end",
+            0
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            20000
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            10000
+          ]
+        },
+        {
+          "type": "+title",
+          "args": [
+            "上崖人"
+          ]
+        },
+        {
+          "type": "narrate",
+          "raw": "崖上的风很大。你把那半卷纸按在怀里，才发觉它比来时重了。"
+        }
+      ]
+    },
+    "q_main_end": {
+      "id": "q_main_end",
+      "name": "【主线】江湖路远",
+      "level": 60,
+      "type": "主线",
+      "giver": "nv_huang",
+      "desc": "残卷在手，御街的公文也到了。交、不交、半交——三条路都不是好结局，可你总得选一条走完。",
+      "require": {
+        "flag": "act4_done"
+      },
+      "stages": [
+        {
+          "desc": "御街：接不接那道进京的公文",
+          "cond": {
+            "or": [
+              {
+                "flag": "summoned"
+              },
+              {
+                "flag": "refused_summon"
+              }
+            ]
+          },
+          "next": 1
+        },
+        {
+          "desc": "渡海：去桃花岛找黄药师",
+          "cond": {
+            "flag": "taohua_road"
+          },
+          "next": 2
+        },
+        {
+          "desc": "蛇阵：过阵（硬闯，或绕过去）",
+          "cond": {
+            "flag": "taohua_passed"
+          },
+          "next": 3
+        },
+        {
+          "desc": "清音洞：听黄药师的三句话",
+          "cond": {
+            "flag": "three_words"
+          },
+          "next": 4
+        },
+        {
+          "desc": "御道：过那道影子",
+          "cond": {
+            "flag": "shadow_done"
+          },
+          "next": 5
+        },
+        {
+          "desc": "太和殿：面圣，把这件事做个了结",
+          "cond": {
+            "flag": "act5_done"
+          },
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "flag",
+          "args": [
+            "act5_done"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            30000
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            15000
+          ]
+        },
+        {
+          "type": "+title",
+          "args": [
+            "名动天下"
+          ]
+        },
+        {
+          "type": "narrate",
+          "raw": "你名动天下。可江湖还是那个江湖——下一个「你」，已经在路上了。"
+        }
+      ]
+    }
+  },
+  "rooms": {
+    "mojiao_shanmen": {
+      "id": "mojiao_shanmen",
+      "actions": [
+        {
+          "cmd": "探后山",
+          "label": "在崖后转一圈",
+          "keywords": [
+            "探后山",
+            "后山",
+            "绕路",
+            "探路"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "act3_done"
+              },
+              {
+                "notFlag": "moye_backroad"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你没往正门去，先绕到崖后。坡上爬满了藤，脚底是湿的。"
+            },
+            {
+              "type": "narrate",
+              "raw": "拨开一丛，后头露出道石缝，窄，够一个人侧身过去。缝里有风出来，是通的。"
+            },
+            {
+              "type": "narrate",
+              "raw": "你没急着进。先记住了这个地方——万一正门不好走。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "moye_backroad"
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "闯山门",
+          "label": "闯山门",
+          "keywords": [
+            "闯山门",
+            "山门",
+            "上崖",
+            "闯"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "act3_done"
+              },
+              {
+                "notFlag": "sentinel1"
+              }
+            ]
+          },
+          "failMsg": "山门上的两个人看的是你的手。你还不够格让他们开门。",
+          "effects": [
+            {
+              "if": {
+                "flag": "moye_backroad"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "你没有走门。后山的藤蔓底下有一道石缝，只容一个人侧着身过去。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "缝口有新擦的痕迹，擦得很熟。有人常从这里走。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "石缝通到大殿后头。你从柱子背后绕进去的时候，没有人回头。"
+                },
+                {
+                  "type": "flag",
+                  "args": [
+                    "sentinel1"
+                  ]
+                },
+                {
+                  "type": "goto",
+                  "args": [
+                    "mojiao_hall"
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "type": "narrate",
+                  "raw": "山门是两块黑石支起来的。石头上刻过对联，字被人凿掉了一半，只剩两三个偏旁。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "门里站着两个人，一左一右。他们看的是你的手。"
+                },
+                {
+                  "type": "say",
+                  "raw": "上崖的，先把手留下。"
+                },
+                {
+                  "type": "combat",
+                  "args": [
+                    "mob_mo_disciple"
+                  ]
+                },
+                {
+                  "type": "narrate",
+                  "raw": "另一个人没有上。他退进石头后面，把门让开了。门轴很涩，响了一声。"
+                },
+                {
+                  "type": "flag",
+                  "args": [
+                    "sentinel1"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "mojiao_hall": {
+      "id": "mojiao_hall",
+      "actions": [
+        {
+          "cmd": "过前殿",
+          "label": "过前殿",
+          "keywords": [
+            "过前殿",
+            "前殿",
+            "大殿",
+            "进去"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "sentinel1"
+              },
+              {
+                "notFlag": "sentinel2"
+              }
+            ]
+          },
+          "failMsg": "门还没让开。先过了山门那一关。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "大殿比外头黑。四根柱子上各挂一盏灯，灯只照柱子，不照人。"
+            },
+            {
+              "type": "narrate",
+              "raw": "殿侧立着四个人。她们谁也没有看你。四个人的衣袖是一样的颜色。"
+            },
+            {
+              "type": "combat",
+              "args": [
+                "mob_mo_disciple"
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "打完了，那四个人还是没有看你。她们只是齐齐往后退了半步，又站定。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "sentinel2"
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "回大殿",
+          "label": "回大殿",
+          "keywords": [
+            "回大殿",
+            "大殿",
+            "第二只手",
+            "任我行"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "dongfang_down"
+              },
+              {
+                "notFlag": "ren_appears"
+              }
+            ]
+          },
+          "failMsg": "大殿上那把椅子还是你的？先把绣阁的事做完。",
+          "effects": [
+            {
+              "if": {
+                "flag": "ren_refused"
+              },
+              "then": [
+                {
+                  "if": {
+                    "flag": "killed_ren_woxing"
+                  },
+                  "then": [
+                    {
+                      "type": "narrate",
+                      "raw": "他把竹牌翻过来，又翻回去，像在数着什么。"
+                    },
+                    {
+                      "type": "say",
+                      "raw": "那就当我先收一笔利钱。"
+                    },
+                    {
+                      "type": "flag",
+                      "args": [
+                        "ren_appears"
+                      ]
+                    }
+                  ],
+                  "else": [
+                    {
+                      "type": "narrate",
+                      "raw": "他没有走。他站在空交椅旁边，还在等你动手。"
+                    },
+                    {
+                      "type": "combat",
+                      "args": [
+                        "ren_woxing"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "if": {
+                "flagsNone": [
+                  "ren_pact",
+                  "ren_refused"
+                ]
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "殿上那张交椅空了。空椅旁边站着一个人，背对着你，正在看墙上那幅画。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "画上是一片水，水里很多小圈——和绣架上那幅，是同一幅的底稿。"
+                },
+                {
+                  "type": "say",
+                  "raw": "残卷？残卷我找了三十年。"
+                },
+                {
+                  "type": "say",
+                  "raw": "我不是替朝廷找。我是替我自己找。"
+                },
+                {
+                  "type": "say",
+                  "raw": "你说，一个人被关在地底十二年，出来头一件事该做什么？"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "他没有等你答。"
+                },
+                {
+                  "type": "say",
+                  "raw": "把欠他的，一样一样拿回来。"
+                },
+                {
+                  "type": "menu",
+                  "raw": "他怎么用你，你怎么用他|接下他的帖子>flag:ren_pact;flag:ren_appears;narrate:他递过来一片竹牌，上面刻着一个字：行。;say:绣绷的夹层，我替你拆。你欠我一次。;;把竹牌推回去>flag:ren_refused;narrate:你把那片竹牌推了回去。;say:不接。;narrate:他把竹牌翻过来，又翻回去，像在数着什么。;say:那就当我先收一笔利钱。;combat:ren_woxing"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "mojiao_shuangxiu": {
+      "id": "mojiao_shuangxiu",
+      "actions": [
+        {
+          "cmd": "上绣楼",
+          "label": "上绣楼",
+          "keywords": [
+            "上绣楼",
+            "绣楼",
+            "上楼",
+            "木梯"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "sentinel2"
+              },
+              {
+                "notFlag": "sentinel3"
+              }
+            ]
+          },
+          "failMsg": "前殿那一步还没走完，木梯上不去。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "木梯九十九级，很窄，只容一个人。"
+            },
+            {
+              "type": "narrate",
+              "raw": "走到一半，上面传来针穿布的声音——一下一下，很匀。"
+            },
+            {
+              "if": {
+                "flag": "buju"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "第四十七级是虚的。你踩在旁边那一级上。左肩那道旧伤，你也知道了。"
+                }
+              ],
+              "else": [
+                {
+                  "type": "narrate",
+                  "raw": "第四十七级是虚的。你的脚陷了下去，膝盖磕在棱上。上面的针声没有停。"
+                },
+                {
+                  "type": "-hp",
+                  "args": [
+                    120
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "sentinel3"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "moye_sentinel"
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "见教主",
+          "label": "见教主",
+          "keywords": [
+            "见教主",
+            "教主",
+            "东方不败",
+            "绣阁"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "moye_sentinel"
+              },
+              {
+                "notFlag": "dongfang_down"
+              }
+            ]
+          },
+          "failMsg": "三道哨卡还没过完，见不到教主。",
+          "effects": [
+            {
+              "if": {
+                "flag": "killed_mojiao_dongfang"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "他靠回绣架上，像一件挂久了的东西。"
+                },
+                {
+                  "type": "say",
+                  "raw": "……那半张单子，你带走。"
+                },
+                {
+                  "type": "say",
+                  "raw": "上面没有我的名字。你猜为什么。"
+                },
+                {
+                  "if": {
+                    "flag": "dongfang_pact"
+                  },
+                  "then": [
+                    {
+                      "type": "say",
+                      "raw": "答应我的事，别忘了。"
+                    }
+                  ]
+                },
+                {
+                  "type": "flag",
+                  "args": [
+                    "dongfang_down"
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "if": {
+                    "notFlag": "dongfang_talks"
+                  },
+                  "then": [
+                    {
+                      "type": "narrate",
+                      "raw": "绣架上绷着一幅没绣完的东西。针还在上面，线是红的。"
+                    },
+                    {
+                      "type": "narrate",
+                      "raw": "屋里有很淡的香，像花，也像药。"
+                    },
+                    {
+                      "type": "say",
+                      "raw": "绣了八年。你看得出这是什么吗？"
+                    },
+                    {
+                      "type": "narrate",
+                      "raw": "你看了很久。绣面上是一片水，水里有很多小圈，圈里好像有人，又好像没有。"
+                    },
+                    {
+                      "type": "say",
+                      "raw": "看不出。来看的人，都看不出。"
+                    },
+                    {
+                      "type": "narrate",
+                      "raw": "他把针搁在绣架上，转过身来。"
+                    },
+                    {
+                      "type": "say",
+                      "raw": "你不是第一个来的。前七个，走的都是同一条路——从山门打上来。"
+                    },
+                    {
+                      "type": "say",
+                      "raw": "他们要的东西，我这儿没有。我这儿只有一张单子。"
+                    },
+                    {
+                      "type": "say",
+                      "raw": "收秘典的不是我。是朝里那位。"
+                    },
+                    {
+                      "if": {
+                        "flag": "jiuye_stood_aside"
+                      },
+                      "then": [
+                        {
+                          "type": "say",
+                          "raw": "你鞋上沾的土，是华山道上的。那晚官车过山脚，你看见了什么，说说。"
+                        },
+                        {
+                          "type": "narrate",
+                          "raw": "他没有等你答。"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "flag",
+                  "args": [
+                    "dongfang_talks"
+                  ]
+                },
+                {
+                  "type": "menu",
+                  "raw": "听完他的话，你怎么做|替他把那张单子带出去>flag:dongfang_pact;narrate:他从绣架底下抽出一张纸，没有折，直接塞给你。;say:上面二十七个名字。你看完就烧了。别学他们，拿它去换什么。;narrate:他抬了一下左肩——先抬的是右边。他留意到了你在看。;say:我这个人，早就没打算活着下崖。;combat:mojiao_dongfang;;不信。他要的东西，自己来拿>flag:dongfang_hostile;say:你说得对。我这儿的东西，都该自己来拿。;say:那就拿吧。;combat:mojiao_dongfang"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "翻绣架",
+          "label": "翻绣架",
+          "keywords": [
+            "翻绣架",
+            "绣架",
+            "夹层",
+            "搜"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "ren_appears"
+              },
+              {
+                "notFlag": "has_canjuan"
+              }
+            ]
+          },
+          "failMsg": "绣架上什么也没有。眼下还轮不到你翻它。",
+          "effects": [
+            {
+              "if": {
+                "flag": "ren_pact"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "夹层被人割开了，割得很利落，割口是新的。"
+                }
+              ],
+              "else": [
+                {
+                  "type": "narrate",
+                  "raw": "绣绷底下是空的。东西缝在夹层里——一节一节的，像被人裁过。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "拿出来才看清：一半被人剪走了。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "剩下的这半，字还认得，理接不上。断口很齐。剪它的人，手上没有抖过。"
+                }
+              ]
+            },
+            {
+              "type": "+item",
+              "args": [
+                "wulin_zhenyi_canjuan",
+                1
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "has_canjuan"
+              ]
+            },
+            {
+              "if": {
+                "flag": "ren_pact"
+              },
+              "then": [
+                {
+                  "type": "say",
+                  "raw": "拆得干净吧。记住，你欠我一次。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "下崖",
+          "label": "下崖",
+          "keywords": [
+            "下崖",
+            "下山",
+            "离开"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "has_canjuan"
+              },
+              {
+                "notFlag": "know_depot_master"
+              }
+            ]
+          },
+          "failMsg": "你还什么都没拿到，下了崖也是白下。",
+          "effects": [
+            {
+              "type": "spawn",
+              "args": [
+                "depot_master",
+                "mojiao_shuangxiu",
+                15
+              ]
+            },
+            {
+              "type": "spawn",
+              "args": [
+                "depot_shadow",
+                "mojiao_shuangxiu",
+                15
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "山下的火把排成了两行。有人上山了，走得很慢，一点也不急。"
+            },
+            {
+              "type": "narrate",
+              "raw": "走在头里的人穿着深青色的袍子，手里没有刀。"
+            },
+            {
+              "type": "say",
+              "raw": "奉天承运。"
+            },
+            {
+              "type": "say",
+              "raw": "请你进京。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他说话很慢，每个字都像在秤上过了过。他的眼睛没有看你，看的是你手里那半卷纸。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他身后那道影子，比别人的长。"
+            },
+            {
+              "if": {
+                "item": "depot_token_half"
+              },
+              "then": [
+                {
+                  "type": "say",
+                  "raw": "你身上有块牌子的气味。厂里的东西，我认得。"
+                },
+                {
+                  "type": "say",
+                  "raw": "留着吧。厂里的东西，认人不认牌。"
+                }
+              ]
+            },
+            {
+              "if": {
+                "flag": "depot_token_given"
+              },
+              "then": [
+                {
+                  "type": "say",
+                  "raw": "你身上本来该有块牌子。现在在别人手里。"
+                },
+                {
+                  "type": "say",
+                  "raw": "不老实。不过我不急着要。"
+                }
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "他说完就转身下山。火把跟着他动，两行变一行，又变没有。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "know_depot_master"
+              ]
+            },
+            {
+              "type": "questdone",
+              "args": [
+                "q_main_moye"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "jn_brothel_hall": {
+      "id": "jn_brothel_hall",
+      "actions": [
+        {
+          "cmd": "劝她",
+          "label": "劝她",
+          "keywords": [
+            "劝她",
+            "鲁半夏",
+            "胭脂",
+            "花厅"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "act3_done"
+              },
+              {
+                "notFlag": "186_warm"
+              },
+              {
+                "notFlag": "186_broken"
+              }
+            ]
+          },
+          "failMsg": "她不在花厅。这条路的事，还轮不到你插嘴。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "花厅里有人在唱曲。唱到一半停了——她看见你进门，把调子放软了些。"
+            },
+            {
+              "type": "narrate",
+              "raw": "她手边搁着一张纸，纸上写满了小字，密得像一片瓦。她把纸往袖里推了半寸。"
+            },
+            {
+              "type": "say",
+              "raw": "爷说笑了，奴家只听过曲。"
+            },
+            {
+              "type": "menu",
+              "raw": "她等着你开口|把袖口那半张纸按住，只说你要去黑木崖>flag:186_warm;flag:buju;narrate:她的手指在纸角上停了一下，很轻。;say:崖上的路，我见过有人上。前山是人挡人；后山没人挡——只是那截藤，得有人告诉你哪一根能拽。;say:还有一件。这位教主的左肩，早年落过伤。他抬手的时候，先抬右边。;;问她：雅间里那句话，你递上去了没有>flag:186_broken;+karma:-10;narrate:她笑了一下，开口唱了两句。第三句没有接下去。;say:爷要是见着教主，就替我说一句——我什么都没听见。;narrate:她把那张纸塞进灯里。纸烧得很快，灰落在桌上，像一层薄雪。;say:记住了吗。什么都没听见。"
+            }
+          ]
+        }
+      ]
+    },
+    "palace_street": {
+      "id": "palace_street",
+      "actions": [
+        {
+          "cmd": "拆公文",
+          "label": "拆公文",
+          "keywords": [
+            "拆公文",
+            "公文",
+            "传旨",
+            "御街"
+          ],
+          "cond": {
+            "flag": "act4_done"
+          },
+          "failMsg": "御街上没有人在等你。你还没到该进京的时候。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "御街的石板缝里长着草。走这条道的人，一年到头也不多。"
+            },
+            {
+              "type": "narrate",
+              "raw": "街口站着一个传旨的人，手里托着公文袋。他已经站了很久，肩上都落了灰。"
+            },
+            {
+              "type": "say",
+              "raw": "提督说了：京里的人都等着见你。"
+            },
+            {
+              "type": "menu",
+              "raw": "你怎么办|进京>flag:summoned;+item:palace_token;narrate:公文袋里除了那卷纸，还夹着一块腰牌。牌子是冷的。;say:他们的意思很清楚。;say:来，或者被带来。;;把公文袋扯开>flag:refused_summon;-rep:朝廷:20;narrate:你把公文袋撕开。纸落了一地。;narrate:那个传旨的人没有拦你。他把纸一张张捡起来，拍了拍灰，卷好。;say:官爷让我带一句话：撕了，也算回话。;narrate:他走了。他没有给你腰牌。"
+            }
+          ]
+        }
+      ]
+    },
+    "jn_yamen_office": {
+      "id": "jn_yamen_office",
+      "actions": [
+        {
+          "cmd": "翻名录",
+          "label": "翻那份名录",
+          "keywords": [
+            "翻名录",
+            "名录",
+            "翻档案",
+            "查名录"
+          ],
+          "cond": {
+            "flag": "know_east_depot",
+            "notFlag": "clerk_met"
+          },
+          "failMsg": "你连那份名录长什么样都不知道，先弄清铜牌的来路。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "架子上那叠未销的公文，最上面一份纸边有新裁的毛口——像是从更长的东西上裁下来的。"
+            },
+            {
+              "type": "narrate",
+              "raw": "「客官，衙门重地。」一个老书吏挡在你和公文之间。他手上有常年握笔磨出的茧。"
+            },
+            {
+              "type": "say",
+              "raw": "「……你说的是那份名单？那不是我抄的，我只是誊。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "clerk_met"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "met_bureau_clerk"
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "补个名分",
+          "label": "补个名分",
+          "keywords": [
+            "补个名分",
+            "名分",
+            "胡录事",
+            "差役"
+          ],
+          "cond": {
+            "flag": "clerk_met"
+          },
+          "failMsg": "签押房的人不认识你。先和他打过照面再来。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "签押房里还是那股墨味。胡录事的笔洗得比谁都干净，砚台边上没有一滴余墨。"
+            },
+            {
+              "type": "say",
+              "raw": "客官又来了。"
+            },
+            {
+              "type": "say",
+              "raw": "那件事……我只是誊的。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他答话的时候，眼睛看的是门口。"
+            },
+            {
+              "type": "menu",
+              "raw": "你想问什么|说出「底档」两个字>flag:intel_didi;+item:palace_token;narrate:他的笔停了。停了很久，久到墨在笔尖上凝成一颗圆的。;say:……你怎么知道这两个字。;say:底档是有。在东市库房的夹层里，编号十九。;say:别说是从我这儿听去的。;narrate:他忽然坐直了，把袖子往上推了推——像是要做事了。;say:衙门的差役名册上，多一个名字不显眼。我给你补一个。;say:补了，午门就认你。;;不提底档，只问他能不能进皇城>say:那是内府的事。;say:我只是誊的。;narrate:他把笔递到嘴边，呵了一口，又低头去抄。这一页他抄得很慢。"
+            }
+          ]
+        }
+      ]
+    },
+    "haitan_boat": {
+      "id": "haitan_boat",
+      "actions": [
+        {
+          "cmd": "搜查",
+          "keywords": [
+            "搜查",
+            "翻找",
+            "找"
+          ],
+          "cond": {
+            "chance": 0.4
+          },
+          "failMsg": "船舱里空空如也。",
+          "effects": [
+            {
+              "type": "+item",
+              "args": [
+                "silk_thread",
+                1
+              ]
+            },
+            {
+              "type": "+money",
+              "args": [
+                80
+              ]
+            },
+            {
+              "type": "say",
+              "raw": "你在船板夹层里摸到一束天蚕丝和几串铜钱。"
+            }
+          ]
+        },
+        {
+          "cmd": "渡海",
+          "label": "渡海",
+          "keywords": [
+            "渡海",
+            "出海",
+            "去桃花岛",
+            "船"
+          ],
+          "cond": {
+            "flag": "has_canjuan"
+          },
+          "failMsg": "艄公看了看你的手，摇了摇头。你手上没有能让他开船的东西。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "船是一条渔船。艄公收了钱，一句话也不说，只顾摇。"
+            },
+            {
+              "type": "narrate",
+              "raw": "海上有雾。雾里听不见别的声音，只有橹。"
+            },
+            {
+              "type": "say",
+              "raw": "岛上没有活人想你上去。"
+            },
+            {
+              "type": "say",
+              "raw": "你要是上去，就别说是我带的。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "taohua_road"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "taohuadao_dock": {
+      "id": "taohuadao_dock",
+      "actions": [
+        {
+          "cmd": "入岛",
+          "label": "入岛",
+          "keywords": [
+            "入岛",
+            "上岛",
+            "登岛",
+            "桃花岛"
+          ],
+          "cond": {
+            "flag": "has_canjuan"
+          },
+          "failMsg": "渡口的风是空的。你手里没有非上岛不可的东西。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "船靠了岸。艄公把橹一收，头也不回。"
+            },
+            {
+              "type": "say",
+              "raw": "岛上没有活人想你上去。"
+            },
+            {
+              "type": "say",
+              "raw": "你要是上去，就别说是我带的。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "taohua_road"
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "回程",
+          "keywords": [
+            "回程",
+            "回去",
+            "离岛"
+          ],
+          "effects": [
+            {
+              "type": "goto",
+              "args": [
+                "haitan_dock"
+              ]
+            },
+            {
+              "type": "say",
+              "raw": "你乘船返回东海码头。"
+            }
+          ]
+        }
+      ]
+    },
+    "taohuadao_she": {
+      "id": "taohuadao_she",
+      "actions": [
+        {
+          "cmd": "破阵",
+          "label": "破阵",
+          "keywords": [
+            "破阵",
+            "闯阵",
+            "过去"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "taohua_road"
+              },
+              {
+                "notFlag": "taohua_passed"
+              }
+            ]
+          },
+          "failMsg": "这阵不是这么过的。先看看四周。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "桃花落在地上，铺得很厚。花瓣底下有东西在动，动得很慢。"
+            },
+            {
+              "type": "narrate",
+              "raw": "地上有脚印。走到第五步就没了。"
+            },
+            {
+              "type": "narrate",
+              "raw": "阵里没有风，花香很甜，甜得发闷。"
+            },
+            {
+              "type": "menu",
+              "raw": "怎么过这个阵|硬闯过去>narrate:你踏出去的时候，花瓣底下同时抬起了好几颗头。;combat:mob_snake;flag:taohua_passed;flag:taohua_brute;narrate:你过去了。身上添了七个口子。;narrate:你过了阵——可你不懂。这阵本来不必过。;;退回去，看那些竹子>narrate:你退到竹林边。竹节上有削过的痕，从地上一路削到一人高——不是虫咬的，是人削的。;narrate:顺着削痕走，绕过蛇阵，前面就是洞口。;narrate:桃花阵是筛子。它筛掉的，是不知道有别的路的人。;flag:taohua_passed"
+            }
+          ]
+        }
+      ]
+    },
+    "taohuadao_qingyin": {
+      "id": "taohuadao_qingyin",
+      "actions": [
+        {
+          "cmd": "问三句话",
+          "label": "问三句话",
+          "keywords": [
+            "问三句话",
+            "黄药师",
+            "清音洞",
+            "三句话"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "taohua_passed"
+              },
+              {
+                "notFlag": "three_words"
+              }
+            ]
+          },
+          "failMsg": "洞里那位不是来见你的。你还没到该听他那三句话的时候。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "清音洞很浅，一眼能看到底。洞里没有别的东西，只有一张石桌，桌上摊着一卷棋。"
+            },
+            {
+              "type": "narrate",
+              "raw": "一个老人背对着洞口坐着，没有回头。"
+            },
+            {
+              "type": "say",
+              "raw": "你也来要秘籍的。"
+            },
+            {
+              "if": {
+                "flag": "taohua_brute"
+              },
+              "then": [
+                {
+                  "type": "say",
+                  "raw": "阵你硬闯，书你硬要。你比先前那些人，更没有耐心。"
+                }
+              ]
+            },
+            {
+              "type": "say",
+              "raw": "我不给。书都是骗人的——写字的人想让别人信，就写。"
+            },
+            {
+              "type": "say",
+              "raw": "我只给你三句话。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他把棋子一颗一颗收回棋盒，收得很慢。"
+            },
+            {
+              "if": {
+                "flag": "jiuye_stood_aside"
+              },
+              "then": [
+                {
+                  "type": "say",
+                  "raw": "你站在旁边的那一晚，也是你的造化。"
+                }
+              ],
+              "else": [
+                {
+                  "type": "say",
+                  "raw": "你打过的第一个人，不是最坏的。"
+                }
+              ]
+            },
+            {
+              "type": "say",
+              "raw": "你练过的那半篇，是别人剪下来的。"
+            },
+            {
+              "if": {
+                "flag": "poisoned_xingxiu"
+              },
+              "then": [
+                {
+                  "type": "say",
+                  "raw": "你练坏的那几天，现在还在你身上。别怨他，他也不知道自己在给谁干活。"
+                }
+              ]
+            },
+            {
+              "type": "say",
+              "raw": "收东西的人，从来不用手拿。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他说完，把棋盒盖上。"
+            },
+            {
+              "type": "say",
+              "raw": "走吧。你要的东西不在我这儿。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他没有起身，也没有送。门帘落下来的时候，你看见帘子上绣着一枝桃——绣得比绣阁那幅差得远。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "three_words"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "palace_road": {
+      "id": "palace_road",
+      "actions": [
+        {
+          "cmd": "看封墙",
+          "label": "看看那道封死的墙",
+          "keywords": [
+            "封墙",
+            "墙",
+            "封条"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "（戈壁的风沙一直吹到御道，砖缝里积着沙。修墙的工程显然是半途而废了。）"
+            }
+          ]
+        },
+        {
+          "cmd": "过御道",
+          "label": "过御道",
+          "keywords": [
+            "过御道",
+            "御道",
+            "影子",
+            "宫门"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "three_words"
+              },
+              {
+                "notFlag": "shadow_done"
+              }
+            ]
+          },
+          "failMsg": "御道还长。你手上的事，还没到能站在这里的时候。",
+          "effects": [
+            {
+              "if": {
+                "flag": "killed_depot_shadow"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "他退到墙根，靠着墙站住。天有一点亮了。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "这是这一路上，他第一次站在有光的地方。"
+                },
+                {
+                  "type": "say",
+                  "raw": "……冯保在殿里。"
+                },
+                {
+                  "type": "say",
+                  "raw": "他等了很久了。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "他说完这一句，就把嘴闭上了。这不是他第一次开口，是最后一次。"
+                },
+                {
+                  "type": "flag",
+                  "args": [
+                    "shadow_done"
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "type": "narrate",
+                  "raw": "御道很长，两边是墙。天快亮了，墙上没有影子。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "走到一半，你发现自己的影子先动了。"
+                },
+                {
+                  "type": "menu",
+                  "raw": "怎么应对|不动。等他自己露出来>+hp:400;narrate:你站住。影子在你脚边停了半息，然后往左偏了一寸。;narrate:你有半步的先机。;combat:depot_shadow;;拔刀，先劈那道影子>narrate:刀落下的时候，劈到的是墙。墙上的砖屑簌簌地掉。;combat:depot_shadow"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问夏承志",
+          "label": "御道边那个人",
+          "keywords": [
+            "夏承志",
+            "捕快",
+            "问夏承志",
+            "御道"
+          ],
+          "cond": {
+            "flag": "act4_done"
+          },
+          "failMsg": "御道边没有人。还不到你该进京的时候。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "御道边上蹲着一个人，穿着捕快的短褂，正在抽一袋没点上的烟。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他往宫门那边看了一眼，才回头看你。"
+            },
+            {
+              "type": "say",
+              "raw": "老爷的事，我管不了。"
+            },
+            {
+              "type": "menu",
+              "raw": "和他说什么|不提东厂。只说你要进午门>+item:palace_token;flag:prison_intel;narrate:他把那袋没点上的烟在手心里掂了掂。;say:今儿门上的腰牌，发出去三块，收回来两块。;say:丢的那一块，昨儿夜里让人从墙根底下捡着了。;narrate:他从怀里摸出一块牌，塞进你手里。牌子是温的——他揣了很久。;say:别说是我给的。;;问他：你替东厂递过话没有>narrate:他没有答。他把烟杆在鞋底上磕了两下，站起身。;say:……老爷的事，我管不了。;narrate:他往宫门那边走。走了七八步，停下来，把烟袋里的烟丝倒在墙根，走了。"
+            }
+          ]
+        }
+      ]
+    },
+    "palace_hall": {
+      "id": "palace_hall",
+      "actions": [
+        {
+          "cmd": "面圣",
+          "label": "面圣",
+          "keywords": [
+            "面圣",
+            "太和殿",
+            "见驾",
+            "冯保"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "three_words"
+              },
+              {
+                "item": "palace_token",
+                "count": 1
+              },
+              {
+                "notFlag": "chen_chaoben"
+              },
+              {
+                "notFlag": "act5_done"
+              }
+            ]
+          },
+          "failMsg": "太和殿的门不是谁都能进的。你还差一样东西。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "太和殿比你想的空。龙案后面那把椅子，漆掉了一块。"
+            },
+            {
+              "type": "narrate",
+              "raw": "冯保站在案边，手里没有刀。他在写字。"
+            },
+            {
+              "type": "say",
+              "raw": "来了。"
+            },
+            {
+              "type": "say",
+              "raw": "等等。这一笔写完。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他写完，把笔搁在笔架上，抬起眼看你。笔洗得很干净。"
+            },
+            {
+              "type": "say",
+              "raw": "这笔账，我记下了。"
+            },
+            {
+              "type": "narrate",
+              "raw": "案上摊着一本册子，一页一页都是名字。他刚写的那一页，最后一个字是新墨。"
+            },
+            {
+              "type": "say",
+              "raw": "东西留下，人就还能站着走出去。"
+            },
+            {
+              "type": "menu",
+              "raw": "最后一件事|交出残卷>say:好。;narrate:他把残卷收进袖里，很轻，像收起一张当票。;say:朝廷要拿它当众烧一场。你可以在场。;say:你的名字，我会写在这一页的头一个。;narrate:三个月后，江南的书铺里摆出一本《武学正典》。序的末尾有一行「奉敕编修」，署的是你的名字。;narrate:街上有人朝你吐唾沫，也有人在夜里往你门口放一壶酒。酒你没喝，倒在了门槛外。;narrate:那本书后来加印过七次。第七次的时候，有人在序里你的名字旁边，用墨点了一点。;narrate:你名动天下。可江湖还是那个江湖——下一个「你」，已经在路上了。;ending:jiaojuan:交了卷;questdone:q_main_end;;不交。那就得先问过这把刀>flag:jujiao_ready;combat:depot_master"
+            }
+          ]
+        },
+        {
+          "cmd": "面圣带抄本",
+          "label": "面圣（带抄本）",
+          "keywords": [
+            "面圣",
+            "带抄本",
+            "抄本"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "three_words"
+              },
+              {
+                "item": "palace_token",
+                "count": 1
+              },
+              {
+                "flag": "chen_chaoben"
+              },
+              {
+                "notFlag": "act5_done"
+              }
+            ]
+          },
+          "failMsg": "太和殿的门不是谁都能进的。你还差一样东西。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "太和殿比你想的空。龙案后面那把椅子，漆掉了一块。"
+            },
+            {
+              "type": "narrate",
+              "raw": "冯保站在案边，手里没有刀。他在写字。"
+            },
+            {
+              "type": "say",
+              "raw": "来了。"
+            },
+            {
+              "type": "say",
+              "raw": "等等。这一笔写完。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他写完，把笔搁在笔架上，抬起眼看你。笔洗得很干净。"
+            },
+            {
+              "type": "say",
+              "raw": "这笔账，我记下了。"
+            },
+            {
+              "type": "narrate",
+              "raw": "案上摊着一本册子，一页一页都是名字。他刚写的那一页，最后一个字是新墨。"
+            },
+            {
+              "type": "say",
+              "raw": "东西留下，人就还能站着走出去。"
+            },
+            {
+              "type": "menu",
+              "raw": "最后一件事|交出残卷>say:好。;narrate:他把残卷收进袖里，很轻，像收起一张当票。;say:朝廷要拿它当众烧一场。你可以在场。;say:你的名字，我会写在这一页的头一个。;narrate:三个月后，江南的书铺里摆出一本《武学正典》。序的末尾有一行「奉敕编修」，署的是你的名字。;narrate:街上有人朝你吐唾沫，也有人在夜里往你门口放一壶酒。酒你没喝，倒在了门槛外。;narrate:那本书后来加印过七次。第七次的时候，有人在序里你的名字旁边，用墨点了一点。;narrate:你名动天下。可江湖还是那个江湖——下一个「你」，已经在路上了。;ending:jiaojuan:交了卷;questdone:q_main_end;;交出抄本，原卷留己>narrate:你从袖里取出一卷抄本。纸是新的，字是别人的手笔——抄的人手很稳。;say:……原卷呢。;narrate:你没有答。;narrate:他看了你很久。然后他伸手，把案上那本册子翻到最后一页，提笔，悬在那儿。;narrate:笔尖上那一点墨，慢慢聚成一颗圆的。;narrate:那一笔到底没有落下去。;say:……你走吧。;narrate:你从御街出去的时候，天正好亮。守门的人没有看你。;narrate:往后你在江湖上走。有人提起那一年的事，说的都是别人。;narrate:江湖还是那个江湖。它连你叫什么，都没有记住。;ending:banjiao:半交;questdone:q_main_end;;不交。那就得先问过这把刀>flag:jujiao_ready;combat:depot_master"
+            }
+          ]
+        },
+        {
+          "cmd": "收场",
+          "label": "把这里收场",
+          "keywords": [
+            "收场",
+            "了结",
+            "收尾",
+            "把那把刀"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "jujiao_ready"
+              },
+              {
+                "flag": "killed_depot_master"
+              },
+              {
+                "notFlag": "act5_done"
+              }
+            ]
+          },
+          "failMsg": "还没有到该收场的时候。刀还在他手里。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "他把刀扔在地上。刀很薄，掉下去的时候没有响。"
+            },
+            {
+              "type": "say",
+              "raw": "你会后悔的。不是今天。"
+            },
+            {
+              "type": "narrate",
+              "raw": "第二天，城门上贴了你的画像。写的是「盗取国典，格杀勿论」。"
+            },
+            {
+              "if": {
+                "flag": "prison_intel"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "你从天牢侧门带走了一个人。他没有谢你——他只是在走出巷口的时候，回头看了一眼。"
+                }
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "半个月里，敲你门的人来了三拨。武当的道士、少林的僧人、丐帮的弟子。他们都不说为什么来，坐下就喝酒。"
+            },
+            {
+              "type": "narrate",
+              "raw": "第三拨人走的时候，天正好亮。你听见街上有小孩在念你的名字。"
+            },
+            {
+              "type": "narrate",
+              "raw": "你名动天下。可江湖还是那个江湖——下一个「你」，已经在路上了。"
+            },
+            {
+              "type": "ending",
+              "args": [
+                "jujiao",
+                "拒交"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act5_done"
+              ]
+            },
+            {
+              "type": "questdone",
+              "args": [
+                "q_main_end"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

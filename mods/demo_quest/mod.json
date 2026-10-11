@@ -1,5 +1,6 @@
 {
   "id": "demo_quest",
+  "_wxTrace": "wxt-official-demo_quest",
   "name": "江南除害（剧情示例）",
   "version": "1.0.0",
   "author": "武侠行官方",
@@ -150,6 +151,8 @@
   "npcs": [
     {
       "id": "demo_swordman",
+      "tag": "swordsman",
+      "personality": "xiayi",
       "name": "游侠",
       "title": "江湖浪客",
       "gender": "male",

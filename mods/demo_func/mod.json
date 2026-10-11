@@ -1,5 +1,6 @@
 {
   "id": "demo_func",
+  "_wxTrace": "wxt-official-demo_func",
   "name": "轻松江湖（功能示例）",
   "version": "1.0.0",
   "author": "武侠行官方",
@@ -29,7 +30,10 @@
       "kind": "onEvent",
       "target": "onTick",
       "value": 1,
-      "cond": "!combat",
+      "cond": [
+        "!combat",
+        "!tuning"
+      ],
       "effect": "+hp:8"
     },
     {

@@ -48,8 +48,10 @@ sec('① 身份推断（覆盖全 320 个 NPC 模板）');
     if (!s || typeof s !== 'string') { empty.push(d.id); continue; }
     /* 🩸 守卫：绝不能再出现「江湖中人」，也不能出现英文 job/tag 原文 */
     if (/江湖中人|^[a-z_]+$/.test(s)) bad.push(d.id + '→' + s);
-    /* 门派 NPC 必须带门派名或职位词 */
-    if (d.sect && !/派|教|帮|岛|门|氏|会|庄/.test(s) && !/弟子|僧|丘|人/.test(s)) {
+    /* 门派 NPC 必须带门派名或职位词。
+       ⚠️ 门派名不止「派/教/帮」，还有镖局、世家、山寨这类 ——
+          武学重制新增 28 家（飞虎镖局 / 五云手温家 / 白驼山…）后就栽在这里。 */
+    if (d.sect && !/派|教|帮|岛|门|氏|会|庄|局|家|山|洞|宫|寺|观|宗/.test(s) && !/弟子|僧|丘|人|师|主/.test(s)) {
       dupTitle.push(d.id + '→' + s);
     }
   }
@@ -67,9 +69,12 @@ sec('① 身份推断（覆盖全 320 个 NPC 模板）');
   ok('任我行 = 日月神教教主', npcIdentity(w, d.mojiao_dongfang) === '日月神教教主', npcIdentity(w, d.mojiao_dongfang));
   ok('rank:0 的教众显示「日月神教教众」（rank 是 0 基下标）',
     npcIdentity(w, d.mob_mo_disciple) === '日月神教教众', npcIdentity(w, d.mob_mo_disciple));
-  /* 🩸 15 个门派 NPC 的职位必须逐个对得上 ranks 表，不许错位一级 */
+  /* 🩸 门派 NPC 的职位必须逐个对得上 ranks 表，不许错位一级
+     （计数随内容增长：2026-10-10 三~五幕 +1 → 16；
+      同日武学/门派重制新增 28 家 × 2 人（掌门 + 弟子）→ 72。
+      这里守的是「每个门派都有人、且身份算得出来」，所以用下限而不是等号。） */
   const sectNpcs = all.filter(x => x.sect && (w.data.sects || {})[x.sect]);
-  ok('门派 NPC 共 15 个', sectNpcs.length === 15, sectNpcs.length);
+  ok('门派 NPC 不少于 16 个（现存 16 门派 + 28 家新门派各 2 人）', sectNpcs.length >= 16, sectNpcs.length);
   ok('🩸 每个门派 NPC 的身份 = 门派名 + ranks[rank]',
     sectNpcs.every(x => {
       const s = w.data.sects[x.sect];

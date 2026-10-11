@@ -87,6 +87,7 @@ section('0 · 前置事实（写死字段名之前先验证结构）');
  *  1 · 画像字段 ↔ 真实读取对齐（核心）
  * ================================================================ */
 section('1 · 画像字段 ↔ 后端/前端真实读取对齐（驱动真指令）');
+let tabooTestable = 0;
 const seenRuntime = {
   routine: 0, catchphrase: 0, toneVerb: 0, origin: 0, now: 0, want: 0, fear: 0, taboo: 0,
   role: 0, secret: 0,   /* WORLD-INTERACT 批次 7 起：role→look、secret→高信任 ask 不再是死字段 */
@@ -187,9 +188,21 @@ const leakedDeadFields = [];   // 收集：哪些「死字段」的文本意外�
       ok(`1.L2b 低信任时不吐露 secret（${npc.name}）`, !secLow.includes(pt.secret.text.slice(0, 12)));
     }
 
-    /* taboo：命中掉好感（A 层 −15） */
-    const tb = (pt.voice.taboo || [])[0];
+    /* taboo：命中掉好感（A 层 −15）
+       ⚠️ 2026-10-11 契约更新（判定收了两道口子，都是为了别误伤 ——
+          见 commands.js 里那一段注释；这里是它们的验收侧）：
+         ① **单字禁忌不算**：数据里有人把 taboo 写成「脚」「手」「塔」，
+            一个字能盖住半部词典，玩家正常问话就动不动踩雷，那不叫禁忌叫碰瓷；
+         ② **与钩子标题撞车的不算**：taboo = 「外人提不得」，hooks = 「他托你办的事」，
+            画像里这两栏常常写的是同一个心结（岳不群的 taboo「弟子」/ 钩子「下山的那个弟子」）。
+            照他自己给的钩子标题去问，反被扣 15 点好感 —— 两栏打架，以钩子为准。
+       所以这里挑一个「长度 ≥ 2、且不与钩子标题撞车」的禁忌词来验；
+       一个都挑不出来的人不计入分母（不然是把契约更新当成回归）。 */
+    const hookTitles = (pt.hooks || []).map(h => h && h.title).filter(Boolean);
+    const tb = (pt.voice.taboo || []).find(x => x && String(x).length >= 2
+      && !hookTitles.some(t => t.includes(x) || x.includes(t)));
     if (tb) {
+      tabooTestable++;
       npc.favor = 0;
       run(e, 'ask ' + npc.name + ' 关于 ' + tb);
       ok(`1.L2 taboo「${tb}」命中掉好感（${npc.name}）`, npc.favor < 0, 'favor=' + npc.favor);
@@ -221,11 +234,11 @@ const leakedDeadFields = [];   // 收集：哪些「死字段」的文本意外�
     ['feuds', 'ask 仇家 trust≥40（批次 7 接线）', '—'],
     ['voice.tone', 'talk 说话动词覆盖(敬/泼/酸)', `${seenRuntime.toneVerb} 条 tone∈{敬,泼,酸}`],
     ['voice.catchphrase', 'talk 前缀(A 30%)', `${seenRuntime.catchphrase}/${total}`],
-    ['voice.taboo', 'ask 命中掉好感', `${seenRuntime.taboo}/${total}`],
+    ['voice.taboo', 'ask 命中掉好感（单字/钩子标题除外）', `${seenRuntime.taboo}/${tabooTestable}`],
     ['voice.style', 'talk 句式签名（批次 7 接线）', '—'],
     ['routine', 'look 房间行 + look 单人', `${seenRuntime.routine}/${total}`],
     ['arc', '—（无读取点）', '死字段'],
-    ['hooks', '—（无读取点，待事件库批次）', '死字段'],
+    ['hooks', 'ask 钩子标题（trust 够就说出来）', `${seenRuntime.hooks || 0}/${total}`],
     ['marks', '仅经 moodBias(丧亲/新婚/得子)，文本不露', '死字段'],
   ];
   for (const [f, via, ev] of rows) console.log('   ' + f.padEnd(16) + '│ ' + via.padEnd(34) + '│ ' + ev);
@@ -236,7 +249,7 @@ const leakedDeadFields = [];   // 收集：哪些「死字段」的文本意外�
   eq('1.C origin 26 人全部可问出', seenRuntime.origin, total);
   eq('1.D want 26 人全部可问出', seenRuntime.want, total);
   eq('1.E fear 26 人全部可问出', seenRuntime.fear, total);
-  eq('1.F taboo 26 人全部生效', seenRuntime.taboo, total);
+  eq('1.F taboo 生效（可测的人都掉了好感）', seenRuntime.taboo, tabooTestable);
   /* 死字段反向钉死：role / secret / obsession 的文本一次都没进过 render（它们是死字段） */
   eq('1.G obsession 仍是死字段（文本零出现；moodBias 只影响 mood 不露字）', leakedDeadFields.length, 0,
     leakedDeadFields.length ? leakedDeadFields.slice(0, 5).join(',') : '（26 人 ×1 字段零出现）');

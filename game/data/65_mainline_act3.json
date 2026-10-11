@@ -1,0 +1,1207 @@
+{
+  "items": {
+    "xuedao_copy_half": {
+      "id": "xuedao_copy_half",
+      "name": "血刀门·半卷抄本",
+      "type": "book",
+      "value": 0,
+      "noSell": true,
+      "tags": [
+        "mainline",
+        "clue"
+      ],
+      "quality": "rare",
+      "desc": "半卷纸，纸是新的，字是别人的手笔，一笔一笔都很稳，收笔顿得很轻。另一半的位置齐刷刷地空着。"
+    },
+    "fake_manual": {
+      "id": "fake_manual",
+      "name": "速成秘籍（伪）",
+      "type": "book",
+      "value": 0,
+      "noSell": true,
+      "tags": [
+        "mainline",
+        "clue"
+      ],
+      "quality": "rare",
+      "desc": "印好的一叠纸，匣子里翻出来的。字是好字，理是歪理——两卷并在一起，字迹一样，气路却正反相冲。"
+    },
+    "yu_ledger_item": {
+      "id": "yu_ledger_item",
+      "name": "盐场假账册",
+      "type": "book",
+      "value": 0,
+      "noSell": true,
+      "tags": [
+        "mainline",
+        "clue"
+      ],
+      "quality": "rare",
+      "desc": "盐册的抄件。最后一页多出一栏，栏头的字是后来补上去的。那一栏里记的是人名。"
+    },
+    "star_cure_item": {
+      "id": "star_cure_item",
+      "name": "星宿海解药",
+      "type": "consumable",
+      "desc": "一小包药，纸包了三层。含在舌下，别咽——到了地方再说。",
+      "healHp": 60,
+      "stackable": true,
+      "stackMax": 9,
+      "noSell": true,
+      "use": [
+        {
+          "type": "+hp",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "你把那包药含在舌下，一股凉意压住了喉咙里的腥气。"
+        }
+      ],
+      "tags": [
+        "mainline",
+        "medicine"
+      ],
+      "quality": "fine"
+    }
+  },
+  "quests": {
+    "q_main_snow": {
+      "id": "q_main_snow",
+      "name": "【主线】伪秘籍",
+      "level": 40,
+      "type": "主线",
+      "giver": "shaolin_fangzheng",
+      "desc": "东厂收武功秘典，收去做什么？——少林少了一卷，北疆丢了半卷，西域有人卖「七天」。三条线，指向同一只手。",
+      "require": {
+        "flag": "act2_done"
+      },
+      "stages": [
+        {
+          "desc": "少林·藏经阁少了一卷，问方证大师",
+          "cond": {
+            "flag": "snow_lead"
+          },
+          "next": 1
+        },
+        {
+          "desc": "雪谷·山口，破第一道哨卡",
+          "cond": {
+            "flag": "pass_shankou"
+          },
+          "next": 2
+        },
+        {
+          "desc": "血刀门·前庭，抉择买路钱",
+          "cond": {
+            "or": [
+              {
+                "flag": "blood_deal"
+              },
+              {
+                "flag": "blood_saber_hostile"
+              }
+            ]
+          },
+          "next": 3
+        },
+        {
+          "desc": "血刀寨·后寨，取私藏的半卷抄本",
+          "cond": {
+            "flag": "xuedao_copy"
+          },
+          "next": 4
+        },
+        {
+          "desc": "刀血——赢下血刀老祖",
+          "cond": {
+            "flag": "blood_saber_down"
+          },
+          "next": 5
+        },
+        {
+          "desc": "星宿海·见老仙，抉择速成的诱惑",
+          "cond": {
+            "or": [
+              {
+                "flag": "zhenyi_bait"
+              },
+              {
+                "flag": "poisoned_xingxiu"
+              },
+              {
+                "flag": "refuse_fake"
+              }
+            ]
+          },
+          "next": 6
+        },
+        {
+          "desc": "截下往黑木崖的信",
+          "cond": {
+            "flag": "know_zhenyi"
+          },
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            12000
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            6000
+          ]
+        },
+        {
+          "type": "+title",
+          "args": [
+            "闻腥者"
+          ]
+        },
+        {
+          "type": "flag",
+          "args": [
+            "act3_done"
+          ]
+        },
+        {
+          "type": "flag",
+          "args": [
+            "know_zhenyi"
+          ]
+        },
+        {
+          "type": "quest",
+          "args": [
+            "q_main_moye",
+            0
+          ]
+        },
+        {
+          "type": "narrate",
+          "raw": "信上只有两行。残卷在绣阁，京里的那位等不了太久。你把信折好收进怀里——这一步踏出去，江湖就回不了头了。"
+        }
+      ]
+    }
+  },
+  "npcs": {
+    "shaolin_fangzheng": {
+      "quests": [
+        "q_shaolin_entry",
+        "q_yijinjing",
+        "q_main_sect",
+        "q_main_snow"
+      ]
+    },
+    "blood_saber": {
+      "bossPhases": [
+        {
+          "at": 1,
+          "name": "刀血",
+          "skill": "xuedao",
+          "line": "（他把刀从椅子上提起来。刀上那层锈色，像刚凝的血。）「过这条道，先让我看看你值几两。」",
+          "desc": "他的刀不快，可每一刀都往同一个地方落。",
+          "mult": {
+            "atk": 1.1,
+            "speed": 1.05
+          }
+        },
+        {
+          "at": 0.6,
+          "name": "化血",
+          "skill": "xuedao",
+          "line": "（他忽然吸了口气。你腕上那道血线，竟逆着往上爬。）",
+          "desc": "刀口吃过的人越多，他站得越稳——那些血本来是你的。",
+          "mult": {
+            "atk": 1.05,
+            "def": 1.15,
+            "lifesteal": 0.3
+          }
+        },
+        {
+          "at": 0.3,
+          "name": "血遁",
+          "line": "（他退到兵器堆后，一柄一柄地拔刀。）「血刀门没输过。只是换个人接。」",
+          "desc": "他不走。他换人。",
+          "mult": {
+            "atk": 0.9,
+            "dodge": 1.5,
+            "speed": 1.3
+          },
+          "summon": {
+            "npc": "mob_bandit_chief",
+            "count": 2
+          }
+        }
+      ]
+    },
+    "xingxiu_laoxian": {
+      "bossPhases": [
+        {
+          "at": 1,
+          "name": "毒雾",
+          "skill": "tangmen_du",
+          "line": "（他笑着后退三步，袍袖一抖。）「先尝尝。谢我就不必了。」",
+          "desc": "水面起了雾。雾里什么都好看，就是喘不上气。",
+          "mult": {
+            "atk": 1.05,
+            "speed": 1.05
+          }
+        },
+        {
+          "at": 0.6,
+          "name": "化功",
+          "skill": "cuixin_zhang",
+          "line": "「你这一身内力，放着也是放着。」",
+          "desc": "你每出一掌，他就多一分力气——那力气原本是你的。",
+          "mult": {
+            "atk": 1.1,
+            "lifesteal": 0.35
+          }
+        },
+        {
+          "at": 0.3,
+          "name": "诡计",
+          "line": "（他拍手。星宿海的水里站起来一排人。）「我教的，都像我。」",
+          "mult": {
+            "atk": 0.95,
+            "def": 1.3
+          },
+          "summon": {
+            "npc": "mob_mo_disciple",
+            "count": 3
+          }
+        }
+      ]
+    }
+  },
+  "rooms": {
+    "road_huashan_1": {
+      "actions": [
+        {
+          "cmd": "夜宿山道",
+          "label": "夜宿山道",
+          "keywords": [
+            "夜宿",
+            "山道",
+            "扎营"
+          ],
+          "cond": {
+            "and": [
+              {
+                "hasSect": true
+              },
+              {
+                "notFlag": "jiuye_done"
+              }
+            ]
+          },
+          "failMsg": "你未曾拜师，山门里的灯不为你点。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你在山门底下歇脚。石阶从这儿起头，一级一级，没入云雾里去了。"
+            },
+            {
+              "type": "narrate",
+              "raw": "三更，山下来了人。前头两匹马，中间一辆车，车板上盖着油布。"
+            },
+            {
+              "type": "narrate",
+              "raw": "押车的人提着灯。灯罩是纸糊的，风一鼓，就瘪下去一角。"
+            },
+            {
+              "type": "narrate",
+              "raw": "那底下有东西动了一下。"
+            },
+            {
+              "type": "say",
+              "raw": "让开。这是公文。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他没再看你第二眼。马蹄已经踏到你脚边的石子上了。"
+            },
+            {
+              "type": "menu",
+              "raw": "（拦，还是不拦）|（拦在车前）>flag:jiuye_fought;say:你一步踏出去，手按在马笼头上。那马喷着白气，站住了。;say:公文你也敢拦？;combat:mob_soldier;narrate:车板上滚下一个人来，摔在道边的碎石上。;narrate:他撑着半个身子，抓住了你的袖口。;narrate:他往你手心塞过来一样东西——硬的，凉的，边上有个断口，像从整块上掰下来的半块。;say:……谁要，都别给。;narrate:他没有再说别的。他松了手，人就不动了。;flag:know_east_depot;+item:depot_token_half;narrate:那名将死之人塞给你的半块铜牌，还带着他掌心的汗。;flag:jiuye_done;quest:q_main_sect:0;;（退到道旁）>flag:jiuye_stood_aside;narrate:你往道边让了一步。山门的影子落在你身上，是凉的。;narrate:车从你面前过去。赶车的斜了你一眼，没停。;narrate:那人没出声。你也看不见他的脸，可你知道他在看你。;narrate:你没伸手，只站在道旁看着。拦得住今晚，拦不住这条路——这话，是你对自己说的。;narrate:车走出半里地，前头一匹马忽然惊了，车一歪。;narrate:车板上滚下一个人来，摔在道上。车没停，把他就这么丢下了。;narrate:他撑着半个身子，抓住了你的袖口。;narrate:他往你手心塞过来一样东西——硬的，凉的，边上有个断口，像从整块上掰下来的半块。;say:……谁要，都别给。;narrate:他没有再说别的。他松了手，人就不动了。;flag:know_east_depot;+item:depot_token_half;narrate:那名将死之人塞给你的半块铜牌，还带着他掌心的汗。;flag:jiuye_done;quest:q_main_sect:0"
+            }
+          ]
+        }
+      ]
+    },
+    "shaolin_daxiong": {
+      "actions": [
+        {
+          "cmd": "问方证",
+          "label": "问方证大师「朝廷与武林的默契」",
+          "keywords": [
+            "问方证",
+            "方证",
+            "问默契",
+            "默契"
+          ],
+          "cond": {
+            "flag": "chongxu_split_task",
+            "notFlag": "fangzheng_admitted"
+          },
+          "failMsg": "你连冲虚让你去问什么都不清楚，就先去问人，未免太急。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "方证大师合掌，让你在下首第一位——那是留给「有资格问话的人」的位子。"
+            },
+            {
+              "type": "say",
+              "raw": "「确有此事。」他说得很慢，「但老衲不能告诉你为何确有此事。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "你追问。他只是笑。然后他忽然问了一句不相干的：「少侠可曾听说，终南山下有人学过三年刀？」"
+            },
+            {
+              "type": "narrate",
+              "raw": "你一时没答上来。他也不追问，只说了句「阿弥陀佛」，便低头念起了经。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "fangzheng_admitted"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "heard_term_nan_ties"
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问缺卷",
+          "label": "问方证大师「少林缺的那一卷」",
+          "keywords": [
+            "问缺卷",
+            "缺卷",
+            "少林少了一卷",
+            "问方证缺卷"
+          ],
+          "cond": {
+            "flag": "know_xuemao",
+            "notFlag": "snow_lead"
+          },
+          "failMsg": "你还没弄清北边到底出了什么事，方证大师未必肯见你。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "大雄宝殿里的香烧到一半。方证大师没有让你坐。"
+            },
+            {
+              "type": "say",
+              "raw": "少林少了一卷。"
+            },
+            {
+              "type": "say",
+              "raw": "不是被偷的。是被人拿着朝廷的名义借走的。"
+            },
+            {
+              "type": "say",
+              "raw": "借书的人留了话，说看完就还。三年了。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他把手里那串念珠转了一颗，又转回来。"
+            },
+            {
+              "type": "say",
+              "raw": "你身上有铜腥味。去过北面？"
+            },
+            {
+              "type": "narrate",
+              "raw": "他没有等你答。"
+            },
+            {
+              "type": "say",
+              "raw": "去看看西边的经架吧。老衲这几日没让人去擦。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "snow_lead"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "shaolin_cangjing": {
+      "actions": [
+        {
+          "cmd": "翻经",
+          "keywords": [
+            "翻经",
+            "看书",
+            "找书",
+            "翻阅"
+          ],
+          "cond": {
+            "flag": "cangjing_read"
+          },
+          "failMsg": "经书浩如烟海，你不敢再乱翻。",
+          "effects": [
+            {
+              "type": "flag",
+              "args": [
+                "cangjing_read"
+              ]
+            },
+            {
+              "type": "say",
+              "raw": "你随手抽出一卷经书翻看，全是梵文，一个字也不认识。"
+            },
+            {
+              "type": "wait",
+              "args": [
+                1200
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "看经架",
+          "label": "看西边那一排经架",
+          "keywords": [
+            "看经架",
+            "经架",
+            "看架子"
+          ],
+          "cond": {
+            "flag": "snow_lead"
+          },
+          "failMsg": "藏经阁里经架千百，你还不知道该看哪一格。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "架子上空出一格。旁边每一格都蒙着薄灰，只有空出来的这一格——干干净净。"
+            },
+            {
+              "type": "narrate",
+              "raw": "有人擦过。擦了很多次。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "zhengju_shaolin"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "road_beijiang_1": {
+      "actions": [
+        {
+          "cmd": "追囚车",
+          "label": "追那辆往北去的囚车",
+          "keywords": [
+            "追囚车",
+            "囚车",
+            "追车",
+            "北上"
+          ],
+          "cond": {
+            "flag": "choice_made",
+            "notFlag": "know_xuemao"
+          },
+          "failMsg": "你还不知道该往哪里追。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你追上那辆车的时候，车夫正在路边生火煮东西。他不拦你，只是看着你。"
+            },
+            {
+              "type": "narrate",
+              "raw": "「你不是官差。」他说，「官差不会追到这种地方。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "「那批人……没往北都城走。」他往西北指了指，「雪谷。新起了一座石堡。」"
+            },
+            {
+              "type": "say",
+              "raw": "「前几日有个被押的人半路跑了。他让我带句话给你——他说他欠你一条命。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "know_xuemao"
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "看车辙",
+          "label": "看雪地上的车辙",
+          "keywords": [
+            "看车辙",
+            "车辙",
+            "看辙"
+          ],
+          "cond": {
+            "flag": "snow_lead"
+          },
+          "failMsg": "你还没弄清北边到底出了什么事，看不出这道辙印往哪儿去。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "车辙很深。新雪还没盖住辙印。按这分量，车上装的是人。"
+            },
+            {
+              "type": "narrate",
+              "raw": "辙印往西北去了，到山口就断了。断口齐整，像被人扫过。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "road_found"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "beijiang_shankou": {
+      "actions": [
+        {
+          "cmd": "摸哨",
+          "label": "摸进雪谷山口",
+          "keywords": [
+            "摸哨",
+            "山口",
+            "进山口",
+            "摸进雪谷"
+          ],
+          "cond": {
+            "flag": "road_found",
+            "notFlag": "pass_shankou"
+          },
+          "failMsg": "你还不知道这条辙印通到哪儿，贸然进山只会送命。",
+          "effects": [
+            {
+              "type": "cond",
+              "if": {
+                "flag": "yue_zhi_road"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "你贴着石壁往里走。脚下那一小段雪被人扫过一遍，扫得比旁边干净，像有人先替你走过。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "山口里有三处踩塌过的雪窝，都不深。他们守过，然后走了。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "你没有遇见人。你遇见的是有人替你清出来的路。"
+                },
+                {
+                  "type": "flag",
+                  "args": [
+                    "pass_shankou"
+                  ]
+                },
+                {
+                  "type": "flag",
+                  "args": [
+                    "shankou_quiet"
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "type": "narrate",
+                  "raw": "三个人从雪里站起来。他们的手在袖子里，没有抽出来。"
+                },
+                {
+                  "type": "say",
+                  "raw": "往回走。这儿不通人。"
+                },
+                {
+                  "type": "combat",
+                  "args": [
+                    "mob_assassin"
+                  ]
+                },
+                {
+                  "type": "narrate",
+                  "raw": "雪地上剩下一串脚印，往土堡去。你顺着走。"
+                },
+                {
+                  "type": "flag",
+                  "args": [
+                    "pass_shankou"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "beijiang_xuedao": {
+      "actions": [
+        {
+          "cmd": "见刀主",
+          "label": "见血刀老祖",
+          "keywords": [
+            "见刀主",
+            "刀主",
+            "血刀老祖",
+            "见血刀"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "pass_shankou"
+              },
+              {
+                "notFlag": "blood_deal"
+              },
+              {
+                "notFlag": "blood_saber_hostile"
+              }
+            ]
+          },
+          "failMsg": "你还过不了前面那道山口，血刀门的堡门不为你开。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "堡门大开。门里横七竖八插着兵器，像一片长歪了的林子。"
+            },
+            {
+              "type": "narrate",
+              "raw": "一个秃顶的矮胖老者坐在正中的交椅上擦刀。刀是红的。"
+            },
+            {
+              "type": "say",
+              "raw": "北边这条道，从我这儿过，得留下买路钱。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他伸出手。那只手在你看不见的地方握过三十年刀，指节都大了。"
+            },
+            {
+              "type": "say",
+              "raw": "给不出钱的，给件东西也行。我不挑。"
+            },
+            {
+              "type": "cond",
+              "if": {
+                "flag": "xuedao_copy"
+              },
+              "then": [
+                {
+                  "type": "menu",
+                  "raw": "（你要拿什么换命）|（把那半块铜牌递过去）>narrate:他接过去，捏着边转了半圈，忽然停住。;say:东厂的牌子。;say:……你从哪儿捡的。;narrate:他把铜牌翻过来看背面。脸上的肉抽了一下。然后他把牌子塞进自己怀里，朝后寨那边努了努嘴。;say:进去吧。看完自己出来。;flag:blood_deal;flag:depot_token_given;flag:xuedao_knows_token;-item:depot_token_half;;（把那半卷抄本递过去）>narrate:他没有接，先让你把纸摊在膝上。然后他捏着纸角，对着门口的光看。;narrate:看了很久。;say:这不是抄的。;say:这是从原本上撕下来的。谁给你的。;narrate:他把纸还给你，手没有松开太久。;say:你这人不老实。不过我不吃亏。进后寨去吧。;flag:blood_deal;flag:blood_deal_trade;;（不交。手按上刀柄）>narrate:他笑了一声，站起来的时候，椅子腿在土里陷下去一寸。;say:我在这儿坐了十九年。你是第三个这么站的。;say:前两个，埋在西边坡下。;flag:blood_saber_hostile;combat:blood_saber;flag:blood_saber_down"
+                }
+              ],
+              "else": [
+                {
+                  "type": "menu",
+                  "raw": "（你要拿什么换命）|（把那半块铜牌递过去）>narrate:他接过去，捏着边转了半圈，忽然停住。;say:东厂的牌子。;say:……你从哪儿捡的。;narrate:他把铜牌翻过来看背面。脸上的肉抽了一下。然后他把牌子塞进自己怀里，朝后寨那边努了努嘴。;say:进去吧。看完自己出来。;flag:blood_deal;flag:depot_token_given;flag:xuedao_knows_token;-item:depot_token_half;;（不交。手按上刀柄）>narrate:他笑了一声，站起来的时候，椅子腿在土里陷下去一寸。;say:我在这儿坐了十九年。你是第三个这么站的。;say:前两个，埋在西边坡下。;flag:blood_saber_hostile;combat:blood_saber;flag:blood_saber_down"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "beijiang_houzhai": {
+      "actions": [
+        {
+          "cmd": "摸后寨",
+          "label": "摸进血刀寨后寨",
+          "keywords": [
+            "摸后寨",
+            "后寨",
+            "进后寨"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "pass_shankou"
+              },
+              {
+                "notFlag": "xuedao_copy"
+              }
+            ]
+          },
+          "failMsg": "你还过不了前面那道山口，进不了血刀寨的后寨。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "后寨只有一间上锁的屋子。锁是新的，挂在旧门板上，很别扭。"
+            },
+            {
+              "type": "narrate",
+              "raw": "锁口没有锈。有人隔几天就来开一次。"
+            },
+            {
+              "type": "narrate",
+              "raw": "屋里一只木箱。箱子里是半卷纸。纸是新的。"
+            },
+            {
+              "type": "narrate",
+              "raw": "字是别人的手笔，一笔一笔都很稳，收笔顿得很轻——和你在别处见过的那种\"抄书人\"的字，一模一样。"
+            },
+            {
+              "type": "narrate",
+              "raw": "只有半卷。另一半的位置，是空的，齐刷刷的。"
+            },
+            {
+              "type": "+item",
+              "args": [
+                "xuedao_copy_half",
+                1
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "xuedao_copy"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "xiyu_shule": {
+      "actions": [
+        {
+          "cmd": "问商队",
+          "label": "向镇上的人打听星宿海",
+          "keywords": [
+            "问商队",
+            "商队",
+            "问星宿海"
+          ],
+          "cond": {
+            "flag": "pass_shankou"
+          },
+          "failMsg": "你连北疆那条道都还没走通，西域的事更无从问起。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "疏勒镇上的货郎一听星宿海三个字，先把秤收起来，才开口。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他说了半句，就不说了。"
+            },
+            {
+              "type": "narrate",
+              "raw": "旁边一个小孩往你手里塞了张纸，转身跑了。纸上画着一条水，水里画着很多小圈。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "shule_to_xingxiu"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "xiyu_xingxiu": {
+      "actions": [
+        {
+          "cmd": "见老仙",
+          "label": "见星宿老仙",
+          "keywords": [
+            "见老仙",
+            "老仙",
+            "星宿老仙",
+            "丁春秋"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "shule_to_xingxiu"
+              },
+              {
+                "notFlag": "poisoned_xingxiu"
+              },
+              {
+                "notFlag": "refuse_fake"
+              },
+              {
+                "notFlag": "zhenyi_bait"
+              }
+            ]
+          },
+          "failMsg": "你还不知道星宿海在哪儿，老仙也不是随便见得的。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "星宿海的水是黑的。水面上没有风，却一直在动。"
+            },
+            {
+              "type": "narrate",
+              "raw": "一个白须老头坐在水边的石头上，脚边搁着一只小匣。"
+            },
+            {
+              "type": "say",
+              "raw": "你要的东西，我这儿有。"
+            },
+            {
+              "type": "say",
+              "raw": "别人练三十年。我这门功夫，七天。"
+            },
+            {
+              "type": "say",
+              "raw": "三十年，和这个数，你自己挑。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他把小匣推过来一寸，又收回去半寸。"
+            },
+            {
+              "type": "cond",
+              "if": {
+                "or": [
+                  {
+                    "flag": "xuedao_copy"
+                  },
+                  {
+                    "flag": "ruan_cure"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "type": "menu",
+                  "raw": "（七天，还是三十年）|（把匣子接过来）>narrate:你确实觉得快了。快得心口发慌。;narrate:第二天，你手背上起了三个红点，不疼，一按就退。;say:看。老祖从不骗人。;narrate:他把匣子合上，收进袖里。;+attr:力量:2;+skill:cuixin_zhang:100;flag:poisoned_xingxiu;narrate:他拍手的时候，星宿海的水面浮起来一排人——那是他教出来的，也长得像他。;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down;;（把匣子推回去）>narrate:你没接那只匣子。;say:聪明的傻子。;narrate:他笑了一声，转身去看水。水里那群小圈，比刚才多了一层。;flag:refuse_fake;narrate:他拍手的时候，星宿海的水面浮起来一排人——那是他教出来的，也长得像他。;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down;;（把两卷纸并在一起，对着光）>narrate:同一个人抄的，字迹一模一样。可一卷说气往下走，一卷说气往上走。一个人身上的气，不会同时往两头走。;say:……你看得懂？;narrate:他说这句话的时候，声音比刚才低。;say:那你走不掉了。;narrate:星宿海的水面下，浮起来一排人。;flag:zhenyi_bait;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down"
+                }
+              ],
+              "else": [
+                {
+                  "type": "menu",
+                  "raw": "（七天，还是三十年）|（把匣子接过来）>narrate:你确实觉得快了。快得心口发慌。;narrate:第二天，你手背上起了三个红点，不疼，一按就退。;say:看。老祖从不骗人。;narrate:他把匣子合上，收进袖里。;+attr:力量:2;+skill:cuixin_zhang:100;flag:poisoned_xingxiu;narrate:他拍手的时候，星宿海的水面浮起来一排人——那是他教出来的，也长得像他。;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down;;（把匣子推回去）>narrate:你没接那只匣子。;say:聪明的傻子。;narrate:他笑了一声，转身去看水。水里那群小圈，比刚才多了一层。;flag:refuse_fake;narrate:他拍手的时候，星宿海的水面浮起来一排人——那是他教出来的，也长得像他。;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "xixia_yanchang": {
+      "actions": [
+        {
+          "cmd": "问煮盐人",
+          "label": "问盐场煮盐的人",
+          "keywords": [
+            "问煮盐人",
+            "煮盐人",
+            "盐场",
+            "问盐场"
+          ],
+          "cond": {
+            "and": [
+              {
+                "or": [
+                  {
+                    "flag": "xingxiu_down"
+                  },
+                  {
+                    "flag": "zhenyi_bait"
+                  }
+                ]
+              },
+              {
+                "notFlag": "zhengju_yanchang"
+              }
+            ]
+          },
+          "failMsg": "盐场的人不会无缘无故开口——你得先攥住点什么，他们才敢说。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "盐场上一排排的池子，白得晃眼。煮盐的人弯着腰，没人抬头。"
+            },
+            {
+              "type": "narrate",
+              "raw": "你问了三个人，第三个人才开口。他说话时先往四周看了一眼。"
+            },
+            {
+              "type": "say",
+              "raw": "上个月拉了十几个人走。都是胳膊上有劲、可眼神不对的。"
+            },
+            {
+              "type": "say",
+              "raw": "说他们是练了邪功，要拿回去做见证。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他掀开盐册给你看。册子最后一页多出一栏，栏头的字是后来补上去的。那一栏里记的是人名。"
+            },
+            {
+              "type": "+item",
+              "args": [
+                "yu_ledger_item",
+                1
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "zhengju_yanchang"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "road_xixia_1": {
+      "actions": [
+        {
+          "cmd": "截信",
+          "label": "截下那骑快马的信",
+          "keywords": [
+            "截信",
+            "截人",
+            "拦马",
+            "快马"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "xingxiu_down"
+              },
+              {
+                "notFlag": "know_zhenyi"
+              }
+            ]
+          },
+          "failMsg": "你还不知道这封信要往哪儿送，拦下来也没有用处。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "一骑快马从北边来，在盐场外换了马，没有停。你拦他的时候，他的手已经按在鞍侧的刀上了。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他没有拔刀。他看清了你的脸，就把手放下了。"
+            },
+            {
+              "type": "say",
+              "raw": "你是那个人。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他把怀里一封信递过来，自己退了半步。"
+            },
+            {
+              "type": "narrate",
+              "raw": "信上只有两行："
+            },
+            {
+              "type": "narrate",
+              "raw": "「残卷在绣阁，请东方教主亲自验收。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "「京里的那位，等不了太久。」"
+            },
+            {
+              "type": "say",
+              "raw": "你截了这个，就再没有回头路了。你想清楚没有。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他说完就走了，走得很稳，像交了一件早就该交的差事。"
+            },
+            {
+              "type": "questdone",
+              "args": [
+                "q_main_snow"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "jn_market_main": {
+      "actions": [
+        {
+          "cmd": "问北线",
+          "label": "问镖车边的女镖头",
+          "keywords": [
+            "问北线",
+            "北线",
+            "问镖师",
+            "问乐知"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "snow_lead"
+              },
+              {
+                "notFlag": "yue_zhi_road"
+              },
+              {
+                "notFlag": "npv180_warm"
+              },
+              {
+                "notFlag": "npv180_broken"
+              }
+            ]
+          },
+          "failMsg": "镖车前的女镖头不是随便搭话的人——先弄清北边出了什么事再来。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "东市的日头偏西了。一个女镖头站在镖车旁边，正把车上那面旗抖开，又卷起来。旗旧得看不出颜色，边角是缝过的。"
+            },
+            {
+              "type": "narrate",
+              "raw": "车辕上坐着一个伙计，一动不动地朝北边看。"
+            },
+            {
+              "type": "say",
+              "raw": "看什么。镖车不写货单，不接搭脚的。"
+            },
+            {
+              "type": "narrate",
+              "raw": "她说话时不看你，只看手里的旗。"
+            },
+            {
+              "type": "menu",
+              "raw": "（你怎么答）|（不提那面旗，只问她往北走哪条道）>narrate:她手上停了一下，才把旗卷好。;say:……不问旗，倒是个懂规矩的。;say:北边这条道，官道三里一卡，卡上的人要钱也要命。车辙往西那条干沟，绕得过去。;say:我这趟也往北。你要跟，就跟半程——到山口我们分道。;flag:yue_zhi_road;flag:npv180_warm;favor:npcv_180:15;;（那面旗，是华山的吧）>narrate:她把旗捏皱了。;say:谁跟你说的。;say:那旗是我借的。借了二十年。;say:头一趟镖，我车上插着它，道上没人敢劫。后来我早不靠华山了——旗还挂在车上。我没摘。;narrate:她把旗从车上扯下来，扔进车辙边的沟里。;say:你去说啊。说乐知的镖是借华山的名头走稳的。;narrate:她跳上车，抖了一下缰绳。骡子走了。走出十几步，一袋钱从车上落下来，砸在你脚边。;say:拿着。当是我买你个不说。;flag:npv180_broken;+money:300"
+            }
+          ]
+        }
+      ]
+    },
+    "jn_brothel_room": {
+      "actions": [
+        {
+          "cmd": "问抄纸",
+          "label": "问雅阁里那位抄书的姑娘",
+          "keywords": [
+            "问抄纸",
+            "抄纸",
+            "问抄书",
+            "问陈语冰"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "snow_lead"
+              },
+              {
+                "notFlag": "chen_chaoben"
+              },
+              {
+                "notFlag": "252_warm"
+              },
+              {
+                "notFlag": "252_broken"
+              }
+            ]
+          },
+          "failMsg": "楼上的姑娘不是随便搭话的人——先弄清北边出了什么事再来。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "楼上的灯只点了一盏。桌上摊着几张纸，字很小，一笔一笔都很稳，收笔的地方顿得很轻。"
+            },
+            {
+              "type": "narrate",
+              "raw": "她背对着门坐着，手里还捏着一支笔。"
+            },
+            {
+              "type": "say",
+              "raw": "爷来得巧。这一曲刚起头。"
+            },
+            {
+              "type": "menu",
+              "raw": "（你说什么）|（坐下。等她唱完）>narrate:她唱得很慢。唱到第二段，声音低下去，隔了两拍才抬起来。;say:……姐姐教我认的字，我都记着呢。;narrate:她把桌上那几张纸翻过来，一张张扣住。;say:这些不是曲词。;say:是书。有人出钱，要我抄——抄完了往西送。抄一页，给一两。;narrate:她抬头看了你一眼，很快又低下去。;say:爷要是也往西去……那批抄好的，走的是疏勒镇往黑水的那条道。装货的人姓常，脸上有块疤。;flag:chen_chaoben;+item:wulin_zhenyi_chaoben:1;flag:252_warm;;（抽一张纸带走，下楼去花厅）>narrate:花厅里坐着梅拾。她把那张纸接过去，看了很久，比看自己的字还久。;say:……这是冰儿写的。;narrate:楼上传来一声响，像是笔摔在桌上。老鸨的脚步上了楼。;narrate:你走出醉春楼的时候，楼上的灯灭了一盏。;flag:252_broken;+karma:-10"
+            }
+          ]
+        }
+      ]
+    },
+    "jn_fruit_stall": {
+      "actions": [
+        {
+          "label": "果子摊",
+          "cmd": "list 柳甜儿",
+          "keywords": [
+            "果子",
+            "水果",
+            "桃"
+          ],
+          "desc": "买两个果子"
+        },
+        {
+          "cmd": "问解药",
+          "label": "问果子摊边蹲着的那个人",
+          "keywords": [
+            "问解药",
+            "解药",
+            "问箱子",
+            "问阮听"
+          ],
+          "cond": {
+            "and": [
+              {
+                "flag": "snow_lead"
+              },
+              {
+                "notFlag": "ruan_cure"
+              },
+              {
+                "notFlag": "npv090_warm"
+              },
+              {
+                "notFlag": "npv090_broken"
+              }
+            ]
+          },
+          "failMsg": "果子摊边那个人不理会闲话——先弄清北边出了什么事再来。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "果子摊边上蹲着一个人。他脚边放着一只小箱，箱盖扣得很严，一只手一直搭在上头。"
+            },
+            {
+              "type": "narrate",
+              "raw": "摊上的果子落了灰，他没买。"
+            },
+            {
+              "type": "say",
+              "raw": "问路就掐着手指头问。别问箱子。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他站起来的时候，掌心在裤腿上擦了一下。手是湿的。"
+            },
+            {
+              "type": "menu",
+              "raw": "（你问什么）|（不问箱子。只说你要往西去）>narrate:他看了你三息，把手从箱子上挪开，又放回去。;say:西边。……那地方，去了别喝生水，别闻香。风里有甜的味，就是有人在水里下东西了。;narrate:他从怀里摸出一小包东西，纸包了三层，塞进你手里。;say:含在舌下，别咽。到了地方再说。;say:你要是真去，替我带句话给疏勒镇的货郎。就说——瓶子满了。;flag:ruan_cure;flag:npv090_warm;+item:star_cure_item;;（问他那箱子里装的是什么）>narrate:他没有答。手背上一根青筋鼓起来，又平下去。;say:……你走吧。;narrate:他把箱子抱起来，往城东走。走到街口，停了一下，没有回头。;narrate:第二天，果子摊的老板说，那个人天没亮就出城了。;flag:npv090_broken;+karma:-10"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

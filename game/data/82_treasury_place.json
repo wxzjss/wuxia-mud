@@ -1,0 +1,4411 @@
+{
+  "rooms": {
+    "huashan_library": {
+      "id": "huashan_library",
+      "name": "华山派·藏经阁",
+      "region": "huashan",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "n": "road_huashan_1",
+        "u": "huashan_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "huashan",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "huashan_vault": {
+      "id": "huashan_vault",
+      "name": "华山派·藏宝阁",
+      "region": "huashan",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "huashan_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "huashan",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "shaolin_library": {
+      "id": "shaolin_library",
+      "name": "少林派·藏经阁",
+      "region": "shaolin",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "n": "road_shaolin_1",
+        "u": "shaolin_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "shaolin",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "shaolin_vault": {
+      "id": "shaolin_vault",
+      "name": "少林派·藏宝阁",
+      "region": "shaolin",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "shaolin_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "shaolin",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "wudang_library": {
+      "id": "wudang_library",
+      "name": "武当派·藏经阁",
+      "region": "wudang",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "n": "road_wudang_1",
+        "u": "wudang_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "wudang",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "wudang_vault": {
+      "id": "wudang_vault",
+      "name": "武当派·藏宝阁",
+      "region": "wudang",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "wudang_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "wudang",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "emei_library": {
+      "id": "emei_library",
+      "name": "峨眉派·藏经阁",
+      "region": "emei",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "sw": "road_emei_1",
+        "u": "emei_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "emei",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "emei_vault": {
+      "id": "emei_vault",
+      "name": "峨眉派·藏宝阁",
+      "region": "emei",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "emei_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "emei",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "gaibang_library": {
+      "id": "gaibang_library",
+      "name": "丐帮·藏经阁",
+      "region": "gaibang",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "e": "road_gaibang_1",
+        "u": "gaibang_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "gaibang",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "gaibang_vault": {
+      "id": "gaibang_vault",
+      "name": "丐帮·藏宝阁",
+      "region": "gaibang",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "gaibang_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "gaibang",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "tangmen_library": {
+      "id": "tangmen_library",
+      "name": "唐门·藏经阁",
+      "region": "tangmen",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "n": "tangmen_hall",
+        "u": "tangmen_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "tangmen",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "tangmen_vault": {
+      "id": "tangmen_vault",
+      "name": "唐门·藏宝阁",
+      "region": "tangmen",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "tangmen_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "tangmen",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "mojiao_library": {
+      "id": "mojiao_library",
+      "name": "日月神教·藏经阁",
+      "region": "mojiao",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "w": "mojiao_hall",
+        "u": "mojiao_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "mojiao",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "mojiao_vault": {
+      "id": "mojiao_vault",
+      "name": "日月神教·藏宝阁",
+      "region": "mojiao",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "mojiao_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "mojiao",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "miaojiang_library": {
+      "id": "miaojiang_library",
+      "name": "苗疆五毒教·藏经阁",
+      "region": "miaojiang",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "e": "road_miao_1",
+        "u": "miaojiang_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "miaojiang",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "miaojiang_vault": {
+      "id": "miaojiang_vault",
+      "name": "苗疆五毒教·藏宝阁",
+      "region": "miaojiang",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "miaojiang_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "miaojiang",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "dali_library": {
+      "id": "dali_library",
+      "name": "大理段氏·藏经阁",
+      "region": "dali",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "nw": "road_dali_1",
+        "u": "dali_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "dali",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "dali_vault": {
+      "id": "dali_vault",
+      "name": "大理段氏·藏宝阁",
+      "region": "dali",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "dali_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "dali",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "xingxiu_library": {
+      "id": "xingxiu_library",
+      "name": "星宿派·藏经阁",
+      "region": "xiyu",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "se": "road_xiyu_1",
+        "u": "xingxiu_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "xingxiu",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "xingxiu_vault": {
+      "id": "xingxiu_vault",
+      "name": "星宿派·藏宝阁",
+      "region": "xiyu",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "xingxiu_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "xingxiu",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "gumu_library": {
+      "id": "gumu_library",
+      "name": "古墓派·藏经阁",
+      "region": "gumu",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "e": "gumu_shan",
+        "u": "gumu_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "gumu",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "gumu_vault": {
+      "id": "gumu_vault",
+      "name": "古墓派·藏宝阁",
+      "region": "gumu",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "gumu_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "gumu",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "taohua_library": {
+      "id": "taohua_library",
+      "name": "桃花岛·藏经阁",
+      "region": "taohuadao",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "w": "taohuadao_dock",
+        "u": "taohua_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "taohua",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "taohua_vault": {
+      "id": "taohua_vault",
+      "name": "桃花岛·藏宝阁",
+      "region": "taohuadao",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "taohua_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "taohua",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "xuedao_library": {
+      "id": "xuedao_library",
+      "name": "血刀门·藏经阁",
+      "region": "beijiang",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "se": "road_beijiang_1",
+        "u": "xuedao_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "xuedao",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "xuedao_vault": {
+      "id": "xuedao_vault",
+      "name": "血刀门·藏宝阁",
+      "region": "beijiang",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "xuedao_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "xuedao",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "taishan_library": {
+      "id": "taishan_library",
+      "name": "泰山派·藏经阁",
+      "region": "changan",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "w": "taishan_hall",
+        "u": "taishan_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "taishan",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "taishan_vault": {
+      "id": "taishan_vault",
+      "name": "泰山派·藏宝阁",
+      "region": "changan",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "taishan_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "taishan",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "hengshan_library": {
+      "id": "hengshan_library",
+      "name": "衡山派·藏经阁",
+      "region": "xiangyang",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "w": "hengshan_hall",
+        "u": "hengshan_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "hengshan",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "hengshan_vault": {
+      "id": "hengshan_vault",
+      "name": "衡山派·藏宝阁",
+      "region": "xiangyang",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "hengshan_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "hengshan",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "hengshanN_library": {
+      "id": "hengshanN_library",
+      "name": "恒山派·藏经阁",
+      "region": "changan",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "w": "hengshanN_hall",
+        "u": "hengshanN_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "hengshanN",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "hengshanN_vault": {
+      "id": "hengshanN_vault",
+      "name": "恒山派·藏宝阁",
+      "region": "changan",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "hengshanN_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "hengshanN",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "qingcheng_library": {
+      "id": "qingcheng_library",
+      "name": "青城派·藏经阁",
+      "region": "chengdu",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "w": "qingcheng_hall",
+        "u": "qingcheng_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "qingcheng",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "qingcheng_vault": {
+      "id": "qingcheng_vault",
+      "name": "青城派·藏宝阁",
+      "region": "chengdu",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "qingcheng_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "qingcheng",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "kongtong_library": {
+      "id": "kongtong_library",
+      "name": "崆峒派·藏经阁",
+      "region": "changan",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "w": "kongtong_hall",
+        "u": "kongtong_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "kongtong",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "kongtong_vault": {
+      "id": "kongtong_vault",
+      "name": "崆峒派·藏宝阁",
+      "region": "changan",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "kongtong_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "kongtong",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "kunlun_library": {
+      "id": "kunlun_library",
+      "name": "昆仑派·藏经阁",
+      "region": "xixia",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "w": "kunlun_hall",
+        "u": "kunlun_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "kunlun",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "kunlun_vault": {
+      "id": "kunlun_vault",
+      "name": "昆仑派·藏宝阁",
+      "region": "xixia",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "kunlun_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "kunlun",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "diancang_library": {
+      "id": "diancang_library",
+      "name": "点苍派·藏经阁",
+      "region": "dali",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "w": "diancang_hall",
+        "u": "diancang_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "diancang",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "diancang_vault": {
+      "id": "diancang_vault",
+      "name": "点苍派·藏宝阁",
+      "region": "dali",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "diancang_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "diancang",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "tiezhang_library": {
+      "id": "tiezhang_library",
+      "name": "铁掌帮·藏经阁",
+      "region": "xiangyang",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "w": "tiezhang_hall",
+        "u": "tiezhang_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "tiezhang",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "tiezhang_vault": {
+      "id": "tiezhang_vault",
+      "name": "铁掌帮·藏宝阁",
+      "region": "xiangyang",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "tiezhang_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "tiezhang",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "hehuan_library": {
+      "id": "hehuan_library",
+      "name": "合欢宗·藏经阁",
+      "region": "qinglou",
+      "desc": "一架一架的书，从地面堆到梁上。窗纸糊得厚，屋里终年不见太阳，纸味与霉味混在一处。",
+      "exits": {
+        "w": "hehuan_hall",
+        "u": "hehuan_vault"
+      },
+      "treasuryKind": "library",
+      "treasurySect": "hehuan",
+      "actions": [
+        {
+          "label": "翻看经卷",
+          "cmd": "藏经阁",
+          "keywords": [
+            "藏经阁",
+            "经卷",
+            "看书"
+          ],
+          "desc": "按牌子进层"
+        }
+      ]
+    },
+    "hehuan_vault": {
+      "id": "hehuan_vault",
+      "name": "合欢宗·藏宝阁",
+      "region": "qinglou",
+      "desc": "木架上分着格子，兵器、瓶罐、符纸、几支乌黑的根茎。每格里都插着一片木牌，写着名目。",
+      "exits": {
+        "d": "hehuan_library"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "hehuan",
+      "actions": [
+        {
+          "label": "看货架",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "藏宝阁",
+            "货架",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "jindao_vault": {
+      "id": "jindao_vault",
+      "name": "金刀门·库房",
+      "region": "luoyang",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "jindao_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "jindao",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "wuhu_vault": {
+      "id": "wuhu_vault",
+      "name": "五虎断门刀·库房",
+      "region": "changan",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "wuhu_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "wuhu",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "feihu_vault": {
+      "id": "feihu_vault",
+      "name": "飞虎镖局·库房",
+      "region": "changan",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "feihu_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "feihu",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "zhenyuan_vault": {
+      "id": "zhenyuan_vault",
+      "name": "镇远镖局·库房",
+      "region": "luoyang",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "zhenyuan_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "zhenyuan",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "shenquan_vault": {
+      "id": "shenquan_vault",
+      "name": "神拳门·库房",
+      "region": "cunzhen",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "shenquan_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "shenquan",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "tieqiang_vault": {
+      "id": "tieqiang_vault",
+      "name": "铁枪门·库房",
+      "region": "luoyang",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "tieqiang_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "tieqiang",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "kuaidao_vault": {
+      "id": "kuaidao_vault",
+      "name": "快刀门·库房",
+      "region": "chengdu",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "kuaidao_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "kuaidao",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "luohan_vault": {
+      "id": "luohan_vault",
+      "name": "罗汉门·库房",
+      "region": "xiangyang",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "luohan_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "luohan",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "wuyun_vault": {
+      "id": "wuyun_vault",
+      "name": "五云手温家·库房",
+      "region": "chengdu",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "wuyun_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "wuyun",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "dafeng_vault": {
+      "id": "dafeng_vault",
+      "name": "大风云飞门·库房",
+      "region": "changan",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "dafeng_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "dafeng",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "huanghe_vault": {
+      "id": "huanghe_vault",
+      "name": "黄河帮·库房",
+      "region": "harbor",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "huanghe_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "huanghe",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "taihu_vault": {
+      "id": "taihu_vault",
+      "name": "太湖帮·库房",
+      "region": "gusu",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "taihu_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "taihu",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "poyang_vault": {
+      "id": "poyang_vault",
+      "name": "鄱阳帮·库房",
+      "region": "gusu",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "poyang_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "poyang",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "qingzhu_vault": {
+      "id": "qingzhu_vault",
+      "name": "青竹帮·库房",
+      "region": "jiangnan",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "qingzhu_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "qingzhu",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "jujing_vault": {
+      "id": "jujing_vault",
+      "name": "巨鲸帮·库房",
+      "region": "harbor",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "jujing_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "jujing",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "jinlong_vault": {
+      "id": "jinlong_vault",
+      "name": "金龙帮·库房",
+      "region": "jiangnan",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "jinlong_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "jinlong",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "wuliang_vault": {
+      "id": "wuliang_vault",
+      "name": "无量剑派·库房",
+      "region": "dali",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "wuliang_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "wuliang",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "funiu_vault": {
+      "id": "funiu_vault",
+      "name": "伏牛派·库房",
+      "region": "xiangyang",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "funiu_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "funiu",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "baisheng_vault": {
+      "id": "baisheng_vault",
+      "name": "百胜刀门·库房",
+      "region": "luoyang",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "baisheng_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "baisheng",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "baituo_vault": {
+      "id": "baituo_vault",
+      "name": "白驼山·库房",
+      "region": "xixia",
+      "desc": "一间不大的屋子，堆着几口箱子，箱盖半开着。看屋的老头坐在门口打盹。",
+      "exits": {
+        "w": "baituo_hall"
+      },
+      "treasuryKind": "vault",
+      "treasurySect": "baituo",
+      "actions": [
+        {
+          "label": "看箱子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "库房",
+            "箱子",
+            "换东西"
+          ],
+          "desc": "用贡献兑换"
+        }
+      ]
+    },
+    "palace_treasury": {
+      "id": "palace_treasury",
+      "name": "皇宫·国库",
+      "region": "palace",
+      "desc": "库门是两层的，外头一层木、里头一层铁。架子上摆的东西不多，每一件前头都立着黄绸条。",
+      "exits": {
+        "s": "palace_gate"
+      },
+      "treasuryKind": "royal",
+      "actions": [
+        {
+          "label": "看册子",
+          "cmd": "藏宝阁",
+          "keywords": [
+            "国库",
+            "册子",
+            "换东西"
+          ],
+          "desc": "用功劳兑换"
+        }
+      ]
+    },
+    "jn_yamen_store": {
+      "id": "jn_yamen_store",
+      "treasuryKind": "house"
+    },
+    "road_huashan_1": {
+      "id": "road_huashan_1",
+      "exits": {
+        "s": "huashan_library"
+      }
+    },
+    "road_shaolin_1": {
+      "id": "road_shaolin_1",
+      "exits": {
+        "s": "shaolin_library"
+      }
+    },
+    "road_wudang_1": {
+      "id": "road_wudang_1",
+      "exits": {
+        "s": "wudang_library"
+      }
+    },
+    "road_emei_1": {
+      "id": "road_emei_1",
+      "exits": {
+        "ne": "emei_library"
+      }
+    },
+    "road_gaibang_1": {
+      "id": "road_gaibang_1",
+      "exits": {
+        "w": "gaibang_library"
+      }
+    },
+    "tangmen_hall": {
+      "id": "tangmen_hall",
+      "exits": {
+        "s": "tangmen_library"
+      }
+    },
+    "mojiao_hall": {
+      "id": "mojiao_hall",
+      "exits": {
+        "e": "mojiao_library"
+      }
+    },
+    "road_miao_1": {
+      "id": "road_miao_1",
+      "exits": {
+        "w": "miaojiang_library"
+      }
+    },
+    "road_dali_1": {
+      "id": "road_dali_1",
+      "exits": {
+        "se": "dali_library"
+      }
+    },
+    "road_xiyu_1": {
+      "id": "road_xiyu_1",
+      "exits": {
+        "nw": "xingxiu_library"
+      }
+    },
+    "gumu_shan": {
+      "id": "gumu_shan",
+      "exits": {
+        "w": "gumu_library"
+      }
+    },
+    "taohuadao_dock": {
+      "id": "taohuadao_dock",
+      "exits": {
+        "e": "taohua_library"
+      }
+    },
+    "road_beijiang_1": {
+      "id": "road_beijiang_1",
+      "exits": {
+        "nw": "xuedao_library"
+      }
+    },
+    "taishan_hall": {
+      "id": "taishan_hall",
+      "exits": {
+        "e": "taishan_library"
+      }
+    },
+    "hengshan_hall": {
+      "id": "hengshan_hall",
+      "exits": {
+        "e": "hengshan_library"
+      }
+    },
+    "hengshanN_hall": {
+      "id": "hengshanN_hall",
+      "exits": {
+        "e": "hengshanN_library"
+      }
+    },
+    "qingcheng_hall": {
+      "id": "qingcheng_hall",
+      "exits": {
+        "e": "qingcheng_library"
+      }
+    },
+    "kongtong_hall": {
+      "id": "kongtong_hall",
+      "exits": {
+        "e": "kongtong_library"
+      }
+    },
+    "kunlun_hall": {
+      "id": "kunlun_hall",
+      "exits": {
+        "e": "kunlun_library"
+      }
+    },
+    "diancang_hall": {
+      "id": "diancang_hall",
+      "exits": {
+        "e": "diancang_library"
+      }
+    },
+    "tiezhang_hall": {
+      "id": "tiezhang_hall",
+      "exits": {
+        "e": "tiezhang_library"
+      }
+    },
+    "hehuan_hall": {
+      "id": "hehuan_hall",
+      "exits": {
+        "e": "hehuan_library"
+      }
+    },
+    "jindao_hall": {
+      "id": "jindao_hall",
+      "exits": {
+        "e": "jindao_vault"
+      }
+    },
+    "wuhu_hall": {
+      "id": "wuhu_hall",
+      "exits": {
+        "e": "wuhu_vault"
+      }
+    },
+    "feihu_hall": {
+      "id": "feihu_hall",
+      "exits": {
+        "e": "feihu_vault"
+      }
+    },
+    "zhenyuan_hall": {
+      "id": "zhenyuan_hall",
+      "exits": {
+        "e": "zhenyuan_vault"
+      }
+    },
+    "shenquan_hall": {
+      "id": "shenquan_hall",
+      "exits": {
+        "e": "shenquan_vault"
+      }
+    },
+    "tieqiang_hall": {
+      "id": "tieqiang_hall",
+      "exits": {
+        "e": "tieqiang_vault"
+      }
+    },
+    "kuaidao_hall": {
+      "id": "kuaidao_hall",
+      "exits": {
+        "e": "kuaidao_vault"
+      }
+    },
+    "luohan_hall": {
+      "id": "luohan_hall",
+      "exits": {
+        "e": "luohan_vault"
+      }
+    },
+    "wuyun_hall": {
+      "id": "wuyun_hall",
+      "exits": {
+        "e": "wuyun_vault"
+      }
+    },
+    "dafeng_hall": {
+      "id": "dafeng_hall",
+      "exits": {
+        "e": "dafeng_vault"
+      }
+    },
+    "huanghe_hall": {
+      "id": "huanghe_hall",
+      "exits": {
+        "e": "huanghe_vault"
+      }
+    },
+    "taihu_hall": {
+      "id": "taihu_hall",
+      "exits": {
+        "e": "taihu_vault"
+      }
+    },
+    "poyang_hall": {
+      "id": "poyang_hall",
+      "exits": {
+        "e": "poyang_vault"
+      }
+    },
+    "qingzhu_hall": {
+      "id": "qingzhu_hall",
+      "exits": {
+        "e": "qingzhu_vault"
+      }
+    },
+    "jujing_hall": {
+      "id": "jujing_hall",
+      "exits": {
+        "e": "jujing_vault"
+      }
+    },
+    "jinlong_hall": {
+      "id": "jinlong_hall",
+      "exits": {
+        "e": "jinlong_vault"
+      }
+    },
+    "wuliang_hall": {
+      "id": "wuliang_hall",
+      "exits": {
+        "e": "wuliang_vault"
+      }
+    },
+    "funiu_hall": {
+      "id": "funiu_hall",
+      "exits": {
+        "e": "funiu_vault"
+      }
+    },
+    "baisheng_hall": {
+      "id": "baisheng_hall",
+      "exits": {
+        "e": "baisheng_vault"
+      }
+    },
+    "baituo_hall": {
+      "id": "baituo_hall",
+      "exits": {
+        "e": "baituo_vault"
+      }
+    },
+    "palace_gate": {
+      "id": "palace_gate",
+      "exits": {
+        "n": "palace_treasury"
+      }
+    }
+  },
+  "npcs": {
+    "huashan_keeper": {
+      "id": "huashan_keeper",
+      "name": "华山派的扫地僧",
+      "title": "守库人",
+      "gender": "male",
+      "room": "huashan_library",
+      "sect": "huashan",
+      "rank": 4,
+      "tier": "A",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 3600,
+      "mp": 2800,
+      "atk": 320,
+      "def": 200,
+      "dodge": 170,
+      "parry": 160,
+      "speed": 90,
+      "skills": {
+        "剑": "huashan_sword",
+        "内功": "zixia_gong"
+      },
+      "learned": {
+        "huashan_sword": {
+          "level": 500
+        },
+        "zixia_gong": {
+          "level": 450
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "shaolin_keeper": {
+      "id": "shaolin_keeper",
+      "name": "少林派的扫地僧",
+      "title": "守库人",
+      "gender": "male",
+      "room": "shaolin_library",
+      "sect": "shaolin",
+      "rank": 4,
+      "tier": "A",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 3600,
+      "mp": 2800,
+      "atk": 320,
+      "def": 200,
+      "dodge": 170,
+      "parry": 160,
+      "speed": 90,
+      "skills": {
+        "拳": "shaolin_changquan",
+        "内功": "yijinjing"
+      },
+      "learned": {
+        "shaolin_changquan": {
+          "level": 500
+        },
+        "yijinjing": {
+          "level": 450
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "wudang_keeper": {
+      "id": "wudang_keeper",
+      "name": "武当派的扫地僧",
+      "title": "守库人",
+      "gender": "male",
+      "room": "wudang_library",
+      "sect": "wudang",
+      "rank": 4,
+      "tier": "A",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 3600,
+      "mp": 2800,
+      "atk": 320,
+      "def": 200,
+      "dodge": 170,
+      "parry": 160,
+      "speed": 90,
+      "skills": {
+        "拳": "wudang_taiji",
+        "内功": "chunyang_gong"
+      },
+      "learned": {
+        "wudang_taiji": {
+          "level": 500
+        },
+        "chunyang_gong": {
+          "level": 450
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "emei_keeper": {
+      "id": "emei_keeper",
+      "name": "峨眉派的扫地僧",
+      "title": "守库人",
+      "gender": "male",
+      "room": "emei_library",
+      "sect": "emei",
+      "rank": 4,
+      "tier": "A",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 3600,
+      "mp": 2800,
+      "atk": 320,
+      "def": 200,
+      "dodge": 170,
+      "parry": 160,
+      "speed": 90,
+      "skills": {
+        "剑": "emei_sword",
+        "内功": "foguang_gong"
+      },
+      "learned": {
+        "emei_sword": {
+          "level": 500
+        },
+        "foguang_gong": {
+          "level": 450
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "gaibang_keeper": {
+      "id": "gaibang_keeper",
+      "name": "丐帮的扫地僧",
+      "title": "守库人",
+      "gender": "male",
+      "room": "gaibang_library",
+      "sect": "gaibang",
+      "rank": 4,
+      "tier": "A",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 3600,
+      "mp": 2800,
+      "atk": 320,
+      "def": 200,
+      "dodge": 170,
+      "parry": 160,
+      "speed": 90,
+      "skills": {
+        "棍": "dagou_bangfa",
+        "内功": "gaibang_force_1"
+      },
+      "learned": {
+        "dagou_bangfa": {
+          "level": 500
+        },
+        "gaibang_force_1": {
+          "level": 450
+        }
+      },
+      "equipment": {
+        "武器": "bamboo_stick"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "tangmen_keeper": {
+      "id": "tangmen_keeper",
+      "name": "唐门的守阁弟子",
+      "title": "守库人",
+      "gender": "male",
+      "room": "tangmen_library",
+      "sect": "tangmen",
+      "rank": 4,
+      "tier": "B",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 2000,
+      "mp": 1500,
+      "atk": 200,
+      "def": 130,
+      "dodge": 110,
+      "parry": 100,
+      "speed": 70,
+      "skills": {
+        "棍": "jh_staff",
+        "内功": "tangmen_force_1"
+      },
+      "learned": {
+        "jh_staff": {
+          "level": 300
+        },
+        "tangmen_force_1": {
+          "level": 270
+        }
+      },
+      "equipment": {
+        "武器": "bamboo_stick"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "mojiao_keeper": {
+      "id": "mojiao_keeper",
+      "name": "日月神教的扫地僧",
+      "title": "守库人",
+      "gender": "male",
+      "room": "mojiao_library",
+      "sect": "mojiao",
+      "rank": 4,
+      "tier": "A",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 3600,
+      "mp": 2800,
+      "atk": 320,
+      "def": 200,
+      "dodge": 170,
+      "parry": 160,
+      "speed": 90,
+      "skills": {
+        "拳": "heimu_zhang",
+        "内功": "xixing_dafa"
+      },
+      "learned": {
+        "heimu_zhang": {
+          "level": 500
+        },
+        "xixing_dafa": {
+          "level": 450
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "miaojiang_keeper": {
+      "id": "miaojiang_keeper",
+      "name": "苗疆五毒教的守阁弟子",
+      "title": "守库人",
+      "gender": "male",
+      "room": "miaojiang_library",
+      "sect": "miaojiang",
+      "rank": 4,
+      "tier": "B",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 2000,
+      "mp": 1500,
+      "atk": 200,
+      "def": 130,
+      "dodge": 110,
+      "parry": 100,
+      "speed": 70,
+      "skills": {
+        "拳": "ice_silk_zhang",
+        "内功": "miaojiang_force_1"
+      },
+      "learned": {
+        "ice_silk_zhang": {
+          "level": 300
+        },
+        "miaojiang_force_1": {
+          "level": 270
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "dali_keeper": {
+      "id": "dali_keeper",
+      "name": "大理段氏的扫地僧",
+      "title": "守库人",
+      "gender": "male",
+      "room": "dali_library",
+      "sect": "dali",
+      "rank": 4,
+      "tier": "A",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 3600,
+      "mp": 2800,
+      "atk": 320,
+      "def": 200,
+      "dodge": 170,
+      "parry": 160,
+      "speed": 90,
+      "skills": {
+        "拳": "yiyang_zhi",
+        "内功": "dali_force_1"
+      },
+      "learned": {
+        "yiyang_zhi": {
+          "level": 500
+        },
+        "dali_force_1": {
+          "level": 450
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "xingxiu_keeper": {
+      "id": "xingxiu_keeper",
+      "name": "星宿派的守阁弟子",
+      "title": "守库人",
+      "gender": "male",
+      "room": "xingxiu_library",
+      "sect": "xingxiu",
+      "rank": 4,
+      "tier": "B",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 2000,
+      "mp": 1500,
+      "atk": 200,
+      "def": 130,
+      "dodge": 110,
+      "parry": 100,
+      "speed": 70,
+      "skills": {
+        "拳": "cuixin_zhang",
+        "内功": "xingxiu_force_1"
+      },
+      "learned": {
+        "cuixin_zhang": {
+          "level": 300
+        },
+        "xingxiu_force_1": {
+          "level": 270
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "gumu_keeper": {
+      "id": "gumu_keeper",
+      "name": "古墓派的守阁弟子",
+      "title": "守库人",
+      "gender": "male",
+      "room": "gumu_library",
+      "sect": "gumu",
+      "rank": 4,
+      "tier": "B",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 2000,
+      "mp": 1500,
+      "atk": 200,
+      "def": 130,
+      "dodge": 110,
+      "parry": 100,
+      "speed": 70,
+      "skills": {
+        "剑": "emei_sword",
+        "内功": "jiuyin_zhenjing"
+      },
+      "learned": {
+        "emei_sword": {
+          "level": 300
+        },
+        "jiuyin_zhenjing": {
+          "level": 270
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "taohua_keeper": {
+      "id": "taohua_keeper",
+      "name": "桃花岛的守阁弟子",
+      "title": "守库人",
+      "gender": "male",
+      "room": "taohua_library",
+      "sect": "taohua",
+      "rank": 4,
+      "tier": "B",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 2000,
+      "mp": 1500,
+      "atk": 200,
+      "def": 130,
+      "dodge": 110,
+      "parry": 100,
+      "speed": 70,
+      "skills": {
+        "刀": "kuangfeng_daofa",
+        "内功": "taohua_force_1"
+      },
+      "learned": {
+        "kuangfeng_daofa": {
+          "level": 300
+        },
+        "taohua_force_1": {
+          "level": 270
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "xuedao_keeper": {
+      "id": "xuedao_keeper",
+      "name": "血刀门的守阁弟子",
+      "title": "守库人",
+      "gender": "male",
+      "room": "xuedao_library",
+      "sect": "xuedao",
+      "rank": 4,
+      "tier": "B",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 2000,
+      "mp": 1500,
+      "atk": 200,
+      "def": 130,
+      "dodge": 110,
+      "parry": 100,
+      "speed": 70,
+      "skills": {
+        "刀": "xuedao",
+        "内功": "xuedao_force_1"
+      },
+      "learned": {
+        "xuedao": {
+          "level": 300
+        },
+        "xuedao_force_1": {
+          "level": 270
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "taishan_keeper": {
+      "id": "taishan_keeper",
+      "name": "泰山派的守阁弟子",
+      "title": "守库人",
+      "gender": "male",
+      "room": "taishan_library",
+      "sect": "taishan",
+      "rank": 4,
+      "tier": "B",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 2000,
+      "mp": 1500,
+      "atk": 200,
+      "def": 130,
+      "dodge": 110,
+      "parry": 100,
+      "speed": 70,
+      "skills": {
+        "剑": "taishan_atk_1",
+        "内功": "taishan_force_1"
+      },
+      "learned": {
+        "taishan_atk_1": {
+          "level": 300
+        },
+        "taishan_force_1": {
+          "level": 270
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "hengshan_keeper": {
+      "id": "hengshan_keeper",
+      "name": "衡山派的守阁弟子",
+      "title": "守库人",
+      "gender": "male",
+      "room": "hengshan_library",
+      "sect": "hengshan",
+      "rank": 4,
+      "tier": "B",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 2000,
+      "mp": 1500,
+      "atk": 200,
+      "def": 130,
+      "dodge": 110,
+      "parry": 100,
+      "speed": 70,
+      "skills": {
+        "剑": "hengshan_atk_1",
+        "内功": "hengshan_force_1"
+      },
+      "learned": {
+        "hengshan_atk_1": {
+          "level": 300
+        },
+        "hengshan_force_1": {
+          "level": 270
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "hengshanN_keeper": {
+      "id": "hengshanN_keeper",
+      "name": "恒山派的守阁弟子",
+      "title": "守库人",
+      "gender": "male",
+      "room": "hengshanN_library",
+      "sect": "hengshanN",
+      "rank": 4,
+      "tier": "B",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 2000,
+      "mp": 1500,
+      "atk": 200,
+      "def": 130,
+      "dodge": 110,
+      "parry": 100,
+      "speed": 70,
+      "skills": {
+        "剑": "hengshanN_atk_1",
+        "内功": "hengshanN_force_1"
+      },
+      "learned": {
+        "hengshanN_atk_1": {
+          "level": 300
+        },
+        "hengshanN_force_1": {
+          "level": 270
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "qingcheng_keeper": {
+      "id": "qingcheng_keeper",
+      "name": "青城派的守阁弟子",
+      "title": "守库人",
+      "gender": "male",
+      "room": "qingcheng_library",
+      "sect": "qingcheng",
+      "rank": 4,
+      "tier": "B",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 2000,
+      "mp": 1500,
+      "atk": 200,
+      "def": 130,
+      "dodge": 110,
+      "parry": 100,
+      "speed": 70,
+      "skills": {
+        "剑": "qingcheng_atk_1",
+        "内功": "qingcheng_force_1"
+      },
+      "learned": {
+        "qingcheng_atk_1": {
+          "level": 300
+        },
+        "qingcheng_force_1": {
+          "level": 270
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "kongtong_keeper": {
+      "id": "kongtong_keeper",
+      "name": "崆峒派的守阁弟子",
+      "title": "守库人",
+      "gender": "male",
+      "room": "kongtong_library",
+      "sect": "kongtong",
+      "rank": 4,
+      "tier": "B",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 2000,
+      "mp": 1500,
+      "atk": 200,
+      "def": 130,
+      "dodge": 110,
+      "parry": 100,
+      "speed": 70,
+      "skills": {
+        "拳": "kongtong_atk_1",
+        "内功": "kongtong_force_1"
+      },
+      "learned": {
+        "kongtong_atk_1": {
+          "level": 300
+        },
+        "kongtong_force_1": {
+          "level": 270
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "kunlun_keeper": {
+      "id": "kunlun_keeper",
+      "name": "昆仑派的守阁弟子",
+      "title": "守库人",
+      "gender": "male",
+      "room": "kunlun_library",
+      "sect": "kunlun",
+      "rank": 4,
+      "tier": "B",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 2000,
+      "mp": 1500,
+      "atk": 200,
+      "def": 130,
+      "dodge": 110,
+      "parry": 100,
+      "speed": 70,
+      "skills": {
+        "剑": "kunlun_atk_1",
+        "内功": "kunlun_force_1"
+      },
+      "learned": {
+        "kunlun_atk_1": {
+          "level": 300
+        },
+        "kunlun_force_1": {
+          "level": 270
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "diancang_keeper": {
+      "id": "diancang_keeper",
+      "name": "点苍派的守阁弟子",
+      "title": "守库人",
+      "gender": "male",
+      "room": "diancang_library",
+      "sect": "diancang",
+      "rank": 4,
+      "tier": "B",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 2000,
+      "mp": 1500,
+      "atk": 200,
+      "def": 130,
+      "dodge": 110,
+      "parry": 100,
+      "speed": 70,
+      "skills": {
+        "剑": "diancang_atk_1",
+        "内功": "diancang_force_1"
+      },
+      "learned": {
+        "diancang_atk_1": {
+          "level": 300
+        },
+        "diancang_force_1": {
+          "level": 270
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "tiezhang_keeper": {
+      "id": "tiezhang_keeper",
+      "name": "铁掌帮的守阁弟子",
+      "title": "守库人",
+      "gender": "male",
+      "room": "tiezhang_library",
+      "sect": "tiezhang",
+      "rank": 4,
+      "tier": "B",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 2000,
+      "mp": 1500,
+      "atk": 200,
+      "def": 130,
+      "dodge": 110,
+      "parry": 100,
+      "speed": 70,
+      "skills": {
+        "拳": "tiezhang_atk_1",
+        "内功": "tiezhang_force_1"
+      },
+      "learned": {
+        "tiezhang_atk_1": {
+          "level": 300
+        },
+        "tiezhang_force_1": {
+          "level": 270
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "hehuan_keeper": {
+      "id": "hehuan_keeper",
+      "name": "合欢宗的守阁弟子",
+      "title": "守库人",
+      "gender": "male",
+      "room": "hehuan_library",
+      "sect": "hehuan",
+      "rank": 4,
+      "tier": "B",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 2000,
+      "mp": 1500,
+      "atk": 200,
+      "def": 130,
+      "dodge": 110,
+      "parry": 100,
+      "speed": 70,
+      "skills": {
+        "拳": "hehuan_atk_1",
+        "内功": "hehuan_force_1"
+      },
+      "learned": {
+        "hehuan_atk_1": {
+          "level": 300
+        },
+        "hehuan_force_1": {
+          "level": 270
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "jindao_keeper": {
+      "id": "jindao_keeper",
+      "name": "金刀门的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "jindao_vault",
+      "sect": "jindao",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "刀": "jindao_atk_1",
+        "内功": "jindao_force_1"
+      },
+      "learned": {
+        "jindao_atk_1": {
+          "level": 120
+        },
+        "jindao_force_1": {
+          "level": 108
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "wuhu_keeper": {
+      "id": "wuhu_keeper",
+      "name": "五虎断门刀的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "wuhu_vault",
+      "sect": "wuhu",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "刀": "wuhu_atk_1",
+        "内功": "wuhu_force_1"
+      },
+      "learned": {
+        "wuhu_atk_1": {
+          "level": 120
+        },
+        "wuhu_force_1": {
+          "level": 108
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "feihu_keeper": {
+      "id": "feihu_keeper",
+      "name": "飞虎镖局的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "feihu_vault",
+      "sect": "feihu",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "刀": "feihu_atk_1",
+        "内功": "feihu_force_1"
+      },
+      "learned": {
+        "feihu_atk_1": {
+          "level": 120
+        },
+        "feihu_force_1": {
+          "level": 108
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "zhenyuan_keeper": {
+      "id": "zhenyuan_keeper",
+      "name": "镇远镖局的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "zhenyuan_vault",
+      "sect": "zhenyuan",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "刀": "zhenyuan_atk_1",
+        "内功": "zhenyuan_force_1"
+      },
+      "learned": {
+        "zhenyuan_atk_1": {
+          "level": 120
+        },
+        "zhenyuan_force_1": {
+          "level": 108
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "shenquan_keeper": {
+      "id": "shenquan_keeper",
+      "name": "神拳门的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "shenquan_vault",
+      "sect": "shenquan",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "拳": "shenquan_atk_1",
+        "内功": "shenquan_force_1"
+      },
+      "learned": {
+        "shenquan_atk_1": {
+          "level": 120
+        },
+        "shenquan_force_1": {
+          "level": 108
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "tieqiang_keeper": {
+      "id": "tieqiang_keeper",
+      "name": "铁枪门的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "tieqiang_vault",
+      "sect": "tieqiang",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "棍": "tieqiang_atk_1",
+        "内功": "tieqiang_force_1"
+      },
+      "learned": {
+        "tieqiang_atk_1": {
+          "level": 120
+        },
+        "tieqiang_force_1": {
+          "level": 108
+        }
+      },
+      "equipment": {
+        "武器": "bamboo_stick"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "kuaidao_keeper": {
+      "id": "kuaidao_keeper",
+      "name": "快刀门的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "kuaidao_vault",
+      "sect": "kuaidao",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "刀": "kuaidao_atk_1",
+        "内功": "kuaidao_force_1"
+      },
+      "learned": {
+        "kuaidao_atk_1": {
+          "level": 120
+        },
+        "kuaidao_force_1": {
+          "level": 108
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "luohan_keeper": {
+      "id": "luohan_keeper",
+      "name": "罗汉门的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "luohan_vault",
+      "sect": "luohan",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "拳": "luohan_atk_1",
+        "内功": "luohan_force_1"
+      },
+      "learned": {
+        "luohan_atk_1": {
+          "level": 120
+        },
+        "luohan_force_1": {
+          "level": 108
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "wuyun_keeper": {
+      "id": "wuyun_keeper",
+      "name": "五云手温家的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "wuyun_vault",
+      "sect": "wuyun",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "拳": "wuyun_atk_1",
+        "内功": "wuyun_force_1"
+      },
+      "learned": {
+        "wuyun_atk_1": {
+          "level": 120
+        },
+        "wuyun_force_1": {
+          "level": 108
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "dafeng_keeper": {
+      "id": "dafeng_keeper",
+      "name": "大风云飞门的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "dafeng_vault",
+      "sect": "dafeng",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "刀": "dafeng_atk_1",
+        "内功": "dafeng_force_1"
+      },
+      "learned": {
+        "dafeng_atk_1": {
+          "level": 120
+        },
+        "dafeng_force_1": {
+          "level": 108
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "huanghe_keeper": {
+      "id": "huanghe_keeper",
+      "name": "黄河帮的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "huanghe_vault",
+      "sect": "huanghe",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "棍": "huanghe_atk_1",
+        "内功": "huanghe_force_1"
+      },
+      "learned": {
+        "huanghe_atk_1": {
+          "level": 120
+        },
+        "huanghe_force_1": {
+          "level": 108
+        }
+      },
+      "equipment": {
+        "武器": "bamboo_stick"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "taihu_keeper": {
+      "id": "taihu_keeper",
+      "name": "太湖帮的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "taihu_vault",
+      "sect": "taihu",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "刀": "taihu_atk_1",
+        "内功": "taihu_force_1"
+      },
+      "learned": {
+        "taihu_atk_1": {
+          "level": 120
+        },
+        "taihu_force_1": {
+          "level": 108
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "poyang_keeper": {
+      "id": "poyang_keeper",
+      "name": "鄱阳帮的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "poyang_vault",
+      "sect": "poyang",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "棍": "poyang_atk_1",
+        "内功": "poyang_force_1"
+      },
+      "learned": {
+        "poyang_atk_1": {
+          "level": 120
+        },
+        "poyang_force_1": {
+          "level": 108
+        }
+      },
+      "equipment": {
+        "武器": "bamboo_stick"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "qingzhu_keeper": {
+      "id": "qingzhu_keeper",
+      "name": "青竹帮的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "qingzhu_vault",
+      "sect": "qingzhu",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "刀": "qingzhu_atk_1",
+        "内功": "qingzhu_force_1"
+      },
+      "learned": {
+        "qingzhu_atk_1": {
+          "level": 120
+        },
+        "qingzhu_force_1": {
+          "level": 108
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "jujing_keeper": {
+      "id": "jujing_keeper",
+      "name": "巨鲸帮的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "jujing_vault",
+      "sect": "jujing",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "刀": "jujing_atk_1",
+        "内功": "jujing_force_1"
+      },
+      "learned": {
+        "jujing_atk_1": {
+          "level": 120
+        },
+        "jujing_force_1": {
+          "level": 108
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "jinlong_keeper": {
+      "id": "jinlong_keeper",
+      "name": "金龙帮的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "jinlong_vault",
+      "sect": "jinlong",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "拳": "jinlong_atk_1",
+        "内功": "jinlong_force_1"
+      },
+      "learned": {
+        "jinlong_atk_1": {
+          "level": 120
+        },
+        "jinlong_force_1": {
+          "level": 108
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "wuliang_keeper": {
+      "id": "wuliang_keeper",
+      "name": "无量剑派的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "wuliang_vault",
+      "sect": "wuliang",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "剑": "wuliang_atk_1",
+        "内功": "wuliang_force_1"
+      },
+      "learned": {
+        "wuliang_atk_1": {
+          "level": 120
+        },
+        "wuliang_force_1": {
+          "level": 108
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "funiu_keeper": {
+      "id": "funiu_keeper",
+      "name": "伏牛派的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "funiu_vault",
+      "sect": "funiu",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "拳": "funiu_atk_1",
+        "内功": "funiu_force_1"
+      },
+      "learned": {
+        "funiu_atk_1": {
+          "level": 120
+        },
+        "funiu_force_1": {
+          "level": 108
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "baisheng_keeper": {
+      "id": "baisheng_keeper",
+      "name": "百胜刀门的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "baisheng_vault",
+      "sect": "baisheng",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "刀": "baisheng_atk_1",
+        "内功": "baisheng_force_1"
+      },
+      "learned": {
+        "baisheng_atk_1": {
+          "level": 120
+        },
+        "baisheng_force_1": {
+          "level": 108
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "baituo_keeper": {
+      "id": "baituo_keeper",
+      "name": "白驼山的看门的老头",
+      "title": "守库人",
+      "gender": "male",
+      "room": "baituo_vault",
+      "sect": "baituo",
+      "rank": 4,
+      "tier": "C",
+      "desc": "那人不看你的脸，只看你腰上的牌子。扫帚放在脚边，手却一直没动过。",
+      "attr": {
+        "力量": 45,
+        "根骨": 50,
+        "身法": 48,
+        "悟性": 40,
+        "福缘": 30,
+        "定力": 60,
+        "资质": 40
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 100,
+      "def": 60,
+      "dodge": 50,
+      "parry": 50,
+      "speed": 45,
+      "skills": {
+        "拳": "baituo_atk_1",
+        "内功": "baituo_force_1"
+      },
+      "learned": {
+        "baituo_atk_1": {
+          "level": 120
+        },
+        "baituo_force_1": {
+          "level": 108
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "那人不看你的脸，只看你腰上的牌子。",
+        "要看什么，先亮牌子。"
+      ],
+      "ask": [
+        {
+          "topic": "重地",
+          "keywords": [
+            "藏经阁",
+            "藏宝阁",
+            "库房"
+          ],
+          "answer": "「门里的规矩：有功劳、有身份，才准进去。进去看什么也要花贡献。」"
+        }
+      ]
+    },
+    "royal_keeper": {
+      "id": "royal_keeper",
+      "name": "守库太监",
+      "title": "内库管事",
+      "gender": "male",
+      "room": "palace_treasury",
+      "rank": 4,
+      "tier": "A",
+      "desc": "脸上没有胡子，说话很轻。手里的册子翻了二十年，翻得边角都软了。",
+      "attr": {
+        "力量": 35,
+        "根骨": 45,
+        "身法": 55,
+        "悟性": 55,
+        "福缘": 30,
+        "定力": 65,
+        "资质": 40
+      },
+      "hp": 3000,
+      "mp": 2600,
+      "atk": 300,
+      "def": 180,
+      "dodge": 180,
+      "parry": 150,
+      "speed": 95,
+      "skills": {
+        "拳": "con_xuanjia_fist",
+        "内功": "con_jinyi_neigong"
+      },
+      "learned": {
+        "con_xuanjia_fist": {
+          "level": 520
+        },
+        "con_jinyi_neigong": {
+          "level": 500
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "国库不是谁都能进的。",
+        "有功劳的，册子上有名字。"
+      ],
+      "ask": [
+        {
+          "topic": "国库",
+          "keywords": [
+            "国库",
+            "赏赐"
+          ],
+          "answer": "「圣上有旨，有功之臣可按功劳领物。册子在这儿，各取所需。」"
+        }
+      ]
+    },
+    "yamen_store_keeper": {
+      "id": "yamen_store_keeper",
+      "name": "守库老吏",
+      "title": "库吏",
+      "gender": "male",
+      "room": "jn_yamen_store",
+      "rank": 2,
+      "tier": "B",
+      "desc": "背有点驼，腰间挂着一大串钥匙。看谁都先看腰牌。",
+      "attr": {
+        "力量": 30,
+        "根骨": 40,
+        "身法": 30,
+        "悟性": 45,
+        "福缘": 30,
+        "定力": 55,
+        "资质": 30
+      },
+      "hp": 1200,
+      "mp": 700,
+      "atk": 130,
+      "def": 90,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 50,
+      "skills": {
+        "棍": "jh_staff"
+      },
+      "learned": {
+        "jh_staff": {
+          "level": 180
+        }
+      },
+      "equipment": {
+        "武器": "bamboo_stick"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "库里的东西都有册子，少一件我担不起。"
+      ],
+      "ask": [
+        {
+          "topic": "库房",
+          "keywords": [
+            "库房",
+            "公文"
+          ],
+          "answer": "「官家的东西，得有身份才动得了。你若是白身，看看也就罢了。」"
+        }
+      ]
+    }
+  }
+}

@@ -173,8 +173,8 @@ const REGIONS = {
     entry: 'mojiao_shanmen', minW: 6, minH: 6,
   },
   gumu: {
-    name: '谷魔窟', color: '#5a3a4a', tier: 'mad', province: '江湖',
-    desc: '谷底终年不见光。魔教的旧账，都埋在这道谷里。',
+    name: '终南山', color: '#5a3a4a', tier: 'sect', province: '江湖',
+    desc: '终南山横在道上，一条山道通着两处山门：东边重阳宫，青烟终年不断；西边活死人墓，墓门终年不开。',
     entry: 'gumu_mu', minW: 6, minH: 6,
   },
 

@@ -48,8 +48,17 @@ sec('① 普通 NPC 完全不受影响');
   const e = boot();
   const w = e.world;
   const ce = new CombatEngine(w);
-  const mob = mkBoss(e, 'blood_saber');
+  /* ⚠️ 「普通 NPC」**不能写死 blood_saber** —— 三~五幕落地（2026-10-10）
+     给血刀老祖 / 丁春秋补了 bossPhases，写死它就等于拿 Boss 来测「普通 NPC 不受影响」，
+     本组会整组假红（也说明它本来守的是「有没有 bossPhases」，不是某个具体的人）。
+     改成**从库里现挑一个真没有 bossPhases 的 NPC**，这样以后再加 Boss 也不会红。 */
+  const plainId = Object.keys(w.data.npcs).find(id => {
+    const d = w.data.npcs[id];
+    return d && !d.bossPhases && !d.unique && /^mob_|^animal_|^npcv_/.test(id);
+  }) || Object.keys(w.data.npcs).find(id => !w.data.npcs[id].bossPhases);
+  const mob = mkBoss(e, plainId);
   ok('测试用 NPC 有实例', !!mob, mob && mob.defId);
+  ok('挑选的确实是「无 bossPhases」的普通 NPC', !!mob && !w.data.npcs[mob.defId].bossPhases, String(plainId));
   ok('普通 NPC 没有 bossPhases', ce.bossPhasesOf(mob) === null);
   const lines = [];
   ce.tickBossPhase(mob, lines, null);

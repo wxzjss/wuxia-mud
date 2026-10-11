@@ -4,7 +4,7 @@
 > 上位规格：`design/02-world-dynamics-spec.md`（**必读；本文件不重写规格，只把 W5–W7 落到真实数据与真实引擎上**）
 > 现存数据：`game/data/70_world.json`（**只有 `rumorSeeds` 16 条**）
 > 已落地前置：传闻系统 W1–W4（`world.js` 的 `computeRegionAdj` / `kFlow` / `addRumor` / `dailyRumorTick` / `p.fame`）
-> 与 `design/25-story-rumor-binding.md`（#116）的边界：见 **§5**（该文件**尚未交付**，本文先给划界提案）
+> 与 `design/25-story-rumor-binding.md`（#116）的边界：见 **§5**（✅ **该文件已于 2026-10-10 交付 v1.1**；本文当时的划界提案已被它采纳，见其 §5/§9/§10）
 >
 > **本文只出设计。不改代码、不改 `game/data/*.json`、不 commit。** 落地由工程执行。
 >

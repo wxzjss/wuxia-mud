@@ -135,8 +135,10 @@ ok('q_main_jianghu.rewards 内已无 ending 效果',
   !!mj && !(mj.rewards || []).some(r => r.type === 'ending'));
 ok('改由一条 narrate 收尾（含「江湖很大」）',
   !!mj && (mj.rewards || []).some(r => r.type === 'narrate' && /江湖很大/.test(r.raw || '')));
-ok('连带项：know_east_depot / depot_token_half / 接二幕 仍留在 rewards（本轮不动，归 E5/E6）',
-  !!mj && (() => { const j = JSON.stringify(mj.rewards); return j.includes('know_east_depot') && j.includes('depot_token_half') && j.includes('q_main_sect'); })());
+ok('连带项：know_east_depot / depot_token_half / 接二幕 已**搬离** rewards（E5）',
+  !!mj && (() => { const j = JSON.stringify(mj.rewards); return !j.includes('know_east_depot') && !j.includes('depot_token_half') && !j.includes('q_main_sect'); })());
+ok('★ E5：stage3「击败名宿」的 cond 里带了 act4_done（门槛后移，第四幕之后才结算）',
+  !!mj && (() => { const c = JSON.stringify((mj.stages[3] || {}).cond || {}); return c.includes('defeatLegend') && c.includes('act4_done'); })());
 
 /* ---------- 专项行为回归：第一幕走完，不产生任何 ending_* ---------- */
 section('⑦ E4 专项 · 第一幕（stage 0→99）走完，无任何 ending_*');
@@ -154,6 +156,10 @@ function walkAct1(seed) {
   p.setVar('sidequests_done', 5);
   /* ⚠️ 名宿从引擎名单里拿（`w.legendIds`），别写死 —— 名单换人时这条测试不该跟着红 */
   p.setFlag('killed_' + ((w.legendIds || [])[0] || 'mojiao_dongfang'), true);
+  /* ⚠️ design/21 §2.9.1（C3）：stage3「击败名宿」的 cond 现在是
+     `{and:[{fn:'defeatLegend'},{flag:'act4_done'}]}` —— 挪到第四幕之后结算。
+     不置这一位，第一幕就走不完（这正是本测试要防的「门槛」本意，别当成故障去掉）。 */
+  p.setFlag('act4_done', true);
   p.setFlag('learned_yijinjing', true);
   w.movePlayerTo(p, w.data.npcs[giverId].room);
   const texts = [];

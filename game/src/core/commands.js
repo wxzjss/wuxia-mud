@@ -9,6 +9,8 @@
 
 const { tokenize, fuzzyFind, clamp, fmtTime, shichen, stars } = require('./utils');
 const { evalCond, evalEffects, evalTemplate } = require('./modapi');
+/* 武学重制（R2）：激活绑定的槽位→基础武学对照表，与角色侧的 effectiveMax 同一套口径 */
+const { SLOT_ROOT, STANDALONE_MAX } = require('./character');
 const social = require('./social');
 const marriage = require('./marriage');
 const kinship = require('./kinship');
@@ -23,6 +25,11 @@ const { pronounOf, genderNoun } = require('./pronouns');
 const sectFounder = require('./sectFounder');
 const estateMod = require('./estate');
 const kidnapMod = require('./kidnap');
+const auctionMod = require('./auction');
+const cultureMod = require('./culture');
+const treasuryMod = require('./treasury');
+const artsMod = require('./arts');
+const neigongMod = require('./neigong');
 const tutorialMod = require('./tutorial');
 
 /* 中文数字 → 阿拉伯 */
@@ -285,8 +292,12 @@ function buildCommands(world) {
       '物品': ['get <物品> 拾取', 'drop <物品> 丢弃', 'use <物品> 使用', 'wear/wield <物品> 装备', 'remove <部位> 卸下', 'give <物品> to <人>'],
       '武学': ['learn <武学> 学', 'train / lian <武学> 练功', 'enable <槽位> <武学> 装备武学', 'perform / pf <武学> 施展绝招', 'skills 查看'],
       '战斗': ['kill / fight <目标> 攻击', '偷袭 <目标> 先手重击（结仇，多半被告发）', 'flee 逃跑', 'auto 自动战斗'],
-      '交互': ['talk <人> 交谈', 'ask <人> about <话题>', '打听 [关键词] 打听江湖传闻', '拜访 <人> 上门拜访（交情够了才进得去）', 'buy <物品> from <人>', 'sell <物品>', 'trade'],
-      '门派': ['sect 门派信息', 'join <门派> 拜师', 'leave 脱离门派', 'promote 升职', 'contribute'],
+      '交互': ['talk <人> 交谈', 'ask <人> about <话题>', '打听 [关键词] 打听这一带的传闻',
+        '风声 江湖上现在怎么说你', '拜访 <人> 上门拜访（交情够了才进得去）', 'buy <物品> from <人>', 'sell <物品>', 'trade'],
+      '门派': ['sect 门派信息', 'join <门派> 拜师', '请安 [师父] 给师父请安（涨好感）', 'leave 脱离门派', 'promote 升职', 'contribute',
+        '参加大典 [门派] 收徒大典（各门日子不同）', '挑战 <人名> 门内争位', '申请 向主事的求缺',
+        '门派任务 接门派差事赚贡献', '华山对决 掌门应战（最终章）'],
+      '官府': ['官府任务 领公事赚功勋', '出征 上战场（将军之后）'],
       '营生': ['work / 打工 打工赚钱（酒楼/药店）', '卖身 卖身青楼换银（仅女子）', '接客 应酬攒赎身钱（卖身后）', '赎身 凑钱脱籍', '身世 查看营生/卖身状态'],
       '采集/农事': ['打水 水源边打水解渴（需容器）', '切割 切野兽尸体取肉皮（需利器）', '加工 客栈/酒楼把生肉做熟', '买地 田头佃户家置田', '种植 <稻种|菜种>', '收割 收成熟庄稼', '偷庄稼 偷别人田（会被通缉）'],
       '任务': ['quest 任务列表', 'accept <任务>', 'abandon <任务>', 'report 交任务'],
@@ -349,10 +360,12 @@ function buildCommands(world) {
    *   拜访上门（919行）、modapi 的 teleport/warp、survival 死亡回客栈。
    *   锁在 movePlayerTo 会把「战斗中被 NPC 拖走/死亡送医」也一起锁死。
    * ================================================================ */
+  /* ⚠️ 提示语一律用**中文指令**（主人 2026-10-11：「把游戏里一些英文指令的教程改成中文指令」）。
+     英文别名后端照旧认，但教程/提示里不再写 —— 玩家看到什么就该敲什么。 */
   const COMBAT_MOVE_HINT =
     '你正与人交手，走不脱！想脱身得先把这桩了结：'
-    + '「kill <目标>」或「auto」进攻、「perform <武学>」使绝招、'
-    + '「defend」凝神防守，或「flee」逃跑。';
+    + '「杀 <目标>」或「自动战斗」进攻、「绝招 <武学>」使绝招、'
+    + '「防御」凝神招架，或「逃跑」走为上。';
 
   const doMove = (ctx, dir) => {
     const p = ctx.player, w = ctx.world;
@@ -399,6 +412,46 @@ function buildCommands(world) {
     if (!r || !r.ok) return { lines: [{ kind: 'warn', text: (r && r.msg) || '那边似乎走不通。' }] };
     const lines = [];
     if (ex && ex.travel) lines.push({ kind: 'story', text: ex.travel });
+    /* 进屋那一刻的见闻（初见相性 / 门派摩擦）——由 movePlayerTo 的 extra 带出来。
+       顺序放在 travel 之后、看房间之前：先「到了」，再说人，最后才是屋里陈设。 */
+    if (r.extra && r.extra.length) lines.push(...r.extra);
+    /* ---- 匪类的自主行为（主人 2026-10-08）----
+       互看 → 山贼量你的斤两与油水 → 抢 / 溜 / 打晕搜刮；有武力的旁人可能先出手
+       （打赢了打晕装袋交衙门）；匪类遇强会逃，追不追得上**看轻功**；
+       追不上时若从你身边过，会弹一句「拦不拦」。
+       ⚠️ 挂在这儿而不是 movePlayerTo：这条路**只有玩家自己走一格**才走得到，
+         传送 / 剧情推人 / 测试摆位都不会闹（那儿闹起来会毁掉别的东西，
+         比如侧线的「走过去跟她说话」当场变成开打）。 */
+    try {
+      lines.push(...require('./outlaw').onPlayerEnter(w, p, w.getRoom(p.room), w.npcsIncludingTemplates(p.room)));
+    } catch (e) { /* 匪类闹事失败不该挡路 */ }
+    /* ---- 榜上的人来找你（2026-10-11 自拟）----
+       兵器谱上名次挨着的人碰上了，性子够好斗的会当场讨教。
+       与匪类同一层（只在**玩家自己走一格**时触发），理由一样：传送别惊动人。 */
+    try {
+      const ask = require('./rank').maybeChallenge(w, p, w.getRoom(p.room), w.npcsIncludingTemplates(p.room));
+      if (ask) lines.push(ask);
+    } catch (e) { /* 挑战失败不该挡路 */ }
+    /* ---- 有人来找你算账（2026-10-11 自拟）----
+       你打倒过的人，他的同门 / 同族 / 好友会记着。碰上了先开口，不是直接开打。 */
+    try {
+      const av = require('./revenge').maybeAvenge(w, p, w.getRoom(p.room), w.npcsIncludingTemplates(p.room));
+      if (av) lines.push(av);
+    } catch (e) { /* 寻仇失败不该挡路 */ }
+    /* ---- 有人在议论你（2026-10-11 自拟 🅔 传闻的消费端）----
+       你的事迹传到这一带之后，走进来会听见邻桌在说 —— 说的就是你。
+       与匪类/讨教/寻仇同一层（只在「玩家自己走一格」时触发）：传送别惊动人。 */
+    try {
+      const ch = require('./rumorfeed').chatterIn(w, w.getRoom(p.room));
+      if (ch) lines.push(ch);
+    } catch (e) { /* 闲话失败不该挡路 */ }
+    /* ---- NPC 之间有时也会切磋（主人 2026-10-11）----
+       只在「玩家自己走一格」时掷一次，和传闻/匪类/讨教同一层 ——
+       放进 lookRoom 会在每次读视图时触发（view 也调它），那就是满屏打架了。
+       概率很低（6%），撞见算运气。 */
+    try {
+      lines.push(...require('./duel').maybeNpcDuel(w));
+    } catch (e) { /* 打架表演失败不该挡路 */ }
     const view = lookRoom(ctx);
     lines.push(...view.lines);
     return { lines, moved: true };
@@ -547,6 +600,20 @@ function buildCommands(world) {
       const fest = w.festivalToday();
       if (fest) lines.push({ kind: 'plain', text: `今日是${fest.name}，街上比平日热闹许多。` });
     }
+    /* ---- 换节气那天说一句（2026-10-11 自拟）----
+       平时不念（每天念一遍就成了天气预报）；只在交节那天给一句话。 */
+    {
+      const term = require('./season').termLine(w);
+      if (term) lines.push(term);
+    }
+    /* ---- 岔路口的路牌（主人 2026-10-08）----
+       有两条以上岔路通向**不同区域**时，路口该立块牌子：东边是什么地方、西边是哪个门派。
+       同城连片的街道不算岔路（那是巷子），所以判据是「跨区域的出口 ≥ 2」。
+       （`observe.signpostFor` 里注释写全了。） */
+    {
+      const sign = require('./observe').signpostFor(w, room);
+      if (sign) lines.push({ kind: 'plain', text: sign.text });
+    }
 
     // NPC
     const npcs = w.npcsIncludingTemplates(p.room);
@@ -651,6 +718,27 @@ function buildCommands(world) {
             hint: out_ ? (hasSack ? '装进麻袋带走' : '得先有条粗麻袋（杂货铺有卖）') : '打晕他，再装袋',
           });
         }
+        /* ★ 「切磋」（主人 2026-10-11：「npc 互动页有『攻击』没有『切磋』」）。
+           与「攻击」是两条完全不同的路：
+             · 攻击 → 真打，会结仇、会通缉、能打死人；
+             · 切磋 → 点到为止，谁都不死，输了留 1 滴血、原地缓过来，还落一点人情。
+           所以它是**无害项**，跟「交谈/送礼」排在一起，压在「打量/攻击」之前 ——
+           主人早就定过规矩：「攻击」必须是最后一项（B10：手指从「交谈」一路滑下来别开打），
+           切磋是安全的，不用躲着它，但也不能把攻击从末位挤走。
+           战斗中不给（正在打就别插一场），人躺着不给（等他缓过来）。 */
+        {
+          const duelMod = require('./duel');
+          const canDuel = !w.battle && one && !one.knockedOut && !one.dead
+            && !/\b狼|虎|熊|蛇|豹|兽|野猪|蟒|鹰/.test(one.name || '');
+          if (canDuel) {
+            const left = duelMod.MAX_PER_DAY - duelMod.countToday(w, one.id);
+            actions.push({
+              label: '切磋',
+              cmd: '切磋 ' + k,
+              hint: left > 0 ? `点到为止，不伤性命（今日还能比 ${left} 场）` : '今日比试的场数已用尽',
+            });
+          }
+        }
         const inBattle = !!(w.battle && w.battle.target === one);
         const hot = !!(one && (one.hostile || one.inCombat || inBattle));
         const attackAct = { label: '攻击', cmd: 'attack ' + k };
@@ -659,6 +747,11 @@ function buildCommands(world) {
         return { text: labelOf(k), type: 'npc', actions };
       });
       lines.push({ kind: 'npcs', text: `这里有：${out.join('、')}。`, hl });
+      /* ---- 屋里的人动了一下（主人 2026-10-08）----
+         说完「这里有谁」，再落一句他们在干什么：「某某某看了某某某一眼」「某某某看了看四周」。
+         按「房间 + 人 + 时辰片」哈希选句，同一个时辰里反复看是同一句 ——
+         不然每看一次屋里就换一副姿势，像木偶抽风。 */
+      lines.push(...require('./observe').roomBeats(w, room, npcs));
       /* ---- 倒地/晕倒的人（任务一）----
          ⚠️ 铁律 32：`npcsIn` 过滤 `!dead`，而打倒的人是 knockedOut+dead，
          所以「这里有：」里**看不到他们** —— 倒地相关一律走 `world.downedIn()`。
@@ -811,9 +904,22 @@ function buildCommands(world) {
        于是落到这里报「这里没有」。按钮发的是 a.cmd，不是玩家手输的口语，
        所以这条路径必须能认 action 的 cmd / keyword。 */
     const roomNow = w.getRoom(p.room);
+    /* ⚠️ 这里必须**先把「人名」摘出去**再放房间物件匹配 ——
+       否则只要某条 action 的 `keywords` 里含一个人名（很常见：`劝她` keywords
+       里有「鲁半夏」、`talk 元怀瑾` 里有「元怀瑾」），玩家 `look 鲁半夏`
+       就会被那条 action 整条吃掉：结果是拿到 action 的 effects 或 failMsg
+       （「她不在花厅。这条路的事，还轮不到你插嘴。」），**永远看不到这个人**。
+       这正是「不报错、只是静默走错路」那一族（smoke-portrait-batch 的 1.L0b 抓到）。
+       判据：**参数能命中本房间的 NPC 时，关键词不当场接管**；
+       `a.cmd === kw`（按钮发的是 a.cmd）与「action 自己就是 look 系」仍然优先。 */
+    const npcsHere = w.npcsIncludingTemplates(p.room);
+    const npcPre = fuzzyFind(npcsHere, kw, n => n.name);
     for (const a of (roomNow && roomNow.actions) || []) {
-      const hit = a.cmd === kw || (a.keywords || []).some(k => k && (kw === k || kw.includes(k)));
-      if (!hit) continue;
+      const ac = (a.cmd || '').trim();
+      const byCmd = ac === kw;
+      const byBypass = !npcPre && (ac.startsWith('look ') || ac.startsWith('看'));
+      const byKw = !npcPre && (a.keywords || []).some(k => k && (kw === k || kw.includes(k)));
+      if (!byCmd && !byBypass && !byKw) continue;
       if (a.cond && !evalCond(a.cond, ctx)) {
         return { lines: [{ kind: 'warn', text: a.failMsg || '现在做不了这个。' }] };
       }
@@ -827,7 +933,7 @@ function buildCommands(world) {
       return { lines: evalEffects(a.effects || [], ctx) };
     }
     // NPC
-    const npcs = w.npcsIncludingTemplates(p.room);
+    const npcs = npcsHere;
     const npc = fuzzyFind(npcs, kw, n => n.name);
     if (npc) return { lines: lookNpc(ctx, npc) };
     // 物品（地面/背包/装备）
@@ -863,6 +969,12 @@ function buildCommands(world) {
       lines.push({ kind: 'plain', text: `江湖上人称${pronounOf(npc)}「${npc.title}」。` });
     }
     lines.push({ kind: 'desc', text: npc.desc || '看不出什么特别之处。' });
+    /* ---- 「看」= **仔细观察**（主人 2026-10-08 纠正）----
+       点「看」这一路给的是**看得见的证据**：手上的茧、袖口的压痕、鞋底的泥，
+       再搭一句对方当下什么反应。
+       ⚠️ 「看了一眼」那种过渡句**不在这儿** —— 它在「点名字、开互动面板」那一步
+       （`observe.glanceAt`，由 engine.npcProfileOf 随资料一起给）。两处分工别搞混。 */
+    lines.push(...require('./observe').lookBeat(w, npc));
     /* ---- 画像 role → 「这是个什么人」的一句身份定位（任务三）----
        role 是画像里的**定位**（如「华山脚下独居的老药婆，采药、看病、也替人藏东西」），
        不是复述 desc —— 看人一眼就该看出对方是个什么人。128 位有画像的 NPC 全带 role。 */
@@ -997,7 +1109,11 @@ function buildCommands(world) {
       const sd = w.getSect(p.sect);
       lines.push({ kind: 'plain', text: `门派：${sd ? sd.name : p.sect}${sd && sd.ranks ? ' · ' + (sd.ranks[p.rank] || '弟子') : ''}` });
     } else lines.push({ kind: 'plain', text: '门派：无门无派' });
-    lines.push({ kind: 'plain', text: `等级：${p.level}　经验：${p.exp}/${p.expNeed(p.level)}　潜能：${p.potential}` });
+    /* 潜能已废除（主人 2026-10-11：「潜能点有什么用？？？没用的话可以把这个删了」）。
+       查清了：它唯一的消耗口是「研读秘籍」，而那个分支要求书声明 `teach` ——
+       全库 9 本书一本都没写，所以这条路从来没通过；其余只有产出没有消耗。
+       现在从玩家可见处与基础玩法里撤掉（字段本身保留，Mod 接口不动）。 */
+    lines.push({ kind: 'plain', text: `等级：${p.level}　经验：${p.exp}/${p.expNeed(p.level)}` });
     lines.push({ kind: 'bar', text: '气血', cur: p.hp, max: p.maxHp, color: 'hp' });
     lines.push({ kind: 'bar', text: '内力', cur: p.mp, max: p.maxMp, color: 'mp' });
     lines.push({ kind: 'bar', text: '饱食', cur: p.food, max: p.maxFood, color: 'food' });
@@ -1011,7 +1127,59 @@ function buildCommands(world) {
       lines.push({ kind: 'plain', text: `蛊：${ins ? ins.name : p.insect}` });
     }
     if (p.titles && p.titles.length) lines.push({ kind: 'plain', text: `称号：${p.titles.join('、')}` });
+
+    /* ---- 装备（主人 2026-10-11：「状态也增加显示装备情况」）----
+       以前「状态」只报攻防闪避这一串数字，**不告诉玩家这数字是怎么来的** ——
+       换了把刀伤害变了，回「状态」一看还是那串数，看不出是兵器的功劳。
+       这里把每个部位穿着什么、加了多少写清楚。 */
+    lines.push(...equipmentLines(ctx));
     return lines;
+  }
+
+  /**
+   * 「装备」那一栏（状态面板 / 装备面板共用一份口径）。
+   * @returns {Array<{kind,text}>} 标题 + 每个部位一行
+   */
+  function equipmentLines(ctx) {
+    const p = ctx.player, w = ctx.world;
+    const eq = p.equipment || {};
+    const out = [];
+    const worn = [];
+    /* ⚠️ 部位顺序按 `equipment` 的键序（头→颈→身→手→脚→武器→…），不另排一遍 ——
+       排序抄第二份迟早跟定义分家。 */
+    for (const slot of Object.keys(eq)) {
+      const uid = eq[slot];
+      if (!uid) continue;
+      const it = w.getItem ? w.getItem(uid) : null;
+      if (it) worn.push({ slot, it });
+    }
+    out.push({ kind: 'subtitle', text: `装备（${worn.length} 件）` });
+    if (!worn.length) {
+      out.push({ kind: 'hint', text: '　你身上一件装备都没有。（「装备」面板或「穿 <物件>」都能上身。）' });
+      return out;
+    }
+    /* 属性只从 `it.stats` / `it.attr` 取 —— recalc 就是拿这两处算的，
+       玩家看到的必须跟身上真生效的是同一份，不另编一套口径。 */
+    const NAMES = { atk: '攻', def: '防', dodge: '闪避', parry: '招架', speed: '身速', critRate: '暴击', maxHp: '气血上限', maxMp: '内力上限' };
+    for (const { slot, it } of worn) {
+      const bits = [];
+      for (const k of Object.keys(it.stats || {})) {
+        const v = it.stats[k];
+        if (typeof v !== 'number' || !v) continue;
+        bits.push((NAMES[k] || k) + (v > 0 ? ' +' : ' ') + (k === 'critRate' ? Math.round(v * 100) + '%' : v));
+      }
+      for (const k of Object.keys(it.attr || {})) {
+        const v = it.attr[k];
+        if (typeof v !== 'number' || !v) continue;
+        bits.push(k + (v > 0 ? ' +' : ' ') + v);
+      }
+      out.push({
+        kind: 'plain',
+        text: `　${slot}：${it.name}${bits.length ? '　' + bits.join('　') : ''}`,
+        uid: it.uid || it.id,
+      });
+    }
+    return out;
   }
 
   reg(['score', 'sc', '状态', '查看自身', '自身'], (ctx) => ({ lines: scoreLines(ctx) }));
@@ -1059,7 +1227,7 @@ function buildCommands(world) {
         lines.push({ kind: 'skill', text: `${sd.name}　${lv} 级　(${cur.exp}/${need})${eq}`, skill: sd.id });
       }
     }
-    lines.push({ kind: 'hint', text: '用「train <武学名>」练功提升等级；用「enable <槽位> <武学名>」改变装备。' });
+    lines.push({ kind: 'hint', text: '用「练 <武学名>」练功提升等级；用「装备武学 <槽位> <武学名>」改变装备。' });
     return { lines };
   });
 
@@ -1253,7 +1421,7 @@ function buildCommands(world) {
     /* ---- 作者手写的 acceptItems / onGift 优先 ---- */
     const def = npc.def || {};
     if (def.acceptItems && def.acceptItems[hit.id]) {
-      const r = social.addFavor(w, npc, 10, '赠礼');
+      const r = social.addFavor(w, npc, 10 * w.favorGainMult(p), '赠礼');
       const lines = [{ kind: 'sys', text: `你把${d ? d.name : hit.id}交给了${npc.name}。` }];
       evalEffects(def.acceptItems[hit.id], { player: p, world: w, npc }).forEach(l => lines.push(l));
       lines.push(...r.lines);
@@ -1267,7 +1435,8 @@ function buildCommands(world) {
 
     /* ---- 通用送礼判定（喜爱类型 + 品质）---- */
     const gv = social.giftValue(w, npc, hit.id);
-    const r = social.addFavor(w, npc, gv.favor, '赠礼');
+    /* 天赋「口才便给」只放大**正向**好感：投其所好给的礼更受用 */
+    const r = social.addFavor(w, npc, gv.favor > 0 ? gv.favor * w.favorGainMult(p) : gv.favor, '赠礼');
     personality.addMood(npc, gv.favor >= 0 ? 10 : -8); // 受赏高兴 / 收到不喜之物不快
 
     const lines = [
@@ -1333,6 +1502,107 @@ function buildCommands(world) {
     return { lines };
   });
 
+  /* 风声：**关于你自己**的那几条（2026-10-11 自拟 🅔）
+   *
+   * 与「打听」的区别（两者容易混，这里说清）：
+   *   · 打听 <关键词>  —— 在**本地**竖着耳朵听，听到的是**这一带**所有活着的传闻
+   *   · 风声          —— 不管你在哪儿，问的是「江湖上我是怎么被说的」，
+   *                      按影响排序、告诉你传到哪些地方了 —— 这是**成长的外部反馈**
+   * 主人原话要的就是这个：「这个世界会因为我在里面而有点不一样」。 */
+  reg(['风声', '我的名声', '名头', '江湖风声', 'reputation'], (ctx) => {
+    const w = ctx.world, p = ctx.player;
+    const rf = require('./rumorfeed');
+    const list = rf.whatTheySay(w, 5);
+    const repLines = rf.reputationLines(w);
+    if (!list.length) {
+      const none = [
+        { kind: 'title', text: '【 江湖风声 】' },
+        { kind: 'plain', text: '你在江湖上还没留下什么话柄 —— 没人议论你，也没人怕你。' },
+        { kind: 'hint', text: '（做点别人看得见的事：拜师、出手、行善、闯祸……总得有人在旁边看着。）' },
+      ];
+      return { lines: none.concat(repLines) };
+    }
+    const lines = [{ kind: 'title', text: '【 江湖风声 · 别人怎么说你 】' }];
+    list.forEach((r, i) => {
+      lines.push({
+        kind: 'say',
+        text: `${i + 1}. 「${r.text}」`,
+      });
+      const where = r.regions.length ? r.regions.slice(0, 3).join('、') : '附近';
+      const fresh = r.bornDaysAgo <= 0 ? '今日的事' : `${r.bornDaysAgo} 天前的事`;
+      const drift = r.truth >= 70 ? '话还是原样' : (r.truth >= 40 ? '传着已有些走样' : '早传走样了');
+      lines.push({
+        kind: 'hint',
+        text: `（${r.kind}·${fresh}；传到 ${where}；${drift}）`,
+      });
+    });
+    lines.push(...repLines);
+    lines.push({ kind: 'hint', text: '（风头会随日子淡下去；声望高到一定程度，认识你的人待你会不一样。）' });
+    return { lines };
+  });
+
+  /* 请安（2026-10-11 自拟 🅕 师门情谊）：
+     拜师之后总得有个「去看看师父」的动作 —— 没有它，
+     师父念叨你「还知道回来」就成了玩家永远无法应对的指责。
+     一次 +好感，并把「多久没来」的账清掉。 */
+  reg(['请安', '问安', '拜见师父', '给师父请安'], (ctx, args) => {
+    const w = ctx.world, p = ctx.player;
+    const mids = Object.keys(p.masters || {});
+    if (!mids.length) return { lines: [{ kind: 'warn', text: '你还没有拜过师。' }] };
+    const kw = (args || []).join(' ').trim();
+    let npc = null;
+    if (kw) {
+      npc = fuzzyFind(w.npcsIncludingTemplates(p.room), kw, n => n.name);
+      if (!npc) return { lines: [{ kind: 'warn', text: `这儿没有「${kw}」。` }] };
+    } else if (mids.length === 1) {
+      const rec = p.masters[mids[0]];
+      npc = fuzzyFind(w.npcsIncludingTemplates(p.room), rec.name, n => n.name);
+      if (!npc) return { lines: [{ kind: 'warn', text: `${rec.name}不在这里。` }] };
+    } else {
+      return {
+        lines: [{
+          kind: 'warn',
+          text: '你拜过 ' + mids.map(id => p.masters[id].name).join('、') + '，请安哪位？（「请安 <师父名>」）',
+        }],
+      };
+    }
+    const r = require('./masterbond').callOn(w, p, npc);
+    return { lines: r.lines };
+  });
+
+  /* 出师 / 退出师门（主人 2026-10-11）
+   *
+   * 两条路的味道正好相反，别混：
+   *   · **出师**：好聚好散。交了满师的心意，名分解除，**好感是涨的**。
+   *     门派师父没有这一条（门内换人走「拜师更高职位」）。
+   *   · **退出师门**：断得难看。好感一次掉 60；若这个师承挂着门派，
+   *     **该门派的传承武学一并废掉**（只废这一家的，别处学的功夫一根汗毛不动）。
+   *
+   * 都不带参数时，自动认「你唯一的师父」（一人只有一个师门）。 */
+  const pickMaster = (w, p, kw) => {
+    const DS = require('./discipleship');
+    const cur = DS.currentMaster(p);
+    if (kw) {
+      const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), kw, n => n.name);
+      return { npc, err: npc ? null : `这儿没有「${kw}」。` };
+    }
+    if (!cur) return { npc: null, err: '你还没有拜过师。' };
+    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), cur.rec.name, n => n.name);
+    return { npc, err: npc ? null : `${cur.rec.name}不在这里 —— 见面才谈得了这件事。` };
+  };
+  for (const [names, fn] of [
+    [['出师', '满师', '出徒'], require('./discipleship').graduate],
+    [['退出师门', '断绝师门', '背师'], require('./discipleship').quit],
+  ]) {
+    reg(names, (ctx, args) => {
+      const w = ctx.world, p = ctx.player;
+      const { npc, err } = pickMaster(w, p, (args || []).join(' ').trim());
+      if (err) return { lines: [{ kind: 'warn', text: err }] };
+      const r = fn(w, p, npc);
+      return { lines: r.lines };
+    });
+  }
+
   /* ---- 私域拜访（#111 Step6 · design/09 §3.3）----
    * B/C 层 NPC 的家是 `house:<npcId>` 虚拟宅院，不在地图上。
    * 好感 ≥30 / 接过他支线 / 债主仇家 才有资格进门；进去能聊天、买卖。 */
@@ -1384,7 +1654,7 @@ function buildCommands(world) {
           color: t.color, favor: n.favor || 0, tier: t.name, npcId: n.id,
         });
       }
-      lines.push({ kind: 'hint', text: '用「favor <人名>」查看详情。' });
+      lines.push({ kind: 'hint', text: '用「好感 <人名>」查看详情。' });
       return { lines };
     }
     const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), args.join(' '), n => n.name);
@@ -1430,30 +1700,113 @@ function buildCommands(world) {
   reg(['qingjiao', '请教', '求教'], (ctx, args) => {
     const w = ctx.world, p = ctx.player;
     if (!args.length) return { lines: [{ kind: 'warn', text: '用法：qingjiao <人名>　看看他愿意教你什么' }] };
-    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), args.join(' '), n => n.name);
-    if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${args.join(' ')}」。` }] };
+    const kw = args.join(' ');
+    let npc = fuzzyFind(w.npcsIncludingTemplates(p.room), kw, n => n.name);
+    let skillKw = '';
+    /* `请教 <人名> <武学名>`：整串一起去找人会落空（名字里多了一段武学名），
+       所以退一步 —— 首段找人，剩下的是武学名。 */
+    if (!npc && args.length >= 2) {
+      npc = fuzzyFind(w.npcsIncludingTemplates(p.room), args[0], n => n.name);
+      if (npc) skillKw = args.slice(1).join(' ');
+    }
+    if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${kw}」。` }] };
     const list = social.teachList(w, npc);
     if (!list.length) return { lines: [{ kind: 'warn', text: `${npc.name}摇摇头：「我这点本事，教不了人。」` }] };
+
+    /* 拜过师的人：师父认了这份名分，他的功夫**必定教你**，不再看好感与银钱
+       —— 主人 2026-10-10：「拜师后请教（可选择请教什么武学）必定成功」。
+       ⚠️ 已学会的**不能再请教**（主人点名）：从清单里剔掉，免得点一个空。
+          要精进请走「练武学」那条路。 */
+    const isMaster = !!(p.masters && p.masters[npc.defId || npc.id]);
+    const shown = list.filter(s => !s.known);
+
+    /* ---- 直接学：`请教 <人名> <武学名>` ---- */
+    if (skillKw) {
+      /* ⚠️ 先在**全表**（含已会）里精确找一次：玩家点了一门已经会了的，
+         必须明确回「不必再请教」——否则模糊匹配会把他随手带去**另一门**功夫，
+         他明明点的是养吾剑法，学到的却是华山剑法（第一版就这么错的）。 */
+      const exactAll = list.find(s => s.name === skillKw);
+      if (exactAll && exactAll.known) {
+        return { lines: [{ kind: 'warn', text: `你已学过「${exactAll.name}」，不必再请教 —— 要精进请用「练武学」自己磨。` }] };
+      }
+      const sd = shown.find(s => s.name === skillKw) || fuzzyFind(shown, skillKw, s => s.name);
+      if (!sd) return { lines: [{ kind: 'warn', text: `${npc.name}不会「${skillKw}」。` }] };
+      const canFavor = (npc.favor || 0) >= sd.favorNeed;
+      if (!isMaster && !canFavor && !sd.money) {
+        return {
+          lines: [
+            { kind: 'warn', text: `${npc.name}摇头：「这门功夫不能轻传。」` },
+            { kind: 'hint', text: `（需要好感 ${sd.favorNeed}。或者——拜${pronounOf(npc)}为师：师父教徒弟是天经地义，往后请教必定学得会。）` },
+          ],
+        };
+      }
+      /* ---- 花钱请教（武馆教头就走这条路）----
+         🔴 这里原来**只判定不扣钱**：列表上写着「可花钱 100 文」，
+         玩家点下去确实学到了，钱却一文没动 —— 铁律里那类「不报错但不生效」的变种，
+         直接把武馆变成白送。现在补齐：钱不够就明说，够了就当场扣掉。
+         （`learn <人名> <武学名>` 那条路一直是扣钱的，两处口径从此一致。） */
+      const byMoney = !isMaster && !canFavor && sd.money > 0;
+      if (byMoney) {
+        const have = p.money || 0;
+        if (have < sd.money) {
+          return {
+            lines: [
+              { kind: 'warn', text: `${npc.name}把手一摊：「束脩先备齐。」` },
+              { kind: 'hint', text: `（「${sd.name}」要 ${sd.money} 文，你身上只有 ${have} 文。）` },
+            ],
+          };
+        }
+        p.money -= sd.money;
+      }
+      const r = p.learnSkill(sd.id, { force: true });
+      if (!r.ok) {
+        if (byMoney) p.money += sd.money;     /* 没学成，钱得退回去 */
+        return { lines: [{ kind: 'warn', text: r.msg }] };
+      }
+      const out = [
+        { kind: 'story', text: `${npc.name}把「${sd.name}」的口诀心法一句句讲与你听，又亲手替你摆正了架子。` },
+        { kind: 'sys', text: r.msg },
+      ];
+      if (byMoney) out.push({ kind: 'plain', text: `（交了束脩 ${sd.money} 文，还剩 ${p.money} 文。）` });
+      /* 师父教徒弟是**从基本功教起**的：这门功夫挂在一条 `base` 链上
+         （养吾剑法 → 华山剑法 → 基本剑法），而链上任何一环没练上去，
+         衍生功夫的 effectiveMax 就被卡死 —— 玩家学了招式却一级都升不了，
+         只会当游戏坏了。所以**整条链一并给你**（从根往下，按顺序说给玩家听）。 */
+      const chain = [];
+      let cur = (w.getSkill(sd.id) || {}).base, guard = 0;
+      while (cur && guard++ < 8) { chain.unshift(cur); cur = (w.getSkill(cur) || {}).base; }
+      for (const cid of chain) {
+        if (p.learned[cid]) continue;
+        const cd = w.getSkill(cid);
+        const rc = p.learnSkill(cid, { force: true });
+        if (rc.ok && cd) out.push({ kind: 'plain', text: `${npc.name}又把「${cd.name}」的路子给你从头捋了一遍——底子不打牢，招式再花也是空的。` });
+      }
+      if (isMaster) out.push({ kind: 'hint', text: '（学会了只是个架子。往后要精进，用「练武学」一遍遍磨。）' });
+      p.advanceTime(30 + ((w.getSkill(sd.id) || {}).difficulty || 1) * 10);
+      return { lines: out };
+    }
 
     const t = social.favorTier(npc.favor);
     const lines = [
       { kind: 'title', text: `【 ${npc.name}可教的武学 】` },
-      { kind: 'plain', text: `当前好感：${npc.favor || 0}（${t.name}）` },
+      isMaster
+        ? { kind: 'hint', text: '这是你师父。他手上的功夫，你要学哪一门？（已会的不会再列出来）' }
+        : { kind: 'plain', text: `当前好感：${npc.favor || 0}（${t.name}）` },
     ];
-    for (const s of list) {
+    for (const s of shown) {
       const canFavor = (npc.favor || 0) >= s.favorNeed;
       const canMoney = s.money > 0;
       const marks = [];
-      if (s.known) marks.push('已学会');
-      if (canFavor) marks.push('好感已够');
+      if (isMaster) marks.push('师父必教');
+      else if (canFavor) marks.push('好感已够');
       if (canMoney) marks.push(`可花钱 ${s.money} 文`);
       lines.push({
         kind: 'skill',
         text: `${s.name}　【${s.quality}】　${s.type}　强度 ${s.power}　需好感 ${s.favorNeed}${marks.length ? '　' + marks.join(' / ') : ''}`,
-        skillId: s.id, favorNeed: s.favorNeed, money: s.money, ok: canFavor || canMoney,
+        skillId: s.id, favorNeed: s.favorNeed, money: s.money, ok: isMaster || canFavor || canMoney,
       });
     }
-    lines.push({ kind: 'hint', text: `用「qingjiao <人名> <武学名>」请教；好感够就免费，不够可花钱（若${pronounOf(npc)}肯收）。` });
+    lines.push({ kind: 'hint', text: isMaster ? `用「请教 ${npc.name} <武学名>」——师父教你，一句话的事。` : `用「请教 <人名> <武学名>」请教；好感够就免费，不够可花钱（若${pronounOf(npc)}肯收）。` });
     return { lines };
   });
 
@@ -1500,7 +1853,8 @@ function buildCommands(world) {
     let dv = Math.round(ratio * 12);
     if (amt < 10) dv = -1;
     if (dv > 30) dv = 30;
-    const r = social.addFavor(w, npc, dv, '赠银');
+    /* 天赋「口才便给」：正向好感放大（塞钱少被看轻的那条 dv=-1 不吃倍率） */
+    const r = social.addFavor(w, npc, dv > 0 ? dv * w.favorGainMult(p) : dv, '赠银');
     const lines = [{ kind: 'sys', text: `你把 ${amt} 文钱塞到${npc.name}手里。` }];
     lines.push({ kind: 'say', text: amt >= worth * 0.5 ? `${npc.name}推辞了两下，还是收了，脸上有了笑意。` : `${npc.name}接了钱，点了点头。` });
     lines.push(...r.lines);
@@ -1553,6 +1907,55 @@ function buildCommands(world) {
    * 婚姻 / 结缘（第二批）
    * ================================================================ */
 
+  /* ============================================================
+   * 结缘线（主人 2026-10-10）：表白 → 男女朋友 → 才谈得上结婚 / 纳妾；另有结义
+   *   规矩：**必须先表白**，提亲与纳妾都以此为门槛（门禁只加在指令层，
+   *         不动 marriage.js 的 API —— 别的地方（剧情/测试）直调要走得通）。
+   * ============================================================ */
+  const loverId = npc => (npc && (npc.defId || npc.id)) || null;
+  const isLover = (p, npc) => {
+    const id = loverId(npc);
+    return !!id && (p.lovers || []).some(x => (x.npcId || x.id) === id);
+  };
+  const findHere = (w, p, who) => (w.npcsIncludingTemplates(p.room) || []).find(n =>
+    !n.isPlayer && n.name && (n.name === who || n.name.indexOf(who) >= 0));
+
+  reg(['表白', '示爱', '说心里话'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const who = args.join(' ').trim();
+    if (!who) return { lines: [{ kind: 'warn', text: '你要跟谁说这句话？' }] };
+    const npc = findHere(w, p, who);
+    if (!npc) return { lines: [{ kind: 'warn', text: `此处没有「${who}」这号人物。` }] };
+    if (isLover(p, npc)) return { lines: [{ kind: 'plain', text: `你与${npc.name}的事，早就说开了。` }] };
+    if (npc.gender === p.gender) {
+      return { lines: [{ kind: 'plain', text: `你把话说到一半，${npc.name}愣住了，把话岔了开去。` }, { kind: 'sys', text: '（这一层意思，对方接不住。）' }] };
+    }
+    const need = 40;
+    const fav = npc.favor || 0;
+    if (fav < need) {
+      return { lines: [
+        { kind: 'plain', text: `你话到嘴边，${npc.name}只当你说的是别的。` },
+        { kind: 'warn', text: `${npc.name}与你的交情还不到说这个的时候（好感 ${Math.round(fav)}/${need}）。` },
+      ] };
+    }
+    const chance = Math.max(0.1, Math.min(0.9, 0.25 + (fav - need) * 0.012));
+    if (w.rng.next() < chance) {
+      p.lovers = p.lovers || [];
+      p.lovers.push({ npcId: loverId(npc), name: npc.name, since: w.clockMinutes });
+      npc.favor = fav + 10;
+      return { lines: [
+        { kind: 'story', text: `你说完了。${npc.name}低着头站了一会儿，才抬起眼来看你，说了句「知道了」。` },
+        { kind: 'sys', text: `你与${npc.name}从今往后，是两心相许的关系了（好感 +10）。` },
+        { kind: 'hint', text: '（往后再谈婚嫁，都从这里起。）' },
+      ] };
+    }
+    npc.favor = fav - 6;
+    return { lines: [
+      { kind: 'plain', text: `${npc.name}听完，摇了摇头：「这话你收回去。」` },
+      { kind: 'sys', text: `${npc.name}有些为难（好感 −6）。` },
+    ] };
+  });
+
   /** 提亲：提亲 <人名> [酒楼|家中] */
   reg(['propose', '提亲', '求亲', '说媒'], (ctx, args) => {
     const w = ctx.world, p = ctx.player;
@@ -1576,6 +1979,13 @@ function buildCommands(world) {
     const nameArgs = venueKw ? args.slice(0, -1) : args;
     const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), nameArgs.join(' '), n => n.name);
     if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${nameArgs.join(' ')}」。` }] };
+    /* 门禁（主人定的规矩）：没表白过，就谈不上婚嫁 */
+    if (!isLover(p, npc)) {
+      return { lines: [
+        { kind: 'plain', text: `你才要开口说正经事，${npc.name}就把脸转开了。` },
+        { kind: 'warn', text: `这门亲事说不出口 —— 你们还没到那一步。先去「表白 <人名>」。` },
+      ] };
+    }
     const r = marriage.propose(w, npc, venueKw || 'home');
     return { lines: r.lines };
   });
@@ -1614,6 +2024,10 @@ function buildCommands(world) {
     }
     const npc = fuzzyFind(w.npcsIncludingTemplates(w.player.room), args.join(' '), n => n.name);
     if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${args.join(' ')}」。` }] };
+    /* 同一条门禁：纳妾也要先有那一层情分 */
+    if (!isLover(w.player, npc)) {
+      return { lines: [{ kind: 'warn', text: `${npc.name}是你什么人？话没说清之前，这事办不成（先去「表白」）。` }] };
+    }
     const r = marriage.takeConcubine(w, npc);
     return { lines: r.lines };
   });
@@ -2090,7 +2504,10 @@ function buildCommands(world) {
       lines.push({ kind: 'sys', text: `你付了 ${price} 文，${teacher.name}这才点头。` });
     }
 
-    const r = p.learnSkill(sd.id);
+    /* ⚠️ 这里是**有人当面教你**（拜师/花钱求教），不是玩家照着图谱自学 ——
+       所以走 force：师父既肯教，就不该再被「须先学会基础武学」这一关拦住。
+       （玩家自学那两条路：读书 `teach` 与 `train`，照旧卡前置。） */
+    const r = p.learnSkill(sd.id, { force: true });
     if (!r.ok) return { lines: [{ kind: 'warn', text: r.msg }] };
 
     const q = social.itemQuality ? null : null;
@@ -2098,7 +2515,7 @@ function buildCommands(world) {
     lines.push({ kind: 'sys', text: r.msg });
     /* 教完加一点好感（他乐意教，说明看重你） */
     if (myFavor >= need) {
-      const fr = social.addFavor(w, teacher, 3, '请教武学');
+      const fr = social.addFavor(w, teacher, 3 * w.favorGainMult(p), '请教武学');
       lines.push(...fr.lines);
       /* 顺带一点信任：肯把真本事传你，是「信得过」的另一半（画像 secret/feuds 门槛用 trust）。 */
       teacher.pstate = teacher.pstate || { trust: 0, revealed: [], hooks: {}, met: false, moodBias: 0, leaked: false };
@@ -2145,34 +2562,566 @@ function buildCommands(world) {
         const d = id ? w.getSkill(id) : null;
         lines.push({ kind: 'plain', text: `${k}：${d ? d.name : '（空）'}` });
       }
+      /* 散学区（武学重制 R2）：没有基础武学的功夫不占槽位，单独激活、合计至多三路 */
+      const sc = (p.standaloneActive || []).map(id => { const d = w.getSkill(id); return d ? d.name : id; });
+      lines.push({ kind: 'plain', text: `散手（无根基，至多 ${STANDALONE_MAX} 路）：${sc.length ? sc.join('、') + `（${sc.length}/${STANDALONE_MAX}）` : '（空）'}` });
       lines.push({ kind: 'hint', text: '用法：enable <槽位> <武学名>，例如 enable 内功 紫霞神功' });
       return { lines };
     }
     let slot = args[0], skillKw = args.slice(1).join(' ');
-    if (!p.equippedSkills[slot] && p.equippedSkills[slot] !== null) {
+    if (!Object.prototype.hasOwnProperty.call(p.equippedSkills, slot)) {
       // 可能只给了武学名
       skillKw = args.join(' ');
       slot = null;
     }
     let sd = fuzzyFind(Object.values(w.data.skills), skillKw, s => s.name);
     if (!sd) return { lines: [{ kind: 'warn', text: `没听说过「${skillKw}」。` }] };
-    if (!slot) slot = sd.type;
-    if (!(slot in p.equippedSkills)) return { lines: [{ kind: 'warn', text: `没有「${slot}」这个槽位。可用：${Object.keys(p.equippedSkills).join('、')}` }] };
     if (!p.learned[sd.id]) return { lines: [{ kind: 'warn', text: `你尚未学会${sd.name}。` }] };
+
+    /* ---- 武学重制：绑定校验（`design/40` §2.3） ----
+       判据是「这门武学的根基（base 链的根）归哪一门基础武学」，
+       与 category（外功/魔功/奇门/旁门）无关 —— 主人 2026-10-10 亲口纠正过：
+       毒术有《基本毒术》、医术有《基本医术》，它们照旧绑定激活；
+       只有**真的没有根基**的散手，才走「单独激活至多三本」。 */
+    const rootId = p.skillRoot(sd.id);
+    let homeSlot = null;
+    for (const k of Object.keys(SLOT_ROOT)) {
+      if (SLOT_ROOT[k].indexOf(rootId) >= 0) { homeSlot = k; break; }
+    }
+    /* 找不到根的两条岔路 —— 必须与「散手」区分清楚，别把两者混成一件事：
+       ① `standalone: true` = **数据明说**「这门功夫不属任何基础武学系」→ 进散手池；
+       ② 没标 standalone 又没根 = mod 武学 / 漏写 base → **宽容兜底按 type 归槽**。
+          不兜这一刀，示例 mod 的自定义剑法会被判成散手，玩家发现「装了却不在剑槽」。 */
+    if (!homeSlot && sd.standalone === true) {
+      const cur = p.standaloneActive || (p.standaloneActive = []);
+      const at = cur.indexOf(sd.id);
+      if (at >= 0) {
+        cur.splice(at, 1); p.recalc();
+        return { lines: [{ kind: 'sys', text: `你收起了散手${sd.name}。` }] };
+      }
+      if (cur.length >= STANDALONE_MAX) {
+        const names = cur.map(id => { const d = w.getSkill(id); return d ? d.name : id; });
+        return { lines: [{ kind: 'warn', text: `散手至多同时运用 ${STANDALONE_MAX} 路，你已用了${names.join('、')}。须先收起一路。` }] };
+      }
+      cur.push(sd.id); p.recalc();
+      return { lines: [{ kind: 'sys', text: `你运起了散手${sd.name}（${cur.length}/${STANDALONE_MAX}）。` }] };
+    }
+    if (!homeSlot && Object.prototype.hasOwnProperty.call(p.equippedSkills, sd.type)) homeSlot = sd.type;
+    if (!homeSlot) {
+      return { lines: [{ kind: 'warn', text: `${sd.name}的根基未明，暂时无从激活。` }] };
+    }
+    if (slot && slot !== homeSlot) {
+      const rd = w.getSkill(rootId);
+      return { lines: [{ kind: 'warn', text: `《${rd ? rd.name : rootId}》一脉的功夫，只能挂在「${homeSlot}」槽上。` }] };
+    }
+    slot = homeSlot;
+    const old = p.equippedSkills[slot];
     p.equippedSkills[slot] = sd.id;
     p.recalc();
-    return { lines: [{ kind: 'sys', text: `你将${sd.name}装备到了「${slot}」槽位。` }] };
+    const oldd = old && old !== sd.id ? w.getSkill(old) : null;
+    return { lines: [{ kind: 'sys', text: `你将${sd.name}装备到了「${slot}」槽位。` + (oldd ? `（换下了${oldd.name}）` : '') }] };
   });
 
   reg(['perform', 'pf', '绝招', '施展'], (ctx, args) => {
     const p = ctx.player, w = ctx.world;
     if (!ctx.world.battle) return { lines: [{ kind: 'warn', text: '你现在没有在战斗。' }] };
     if (!args.length) return { lines: [{ kind: 'warn', text: '你想施展什么绝招？' }] };
-    const sd = fuzzyFind(Object.values(w.data.skills), args.join(' '), s => s.name);
-    if (!sd) return { lines: [{ kind: 'warn', text: `你不会「${args.join(' ')}」。` }] };
+    const kw = args.join(' ');
+    /* 先按「武技」（skill.moves[]）找，找不到才退回「整门武学」 ——
+       武技是武学重制新增的一层：一门功夫可以有好几招，各有冷却与消耗。 */
+    let hit = null;
+    for (const s of Object.values(w.data.skills)) {
+      if (!p.learned[s.id]) continue;
+      for (const mv of [].concat(s.moves || [])) {
+        if (mv && mv.name === kw) { hit = { skill: s, move: mv }; break; }
+      }
+      if (hit) break;
+    }
+    if (hit) {
+      const r = ctx.world.combatStep({ type: 'skill', skill: hit.skill.id, moveId: hit.move.id });
+      return { lines: r ? r.lines : [] };
+    }
+    const sd = fuzzyFind(Object.values(w.data.skills), kw, s => s.name);
+    if (!sd) return { lines: [{ kind: 'warn', text: `你不会「${kw}」。` }] };
     if (!p.learned[sd.id]) return { lines: [{ kind: 'warn', text: `你尚未学会${sd.name}。` }] };
     const r = ctx.world.combatStep({ type: 'skill', skill: sd.id });
     return { lines: r ? r.lines : [] };
+  });
+
+  /* ============================================================
+   * 拍卖行（design/40 §6.3，主人点名要的系统）
+   *   面板本身走前端 PANEL_CMDS（auction/拍卖）；这里是**真指令**：
+   *   出价、寄拍都在后端结算，因为要动钱与背包。
+   * ============================================================ */
+  reg(['bid', '出价', '叫价'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const room = w.data.rooms[p.room] || {};
+    if (!room.auctionHouse) return { lines: [{ kind: 'warn', text: '这儿没有拍卖行，得去大城的市集。' }] };
+    const raw = String(args[0] || '');
+    const price = cnNum(raw) || parseInt(raw, 10);
+    const r = auctionMod.bid(w, p, price);
+    return { lines: r.lines };
+  });
+
+  reg(['consign', '寄拍', '寄卖'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const room = w.data.rooms[p.room] || {};
+    if (!room.auctionHouse) return { lines: [{ kind: 'warn', text: '这儿没有拍卖行，得去大城的市集。' }] };
+    if (!args.length) return { lines: [{ kind: 'warn', text: '用法：consign <物品名>，把值钱的物件交给柜上代卖。' }] };
+    const kw = args.join(' ');
+    const r = auctionMod.consign(w, p, kw);
+    return { lines: r.lines };
+  });
+
+  /* 拍卖行的**文本版**入口：前端面板（PANEL_CMDS）才是主入口，这条是兜底 ——
+     万一玩家在没被前端拦住的场合敲「拍卖」，不至于得到「这是什么指令」。 */
+  reg(['auction', '拍卖', '拍卖行'], (ctx) => {
+    const p = ctx.player, w = ctx.world;
+    const room = w.data.rooms[p.room] || {};
+    if (!room.auctionHouse) {
+      return { lines: [{ kind: 'warn', text: '这儿没有拍卖行。大城的市集上才有（洛阳 / 长安 / 成都 / 襄阳 / 江南 / 姑苏）。' }] };
+    }
+    const v = auctionMod.viewOf(w);
+    const lines = [{ kind: 'title', text: `【 拍卖行 · 第 ${v.session + 1} 期 】（距下一场 ${v.daysToNext} 日）` }];
+    if (v.news && v.news.length) for (const n of v.news) lines.push({ kind: 'sys', text: n });
+    if (v.current) {
+      lines.push({ kind: 'plain', text: `正在拍：${v.current.name}　当前价 ${v.current.price} 文（加价 ${v.current.step}）${v.current.leaderName ? '　领先：' + v.current.leaderName : ''}` });
+      lines.push({ kind: 'hint', text: `用「出价 <价钱>」出价，例如 bid ${v.current.price + v.current.step}。` });
+    } else {
+      lines.push({ kind: 'plain', text: '本期的东西都拍完了。' });
+    }
+    if ((v.pending || []).length) lines.push({ kind: 'plain', text: `你寄拍中：${v.pending.map(x => x.name).join('、')}` });
+    lines.push({ kind: 'hint', text: '「consign <物品名>」可把值 500 文以上的东西交给柜上代卖。' });
+    return { lines };
+  });
+
+  /* 寻访：在荒僻处碰碰运气（奇遇表见 75_content_extra.json）。
+     为什么不做成「每次进屋自动掷骰」：那会污染房间的 onEnter 数组
+     （数组是 replace 语义，后写的会把原有的整段抄掉），风险远大于收益。 */
+  reg(['寻访', '寻奇遇', '访奇', '探奇'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const room = w.data.rooms[p.room] || {};
+    const pool = Object.values(w.data.encounters || {})
+      .filter(e => e && (!e.rooms || e.rooms.indexOf(room.region) >= 0));
+    if (!pool.length) return { lines: [{ kind: 'warn', text: '这种地方人来人往，寻不出什么奇遇。' }] };
+    if (p.vars.lastStray && (w.clockMinutes - p.vars.lastStray) < 60) {
+      return { lines: [{ kind: 'warn', text: '你刚转过一圈，腿还酸着，歇会儿再说。' }] };
+    }
+    p.vars.lastStray = w.clockMinutes;
+    let hit = null;
+    for (const e of pool) { if (w.rng.next() < (e.chance || 0.08)) { hit = e; break; } }
+    if (!hit) return { lines: [{ kind: 'plain', text: '你在附近转了一圈，草里除了虫叫什么都没有。' }] };
+    const lines = evalEffects(hit.effects, { player: p, world: w });
+    return { lines: [{ kind: 'title', text: `【奇遇 · ${hit.name}】` }].concat(lines || []) };
+  });
+
+  /* ============================================================
+   * 门派邦交 + 门派大比（design/40 §5.4 / §5.6）
+   * ============================================================ */
+  reg(['邦交', '门派关系', '列国', 'relations'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    if (!p.sect) return { lines: [{ kind: 'warn', text: '你还没有门派，谈什么邦交。' }] };
+    if (!w.factionState) w.initWorldDynamics();
+    const mine = w.getSect(p.sect);
+    const lines = [{ kind: 'title', text: `【 ${mine ? mine.name : p.sect} · 邦交 】` }];
+    const ids = Object.keys(w.data.sects).filter(id => id !== p.sect && id !== 'xiake');
+    ids.sort((a, b) => w.factionRel(p.sect, b) - w.factionRel(p.sect, a));
+    for (const id of ids) {
+      const s = w.getSect(id);
+      const v = w.factionRel(p.sect, id);
+      const feud = w.factionFeudOf(p.sect, id);
+      lines.push({
+        kind: 'plain',
+        text: `${s.name}（${s.tier || '—'}）：${w.factionRelWord(v)} ${v > 0 ? '+' : ''}${v}`
+          + (feud ? `　· ${feud}` : ''),
+      });
+    }
+    lines.push({ kind: 'hint', text: '交恶到 −25 以下，两派弟子照面就会撂狠话（有交情的除外）。' });
+    return { lines };
+  });
+
+  /* ⚠️ 名字别叫「大比」—— 那个词已经被 sectFounder（自建宗门的宗门大比）占了，
+     前端 PANEL_CMDS 也把「大比」映射到 found 面板，撞名会让这条永远走不到。 */
+  reg(['门派大比', '门中大比', '本派大比', 'tourney'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    if (!p.sect) return { lines: [{ kind: 'warn', text: '无门无派，没资格下场。' }] };
+    const mine = w.getSect(p.sect);
+    const room = w.data.rooms[p.room] || {};
+    if (!mine || room.region !== mine.region) {
+      return { lines: [{ kind: 'warn', text: `大比在本派地界上开（${mine ? mine.name : ''}），你站的地方不对。` }] };
+    }
+    const t = p.vars.tourney;
+    if (t && t.oppId) {
+      const prev = w.getNpc(t.oppId);
+      const won = prev && (prev.dead || prev.knockedOut || prev.hp <= 0);
+      if (!won) return { lines: [{ kind: 'warn', text: '上一场还没了结，先把眼前这位打发了。' }] };
+      t.wins = (t.wins || 0) + 1; t.round = (t.round || 1) + 1; t.oppId = null;
+    } else if (!t) {
+      p.vars.tourney = { round: 1, wins: 0, oppId: null, sect: p.sect };
+    }
+    const tt = p.vars.tourney;
+    if (tt.round > 3) {
+      /* 三轮走完 → 结算：贡献 + 声望 + 一门本派武学 */
+      const rank = tt.wins;
+      p.sectContribution = (p.sectContribution || 0) + 60 + rank * 40;
+      p.reputation[p.sect] = (p.reputation[p.sect] || 0) + 10 + rank * 10;
+      const prize = rank >= 3 ? `${p.sect}_atk_3` : rank >= 2 ? `${p.sect}_atk_2` : `${p.sect}_atk_1`;
+      const lr = p.learnSkill(prize, { force: true });
+      p.vars.tourney = null;
+      const lines = [
+        { kind: 'title', text: `【 大比落幕 】` },
+        { kind: 'sys', text: `${tt.wins} 胜 —— 你在本派大比中排到了${rank >= 3 ? '头名' : rank >= 2 ? '前列' : '中游'}。` },
+        { kind: 'sys', text: `贡献 +${60 + rank * 40}，声望 +${10 + rank * 10}。` },
+        { kind: 'sys', text: lr.ok ? `门中把《${(w.getSkill(prize) || {}).name || prize}》传了你。` : `（门派武学：${lr.msg}）` },
+      ];
+      return { lines };
+    }
+    /* 造本轮对手：越往后越硬 */
+    const pool = tt.round === 1 ? ['mob_bandit'] : tt.round === 2 ? [`${p.sect}_disciple`] : [`${p.sect}_master`];
+    const nid = pool.find(x => w.data.npcs[x]);
+    if (!nid) return { lines: [{ kind: 'warn', text: '门里一时凑不齐对手，过阵子再来。' }] };
+    const foe = w.spawnNpc(nid, p.room, 1, true);
+    if (tt.round === 3) { foe.name = `${mine.name}·掌门`; }
+    tt.oppId = foe.id;
+    const dr = w.startDuel(p, foe);
+    return {
+      lines: [
+        { kind: 'title', text: `【 大比 · 第 ${tt.round} 轮 / 共 3 轮 】` },
+        { kind: 'plain', text: `场边围了一圈本门弟子。${tt.round === 3 ? '最后一场，对手是当家的。' : '轮到你了。'}` },
+      ].concat(dr.lines || []),
+    };
+  });
+
+  /* ============================================================
+   * 文化项目：科举 / 听曲 / 诗会 / 比武招亲（culture.js）
+   *   文采是这一套的核心资源：温书攒、听曲涨、诗会奖、科举考它。
+   * ============================================================ */
+  reg(['应试', '科举', '报考', '应考', 'exam'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const r = cultureMod.takeExam(w, p, args.join(' ') || null);
+    return { lines: r.lines };
+  });
+
+  reg(['温书', '读书', '苦读', 'study'], (ctx) => {
+    const r = cultureMod.study(ctx.world, ctx.player);
+    return { lines: r.lines };
+  });
+
+  reg(['听曲', '点曲', '听戏', 'listen'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const room = w.data.rooms[p.room] || {};
+    if (room.region !== 'qinglou' && !room.songs) {
+      return { lines: [{ kind: 'warn', text: '这儿没有唱的。要听曲得去勾栏。' }] };
+    }
+    const r = cultureMod.listenSong(w, p, args.join(' ') || null);
+    return { lines: r.lines };
+  });
+
+  reg(['赋诗', '诗会', '出题'], (ctx) => {
+    const p = ctx.player, w = ctx.world;
+    const room = w.data.rooms[p.room] || {};
+    if (room.region !== 'qinglou') return { lines: [{ kind: 'warn', text: '诗会在醉春楼那样的地方开。' }] };
+    const r = cultureMod.poemAsk(w, p);
+    return { lines: r.lines };
+  });
+
+  reg(['对句', '接句', '答对'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const room = w.data.rooms[p.room] || {};
+    if (room.region !== 'qinglou') return { lines: [{ kind: 'warn', text: '这里没有席。' }] };
+    if (!args.length) return { lines: [{ kind: 'warn', text: '报个号，用法：对句 2' }] };
+    const r = cultureMod.poemAnswer(w, p, args[0]);
+    return { lines: r.lines };
+  });
+
+  /* ⚠️ 别名别跟别处撞：宗门那边有 `contest`，这里用 `meet` / `招亲擂台` */
+  reg(['比武招亲', '招亲', '擂台招亲', 'meet'], (ctx) => {
+    const p = ctx.player, w = ctx.world;
+    const room = w.data.rooms[p.room] || {};
+    const arenaRoom = (cultureMod.cfg(w).marriageMeet || {}).room;
+    if (room.id !== arenaRoom) {
+      return { lines: [{ kind: 'warn', text: `擂台立在洛阳，你得站到台前去（${arenaRoom}）。` }] };
+    }
+    const r = cultureMod.startMarriageMeet(w, p);
+    return { lines: r.lines };
+  });
+
+  /* ============================================================
+   * 重地：藏经阁（三层）/ 藏宝阁 / 国库 / 衙门库房（R5）
+   * ============================================================ */
+  reg(['藏经阁', '经阁', '翻经', 'library'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const room = treasuryMod.here(w);
+    if (!room || room.treasuryKind !== 'library') {
+      return { lines: [{ kind: 'warn', text: '这儿没有藏经阁。各派的藏经阁都在自己的地界上。' }] };
+    }
+    if (args.length) return { lines: treasuryMod.shelfView(w, p, args[0]).lines };
+    const v = treasuryMod.libraryView(w, p);
+    const lines = [{ kind: 'title', text: `【${v.owner ? v.owner.name : ''}藏经阁】` }];
+    lines.push({ kind: 'sys', text: `你的门中身份：${['外门', '内门', '执事', '首座', '长老', '掌门'][v.rank] || '弟子'}　贡献：${v.contrib}` });
+    for (const f of v.floors) {
+      lines.push({
+        kind: 'plain',
+        text: `${f.id}. ${f.name}（${f.grades.map(g => ['', '一', '二', '三', '四', '五', '六', '七', '八', '九'][g] + '品').join('/')}）`
+          + `　${f.can ? `可抄 ${f.count} 本　入门费 ${f.cost} 贡献` : `—— ${f.why}`}`,
+      });
+    }
+    lines.push({ kind: 'hint', text: '「藏经阁 <层号>」翻看这一层；「抄录 <武学名>」抄一本下来。' });
+    return { lines };
+  });
+
+  reg(['抄录', '抄书', 'copy'], (ctx, args) => {
+    const r = treasuryMod.copy(ctx.world, ctx.player, args.join(' '));
+    return { lines: r.lines };
+  });
+
+  reg(['藏宝阁', '宝库', '库房', '国库', 'vault'], (ctx) => {
+    const r = treasuryMod.vaultView(ctx.world, ctx.player);
+    return { lines: r.lines };
+  });
+
+  reg(['兑换', '换取', 'redeem'], (ctx, args) => {
+    const r = treasuryMod.redeem(ctx.world, ctx.player, args.join(' '));
+    return { lines: r.lines };
+  });
+
+  /* ============================================================
+   * 战斗外秘技（迷晕 / 致幻 / 暗劲 / 下毒 / 催眠 / 采补 / 双修）
+   *   通常用在 NPC 交互界面的按钮上；这里给一条文字入口，两者共用 arts.js。
+   * ============================================================ */
+  reg(['秘技', '使秘技', '暗算', 'art'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    if (args.length < 2) {
+      const list = artsMod.listFor(w, p, null);
+      const lines = [{ kind: 'title', text: '【可用的秘技】' }];
+      for (const a of (artsMod.cfg(w).list || [])) {
+        /* 双修 / 采补不在这儿露面（主人 2026-10-11）—— 它们挂在 NPC 互动面板上，
+           判定与流程都在 dualcultivate.js。`listFor` 里已经筛过一次，
+           这一处是**另一条路**（直接读配置），所以要各自筛，别只改一处。 */
+        if (a.effect === 'dual' || a.effect === 'drain') continue;
+        const u = artsMod.artUsable(w, p, a);
+        lines.push({ kind: 'plain', text: `${a.name}（${a.cat}）　内力 ${a.mpCost}　${u.ok ? '已可运用' : '—— ' + u.why}` });
+      }
+      lines.push({ kind: 'hint', text: '用法：秘技 <人名> <秘技名>，例如「秘技 张掌柜 迷晕」。' });
+      return { lines };
+    }
+    const artName = args[args.length - 1];
+    const who = args.slice(0, args.length - 1).join(' ');
+    const npc = (w.npcsIncludingTemplates(p.room) || []).find(n =>
+      !n.isPlayer && (n.name === who || n.id === who || n.defId === who || (n.name && n.name.indexOf(who) >= 0)));
+    if (!npc) return { lines: [{ kind: 'warn', text: `此处没有「${who}」这号人物。` }] };
+    const r = artsMod.use(w, p, npc, artName);
+    return { lines: r.lines };
+  });
+
+  /* 合欢宗：卖身青楼 + 接待满十位 → 楼里自有人来问一句话 */
+  reg(['入合欢宗', '合欢宗', '投合欢', 'hehuan'], (ctx) => {
+    const p = ctx.player, w = ctx.world;
+    const g = artsMod.hehuanGate(w, p);
+    if (g.already) return { lines: [{ kind: 'plain', text: g.msg }] };
+    if (!g.ok) {
+      return {
+        lines: [
+          { kind: 'plain', text: (artsMod.hh(w).joinLine || '') },
+          { kind: 'warn', text: g.msg },
+          ...(g.need ? [{ kind: 'hint', text: `（在青楼用「接客」攒够 ${g.need} 位再来。）` }] : []),
+        ],
+      };
+    }
+    const r = p.joinSect('hehuan');
+    return {
+      lines: [
+        { kind: 'story', text: artsMod.hh(w).joinAsk || '' },
+        { kind: r.ok ? 'sys' : 'warn', text: r.msg },
+      ],
+    };
+  });
+
+  /* ============================================================
+   * 内力上限：吐纳 / 收功（neigong.js）
+   *   吐纳是「熬」——一次次坐下来，内力与气血一点点耗干，见底那一刻才长上限。
+   *   期间不能走动（movePlayerTo 会拦），挨打或走动即散功。
+   * ============================================================ */
+  reg(['吐纳', '行功', '调息', 'tuna'], (ctx) => {
+    const p = ctx.player, w = ctx.world;
+    if (!neigongMod.stateOf(p)) return { lines: neigongMod.start(w, p).lines };
+    const r = neigongMod.round(w, p);
+    return { lines: r.lines };
+  });
+
+  reg(['收功', '散功', '起身'], (ctx) => {
+    /* 显式退出吐纳 / 双修 / 采补（主人 2026-10-11）。
+       ⚠️ 主人明确**不要「收功」按钮** —— 常态路径是「点屏幕上任何别的按钮就退出这个状态」，
+       那条路由 `engine.exec` 自动接管（见那边 `KEEP` 白名单与 `exitBusy`）。
+       这条指令留着，给手敲的老玩家和内部调用用，不是主路径。
+       两件事都要认：坐着吐纳，或者正在双修/采补当中 —— 以前只认吐纳，
+       双修起手之后敲「收功」会说「你并没有在吐纳」，等于把玩家锁死在那个状态里。 */
+    const dc = require('./dualcultivate');
+    if (dc.stateOf(ctx.player)) return { lines: dc.stop(ctx.world, ctx.player).lines };
+    const r = neigongMod.stop(ctx.world, ctx.player);
+    return { lines: r.lines };
+  });
+
+  /* ============================================================
+   * 医术：诊脉 / 疗伤 / 解毒（medicine.js）
+   *
+   * 主人 2026-10-11「继续做剩下的内容」——待办里挂着一条：「医术类武学无战斗外消费点」。
+   * 《基本医术》占着 `character.js` 的槽位表一格，玩家学了却发现**哪里都用不上**。
+   * 这三条指令把它接上：看病不花钱，治病靠内力，治好了长人情。
+   * ============================================================ */
+  const medicineMod = require('./medicine');
+
+  /** 医术的目标：屋里活着的人 + 躺在地上的人（倒地那个恰恰最该救） */
+  function medicineTarget(w, p, kw) {
+    const pool = (w.npcsIn(p.room) || []).concat(w.downedIn ? w.downedIn(p.room) : []);
+    return fuzzyFind(pool, kw, n => n.name) || null;
+  }
+  function medGate(p) {
+    return medicineMod.hasMedicine(p)
+      ? null
+      : [{ kind: 'hint', text: '（先学了《基本医术》再说 —— 那是做医者的门槛。）' }];
+  }
+
+  reg(['诊脉', '把脉'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const gate = medGate(p);
+    if (gate) return { lines: gate };
+    const kw = (args || []).join(' ').trim();
+    if (!kw) return { lines: medicineMod.diagnose(w, p, p).lines };
+    const t = medicineTarget(w, p, kw);
+    if (!t) return { lines: [{ kind: 'warn', text: `这里没有「${kw}」。` }] };
+    return { lines: medicineMod.diagnose(w, p, t).lines };
+  });
+
+  /* ⚠️ 指令名**不能叫「疗伤」** —— `heal / 疗伤 / 运功疗伤 / 养伤 / 行气疗伤`
+     早在 commands.js 后面注册过了（耗内力硬撑、掏空了还会积暗伤的那套）。
+     `reg([...])` 是**后者覆盖前者**，重名会让这边整块静默失效（第一版就踩了：
+     敲「疗伤」跑的是老实现，我这边一句都没执行，测试还以为是数值不对）。
+     所以这边专管「**替人**看伤」：医治 / 看伤 / 救治。 */
+  reg(['医治', '看伤', '救治', '施救'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const gate = medGate(p);
+    if (gate) return { lines: gate };
+    const kw = (args || []).join(' ').trim();
+    /* 不带人 = 替自己看。提示一句另一条路，免得玩家以为两回事。 */
+    if (!kw) {
+      const r = medicineMod.heal(w, p, p);
+      r.lines.push({ kind: 'hint', text: '（内力足的时候，「疗伤」那一路来得更快，只是掏空了会积暗伤。）' });
+      return { lines: r.lines };
+    }
+    const t = medicineTarget(w, p, kw);
+    if (!t) return { lines: [{ kind: 'warn', text: `这里没有「${kw}」。` }] };
+    return { lines: medicineMod.heal(w, p, t).lines };
+  });
+
+  reg(['解毒', '拔毒', '驱毒'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const gate = medGate(p);
+    if (gate) return { lines: gate };
+    const kw = (args || []).join(' ').trim();
+    if (!kw) return { lines: medicineMod.detox(w, p, p).lines };
+    const t = medicineTarget(w, p, kw);
+    if (!t) return { lines: [{ kind: 'warn', text: `这里没有「${kw}」。` }] };
+    return { lines: medicineMod.detox(w, p, t).lines };
+  });
+
+  /* ============================================================
+   * 双修 / 采补（dualcultivate.js，主人 2026-10-11 重做）
+   *
+   * 入口搬到「点 NPC 名字 → 互动面板」的按钮上（从前挂在秘技里，既不判晚上
+   * 也不判旁边有没有人）。指令仍然保留：面板上的按钮发的是这两条。
+   * 一轮一次指令 —— 「屏幕上缓慢弹出」就是这个意思，跟吐纳一个路子。
+   * ============================================================ */
+  for (const [names, kind] of [
+    [['双修', '合修', 'dual'], 'dual'],
+    [['采补', '采战', 'drain'], 'drain'],
+  ]) {
+    reg(names, (ctx, args) => {
+      const p = ctx.player, w = ctx.world;
+      const dc = require('./dualcultivate');
+      const st = dc.stateOf(p);
+      if (st) {
+        if (st.kind !== kind) return { lines: [{ kind: 'warn', text: '你正忙着另一桩事。（要走开，点屏幕上任何别的按钮都行。）' }] };
+        return { lines: dc.round(w, p).lines };
+      }
+      const kw = (args || []).join(' ').trim();
+      if (!kw) return { lines: [{ kind: 'warn', text: '对谁？' }] };
+      const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), kw, n => n.name);
+      if (!npc || npc.isPlayer) return { lines: [{ kind: 'warn', text: `这里没有「${kw}」。` }] };
+      const r = dc.start(w, p, npc, kind);
+      return { lines: r.lines };
+    });
+  }
+
+  /* ---------------- 徒弟：传功 / 灌顶 ---------------- */
+  reg(['传功', '授徒', '传艺'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    p.disciples = p.disciples || [];
+    if (!args.length) {
+      const list = p.disciples.map(id => { const n = w.getNpc(id); return n ? n.name : null; }).filter(Boolean);
+      return { lines: list.length
+        ? [{ kind: 'title', text: '【门下的弟子】' }, { kind: 'plain', text: list.join('、') }, { kind: 'hint', text: '用法：传功 <弟子> <功法名>' }]
+        : [{ kind: 'warn', text: '你还没有收徒。' }] };
+    }
+    const kw = args.join(' ');
+    let npc = null, skillKw = '';
+    for (let i = args.length; i > 0; i--) {
+      const nameTry = args.slice(0, i).join(' ');
+      const hit = p.disciples.map(id => w.getNpc(id)).find(n => n && n.name && (n.name === nameTry || n.name.indexOf(nameTry) >= 0));
+      if (hit) { npc = hit; skillKw = args.slice(i).join(' '); break; }
+    }
+    if (!npc) return { lines: [{ kind: 'warn', text: `你的弟子里没有「${kw}」这号人。` }] };
+    if (!skillKw) return { lines: [{ kind: 'warn', text: '要传哪一门功夫？' }] };
+    const sid = Object.keys(p.learned).find(id => {
+      const sd = w.getSkill(id);
+      return sd && (sd.name === skillKw || sd.name.indexOf(skillKw) >= 0 || id === skillKw);
+    });
+    if (!sid) return { lines: [{ kind: 'warn', text: `你自己都不会「${skillKw}」，传不了。` }] };
+    const sd = w.getSkill(sid);
+    const myLv = p.learned[sid].level || 0;
+    const pass = Math.max(1, Math.floor(myLv * 0.6));      // 传下去只剩六成火候
+    npc.learned = npc.learned || {};
+    const before = (npc.learned[sid] && npc.learned[sid].level) || 0;
+    if (before >= pass) {
+      return { lines: [{ kind: 'plain', text: `${npc.name}在这门功夫上已经不比这一手差了。` }] };
+    }
+    npc.learned[sid] = { level: pass, exp: 0 };
+    if (sd.type && npc.equippedSkills && !npc.equippedSkills[sd.type]) npc.equippedSkills[sd.type] = sid;
+    npc.recalc && npc.recalc();
+    npc.favor = (npc.favor || 0) + 6;
+    return {
+      lines: [
+        { kind: 'story', text: `你把${npc.name}叫到跟前，一式一式拆给他看。他学得慢，但记得牢。` },
+        { kind: 'sys', text: `传了《${sd.name}》（你 ${myLv} 级 → 他 ${pass} 级）。好感 +6。` },
+      ],
+    };
+  });
+
+  reg(['灌顶', '灌顶传功', '以气渡人'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    p.disciples = p.disciples || [];
+    if (!args.length) return { lines: [{ kind: 'warn', text: '用法：灌顶 <弟子>　把自己十点内力上限渡给他' }] };
+    const who = args.join(' ');
+    const npc = p.disciples.map(id => w.getNpc(id)).find(n => n && n.name && (n.name === who || n.name.indexOf(who) >= 0));
+    if (!npc) return { lines: [{ kind: 'warn', text: `你的弟子里没有「${who}」这号人。` }] };
+    if ((p.maxMp || 0) < 40) return { lines: [{ kind: 'warn', text: '你自己的内力都薄得可怜，拿什么渡人。' }] };
+    const give = Math.min(10, Math.max(1, Math.floor((p.maxMp || 0) * 0.1)), 10);
+    p.maxMpBase = Math.max(10, (p.maxMpBase || 50) - give);
+    npc.maxMpBase = (npc.maxMpBase || 50) + give;
+    p.recalc(); npc.recalc && npc.recalc();
+    /* 内力上去了，他的功法火候也跟着抬（内力上限 = 实力上限） */
+    const lifted = neigongMod.syncNpcByMp(w, npc);
+    npc.favor = (npc.favor || 0) + 10;
+    const ng = p.equippedSkills['内功'];
+    const ngName = ng ? ((w.getSkill(ng) || {}).name || ng) : null;
+    return {
+      lines: [
+        { kind: 'story', text: `你与${npc.name}对坐，掌心相抵。你这边一点点空下去，他那边一点点满起来。` },
+        { kind: 'sys', text: `你的内力上限 −${give}（现 ${Math.floor(p.maxMp)}），${npc.name}的内力上限 +${give}（现 ${Math.floor(npc.maxMp)}）。` },
+        lifted ? { kind: 'sys', text: `他一身功夫跟着水涨船高（${lifted} 门武学的火候被内力顶上去了）。` } : { kind: 'plain', text: '（他原有的火候比这点内力配得上的还要高些。）' },
+        ngName ? { kind: 'hint', text: `（你运的是《${ngName}》——内力上限掉下去，武学上限也会跟着低一点。）` } : { kind: 'hint', text: '（你连内功都没运——底子薄，将来得补。）' },
+      ],
+    };
   });
 
   reg(['forget', '忘记'], (ctx, args) => {
@@ -2307,6 +3256,12 @@ function buildCommands(world) {
     const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), args.join(' '), n => n.name);
     if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${args.join(' ')}」。` }] };
     const lines = [];
+    /* ---- 他有没有话要跟你提（2026-10-11 自拟）----
+       「NPC 记着你」：答应过没办的事 > 人情账 > 听说你的事 > 久别重逢。
+       一次只说一件，且同一件事一天最多念一回 —— 见面就翻旧账那不叫记性，叫唐僧。 */
+    try {
+      lines.push(...require('./npcMemory').greetLines(w, p, npc));
+    } catch (e) { /* 记忆出错不该挡着说话 */ }
     const def = npc.def || {};
     if (def.dialog && w.data.dialogues[def.dialog]) {
       const dlg = w.data.dialogues[def.dialog];
@@ -2355,8 +3310,9 @@ function buildCommands(world) {
       if (st.chatDay !== day) { st.chatDay = day; st.chatCount = 0; }
       if ((st.chatCount || 0) < 3) {
         st.chatCount = (st.chatCount || 0) + 1;
-        npc.favor = clamp((npc.favor || 0) + 1, -200, 200);
-        lines.push({ kind: 'sys', text: `　（闲谈几句，${npc.name}对你多了三分熟络。好感 +1）` });
+        /* 走 world.gainFavor：正向增量会过「口才便给」天赋倍率 */
+        const fd = Math.round(w.gainFavor(npc, 1));
+        lines.push({ kind: 'sys', text: `　（闲谈几句，${npc.name}对你多了三分熟络。好感 ${fd > 0 ? '+' : ''}${fd}）` });
       } else {
         lines.push({ kind: 'hint', text: '　（话已说尽，再说就成聒噪了——明日再来。）' });
       }
@@ -2392,10 +3348,11 @@ function buildCommands(world) {
     const verb = personality.sayVerbToned(npc);
     const lines = [];
     const before = npc.favor || 0;
-    npc.favor = clamp(before + 1, -200, 200);
+    /* 走 world.gainFavor：正向增量会过「口才便给」天赋倍率 */
+    w.gainFavor(npc, 1);
     lines.push({ kind: 'story', text: `你朝他拱了拱手，道一声「后会有期」。` });
     lines.push({ kind: 'say', text: `${npc.name}${verb}：「慢走，不送。」` });
-    if ((npc.favor || 0) > before) lines.push({ kind: 'sys', text: `　（礼数到了，${npc.name}的好感 +1。）` });
+    if ((npc.favor || 0) > before) lines.push({ kind: 'sys', text: `　（礼数到了，${npc.name}的好感 +${Math.round(npc.favor - before)}。）` });
     return { lines };
   });
 
@@ -2474,11 +3431,23 @@ function buildCommands(world) {
         }
         break;
       }
-      /* 禁忌话题：踩到 voice.taboo 掉好感（−5~−15，按层级加权） */
-      const taboo = pt.voice && pt.voice.taboo;
-      if (taboo && taboo.some(x => x && topic.includes(x))) {
+      /* 禁忌话题：踩到 voice.taboo 掉好感（−5~−15，按层级加权）
+         ⚠️ 两处收口（2026-10-11 查画像一致性时抓到，同一类问题）：
+         ① **单字禁忌一律不算**。数据里有人把 taboo 写成「手」「塔」「水」这种单字，
+            于是「华山的旧手」这种正经话题也会撞上去，白白扣好感 —— 一个字宽到
+            能盖住半部词典，那不叫禁忌，那叫碰瓷。
+         ② **钩子标题不算踩雷**。画像里 taboo 与 hooks[].title 是同一个心结的两种写法：
+            taboo = 「外人提不得」，hooks = 「他信得过你才托给你的事」。
+            玩家照着他自己给的钩子标题去问，反倒先被扣 15 点好感 —— 两栏打架，
+            45 处撞车。以钩子为准。 */
+      const taboo = (pt.voice && pt.voice.taboo) || [];
+      const hookTitles = (pt.hooks || []).map(h => h && h.title).filter(Boolean);
+      const hitTaboo = taboo.some(x => x && String(x).length >= 2 && topic.includes(x)
+        && !hookTitles.some(t => t.includes(x) || x.includes(t)));
+      if (hitTaboo) {
         const d = -5 - (pt.tier === 'A' ? 10 : pt.tier === 'B' ? 5 : 0);
-        npc.favor = (npc.favor || 0) + d;
+        /* 踩忌口是**负向**好感；走 gainFavor 只是收敛口径（负向不吃「口才便给」倍率） */
+        w.gainFavor(npc, d);
         lines.push({ kind: 'sys', text: `（${npc.name}的脸沉了一下，好感 ${d}）` });
       }
       /* ---- 画像 L3 吐露：恩怨 feuds + 隐秘 secret（任务三）----
@@ -2516,6 +3485,44 @@ function buildCommands(world) {
           }
         } else {
           lines.push({ kind: 'say', text: `${npc.name}${verb2}：「你还问不着这个。」（信得过我，才说得出口——先替我把事办了）` });
+        }
+      }
+      /* ---- 画像 L4 · 钩子（hooks）：他手里那件「你能帮着做的事」----
+         这是画像里**唯一指向「接下来能干什么」**的一栏（type: task/reveal），
+         每条都写了「他有什么难处 / 你要做什么 / 做成了得什么」。
+         ⚠️ 原先这一栏全仓**没有任何消费点**（51 个人写了钩子，一个也问不出来），
+            而且它的 `trigger` 一律读 `var: trust_<npcId>`，那个变量也**从没人写过** ——
+            「没人读」+「条件恒不成立」，双重死数据。这里两处一起补：
+              · 先把这人的 trust 同步进 p.vars（判据见 world.syncTrustVar）；
+              · 再按 trigger 给出「说 / 不说」两种回应。
+         问法有两种：`ask <人> about <钩子标题>`，或者泛问「有什么难处 / 要我做什么」。 */
+      if (!found && pt.hooks && pt.hooks.length) {
+        w.syncTrustVar(npc);
+        const K = topic || '';
+        const GENERAL = ['难处', '心事', '要办的事', '什么事', '帮忙', '帮你', '尽管说', '有没有事', '用得上我'];
+        let hk = pt.hooks.find(h => h && h.title && K && (K.includes(h.title) || h.title.includes(K)));
+        let generic = false;
+        if (!hk && GENERAL.some(x => K.includes(x))) {
+          generic = true;
+          /* 泛问挑一条：优先「现在就能做」的，都做不了就挑门槛最低的那条（第一条） */
+          hk = pt.hooks.find(h => !h.trigger || evalCond(h.trigger, { player: p, world: w })) || pt.hooks[0];
+        }
+        if (hk) {
+          found = true;
+          const hstate = (npc.pstate && npc.pstate.hooks) || {};
+          const open = !hk.trigger || evalCond(hk.trigger, { player: p, world: w });
+          if (hstate[hk.id]) {
+            lines.push({ kind: 'say', text: `${npc.name}${verb2}：「那桩事你已经在办了，我记着。」` });
+          } else if (open) {
+            lines.push({ kind: 'say', text: `${npc.name}${verb2}：「${evalTemplate(hk.seed || hk.title || '', ctx)}」` });
+            if (hk.rewardHint) lines.push({ kind: 'hint', text: `（${hk.rewardHint}）` });
+            if (npc.pstate) { npc.pstate.hooks = npc.pstate.hooks || {}; npc.pstate.hooks[hk.id] = 1; }
+            lines.push({ kind: 'sys', text: `（你记下了「${hk.title}」这件事。）` });
+          } else {
+            /* 交情不到：不撒谎、也不白给 —— 把话头留在这儿，玩家自己会去经营 */
+            lines.push({ kind: 'say', text: `${npc.name}${verb2}：「${generic ? '我这儿的难处，' : hk.title + '么……'}还不到同你说的时候。」` });
+            lines.push({ kind: 'hint', text: '（先替他把别的事办成；他信得过你了，自己会说。）' });
+          }
         }
       }
     }
@@ -2596,13 +3603,15 @@ function buildCommands(world) {
     if (!npc) return { lines: [{ kind: 'warn', text: '这里没有做买卖的人。' }] };
     const lines = [{ kind: 'title', text: `【 ${npc.name}的货摊 】` }];
     const shop = w.data.shops[npc.shop] || { goods: (npc.def && npc.def.goods) || [] };
+    /* 天赋「经商奇才」：标价即折后价（否则看到的与买到的对不上） */
+    const shopDisc = w.shopDiscount(p);
     for (const g of shop.goods) {
       const d = w.getItem(g.item || g.id);
       if (!d) continue;
-      const price = g.price || Math.floor((d.value || 10) * 1.5);
+      const price = Math.floor((g.price || Math.floor((d.value || 10) * 1.5)) * (1 - shopDisc));
       lines.push({ kind: 'item', text: `${d.name}　${price} 文${g.stock !== undefined ? `（余 ${g.stock}）` : ''}`, itemId: g.item || g.id, price });
     }
-    lines.push({ kind: 'hint', text: '用「buy <物品名>」购买，「sell <物品名>」出售。' });
+    lines.push({ kind: 'hint', text: '用「买 <物品名>」购买，「卖 <物品名>」出售。' });
     return { lines };
   });
 
@@ -2629,7 +3638,8 @@ function buildCommands(world) {
       const fac = fid && w.factionState && w.factionState.factions[fid];
       if (fac) facDisc = clamp(fac.power / 100 * 0.15, 0, 0.15);
     }
-    const final = Math.floor(price * discount * (1 - facDisc));
+    /* 天赋「经商奇才」：买价再打折（叠在声望/势力折扣之上） */
+    const final = Math.floor(price * discount * (1 - facDisc) * (1 - w.shopDiscount(p)));
     if (p.money < final) return { lines: [{ kind: 'warn', text: `你钱不够，需要 ${final} 文，你有 ${p.money} 文。` }] };
     p.money -= final;
     w.giveItem(p, hit.item || hit.id, count);
@@ -2648,7 +3658,8 @@ function buildCommands(world) {
     const hit = fuzzyFind(p.inventory || [], args.join(' '), i => { const id = (typeof i === 'object' && i) ? i.id : i; const d = w.getItem(id); return (d && d.name) || id; });
     if (!hit) return { lines: [{ kind: 'warn', text: `你身上没有「${args.join(' ')}」。` }] };
     const d = w.getItem(hit.id);
-    const price = Math.floor((d.value || 5) * 0.6 * (hit.count || 1));
+    /* 天赋「经商奇才」：卖价抬高（×1.15），与买价折扣同源 */
+    const price = Math.floor((d.value || 5) * 0.6 * (1 + w.shopDiscount(p)) * (hit.count || 1));
     w.removeItem(p, hit.id, hit.count || 1);
     p.money += price;
     return { lines: [{ kind: 'sys', text: `你卖掉了${d.name}，得银 ${price} 文。` }] };
@@ -2687,7 +3698,7 @@ function buildCommands(world) {
         const sd = w.data.sects[id];
         lines.push({ kind: 'plain', text: `${sd.name}　${sd.align || ''}　${sd.desc ? sd.desc.slice(0, 30) : ''}` });
       }
-      lines.push({ kind: 'hint', text: '用「join <门派名>」拜师入门。' });
+      lines.push({ kind: 'hint', text: '用「拜师 <门派名>」拜师入门。' });
       return { lines };
     }
     const sd = fuzzyFind(Object.values(w.data.sects), args.join(' '), s => s.name);
@@ -2701,12 +3712,111 @@ function buildCommands(world) {
     return { lines };
   });
 
-  reg(['join', '拜师', '入门'], (ctx, args) => {
+  /* 拜师（主人 2026-10-08）：「npc 互动面板增加拜师」+「加入门派方式也是拜师」。
+     同一个指令两条路：
+       · `拜师 <人名>`   —— 拜**个人**为师，此后「请教」他的功夫必定学得会
+       · `拜师 <门派名>` —— 入**山门**（原来的 join 行为，一个字没改）
+     先按人名找，找不到再按门派名找 —— 「拜师 令狐冲」与「拜师 华山派」都通。 */
+  reg(['join', '拜师', 'baishi', '入门'], (ctx, args) => {
     const p = ctx.player, w = ctx.world;
-    if (!args.length) return { lines: [{ kind: 'warn', text: '你想拜入哪个门派？' }] };
+    if (!args.length) return { lines: [{ kind: 'warn', text: '你想拜谁为师？（「拜师 <人名>」拜个人，或「拜师 <门派名>」入山门）' }] };
+    const kw = args.join(' ');
+
+    /* ---- 第一条路：拜一个人 ---- */
+    const person = fuzzyFind(w.npcsIncludingTemplates(p.room), kw, n => n.name);
+    if (person && !person.isPlayer) {
+      if (person.dead || person.knockedOut) return { lines: [{ kind: 'warn', text: `${person.name}现在没法答你的话。` }] };
+      if (person.def && person.def.hostile) return { lines: [{ kind: 'warn', text: '对方杀机毕露，这一拜怕是要拜进阎王殿。' }] };
+      /* 同门的长辈：这不是「拜师」，是**求升** ——
+         主人原话：「普通弟子晋升条件也是贡献足够后拜长老成真传」。
+         贡献不够时他会明说差多少（promoteByMaster 里写了）。 */
+      if (p.sect && person.sect === p.sect && ((person.rank === undefined ? 3 : person.rank) > (p.rank || 0))) {
+        const SL = require('./sectlife');
+        const DS = require('./discipleship');
+        /* 「一人只有一个师门」也管着门内这条路：外面认了个人师父（rec.sect 为空）
+           的，得先了断才谈得上在门里另认 —— 不然一转身门里门外两位师父，说不通。 */
+        const cur = DS.currentMaster(p);
+        if (cur && !(cur.rec && cur.rec.sect)) {
+          return {
+            lines: [
+              { kind: 'warn', text: `${person.name}摇头：「你已在外头认了师父。门里的师承，不便与外人并立。」` },
+              { kind: 'hint', text: `（先与${(cur.rec && cur.rec.name) || '那位'}了断：用「出师」或「退出师门」。）` },
+            ],
+          };
+        }
+        const r = SL.promoteByMaster(w, p, person);
+        const lines = r.lines || [];
+        if (r.ok) {
+          /* 门内转拜更高职位（主人 2026-10-11）：
+             ① 新认的这位成为你的**门派师父**（往后「请教」他一句就教）；
+             ② **同一个门派**里原来那位（低职位的同门）从此不再是你的师父。
+             江湖上认的个人师父（rec.sect 为空）不动 —— 那跟门内升迁没关系。 */
+          const mid = DS.setMaster(p, person, { sect: p.sect });
+          lines.push(...DS.dropSectMasters(w, p, mid));
+        }
+        return { lines };
+      }
+      p.masters = p.masters || {};
+      const mid = person.defId || person.id;
+      if (p.masters[mid]) return { lines: [{ kind: 'warn', text: `你已拜过${person.name}为师了。` }] };
+      const DS = require('./discipleship');
+      /* 他肯不肯收，看他手上有没有功夫、以及你在他眼里是个什么人。
+         ⚠️「收徒条件由你（我）判断」——定的规矩是三条：手上有货 / 不是无名杂鱼 / 你与他不是陌路。
+         🔴 **先判「他收不收」，再判「你有没有师父」**（主人 2026-10-11 的先后要求）：
+            顺序反了的话，一个根本不肯收你的人也会得到「你已有师门」——
+            玩家会以为换个人就能拜，白跑一趟。判定失败一律走原来那句失败的话。 */
+      const canTeach = social.teachList(w, person).filter(s => !s.known);
+      if (!canTeach.length) return { lines: [{ kind: 'warn', text: `${person.name}摆手：「我这点本事，教不了人。」` }] };
+      if ((person.tier || 'C') === 'C' && !canTeach.some(s => (s.level || 0) > 60)) {
+        return { lines: [{ kind: 'warn', text: `${person.name}笑了笑：「我这几手粗浅把式，哪配当人师父。」` }] };
+      }
+      const favor = person.favor || 0;
+      if (favor < 15) {
+        return {
+          lines: [
+            { kind: 'warn', text: `${person.name}打量你两眼，摇头：「萍水相逢，凭什么收你？」` },
+            { kind: 'hint', text: `（好感需 15，你当前 ${favor}。先与他多来往、送礼，或帮个忙。）` },
+          ],
+        };
+      }
+      /* ---- 一人只有一个师门（主人 2026-10-11）----
+         他肯收、你也够格，这才轮到「可你已经有师父了」。
+         门内的转拜走上面那条求升的路，不会走到这儿（那条要清掉同门旧师父）。 */
+      const cur = DS.currentMaster(p);
+      if (cur && cur.id !== mid) {
+        const rec = cur.rec || {};
+        return {
+          lines: [
+            { kind: 'warn', text: `${person.name}看了看你，摇头：「你已有师门。既是${rec.name || '别人'}门下的人，我不便再收。」` },
+            {
+              kind: 'hint',
+              text: rec.sect
+                ? `（你眼下的师承在${rec.sect}。门内换人，直接去向职位更高的人「拜师」；要断，用「退出师门」。）`
+                : `（要另投他人，先同${rec.name || '你师父'}了断 —— 用「出师」或「退出师门」。）`,
+            },
+          ],
+        };
+      }
+      /* ⚠️ `sect` 这一笔只在他**与你是同一个门派**时才记（那才叫门派师承）。
+         第一版写成 `person.sect || null` —— 于是「在外头拜了个华山派的人」
+         也被当成门派师父，面板上连「出师」都不给（主人要的是个人师父能出师）。 */
+      DS.setMaster(p, person, { sect: (p.sect && person.sect === p.sect) ? person.sect : null });
+      const fr = social.addFavor(w, person, 15 * w.favorGainMult(p), '收徒');
+      const lines = [
+        { kind: 'story', text: `你整了整衣冠，恭恭敬敬朝${person.name}磕了三个头。${person.name}受了，把袖口一拂：「起来罢。」` },
+        { kind: 'sys', text: `你拜${person.name}为师。往后「请教 ${person.name}」他手上的功夫，他都会教你。` },
+      ];
+      lines.push(...(fr.lines || []));
+      /* 拜师也算一桩可传的事（自拟 🅔）：往门外一站就是「某某磕了头认了师」。
+         一天只传一回（rumorfeed 里管着），免得反复拜师刷屏。 */
+      try {
+        require('./rumorfeed').note(w, 'rs_master_take', { vars: { whom: person.name } });
+      } catch (e) { /* 传不出去不该挡着拜师 */ }
+      return { lines };
+    }
+
     // 优先找本房间 NPC 所属门派
     const npcs = w.npcsIncludingTemplates(p.room).filter(n => n.def && n.def.sect);
-    const kw = args.join(' ');
     let targetSect = null;
     for (const n of npcs) {
       const sd = w.getSect(n.def.sect);
@@ -2715,16 +3825,256 @@ function buildCommands(world) {
     if (!targetSect) {
       targetSect = fuzzyFind(Object.values(w.data.sects), kw, s => s.name);
     }
-    if (!targetSect) return { lines: [{ kind: 'warn', text: '江湖中没有这个门派。' }] };
+    if (!targetSect) return { lines: [{ kind: 'warn', text: '江湖中没有这个门派，也没有这么个人。' }] };
     const r = p.joinSect(targetSect.id);
     if (!r.ok) return { lines: [{ kind: 'warn', text: r.msg }] };
     const lines = [{ kind: 'sys', text: r.msg }];
     if (targetSect.entryEffects) evalEffects(targetSect.entryEffects, ctx).forEach(l => lines.push(l));
+    /* 门派剧情第一段（主人：「玩家初入宗门时触发门派剧情任务」）——
+       按这一家的气质分野（正道怕坏名声 / 邪派怕被合起来打 / 中立两头不讨好）。 */
+    lines.push(...require('./sectlife').storyEntry(w, p, targetSect));
     /* B22 埋点 6/14 · rs_sect_join（拜入门派，扬名 +）：门派弟子/山门目击 → 邻房也传。 */
     if (typeof w.addRumor === 'function') {
       w.addRumor('rs_sect_join', { room: p.room, about: targetSect.id, vars: { who: p.name, where: targetSect.name } });
     }
     return { lines };
+  });
+
+  /* ---------------- 门派生涯（主人 2026-10-08）---------------- */
+
+  /** 收徒大典：每个宗门各有一天，过不了常例门槛的人走这条路 */
+  reg(['参加大典', '收徒大典', '大典', 'festival'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const SL = require('./sectlife');
+    if (!args.length) {
+      const today = SL.festivalsToday(w);
+      if (!today.length) {
+        const all = Object.values(w.data.sects).map(s => SL.festivalInfo(w, s.id)).sort((a, b) => a.inDays - b.inDays);
+        return {
+          lines: [
+            { kind: 'plain', text: `今日各山门都没办大典。最近的三家：${all.slice(0, 3).map(f => `${f.name}（还有 ${f.inDays} 天）`).join('、')}` },
+            { kind: 'hint', text: '（要进哪一家，就赶在人家开山那天去：「参加大典 <门派名>」。）' },
+          ],
+        };
+      }
+      return {
+        lines: [
+          { kind: 'title', text: '【 今日开山收徒 】' },
+          ...today.map(f => ({ kind: 'plain', text: `${f.name}（${f.tier}）——门槛不高，过了就留下` })),
+          { kind: 'hint', text: '用「参加大典 <门派名>」去应试。' },
+        ],
+      };
+    }
+    const kw = args.join(' ');
+    let sd = null;
+    for (const n of w.npcsIn(p.room)) { const s = n.sect && w.getSect(n.sect); if (s && (s.name.includes(kw) || kw.includes(s.name))) { sd = s; break; } }
+    if (!sd) sd = Object.values(w.data.sects).find(s => s.name.includes(kw) || kw.includes(s.name));
+    if (!sd) return { lines: [{ kind: 'warn', text: `江湖中没有「${kw}」这一家。` }] };
+    return { lines: SL.attendFestival(w, p, sd.id).lines };
+  });
+
+  /** 挑战：门中位次比你高一位的人，押上贡献去打一场 */
+  reg(['挑战', 'tiaozhan', 'challenge'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const SL = require('./sectlife');
+    if (!args.length) return { lines: [{ kind: 'warn', text: '你想挑战谁？（门中位次比你高一位的那位）' }] };
+    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), args.join(' '), n => n.name);
+    if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${args.join(' ')}」。` }] };
+    const r = SL.startChallenge(w, p, npc);
+    if (!r.ok) return { lines: r.lines };
+    w.startCombat(p, npc);
+    return { lines: r.lines };
+  });
+
+  /** 不挑战、走门路：长老位有缺 + 贡献够，向主事的开口 */
+  reg(['申请', '请位', 'petition'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const SL = require('./sectlife');
+    if (!p.sect) return { lines: [{ kind: 'warn', text: '你尚无门派。' }] };
+    const kw = args.join(' ');
+    const npc = kw ? fuzzyFind(w.npcsIncludingTemplates(p.room), kw, n => n.name)
+      : (w.npcsIn(p.room).find(n => n.sect === p.sect) || null);
+    if (!npc) return { lines: [{ kind: 'warn', text: '这种话得当着门中主事的人说。' }] };
+    return { lines: SL.applyByPetition(w, p, npc).lines };
+  });
+
+  /** 门派任务处 */
+  reg(['门派任务', 'sectquest', '接差事'], (ctx) => {
+    const p = ctx.player, w = ctx.world;
+    const SL = require('./sectlife');
+    if (!p.sect) return { lines: [{ kind: 'warn', text: '你无门无派，执事房不派差事给你。' }] };
+    const sd = w.getSect(p.sect);
+    const t = SL.drawSectTask(w, p);
+    const gain = Math.round(t.contrib * (1 + (p.rank || 0) * 0.15));
+    p.sectContribution = (p.sectContribution || 0) + gain;
+    p.advanceTime(180);
+    return {
+      lines: [
+        { kind: 'story', text: `执事房的老先生翻着册子，指了一条给你：「${t.name}」——${t.desc}你接了牌子出门，回来时天已经擦黑。` },
+        { kind: 'sys', text: `差事办妥，贡献 +${gain}（现 ${p.sectContribution}）。` },
+      ],
+    };
+  });
+
+  /** 官府任务处（功勋线，与门派线各走各的） */
+  reg(['官府任务', '公差', 'officialquest', '领公事'], (ctx) => {
+    const p = ctx.player, w = ctx.world;
+    const SL = require('./sectlife');
+    const t = SL.drawOfficialTask(w, p);
+    const gain = Math.round(t.merit * (1 + ((p.vars.officialRank || 0)) * 0.25));
+    p.vars.officialMerit = (p.vars.officialMerit || 0) + gain;
+    p.advanceTime(180);
+    const up = SL.officialPromote(w, p);
+    const lines = [
+      { kind: 'story', text: `你在衙门口的公事牌上揭了一张：「${t.name}」——${t.desc}` },
+      { kind: 'sys', text: `交差回来，功勋 +${gain}（现 ${p.vars.officialMerit}）。` },
+    ];
+    if (up) lines.push(...up.lines);
+    return { lines };
+  });
+
+  /** 门派最终章：敌对门派下战书，华山对决（剧情视角） */
+  reg(['华山对决', '门派决战', '下战书', 'duel'], (ctx) => {
+    const p = ctx.player, w = ctx.world;
+    const SL = require('./sectlife');
+    if (!p.sect) return { lines: [{ kind: 'warn', text: '你尚无门派，谈什么门户之争。' }] };
+    const sd = w.getSect(p.sect);
+    if (!SL.isSectMaster(p, sd)) {
+      return { lines: [{ kind: 'warn', text: '这种事要一门之主才能应。你还没到那个位子。' }] };
+    }
+    const r = SL.duelOf(w, p, sd);
+    if (r.ok) {
+      p.vars = p.vars || {};
+      p.vars.sectDuel = { at: w.clockMinutes || 0, foe: r.foe, stage: r.stage };
+    }
+    return { lines: r.lines };
+  });
+
+  /** 官府最终章：上战场（主人：「官府线最多成为将军，最终任务是上战场与敌国军队进行最终对决」） */
+  reg(['出征', '上战场', '沙场', 'front'], (ctx) => {
+    const p = ctx.player, w = ctx.world;
+    return { lines: require('./sectlife').battleFront(w, p).lines };
+  });
+
+  /* ---------------- 江湖榜（2026-10-11 自拟）----------------
+     成长得有外部反馈。练到八百级没人知道，那练它做什么。 */
+
+  reg(['江湖榜', '兵器谱', '高手榜', 'rank'], (ctx, args) => {
+    const w = ctx.world;
+    const R = require('./rank');
+    const which = /恶人/.test(args.join('')) ? 'evil' : 'weapon';
+    return { lines: R.boardText(w, which) };
+  });
+
+  reg(['恶人榜', 'evilrank'], (ctx) => {
+    return { lines: require('./rank').boardText(ctx.world, 'evil') };
+  });
+
+  /** 榜上的人当面挑战 —— 接下就是一场 */
+  reg(['比武', '应战', 'duel_rank'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), args.join(' '), n => n.name);
+    if (!npc) return { lines: [{ kind: 'warn', text: '你要跟谁比武？' }] };
+    if (!p.sect && !Object.keys(p.learned || {}).length) {
+      return { lines: [{ kind: 'warn', text: '你手上还没功夫，拿什么跟人比。' }] };
+    }
+    w.startCombat(p, npc);
+    return {
+      lines: [
+        { kind: 'story', text: `你解下外袍交给旁边的人。${npc.name}也把袖子束好了。围观的往两边退开，让出一块空地。` },
+        { kind: 'hint', text: '（赢了，谱上的位子就得挪一挪。）' },
+      ],
+    };
+  });
+
+  reg(['推辞', '婉拒', 'decline'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), args.join(' '), n => n.name);
+    const name = npc ? npc.name : '对方';
+    return {
+      lines: [
+        { kind: 'plain', text: `你抱拳推辞了。` },
+        { kind: 'say', text: `${name}看了你一眼，也没多说什么，把袖子放下来走了。` },
+      ],
+    };
+  });
+
+  /* ---------------- 武学自创（2026-10-11 自拟）----------------
+     把两门同槽、都下过苦功的功夫揉成一门新的。规矩写在 customskill.js 顶上。 */
+
+  reg(['化用', '自创', '融会贯通', 'fuse'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const M = require('./customskill');
+    const learned = Object.keys(p.learned || {});
+    if (learned.length < 2) {
+      return { lines: [{ kind: 'warn', text: '你手上的功夫还不够，谈什么化用。' }] };
+    }
+    if (!args.length) {
+      const can = learned
+        .map(id => w.getSkill(id))
+        .filter(sd => sd && (p.learned[sd.id].level || 0) >= M.MIN_LEVEL)
+        .map(sd => sd.name);
+      return {
+        lines: [
+          { kind: 'sys', text: '把两门同槽的功夫化成一门新的：`化用 <功夫一> <功夫二> <新名字>`' },
+          { kind: 'plain', text: can.length >= 2 ? `你手上够火候的有：${can.join('、')}` : `（眼下还没有两门都到 ${M.MIN_LEVEL} 级的功夫。）` },
+          { kind: 'hint', text: `（两边各要 ${M.MIN_LEVEL} 级；一辈子最多创 ${M.MAX_CUSTOM} 门；失败会走火。）` },
+        ],
+      };
+    }
+    if (args.length < 3) return { lines: [{ kind: 'warn', text: '用法：化用 <功夫一> <功夫二> <新名字>' }] };
+    const newName = args[args.length - 1];
+    const a = fuzzyFind(learned.map(id => w.getSkill(id)).filter(Boolean), args[0], s => s.name);
+    const b = fuzzyFind(learned.map(id => w.getSkill(id)).filter(Boolean), args[1], s => s.name);
+    if (!a || !b) return { lines: [{ kind: 'warn', text: '没这两门功夫。' }] };
+    const r = M.fuse(w, p, a.id, b.id, newName);
+    return { lines: r.lines };
+  });
+
+  reg(['自创武学', '我的武学', 'customskills'], (ctx) => {
+    const p = ctx.player, w = ctx.world;
+    const list = require('./customskill').listOf(p);
+    if (!list.length) return { lines: [{ kind: 'plain', text: '你还没自创过什么功夫。' }] };
+    const lines = [{ kind: 'title', text: '【 你自己化出来的 】' }];
+    for (const c of list) {
+      const from = c.from.map(id => (w.getSkill(id) || {}).name || id).join(' + ');
+      const lv = (p.learned[c.id] && p.learned[c.id].level) || 0;
+      lines.push({ kind: 'plain', text: `${c.name}（${c.slot}·${lv} 级）　—— ${from} 化出` });
+    }
+    return { lines };
+  });
+
+  /* ---------------- 江湖的回应（2026-10-11 自拟） ---------------- */
+
+  reg(['了断', '接这一场', 'settle'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), args.join(' '), n => n.name);
+    if (!npc) return { lines: [{ kind: 'warn', text: '你要跟谁了断？' }] };
+    w.startCombat(p, npc);
+    return {
+      lines: [
+        { kind: 'story', text: `你不再解释了。${npc.name}也把外袍脱了——两个人都明白这一场躲不过。` },
+      ],
+    };
+  });
+
+  reg(['赔罪', '赔个不是', 'apologize'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), args.join(' '), n => n.name);
+    if (!npc) return { lines: [{ kind: 'warn', text: '你要向谁赔罪？' }] };
+    return { lines: require('./revenge').apologize(w, p, npc).lines };
+  });
+
+  reg(['不理', '走开', 'ignore_him'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), args.join(' '), n => n.name);
+    const name = npc ? npc.name : '他';
+    return {
+      lines: [
+        { kind: 'plain', text: `你没接话，绕开走了。` },
+        { kind: 'say', text: `${name}在你背后说了一句什么，你没听清，也没回头。` },
+      ],
+    };
   });
 
   reg(['leave', '脱离门派', '叛门'], (ctx) => {
@@ -2778,7 +4128,9 @@ function buildCommands(world) {
     return { lines: sectFounder.expel(w, npc).lines };
   });
   reg(['演武', 'drill'], (ctx) => ({ lines: sectFounder.drill(ctx.world).lines }));
-  reg(['大比', '门派大比', 'contest'], (ctx) => ({ lines: sectFounder.contest(ctx.world).lines }));
+  /* ⚠️ 「门派大比」这个别名留给**门派**（上面那条），宗门大比别抢：
+     reg 后面的会覆盖前面的，抢了的话玩家打「门派大比」永远只能得到「你尚未创立宗门」。 */
+  reg(['大比', '宗门大比', 'contest'], (ctx) => ({ lines: sectFounder.contest(ctx.world).lines }));
   reg(['解散宗门', '遣散', 'disband'], (ctx) => ({ lines: sectFounder.disband(ctx.world).lines }));
 
   /* ---------------- 家园地块 / 资助NPC建家（SPRINT2）---------------- */
@@ -2838,7 +4190,7 @@ function buildCommands(world) {
         const qd = w.getQuest(a.q);
         lines.push({ kind: 'quest', text: `${qd ? qd.name : a.q}（找 ${a.npc.name}）`, quest: a.q });
       }
-      lines.push({ kind: 'hint', text: '用「accept <任务名>」接取。' });
+      lines.push({ kind: 'hint', text: '用「接取 <任务名>」接取。' });
     }
     return { lines };
   });
@@ -2850,13 +4202,19 @@ function buildCommands(world) {
     if (!qd) return { lines: [{ kind: 'warn', text: '没有这个任务。' }] };
     if (p.questStage(qd.id) >= 0) return { lines: [{ kind: 'warn', text: '你已经在进行这个任务了。' }] };
     if (qd.require) {
-      if (!evalCond(qd.require, ctx)) return { lines: [{ kind: 'warn', text: '你还不满足接取条件。' }] };
+      /* ⚠️ 支持 `requireMsg`：像「先把凭据拿来」这种话比「你还不满足接取条件」有用得多 ——
+         后者只告诉玩家「不行」，不告诉他「差什么」，是让人卡关的那种提示。 */
+      if (!evalCond(qd.require, ctx)) {
+        return { lines: [{ kind: 'warn', text: qd.requireMsg || '你还不满足接取条件。' }] };
+      }
     }
     p.setQuestStage(qd.id, 0);
-    const lines = [{ kind: 'quest', text: `【接取任务】${qd.name}` }];
-    if (qd.desc) lines.push({ kind: 'story', text: qd.desc });
-    if (qd.stages && qd.stages[0] && qd.stages[0].desc) lines.push({ kind: 'plain', text: `目标：${qd.stages[0].desc}` });
-    return { lines };
+    /* ⚠️ 这里**不再**自己念 desc / 目标 —— 交给 `storybeat.reconcile`。
+       为什么：任务的来历写的就是委托人的做派（「他缠着你去看看」），
+       属于「人物的言行」，必须过**在场闸门**（人不在场就不该上屏，主人 2026-10-11 的要求）。
+       两处都念还会一字不差地重一遍 —— 本模块接上之后实测就是两遍。
+       一处ownership：剧情归 storybeat，指令只负责改状态。 */
+    return { lines: [] };
   });
 
   reg(['abandon', '放弃', '放弃任务'], (ctx, args) => {
@@ -2938,7 +4296,11 @@ function buildCommands(world) {
     p.food = clamp(p.food - 30, 0, p.maxFood);
     return { lines: [{ kind: 'story', text: '你就地歇息了一夜。' }, { kind: 'sys', text: '你精神恢复了不少。' }] };
   });
-  reg([' meditate', 'meditate', '打坐', '练气'], (ctx) => {
+  /* ⚠️ 首个别名是**规范名**（`CMD[x].names[0]`，新手引导靠它反查「这条指令属于哪一步」）。
+     这里原先是 `' meditate'`（**带一个前导空格**）——那是笔误：
+     玩家输入永远会被 trim，所以带空格的别名不可达；而规范名跟着带空格，
+     会让任何「按规范名做映射」的代码都对不上（实测：引导的 did_train 就漏了英文 meditate 按钮）。 */
+  reg(['meditate', '打坐', '练气'], (ctx) => {
     const p = ctx.player;
     const neigong = p.equippedSkills && p.equippedSkills['内功'];
     const gain = 5 + Math.floor(p.attrTotal('悟性') / 2);
@@ -2975,6 +4337,49 @@ function buildCommands(world) {
     } else {
       lines.push({ kind: 'sys', text: '你尚未修习内功，只能做些粗浅的养气功夫，长进有限。' });
     }
+    return { lines };
+  });
+
+  /* ---------------- 飞往（去过的地方） ----------------
+     主人 2026-10-11：「地图里有一个『飞往』……可以改成玩家去过的城市都可以飞到该城市入口处，
+     门派也是一样入口处，前提是玩家去过那里」。
+
+     规矩（照主人的原话）：
+       · 只认**区域的 `entry` 房间**（每个 region 都定义了 entry，就是它的门户）；
+       · **必须去过那个入口**（`visited_<entry>` 旗标）—— 没去过的只能在地图上看看；
+       · 门派与城市一视同仁，都在同一张 region 表里，所以一条逻辑管两边。
+
+     加了两条限制，都是防「传送把江湖走没了」：
+       · 战斗中不能飞；
+       · 收 60 分钟脚程（不是白给，但比一步步走便宜得多）。 */
+  reg(['飞往', '传送', '去往', '赶往', 'feiwang'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const lines = [];
+    if (w.battle) return { lines: [{ kind: 'warn', text: COMBAT_MOVE_HINT }] };
+    const kw = (args || []).join('').trim();
+    if (!kw) return { lines: [{ kind: 'warn', text: '要飞往哪里？说个地名，或者在地图面板点地名。' }] };
+    const regs = Object.values(w.data.regions || {});
+    const hit = regs.find(r => r.name === kw || r.id === kw)
+      || regs.find(r => r.name && (r.name.includes(kw) || kw.includes(r.name)));
+    if (!hit) return { lines: [{ kind: 'warn', text: `江湖上没有叫「${kw}」的地方。` }] };
+    /* 入口：优先用区域自己写的 `entry`；没写就回落到本区第一个房间
+       （Mod 作者不会知道要补这个字段，别让新功能一到 Mod 就废）。 */
+    const entryId = hit.entry
+      || (Object.values(w.data.rooms).find(x => x.region === hit.id) || {}).id;
+    if (!entryId || !w.getRoom(entryId)) {
+      return { lines: [{ kind: 'warn', text: `${hit.name}没有可以落脚的入口。` }] };
+    }
+    if (p.room === entryId) return { lines: [{ kind: 'plain', text: `你已经站在${hit.name}的门口了。` }] };
+    if (!p.hasFlag('visited_' + entryId)) {
+      return { lines: [{ kind: 'warn', text: `你没去过${hit.name}，路不认得，飞不了。先自己走一趟吧。` }] };
+    }
+    /* 找一条「你知道怎么走」的说法：入口房间的名字 */
+    const tgt = w.getRoom(entryId);
+    p.room = entryId;
+    p.advanceTime(60);
+    if (!p.hasFlag('visited_' + entryId)) p.setFlag('visited_' + entryId, true);
+    lines.push({ kind: 'story', text: `你记起${hit.name}的方向，收了收行囊，一路赶了过去。` });
+    lines.push({ kind: 'sys', text: `你来到了${tgt.name}。` });
     return { lines };
   });
 
@@ -3206,7 +4611,7 @@ function buildCommands(world) {
         p.hp = 1;
         lines.push({ kind: 'warn', text: '淬体失当，气血逆行，险些丧命！（被人救起，仅余一息）' });
       } else {
-        lines.push({ kind: 'warn', text: '淬体失当，气血翻涌，险象环生！' });
+        lines.push({ kind: 'warn', text: '淬体失当，气血乱窜，撑不住了！' });
       }
     }
     return { lines };
@@ -3264,6 +4669,59 @@ function buildCommands(world) {
   reg(['炼器', 'forge', 'lianqi'], (ctx, args) => doCraft(ctx, 'forge', args.join(' ')));
   reg(['画符', '制符', '布阵', '符箓', 'rune', 'lianfu'], (ctx, args) => doCraft(ctx, 'rune', args.join(' ')));
 
+  /* ---------------- 匪类拦截（主人 2026-10-08）----------------
+     匪类逃窜时正好从你身边擦过去，屏幕上会弹出「拦不拦」。
+     拦了：你 + 追来的那位 + 附近同样够胆的人一起上（结算式，见 outlaw.doIntercept）。 */
+
+  reg(['拦截', '拦住', 'intercept'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const outlaw = require('./outlaw');
+    const kw = args.join(' ');
+    const pool = w.npcsIncludingTemplates(p.room).filter(n => n.isNpc && !n.dead);
+    let foe = kw ? fuzzyFind(pool, kw, n => n.name) : null;
+    if (!foe) foe = pool.find(outlaw.isOutlaw);
+    if (!foe) return { lines: [{ kind: 'warn', text: '眼前没有要拦的人。' }] };
+    if (!outlaw.isOutlaw(foe)) return { lines: [{ kind: 'warn', text: `${foe.name}不是匪类，拦他做什么。` }] };
+    const r = outlaw.doIntercept(w, p, foe);
+    return { lines: r.lines };
+  });
+
+  reg(['让开', '放他走', 'letgo'], (ctx) => {
+    const p = ctx.player, w = ctx.world;
+    const foe = w.npcsIncludingTemplates(p.room).find(n => require('./outlaw').isOutlaw(n));
+    const name = foe ? foe.name : '那人';
+    return {
+      lines: [
+        { kind: 'plain', text: `你侧了侧身。${name}从你手边擦过去，脚步没慢。` },
+        { kind: 'story', text: `巷子口的风把他衣角掀起来一下，又落回去。你听着脚步声一直远到听不见。` },
+      ],
+    };
+  });
+
+  /* ---------------- 练武学（主人 2026-10-10：快捷键面板，点了自动耗内力练） ---------------- */
+
+  reg(['练武学', 'lianwuxue', 'practice'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const practiceMod = require('./practice');
+    const list = practiceMod.listFor(w, p);
+    if (!list.length) return { lines: [{ kind: 'warn', text: '你手上一门功夫都没有，拿什么练？先去拜个师父。' }] };
+    if (!args.length) {
+      /* 不带名字 = 打开面板（前端把 `练武学` 接进 PANEL_CMDS 指向 practice）。
+         这里也备一份文字清单，供不支持面板的场合（命令行 / 测试）用。 */
+      const lines = [{ kind: 'sys', text: '你想练哪一门？（点下方的武学按钮，或「练武学 <武学名>」）' }];
+      lines.push({
+        kind: 'plain',
+        text: list.map(x => `${x.name}${x.full ? '〔已至上限〕' : `〔${x.level}/${x.cap}〕`}`).join('　'),
+      });
+      return { lines, panel: 'practice' };
+    }
+    const kw = args.join(' ');
+    const hit = list.find(x => x.name === kw) || fuzzyFind(list, kw, x => x.name);
+    if (!hit) return { lines: [{ kind: 'warn', text: `你没学过「${kw}」。` }] };
+    const r = practiceMod.practice(w, p, hit.id);
+    return { lines: r.lines };
+  });
+
   /* ---------------- 收徒系统（SPRINT2 任务70） ---------------- */
 
   reg(['收徒', 'shoutu', '收弟子'], (ctx, args) => {
@@ -3282,7 +4740,7 @@ function buildCommands(world) {
     npc.pstate.master = p.id;
     npc.master = p.id;
     const { addFavor } = require('./social');
-    addFavor(w, npc, 30, '拜师');
+    addFavor(w, npc, 30 * w.favorGainMult(p), '拜师');
     return { lines: [{ kind: 'sys', text: `${npc.name}向你磕头行礼，正式拜入你门下！` }] };
   });
 
@@ -3414,6 +4872,42 @@ function buildCommands(world) {
     return null;
   }
 
+  /** 房间动作的限次（`once` 一辈子一次 / `oncePerDay` 每天一次）。
+   *  返回「拦下来说的话」（数组）或 null（放行，并记账）。
+   *
+   *  来由（主人 2026-10-11：「重阳宫那里有个论道会无限获得潜能点的改一下」）：
+   *  查下来不止重阳宫 —— 全地图 16 个「参悟 / 观景」型动作都能原地连点无限刷。
+   *
+   *  🔴 **必须做成共享函数**：房间动作有**三个**执行入口 ——
+   *     `selfSuffRoomAction`（自带 effects，排在所有处理之前）
+   *     `gatherRoomAction`（采集类）
+   *     `questKeyword`（兜底关键词）
+   *     我第一版只写在 `questKeyword` 里，结果「论道」走的是 `selfSuffRoomAction`，
+   *     限次形同虚设 —— `smoke-actlimit` 当场抓住（连点两次都给收益）。
+   *     凡是「同一个概念有多个入口」的地方，判定就必须抽出来共用。
+   *
+   *  ⚠️ 记账用 `!== undefined` 而不是真值判断：`day` 可能是 0（开局当天），
+   *     `if (rec)` 会把「第 0 天做过」当成没做过。这条教训是世界事件那边
+   *     `_evFired` 踩出来的，这里照搬。 */
+  function actionLimit(ctx, a) {
+    if (!a || (!a.once && !a.oncePerDay)) return null;
+    const p = ctx.player, w = ctx.world;
+    const used = p.actionUsed || (p.actionUsed = {});
+    const last = p.actionLast || (p.actionLast = {});
+    /* 键里带上房间：同一个 cmd（比如「打坐」）在不同房间是不同的事 */
+    const key = (p.room || '') + '|' + (a.cmd || '');
+    const today = Math.floor((w.clockMinutes || 0) / 1440);
+    if (a.once && used[key] !== undefined) {
+      return [{ kind: 'warn', text: a.spentMsg || '此处你已经悟透了，再看也无新得。' }];
+    }
+    if (a.oncePerDay && last[key] !== undefined && last[key] >= today) {
+      return [{ kind: 'warn', text: a.dayMsg || '今日已经做过一回了，明日再来。' }];
+    }
+    if (a.once) used[key] = today;
+    if (a.oncePerDay) last[key] = today;
+    return null;
+  }
+
   /** 没有 effects 的采集类 action → 兑现成真物品
    *
    *⚠️ 必须先确认「本房间真的声明了这么一条 action」才兑现，
@@ -3428,9 +4922,12 @@ function buildCommands(world) {
     const m = /^(get|拿|取|采|摘|捡|拾取|take|pick)\s*(.+)$/i.exec(raw);
     if (!m) return null;
     /* 本房间是否声明了这条采集 action（cmd 或 keywords 命中） */
-    const declared = (room.actions || []).some(a =>
+    const declaredAct = (room.actions || []).find(a =>
       (a.cmd || '').trim() === raw || (a.keywords || []).some(k => k && raw.includes(k)));
-    if (!declared) return null;
+    if (!declaredAct) return null;
+    /* 第三个入口也要过限次（同 actionLimit 注释）。 */
+    const blocked = actionLimit(ctx, declaredAct);
+    if (blocked) return { lines: blocked };
     const itemId = resolveGatherable(w, m[2]);
     if (!itemId) return null;   /* 解析不出就老实不处理，交给后续报「没有」 */
     if (w.battle) return { lines: [{ kind: 'warn', text: COMBAT_MOVE_HINT }] };
@@ -3470,6 +4967,8 @@ function buildCommands(world) {
       if (selfSuff.cond && !evalCond(selfSuff.cond, ctx)) {
         return { lines: [{ kind: 'warn', text: selfSuff.failMsg || '现在做不了这个。' }] };
       }
+      const blocked = actionLimit(ctx, selfSuff);
+      if (blocked) return { lines: blocked };
       return { lines: evalEffects(selfSuff.effects, ctx) };
     }
 
@@ -3576,6 +5075,9 @@ function questKeyword(ctx, cmd, args, rawFull) {
     for (const a of acts) {
       if (matchAction(a)) {
         if (a.cond && !evalCond(a.cond, ctx)) return a.failMsg ? [{ kind: 'warn', text: a.failMsg }] : [{ kind: 'warn', text: '现在做不了这个。' }];
+        /* 限次（见 actionLimit 的注释：房间动作有三个入口，判定必须共用） */
+        const blocked = actionLimit(ctx, a);
+        if (blocked) return blocked;
         if (!a.effects || !a.effects.length) {
           /* B6：action 存在但没写 effects（纯描述性/委托给内置指令的）。
              这里不能静默返回空数组 —— 玩家点了按钮却什么都没发生，
@@ -3695,6 +5197,10 @@ function questKeyword(ctx, cmd, args, rawFull) {
        此前**全仓没有任何地方涨 trust** ⇒ 那些内容玩家永远看不到。这里补上。 */
     npc.pstate = npc.pstate || { trust: 0, revealed: [], hooks: {}, met: false, moodBias: 0, leaked: false };
     npc.pstate.trust = Math.min(100, (npc.pstate.trust || 0) + 8);
+    /* 任务每推进一步，也涨一截**好感**（主人 2026-10-10 定的）：
+       好感是「他喜不喜欢你」，trust 是「他信不信得过你」——两条轴不混，
+       但一起办事的人本来就该越处越近。下限 10，永不为负。 */
+    npc.favor = (npc.favor || 0) + 10;
     // 清理阶段变量
     if (stage && stage.targets) for (const t of stage.targets) p.setVar(t.var || `q_${q}_${t.id}`, 0);
     if (stage && stage.effects) evalEffects(stage.effects, { ...ctx, npc }).forEach(l => lines.push(l));
@@ -3753,10 +5259,24 @@ function questKeyword(ctx, cmd, args, rawFull) {
    * 不做道德说教，只让官府和pty 传闻来找麻烦。
    * ================================================================ */
   const kdLines = (r) => ({ lines: (r && r.lines) || [] });
-  const kdArg = (ctx) => String((ctx && ctx.args) || '').trim();
+  /* ⚠️ 参数要从**第二参**取，不是 ctx.args。
+     内置指令的分派是 ，ctx 上根本没有 args 这个键 ——
+     读 ctx.args 永远是 undefined，于是  一直在**忽略名字**，
+     永远抓房间里第一个晕倒的人（一批掳人指令都带着这个毛病）。 */
+  const kdArg = (ctx, args) => {
+    if (Array.isArray(args) && args.length) return args.join(' ').trim();
+    return String((ctx && ctx.args) || '').trim();
+  };
 
   /* ---- ① 掳人：把晕倒的 NPC 装进麻袋 ---- */
-  reg(['pack', '装人', '掳走', '扛人'], (ctx) => kdLines(kidnapMod.packNpc(ctx.world, kdArg(ctx))));
+  reg(['pack', '装人', '掳走', '扛人'], (ctx, args) => kdLines(kidnapMod.packNpc(ctx.world, kdArg(ctx, args))));
+  /* ---- 绑架（主人 2026-10-11）----
+     NPC 菜单那个「绑架」按钮发的就是这条。与「装人」的区别：
+       装人 —— 只装**已经晕倒**的人；
+       绑架 —— 站着的人也能下手，先按成功率掷一次：
+                成了当场套袋（**不开打**），没成才动手（打赢他自然晕，回来再装）。
+     「晕着的人」走这条也照旧直接装（必定成功），所以面板上那个按钮可以放心点。 */
+  reg(['绑架', 'kidnap', '掳人', '掳走他'], (ctx, args) => kdLines(kidnapMod.kidnapAttempt(ctx.world, kdArg(ctx, args))));
 
   /* ---- ② 麻袋一览 / 放人 ---- */
   reg(['bags', '麻袋', '袋'], (ctx) => {
@@ -3775,24 +5295,24 @@ function questKeyword(ctx, cmd, args, rawFull) {
     return { lines };
   });
 
-  reg(['release', '放人'], (ctx) => kdLines(kidnapMod.releaseBag(ctx.world, kdArg(ctx) || 1)));
+  reg(['release', '放人'], (ctx, args) => kdLines(kidnapMod.releaseBag(ctx.world, kdArg(ctx, args) || 1)));
 
   /* ---- ③ 卖人 / 赎人 ---- */
-  reg(['sellnpc', '卖人'], (ctx) => kdLines(kidnapMod.sellNpc(ctx.world, kdArg(ctx))));
+  reg(['sellnpc', '卖人'], (ctx, args) => kdLines(kidnapMod.sellNpc(ctx.world, kdArg(ctx, args))));
   /* ⚠️ 「赎人」不能占 redeem/赎身 —— 那是青楼卖身线的既有指令（blood rule #27 同理）。
      赎回别人的名字一律带「买」字口：赎人 → 「赎回」。 */
-  reg(['redeemnpc', '赎回', '赎出'], (ctx) => kdLines(kidnapMod.redeemPerson(ctx.world, kdArg(ctx))));
+  reg(['redeemnpc', '赎回', '赎出'], (ctx, args) => kdLines(kidnapMod.redeemPerson(ctx.world, kdArg(ctx, args))));
 
   /* ---- ④ 黑市买奴 ---- */
-  reg(['buyslave', '买奴'], (ctx) => kdLines(kidnapMod.buySlave(ctx.world, kdArg(ctx))));
+  reg(['buyslave', '买奴'], (ctx, args) => kdLines(kidnapMod.buySlave(ctx.world, kdArg(ctx, args))));
 
   /* ---- ④b 家园地牢（关押 / 提审 / 陪练 / 放出）----
      estate 的「地牢」地块此前只定义没接线（captiveCap/tortureRate/sparExp 无人消费），
      这四个指令就是把那块地牢接上。 */
-  reg(['jail', '关押', '收监', '下狱'], (ctx) => kdLines(kidnapMod.imprison(ctx.world, kdArg(ctx))));
-  reg(['interrogate', '提审', '逼供', '审问'], (ctx) => kdLines(kidnapMod.interrogate(ctx.world, kdArg(ctx))));
-  reg(['spar', '陪练', '喂招'], (ctx) => kdLines(kidnapMod.sparWith(ctx.world, kdArg(ctx))));
-  reg(['freecaptive', '放出', '开锁'], (ctx) => kdLines(kidnapMod.freeCaptive(ctx.world, kdArg(ctx))));
+  reg(['jail', '关押', '收监', '下狱'], (ctx, args) => kdLines(kidnapMod.imprison(ctx.world, kdArg(ctx, args))));
+  reg(['interrogate', '提审', '逼供', '审问'], (ctx, args) => kdLines(kidnapMod.interrogate(ctx.world, kdArg(ctx, args))));
+  reg(['spar', '陪练', '喂招'], (ctx, args) => kdLines(kidnapMod.sparWith(ctx.world, kdArg(ctx, args))));
+  reg(['freecaptive', '放出', '开锁'], (ctx, args) => kdLines(kidnapMod.freeCaptive(ctx.world, kdArg(ctx, args))));
 
   /* ---- ⑤ 名册：麻袋 + 奴 + 护院 + 恶名 ---- */
   reg(['slaves', '奴册', '奴仆', '护院', '地牢', '牢房'], (ctx) => {
@@ -3856,8 +5376,8 @@ function questKeyword(ctx, cmd, args, rawFull) {
   });
 
   /* ---- ⑥ 派活 ---- */
-  reg(['task', '使唤', '派活'], (ctx) => {
-    const arg = kdArg(ctx);
+  reg(['task', '使唤', '派活'], (ctx, args) => {
+    const arg = kdArg(ctx, args);
     /* 「使唤」不带活名 → 列可选活；带活名 → 派 */
     const TASK_KEYS = { '做工': 'craft', '土工': 'craft', '采买': 'purchase', '跑腿': 'errand', '洗衣': 'laundry' };
     let taskKey = TASK_KEYS[arg];
@@ -3884,12 +5404,12 @@ function questKeyword(ctx, cmd, args, rawFull) {
   });
 
   /* ---- ⑦ 跟随 ---- */
-  reg(['follow', '跟随', '邀跟随'], (ctx) => kdLines(kidnapMod.inviteFollow(ctx.world, kdArg(ctx))));
+  reg(['follow', '跟随', '邀跟随'], (ctx, args) => kdLines(kidnapMod.inviteFollow(ctx.world, kdArg(ctx, args))));
 
   /* ---- ⑧ 护院：雇 / 结薪 / 监督 ---- */
-  reg(['hireguard', '雇护院', '请护院'], (ctx) => kdLines(kidnapMod.hireGuard(ctx.world, kdArg(ctx))));
+  reg(['hireguard', '雇护院', '请护院'], (ctx, args) => kdLines(kidnapMod.hireGuard(ctx.world, kdArg(ctx, args))));
   reg(['wages', '发工钱', '结薪'], (ctx) => kdLines(kidnapMod.payWages(ctx.world)));
-  reg(['supervise', '监督', '盯着'], (ctx) => kdLines(kidnapMod.supervise(ctx.world, kdArg(ctx))));
+  reg(['supervise', '监督', '盯着'], (ctx, args) => kdLines(kidnapMod.supervise(ctx.world, kdArg(ctx, args))));
 
   /* ---- ⑨ 玩家自己被掳走后的三条路 ----
    * 赎身/赎回/脱籍 由上面那个「赎身」按场景统一分派，这里不再重复注册。
@@ -3946,7 +5466,7 @@ function favorDetail(w, npc) {
         skillId: s.id, favorNeed: s.favorNeed, money: s.money, ok,
       });
     }
-    if (tl.length > 6) lines.push({ kind: 'hint', text: `　…还有 ${tl.length - 6} 门，用「qingjiao ${npc.name}」看全部。` });
+    if (tl.length > 6) lines.push({ kind: 'hint', text: `　…还有 ${tl.length - 6} 门，用「请教 ${npc.name}」看全部。` });
   }
 
   /* 住处 */
@@ -3973,7 +5493,7 @@ function favorDetail(w, npc) {
       if (!o) continue;
       lines.push({ kind: 'plain', text: `　${relKindCN(r.kind)}　${o.name}（${npcIdentity(w, o)}）`, relId: r.id, relKind: r.kind });
     }
-    lines.push({ kind: 'hint', text: `　用「guanxi ${npc.name}」看全部关系。` });
+    lines.push({ kind: 'hint', text: `　用「关系 ${npc.name}」看全部关系。` });
   }
   return lines;
 }

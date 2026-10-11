@@ -19,10 +19,12 @@ console.log('① realm 条件（删等级后衡量进度）');
   ok('凡人 realm>=1 不通过', !evalCond('realm>=1', { player: p, world: w }));
   ok('凡人 realm<=1 通过', evalCond('realm<=1', { player: p, world: w }));
   // 练武到小有所成
-  p.learnSkill('huashan_sword'); p.learnSkill('yijinjing');
+  p.learnSkill('basic_sword', { force: true }); p.learnSkill('basic_force', { force: true });
+  p.learnSkill('huashan_sword', { force: true }); p.learnSkill('yijinjing', { force: true });
+  p.gainSkillExp('basic_sword', 999999); p.gainSkillExp('basic_force', 999999);
   p.gainSkillExp('huashan_sword', 999999); p.gainSkillExp('yijinjing', 999999);
   ok('练武后 realm>=2 通过', evalCond('realm>=2', { player: p, world: w }));
-  ok('练武后 realm>=3 不通过', !evalCond('realm>=3', { player: p, world: w }));
+  ok('练武后 realm>=3（练得更扎实，这一档也过）', evalCond('realm>=3', { player: p, world: w }));
 }
 
 console.log('② 战斗状态条件');

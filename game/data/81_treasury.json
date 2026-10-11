@@ -1,0 +1,91 @@
+{
+  "treasury": {
+    "note": "藏经阁三层 / 藏宝阁 / 国库 / 衙门库房 的规则表。房间与守卫由 82_treasury_place.json 提供。",
+    "library": {
+      "floors": [
+        { "id": 1, "name": "外阁", "grades": [7, 8, 9], "minRank": 1, "minContrib": 100, "cost": 20,
+          "desc": "书架是新的，摆的多是各家各派入门的那几本。门里说，这些是「给外人看的」。",
+          "house": "藏经阁·外阁" },
+        { "id": 2, "name": "内阁", "grades": [4, 5, 6], "minRank": 3, "minContrib": 400, "cost": 50,
+          "desc": "架子上落着薄灰，几本册子用布包着，绳结打得很讲究。",
+          "house": "藏经阁·内阁" },
+        { "id": 3, "name": "密阁", "grades": [1, 2, 3], "minRank": 4, "minContrib": 1000, "cost": 120,
+          "desc": "一道铁门，门上没有锁，只有一个凹槽。屋里四壁空荡，东西都在暗格里。",
+          "house": "藏经阁·密阁" }
+      ],
+      "copyCost": { "1": 600, "2": 480, "3": 360, "4": 200, "5": 160, "6": 120, "7": 80, "8": 60, "9": 40 },
+      "limitPerVisit": 6,
+      "note": "外阁/内阁/密阁按品级分段存**非本门派**武学 —— 想学别家的功夫，得进别家的藏经阁。"
+    },
+    "vault": {
+      "note": "藏宝阁：武器 / 丹药 / 符箓 / 阵法 / 特殊效果宝物 / 天材地果，一律用门派贡献换。",
+      "goods": [
+        { "item": "fine_sword", "cost": 260, "kind": "武器" },
+        { "item": "iron_blade", "cost": 240, "kind": "武器" },
+        { "item": "bamboo_stick", "cost": 300, "kind": "武器" },
+        { "item": "long_whip", "cost": 320, "kind": "武器" },
+        { "item": "iron_spear", "cost": 280, "kind": "武器" },
+        { "item": "c_huoxue_san", "cost": 80, "kind": "丹药" },
+        { "item": "c_huiqi_dan", "cost": 90, "kind": "丹药" },
+        { "item": "c_jiedu_dan", "cost": 90, "kind": "丹药" },
+        { "item": "c_buqi_gao", "cost": 180, "kind": "丹药" },
+        { "item": "c_jinzhong_fu", "cost": 150, "kind": "符箓" },
+        { "item": "c_yunxing_fu", "cost": 160, "kind": "符箓" },
+        { "item": "c_jingxin_fu", "cost": 170, "kind": "符箓" },
+        { "item": "c_zhenli_fu", "cost": 340, "kind": "符箓" },
+        { "item": "c_mihun_xiang", "cost": 260, "kind": "宝物" },
+        { "item": "c_bixue_zhen", "cost": 380, "kind": "宝物" },
+        { "item": "c_lihua_zhen", "cost": 620, "kind": "宝物" },
+        { "item": "t_cloud_tea", "cost": 220, "kind": "天材地果" },
+        { "item": "t_wolf_fang", "cost": 260, "kind": "天材地果" },
+        { "item": "t_moon_flower", "cost": 280, "kind": "天材地果" },
+        { "item": "t_ice_marrow", "cost": 700, "kind": "天材地果" },
+        { "item": "t_fire_sand", "cost": 700, "kind": "天材地果" },
+        { "item": "t_wash_marrow", "cost": 620, "kind": "天材地果" },
+        { "item": "t_herb_1000", "cost": 1100, "kind": "天材地果" },
+        { "item": "t_soul_herb", "cost": 1400, "kind": "天材地果" }
+      ],
+      "limitPerVisit": 4
+    },
+    "royal": {
+      "note": "皇宫国库：朝廷的东西，比门派的藏宝阁阔气，也要贵得多。",
+      "goods": [
+        { "item": "xuantie_sword", "cost": 2600, "kind": "武器" },
+        { "item": "blood_blade", "cost": 1800, "kind": "武器" },
+        { "item": "t_lingzhi_purple", "cost": 1600, "kind": "天材地果" },
+        { "item": "t_dragon_grass", "cost": 1500, "kind": "天材地果" },
+        { "item": "c_zhenli_fu", "cost": 600, "kind": "符箓" },
+        { "item": "c_yanshi_dan", "cost": 520, "kind": "丹药" },
+        { "item": "c_tiebu_shan", "cost": 260, "kind": "丹药" }
+      ],
+      "limitPerVisit": 3
+    },
+    "house": {
+      "note": "衙门库房（已有 jn_yamen_store）：官家的东西，得有身份才动得了。",
+      "goods": [
+        { "item": "iron_blade", "cost": 200, "kind": "武器" },
+        { "item": "c_huoxue_san", "cost": 70, "kind": "丹药" },
+        { "item": "c_jiedu_dan", "cost": 80, "kind": "丹药" },
+        { "item": "c_jinzhong_fu", "cost": 140, "kind": "符箓" }
+      ],
+      "minRank": 2,
+      "limitPerVisit": 2
+    },
+    "guard": {
+      "note": "重地由「扫地僧」级高手把守：一流势力一流高手守，二流二流守，依此类推。",
+      "byTier": { "一流": "A", "二流": "B", "三流": "C", "秘境": "A" },
+      "names": {
+        "一流": ["扫地僧", "看阁老人", "守库的老者"],
+        "二流": ["守阁弟子", "看库的汉子"],
+        "三流": ["看门的老头", "守屋的伙计"]
+      },
+      "line": "那人不看你的脸，只看你腰上的牌子。",
+      "denyLine": "「牌子不够。」他把门一挡，「先立几件功劳再来。」"
+    },
+    "factions": {
+      "note": "「不同势力也一样」：非门派的势力（朝廷/东厂/商会/盐帮）各有自家重地。",
+      "court": { "name": "朝廷", "tier": "一流", "treasury": "royal", "region": "palace" },
+      "yamen": { "name": "衙门", "tier": "二流", "treasury": "house", "region": "yamen" }
+    }
+  }
+}

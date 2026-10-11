@@ -1,0 +1,66 @@
+{
+  "quests": {
+    "q_brothel_sell": {
+      "id": "q_brothel_sell",
+      "name": "楼里的门道",
+      "type": "支线",
+      "level": 1,
+      "giver": "npcv_220",
+      "desc": "苗春把你从头看到脚，没赶你走，也没应你。她说：楼里不留闲人。你真想在这地方落脚，先替我在楼上招呼三趟客人——手脚干净、嘴严，我才敢用你。",
+      "stages": [
+        {
+          "desc": "在望江阁替鸨母招呼三趟客人（敲「招揽」）",
+          "targets": [
+            { "id": "host", "kind": "flag", "key": "brothel_host", "desc": "替鸨母招呼客人", "count": 3, "var": "q_brothel_host" }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "回门厅找苗春回话",
+          "targets": [],
+          "effects": [
+            { "type": "say", "raw": "苗春听完，把手里的团扇在掌心敲了两下：「三天下来没出岔子，也没多嘴。行，牌子给你挂上。」" },
+            { "type": "flag", "raw": "brothel_permit" }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        { "type": "narrate", "raw": "苗春从袖里数了几串钱推过来：「先把衣裳换了。楼里的规矩，往后慢慢教你。」" }
+      ]
+    }
+  },
+
+  "npcs": {
+    "npcv_220": {
+      "id": "npcv_220",
+      "quests": ["q_brothel_sell"],
+      "talk": [
+        "楼里不留闲人。你要真想落脚，先替我做几天事。",
+        "脸皮薄、嘴不严、手脚还毛躁的，我这门都进不来。",
+        "钱是干净钱，就是不好挣。你自己掂量。"
+      ]
+    }
+  },
+
+  "rooms": {
+    "jn_brothel_3": {
+      "id": "jn_brothel_3",
+      "name": "醉春楼·望江阁",
+      "actions": [
+        {
+          "cmd": "招揽",
+          "label": "替鸨母揽客",
+          "keywords": ["招揽", "揽客", "招呼客人", "招呼"],
+          "desc": "在望江阁廊下替苗春迎客（替楼里做事）",
+          "effects": [
+            { "type": "incvar", "raw": "q_brothel_host" },
+            { "type": "narrate", "raw": "你学着楼里伙计的样子立在廊下，替上来的客人掀帘子、接蓑衣、报房号。一天下来，脚是酸的，嘴却练顺了。" },
+            { "type": "say", "raw": "楼下有人喊：「三号房！热水！」你应了一声，转身去提。" },
+            { "type": "narrate", "raw": "苗春从楼梯口过了一趟，没跟你说话，只扫了一眼你手里那壶水烫不烫手。" }
+          ]
+        }
+      ]
+    }
+  }
+}

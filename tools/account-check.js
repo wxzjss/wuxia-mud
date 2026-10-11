@@ -1,7 +1,10 @@
 /* ============================================================
  *  site-check.js —— 单机 Mod 站契约检查
  *  ------------------------------------------------------------------
- *  本站**没有账号 / 登录 / 论坛 / 云存档**，这一切在「撤账号」那轮删掉了。
+ *  本站**没有论坛 / 云存档**，账号体系也在「撤账号」那轮删掉了。
+ *  ⚠️ 2026-10-11 主人要求「上传 Mod 必须登录」+「我制作的 Mod」，于是**轻量账号
+ *     重新引入**（`server/mod-site.js` 的 `/api/account/*`）—— 只做「上传署名 +
+ *     作品归属」这一件事，没有 forum/account/mine 页面、没有云存档账号。
  *  这个脚本的作用是：
  *    ① 守住「确实删干净了」——残留的全局引用会静默失败，必须靠断言兜
  *    ② 守住「Mod 上传下载 / 本地文件夹」这两条保留能力没被误伤
@@ -123,9 +126,12 @@ const GS = R('server/game-server.js');
 ok('game-server 已无 save/read', !/case 'save\/read'/.test(GS));
 ok('game-server 有 save/write（云存档落盘）', /case 'save\/write'/.test(GS));
 
-/* 样式也清干净 */
+/* 样式也清干净。
+   ⚠️ `.acct-` 已从名单里拿掉：2026-10-11 主人要求上传必须登录，
+      站点重新有了 `.acct-bar`（上传页的登录条）。那套「撤账号」的残留样式
+      （`.login-tabs` / `.ltab` / `.login-hint`）仍然不许回来。 */
 const SCSS = R('server/public/css/site.css');
-['.fb-', '.acct-', '.sv-', '.mine-', '.shu-', '.wm-foot', '.login-tabs', '.ltab', '.login-hint']
+['.fb-', '.sv-', '.mine-', '.shu-', '.wm-foot', '.login-tabs', '.ltab', '.login-hint']
   .forEach(k => ok('site.css 已无 ' + k, SCSS.indexOf(k) < 0));
 ok('site.css 保留 Mod 卡片样式', /\.mc-|\.card|\.mod-/.test(SCSS));
 ok('site.css 保留弹窗样式', /\.wx-modal/.test(SCSS) && /\.wm-box/.test(SCSS));

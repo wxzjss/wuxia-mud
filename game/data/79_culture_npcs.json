@@ -1,0 +1,277 @@
+{
+  "npcs": {
+    "tang_bohu": {
+      "id": "tang_bohu", "name": "唐寅", "title": "唐伯虎", "gender": "male",
+      "room": "jn_wenmo_zhai", "tier": "A", "district": "shuyuan",
+      "desc": "三十来岁，一领旧青衫，袖口沾着墨。笑起来眼角有细纹，看着比实际年纪老。",
+      "portrait": {
+        "v": 1, "tier": "A", "lock": false,
+        "role": "吴中第一才子，画名满江南，日子却过得一塌糊涂",
+        "origin": "乡试第一，人称解元。会试那年被人告了舞弊，下了狱，出来仕途就断了。回苏州卖画为生，酒照喝，画照画。",
+        "now": "在阊门摆摊，一幅画换几壶酒。有人出重金求画，他偏挑不顺眼的拒了。",
+        "want": "有个人肯替他跑一趟腿，把一幅画送到该到的地方去。"
+      },
+      "skills": { "拳": "jh_fist" },
+      "learned": { "jh_fist": { "level": 12 } },
+      "hostile": false, "leavesCorpse": false,
+      "teach": [],
+      "quests": ["q_talents_seven"],
+      "talk": [
+        "画是给人看的，不是给钱看的。",
+        "你别看我这样。当年乡试，我头一个交卷。",
+        "酒还剩半壶。坐下说。"
+      ],
+      "ask": [
+        { "topic": "当年那场会试", "keywords": ["会试", "舞弊", "解元"], "answer": "他捏着酒杯转了半圈：「有人在外头把题目卖了出去，买卖的人不是我。主考认了我这张卷，我就得担着。」" },
+        { "topic": "卖画", "keywords": ["画", "卖画"], "answer": "「一幅画换三壶酒，这价钱在苏州算公道。」他笑，「肯出五十两的也有，可我瞧不上他那张脸。」" },
+        { "topic": "江南七才子", "keywords": ["才子", "七才子", "江南"], "answer": "「什么七才子，是他们编排的。」他摆摆手，「无非七个穷鬼凑作堆，谁也别嫌谁。」" }
+      ]
+    },
+    "zhu_zhishan": {
+      "id": "zhu_zhishan", "name": "祝允明", "title": "祝枝山", "gender": "male",
+      "room": "jn_wenmo_zhai", "tier": "A", "district": "shuyuan",
+      "desc": "右手天生多一根指头，写字时反倒格外稳。说话嗓门大，一屋子人都听得见。",
+      "portrait": {
+        "v": 1, "tier": "A", "lock": false,
+        "role": "写狂草的一把手，也是苏州城里最不攒钱的人",
+        "origin": "祖上做过官，到他这一代只剩下几箱字帖。他学书学得疯，把家底都换成了纸墨。",
+        "now": "替人写寿序、写招牌、写牌匾。钱一到手就散出去，多半请客。",
+        "want": "有个人肯听他念一遍新写的那篇序，念完还不打瞌睡。"
+      },
+      "skills": { "拳": "jh_fist" },
+      "learned": { "jh_fist": { "level": 10 } },
+      "hostile": false, "leavesCorpse": false,
+      "teach": [],
+      "quests": ["q_talents_seven"],
+      "talk": [
+        "字要写得快，快到自己都认不出，那才叫痛快。",
+        "我这一手，全苏州找不出第二个。倒也不是什么光彩事。",
+        "谁欠我钱我记不住，谁欠我一篇序我记得清楚。"
+      ],
+      "ask": [
+        { "topic": "写字", "keywords": ["字", "书法", "狂草"], "answer": "他把右手一摊，多出来的那根指头动了动：「小时候人家说是怪胎，如今倒靠它吃饭。」" },
+        { "topic": "钱", "keywords": ["钱", "银", "穷"], "answer": "「钱是纸做的，字也是纸做的。」他哈哈大笑，「我整天跟纸打交道，还分那么清做什么。」" }
+      ]
+    },
+    "wen_zhengming": {
+      "id": "wen_zhengming", "name": "文徵明", "title": "衡山居士", "gender": "male",
+      "room": "jn_wenmo_zhai", "tier": "A", "district": "shuyuan",
+      "desc": "气度端方，衣裳洗得发白但一丝不苟。说话慢，一句是一句。",
+      "portrait": {
+        "v": 1, "tier": "A", "lock": false,
+        "role": "江南七才子里最用功的那个，也是最不肯通融的那个",
+        "origin": "父亲做过官，家学极严。自小一笔字描到手腕发抖，九次乡试都没中过。",
+        "now": "日日临帖作画，谁来求「应酬画」一律回绝——哪怕是钱府的帖子。",
+        "want": "有人懂他那句「不肯画应酬」到底在守什么。"
+      },
+      "skills": { "拳": "jh_fist" },
+      "learned": { "jh_fist": { "level": 8 } },
+      "hostile": false, "leavesCorpse": false,
+      "teach": [],
+      "quests": ["q_talents_seven"],
+      "talk": [
+        "九次没中，那就第十次。",
+        "画要画得慢。快了，手就不是自己的手了。",
+        "唐寅是天分，我是笨功夫，各走各的路。"
+      ],
+      "ask": [
+        { "topic": "九次落第", "keywords": ["乡试", "落第", "考"], "answer": "「考官换了几任，卷子还是那张卷子。」他理了理袖口，「中不中另说，字不能写坏。」" },
+        { "topic": "应酬画", "keywords": ["应酬", "钱府", "求画"], "answer": "「画一张应酬的，往后手就记住了。」他摇头，「这口子不能开。」" }
+      ]
+    },
+    "zhou_wenbin": {
+      "id": "zhou_wenbin", "name": "周文宾", "title": "周公子", "gender": "male",
+      "room": "jn_wenmo_zhai", "tier": "A", "district": "shuyuan",
+      "desc": "眉眼生得极秀气，说话时爱歪着头。衣裳比旁人都讲究三分。",
+      "portrait": {
+        "v": 1, "tier": "A", "lock": false,
+        "role": "苏州有名的美男子，扮起女装来能把一屋子人蒙过去",
+        "origin": "出身书香人家，自幼被长辈当女孩养到七岁。后来自己把这桩事变成了本事。",
+        "now": "常在曲会上扮唱，唱完一掀冠，满座哗然。有人笑，有人恼，他都不在意。",
+        "want": "想找个人跟他合一出戏，把某位自视甚高的老爷请下神坛。"
+      },
+      "skills": { "拳": "jh_fist", "轻功": "jh_dodge" },
+      "learned": { "jh_fist": { "level": 10 }, "jh_dodge": { "level": 12 } },
+      "hostile": false, "leavesCorpse": false,
+      "teach": [],
+      "quests": ["q_talents_seven"],
+      "talk": [
+        "唱曲的规矩：不看脸，只听腔。",
+        "你盯着我看做什么？我又不会吃了你。",
+        "扮相是假的，腔是真的。"
+      ],
+      "ask": [
+        { "topic": "扮相", "keywords": ["扮相", "女装", "唱曲"], "answer": "他把扇子一合：「七岁前我穿的就是裙子。后来不穿了，可那套身段忘不掉。」" },
+        { "topic": "曲会", "keywords": ["曲会", "戏台", "勾栏"], "answer": "「醉春楼那台子我上过三回。」他笑，「第二回台下的老客认出了我，硬说我是他相好，赔了两壶酒。」" }
+      ]
+    },
+    "xu_zhenqing": {
+      "id": "xu_zhenqing", "name": "徐祯卿", "title": "昌谷先生", "gender": "male",
+      "room": "jn_wenmo_zhai", "tier": "A", "district": "shuyuan",
+      "desc": "七人里最年轻的，身形清瘦，说话快，眼睛亮得有些扎人。",
+      "portrait": {
+        "v": 1, "tier": "A", "lock": false,
+        "role": "以诗论闻名，嘴上最不留情面的一个",
+        "origin": "天生记性好，读过一遍的诗能背，读过两遍就要挑毛病。年纪轻轻就在吴中排到了前头。",
+        "now": "替人评诗，评得人下不来台。也替人改诗，改得人心里服气。",
+        "want": "想听一句真话，评诗的那种。场面话他早就听腻了。"
+      },
+      "skills": { "拳": "jh_fist" },
+      "learned": { "jh_fist": { "level": 8 } },
+      "hostile": false, "leavesCorpse": false,
+      "teach": [],
+      "quests": ["q_talents_seven"],
+      "talk": [
+        "庸句不必读第二遍，好句不必读第二遍也一样记得住。",
+        "你们说我刻薄，我说我是省事。",
+        "诗这东西，最怕的就是客气。"
+      ],
+      "ask": [
+        { "topic": "论诗", "keywords": ["诗", "评诗", "论诗"], "answer": "「诗不用雕。」他指了指案上的纸，「雕出来的东西，一看就知道你在用力。」" },
+        { "topic": "七才子", "keywords": ["才子", "七才子"], "answer": "他撇嘴：「凑数罢了。要不是把周文宾也算进来，我早退了这个名头。」" }
+      ]
+    },
+    "zhang_ling": {
+      "id": "zhang_ling", "name": "张灵", "title": "梦晋", "gender": "male",
+      "room": "jn_wenmo_zhai", "tier": "A", "district": "shuyuan",
+      "desc": "衣衫半旧，酒气重。坐在角落里，谁说话他都要插一句。",
+      "portrait": {
+        "v": 1, "tier": "A", "lock": false,
+        "role": "与唐寅齐名的狂士，穷得只剩一身骨气",
+        "origin": "家里原本有些田产，被他喝酒喝掉了大半。剩下的一间屋子，门口挂着他自己写的字。",
+        "now": "白日饮酒，醉后作画，画得比清醒时还好。清醒的时候不肯动笔。",
+        "want": "想再跟唐寅喝一场——不带目的的那种。"
+      },
+      "skills": { "拳": "jh_fist" },
+      "learned": { "jh_fist": { "level": 14 } },
+      "hostile": false, "leavesCorpse": false,
+      "teach": [],
+      "quests": ["q_talents_seven"],
+      "talk": [
+        "坐下来，喝一碗。不喝就不是朋友。",
+        "唐寅那小子欠我三顿酒。",
+        "醒着的时候我是个废物，醉了才像个人。"
+      ],
+      "ask": [
+        { "topic": "唐寅", "keywords": ["唐寅", "伯虎"], "answer": "他把酒碗一墩：「他不知道爱惜自己。我劝过，他不听，我也就不劝了。」" },
+        { "topic": "酒", "keywords": ["酒", "喝"], "answer": "「酒是水做的，可它能把人烧起来。」他晃了晃碗，「你信不信？」" }
+      ]
+    },
+    "du_mu": {
+      "id": "du_mu", "name": "都穆", "title": "南濠居士", "gender": "male",
+      "room": "jn_wenmo_zhai", "tier": "A", "district": "shuyuan",
+      "desc": "袖口磨破了也不换，眼睛只盯着书。有人跟他说话，他要慢半息才抬头。",
+      "portrait": {
+        "v": 1, "tier": "A", "lock": false,
+        "role": "藏书几万卷，最舍不得借人的那个",
+        "origin": "家里三代积书。他自小在书堆里长大，别的本事没学会，书倒是认得比人熟。",
+        "now": "守着书楼，谁来借书都要留下名姓与日子，还回来的书他还要翻一遍。",
+        "want": "有一卷书的缺页，他找了七年，想托人打听。"
+      },
+      "skills": { "拳": "jh_fist" },
+      "learned": { "jh_fist": { "level": 8 } },
+      "hostile": false, "leavesCorpse": false,
+      "teach": [],
+      "quests": ["q_talents_seven"],
+      "talk": [
+        "书借出去，就跟我没关系了。",
+        "这部缺了三卷，我在江南找了七年。",
+        "你也看书？看得懂哪一部？"
+      ],
+      "ask": [
+        { "topic": "缺页的书", "keywords": ["书", "缺页", "藏书"], "answer": "「《吴中旧事》缺了第七、第八、第九三卷。」他顿了顿，「缺页的那三卷，正好写的是十年前的事。」" },
+        { "topic": "七才子", "keywords": ["才子", "七才子"], "answer": "「他们几个是才子，我算不上。」他推了推书堆，「我就是给他们看书的。」" }
+      ]
+    },
+
+    "liu_hanyan": {
+      "id": "liu_hanyan", "name": "柳含烟", "title": "醉春楼花魁", "gender": "female",
+      "room": "jn_brothel_2", "tier": "A", "district": "qinglou",
+      "desc": "一支素簪，一袭月白。说话轻声，可一句话就能让满厅安静下来。",
+      "portrait": {
+        "v": 1, "tier": "A", "lock": false,
+        "role": "醉春楼的头牌，弹唱、对句、行酒令都拿得住",
+        "origin": "原是江南一户盐商的女儿，家里败了，十二岁被卖进楼里。琴是楼里教的，字是她自己认的。",
+        "now": "每逢月半开一场诗会。有些客人是来寻乐的，她只管把场子撑着。",
+        "want": "存够赎身的银子。她没跟任何人说过这件事。"
+      },
+      "skills": { "拳": "jh_fist", "音波": "basic_sing" },
+      "learned": { "jh_fist": { "level": 6 }, "basic_sing": { "level": 40 } },
+      "hostile": false, "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "客官要听什么？先说曲牌。",
+        "今夜席上有人出题，你若有兴致，不妨接一句。",
+        "楼里的规矩是规矩，外头的规矩是外头的。"
+      ],
+      "ask": [
+        { "topic": "诗会", "keywords": ["诗会", "对句", "出题"], "answer": "「月半开一场。」她拨了下弦，「出题的不一定是我，答上来的也不一定是真懂。」" },
+        { "topic": "听曲", "keywords": ["听曲", "曲", "唱"], "answer": "「《广陵散》要贵些。」她笑了一下，「不是我拿大，是弹它伤人。」" },
+        { "topic": "出身", "keywords": ["家乡", "来历", "出身"], "answer": "她停了停：「记不清了。你要是想听故事，我讲别人的给你听。」" }
+      ]
+    },
+
+    "xue_zheng": {
+      "id": "xue_zheng", "name": "周学政", "title": "江南提学", "gender": "male",
+      "room": "jn_gongyuan_hall", "tier": "A", "district": "yamen",
+      "desc": "五十上下，须发半白，坐在上首不动声色。看人时目光很沉。",
+      "portrait": {
+        "v": 1, "tier": "A", "lock": false,
+        "role": "江南提学道，主持乡试会试，也看着殿试的名册",
+        "origin": "做了三十年学官，见过状元，也见过反贼，都是他门下出来的。",
+        "now": "每场科考坐镇贡院。有人说他手上放过水，也有人说他硬得像块石头。",
+        "want": "想看看这一代还有没有人肯老老实实把书读下去。"
+      },
+      "skills": { "拳": "jh_fist" },
+      "learned": { "jh_fist": { "level": 8 } },
+      "hostile": false, "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "要应考，先交报名钱，再按册子写名。",
+        "乡试、会试、殿试，一步一步来，别想着跳。",
+        "文字里藏不住人。看卷子就知道你是什么货色。"
+      ],
+      "ask": [
+        { "topic": "科举", "keywords": ["科举", "应考", "乡试"], "answer": "「先考乡试，中了是秀才。」他翻着册子，「会试再中，就是举人；殿试过关，才叫进士。」" },
+        { "topic": "文采", "keywords": ["文采", "温书", "书"], "answer": "「笔头是磨出来的。」他头也不抬，「你来贡院之前，先自己读够书。」" }
+      ]
+    }
+  },
+  "quests": {
+    "q_talents_seven": {
+      "id": "q_talents_seven", "name": "江南七才子", "type": "支线",
+      "npc": "tang_bohu", "giver": "tang_bohu", "level": 12,
+      "desc": "江南城里传着「七才子」的名头。七个人凑在一处，谁都看不上谁，偏偏又总在一处。唐寅说，你要真想知道这七个人是怎么回事，就一间屋一间屋地去坐坐。",
+      "stages": [
+        {
+          "desc": "去文墨斋，坐一坐，把七个人都见一遍",
+          "targets": [{ "id": "go0", "kind": "room", "key": "jn_wenmo_zhai", "count": 1, "var": "q_talents_go0", "desc": "去文墨斋" }],
+          "next": 1,
+          "effects": [
+            { "type": "narrate", "raw": "文墨斋里摆着七张案。有人写字，有人喝酒，有人对着墙上的画发呆。你进去时，只有角落里那位抬头看了你一眼。" },
+            { "type": "say", "raw": "「坐。」唐寅把一只酒碗推过来，「七个里有六个不想理你，你不必在意。」" }
+          ]
+        },
+        {
+          "desc": "替他们解一回围：文墨斋外有人寻衅",
+          "targets": [{ "id": "go1", "kind": "room", "key": "jn_wenmo_zhai", "count": 2, "var": "q_talents_go1", "desc": "再回文墨斋" }],
+          "next": 99,
+          "effects": [
+            { "type": "narrate", "raw": "门外进来几个穿绸的，说是钱府的人，来讨一幅画。文徵明一句话也没回，把笔搁了。" },
+            { "type": "say", "raw": "「诸位请回。」祝枝山把字帖往桌上一拍，「字我可以写，脸我不给。」" },
+            { "type": "narrate", "raw": "那几个人看了看屋里，又看了看你，到底没敢动手，骂骂咧咧地走了。" },
+            { "type": "say", "raw": "「这一趟，谢了。」都穆终于从书堆里抬起头，「他们七个的名字，往后你可以在外头说。」" },
+            { "type": "sys", "raw": "你得了雅号「江南才子」。文采 +8。" },
+            { "type": "+pot", "args": [300] },
+            { "type": "flag", "args": ["jiangnan_caizi"] }
+          ]
+        }
+      ]
+    }
+  },
+  "meta": {
+    "note": "江南七大才子（唐寅/祝允明/文徵明/周文宾/徐祯卿/张灵/都穆）+ 花魁柳含烟 + 提学周学政；含一条支线。房间由 80_culture_place.json 提供。"
+  }
+}

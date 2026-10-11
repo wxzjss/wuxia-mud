@@ -93,6 +93,10 @@
           '<div class="detail-side">' +
           '<div class="side-box">' +
           '<div class="side-row"><span class="k">作者</span><span class="v">' + SITE.esc(m.author || '佚名') + '</span></div>' +
+          /* 二创标注（主人 2026-10-11）：来源由服务端从隐藏溯源判定后钉进记录，作者改不了 */
+          (m.forkOf ? '<div class="side-row"><span class="k">来路</span><span class="v">二创自 <a href="mod.html?id=' +
+            encodeURIComponent(m.forkOf.id) + '">《' + SITE.esc(m.forkOf.name) + '》</a>（' +
+            SITE.esc(m.forkOf.official ? '官方' : m.forkOf.owner) + '）</span></div>' : '') +
           '<div class="side-row"><span class="k">版本</span><span class="v">' + SITE.esc(m.version || '1.0.0') + '</span></div>' +
           '<div class="side-row"><span class="k">分类</span><span class="v">' + SITE.esc(m.category || '综合') + '</span></div>' +
           '<div class="side-row"><span class="k">下载次数</span><span class="v">' + (m.downloads || 0) + '</span></div>' +

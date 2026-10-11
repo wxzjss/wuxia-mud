@@ -156,7 +156,12 @@ section('④ 单调性：防御力↑ → 伤害↓（防公式接反）');
   const at = d => w.combatHooks.damage(p, { defFinal: d }, 100, FIX);
   const ds = [0, 50, 200, 800, 3000].map(at);
   ok('五个防御档位都是有限正数', ds.every(d => Number.isFinite(d) && d > 0), ds.join(' > '));
-  ok('严格单调递减', ds.every((d, i) => i === 0 || d < ds[i - 1]), ds.join(' > '));
+  /* ⚠️ 2026-10-10 数值体检把减伤**封顶 75%**（原来没有上限，def=732 的扫地僧减伤 88%，
+     玩家每刀只剩一成伤害 → 打它要 276 刀，高防人物变成「打不动的肉墙」）。
+     所以这里只能保证「非严格」递减：封顶之后再加防御不再继续减伤。
+     防公式接反（防御越高伤害越高）仍会被这条抓住。 */
+  ok('单调递减（封顶后持平）', ds.every((d, i) => i === 0 || d <= ds[i - 1]), ds.join(' > '));
+  ok('减伤封顶 75%：def 800 与 def 3000 打出同一伤害', ds[3] === ds[4], `${ds[3]} / ${ds[4]}`);
   ok('防御拉到 3000 仍有伤害（Math.max(1,…) 保底）', ds[4] >= 1, String(ds[4]));
   /* 破防方向：armorPen 越高，伤害越高（同样防公式别接反） */
   const pen0 = w.combatHooks.damage(p, { defFinal: 800 }, 100, ctxOf({ rng: { next: () => 0.5 } }, { armorPen: 0 }));

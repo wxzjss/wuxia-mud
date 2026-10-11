@@ -5,7 +5,7 @@
 
 交付人：文策渊（设计+叙事）　任务号：#115　日期：2026-10-11
 上游：`design/15-portrait-roster.md`（我写的规范）· `design/portraits-new.json`（26 人 + `hooks`）
-主线依据：`design/10-mainline-story.md`（五幕蓝图）· `design/21-mainline-act3-5.md`（三~五幕细写，**已落地**）
+主线依据：`design/10-mainline-story.md`（五幕蓝图）· `design/21-mainline-act3-5.md`（三~五幕细写，**细纲已完成；落地方案 E5–E16 截至 2026-10-10 仍基本未做，见 `design/36-md-audit.md`**）
 舞台依据：`design/19-map-rebalance.md`（B13 重设计，**已落地**：江南 56→27 房、24 座宅院迁出）
 
 > **本文只出设计。不改代码、不改 `game/data/*.json`、不 commit。** 落地由工程执行。

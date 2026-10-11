@@ -144,7 +144,27 @@ function createServer(opts) {
     console.error('服务启动失败:', e.message);
   });
 
-  return { server, engine, bootInfo, userDataDir };
+  /* ---- 兜底存档（_live）：防「闲置被回收 → 玩家角色凭空消失」 ----
+     线上沙箱闲置会回收进程，世界全在内存里，重启后 world.player 就是 null，
+     而玩家浏览器那一页还开着 —— 下一条指令就变成「请先创建角色」+ 属性归零。
+     这里每分钟把当前世界落一次盘；进程重启后第一次收请求时由
+     `engine.restoreLive()` 接回来（见下方 handleApi 开头）。
+     ⚠️ 不用 unref()：这个定时器就是进程的「心跳」，不该让进程因为无事可做而退出。 */
+  const liveTimer = setInterval(() => {
+    try { engine.saveLive(); } catch (e) { /* 存不上不该拖垮服务 */ }
+  }, 60 * 1000);
+
+  /* 收到终止信号时抢最后一次（沙箱是 SIGTERM 停容器，给的时间不长，所以只做一次同步写） */
+  const flushLive = () => {
+    try { engine.saveLive(); } catch (e) { /* ignore */ }
+  };
+  process.once('SIGTERM', flushLive);
+  process.once('SIGINT', flushLive);
+
+  // 启动时如果本来就没有玩家、但有兜底档，直接接回来（页面刷新也不用重开）
+  try { if (!engine.world.player) engine.restoreLive(); } catch (e) { /* 接不回来就走正常开局 */ }
+
+  return { server, engine, bootInfo, userDataDir, liveTimer };
 }
 
 /* ------------------------------------------------------------------ *
@@ -153,6 +173,23 @@ function createServer(opts) {
 async function handleApi(engine, req, res, pn, query, preset) {
   const route = pn.replace('/api/', '');
   const method = req.method;
+
+  /* ---- 进程被回收过 → 先把玩家接回来 ----
+     闲置回收是线上真事：容器一重启，内存里的世界就没了。
+     ⚠️ **只认「玩家真的动手了」的那几条路由**（走一步 / 开面板 / 打一拳 / 点快捷 / 选菜单），
+        不认任何**只读**路由（`boot` / `births` / `saves` / `view` / `quest` / `npc`）。
+        理由有二：
+          ① 一次「查一下这个任务详情」不该有副作用 —— 它把整份存档接回来是**读操作写出状态**；
+          ② 没有玩家的时候，那些路由本来就该照实回「未起局」。
+             （`smoke-server-guard` 的 ④-a 正是守这条：未起局 `/api/quest` 要回 404 而不是 200。）
+        也不认 `new` —— 玩家明确要新开一局。 */
+  const LIVE_ROUTES = ['exec', 'panel', 'combat', 'quick', 'menu', 'guide/mark'];
+  if (LIVE_ROUTES.indexOf(route) >= 0 && !engine.world.player) {
+    let revived = false;
+    try { revived = !!engine.restoreLive().ok; } catch (e) { /* 接不回来按原样走，前端会给出提示 */ }
+    /* 每一条指令都存一次太重，这里只在「刚接回来」时补一次 */
+    if (revived) { try { engine.saveLive(); } catch (e) { /* ignore */ } }
+  }
 
   let json_body = null;
   if (preset) {
@@ -195,19 +232,45 @@ async function handleApi(engine, req, res, pn, query, preset) {
         title: engine.world.data.meta.title,
         version: engine.bootLog && engine.bootLog.version || '1.0.0',
         stats: countWorld(engine),
+        /* 合并部署（`combined.js` 起了 Mod 站）时，把 Mod 站的地址一起告诉前端 ——
+           游戏页据此在顶栏挂一个「⌂ Mod 客栈」的回站入口：Mod 站那边有「▶ 开始游戏」，
+           这边也该有路回去，两边才像一家，而不是两个互不相干的站。
+           ⚠️ 单独跑 `game-server.js` 时 `COMBINED` 没设 → 这里是 null，
+           前端就不注入，免得玩家点到一个 404 的死链。
+           ⚠️ 判据必须**在请求里读**环境变量（不能在模块顶部缓存成常量）：
+           `combined.js` 是先 require 本模块、随后才设 `process.env.COMBINED = '1'`。 */
+        site: (process.env.COMBINED === '1') ? { url: '/site/', name: 'Mod 客栈' } : null,
         warnings: (engine.bootLog && engine.bootLog.warnings) || [],
         mods: (engine.bootLog && engine.bootLog.mods) || [],
       });
 
       /* --- 重载（启用/禁用 mod 后） --- */
       case 'reload': {
-        engine.reload();
-        return json(res, 200, { ok: true, boot: engine.bootLog, view: engine.view(), stats: countWorld(engine) });
+        /* ⚠️ 把 reload 的结果**如实带出去**：读档失败时 `engine.reload()` 会退回旧世界
+           （玩家不丢），但必须让前端知道「mod 没换成」。原先把返回值丢掉、恒报 ok:true，
+           于是失败被完全吞掉 —— 玩家只看到界面莫名变空。 */
+        const rr = engine.reload();
+        return json(res, 200, {
+          ok: !(rr && rr.ok === false),
+          error: (rr && rr.error) || undefined,
+          mods: (rr && rr.mods) || 0,
+          boot: engine.bootLog, view: engine.view(), stats: countWorld(engine),
+        });
       }
 
       /* --- 开局 --- */
-      case 'new':
-        return json(res, 200, { ok: true, view: engine.newGame(json_body || {}) });
+      case 'new': {
+        /* ⚠️ 「身份 × 性别不符」是**用户输入问题**，不是服务端故障 ——
+           `World.createPlayer` 会为准性别不对的身份抛错（前端藏起来只是第一道，
+           手搓请求绕得过去）。若不在这里拦，异常会冒到外层 catch 变成 **500**：
+           既误导排查（看着像服务器崩了），又踩本项目「未起局不许 5xx」的守卫。
+           所以：校验类失败一律回 **400 + 人话**。 */
+        try {
+          return json(res, 200, { ok: true, view: engine.newGame(json_body || {}) });
+        } catch (err) {
+          return json(res, 400, { ok: false, error: String((err && err.message) || err) });
+        }
+      }
 
       case 'births': {
         const meta = engine.world.data.meta;
@@ -242,7 +305,15 @@ async function handleApi(engine, req, res, pn, query, preset) {
       case 'exec': {
         const cmd = (json_body && (json_body.cmd || json_body.command)) || query.cmd || query.command || '';
         const r = engine.exec(cmd, {});
-        return json(res, 200, { ok: true, cmd, lines: r.lines, log: r.lines, clear: !!r.clear, action: r.action || null, openPanel: r.openPanel || null, choices: r.choices || null, choicesTitle: r.choicesTitle || null, modal: r.modal || null, ending: r.ending || null, view: r.view });
+        return json(res, 200, {
+          ok: true, cmd, lines: r.lines, log: r.lines, clear: !!r.clear,
+          action: r.action || null, openPanel: r.openPanel || null,
+          choices: r.choices || null, choicesTitle: r.choicesTitle || null,
+          modal: r.modal || null, ending: r.ending || null, view: r.view,
+          /* 角色不在（多半是进程被回收过）→ 前端据此去接人，**别拿空视图覆盖界面** */
+          noPlayer: r.noPlayer || false,
+          canRestore: r.canRestore || false,
+        });
       }
 
       /* --- 打开面板（前端 /api/panel 或 /api/exec {cmd:'panel/xxx'}） --- */
@@ -284,7 +355,7 @@ async function handleApi(engine, req, res, pn, query, preset) {
         })().valueOf());
       }
 
-      case 'view': return json(res, 200, { ok: true, view: engine.view() });
+      case 'view': return json(res, 200, { ok: true, view: engine.view({ map: true }) });
 
       /* NPC 详情画像（前端「细看此人」的新界面）。
          `api.view(panel)` 只吃一个 panel 名，传不了「看哪个人」，
@@ -478,6 +549,9 @@ async function handleApi(engine, req, res, pn, query, preset) {
         return json(res, 200, { ok: true, list: out });
       }
 
+      /* --- 游戏内各类事物的 ID 一览（Mod 制作器「游戏内 ID」用，主人 2026-10-11） --- */
+      case 'gamedata': return json(res, 200, gamedataApi(engine, query));
+
       /* --- 与 Mod 网站通信 --- */
       case 'site/config': {
         const cfg = readSiteConfig();
@@ -489,6 +563,8 @@ async function handleApi(engine, req, res, pn, query, preset) {
       }
       case 'site/upload': return await proxyUpload(engine, req, res, json_body);
       case 'site/remote': return await proxyRemote(engine, req, res, query);
+      /* 本站账号：登录 / 注册 / 登出 / 我的作品（主人 2026-10-11 上传要登录） */
+      case 'site/account': return await proxyAccount(engine, req, res, json_body, query);
 
       default:
         return json(res, 404, { ok: false, error: '未知接口: ' + route });
@@ -515,9 +591,96 @@ function writeSiteConfig(c) {
   fs.writeFileSync(SITE_CFG, JSON.stringify(Object.assign(readSiteConfig(), c), null, 2), 'utf8');
 }
 
+/**
+ * 游戏内各类事物的 ID 一览（Mod 制作器「游戏内 ID」用）。
+ *
+ * 主人 2026-10-11：「在 mod 制作器里添加游戏内各事物 id 列表……同时添加可通过
+ * id 更改游戏内剧情、人物、物品、功法、区域等有 id 的事物」。
+ *
+ * · `kind` 指定类别；不带 `id` → 回一份**精简清单**（id + 名字 + 一条摘要）；
+ * · 带 `id` → 回那一件的**完整内容**，制作器据此「按 ID 改」（生成同 id 的覆盖 Mod）。
+ * ⚠️ 列表**只发 id/名字/摘要**，别把整个 `data` 甩给前端 —— 那是 30 多个数据文件、
+ *    上千条记录，浏览器会卡住；真正要改哪一件时再单独取那一件。
+ */
+function gamedataApi(engine, query) {
+  /* ⚠️ 2026-10-11 扩容：制作器的「游戏 ID 列表」原本只有 7 类，
+     而这两年库里陆续多了**世界事件**（68 条）、**结局**、**天赋/特质** ——
+     作者要引用它们、按 id 改它们，却在前端一个入口都没有。
+     新增：
+       · `endings` / `traits` —— 都是 byId 的表，和 npcs 一样**可以按 id 载入编辑**；
+       · `worldEvents` —— 世界事件挂在 `worldEvents.onDayTick` 这个**数组**上，
+         而数组在引擎里是「整段替换」语义：改一条会把其余 67 条一起顶掉。
+         所以这一类**只提供查看与取 id**，不给「载入编辑」（下面加 `_list` 标记，
+         前端据此换成「只读」提示）。
+     另：`traits` 顶层是 byId，`attrs` 在部分数据里是数组，两种都兜住。 */
+  const KINDS = ['npcs', 'items', 'skills', 'rooms', 'regions', 'quests', 'sects',
+    'endings', 'traits', 'worldEvents'];
+  const RO_KINDS = ['worldEvents'];   /* 只读：数组语义，改单条会顶掉整组 */
+  const w = engine.world;
+  const d = (w && w.data) || {};
+  const kind = String((query && query.kind) || 'npcs');
+  if (KINDS.indexOf(kind) < 0) {
+    return { ok: false, error: '未知的类别：' + kind, kinds: KINDS };
+  }
+
+  /* 世界事件：把 {onDayTick:[...]} 摊平成一串带 id 的记录，并标明它挂在哪条事件线上 */
+  if (kind === 'worldEvents') {
+    const src = d.worldEvents || {};
+    const flat = [];
+    for (const line of Object.keys(src)) {
+      for (const ev of [].concat(src[line] || [])) {
+        if (!ev) continue;
+        flat.push(Object.assign({}, ev, { _list: line }));
+      }
+    }
+    const q0 = String((query && query.q) || '').trim();
+    if (query && query.id) {
+      const one = flat.find(x => x && x.id === query.id);
+      if (!one) return { ok: false, error: '没有这一件：' + query.id };
+      return { ok: true, kind, id: query.id, item: one, readonly: true, kinds: KINDS };
+    }
+    const rows = flat
+      .filter(it => !q0 || String(it.id).indexOf(q0) >= 0 || String(it.name || '').indexOf(q0) >= 0)
+      .map(it => ({ id: it.id, name: String(it.name || ''), sub: String(it.cat || it._list || '') }));
+    return { ok: true, kind, total: flat.length, shown: rows.length, rows, readonly: true, kinds: KINDS };
+  }
+
+  const bag = d[kind] || {};
+  const asList = Array.isArray(bag)
+    ? bag.slice()
+    : Object.keys(bag).map(k => Object.assign({ id: k }, bag[k] || {}));
+
+  /* 单件详情 */
+  if (query && query.id) {
+    const one = Array.isArray(bag)
+      ? bag.find(x => x && x.id === query.id)
+      : bag[query.id];
+    if (!one) return { ok: false, error: '没有这一件：' + query.id };
+    return { ok: true, kind, id: query.id, item: one, readonly: RO_KINDS.indexOf(kind) >= 0, kinds: KINDS };
+  }
+
+  /* 清单 */
+  const q = String((query && query.q) || '').trim();
+  const limit = Math.min(3000, parseInt(query && query.limit, 10) || 500);
+  const rows = [];
+  for (let i = 0; i < asList.length; i++) {
+    const it = asList[i];
+    if (!it || !it.id) continue;
+    const name = String(it.name || it.title || '');
+    if (q && String(it.id).indexOf(q) < 0 && name.indexOf(q) < 0) continue;
+    rows.push({
+      id: it.id, name,
+      sub: String(it.type || it.category || it.region || it.tag ||
+        (it.level != null ? ('等级 ' + it.level) : '') ||
+        (it.price != null ? (it.price + ' 文') : '') || ''),
+    });
+    if (rows.length >= limit) break;
+  }
+  return { ok: true, kind, total: asList.length, shown: rows.length, rows, readonly: RO_KINDS.indexOf(kind) >= 0, kinds: KINDS };
+}
+
 /** 统计世界内容规模 */
-function countWorld(engine) {
-  const d = (engine.world && engine.world.data) || {};
+function countWorld(engine) {  const d = (engine.world && engine.world.data) || {};
   const n = (k) => (Array.isArray(d[k]) ? d[k].length : (d[k] ? Object.keys(d[k]).length : 0));
   let mods = 0, modsOn = 0;
   try {
@@ -530,6 +693,46 @@ function countWorld(engine) {
     monsters: n('monsters'), books: n('books'), shops: n('shops'),
     mods, modsEnabled: modsOn,
   };
+}
+
+/**
+ * 本站账号（登录 / 注册 / 登出 / 我的作品）—— 转发给 Mod 站点。
+ *
+ * 主人 2026-10-11：「上传 mod 需要登录才能用」+「制作器里加『我制作的 Mod』」。
+ * ⚠️ 站点那边把「没登录」做成 **HTTP 200 + `ok:false` + `needLogin:true`**
+ *    （不是 401）—— 这里千万不能把 `ok:false` 当成传输失败，否则前端拿不到
+ *    `needLogin` 标记，只能显示一句「网络错误」，登录引导就断了。
+ */
+async function proxyAccount(engine, req, res, jb, query) {
+  const cfg = readSiteConfig();
+  const src = jb || {};
+  const action = String(src.action || (query && query.action) || '').trim();
+  const isGet = (action === 'me' || action === 'mods');
+  if (['login', 'register', 'logout', 'me', 'mods'].indexOf(action) < 0) {
+    return json(res, 400, { ok: false, error: '未知的账号动作：' + action });
+  }
+  const payload = {
+    name: src.name || '',
+    pass: src.pass || '',
+    token: src.token || (query && query.token) || '',
+  };
+  const u = cfg.apiBase + '/api/account/' + action +
+    (isGet && payload.token ? ('?token=' + encodeURIComponent(payload.token)) : '');
+
+  const result = isGet
+    ? await httpRequest(u, { method: 'GET' })
+    : await httpRequest(u, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: Buffer.from(JSON.stringify(payload), 'utf8'),
+    });
+
+  if (!result.ok) {
+    const d = result.data;
+    if (d && typeof d === 'object' && 'ok' in d) return json(res, 200, d);
+    return json(res, 200, { ok: false, error: (d && d.error) || result.error || '账号服务不可用' });
+  }
+  return json(res, 200, result.data || { ok: false, error: '账号服务没有回应' });
 }
 
 /** 上传 mod 到站点（JSON API，与本项目 mod-site.js 对接） */
@@ -555,7 +758,10 @@ async function proxyUpload(engine, req, res, jb) {
     base64: zipB64,
     id: modId,
     note: jb.note || '',
+    /* ⚠️ `author` 只是兜底署名 —— 站点会用**登录账号名**覆盖它。
+       真正决定「这是谁的作品」的是下面这个 token（主人 2026-10-11：上传要登录）。 */
     author: jb.author || cfg.author || '匿名侠客',
+    token: jb.token || '',
   };
 
   const result = await httpRequest(cfg.apiBase + '/api/mods', {
@@ -575,13 +781,15 @@ async function proxyUpload(engine, req, res, jb) {
   return json(res, 200, {
     ok: true, id: (result.data && result.data.id) || modId,
     updated: !!(result.data && result.data.updated),
+    /* 二创标注透传给制作器（主人 2026-10-11）：不是原创就把来源带回前端，
+       上传成功的弹窗里明说一句「二创自《X》」。 */
+    forkOf: (result.data && result.data.mod && result.data.mod.forkOf) || null,
     url: pageUrl || (cfg.apiBase + '/mod.html?id=' + encodeURIComponent(modId)),
   });
 }
 
 /** 从站点拉取 mod 列表 / 下载安装 */
-async function proxyRemote(engine, req, res, query) {
-  const cfg = readSiteConfig();
+async function proxyRemote(engine, req, res, query) {  const cfg = readSiteConfig();
 
   /* 列表 */
   if (query.action === 'list' || !query.action) {
@@ -632,6 +840,18 @@ async function proxyRemote(engine, req, res, query) {
   if (query.action === 'ping') {
     const r = await httpRequest(cfg.apiBase + '/api/health', { method: 'GET' });
     return json(res, 200, { ok: r.ok, info: r.data || null, error: r.error || null });
+  }
+
+  /* 取单个 Mod 的完整内容（「我制作的 Mod → 载入编辑」用；**不安装**）
+     ⚠️ 不能复用 action=download —— 那条会把 Mod 直接装进 mods 目录。 */
+  if (query.action === 'detail') {
+    const id = query.id;
+    if (!id) return json(res, 400, { ok: false, error: '缺少 id' });
+    const r = await httpRequest(cfg.apiBase + '/api/mods/' + encodeURIComponent(id), { method: 'GET' });
+    if (!r.ok || !r.data || r.data.ok === false) {
+      return json(res, 200, { ok: false, error: (r.data && r.data.error) || r.error || '取不到这个 Mod' });
+    }
+    return json(res, 200, { ok: true, mod: r.data.mod || r.data });
   }
 
   return json(res, 400, { ok: false, error: '未知 action：' + query.action });
@@ -693,4 +913,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { createServer, httpRequest };
+module.exports = { createServer, httpRequest, gamedataApi };

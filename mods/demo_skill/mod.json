@@ -1,5 +1,6 @@
 {
   "id": "demo_skill",
+  "_wxTrace": "wxt-official-demo_skill",
   "name": "太虚剑意（功法示例）",
   "version": "1.1.0",
   "author": "武侠行官方",
@@ -89,8 +90,11 @@
       "id": "taixu_hermit",
       "name": "太虚居士",
       "title": "剑冢守人",
+      "tier": "A",
       "gender": "male",
       "room": "huashan_siguoya",
+      "tag": "swordsman",
+      "personality": "lengmo",
       "level": 45,
       "hp": 2600,
       "mp": 1600,

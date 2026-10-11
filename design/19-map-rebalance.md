@@ -111,7 +111,7 @@
 | `dali` | 大理 | sect | 4 | **5** | **+1** | 段氏王府，补 `dali_wuhua`（五华楼） |
 | `miaojiang` | 苗疆 | sect | 4 | **5** | **+1** | 补 `miaojiang_zhai`（苗寨吊脚楼群） |
 | `xiyu` | 西域 | wild | 4 | **5** | **+1** | 第三幕舞台，补 `xiyu_shule`（疏勒镇） |
-| `gumu` | 谷魔窟 | mad | 4 | **4** | 0 | 维持（秘境型） |
+| `gumu` | 终南山 | sect | 4 | **4** | 0 | 维持（重阳宫 + 活死人墓） |
 | `mojiao` | 黑木崖 | mad | 4 | **4** | 0 | 维持（第四幕有绣阁 boss，房少但重） |
 | `haitan` | 梅海滩 | wild | 3 | **4** | **+1** | 补 `haitan_village`（渔村），去掉"3 房空壳" |
 | `beijiang` | 北疆·雪谷 | wild | 3 | **5** | **+2** | **第三幕主舞台** → 补 `beijiang_shankou`（山口）+ `beijiang_houzhai`（血刀寨后寨） |

@@ -57,7 +57,8 @@ section('4. 练武功法变强');
   e.newGame({ name: '凡人', gender: 'male' });
   const w = e.world, p = w.player;
   const a0 = p.atk, realm0 = e.realmName(p);
-  p.learnSkill('huashan_sword'); // 华山剑法 bonus atk 30
+  p.learnSkill('basic_sword', { force: true });   // 武学重制：门派入门先授基础武学
+  p.learnSkill('huashan_sword', { force: true }); // 华山剑法 bonus atk 30
   p.gainSkillExp('huashan_sword', 999999);
   p.recalc();
   ok('练剑法加攻击', p.atk > a0, 'atk ' + a0 + '→' + p.atk);

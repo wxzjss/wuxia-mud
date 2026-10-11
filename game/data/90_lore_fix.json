@@ -1,0 +1,88 @@
+{
+  "npcs": {
+    "npcv_009": {
+      "tier": "A"
+    },
+    "npcv_010": {
+      "tier": "A"
+    },
+    "npcv_036": {
+      "tier": "A"
+    },
+    "npcv_037": {
+      "tier": "B"
+    },
+    "npcv_062": {
+      "tier": "B"
+    },
+    "npcv_065": {
+      "tier": "A"
+    },
+    "npcv_074": {
+      "tier": "A"
+    },
+    "npcv_082": {
+      "tier": "A"
+    },
+    "npcv_083": {
+      "tier": "A"
+    },
+    "npcv_090": {
+      "tier": "A"
+    },
+    "npcv_091": {
+      "tier": "A"
+    },
+    "npcv_095": {
+      "tier": "A"
+    },
+    "npcv_115": {
+      "tier": "A"
+    },
+    "npcv_126": {
+      "tier": "A"
+    },
+    "npcv_154": {
+      "tier": "A"
+    },
+    "npcv_164": {
+      "tier": "A"
+    },
+    "npcv_174": {
+      "tier": "A"
+    },
+    "npcv_178": {
+      "tier": "A"
+    },
+    "npcv_180": {
+      "tier": "A"
+    },
+    "npcv_186": {
+      "tier": "A"
+    },
+    "npcv_208": {
+      "tier": "A"
+    },
+    "npcv_215": {
+      "tier": "A"
+    },
+    "npcv_223": {
+      "tier": "A"
+    },
+    "npcv_237": {
+      "tier": "A"
+    },
+    "npcv_240": {
+      "tier": "A"
+    },
+    "npcv_241": {
+      "tier": "A"
+    },
+    "npcv_248": {
+      "tier": "A"
+    },
+    "npcv_252": {
+      "tier": "A"
+    }
+  }
+}

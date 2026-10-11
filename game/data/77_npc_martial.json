@@ -1,0 +1,260 @@
+{
+  "npcs": {
+    "jn_apothecary": {
+      "skills": {
+        "拳": "jh_fist"
+      },
+      "learned": {
+        "jh_fist": {
+          "level": 16
+        }
+      }
+    },
+    "jn_silkkeeper": {
+      "skills": {
+        "拳": "cn_long_fist"
+      },
+      "learned": {
+        "cn_long_fist": {
+          "level": 18
+        }
+      }
+    },
+    "jn_winewaiter": {
+      "skills": {
+        "拳": "cn_long_fist"
+      },
+      "learned": {
+        "cn_long_fist": {
+          "level": 18
+        }
+      }
+    },
+    "jn_bookman": {
+      "skills": {
+        "拳": "jh_fist"
+      },
+      "learned": {
+        "jh_fist": {
+          "level": 11
+        }
+      }
+    },
+    "jn_tutor": {
+      "skills": {
+        "拳": "jh_fist"
+      },
+      "learned": {
+        "jh_fist": {
+          "level": 16
+        }
+      }
+    },
+    "jn_smithman": {
+      "skills": {
+        "拳": "jh_fist",
+        "棍": "jh_staff"
+      },
+      "learned": {
+        "jh_fist": {
+          "level": 20
+        },
+        "jh_staff": {
+          "level": 20
+        }
+      },
+      "equipment": {
+        "武器": "bamboo_stick"
+      }
+    },
+    "jn_grocer": {
+      "skills": {
+        "拳": "cn_long_fist"
+      },
+      "learned": {
+        "cn_long_fist": {
+          "level": 20
+        }
+      }
+    },
+    "jn_villagekeep": {
+      "skills": {
+        "拳": "jh_fist"
+      },
+      "learned": {
+        "jh_fist": {
+          "level": 18
+        }
+      }
+    },
+    "jn_fruitman": {
+      "skills": {
+        "拳": "jh_fist"
+      },
+      "learned": {
+        "jh_fist": {
+          "level": 13
+        }
+      }
+    },
+    "jn_diviner": {
+      "skills": {
+        "拳": "cn_long_fist",
+        "内功": "jh_neigong"
+      },
+      "learned": {
+        "cn_long_fist": {
+          "level": 13
+        },
+        "jh_neigong": {
+          "level": 13
+        }
+      }
+    },
+    "jn_porter": {
+      "skills": {
+        "拳": "jh_fist"
+      },
+      "learned": {
+        "jh_fist": {
+          "level": 18
+        }
+      }
+    },
+    "jn_pawnclerk": {
+      "skills": {
+        "拳": "jh_fist"
+      },
+      "learned": {
+        "jh_fist": {
+          "level": 14
+        }
+      }
+    },
+    "guide_teaman": {
+      "skills": {
+        "拳": "jh_fist"
+      },
+      "learned": {
+        "jh_fist": {
+          "level": 14
+        }
+      }
+    },
+    "gambler_boss": {
+      "skills": {
+        "拳": "jh_fist"
+      },
+      "learned": {
+        "jh_fist": {
+          "level": 14
+        }
+      }
+    },
+    "gambler_loser": {
+      "skills": {
+        "拳": "jh_fist"
+      },
+      "learned": {
+        "jh_fist": {
+          "level": 16
+        }
+      }
+    },
+    "fisher_old": {
+      "skills": {
+        "棍": "bang_wharf_staff",
+        "轻功": "jh_dodge"
+      },
+      "learned": {
+        "bang_wharf_staff": {
+          "level": 17
+        },
+        "jh_dodge": {
+          "level": 17
+        }
+      },
+      "equipment": {
+        "武器": "bamboo_stick"
+      }
+    },
+    "test_npc": {
+      "skills": {
+        "拳": "jh_fist"
+      },
+      "learned": {
+        "jh_fist": {
+          "level": 16
+        }
+      }
+    },
+    "demo_swordman": {
+      "skills": {
+        "拳": "jh_fist"
+      },
+      "learned": {
+        "jh_fist": {
+          "level": 16
+        }
+      }
+    },
+    "npcv_156": {
+      "skills": {
+        "剑": "basic_sword",
+        "轻功": "jh_dodge",
+        "招架": "jh_parry",
+        "内功": "jh_neigong"
+      },
+      "learned": {
+        "jh_sword": {
+          "level": 58,
+          "exp": 0
+        },
+        "jh_dodge": {
+          "level": 62,
+          "exp": 0
+        },
+        "jh_parry": {
+          "level": 67,
+          "exp": 0
+        },
+        "jh_neigong": {
+          "level": 72,
+          "exp": 0
+        },
+        "basic_sword": {
+          "level": 100
+        }
+      }
+    },
+    "npcv_288": {
+      "skills": {
+        "剑": "basic_sword",
+        "轻功": "jh_dodge",
+        "招架": "jh_parry",
+        "内功": "jh_neigong"
+      },
+      "learned": {
+        "jh_sword": {
+          "level": 96,
+          "exp": 0
+        },
+        "jh_dodge": {
+          "level": 80,
+          "exp": 0
+        },
+        "jh_parry": {
+          "level": 85,
+          "exp": 0
+        },
+        "jh_neigong": {
+          "level": 35,
+          "exp": 0
+        },
+        "basic_sword": {
+          "level": 372
+        }
+      }
+    }
+  }
+}

@@ -29,7 +29,73 @@ const PATTERNS = [
   ['翻译腔', /使得|从而|进而|对于[\u4e00-\u9fa5]{1,10}而言|某种程度上|总体而言|整体而言|同时也是|不仅是[\u4e00-\u9fa5]{0,8}，更是/],
   ['空赞词', /完美(地|的)?|极致|非凡|震撼|惊艳|瑰丽|绚丽|璀璨|辉煌|叹为观止/],
   ['模板收尾', /(的|了)[\u4e00-\u9fa5]{0,10}之旅|一段[\u4e00-\u9fa5]{0,8}的(旅程|传奇|故事)|谱写[\u4e00-\u9fa5]{0,8}(篇章|传奇)/],
+  /* 🔴 「观察腔：不X，只Y」—— 主人 2026-10-11 亲报的那句
+     「一条黄狗趴在墙根晒太阳，人来也不躲，只抬了抬眼皮」。
+     机器写环境描写时最爱这个形状：**先否定一个社交反应，再补一个极小的动作**，
+     读着像有人站在旁边给你做注解。
+     ⚠️ 范围收得很紧（只认 看/理/动/躲/答/吭/理会/言语/管/顾/抬眼/抬头 这几个动词，
+     后面必须紧跟「只/却/仅 + 一…」），这是故意的：
+     「不求招式花巧，只求一刀比一刀快」「不图伤敌，只求货在人在」这类**成句**
+     是中文里本来就有的狠话，放宽了会一起打死（实测放宽到 12 条命中，全是好句子）。
+     当前全库命中 0 —— 这条规矩是**守着别让它回来**的。 */
+  ['观察腔（不X只Y）', /(?:也|都)?[不没](?:看|理|动|躲|答|吭|理会|言语|管|顾|抬眼|抬头)[^，。\n]{0,4}，\s*(?:只|却|仅)[^\n]{0,6}(?:[\u4e00-\u9fa5]了[\u4e00-\u9fa5]|一眼|一下|一声)/],
+  /* 🔴 对偶定义「不是A，是B」——主人 2026-10-11 亲报的那句
+     「不是钱，是一封旧信，封皮上只按了个指印」。
+     这是 AI 写中文最典型的一层壳：**先立一个靶子（不是X），再抛出答案（是Y）**。
+     它读着不像在写事，像有人站在旁边给你做注解 —— 旁白里成批出现时最刺眼。
+     ⚠️ 判红范围收得很紧，两条豁免：
+       ① **人物台词豁免**（`talk`/`answer`/`say` 字段，或整句在「」『』里）——
+          「这不是狠话，是账」「蛊不是术，是命」这种是人的强调语气，是好句子；
+       ② 只认**逗号紧接**的形态（「不是X，是Y」），不认跨句、跨分号的散装组合。 */
+  ['对偶定义（不是A是B）', /不是[^，。！？；\n]{1,14}，(?:而是|是)[^，。！？；\n]{1,26}/, { speechExempt: true }],
+
+  /* 🔴 「模板句式复用」——主人 2026-10-11 亲报的第二批。
+     原话：「旁边还有一个黄修的盗贼，细看里面有一句『看人先看腰，站得离人很近，又不觉得近』
+            ai 感很强，而且**一下子就发现俩那肯定不是个例**。」
+     顺着扫，果然不止两处：`看人先看X` 全库 **4 处**（腰/手/脸色再衣裳/鞋），
+     `站得离人很近，又不觉得近` **2 处**，`等…才抬眼` **2 处**。
+     这几种壳的共同点不是「用词」，而是**同一副骨架反复套**：
+       · 「看人先看X」   —— 一个动宾开头的工整小句，谁都能往里填
+       · 「A，又不A」    —— 悖论式对偶，读着像金句，其实没信息
+       · 「等…才…」      —— 时间状语 + 动作，前后两半字数还对称
+     ⚠️ 判据只认**这几个具体骨架**，不做泛化的「工整句」检测 ——
+        中文里对称句天生就多，泛化会误杀一大片（这个脚本上一轮已经栽过一次）。 */
+  ['模板句式（看/问/听人先看X）', /(?:看|问|听|见|说|认)人先(?:看|问|听|见|说|认)[^，。；\n]{0,8}/],
+  ['悖论对偶（…，又不觉得…）', /[^，。；\n]{2,10}，又不觉得[^，。；\n]{1,10}/],
+  ['对称对偶（等…才…）', /等[^，。；\n]{1,12}才[^，。；\n]{1,8}[，。；]/],
 ];
+
+/* ============================================================
+ * 守卫自证 —— 拿「已知必错」的样本反考自己
+ *
+ * 为什么要有：这个脚本的规则**收得很紧**（怕误杀好句子），
+ * 收紧了就很容易悄悄失效 —— 正则写歪一个字符，命中数就永远是 0，
+ * 而 0 命中看起来和「全库干净」一模一样。
+ * 上一轮 `dark-bg-check` 就吃过这个亏（只认 rgba 不认十六进制，一路绿灯）。
+ * 所以：样本必须被判红，判不出来就非 0 退出。
+ * ============================================================ */
+const FIXTURES = [
+  ['看人先看腰，站得离人很近，又不觉得近。', true],
+  ['见人过来就低头，等走远了才抬眼。', true],
+  ['他打量人，从脸色一直看到衣裳。', false],
+  ['她挨得比谁都近，偏没人留意。', false],
+  /* ⚠️ 这里**只考正则本身**，不考「台词豁免」——
+     「这不是狠话，是账。」这种句子**原始正则会命中**，
+     是扫描阶段按字段（talk/answer/say）与「」包着才放行的。
+     把它当 `false` 塞进来，考的是「豁免层」而不是「正则层」，
+     于是自证永远红（第一版就是这么挂的）。
+     豁免层的回归由下面的实际扫描 + speechExempt 单测覆盖。 */
+  ['这不是狠话，是账。', true],
+];
+{
+  let bad = 0;
+  for (const [t, want] of FIXTURES) {
+    const got = PATTERNS.some(([, re]) => { re.lastIndex = 0; return re.test(t); });
+    if (got !== want) { bad++; console.log('  ✘ 自证失败：' + JSON.stringify(t.slice(0, 22)) + ' 期望' + want + ' 实得' + got); }
+  }
+  if (bad) { console.log('\n===== AI 味规则自证失败：有样本判不出来 ====='); process.exit(1); }
+  console.log('（规则自证：' + FIXTURES.length + ' 个样本全部判定正确）\n');
+}
 
 /* 要扫的文件 */
 const DATA_DIR = path.join(ROOT, 'game', 'data');
@@ -39,6 +105,9 @@ const CORE_DIR = path.join(ROOT, 'game', 'src', 'core');
 const VISIBLE_KEYS = new Set([
   'name', 'desc', 'title', 'text', 'answer', 'talk', 'raw', 'msg', 'label', 'hint',
   'topic', 'story', 'goal', 'say', 'line', 'note', 'subtitle', 'stageDesc', 'why',
+  /* ⚠️ NPC 的问答表也是**玩家能读到的字**（问一句他答一句），第一版没列进来，
+     于是「当一收三。不是我狠…」这类台词被判成旁白，白吃一条命中。 */
+  'ask', 'askDefault',
 ]);
 
 /* 出戏词：NPC 嘴里／世界描述里蹦出**网游/现代**词汇，最伤沉浸感（这是「不真实感」的正主）。
@@ -70,14 +139,29 @@ function allowed(h) {
 const hits = [];
 const oow = [];
 
+/* 台词字段：这些话是**人物在说**，不是旁白在解释 —— 带强调语气的对偶句在这里是人的口吻 */
+const SPEECH_KEYS = new Set(['talk', 'answer', 'say', 'line', 'subtitle', 'ask', 'askDefault']);
+/** 整句被引号包着 → 也是人在说话（`raw: '「…」'` 这种） */
+function isSpeech(str, key) {
+  if (SPEECH_KEYS.has(key)) return true;
+  const t = String(str).trim();
+  return /^[「『][\s\S]*[」』][。！？]?$/.test(t);
+}
+/** menu / narrate 这类 DSL 串：里面分号竖线一大堆，不是给玩家连着读的句子，规则别在这儿咬 */
+function isDsl(str) {
+  return /[>;|]/.test(str) && /(?:narrate|combat|flag|money|exp|pot|favor|rep|var|item|menu):/.test(str);
+}
+
 function scanString(str, file, key) {
   if (!str || typeof str !== 'string' || str.length < 6) return;
   /* 去掉明显是代码/标记的串 */
   if (/^[\w_./-]+$/.test(str)) return;
-  for (const [label, re] of PATTERNS) {
+  if (isDsl(str)) return;
+  for (const [label, re, opt] of PATTERNS) {
     const m = str.match(re);
     if (!m) continue;
     const h = { file, key, label, frag: m[0], text: str.length > 90 ? str.slice(0, 90) + '…' : str };
+    if (opt && opt.speechExempt && isSpeech(str, key)) continue;
     if (allowed(h)) continue;
     hits.push(h);
   }
@@ -115,17 +199,26 @@ for (const f of fs.readdirSync(CORE_DIR)) {
   while ((m = re.exec(src)) !== null) {
     scanString(m[1].slice(1, -1), f, 'inline');
   }
-  /* 也扫 player-visible 数组里的字符串（help / 剧情池） */
-  const re2 = /'(?:[^'\\]|\\.){8,}'/g;
-  let m2;
-  let n = 0;
-  while ((m2 = re2.exec(src)) !== null && n < 4000) {
-    n++;
-    const s = m2[0].slice(1, -1);
-    /* 只留中文长句 */
-    if (!/[\u4e00-\u9fa5]/.test(s)) continue;
-    if (s.length < 10) continue;
-    scanString(s, f, 'inline-str');
+  /* 也扫 player-visible 数组里的字符串（help / 剧情池）
+     ⚠️ 要**跳过注释**：注释里也有引号、也有中文长句，但它们不是给玩家看的字。
+        第一版没跳，于是 combat.js/commands.js 的注释连续命中「不是A是B」——
+        那是工程笔记，改了没意义；而真正的玩家文案反而被淹在噪声里。 */
+  const lines = src.split('\n');
+  for (const line of lines) {
+    const t = line.trim();
+    if (/^(\/\/|\*|\/\*)/.test(t)) continue;          /* 整行注释 / 块注释内 */
+    const code = line.replace(/(^|[^:'"`])\/\/.*$/, '$1'); /* 行尾注释 */
+    let m2;
+    const re2 = /'(?:[^'\\]|\\.){8,}'/g;
+    let n = 0;
+    while ((m2 = re2.exec(code)) !== null && n < 400) {
+      n++;
+      const s = m2[0].slice(1, -1);
+      /* 只留中文长句 */
+      if (!/[\u4e00-\u9fa5]/.test(s)) continue;
+      if (s.length < 10) continue;
+      scanString(s, f, 'inline-str');
+    }
   }
 }
 

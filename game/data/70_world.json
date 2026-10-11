@@ -634,6 +634,1383 @@
         ],
         "cooldownDays": 20
       }
+    ,
+      {
+        "id": "w5_foe_ambush",
+        "cat": "江湖恩怨",
+        "name": "仇家堵路",
+        "cond": {
+          "and": [
+            {
+              "karma": "<=-10"
+            },
+            {
+              "chance": 0.15
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "巷口横着两个人，一个靠着墙剔牙，一个就那么看着你。你往前走，他们没让，也没动。"
+          },
+          "me:你把手垂在身侧，指头松了松，离自己的兵器近了半寸。",
+          {
+            "type": "say",
+            "raw": "「就是你吧。」"
+          },
+          {
+            "type": "narrate",
+            "raw": "错身过去的时候，有人用肩膀撞了你一下，力道不大，位置很准。"
+          },
+          "-hp:6"
+        ],
+        "cooldownDays": 20
+      },
+      {
+        "id": "w5_foe_letter",
+        "cat": "江湖恩怨",
+        "name": "下战书",
+        "cond": {
+          "and": [
+            {
+              "var": "faction_rel_all",
+              "op": "<=",
+              "value": -20
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "门缝里塞进来一张纸，折得很齐。展开只有一行日子、一个地名，和一枚按上去的血指印。"
+          }
+        ],
+        "cooldownDays": 25
+      },
+      {
+        "id": "w5_foe_arson",
+        "cat": "江湖恩怨",
+        "name": "半夜放火",
+        "cond": {
+          "and": [
+            {
+              "time": {
+                "min": 1080,
+                "max": 360
+              }
+            },
+            {
+              "karma": "<=-20"
+            },
+            {
+              "chance": 0.1
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "半夜被呛醒。窗外一片红，把院墙都照亮了。隔壁柴房在烧，有人提着桶跑过去，喊声一片。"
+          },
+          "flag:arson_seen"
+        ],
+        "cooldownDays": 40
+      },
+      {
+        "id": "w5_foe_duel",
+        "cat": "江湖恩怨",
+        "name": "约架",
+        "cond": {
+          "and": [
+            {
+              "karma": "<=-15"
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "有人在你必经的路口站了半个时辰。见你来了，他把外袍脱下来搭在栏杆上，围的人自觉退了三步。"
+          },
+          {
+            "type": "say",
+            "raw": "「今天不牵扯旁人。」"
+          }
+        ],
+        "cooldownDays": 20
+      },
+      {
+        "id": "w5_foe_poison",
+        "cat": "江湖恩怨",
+        "name": "酒里下药",
+        "cond": {
+          "and": [
+            {
+              "region": "market"
+            },
+            {
+              "chance": 0.12
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "酒入口有点涩，不是这家的味道。你放下碗，舌尖已经麻了半片。"
+          },
+          "-hp:12"
+        ],
+        "cooldownDays": 25
+      },
+      {
+        "id": "w5_foe_snatch",
+        "cat": "江湖恩怨",
+        "name": "抢你的货",
+        "cond": {
+          "and": [
+            {
+              "money": ">=200"
+            },
+            {
+              "chance": 0.1
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "你回头看了一眼摊子，再回头，腰间轻了。人群里有个人跑得很快，快得像早就知道该往哪跑。"
+          },
+          "-money:60"
+        ],
+        "cooldownDays": 25
+      },
+      {
+        "id": "w5_foe_slander",
+        "cat": "江湖恩怨",
+        "name": "造你的谣",
+        "cond": {
+          "and": [
+            {
+              "var": "rumor_heat_max",
+              "op": ">=",
+              "value": 30
+            },
+            {
+              "chance": 0.3
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "茶棚里的人一见你就不说话了。你走远了，背后才重新有声音——他们在说一件你没做过的事。"
+          },
+          "-rep:*:2"
+        ],
+        "cooldownDays": 20
+      },
+      {
+        "id": "w5_foe_kin",
+        "cat": "江湖恩怨",
+        "name": "仇家拿家眷做筏",
+        "cond": {
+          "and": [
+            {
+              "var": "family_count",
+              "op": ">=",
+              "value": 1
+            },
+            {
+              "chance": 0.15
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "门口的石阶上放着一样东西，很小，不是你的。"
+          },
+          {
+            "type": "say",
+            "raw": "「东西要还，人也一样。」"
+          }
+        ],
+        "cooldownDays": 30
+      },
+      {
+        "id": "w5_foe_pact",
+        "cat": "江湖恩怨",
+        "name": "仇家结盟",
+        "cond": {
+          "and": [
+            {
+              "var": "rumor_heat_bad_max",
+              "op": ">=",
+              "value": 40
+            },
+            {
+              "chance": 0.15
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "两个本来不对付的人，昨天在同一张桌上喝了酒。消息传到你耳朵里的时候，他们已经散了。"
+          }
+        ],
+        "cooldownDays": 30
+      },
+      {
+        "id": "w5_foe_repent",
+        "cat": "江湖恩怨",
+        "name": "仇家求和",
+        "cond": {
+          "and": [
+            {
+              "karma": ">-30"
+            },
+            {
+              "chance": 0.08
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "他站在门外，没进来，手里提着一坛没开封的酒。"
+          },
+          {
+            "type": "say",
+            "raw": "「那件事，是我先动的手。你要打，我不还手；你要算了，我请你喝一碗。」"
+          },
+          "+karma:2"
+        ],
+        "cooldownDays": 40
+      },
+      {
+        "id": "w5_foe_debt",
+        "cat": "江湖恩怨",
+        "name": "旧债做文章",
+        "cond": {
+          "and": [
+            {
+              "var": "has_debt",
+              "op": ">=",
+              "value": 1
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "讨债的没上门，来了个传话的：债主把那张借据转给了别人，价钱不低。接手的那位，手上有刀。"
+          }
+        ],
+        "cooldownDays": 30
+      },
+      {
+        "id": "w5_wanted_check",
+        "cat": "官府缉拿",
+        "name": "官道盘查",
+        "cond": {
+          "and": [
+            {
+              "var": "wanted",
+              "op": ">=",
+              "value": 1
+            },
+            {
+              "chance": 0.3
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "官道上设了卡，两个差役拿着一张图，一个一个看过去。你的脚步慢下来——图上那张脸，比本人瘦些。"
+          },
+          {
+            "type": "say",
+            "raw": "「站住，路引拿出来。」"
+          }
+        ],
+        "cooldownDays": 10
+      },
+      {
+        "id": "w5_wanted_reward",
+        "cat": "官府缉拿",
+        "name": "悬赏告示",
+        "cond": {
+          "and": [
+            {
+              "var": "wanted",
+              "op": ">=",
+              "value": 30
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "城门口贴了新告示，落款处盖着朱印。看的人比平时多，念一句就回头看一圈。"
+          },
+          "-rep:朝廷:5"
+        ],
+        "cooldownDays": 20
+      },
+      {
+        "id": "w5_wanted_raid",
+        "cat": "官府缉拿",
+        "name": "查夜",
+        "cond": {
+          "and": [
+            {
+              "time": {
+                "min": 1080,
+                "max": 360
+              }
+            },
+            {
+              "var": "wanted",
+              "op": ">=",
+              "value": 1
+            },
+            {
+              "chance": 0.3
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "三更天，巷子里响起一串脚步声，不齐，但很快。有人挨家挨户地敲门，敲得又急又短。"
+          }
+        ],
+        "cooldownDays": 12
+      },
+      {
+        "id": "w5_wanted_trap",
+        "cat": "官府缉拿",
+        "name": "设局相请",
+        "cond": {
+          "and": [
+            {
+              "rep": "朝廷",
+              "<": 0
+            },
+            {
+              "chance": 0.15
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "有人送来一张帖子，说某位老爷请你去叙话。地址是个僻静的院子，时辰是天黑之后。"
+          }
+        ],
+        "cooldownDays": 30
+      },
+      {
+        "id": "w5_wanted_seal",
+        "cat": "官府缉拿",
+        "name": "城门查验",
+        "cond": {
+          "and": [
+            {
+              "var": "wanted",
+              "op": ">=",
+              "value": 1
+            },
+            {
+              "chance": 0.25
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "今日城门换了人。守门的差役手里拿着册子，出城的人排成一列，一个一个对脸。"
+          }
+        ],
+        "cooldownDays": 12
+      },
+      {
+        "id": "w5_wanted_bounty",
+        "cat": "官府缉拿",
+        "name": "缉捕",
+        "cond": {
+          "and": [
+            {
+              "var": "wanted",
+              "op": ">=",
+              "value": 40
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "街口忽然静了。几个穿公服的从两头逼过来，走得不急，手都按在刀上——他们知道你跑不掉。"
+          },
+          "-rep:朝廷:10"
+        ],
+        "cooldownDays": 20
+      },
+      {
+        "id": "w5_flood",
+        "cat": "天灾饥荒",
+        "name": "河堤决口",
+        "cond": {
+          "and": [
+            {
+              "season": "summer"
+            },
+            {
+              "region": "cunzhen"
+            },
+            {
+              "chance": 0.12
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "后半夜听见水声不对。天亮时，河堤上裂开一道口子，田里的水已经过了膝，有人抱着门板漂过去。"
+          },
+          "var:grain_price=3",
+          "flag:famine_year",
+          "rumor:rs_e_world_disaster"
+        ],
+        "cooldownDays": 60
+      },
+      {
+        "id": "w5_grain_price",
+        "cat": "天灾饥荒",
+        "name": "粮价上涨",
+        "cond": {
+          "and": [
+            {
+              "var": "grain_price",
+              "op": ">=",
+              "value": 2
+            },
+            {
+              "chance": 0.3
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "米铺换了价牌，昨天的数被抹掉，新写的比旧的大了一圈。掌柜站在门口，谁问都只摇头。"
+          }
+        ],
+        "cooldownDays": 20
+      },
+      {
+        "id": "w5_drought",
+        "cat": "天灾饥荒",
+        "name": "大旱",
+        "cond": {
+          "and": [
+            {
+              "season": "summer"
+            },
+            {
+              "region": "farmland"
+            },
+            {
+              "chance": 0.08
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "日头一天比一天毒。田里的土裂成一块一块，牛在井边站着，井已经见底。"
+          },
+          "flag:drought_year"
+        ],
+        "cooldownDays": 60
+      },
+      {
+        "id": "w5_plague",
+        "cat": "天灾饥荒",
+        "name": "时疫",
+        "cond": {
+          "and": [
+            {
+              "season": "autumn"
+            },
+            {
+              "region": "jiangnan"
+            },
+            {
+              "chance": 0.06
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "巷子深处飘着药味，和别的什么东西。有人家挂了白布，也有几条街看不见人走动。"
+          },
+          "rumor:rs_e_world_disaster"
+        ],
+        "cooldownDays": 90
+      },
+      {
+        "id": "w5_siguya_open",
+        "cat": "秘境现世",
+        "name": "思过崖后洞",
+        "cond": {
+          "and": [
+            {
+              "room": "huashan_siguoya"
+            },
+            {
+              "flag": "know_siguya"
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "你在崖下避雨，手扶着石壁，摸到一道缝——不像裂缝，像门。往里一推，是一间黑屋子，地上散着几柄断了口的剑。"
+          },
+          "flag:siguya_found"
+        ],
+        "once": true
+      },
+      {
+        "id": "w5_gumu_open",
+        "cat": "秘境现世",
+        "name": "古墓现世",
+        "cond": {
+          "and": [
+            {
+              "room": "gumu_shan"
+            },
+            {
+              "chance": 0.15
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "山石塌了半边，露出一段砌得极齐的青砖。砖缝里透出凉气，是往下去的。"
+          }
+        ],
+        "once": true
+      },
+      {
+        "id": "w5_jianzhong",
+        "cat": "秘境现世",
+        "name": "剑冢出土",
+        "cond": {
+          "and": [
+            {
+              "room": "huashan_siguoya"
+            },
+            {
+              "chance": 0.12
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "崖下的碎石被雨水冲开，露出一个石堆。堆上插着几把剑，最上面那把已经锈得看不出锋口。"
+          }
+        ],
+        "once": true
+      },
+      {
+        "id": "w5_cangjing_lost",
+        "cat": "秘境现世",
+        "name": "藏经阁失窃",
+        "cond": {
+          "and": [
+            {
+              "room": "shaolin_cangjing"
+            },
+            {
+              "chance": 0.3
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "寺里的钟敲得比平时慢。知客僧一个个脸色发白，有人小声说：三楼少了一函东西。"
+          },
+          "rumor:rs_e_world_sect"
+        ],
+        "cooldownDays": 40
+      },
+      {
+        "id": "w5_xiake_dukou",
+        "cat": "秘境现世",
+        "name": "侠客岛渡口",
+        "cond": {
+          "and": [
+            {
+              "room": "xiake_dukou"
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "渡口泊着一条船，帆是黑的，船上没人上岸。有人问船家去哪，船家只笑，说不远。"
+          }
+        ],
+        "cooldownDays": 30
+      },
+      {
+        "id": "w5_jinguo_tomb",
+        "cat": "秘境现世",
+        "name": "旧陵主墓",
+        "cond": {
+          "and": [
+            {
+              "room": "jinguo_shi"
+            },
+            {
+              "flag": "jinguo_open"
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "墓道口的封石被撬开过，撬痕是新的。里面的灯还亮着——有人在你之前点上的。"
+          }
+        ],
+        "once": true
+      },
+      {
+        "id": "w5_sect_provoke",
+        "cat": "门派纷争",
+        "name": "弟子下山挑衅",
+        "cond": {
+          "and": [
+            {
+              "var": "faction_power_mojiao",
+              "op": ">=",
+              "value": 70
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "教众下了山，在山道上走成一列，见铺子就砸，见人就问华山的人在哪。"
+          }
+        ],
+        "cooldownDays": 20
+      },
+      {
+        "id": "w5_sect_master_change",
+        "cat": "门派纷争",
+        "name": "掌门换人",
+        "cond": {
+          "and": [
+            {
+              "var": "faction_power_mojiao",
+              "op": "<=",
+              "value": 25
+            },
+            {
+              "chance": 0.15
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "门里传出话来：老的退了，新的上了。理由说得体面，听的人心里各有各的数。"
+          },
+          "rumor:rs_e_world_sect"
+        ],
+        "cooldownDays": 60
+      },
+      {
+        "id": "w5_sect_treasure",
+        "cat": "门派纷争",
+        "name": "镇派之宝失窃",
+        "cond": {
+          "and": [
+            {
+              "chance": 0.12
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "门里丢了东西，不声张，只把守夜的换了一遍。可换人的动作太大，反倒让外人都知道了。"
+          }
+        ],
+        "cooldownDays": 45
+      },
+      {
+        "id": "w5_sect_expel",
+        "cat": "门派纷争",
+        "name": "清理门户",
+        "cond": {
+          "and": [
+            {
+              "var": "faction_power_huashan",
+              "op": "<=",
+              "value": 30
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "有人被从山门里赶出来，包袱扔在台阶下，人没回头。从前他是替掌门管账的。"
+          }
+        ],
+        "cooldownDays": 30
+      },
+      {
+        "id": "w5_sect_mercy",
+        "cat": "门派纷争",
+        "name": "有人出面调解",
+        "cond": {
+          "and": [
+            {
+              "karma": ">20"
+            },
+            {
+              "var": "faction_rel_all",
+              "op": "<=",
+              "value": -60
+            },
+            {
+              "chance": 0.25
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "两边正要动手，来了个上了年纪的，站在中间把那句「都住手」说了两遍。第二遍说完，真没人动了。"
+          },
+          "+karma:3"
+        ],
+        "cooldownDays": 30
+      },
+      {
+        "id": "w5_sect_alliance",
+        "cat": "门派纷争",
+        "name": "两派结盟",
+        "cond": {
+          "and": [
+            {
+              "var": "faction_rel_huashan_mojiao",
+              "op": ">=",
+              "value": 60
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "两家的旗子在同一处院墙上并排挂着，中间还隔着一尺。有人说是好事，也有人摇头。"
+          },
+          "rumor:rs_e_world_sect"
+        ],
+        "cooldownDays": 40
+      },
+      {
+        "id": "w5_sect_broke",
+        "cat": "门派纷争",
+        "name": "门派窘迫",
+        "cond": {
+          "and": [
+            {
+              "var": "faction_treasury_mojiao",
+              "op": "<=",
+              "value": -1
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "山门前的石阶缺了一块，没人换。弟子们把兵器当了，换米的换米，换药的换药。"
+          }
+        ],
+        "cooldownDays": 30
+      },
+      {
+        "id": "w5_sect_hunt",
+        "cat": "门派纷争",
+        "name": "联手追杀你",
+        "cond": {
+          "and": [
+            {
+              "var": "rumor_heat_bad_max",
+              "op": ">=",
+              "value": 70
+            },
+            {
+              "var": "faction_rel_all",
+              "op": "<=",
+              "value": -30
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "几家门派的人坐在同一间屋里，桌上摊着一张画像。他们不吵，只把画像往中间推了推。"
+          }
+        ],
+        "cooldownDays": 20
+      },
+      {
+        "id": "w5_debt_collector",
+        "cat": "市井琐事",
+        "name": "催债的上门",
+        "cond": {
+          "and": [
+            {
+              "region": "market"
+            },
+            {
+              "var": "has_debt",
+              "op": ">=",
+              "value": 1
+            },
+            {
+              "chance": 0.25
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "一个横眉竖眼的汉子堵在门口，不进来，也不走。"
+          },
+          {
+            "type": "say",
+            "raw": "「欠的钱，今天该有个说法。」"
+          }
+        ],
+        "cooldownDays": 20
+      },
+      {
+        "id": "w5_streetfight",
+        "cat": "市井琐事",
+        "name": "当街斗殴",
+        "cond": {
+          "and": [
+            {
+              "region": "market"
+            },
+            {
+              "chance": 0.12
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "街上忽然乱了。两个人从摊子后面打出来，撞翻一筐梨，梨滚了满地，没人敢捡。"
+          }
+        ],
+        "cooldownDays": 12
+      },
+      {
+        "id": "w5_pickpocket",
+        "cat": "市井琐事",
+        "name": "扒手",
+        "cond": {
+          "and": [
+            {
+              "region": "market"
+            },
+            {
+              "chance": 0.1
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "人挤的时候，你只顾着看前面的热闹。等散开，怀里空了一块。"
+          },
+          "-money:15"
+        ],
+        "cooldownDays": 10
+      },
+      {
+        "id": "w5_cockfight",
+        "cat": "市井琐事",
+        "name": "斗鸡",
+        "cond": {
+          "and": [
+            {
+              "room": "jn_market_north"
+            },
+            {
+              "chance": 0.15
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "院里围了半圈人，中间两只鸡脖子上的毛都立着。押注的手在袖子里比划，谁也不出声。"
+          }
+        ],
+        "cooldownDays": 12
+      },
+      {
+        "id": "w5_matchmaker",
+        "cat": "市井琐事",
+        "name": "媒婆说亲",
+        "cond": {
+          "and": [
+            {
+              "age": ">=18"
+            },
+            {
+              "chance": 0.08
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "一个鬓边插花的妇人拦住你，先夸你面相，再问你家里还有几口人。"
+          },
+          {
+            "type": "say",
+            "raw": "「这门亲事，我瞧着是配得上的。」"
+          }
+        ],
+        "cooldownDays": 40
+      },
+      {
+        "id": "w5_lost_child",
+        "cat": "市井琐事",
+        "name": "孩童走失",
+        "cond": {
+          "and": [
+            {
+              "region": "market"
+            },
+            {
+              "time": {
+                "min": 480,
+                "max": 1080
+              }
+            },
+            {
+              "chance": 0.08
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "一个女人沿着街喊一个名字，喊了半条街，声音开始劈。有人劝她回去等，她不肯。"
+          }
+        ],
+        "cooldownDays": 20
+      },
+      {
+        "id": "w5_drunk",
+        "cat": "市井琐事",
+        "name": "醉汉闹事",
+        "cond": {
+          "and": [
+            {
+              "room": "jn_wine_house"
+            },
+            {
+              "chance": 0.15
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "酒楼上有人掀了桌子，碗碟碎了一地。掌柜赔笑，那人却指着他说：「你笑话我。」"
+          }
+        ],
+        "cooldownDays": 12
+      },
+      {
+        "id": "w5_theft",
+        "cat": "市井琐事",
+        "name": "铺面失窃",
+        "cond": {
+          "and": [
+            {
+              "room": "jn_silk_shop"
+            },
+            {
+              "chance": 0.08
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "绸缎庄的门开着，掌柜蹲在柜台后面数货。数到一半就不数了，坐着没动。"
+          }
+        ],
+        "cooldownDays": 20
+      },
+      {
+        "id": "w5_funeral",
+        "cat": "市井琐事",
+        "name": "出殡",
+        "cond": {
+          "and": [
+            {
+              "region": "cunzhen"
+            },
+            {
+              "chance": 0.06
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "一队人吹着唢呐从村口出来，纸钱撒在路上，被风卷起来又落下。走在最前面的女人没哭，只是低着头。"
+          }
+        ],
+        "cooldownDays": 25
+      },
+      {
+        "id": "w5_gambling",
+        "cat": "市井琐事",
+        "name": "赌坊开庄",
+        "cond": {
+          "and": [
+            {
+              "room": "jn_wine_room"
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "后院的门开了一条缝，里头骰子撞在碗上，一声一声。门口有人守着，眼睛却在看街两头。"
+          }
+        ],
+        "cooldownDays": 12
+      },
+      {
+        "id": "w5_escort_robbed",
+        "cat": "商路货殖",
+        "name": "镖银被劫",
+        "cond": {
+          "and": [
+            {
+              "region": "gaibang"
+            },
+            {
+              "chance": 0.15
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "镖车停在路边，车上的箱子开着，封条撕成两半。镖师靠着车轮坐着，手还攥着刀柄。"
+          }
+        ],
+        "cooldownDays": 20
+      },
+      {
+        "id": "w5_caravan",
+        "cat": "商路货殖",
+        "name": "商队遇匪",
+        "cond": {
+          "and": [
+            {
+              "region": "xiyu"
+            },
+            {
+              "chance": 0.15
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "商队的人一夜没睡，骆驼跪着不起来。领头的把货重新捆了一遍，捆的结比昨天紧。"
+          }
+        ],
+        "cooldownDays": 20
+      },
+      {
+        "id": "w5_smuggle",
+        "cat": "商路货殖",
+        "name": "走私被发现",
+        "cond": {
+          "and": [
+            {
+              "region": "harbor"
+            },
+            {
+              "time": {
+                "min": 1080,
+                "max": 360
+              }
+            },
+            {
+              "chance": 0.1
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "码头上灯火乱晃，有人把船往暗处撑。岸上传来吆喝，撑船的不答话，只把桨压得更深。"
+          }
+        ],
+        "cooldownDays": 15
+      },
+      {
+        "id": "w5_ship_delay",
+        "cat": "商路货殖",
+        "name": "船期延误",
+        "cond": {
+          "and": [
+            {
+              "weather": "雨"
+            },
+            {
+              "region": "harbor"
+            },
+            {
+              "chance": 0.2
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "雨下了一夜，船还停在原处。船家在舱里抽烟，说等雨小了再走——这话昨天也说过。"
+          }
+        ],
+        "cooldownDays": 10
+      },
+      {
+        "id": "w5_market_fair",
+        "cat": "商路货殖",
+        "name": "码头开市",
+        "cond": {
+          "and": [
+            {
+              "region": "harbor"
+            },
+            {
+              "chance": 0.1
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "码头支起一长排棚子，鱼虾的腥气混着新剖的木头味。挑担的挤在中间，把路堵得只剩一条缝。"
+          },
+          "var:price_harbor=1"
+        ],
+        "cooldownDays": 10
+      },
+      {
+        "id": "w5_bandit_toll",
+        "cat": "商路货殖",
+        "name": "山贼设卡",
+        "cond": {
+          "and": [
+            {
+              "room": "road_jiangnan_2"
+            },
+            {
+              "chance": 0.12
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "路中间横着一根削尖的木头，旁边坐着三四个人啃干粮。见你过来，其中一个站起来，拍了拍手。"
+          },
+          {
+            "type": "say",
+            "raw": "「过路的，留点买路钱。」"
+          }
+        ],
+        "cooldownDays": 15
+      },
+      {
+        "id": "w5_salt_run",
+        "cat": "商路货殖",
+        "name": "盐车过境",
+        "cond": {
+          "and": [
+            {
+              "region": "xixia"
+            },
+            {
+              "chance": 0.1
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "盐车一长串过去，车辙压得很深，赶上的人只能绕到路边。押车的人不说话，看的却比说的多。"
+          }
+        ],
+        "cooldownDays": 25
+      },
+      {
+        "id": "w5_border_levy",
+        "cat": "边关烽火",
+        "name": "边军征丁",
+        "cond": {
+          "and": [
+            {
+              "region": "beijiang"
+            },
+            {
+              "chance": 0.1
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "村里的墙上贴了红纸，写着一串名字，末尾几个是空的——空着的还得再填。"
+          }
+        ],
+        "cooldownDays": 25
+      },
+      {
+        "id": "w5_hu_raid",
+        "cat": "边关烽火",
+        "name": "胡骑南下",
+        "cond": {
+          "and": [
+            {
+              "season": "winter"
+            },
+            {
+              "region": "beijiang"
+            },
+            {
+              "chance": 0.12
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "天刚亮，远处起了尘。不是商队，商队起不了这么整的尘。守堡的人开始收拢牲口。"
+          },
+          "flag:hu_raid_warn"
+        ],
+        "cooldownDays": 30
+      },
+      {
+        "id": "w5_border_market_close",
+        "cat": "边关烽火",
+        "name": "边市关闭",
+        "cond": {
+          "and": [
+            {
+              "region": "xiyu"
+            },
+            {
+              "flag": "hu_raid_warn"
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "边市的门栓上了。做惯交易的两边人隔着一道栅栏站着，都想说话，又都不说。"
+          }
+        ],
+        "cooldownDays": 20
+      },
+      {
+        "id": "w5_deserter",
+        "cat": "边关烽火",
+        "name": "逃兵",
+        "cond": {
+          "and": [
+            {
+              "region": "beijiang"
+            },
+            {
+              "chance": 0.1
+            }
+          ]
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "raw": "路边草里躺着一个人，甲还穿着，甲缝里全是泥。他没求你，只是看着你，看完就闭上眼。"
+          }
+        ],
+        "cooldownDays": 20
+      }
     ]
   },
   "factions": {

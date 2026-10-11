@@ -121,10 +121,34 @@ sec('① sidequest 指针 ⇒ quest 一一对上（**先红后绿**的对象）'
   ok('quest.name 与画像 hook.title 逐字相同（发出==读取）', nameBad.length === 0, nameBad.slice(0, 4).join('; '));
 
   const hkIds = Object.keys(w.data.quests).filter(k => k.startsWith('hk_'));
-  ok('quests 表里 hk_* 恰好 52 条', hkIds.length === 52, hkIds.length);
-  const hookSet = new Set(HOOKS.map(h => h.id));
-  ok('quests 表里没有画像之外的 hk_*', hkIds.every(k => hookSet.has(k)),
-    hkIds.filter(k => !hookSet.has(k)).slice(0, 5).join(', '));
+  /* ⚠️ 2026-10-10 契约更新：计数改成**数据驱动**。
+     原来写死 52（只数 `61_sidequests.json` 那批），`67_sidequests2.json` 又补了一批 →
+     写死必红。而且判据也换了：原来断「在 design/15 那 26 人名单里」，
+     那是**当时那批**的名单；真正要守的是**「画像支线必须长在有画像的人身上」**。
+     ⇒ 新判据：每条 hk_* 的委托人**必须有 `portrait`**（比名单更强、且不会随批次失效）。 */
+  const cnt = f => Object.keys((require('../game/data/' + f).quests) || {})
+    .filter(k => k.startsWith('hk_')).length;
+  /* ⚠️ 2026-10-11：`98_sidequests_culture.json` 又补了 9 条（据画像写的文化人物支线）。
+     与其每加一批就往这儿补一个文件名（补一次忘一次，忘了就红），
+     不如**把所有 hk_ 的来源一起数**：数据文件里有多少，运行时就得有多少。 */
+  const dataDir = path.join(ROOT, 'game', 'data');
+  let fromFiles = 0;
+  for (const f of fs.readdirSync(dataDir)) {
+    if (!/^\d+_.*\.json$/.test(f)) continue;
+    let j = null;
+    try { j = JSON.parse(fs.readFileSync(path.join(dataDir, f), 'utf8')); } catch (e) { continue; }
+    const qs = (j && j.quests) || {};
+    fromFiles += Object.keys(qs).filter(k => k.startsWith('hk_')).length;
+  }
+  ok(`quests 表里 hk_* 与各数据文件之和一致`,
+    hkIds.length === fromFiles, `数据 ${fromFiles} 条 / 运行时 ${hkIds.length} 条`);
+  const noPortrait = hkIds.filter(k => {
+    const q = w.data.quests[k] || {};
+    const def = w.data.npcs[q.giver || q.npc];
+    return !def || !def.portrait;
+  });
+  ok('★ 每条 hk_* 的委托人都真有画像（画像支线必须长在画像上）',
+    noPortrait.length === 0, noPortrait.slice(0, 5).join(', '));
   /* 桩：确认别的集合没被 61 改坏（60_quests 的 sq_npcv_* 仍在，未受影响） */
   ok('原 60_quests 的 sq_npcv_* 未被 61 覆盖（仍 ≥ 260 条）',
     Object.keys(w.data.quests).filter(k => /^sq_npcv_/.test(k)).length >= 260,

@@ -379,6 +379,46 @@ function ok(name, cond, extra) {
   ok('全局只有一处「此地可做」标签（room-actions 块已从 HTML 移除）',
     !/id="room-actions"/.test(HTML) && !/insertBefore\(box, exits\.nextSibling\)/.test(UI));
 
+  /* ⑦ 吐纳 / 双修「点别的按钮就退出」（主人 2026-10-11）
+        ⚠️ 本地面板指令**不经过服务端**（`panelForCmd` 直接在前端开面板），
+           所以「点任何别的按钮都退出这个状态」这条，前端得自己补一趟 ——
+           必须真跑一次 doCmd 才验得到（静态扫源码不算数）。 */
+  console.log('\n⑦ 吐纳 / 双修中开面板先退出');
+  const execdBusy = [];
+  const prevExec2 = api.exec;
+  const prevView7 = api.view;
+  api.exec = async (c) => { execdBusy.push(c); return { ok: true, lines: [], view: { player: { name: '试剑' } } }; };
+  /* ⚠️ 前面的组会把 api.view 换成「不记录 panelCalls」的桩，所以要自带一个 */
+  api.view = async (p) => { panelCalls.push(p); return { view: { npcs: [STUB_NPC], player: {} } }; };
+
+  S.view = { player: { busy: { kind: 'tune', round: 1 } } };
+  panelCalls = [];
+  await U.doCmd('背包');
+  ok('★ 吐纳中点「背包」先走一趟服务端退出', execdBusy[0] === '收功', JSON.stringify(execdBusy));
+  ok('★ 而且背包照常打开（不是被拒绝）', panelCalls[0] === 'inventory', JSON.stringify(panelCalls));
+
+  execdBusy.length = 0; panelCalls = [];
+  S.view = { player: { busy: { kind: 'dual', name: '云中鹤', round: 2, rounds: 4 } } };
+  await U.doCmd('地图');
+  ok('★ 双修中点「地图」也先退出', execdBusy[0] === '收功', JSON.stringify(execdBusy));
+  ok('★ 地图照常打开', panelCalls[0] === 'map', JSON.stringify(panelCalls));
+
+  execdBusy.length = 0; panelCalls = [];
+  S.view = { player: {} };
+  await U.doCmd('状态');
+  ok('没在吐纳/双修时，开面板不该多发那一趟退出', execdBusy.length === 0, JSON.stringify(execdBusy));
+  ok('状态面板照常打开', panelCalls[0] === 'score', JSON.stringify(panelCalls));
+
+  execdBusy.length = 0; panelCalls = [];
+  S.view = { player: { busy: { kind: 'tune' } } };
+  await U.doCmd('吐纳');
+  ok('「吐纳」不是面板指令，交给服务端（前端不该吞掉它）',
+    panelCalls.length === 0 && execdBusy[0] === '吐纳', JSON.stringify(execdBusy));
+
+  api.exec = prevExec2;
+  api.view = prevView7;
+  S.view = null;
+
   console.log('\n' + '='.repeat(42));
   console.log('  通过 ' + pass + ' 项，失败 ' + fail + ' 项');
   console.log('='.repeat(42));

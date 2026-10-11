@@ -1,0 +1,68 @@
+{
+  "rumorSeeds": {
+    "rs_master_take": {
+      "id": "rs_master_take",
+      "kind": "师承",
+      "polarity": 0,
+      "weight": 1.2,
+      "heat0": 42,
+      "tauDays": 5,
+      "ttlDays": 18,
+      "loud": false,
+      "texts": {
+        "true": "{who}在{where}磕了头，认下{whom}做师父。",
+        "half": "听说{who}在{where}拜了师，师父是谁倒没人说得准。",
+        "false": "{who}在{where}给一位大人物递了帖子，往后怕是要发达了！"
+      },
+      "marks": ["师承"]
+    },
+    "rs_sect_promote": {
+      "id": "rs_sect_promote",
+      "kind": "晋位",
+      "polarity": 1,
+      "weight": 1.8,
+      "heat0": 55,
+      "tauDays": 6,
+      "ttlDays": 20,
+      "loud": false,
+      "texts": {
+        "true": "{who}在{where}升了位分，如今是{whom}了，说话比先前管用。",
+        "half": "听说{who}在{where}往上挪了一级，挪到哪儿众说不一。",
+        "false": "{who}在{where}一步登天，门里上下见了他都得让三分！"
+      },
+      "marks": ["晋位"]
+    },
+    "rs_skill_fuse": {
+      "id": "rs_skill_fuse",
+      "kind": "创功",
+      "polarity": 1,
+      "weight": 2.2,
+      "heat0": 62,
+      "tauDays": 10,
+      "ttlDays": 28,
+      "loud": false,
+      "texts": {
+        "true": "听人说{who}把两门功夫揉成了一门新的，叫《{whom}》——也不知是哪一路。",
+        "half": "风闻{who}在{where}练出个新名堂，叫什么倒没人说得清。",
+        "false": "{who}在{where}创下一门绝世神功，江湖上怕是要变天了！"
+      },
+      "marks": ["创功"]
+    },
+    "rs_take_disciple": {
+      "id": "rs_take_disciple",
+      "kind": "收徒",
+      "polarity": 0,
+      "weight": 1.3,
+      "heat0": 44,
+      "tauDays": 5,
+      "ttlDays": 18,
+      "loud": false,
+      "texts": {
+        "true": "{who}在{where}收了{whom}做徒弟，还摆了几桌。",
+        "half": "听说{who}收了个徒弟，年纪据说还不小。",
+        "false": "{who}在{where}广收门徒，门下怕不是要成气候了！"
+      },
+      "marks": ["收徒"]
+    }
+  }
+}

@@ -1,0 +1,8227 @@
+{
+  "_note": "城市补人（#67）。生成器：tools/gen-city-npcs.js（确定性，重跑一致）。⚠️ 本文件完全由生成器拥有，整表重建；画像池与 gen-portraits-bc.js 共用 lib-portrait-pools.js。",
+  "npcs": {
+    "cy_xy_gate_1": {
+      "id": "cy_xy_gate_1",
+      "name": "秦豹",
+      "gender": "male",
+      "tag": "soldier",
+      "title": "守城兵",
+      "room": "xiangyang_gate",
+      "home": "house:cy_xy_gate_1",
+      "personality": "mune",
+      "desc": "靴底沾着泥，腰间刀鞘磕掉了一块漆。",
+      "talk": [
+        "城门申时落闸，要进城趁早。",
+        "路引带在身上么？"
+      ],
+      "age": 48,
+      "likes": [
+        "silver"
+      ],
+      "level": 9,
+      "hp": 195,
+      "atk": 32,
+      "def": 11,
+      "dodge": 6,
+      "speed": 12,
+      "money": 115,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 43,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_gate",
+        "night": "xiangyang_gate"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城门洞里当值的兵，甲片上的锈擦不干净，一天站六个时辰",
+        "origin": "原是个种地的，被拉了壮丁，编到这儿就留了下来。",
+        "now": "近来城门查得紧，来往的都要验一验路引。",
+        "want": "在营里熬到不用再站门洞的那一天",
+        "fear": "怕军令一夜之间就变",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "进城办事的？别惹事。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "拄着长枪站在门洞里，眼睛扫过每一个进出的人"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "兵"
+        ]
+      }
+    },
+    "cy_xy_gate_2": {
+      "id": "cy_xy_gate_2",
+      "name": "周砚",
+      "gender": "male",
+      "tag": "soldier",
+      "title": "守城兵",
+      "room": "xiangyang_gate",
+      "home": "house:cy_xy_gate_2",
+      "personality": "baozhao",
+      "desc": "脸上有道旧疤，不笑，握枪的手背上青筋绷着。",
+      "talk": [
+        "路引带在身上么？",
+        "城门申时落闸，要进城趁早。"
+      ],
+      "age": 33,
+      "likes": [
+        "book"
+      ],
+      "level": 8,
+      "hp": 202,
+      "atk": 21,
+      "def": 22,
+      "dodge": 7,
+      "speed": 21,
+      "money": 30,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 54,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_gate",
+        "night": "xiangyang_gate"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "守在襄阳城城门下的卒子，枪杆攥得比谁都稳，脸却木着",
+        "origin": "吃了三年兵粮。家小在城外三十里，一个月回去一趟。",
+        "now": "换防的日子又近了，他还没攒够回家那趟的盘缠。",
+        "want": "攒够钱，退伍回乡置两亩地",
+        "fear": "怕有一天守的这道门，是从里头被人开了的",
+        "voice": {
+          "tone": "急躁，说翻脸就翻脸",
+          "catchphrase": "路引拿出来。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "拄着长枪站在门洞里，眼睛扫过每一个进出的人"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "兵"
+        ]
+      }
+    },
+    "cy_xy_gate_3": {
+      "id": "cy_xy_gate_3",
+      "name": "吴老栓",
+      "gender": "male",
+      "tag": "watchman",
+      "title": "城门更夫",
+      "room": "xiangyang_gate",
+      "home": "house:cy_xy_gate_3",
+      "personality": "qienuo",
+      "desc": "背有点驼，耳朵却总竖着。",
+      "talk": [
+        "天干物燥，小心火烛——",
+        "夜里别乱走。"
+      ],
+      "age": 32,
+      "likes": [
+        "sword"
+      ],
+      "level": 7,
+      "hp": 101,
+      "atk": 26,
+      "def": 17,
+      "dodge": 6,
+      "speed": 10,
+      "money": 265,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 6,
+      "carry": {
+        "money": 61,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_gate",
+        "night": "xiangyang_gate"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城打更的，一夜敲五遍梆子，街上有事他最先知道",
+        "origin": "原本是个走街串巷的货郎，腿脚好，改做了更夫。",
+        "now": "近来夜里街上不安静，他敲梆子的手比从前紧了。",
+        "want": "让街坊夜里睡得踏实些",
+        "fear": "怕哪一夜撞上不该撞上的人",
+        "voice": {
+          "tone": "怯，声气小",
+          "catchphrase": "又到三更了。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "提着灯笼沿街走，走几步敲一下梆子"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "役"
+        ]
+      }
+    },
+    "cy_xy_street_1": {
+      "id": "cy_xy_street_1",
+      "name": "花伯当",
+      "gender": "male",
+      "tag": "storyteller",
+      "title": "说书人",
+      "room": "xiangyang_street",
+      "home": "house:cy_xy_street_1",
+      "personality": "haoshuang",
+      "desc": "灰布长衫洗得干净，袖口却起了毛边。",
+      "talk": [
+        "这段书，我在这儿说了三年了。",
+        "要听，就找个座儿坐下。"
+      ],
+      "age": 34,
+      "likes": [
+        "wine"
+      ],
+      "level": 13,
+      "hp": 167,
+      "atk": 18,
+      "def": 15,
+      "dodge": 18,
+      "speed": 16,
+      "money": 43,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 67,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_street",
+        "night": "xiangyang_street"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城茶棚里说书的，一块醒木一张桌，说的都是前朝旧事",
+        "origin": "跟一位老师父学的，师父说书说到八十岁，最后死在书台上。",
+        "now": "近来点《岳家将》的人多，他偏不乐意说——说了要出事。",
+        "want": "找个肯听的，把肚子里这些事传下去",
+        "fear": "怕哪一句说岔了，惹祸上身",
+        "voice": {
+          "tone": "豪爽，笑声先到",
+          "catchphrase": "这一段，只在这儿说。"
+        },
+        "routine": [
+          {
+            "at": "dusk",
+            "act": "坐在茶棚中央，醒木一拍，满棚的说话声就停了"
+          }
+        ],
+        "arc": {
+          "init": "一开口就是笑，先递茶再说话。",
+          "warm": "把你当自己人，有好处先想到你。"
+        },
+        "marks": [
+          "艺"
+        ]
+      },
+      "quests": [
+        "sq_cy_xy_shu"
+      ]
+    },
+    "cy_xy_street_2": {
+      "id": "cy_xy_street_2",
+      "name": "郑大牛",
+      "gender": "male",
+      "tag": "porter",
+      "title": "脚夫",
+      "room": "xiangyang_street",
+      "home": "house:cy_xy_street_2",
+      "personality": "mune",
+      "desc": "一只手抠着箩筐的绳子，指节粗得不像话。",
+      "talk": [
+        "让一让，借光！",
+        "这担子沉，别撞着。"
+      ],
+      "age": 37,
+      "likes": [
+        "tea"
+      ],
+      "level": 16,
+      "hp": 158,
+      "atk": 35,
+      "def": 10,
+      "dodge": 11,
+      "speed": 13,
+      "money": 90,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 62,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_street",
+        "night": "xiangyang_street"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城街口扛活的脚夫，一副竹杠两只箩，肩膀上的茧比皮还厚",
+        "origin": "从小就跟着大人挑担，肩膀练出来了，别的没学会。",
+        "now": "近来活少，一帮人在街口蹲着等，谁先上前谁挨骂。",
+        "want": "攒够钱，回乡把老娘接来",
+        "fear": "怕哪一趟挑不动，把腰闪了",
+        "voice": {
+          "tone": "钝，问三句答一句",
+          "catchphrase": "多重都扛得起。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "蹲在街口把箩筐摆正，等人来叫"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "工"
+        ]
+      }
+    },
+    "cy_xy_street_3": {
+      "id": "cy_xy_street_3",
+      "name": "陶三娘",
+      "gender": "female",
+      "tag": "vendor",
+      "title": "摊主",
+      "room": "xiangyang_street",
+      "home": "house:cy_xy_street_3",
+      "personality": "youhua",
+      "desc": "担子卸在脚边，一样样码得整齐。",
+      "talk": [
+        "看一眼，不买也看一眼。",
+        "就剩这些了，便宜给你。"
+      ],
+      "age": 54,
+      "likes": [
+        "sword"
+      ],
+      "level": 7,
+      "hp": 97,
+      "atk": 14,
+      "def": 21,
+      "dodge": 10,
+      "speed": 14,
+      "money": 69,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 10,
+      "carry": {
+        "money": 25,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_street",
+        "night": "xiangyang_street"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城摆摊的，日头没出就支起棚子，天黑才收",
+        "origin": "原是给大户做事的，被辞了以后摆起了摊。",
+        "now": "这几天摊前的路被挖开了，人过不来。",
+        "want": "让家里最小的那个念上书",
+        "fear": "怕一场雨把棚子和货一起泡了",
+        "voice": {
+          "tone": "油滑，见人说人话",
+          "catchphrase": "就剩这些了，便宜些给你。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "蹲在摊子后面把货一样样摆正，摆完又摆一遍"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_xy_market_1": {
+      "id": "cy_xy_market_1",
+      "name": "马洪",
+      "gender": "male",
+      "tag": "groom",
+      "title": "马夫",
+      "room": "xiangyang_market",
+      "home": "house:cy_xy_market_1",
+      "personality": "mune",
+      "desc": "蹲在那儿，半天不说话，只看着牲口。",
+      "talk": [
+        "这马认人，你别靠近。",
+        "草料又涨价了。"
+      ],
+      "age": 51,
+      "likes": [
+        "incense"
+      ],
+      "level": 10,
+      "hp": 96,
+      "atk": 35,
+      "def": 16,
+      "dodge": 19,
+      "speed": 19,
+      "money": 168,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 7,
+      "carry": {
+        "money": 52,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_market",
+        "night": "xiangyang_market"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城马厩里管牲口的，哪匹马夜里踢人他都知道",
+        "origin": "原是镖行里管牲口的，镖行散了，留在了这儿。",
+        "now": "有匹马病了，他守了两夜。",
+        "want": "把眼下这匹病马养好",
+        "fear": "怕牲口折在他手上",
+        "voice": {
+          "tone": "钝，问三句答一句",
+          "catchphrase": "马知道谁对它好。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "蹲在槽边给马刷毛，从脖子一直刷到腿"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "役"
+        ]
+      },
+      "quests": [
+        "sq_cy_xy_ma"
+      ]
+    },
+    "cy_xy_market_2": {
+      "id": "cy_xy_market_2",
+      "name": "郎全",
+      "gender": "male",
+      "tag": "merchant",
+      "title": "马市牙人",
+      "room": "xiangyang_market",
+      "home": "house:cy_xy_market_2",
+      "personality": "youhua",
+      "desc": "一身好料子，鞋底却磨得薄了——跑得多。",
+      "talk": [
+        "这位，看点什么？",
+        "货是好货，价钱好说。"
+      ],
+      "age": 54,
+      "likes": [
+        "music"
+      ],
+      "level": 11,
+      "hp": 197,
+      "atk": 18,
+      "def": 9,
+      "dodge": 14,
+      "speed": 14,
+      "money": 69,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 6,
+      "carry": {
+        "money": 41,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_market",
+        "night": "xiangyang_market"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城跑货的行商，一年中有大半年在路上",
+        "origin": "家里原是商户，一场官司败了家，他从零做起。",
+        "now": "一批货压在手上，行情却往下走。",
+        "want": "在城里落一个自己的栈",
+        "fear": "怕路上出事，血本无归",
+        "voice": {
+          "tone": "油滑，见人说人话",
+          "catchphrase": "这个价，我明天再来听您的信儿。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在货栈里翻看账本，一边翻一边摇头"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_xy_tavern_1": {
+      "id": "cy_xy_tavern_1",
+      "name": "褚掌柜",
+      "gender": "male",
+      "tag": "innkeeper",
+      "title": "汉江楼掌柜",
+      "room": "xiangyang_tavern",
+      "home": "house:cy_xy_tavern_1",
+      "personality": "wenwan",
+      "desc": "站在柜台后头，眼睛却把满屋子的人都数了一遍。",
+      "talk": [
+        "住店还是打尖？",
+        "后堂还有位子。"
+      ],
+      "age": 37,
+      "likes": [
+        "incense"
+      ],
+      "level": 8,
+      "hp": 106,
+      "atk": 17,
+      "def": 22,
+      "dodge": 15,
+      "speed": 21,
+      "money": 34,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 50,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_tavern",
+        "night": "xiangyang_tavern"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城一处铺面的掌柜，柜台后就那一张椅子，坐出了坑",
+        "origin": "学徒出身，替人站了六年柜台，攒够了钱自己盘下一间。",
+        "now": "近来账上总差那么一点，对不上，又找不出错在哪。",
+        "want": "让这间铺子的招牌，在他手里再亮二十年",
+        "fear": "怕哪天算错一笔大数，把家底赔进去",
+        "voice": {
+          "tone": "轻声细语",
+          "catchphrase": "这个价，我可是照本钱给您的。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "站在柜台后头拨算盘，眼睛时不时往街上瞟一眼"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_xy_tavern_2": {
+      "id": "cy_xy_tavern_2",
+      "name": "韦小六",
+      "gender": "male",
+      "tag": "waiter",
+      "title": "酒楼伙计",
+      "room": "xiangyang_tavern",
+      "home": "house:cy_xy_tavern_2",
+      "personality": "haoshuang",
+      "desc": "腰上系着围裙，走得比谁都快。",
+      "talk": [
+        "来了您呐！",
+        "有什么忌口？"
+      ],
+      "age": 52,
+      "likes": [
+        "music"
+      ],
+      "level": 17,
+      "hp": 99,
+      "atk": 28,
+      "def": 11,
+      "dodge": 14,
+      "speed": 20,
+      "money": 119,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 67,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_tavern",
+        "night": "xiangyang_tavern"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城酒楼里跑堂的，两只手端六个碗不打晃",
+        "origin": "逃荒过来的，掌柜看他机灵，留下跑堂。",
+        "now": "老板许过他年下涨工钱，眼看日子近了，老板却不提。",
+        "want": "让掌柜把话算数",
+        "fear": "怕打碎东西赔不起",
+        "voice": {
+          "tone": "豪爽，笑声先到",
+          "catchphrase": "客官的事，我什么也没听见。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "抹布搭在肩上，穿行在桌与桌之间，脚下不停"
+          }
+        ],
+        "arc": {
+          "init": "一开口就是笑，先递茶再说话。",
+          "warm": "把你当自己人，有好处先想到你。"
+        },
+        "marks": [
+          "伙计"
+        ]
+      }
+    },
+    "cy_xy_tavern_up_1": {
+      "id": "cy_xy_tavern_up_1",
+      "name": "雷震",
+      "gender": "male",
+      "tag": "escort",
+      "title": "镖行镖头",
+      "room": "xiangyang_tavern_up",
+      "home": "house:cy_xy_tavern_up_1",
+      "personality": "yinzhi",
+      "desc": "衣裳半新不旧，脸上带着这个岁数该有的疲色。",
+      "talk": [
+        "吃了没？",
+        "有事您说话。"
+      ],
+      "age": 37,
+      "likes": [
+        "food"
+      ],
+      "level": 12,
+      "hp": 98,
+      "atk": 27,
+      "def": 22,
+      "dodge": 15,
+      "speed": 13,
+      "money": 66,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 10,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_tavern_up",
+        "night": "xiangyang_tavern_up"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城走镖的，镖旗一插，路上谁都得让三分",
+        "origin": "原是跑单帮的，栽过一回跟头，投了镖行。",
+        "now": "这条路上近来不太平，他多带了两个人。",
+        "want": "把镖局的招牌再撑几年",
+        "fear": "怕镖丢在自己手上",
+        "voice": {
+          "tone": "阴沉，话里总留着半句",
+          "catchphrase": "路上少说话，多看。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "靠着镖车坐着，一只手始终没离开刀柄"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "镖"
+        ]
+      }
+    },
+    "cy_xy_inn_1": {
+      "id": "cy_xy_inn_1",
+      "name": "严掌柜",
+      "gender": "female",
+      "tag": "innkeeper",
+      "title": "将军客栈掌柜",
+      "room": "xiangyang_inn",
+      "home": "house:cy_xy_inn_1",
+      "personality": "wenwan",
+      "desc": "站在柜台后头，眼睛却把满屋子的人都数了一遍。",
+      "talk": [
+        "后堂还有位子。",
+        "住店还是打尖？"
+      ],
+      "age": 58,
+      "likes": [
+        "wine"
+      ],
+      "level": 13,
+      "hp": 135,
+      "atk": 14,
+      "def": 15,
+      "dodge": 18,
+      "speed": 20,
+      "money": 103,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 67,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_inn",
+        "night": "xiangyang_inn"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城开店的小老板，柜上三分利，人情倒有七分",
+        "origin": "爹娘留下这间铺子，接手那年她十九，账本第一页还是她爹的字。",
+        "now": "铺子对面的新号开了张，把她的老主顾抢去了一半。",
+        "want": "把欠出去的那几笔账收回来，收不回来也认了",
+        "fear": "怕老主顾一个一个不来了",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "本小利薄，您多担待。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "站在柜台后头拨算盘，眼睛时不时往街上瞟一眼"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_xy_lane_1": {
+      "id": "cy_xy_lane_1",
+      "name": "韩铁山",
+      "gender": "male",
+      "tag": "smith",
+      "title": "铁匠",
+      "room": "xiangyang_lane",
+      "home": "house:cy_xy_lane_1",
+      "personality": "baozhao",
+      "desc": "赤着上身，胸口的汗混着炉灰，一道道。",
+      "talk": [
+        "等一下，这火还没打完。",
+        "要好刀，得等。"
+      ],
+      "age": 37,
+      "likes": [
+        "tea"
+      ],
+      "level": 12,
+      "hp": 154,
+      "atk": 27,
+      "def": 22,
+      "dodge": 15,
+      "speed": 21,
+      "money": 62,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 38,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_lane",
+        "night": "xiangyang_lane"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城铁匠铺的炉子，从早到晚没凉过",
+        "origin": "年轻时想当武人，练了三年没练出名堂，回来接了他爹的锤子。",
+        "now": "有人订了一批兵器，出的价不低，可那款式不像是自用。",
+        "want": "把这铺子再撑十年",
+        "fear": "怕手艺断在自己这一辈",
+        "voice": {
+          "tone": "急躁，说翻脸就翻脸",
+          "catchphrase": "好铁好钢，做不出花来。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "抡锤，一下一下，落点从不偏"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "工"
+        ]
+      },
+      "quests": [
+        "sq_cy_xy_lu"
+      ]
+    },
+    "cy_xy_lane_2": {
+      "id": "cy_xy_lane_2",
+      "name": "季老更",
+      "gender": "male",
+      "tag": "watchman",
+      "title": "更夫",
+      "room": "xiangyang_lane",
+      "home": "house:cy_xy_lane_2",
+      "personality": "mune",
+      "desc": "腰上别着梆子，手里一盏灯笼，灯罩上糊着油纸。",
+      "talk": [
+        "夜里别乱走。",
+        "天干物燥，小心火烛——"
+      ],
+      "age": 52,
+      "likes": [
+        "wine"
+      ],
+      "level": 17,
+      "hp": 147,
+      "atk": 34,
+      "def": 11,
+      "dodge": 10,
+      "speed": 12,
+      "money": 147,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 55,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_lane",
+        "night": "xiangyang_lane"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城巡夜的更夫，一盏灯笼照不了多远，耳朵却灵",
+        "origin": "老了，别的活干不动，接了这份巡夜的差。",
+        "now": "有几户人家的门闩，夜里被人动过。",
+        "want": "太平地把这一更敲过去",
+        "fear": "怕自己老了喊不动",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "天干物燥——小心火烛——"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "提着灯笼沿街走，走几步敲一下梆子"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "役"
+        ]
+      }
+    },
+    "cy_xy_brothel_1": {
+      "id": "cy_xy_brothel_1",
+      "name": "花妈妈",
+      "gender": "female",
+      "tag": "madam",
+      "title": "凤来仪掌事",
+      "room": "xiangyang_brothel",
+      "home": "house:cy_xy_brothel_1",
+      "personality": "youhua",
+      "desc": "一头珠翠，脸上的粉却打得匀，看不出年纪。",
+      "talk": [
+        "进来坐坐？",
+        "我这儿的规矩，先说明了。"
+      ],
+      "age": 37,
+      "likes": [
+        "book"
+      ],
+      "level": 10,
+      "hp": 124,
+      "atk": 29,
+      "def": 20,
+      "dodge": 15,
+      "speed": 19,
+      "money": 156,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 11,
+      "carry": {
+        "money": 28,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_brothel",
+        "night": "xiangyang_brothel"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城这一行的当家，姑娘们的账都过她的手",
+        "origin": "原是替人管账的，上一任掌事走了，她接的手。",
+        "now": "楼里有个姑娘攒赎身钱，她装作不知道。",
+        "want": "给自己留一条走得出去的路",
+        "fear": "怕哪一天官面翻脸",
+        "voice": {
+          "tone": "滑不留手",
+          "catchphrase": "银子归银子，情分归情分。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "坐在楼上靠栏的位置，楼下谁进谁出她看得清楚"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "风尘",
+          "债"
+        ]
+      }
+    },
+    "cy_xy_jiangmen_1": {
+      "id": "cy_xy_jiangmen_1",
+      "name": "戚振",
+      "gender": "male",
+      "tag": "officer",
+      "title": "牙将",
+      "room": "xiangyang_jiangmen_lane",
+      "home": "house:cy_xy_jiangmen_1",
+      "personality": "yinzhi",
+      "desc": "甲胄底下压着一件洗得发白的旧里衣，腰杆比谁都直。",
+      "talk": [
+        "营里的事，少打听。",
+        "走路看着点，这儿是校场边。"
+      ],
+      "age": 54,
+      "likes": [
+        "silver"
+      ],
+      "level": 7,
+      "hp": 117,
+      "atk": 20,
+      "def": 17,
+      "dodge": 14,
+      "speed": 14,
+      "money": 53,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 6,
+      "carry": {
+        "money": 49,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_jiangmen_lane",
+        "night": "xiangyang_jiangmen_lane"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城驻军里的牙将，甲胄底下还压着一件旧里衣",
+        "origin": "上一辈就是吃这碗饭的，他十几岁便在营里跑腿。",
+        "now": "上头拨下来的军饷总对不上数，他记着，没处说。",
+        "want": "把短的那截粮饷，替兄弟们讨回来",
+        "fear": "怕真打起来，自己带队填进去",
+        "voice": {
+          "tone": "阴沉，话都想过才说",
+          "catchphrase": "营里的规矩，你担不起。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "背着手在校场边上走，看谁的动作先走形"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "将",
+          "兵"
+        ]
+      }
+    },
+    "cy_xy_jiangmen_2": {
+      "id": "cy_xy_jiangmen_2",
+      "name": "倪老爹",
+      "gender": "male",
+      "tag": "soldier",
+      "title": "老军",
+      "room": "xiangyang_jiangmen_lane",
+      "home": "house:cy_xy_jiangmen_2",
+      "personality": "mune",
+      "desc": "脸上有道旧疤，不笑，握枪的手背上青筋绷着。",
+      "talk": [
+        "城门申时落闸，要进城趁早。",
+        "路引带在身上么？"
+      ],
+      "age": 55,
+      "likes": [
+        "tea"
+      ],
+      "level": 6,
+      "hp": 104,
+      "atk": 19,
+      "def": 8,
+      "dodge": 9,
+      "speed": 11,
+      "money": 288,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 7,
+      "carry": {
+        "money": 28,
+        "items": []
+      },
+      "schedule": {
+        "day": "xiangyang_jiangmen_lane",
+        "night": "xiangyang_jiangmen_lane"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城门洞里当值的兵，甲片上的锈擦不干净，一天站六个时辰",
+        "origin": "原是个种地的，被拉了壮丁，编到这儿就留了下来。",
+        "now": "近来城门查得紧，来往的都要验一验路引。",
+        "want": "在营里熬到不用再站门洞的那一天",
+        "fear": "怕军令一夜之间就变",
+        "voice": {
+          "tone": "钝，问三句答一句",
+          "catchphrase": "进城办事的？别惹事。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "拄着长枪站在门洞里，眼睛扫过每一个进出的人"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "兵"
+        ]
+      }
+    },
+    "cy_xy_home_01": {
+      "id": "cy_xy_home_01",
+      "name": "周敬斋",
+      "gender": "male",
+      "tag": "richman",
+      "title": "襄阳富户",
+      "room": "xy_home_01",
+      "home": "house:cy_xy_home_01",
+      "personality": "yinzhi",
+      "desc": "说话慢，尾音拖得长，像什么都不必急。",
+      "talk": [
+        "坐。",
+        "这事我记下了。"
+      ],
+      "age": 56,
+      "likes": [
+        "wine"
+      ],
+      "level": 17,
+      "hp": 191,
+      "atk": 30,
+      "def": 23,
+      "dodge": 16,
+      "speed": 12,
+      "money": 131,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 59,
+        "items": []
+      },
+      "schedule": {
+        "day": "xy_home_01",
+        "night": "xy_home_01"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城有田产的人家，几进的院子，两房的仆役",
+        "origin": "他自己挣出来的，从头一笔生意做起。",
+        "now": "儿子在外头做官，他最怕儿子出事牵连本家。",
+        "want": "在族里说一句话，谁都要听",
+        "fear": "怕家业败在自己手上",
+        "voice": {
+          "tone": "阴沉，话都想过才说",
+          "catchphrase": "好说，都是乡里乡亲的。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在堂上，看人送来的帖子，看完放到一边"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "富"
+        ]
+      }
+    },
+    "cy_xy_home_02": {
+      "id": "cy_xy_home_02",
+      "name": "吴婶",
+      "gender": "female",
+      "title": "周宅邻舍",
+      "room": "xy_home_02",
+      "home": "house:cy_xy_home_02",
+      "personality": "wenwan",
+      "desc": "衣裳半新不旧，脸上带着这个岁数该有的疲色。",
+      "talk": [
+        "吃了没？",
+        "有事您说话。"
+      ],
+      "age": 35,
+      "likes": [
+        "incense"
+      ],
+      "level": 16,
+      "hp": 198,
+      "atk": 25,
+      "def": 18,
+      "dodge": 13,
+      "speed": 21,
+      "money": 46,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 14,
+        "items": []
+      },
+      "schedule": {
+        "day": "xy_home_02",
+        "night": "xy_home_02"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城的寻常住户，早出晚归",
+        "origin": "从别处迁来的，来了就没再走。",
+        "now": "月初刚交了一笔钱，手头正紧。",
+        "want": "把欠街坊的人情还上",
+        "fear": "怕出事",
+        "voice": {
+          "tone": "轻声细语",
+          "catchphrase": "您先忙，您先忙。"
+        },
+        "routine": [
+          {
+            "at": "dusk",
+            "act": "靠在门框上剥花生，剥一颗吃一颗"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "邻"
+        ]
+      }
+    },
+    "cy_xy_home_03": {
+      "id": "cy_xy_home_03",
+      "name": "冯济仁",
+      "gender": "male",
+      "tag": "doctor",
+      "title": "坐堂郎中",
+      "room": "xy_home_03",
+      "home": "house:cy_xy_home_03",
+      "personality": "lengmo",
+      "desc": "药香从他身上先到，人才到。",
+      "talk": [
+        "哪儿不舒服？",
+        "方子我写好了，照抓。"
+      ],
+      "age": 52,
+      "likes": [
+        "music"
+      ],
+      "level": 15,
+      "hp": 97,
+      "atk": 14,
+      "def": 13,
+      "dodge": 14,
+      "speed": 14,
+      "money": 73,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 10,
+      "carry": {
+        "money": 21,
+        "items": []
+      },
+      "schedule": {
+        "day": "xy_home_03",
+        "night": "xy_home_03"
+      },
+      "tier": "B",
+      "district": "xiangyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "襄阳城坐堂的郎中，药柜三十六个抽屉，闭着眼也摸得准",
+        "origin": "家中原是药商，一场疫病把铺子赔光，只剩这门手艺。",
+        "now": "有个老病人赊了三个月的药，方子还压在案头。",
+        "want": "看一次不用先问银子的病",
+        "fear": "怕遇到自己认不出的症候",
+        "voice": {
+          "tone": "冷淡，不多说一个字",
+          "catchphrase": "手伸出来。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在堂里碾药，碾子转得很慢"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "医",
+          "药"
+        ]
+      }
+    },
+    "cy_ly_gate_1": {
+      "id": "cy_ly_gate_1",
+      "name": "柏文远",
+      "gender": "male",
+      "tag": "watchman",
+      "title": "城门吏",
+      "room": "luoyang_gate",
+      "home": "house:cy_ly_gate_1",
+      "personality": "mune",
+      "desc": "灰布短袄上打着补丁，补丁的针脚倒是齐整。",
+      "talk": [
+        "天干物燥，小心火烛——",
+        "夜里别乱走。"
+      ],
+      "age": 54,
+      "likes": [
+        "sword"
+      ],
+      "level": 13,
+      "hp": 95,
+      "atk": 22,
+      "def": 15,
+      "dodge": 16,
+      "speed": 16,
+      "money": 211,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 55,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_gate",
+        "night": "luoyang_gate"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城打更的，一夜敲五遍梆子，街上有事他最先知道",
+        "origin": "原本是个走街串巷的货郎，腿脚好，改做了更夫。",
+        "now": "近来夜里街上不安静，他敲梆子的手比从前紧了。",
+        "want": "让街坊夜里睡得踏实些",
+        "fear": "怕哪一夜撞上不该撞上的人",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "又到三更了。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "提着灯笼沿街走，走几步敲一下梆子"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "役"
+        ]
+      }
+    },
+    "cy_ly_gate_2": {
+      "id": "cy_ly_gate_2",
+      "name": "苏承",
+      "gender": "male",
+      "tag": "soldier",
+      "title": "守城兵",
+      "room": "luoyang_gate",
+      "home": "house:cy_ly_gate_2",
+      "personality": "haoshuang",
+      "desc": "甲片上的锈擦不净，站得笔直，眼睛却总往城外的路上瞟。",
+      "talk": [
+        "城门申时落闸，要进城趁早。",
+        "路引带在身上么？"
+      ],
+      "age": 33,
+      "likes": [
+        "book"
+      ],
+      "level": 16,
+      "hp": 150,
+      "atk": 27,
+      "def": 10,
+      "dodge": 11,
+      "speed": 17,
+      "money": 106,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 10,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_gate",
+        "night": "luoyang_gate"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城门洞里当值的兵，甲片上的锈擦不干净，一天站六个时辰",
+        "origin": "原是个种地的，被拉了壮丁，编到这儿就留了下来。",
+        "now": "近来城门查得紧，来往的都要验一验路引。",
+        "want": "在营里熬到不用再站门洞的那一天",
+        "fear": "怕军令一夜之间就变",
+        "voice": {
+          "tone": "爽快，话里带笑",
+          "catchphrase": "进城办事的？别惹事。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "拄着长枪站在门洞里，眼睛扫过每一个进出的人"
+          }
+        ],
+        "arc": {
+          "init": "一开口就是笑，先递茶再说话。",
+          "warm": "把你当自己人，有好处先想到你。"
+        },
+        "marks": [
+          "兵"
+        ]
+      }
+    },
+    "cy_ly_street_1": {
+      "id": "cy_ly_street_1",
+      "name": "贾花农",
+      "gender": "male",
+      "tag": "gardener",
+      "title": "花匠",
+      "room": "luoyang_street",
+      "home": "house:cy_ly_street_1",
+      "personality": "wenwan",
+      "desc": "指甲修得齐整，指缝里却嵌着洗不掉的泥。",
+      "talk": [
+        "花这东西，急不得。",
+        "这几株费了两年工夫。"
+      ],
+      "age": 30,
+      "likes": [
+        "jade"
+      ],
+      "level": 13,
+      "hp": 131,
+      "atk": 26,
+      "def": 11,
+      "dodge": 10,
+      "speed": 16,
+      "money": 271,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 39,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_street",
+        "night": "luoyang_street"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城替大户养花的匠人，手上沾着泥，指甲修得倒干净",
+        "origin": "原是个落魄的书生，爱花胜过爱书，索性做了这行。",
+        "now": "主家要办一场赏花宴，他得赶在日子前把最难伺候的那几株催开。",
+        "want": "让这座城里的人都知道，花是谁养的",
+        "fear": "怕主家的花折在他手里",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "再等两日，它就要开了。"
+        },
+        "routine": [
+          {
+            "at": "dawn",
+            "act": "蹲在花圃里修枝，剪子使得极轻"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "工"
+        ]
+      }
+    },
+    "cy_ly_street_2": {
+      "id": "cy_ly_street_2",
+      "name": "米芾",
+      "gender": "male",
+      "tag": "artist",
+      "title": "画师",
+      "room": "luoyang_street",
+      "home": "house:cy_ly_street_2",
+      "personality": "lengmo",
+      "desc": "眼神总往虚处看，像在琢磨什么。",
+      "talk": [
+        "这幅还没干，别碰。",
+        "你要画像？坐正了。"
+      ],
+      "age": 53,
+      "likes": [
+        "food"
+      ],
+      "level": 16,
+      "hp": 138,
+      "atk": 15,
+      "def": 22,
+      "dodge": 11,
+      "speed": 17,
+      "money": 186,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 22,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_street",
+        "night": "luoyang_street"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城画画的，桌上笔比人多",
+        "origin": "原是给人做匾额的，慢慢画起了整幅。",
+        "now": "有位主顾订了一幅画，他画了三稿都不满意。",
+        "want": "让画上落下自己的名",
+        "fear": "怕有一天手抖了，画不成",
+        "voice": {
+          "tone": "淡淡的，事不关己",
+          "catchphrase": "像不像不要紧，要的是那个人。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在窗前，笔搁着，看很久才落一笔"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "艺"
+        ]
+      }
+    },
+    "cy_ly_street_3": {
+      "id": "cy_ly_street_3",
+      "name": "潘锦堂",
+      "gender": "male",
+      "tag": "merchant",
+      "title": "绸缎商人",
+      "room": "luoyang_street",
+      "home": "house:cy_ly_street_3",
+      "personality": "youhua",
+      "desc": "眼珠子一转，先看你穿的是什么。",
+      "talk": [
+        "这位，看点什么？",
+        "货是好货，价钱好说。"
+      ],
+      "age": 30,
+      "likes": [
+        "silver"
+      ],
+      "level": 11,
+      "hp": 157,
+      "atk": 32,
+      "def": 17,
+      "dodge": 10,
+      "speed": 18,
+      "money": 213,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 6,
+      "carry": {
+        "money": 29,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_street",
+        "night": "luoyang_street"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城跑货的行商，一年中有大半年在路上",
+        "origin": "家里原是商户，一场官司败了家，他从零做起。",
+        "now": "一批货压在手上，行情却往下走。",
+        "want": "在城里落一个自己的栈",
+        "fear": "怕路上出事，血本无归",
+        "voice": {
+          "tone": "油滑，见人说人话",
+          "catchphrase": "这个价，我明天再来听您的信儿。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在货栈里翻看账本，一边翻一边摇头"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_ly_market_1": {
+      "id": "cy_ly_market_1",
+      "name": "章有德",
+      "gender": "male",
+      "tag": "merchant",
+      "title": "南市行商",
+      "room": "luoyang_market",
+      "home": "house:cy_ly_market_1",
+      "personality": "youhua",
+      "desc": "一身好料子，鞋底却磨得薄了——跑得多。",
+      "talk": [
+        "货是好货，价钱好说。",
+        "这位，看点什么？"
+      ],
+      "age": 41,
+      "likes": [
+        "book"
+      ],
+      "level": 6,
+      "hp": 172,
+      "atk": 21,
+      "def": 20,
+      "dodge": 19,
+      "speed": 19,
+      "money": 132,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 11,
+      "carry": {
+        "money": 64,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_market",
+        "night": "luoyang_market"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城做买卖的，哪儿的价高往哪儿走",
+        "origin": "跟人跑腿跑了五年，学会了看行情，也学会了看人。",
+        "now": "新谈的一门生意，对方的底细他没摸清。",
+        "want": "做成这笔买卖，把本钱翻一番",
+        "fear": "怕信错了人",
+        "voice": {
+          "tone": "滑不留手",
+          "catchphrase": "好说，好说。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在货栈里翻看账本，一边翻一边摇头"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_ly_market_2": {
+      "id": "cy_ly_market_2",
+      "name": "葛小娥",
+      "gender": "female",
+      "tag": "vendor",
+      "title": "南市摊主",
+      "room": "luoyang_market",
+      "home": "house:cy_ly_market_2",
+      "personality": "baozhao",
+      "desc": "担子卸在脚边，一样样码得整齐。",
+      "talk": [
+        "看一眼，不买也看一眼。",
+        "就剩这些了，便宜给你。"
+      ],
+      "age": 34,
+      "likes": [
+        "wine"
+      ],
+      "level": 7,
+      "hp": 153,
+      "atk": 22,
+      "def": 13,
+      "dodge": 12,
+      "speed": 18,
+      "money": 189,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 10,
+      "carry": {
+        "money": 17,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_market",
+        "night": "luoyang_market"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城摆摊的，日头没出就支起棚子，天黑才收",
+        "origin": "原是给大户做事的，被辞了以后摆起了摊。",
+        "now": "这几天摊前的路被挖开了，人过不来。",
+        "want": "让家里最小的那个念上书",
+        "fear": "怕一场雨把棚子和货一起泡了",
+        "voice": {
+          "tone": "火爆，一句话就顶回来",
+          "catchphrase": "就剩这些了，便宜些给你。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "蹲在摊子后面把货一样样摆正，摆完又摆一遍"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_ly_tavern_1": {
+      "id": "cy_ly_tavern_1",
+      "name": "彭掌柜",
+      "gender": "male",
+      "tag": "innkeeper",
+      "title": "天香楼掌柜",
+      "room": "luoyang_tavern",
+      "home": "house:cy_ly_tavern_1",
+      "personality": "wenwan",
+      "desc": "站在柜台后头，眼睛却把满屋子的人都数了一遍。",
+      "talk": [
+        "住店还是打尖？",
+        "后堂还有位子。"
+      ],
+      "age": 59,
+      "likes": [
+        "incense"
+      ],
+      "level": 12,
+      "hp": 198,
+      "atk": 23,
+      "def": 18,
+      "dodge": 13,
+      "speed": 21,
+      "money": 30,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 18,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_tavern",
+        "night": "luoyang_tavern"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城一处铺面的掌柜，柜台后就那一张椅子，坐出了坑",
+        "origin": "学徒出身，替人站了六年柜台，攒够了钱自己盘下一间。",
+        "now": "近来账上总差那么一点，对不上，又找不出错在哪。",
+        "want": "让这间铺子的招牌，在他手里再亮二十年",
+        "fear": "怕哪天算错一笔大数，把家底赔进去",
+        "voice": {
+          "tone": "轻声细语",
+          "catchphrase": "这个价，我可是照本钱给您的。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "站在柜台后头拨算盘，眼睛时不时往街上瞟一眼"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_ly_tavern_2": {
+      "id": "cy_ly_tavern_2",
+      "name": "唐婉娘",
+      "gender": "female",
+      "tag": "actor",
+      "title": "卖唱伶人",
+      "room": "luoyang_tavern",
+      "home": "house:cy_ly_tavern_2",
+      "personality": "wenwan",
+      "desc": "眼角画着一道，不知是忘了卸，还是新勾的。",
+      "talk": [
+        "听我唱一段？",
+        "嗓子今儿不太开。"
+      ],
+      "age": 60,
+      "likes": [
+        "wine"
+      ],
+      "level": 13,
+      "hp": 191,
+      "atk": 28,
+      "def": 23,
+      "dodge": 18,
+      "speed": 20,
+      "money": 63,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 31,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_tavern",
+        "night": "luoyang_tavern"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城戏班里的，嗓子一亮半条街听得见",
+        "origin": "原先是个读书人，家道败了，改唱了戏。",
+        "now": "班主欠了她三个月的份子钱。",
+        "want": "把欠的份子讨回来，好寄回家",
+        "fear": "怕嗓子坏了",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "台上的人，谢了幕就没了。"
+        },
+        "routine": [
+          {
+            "at": "dusk",
+            "act": "在后台对着镜子勾脸，一笔一笔很慢"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "艺"
+        ]
+      }
+    },
+    "cy_ly_tavern_up_1": {
+      "id": "cy_ly_tavern_up_1",
+      "name": "邹老吏",
+      "gender": "male",
+      "tag": "official",
+      "title": "致仕老吏",
+      "room": "luoyang_tavern_up",
+      "home": "house:cy_ly_tavern_up_1",
+      "personality": "yinzhi",
+      "desc": "说话前先看你一眼，像在心里过了一遍章程。",
+      "talk": [
+        "照着规矩来。",
+        "文书压着，急不得。"
+      ],
+      "age": 61,
+      "likes": [
+        "tea"
+      ],
+      "level": 8,
+      "hp": 198,
+      "atk": 27,
+      "def": 10,
+      "dodge": 15,
+      "speed": 17,
+      "money": 130,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 42,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_tavern_up",
+        "night": "luoyang_tavern_up"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城衙门里的书办，案上的文书一摞压一摞",
+        "origin": "接了他爹的缺，公门里的门道他从小就学。",
+        "now": "上头的公文压了三天，他还没敢落笔。",
+        "want": "把那些旧账从册子上抹清楚",
+        "fear": "怕上面出事牵连到自己",
+        "voice": {
+          "tone": "阴沉，话里总留着半句",
+          "catchphrase": "这文书，早该结了。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "伏在案上写字，写完吹一吹墨"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "官",
+          "书"
+        ]
+      },
+      "quests": [
+        "sq_cy_ly_an"
+      ]
+    },
+    "cy_ly_inn_1": {
+      "id": "cy_ly_inn_1",
+      "name": "薛掌柜",
+      "gender": "male",
+      "tag": "innkeeper",
+      "title": "龙门客栈掌柜",
+      "room": "luoyang_inn",
+      "home": "house:cy_ly_inn_1",
+      "personality": "mune",
+      "desc": "站在柜台后头，眼睛却把满屋子的人都数了一遍。",
+      "talk": [
+        "后堂还有位子。",
+        "住店还是打尖？"
+      ],
+      "age": 48,
+      "likes": [
+        "music"
+      ],
+      "level": 9,
+      "hp": 203,
+      "atk": 32,
+      "def": 19,
+      "dodge": 10,
+      "speed": 20,
+      "money": 159,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 19,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_inn",
+        "night": "luoyang_inn"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城开店的小老板，柜上三分利，人情倒有七分",
+        "origin": "爹娘留下这间铺子，接手那年他十九，账本第一页还是他爹的字。",
+        "now": "铺子对面的新号开了张，把他的老主顾抢去了一半。",
+        "want": "把欠出去的那几笔账收回来，收不回来也认了",
+        "fear": "怕老主顾一个一个不来了",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "本小利薄，您多担待。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "站在柜台后头拨算盘，眼睛时不时往街上瞟一眼"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_ly_lane_1": {
+      "id": "cy_ly_lane_1",
+      "name": "盛花姑",
+      "gender": "female",
+      "tag": "gardener",
+      "title": "花巷花匠",
+      "room": "luoyang_lane",
+      "home": "house:cy_ly_lane_1",
+      "personality": "wenwan",
+      "desc": "指甲修得齐整，指缝里却嵌着洗不掉的泥。",
+      "talk": [
+        "这几株费了两年工夫。",
+        "花这东西，急不得。"
+      ],
+      "age": 35,
+      "likes": [
+        "tea"
+      ],
+      "level": 8,
+      "hp": 166,
+      "atk": 33,
+      "def": 10,
+      "dodge": 17,
+      "speed": 21,
+      "money": 50,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 42,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_lane",
+        "night": "luoyang_lane"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城伺候花圃的，一年到头打交道的都是草木",
+        "origin": "家里三代养花，她爹接的活，如今到了她手上。",
+        "now": "今年时气不对，几株名品的叶子先黄了。",
+        "want": "养出一株自己都舍不得卖的花",
+        "fear": "怕栽了一辈子的花，最后自己连块地都没有",
+        "voice": {
+          "tone": "轻声细语",
+          "catchphrase": "花不骗人，缺一分水就蔫给你看。"
+        },
+        "routine": [
+          {
+            "at": "dawn",
+            "act": "蹲在花圃里修枝，剪子使得极轻"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "工"
+        ]
+      },
+      "quests": [
+        "sq_cy_ly_hua"
+      ]
+    },
+    "cy_ly_brothel_1": {
+      "id": "cy_ly_brothel_1",
+      "name": "姚掌事",
+      "gender": "female",
+      "tag": "madam",
+      "title": "牡丹阁掌事",
+      "room": "luoyang_brothel",
+      "home": "house:cy_ly_brothel_1",
+      "personality": "youhua",
+      "desc": "一头珠翠，脸上的粉却打得匀，看不出年纪。",
+      "talk": [
+        "进来坐坐？",
+        "我这儿的规矩，先说明了。"
+      ],
+      "age": 37,
+      "likes": [
+        "food"
+      ],
+      "level": 6,
+      "hp": 184,
+      "atk": 23,
+      "def": 8,
+      "dodge": 13,
+      "speed": 19,
+      "money": 208,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 7,
+      "carry": {
+        "money": 48,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_brothel",
+        "night": "luoyang_brothel"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城这一行的当家，姑娘们的账都过她的手",
+        "origin": "原是替人管账的，上一任掌事走了，她接的手。",
+        "now": "楼里有个姑娘攒赎身钱，她装作不知道。",
+        "want": "给自己留一条走得出去的路",
+        "fear": "怕哪一天官面翻脸",
+        "voice": {
+          "tone": "滑不留手",
+          "catchphrase": "银子归银子，情分归情分。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "坐在楼上靠栏的位置，楼下谁进谁出她看得清楚"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "风尘",
+          "债"
+        ]
+      },
+      "quests": [
+        "sq_cy_ly_zhang"
+      ]
+    },
+    "cy_ly_mudan_1": {
+      "id": "cy_ly_mudan_1",
+      "name": "冯观澜",
+      "gender": "male",
+      "tag": "scholar",
+      "title": "书院学子",
+      "room": "luoyang_mudan_lane",
+      "home": "house:cy_ly_mudan_1",
+      "personality": "haoshuang",
+      "desc": "一眼看得出是熬了夜的，眼底青着。",
+      "talk": [
+        "书里的话，未必作数。",
+        "考完了再说吧。"
+      ],
+      "age": 26,
+      "likes": [
+        "silver"
+      ],
+      "level": 15,
+      "hp": 153,
+      "atk": 16,
+      "def": 21,
+      "dodge": 10,
+      "speed": 14,
+      "money": 117,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 10,
+      "carry": {
+        "money": 33,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_mudan_lane",
+        "night": "luoyang_mudan_lane"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城的读书人，屋里的书比家具多",
+        "origin": "家里供他念书，把地都卖了，他还没考出来。",
+        "now": "再考一场，家里就真拿不出盘缠了。",
+        "want": "让家里那些卖地的钱不算白花",
+        "fear": "怕读了一辈子书，到头来什么都不是",
+        "voice": {
+          "tone": "豪爽，笑声先到",
+          "catchphrase": "书中自有……书中自有。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "在灯下抄书，抄一会儿就抬头揉眼睛"
+          }
+        ],
+        "arc": {
+          "init": "一开口就是笑，先递茶再说话。",
+          "warm": "把你当自己人，有好处先想到你。"
+        },
+        "marks": [
+          "儒"
+        ]
+      }
+    },
+    "cy_ly_mudan_2": {
+      "id": "cy_ly_mudan_2",
+      "name": "孔继圣",
+      "gender": "male",
+      "tag": "scholar",
+      "title": "应举书生",
+      "room": "luoyang_mudan_lane",
+      "home": "house:cy_ly_mudan_2",
+      "personality": "yinzhi",
+      "desc": "袖子里露出半卷书，书角卷得不像样。",
+      "talk": [
+        "考完了再说吧。",
+        "书里的话，未必作数。"
+      ],
+      "age": 55,
+      "likes": [
+        "flower"
+      ],
+      "level": 10,
+      "hp": 140,
+      "atk": 23,
+      "def": 12,
+      "dodge": 7,
+      "speed": 15,
+      "money": 96,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 11,
+      "carry": {
+        "money": 44,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_mudan_lane",
+        "night": "luoyang_mudan_lane"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城教书的，几个蒙童，一间旧屋",
+        "origin": "祖上出过举人，到了他这一辈，只剩下那方砚台。",
+        "now": "替人抄书换米，抄到夜里，字就越写越潦。",
+        "want": "中一次，哪怕只是末名",
+        "fear": "怕母亲的病拖不起",
+        "voice": {
+          "tone": "阴沉，话里总留着半句",
+          "catchphrase": "这个嘛，容我想想。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "在灯下抄书，抄一会儿就抬头揉眼睛"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "儒"
+        ]
+      }
+    },
+    "cy_ly_home_01": {
+      "id": "cy_ly_home_01",
+      "name": "王万钟",
+      "gender": "male",
+      "tag": "richman",
+      "title": "洛阳富户",
+      "room": "ly_home_01",
+      "home": "house:cy_ly_home_01",
+      "personality": "yinzhi",
+      "desc": "说话慢，尾音拖得长，像什么都不必急。",
+      "talk": [
+        "坐。",
+        "这事我记下了。"
+      ],
+      "age": 48,
+      "likes": [
+        "sword"
+      ],
+      "level": 13,
+      "hp": 203,
+      "atk": 18,
+      "def": 19,
+      "dodge": 18,
+      "speed": 12,
+      "money": 59,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 51,
+        "items": []
+      },
+      "schedule": {
+        "day": "ly_home_01",
+        "night": "ly_home_01"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城有田产的人家，几进的院子，两房的仆役",
+        "origin": "他自己挣出来的，从头一笔生意做起。",
+        "now": "儿子在外头做官，他最怕儿子出事牵连本家。",
+        "want": "在族里说一句话，谁都要听",
+        "fear": "怕家业败在自己手上",
+        "voice": {
+          "tone": "阴沉，话都想过才说",
+          "catchphrase": "好说，都是乡里乡亲的。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在堂上，看人送来的帖子，看完放到一边"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "富"
+        ]
+      }
+    },
+    "cy_ly_home_02": {
+      "id": "cy_ly_home_02",
+      "name": "李守拙",
+      "gender": "male",
+      "title": "王家邻舍",
+      "room": "ly_home_02",
+      "home": "house:cy_ly_home_02",
+      "personality": "mune",
+      "desc": "手上做着活，眼睛却瞟着街上。",
+      "talk": [
+        "吃了没？",
+        "有事您说话。"
+      ],
+      "age": 43,
+      "likes": [
+        "book"
+      ],
+      "level": 12,
+      "hp": 146,
+      "atk": 19,
+      "def": 14,
+      "dodge": 11,
+      "speed": 17,
+      "money": 110,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 30,
+        "items": []
+      },
+      "schedule": {
+        "day": "ly_home_02",
+        "night": "ly_home_02"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城的寻常住户，早出晚归",
+        "origin": "从别处迁来的，来了就没再走。",
+        "now": "月初刚交了一笔钱，手头正紧。",
+        "want": "把欠街坊的人情还上",
+        "fear": "怕出事",
+        "voice": {
+          "tone": "钝，问三句答一句",
+          "catchphrase": "您先忙，您先忙。"
+        },
+        "routine": [
+          {
+            "at": "dusk",
+            "act": "靠在门框上剥花生，剥一颗吃一颗"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "邻"
+        ]
+      }
+    },
+    "cy_ly_home_03": {
+      "id": "cy_ly_home_03",
+      "name": "沈墨林",
+      "gender": "male",
+      "tag": "scholar",
+      "title": "致仕老儒",
+      "room": "ly_home_03",
+      "home": "house:cy_ly_home_03",
+      "personality": "wenwan",
+      "desc": "一眼看得出是熬了夜的，眼底青着。",
+      "talk": [
+        "书里的话，未必作数。",
+        "考完了再说吧。"
+      ],
+      "age": 34,
+      "likes": [
+        "wine"
+      ],
+      "level": 15,
+      "hp": 149,
+      "atk": 32,
+      "def": 9,
+      "dodge": 6,
+      "speed": 18,
+      "money": 157,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 6,
+      "carry": {
+        "money": 69,
+        "items": []
+      },
+      "schedule": {
+        "day": "ly_home_03",
+        "night": "ly_home_03"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城的读书人，屋里的书比家具多",
+        "origin": "家里供他念书，把地都卖了，他还没考出来。",
+        "now": "再考一场，家里就真拿不出盘缠了。",
+        "want": "让家里那些卖地的钱不算白花",
+        "fear": "怕读了一辈子书，到头来什么都不是",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "书中自有……书中自有。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "在灯下抄书，抄一会儿就抬头揉眼睛"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "儒"
+        ]
+      }
+    },
+    "cy_ly_home_04": {
+      "id": "cy_ly_home_04",
+      "name": "韩素娘",
+      "gender": "female",
+      "title": "韩宅主母",
+      "room": "ly_home_04",
+      "home": "house:cy_ly_home_04",
+      "personality": "youhua",
+      "desc": "衣裳半新不旧，脸上带着这个岁数该有的疲色。",
+      "talk": [
+        "有事您说话。",
+        "吃了没？"
+      ],
+      "age": 41,
+      "likes": [
+        "flower"
+      ],
+      "level": 6,
+      "hp": 180,
+      "atk": 29,
+      "def": 12,
+      "dodge": 13,
+      "speed": 11,
+      "money": 284,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 11,
+      "carry": {
+        "money": 52,
+        "items": []
+      },
+      "schedule": {
+        "day": "ly_home_04",
+        "night": "ly_home_04"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城街面上的人，日子过得不宽裕也不算差",
+        "origin": "爹娘走得早，是街坊们看着长大的。",
+        "now": "隔壁那家在办喜事，她去凑了个份子。",
+        "want": "让孩子有个正经出路",
+        "fear": "怕日子过不下去",
+        "voice": {
+          "tone": "滑不留手",
+          "catchphrase": "这世道，不都这样么。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "跟隔壁墙头上那位隔着墙说闲话"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "邻"
+        ]
+      }
+    },
+    "cy_ly_arena_1": {
+      "id": "cy_ly_arena_1",
+      "name": "裘打擂",
+      "gender": "male",
+      "tag": "swordsman",
+      "title": "守擂武人",
+      "room": "luoyang_arena",
+      "home": "house:cy_ly_arena_1",
+      "personality": "baozhao",
+      "desc": "衣裳上没有一处装饰，只有刀柄缠得极紧。",
+      "talk": [
+        "报个名号。",
+        "手底下见。"
+      ],
+      "age": 30,
+      "likes": [
+        "wine"
+      ],
+      "level": 13,
+      "hp": 191,
+      "atk": 26,
+      "def": 23,
+      "dodge": 18,
+      "speed": 20,
+      "money": 103,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 31,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_arena",
+        "night": "luoyang_arena"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "洛阳城行走的武人，兵器不离身",
+        "origin": "家里出事之后出来闯的，一闯就是半辈子。",
+        "now": "他的刀口近来钝了，人也钝了。",
+        "want": "找一门能安身的差事，不再东跑西跑",
+        "fear": "怕自己这一身本事，到头来一无是处",
+        "voice": {
+          "tone": "火爆，一句话就顶回来",
+          "catchphrase": "手底下见。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在墙角擦兵器，一遍一遍擦到发亮"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "武"
+        ]
+      }
+    },
+    "cy_cd_gate_1": {
+      "id": "cy_cd_gate_1",
+      "name": "任守义",
+      "gender": "male",
+      "tag": "soldier",
+      "title": "守城兵",
+      "room": "chengdu_gate",
+      "home": "house:cy_cd_gate_1",
+      "personality": "mune",
+      "desc": "甲片上的锈擦不净，站得笔直，眼睛却总往城外的路上瞟。",
+      "talk": [
+        "城门申时落闸，要进城趁早。",
+        "路引带在身上么？"
+      ],
+      "age": 26,
+      "likes": [
+        "sword"
+      ],
+      "level": 13,
+      "hp": 155,
+      "atk": 34,
+      "def": 11,
+      "dodge": 12,
+      "speed": 20,
+      "money": 155,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 63,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_gate",
+        "night": "chengdu_gate"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府门洞里当值的兵，甲片上的锈擦不干净，一天站六个时辰",
+        "origin": "原是个种地的，被拉了壮丁，编到这儿就留了下来。",
+        "now": "近来城门查得紧，来往的都要验一验路引。",
+        "want": "在营里熬到不用再站门洞的那一天",
+        "fear": "怕军令一夜之间就变",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "进城办事的？别惹事。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "拄着长枪站在门洞里，眼睛扫过每一个进出的人"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "兵"
+        ]
+      }
+    },
+    "cy_cd_street_1": {
+      "id": "cy_cd_street_1",
+      "name": "贾茶客",
+      "gender": "male",
+      "tag": "merchant",
+      "title": "茶商",
+      "room": "chengdu_street",
+      "home": "house:cy_cd_street_1",
+      "personality": "wenwan",
+      "desc": "一身好料子，鞋底却磨得薄了——跑得多。",
+      "talk": [
+        "这位，看点什么？",
+        "货是好货，价钱好说。"
+      ],
+      "age": 24,
+      "likes": [
+        "jade"
+      ],
+      "level": 17,
+      "hp": 111,
+      "atk": 18,
+      "def": 15,
+      "dodge": 16,
+      "speed": 20,
+      "money": 127,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 11,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_street",
+        "night": "chengdu_street"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府跑货的行商，一年中有大半年在路上",
+        "origin": "家里原是商户，一场官司败了家，他从零做起。",
+        "now": "一批货压在手上，行情却往下走。",
+        "want": "在城里落一个自己的栈",
+        "fear": "怕路上出事，血本无归",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "这个价，我明天再来听您的信儿。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在货栈里翻看账本，一边翻一边摇头"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_cd_street_2": {
+      "id": "cy_cd_street_2",
+      "name": "谢漆匠",
+      "gender": "male",
+      "tag": "artisan",
+      "title": "漆器匠",
+      "room": "chengdu_street",
+      "home": "house:cy_cd_street_2",
+      "personality": "mune",
+      "desc": "腰上挂着一排小工具，走一步碰出一串轻响。",
+      "talk": [
+        "活儿要做细，急不来。",
+        "看一眼不打紧，别碰。"
+      ],
+      "age": 41,
+      "likes": [
+        "book"
+      ],
+      "level": 8,
+      "hp": 150,
+      "atk": 23,
+      "def": 10,
+      "dodge": 11,
+      "speed": 17,
+      "money": 282,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 26,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_street",
+        "night": "chengdu_street"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府做手艺的，一双手比嘴灵，桌上的工具摆得比谁都齐",
+        "origin": "原本在别处做工，那段日子里主家败了，他带着手艺自己出来。",
+        "now": "近来接的活越来越杂，肯下本钱的主儿却越来越少。",
+        "want": "让这手艺在自己手上不断",
+        "fear": "怕手艺断在他这一辈",
+        "voice": {
+          "tone": "钝，问三句答一句",
+          "catchphrase": "这活儿，快不了。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在窗前做活，头也不抬，手却一直没停"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "工"
+        ]
+      }
+    },
+    "cy_cd_market_1": {
+      "id": "cy_cd_market_1",
+      "name": "杨锦堂",
+      "gender": "male",
+      "tag": "merchant",
+      "title": "锦缎商",
+      "room": "chengdu_market",
+      "home": "house:cy_cd_market_1",
+      "personality": "youhua",
+      "desc": "手里捏着一串铜钱，捻得哗哗响。",
+      "talk": [
+        "货是好货，价钱好说。",
+        "这位，看点什么？"
+      ],
+      "age": 61,
+      "likes": [
+        "flower"
+      ],
+      "level": 10,
+      "hp": 152,
+      "atk": 23,
+      "def": 16,
+      "dodge": 7,
+      "speed": 19,
+      "money": 92,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 7,
+      "carry": {
+        "money": 48,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_market",
+        "night": "chengdu_market"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府做买卖的，哪儿的价高往哪儿走",
+        "origin": "跟人跑腿跑了五年，学会了看行情，也学会了看人。",
+        "now": "新谈的一门生意，对方的底细他没摸清。",
+        "want": "做成这笔买卖，把本钱翻一番",
+        "fear": "怕信错了人",
+        "voice": {
+          "tone": "滑不留手",
+          "catchphrase": "好说，好说。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在货栈里翻看账本，一边翻一边摇头"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      },
+      "quests": [
+        "sq_cy_cd_jin"
+      ]
+    },
+    "cy_cd_market_2": {
+      "id": "cy_cd_market_2",
+      "name": "窦盐客",
+      "gender": "male",
+      "tag": "vendor",
+      "title": "盐贩",
+      "room": "chengdu_market",
+      "home": "house:cy_cd_market_2",
+      "personality": "haoshuang",
+      "desc": "蹲在摊子后面，把货来回摆正。",
+      "talk": [
+        "看一眼，不买也看一眼。",
+        "就剩这些了，便宜给你。"
+      ],
+      "age": 34,
+      "likes": [
+        "silver"
+      ],
+      "level": 11,
+      "hp": 133,
+      "atk": 22,
+      "def": 9,
+      "dodge": 16,
+      "speed": 14,
+      "money": 253,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 6,
+      "carry": {
+        "money": 65,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_market",
+        "night": "chengdu_market"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府摆摊的，日头没出就支起棚子，天黑才收",
+        "origin": "原是给大户做事的，被辞了以后摆起了摊。",
+        "now": "这几天摊前的路被挖开了，人过不来。",
+        "want": "让家里最小的那个念上书",
+        "fear": "怕一场雨把棚子和货一起泡了",
+        "voice": {
+          "tone": "豪爽，笑声先到",
+          "catchphrase": "就剩这些了，便宜些给你。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "蹲在摊子后面把货一样样摆正，摆完又摆一遍"
+          }
+        ],
+        "arc": {
+          "init": "一开口就是笑，先递茶再说话。",
+          "warm": "把你当自己人，有好处先想到你。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_cd_tavern_1": {
+      "id": "cy_cd_tavern_1",
+      "name": "崔掌柜",
+      "gender": "female",
+      "tag": "innkeeper",
+      "title": "望江楼掌柜",
+      "room": "chengdu_tavern",
+      "home": "house:cy_cd_tavern_1",
+      "personality": "wenwan",
+      "desc": "围裙上的油点又多了几块，袖口卷到手肘。",
+      "talk": [
+        "住店还是打尖？",
+        "后堂还有位子。"
+      ],
+      "age": 25,
+      "likes": [
+        "incense"
+      ],
+      "level": 12,
+      "hp": 114,
+      "atk": 21,
+      "def": 22,
+      "dodge": 15,
+      "speed": 13,
+      "money": 174,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 58,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_tavern",
+        "night": "chengdu_tavern"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府一处铺面的掌柜，柜台后就那一张椅子，坐出了坑",
+        "origin": "学徒出身，替人站了六年柜台，攒够了钱自己盘下一间。",
+        "now": "近来账上总差那么一点，对不上，又找不出错在哪。",
+        "want": "让这间铺子的招牌，在她手里再亮二十年",
+        "fear": "怕哪天算错一笔大数，把家底赔进去",
+        "voice": {
+          "tone": "轻声细语",
+          "catchphrase": "这个价，我可是照本钱给您的。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "站在柜台后头拨算盘，眼睛时不时往街上瞟一眼"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_cd_tavern_2": {
+      "id": "cy_cd_tavern_2",
+      "name": "白凤鸣",
+      "gender": "male",
+      "tag": "actor",
+      "title": "川剧伶人",
+      "room": "chengdu_tavern",
+      "home": "house:cy_cd_tavern_2",
+      "personality": "haoshuang",
+      "desc": "嗓子好，说话的尾音总往上提一提。",
+      "talk": [
+        "听我唱一段？",
+        "嗓子今儿不太开。"
+      ],
+      "age": 30,
+      "likes": [
+        "jade"
+      ],
+      "level": 17,
+      "hp": 203,
+      "atk": 26,
+      "def": 11,
+      "dodge": 8,
+      "speed": 20,
+      "money": 51,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 19,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_tavern",
+        "night": "chengdu_tavern"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府戏班里的，嗓子一亮半条街听得见",
+        "origin": "原先是个读书人，家道败了，改唱了戏。",
+        "now": "班主欠了他三个月的份子钱。",
+        "want": "把欠的份子讨回来，好寄回家",
+        "fear": "怕嗓子坏了",
+        "voice": {
+          "tone": "豪爽，笑声先到",
+          "catchphrase": "台上的人，谢了幕就没了。"
+        },
+        "routine": [
+          {
+            "at": "dusk",
+            "act": "在后台对着镜子勾脸，一笔一笔很慢"
+          }
+        ],
+        "arc": {
+          "init": "一开口就是笑，先递茶再说话。",
+          "warm": "把你当自己人，有好处先想到你。"
+        },
+        "marks": [
+          "艺"
+        ]
+      }
+    },
+    "cy_cd_tavern_up_1": {
+      "id": "cy_cd_tavern_up_1",
+      "name": "瞿药师",
+      "gender": "male",
+      "tag": "doctor",
+      "title": "药商",
+      "room": "chengdu_tavern_up",
+      "home": "house:cy_cd_tavern_up_1",
+      "personality": "lengmo",
+      "desc": "袖里揣着一方脉枕，药箱的角磨得发亮。",
+      "talk": [
+        "哪儿不舒服？",
+        "方子我写好了，照抓。"
+      ],
+      "age": 41,
+      "likes": [
+        "flower"
+      ],
+      "level": 8,
+      "hp": 122,
+      "atk": 23,
+      "def": 22,
+      "dodge": 11,
+      "speed": 21,
+      "money": 202,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 66,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_tavern_up",
+        "night": "chengdu_tavern_up"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府坐堂的郎中，药柜三十六个抽屉，闭着眼也摸得准",
+        "origin": "家中原是药商，一场疫病把铺子赔光，只剩这门手艺。",
+        "now": "有个老病人赊了三个月的药，方子还压在案头。",
+        "want": "看一次不用先问银子的病",
+        "fear": "怕遇到自己认不出的症候",
+        "voice": {
+          "tone": "淡淡的，事不关己",
+          "catchphrase": "手伸出来。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在堂里碾药，碾子转得很慢"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "医",
+          "药"
+        ]
+      },
+      "quests": [
+        "sq_cy_cd_yao"
+      ]
+    },
+    "cy_cd_inn_1": {
+      "id": "cy_cd_inn_1",
+      "name": "奚掌柜",
+      "gender": "male",
+      "tag": "innkeeper",
+      "title": "武侯客栈掌柜",
+      "room": "chengdu_inn",
+      "home": "house:cy_cd_inn_1",
+      "personality": "mune",
+      "desc": "围裙上的油点又多了几块，袖口卷到手肘。",
+      "talk": [
+        "后堂还有位子。",
+        "住店还是打尖？"
+      ],
+      "age": 50,
+      "likes": [
+        "music"
+      ],
+      "level": 9,
+      "hp": 167,
+      "atk": 30,
+      "def": 15,
+      "dodge": 10,
+      "speed": 12,
+      "money": 55,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 39,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_inn",
+        "night": "chengdu_inn"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府开店的小老板，柜上三分利，人情倒有七分",
+        "origin": "爹娘留下这间铺子，接手那年他十九，账本第一页还是他爹的字。",
+        "now": "铺子对面的新号开了张，把他的老主顾抢去了一半。",
+        "want": "把欠出去的那几笔账收回来，收不回来也认了",
+        "fear": "怕老主顾一个一个不来了",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "本小利薄，您多担待。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "站在柜台后头拨算盘，眼睛时不时往街上瞟一眼"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_cd_lane_1": {
+      "id": "cy_cd_lane_1",
+      "name": "屈竹生",
+      "gender": "male",
+      "tag": "artisan",
+      "title": "竹器匠",
+      "room": "chengdu_lane",
+      "home": "house:cy_cd_lane_1",
+      "personality": "mune",
+      "desc": "腰上挂着一排小工具，走一步碰出一串轻响。",
+      "talk": [
+        "看一眼不打紧，别碰。",
+        "活儿要做细，急不来。"
+      ],
+      "age": 27,
+      "likes": [
+        "incense"
+      ],
+      "level": 12,
+      "hp": 146,
+      "atk": 35,
+      "def": 22,
+      "dodge": 17,
+      "speed": 13,
+      "money": 214,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 30,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_lane",
+        "night": "chengdu_lane"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府在这一行里熬了半辈子的匠人，活计只认细不认快",
+        "origin": "自小跟师父学的手艺，师父临走前把家伙什都留给了他。",
+        "now": "他想收个徒弟，来问的几个都嫌这行吃苦。",
+        "want": "做出一件连自己都挑不出毛病的活计",
+        "fear": "怕为了吃饭，把活计做糙了",
+        "voice": {
+          "tone": "钝，问三句答一句",
+          "catchphrase": "等他收完这道口子。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在窗前做活，头也不抬，手却一直没停"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "工"
+        ]
+      },
+      "quests": [
+        "sq_cy_cd_zhu"
+      ]
+    },
+    "cy_cd_brothel_1": {
+      "id": "cy_cd_brothel_1",
+      "name": "樊妈妈",
+      "gender": "female",
+      "tag": "madam",
+      "title": "翠云楼掌事",
+      "room": "chengdu_brothel",
+      "home": "house:cy_cd_brothel_1",
+      "personality": "youhua",
+      "desc": "手里摇着一柄团扇，扇上的字是新描的。",
+      "talk": [
+        "进来坐坐？",
+        "我这儿的规矩，先说明了。"
+      ],
+      "age": 25,
+      "likes": [
+        "flower"
+      ],
+      "level": 14,
+      "hp": 116,
+      "atk": 31,
+      "def": 20,
+      "dodge": 7,
+      "speed": 19,
+      "money": 228,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 11,
+      "carry": {
+        "money": 20,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_brothel",
+        "night": "chengdu_brothel"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府这一行的当家，姑娘们的账都过她的手",
+        "origin": "原是替人管账的，上一任掌事走了，她接的手。",
+        "now": "楼里有个姑娘攒赎身钱，她装作不知道。",
+        "want": "给自己留一条走得出去的路",
+        "fear": "怕哪一天官面翻脸",
+        "voice": {
+          "tone": "滑不留手",
+          "catchphrase": "银子归银子，情分归情分。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "坐在楼上靠栏的位置，楼下谁进谁出她看得清楚"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "风尘",
+          "债"
+        ]
+      }
+    },
+    "cy_cd_jinli_1": {
+      "id": "cy_cd_jinli_1",
+      "name": "葛禄",
+      "gender": "male",
+      "tag": "richman",
+      "title": "锦里富户",
+      "room": "chengdu_jinli_lane",
+      "home": "house:cy_cd_jinli_1",
+      "personality": "yinzhi",
+      "desc": "衣裳料子极好，人却坐着不动，由人伺候。",
+      "talk": [
+        "坐。",
+        "这事我记下了。"
+      ],
+      "age": 45,
+      "likes": [
+        "flower"
+      ],
+      "level": 16,
+      "hp": 114,
+      "atk": 35,
+      "def": 22,
+      "dodge": 13,
+      "speed": 17,
+      "money": 242,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 26,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_jinli_lane",
+        "night": "chengdu_jinli_lane"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府有田产的人家，几进的院子，两房的仆役",
+        "origin": "他自己挣出来的，从头一笔生意做起。",
+        "now": "儿子在外头做官，他最怕儿子出事牵连本家。",
+        "want": "在族里说一句话，谁都要听",
+        "fear": "怕家业败在自己手上",
+        "voice": {
+          "tone": "阴沉，话里总留着半句",
+          "catchphrase": "好说，都是乡里乡亲的。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在堂上，看人送来的帖子，看完放到一边"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "富"
+        ]
+      }
+    },
+    "cy_cd_home_01": {
+      "id": "cy_cd_home_01",
+      "name": "杨守田",
+      "gender": "male",
+      "tag": "farmer",
+      "title": "杨宅当家人",
+      "room": "cd_home_01",
+      "home": "house:cy_cd_home_01",
+      "personality": "mune",
+      "desc": "裤腿上还沾着泥，一看就是从地里来的。",
+      "talk": [
+        "地里的事，急不来。",
+        "今年看天了。"
+      ],
+      "age": 52,
+      "likes": [
+        "sword"
+      ],
+      "level": 9,
+      "hp": 127,
+      "atk": 14,
+      "def": 23,
+      "dodge": 18,
+      "speed": 16,
+      "money": 227,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 55,
+        "items": []
+      },
+      "schedule": {
+        "day": "cd_home_01",
+        "night": "cd_home_01"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府种地的，田不算好，人肯下力",
+        "origin": "上游的田卖了，搬来这儿租人家的地种。",
+        "now": "眼看要收了，天却一直不下雨。",
+        "want": "给孩子留一块自己的地",
+        "fear": "怕一场天灾把一年的辛苦刮走",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "有多少力，吃多少饭。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "弯着腰在地里锄草，锄一会儿直起身捶捶腰"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "农"
+        ]
+      }
+    },
+    "cy_cd_home_02": {
+      "id": "cy_cd_home_02",
+      "name": "朱济世",
+      "gender": "male",
+      "tag": "doctor",
+      "title": "朱宅坐堂",
+      "room": "cd_home_02",
+      "home": "house:cy_cd_home_02",
+      "personality": "wenwan",
+      "desc": "药香从他身上先到，人才到。",
+      "talk": [
+        "方子我写好了，照抓。",
+        "哪儿不舒服？"
+      ],
+      "age": 55,
+      "likes": [
+        "food"
+      ],
+      "level": 8,
+      "hp": 190,
+      "atk": 17,
+      "def": 18,
+      "dodge": 7,
+      "speed": 13,
+      "money": 38,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 66,
+        "items": []
+      },
+      "schedule": {
+        "day": "cd_home_02",
+        "night": "cd_home_02"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府开药方的，医得了病，医不了没钱的病",
+        "origin": "跟着一位游方郎中学了十年，师父没留名，只留了一本方的册子。",
+        "now": "近来收进来几味药，成色不对，他捏在手里看了半天。",
+        "want": "把那本册子抄完，留给一个肯认药的人",
+        "fear": "怕药秤上出一次错",
+        "voice": {
+          "tone": "轻声细语",
+          "catchphrase": "先坐下，我说得慢些。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在堂里碾药，碾子转得很慢"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "医",
+          "药"
+        ]
+      }
+    },
+    "cy_cd_home_03": {
+      "id": "cy_cd_home_03",
+      "name": "许巧姑",
+      "gender": "female",
+      "tag": "artisan",
+      "title": "许宅绣娘",
+      "room": "cd_home_03",
+      "home": "house:cy_cd_home_03",
+      "personality": "wenwan",
+      "desc": "一双手比脸糙，虎口上全是老茧。",
+      "talk": [
+        "活儿要做细，急不来。",
+        "看一眼不打紧，别碰。"
+      ],
+      "age": 28,
+      "likes": [
+        "silver"
+      ],
+      "level": 15,
+      "hp": 209,
+      "atk": 16,
+      "def": 13,
+      "dodge": 8,
+      "speed": 14,
+      "money": 65,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 10,
+      "carry": {
+        "money": 13,
+        "items": []
+      },
+      "schedule": {
+        "day": "cd_home_03",
+        "night": "cd_home_03"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "成都府做手艺的，一双手比嘴灵，桌上的工具摆得比谁都齐",
+        "origin": "原本在别处做工，那段日子里主家败了，她带着手艺自己出来。",
+        "now": "近来接的活越来越杂，肯下本钱的主儿却越来越少。",
+        "want": "让这手艺在自己手上不断",
+        "fear": "怕手艺断在她这一辈",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "这活儿，快不了。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在窗前做活，头也不抬，手却一直没停"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "工"
+        ]
+      }
+    },
+    "cy_ca_gate_1": {
+      "id": "cy_ca_gate_1",
+      "name": "卫擎",
+      "gender": "male",
+      "tag": "soldier",
+      "title": "禁军",
+      "room": "changan_gate",
+      "home": "house:cy_ca_gate_1",
+      "personality": "yinzhi",
+      "desc": "脸上有道旧疤，不笑，握枪的手背上青筋绷着。",
+      "talk": [
+        "城门申时落闸，要进城趁早。",
+        "路引带在身上么？"
+      ],
+      "age": 43,
+      "likes": [
+        "book"
+      ],
+      "level": 8,
+      "hp": 154,
+      "atk": 25,
+      "def": 22,
+      "dodge": 15,
+      "speed": 21,
+      "money": 134,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 10,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_gate",
+        "night": "changan_gate"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城门洞里当值的兵，甲片上的锈擦不干净，一天站六个时辰",
+        "origin": "原是个种地的，被拉了壮丁，编到这儿就留了下来。",
+        "now": "近来城门查得紧，来往的都要验一验路引。",
+        "want": "在营里熬到不用再站门洞的那一天",
+        "fear": "怕军令一夜之间就变",
+        "voice": {
+          "tone": "阴沉，话里总留着半句",
+          "catchphrase": "进城办事的？别惹事。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "拄着长枪站在门洞里，眼睛扫过每一个进出的人"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "兵"
+        ]
+      }
+    },
+    "cy_ca_gate_2": {
+      "id": "cy_ca_gate_2",
+      "name": "骆骁",
+      "gender": "male",
+      "tag": "soldier",
+      "title": "禁军",
+      "room": "changan_gate",
+      "home": "house:cy_ca_gate_2",
+      "personality": "baozhao",
+      "desc": "脸上有道旧疤，不笑，握枪的手背上青筋绷着。",
+      "talk": [
+        "路引带在身上么？",
+        "城门申时落闸，要进城趁早。"
+      ],
+      "age": 26,
+      "likes": [
+        "wine"
+      ],
+      "level": 13,
+      "hp": 91,
+      "atk": 34,
+      "def": 11,
+      "dodge": 14,
+      "speed": 16,
+      "money": 271,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 27,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_gate",
+        "night": "changan_gate"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "守在长安城城门下的卒子，枪杆攥得比谁都稳，脸却木着",
+        "origin": "吃了三年兵粮。家小在城外三十里，一个月回去一趟。",
+        "now": "换防的日子又近了，他还没攒够回家那趟的盘缠。",
+        "want": "攒够钱，退伍回乡置两亩地",
+        "fear": "怕有一天守的这道门，是从里头被人开了的",
+        "voice": {
+          "tone": "火爆，一句话就顶回来",
+          "catchphrase": "路引拿出来。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "拄着长枪站在门洞里，眼睛扫过每一个进出的人"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "兵"
+        ]
+      }
+    },
+    "cy_ca_street_1": {
+      "id": "cy_ca_street_1",
+      "name": "窦书办",
+      "gender": "male",
+      "tag": "official",
+      "title": "六部书吏",
+      "room": "changan_street",
+      "home": "house:cy_ca_street_1",
+      "personality": "yinzhi",
+      "desc": "公服的袖口磨得发亮，手指上有一处笔茧。",
+      "talk": [
+        "照着规矩来。",
+        "文书压着，急不得。"
+      ],
+      "age": 51,
+      "likes": [
+        "food"
+      ],
+      "level": 8,
+      "hp": 146,
+      "atk": 33,
+      "def": 22,
+      "dodge": 13,
+      "speed": 21,
+      "money": 286,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 30,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_street",
+        "night": "changan_street"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城衙门里的书办，案上的文书一摞压一摞",
+        "origin": "接了他爹的缺，公门里的门道他从小就学。",
+        "now": "上头的公文压了三天，他还没敢落笔。",
+        "want": "把那些旧账从册子上抹清楚",
+        "fear": "怕上面出事牵连到自己",
+        "voice": {
+          "tone": "阴沉，话里总留着半句",
+          "catchphrase": "这文书，早该结了。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "伏在案上写字，写完吹一吹墨"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "官",
+          "书"
+        ]
+      }
+    },
+    "cy_ca_street_2": {
+      "id": "cy_ca_street_2",
+      "name": "安胡商",
+      "gender": "male",
+      "tag": "merchant",
+      "title": "胡商",
+      "room": "changan_street",
+      "home": "house:cy_ca_street_2",
+      "personality": "haoshuang",
+      "desc": "眼珠子一转，先看你穿的是什么。",
+      "talk": [
+        "这位，看点什么？",
+        "货是好货，价钱好说。"
+      ],
+      "age": 56,
+      "likes": [
+        "silver"
+      ],
+      "level": 13,
+      "hp": 115,
+      "atk": 16,
+      "def": 11,
+      "dodge": 6,
+      "speed": 16,
+      "money": 163,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 51,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_street",
+        "night": "changan_street"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城跑货的行商，一年中有大半年在路上",
+        "origin": "家里原是商户，一场官司败了家，他从零做起。",
+        "now": "一批货压在手上，行情却往下走。",
+        "want": "在城里落一个自己的栈",
+        "fear": "怕路上出事，血本无归",
+        "voice": {
+          "tone": "豪爽，笑声先到",
+          "catchphrase": "这个价，我明天再来听您的信儿。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在货栈里翻看账本，一边翻一边摇头"
+          }
+        ],
+        "arc": {
+          "init": "一开口就是笑，先递茶再说话。",
+          "warm": "把你当自己人，有好处先想到你。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_ca_market_1": {
+      "id": "cy_ca_market_1",
+      "name": "康宝珠",
+      "gender": "male",
+      "tag": "merchant",
+      "title": "珠宝商人",
+      "room": "changan_market",
+      "home": "house:cy_ca_market_1",
+      "personality": "youhua",
+      "desc": "眼珠子一转，先看你穿的是什么。",
+      "talk": [
+        "货是好货，价钱好说。",
+        "这位，看点什么？"
+      ],
+      "age": 58,
+      "likes": [
+        "music"
+      ],
+      "level": 11,
+      "hp": 197,
+      "atk": 32,
+      "def": 9,
+      "dodge": 16,
+      "speed": 14,
+      "money": 289,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 6,
+      "carry": {
+        "money": 41,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_market",
+        "night": "changan_market"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城做买卖的，哪儿的价高往哪儿走",
+        "origin": "跟人跑腿跑了五年，学会了看行情，也学会了看人。",
+        "now": "新谈的一门生意，对方的底细他没摸清。",
+        "want": "做成这笔买卖，把本钱翻一番",
+        "fear": "怕信错了人",
+        "voice": {
+          "tone": "油滑，见人说人话",
+          "catchphrase": "好说，好说。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在货栈里翻看账本，一边翻一边摇头"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_ca_market_2": {
+      "id": "cy_ca_market_2",
+      "name": "苏禄",
+      "gender": "male",
+      "tag": "merchant",
+      "title": "西市胡商",
+      "room": "changan_market",
+      "home": "house:cy_ca_market_2",
+      "personality": "youhua",
+      "desc": "手里捏着一串铜钱，捻得哗哗响。",
+      "talk": [
+        "这位，看点什么？",
+        "货是好货，价钱好说。"
+      ],
+      "age": 61,
+      "likes": [
+        "tea"
+      ],
+      "level": 6,
+      "hp": 200,
+      "atk": 23,
+      "def": 16,
+      "dodge": 17,
+      "speed": 15,
+      "money": 132,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 7,
+      "carry": {
+        "money": 36,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_market",
+        "night": "changan_market"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城跑货的行商，一年中有大半年在路上",
+        "origin": "家里原是商户，一场官司败了家，他从零做起。",
+        "now": "一批货压在手上，行情却往下走。",
+        "want": "在城里落一个自己的栈",
+        "fear": "怕路上出事，血本无归",
+        "voice": {
+          "tone": "滑不留手",
+          "catchphrase": "这个价，我明天再来听您的信儿。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在货栈里翻看账本，一边翻一边摇头"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      },
+      "quests": [
+        "sq_cy_ca_hu"
+      ]
+    },
+    "cy_ca_tavern_1": {
+      "id": "cy_ca_tavern_1",
+      "name": "陆掌柜",
+      "gender": "male",
+      "tag": "innkeeper",
+      "title": "醉仙楼掌柜",
+      "room": "changan_tavern",
+      "home": "house:cy_ca_tavern_1",
+      "personality": "wenwan",
+      "desc": "手上拨着算盘，嘴里还应付着客人。",
+      "talk": [
+        "住店还是打尖？",
+        "后堂还有位子。"
+      ],
+      "age": 42,
+      "likes": [
+        "silver"
+      ],
+      "level": 9,
+      "hp": 151,
+      "atk": 34,
+      "def": 15,
+      "dodge": 18,
+      "speed": 12,
+      "money": 275,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 19,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_tavern",
+        "night": "changan_tavern"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城一处铺面的掌柜，柜台后就那一张椅子，坐出了坑",
+        "origin": "学徒出身，替人站了六年柜台，攒够了钱自己盘下一间。",
+        "now": "近来账上总差那么一点，对不上，又找不出错在哪。",
+        "want": "让这间铺子的招牌，在他手里再亮二十年",
+        "fear": "怕哪天算错一笔大数，把家底赔进去",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "这个价，我可是照本钱给您的。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "站在柜台后头拨算盘，眼睛时不时往街上瞟一眼"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_ca_tavern_2": {
+      "id": "cy_ca_tavern_2",
+      "name": "邢元度",
+      "gender": "male",
+      "tag": "scholar",
+      "title": "贡院考生",
+      "room": "changan_tavern",
+      "home": "house:cy_ca_tavern_2",
+      "personality": "yinzhi",
+      "desc": "袖子里露出半卷书，书角卷得不像样。",
+      "talk": [
+        "书里的话，未必作数。",
+        "考完了再说吧。"
+      ],
+      "age": 57,
+      "likes": [
+        "tea"
+      ],
+      "level": 12,
+      "hp": 158,
+      "atk": 21,
+      "def": 10,
+      "dodge": 7,
+      "speed": 21,
+      "money": 54,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 66,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_tavern",
+        "night": "changan_tavern"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城的读书人，屋里的书比家具多",
+        "origin": "家里供他念书，把地都卖了，他还没考出来。",
+        "now": "再考一场，家里就真拿不出盘缠了。",
+        "want": "让家里那些卖地的钱不算白花",
+        "fear": "怕读了一辈子书，到头来什么都不是",
+        "voice": {
+          "tone": "阴沉，话里总留着半句",
+          "catchphrase": "书中自有……书中自有。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "在灯下抄书，抄一会儿就抬头揉眼睛"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "儒"
+        ]
+      }
+    },
+    "cy_ca_tavern_up_1": {
+      "id": "cy_ca_tavern_up_1",
+      "name": "袁仵作",
+      "gender": "male",
+      "tag": "coroner",
+      "title": "大理寺仵作",
+      "room": "changan_tavern_up",
+      "home": "house:cy_ca_tavern_up_1",
+      "personality": "lengmo",
+      "desc": "袖口用布条扎着，一双眼睛比谁都冷。",
+      "talk": [
+        "衙门的事，问不得。",
+        "这地方不干净，你走吧。"
+      ],
+      "age": 24,
+      "likes": [
+        "jade"
+      ],
+      "level": 7,
+      "hp": 129,
+      "atk": 30,
+      "def": 13,
+      "dodge": 10,
+      "speed": 18,
+      "money": 237,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 10,
+      "carry": {
+        "money": 25,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_tavern_up",
+        "night": "changan_tavern_up"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城衙门里验尸的仵作，一双手什么尸首都碰过",
+        "origin": "原是个屠户，手稳，被衙门叫去帮过一回忙，就留下了。",
+        "now": "近来衙门送来的尸首，他越验越觉得不对劲。",
+        "want": "有一天能不必再瞒着自己写结论",
+        "fear": "怕上头叫他改的那份验单，迟早要出事",
+        "voice": {
+          "tone": "冷淡，不多说一个字",
+          "catchphrase": "这个，我得看仔细。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在偏房里摆弄验尸的家什，一遍遍擦"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "官",
+          "仵"
+        ]
+      },
+      "quests": [
+        "sq_cy_ca_yan"
+      ]
+    },
+    "cy_ca_inn_1": {
+      "id": "cy_ca_inn_1",
+      "name": "常掌柜",
+      "gender": "female",
+      "tag": "innkeeper",
+      "title": "悦来客栈掌柜",
+      "room": "changan_inn",
+      "home": "house:cy_ca_inn_1",
+      "personality": "wenwan",
+      "desc": "手上拨着算盘，嘴里还应付着客人。",
+      "talk": [
+        "后堂还有位子。",
+        "住店还是打尖？"
+      ],
+      "age": 49,
+      "likes": [
+        "incense"
+      ],
+      "level": 6,
+      "hp": 132,
+      "atk": 25,
+      "def": 12,
+      "dodge": 13,
+      "speed": 11,
+      "money": 76,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 11,
+      "carry": {
+        "money": 64,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_inn",
+        "night": "changan_inn"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城开店的小老板，柜上三分利，人情倒有七分",
+        "origin": "爹娘留下这间铺子，接手那年她十九，账本第一页还是她爹的字。",
+        "now": "铺子对面的新号开了张，把她的老主顾抢去了一半。",
+        "want": "把欠出去的那几笔账收回来，收不回来也认了",
+        "fear": "怕老主顾一个一个不来了",
+        "voice": {
+          "tone": "轻声细语",
+          "catchphrase": "本小利薄，您多担待。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "站在柜台后头拨算盘，眼睛时不时往街上瞟一眼"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_ca_lane_1": {
+      "id": "cy_ca_lane_1",
+      "name": "于慎行",
+      "gender": "male",
+      "tag": "scholar",
+      "title": "赴考举子",
+      "room": "changan_lane",
+      "home": "house:cy_ca_lane_1",
+      "personality": "haoshuang",
+      "desc": "袖子里露出半卷书，书角卷得不像样。",
+      "talk": [
+        "考完了再说吧。",
+        "书里的话，未必作数。"
+      ],
+      "age": 28,
+      "likes": [
+        "silver"
+      ],
+      "level": 17,
+      "hp": 187,
+      "atk": 24,
+      "def": 19,
+      "dodge": 8,
+      "speed": 16,
+      "money": 123,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 63,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_lane",
+        "night": "changan_lane"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城教书的，几个蒙童，一间旧屋",
+        "origin": "祖上出过举人，到了他这一辈，只剩下那方砚台。",
+        "now": "替人抄书换米，抄到夜里，字就越写越潦。",
+        "want": "中一次，哪怕只是末名",
+        "fear": "怕母亲的病拖不起",
+        "voice": {
+          "tone": "豪爽，笑声先到",
+          "catchphrase": "这个嘛，容我想想。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "在灯下抄书，抄一会儿就抬头揉眼睛"
+          }
+        ],
+        "arc": {
+          "init": "一开口就是笑，先递茶再说话。",
+          "warm": "把你当自己人，有好处先想到你。"
+        },
+        "marks": [
+          "儒"
+        ]
+      },
+      "quests": [
+        "sq_cy_ca_ju"
+      ]
+    },
+    "cy_ca_brothel_1": {
+      "id": "cy_ca_brothel_1",
+      "name": "柳掌事",
+      "gender": "female",
+      "tag": "madam",
+      "title": "平康坊掌事",
+      "room": "changan_brothel",
+      "home": "house:cy_ca_brothel_1",
+      "personality": "youhua",
+      "desc": "手里摇着一柄团扇，扇上的字是新描的。",
+      "talk": [
+        "进来坐坐？",
+        "我这儿的规矩，先说明了。"
+      ],
+      "age": 56,
+      "likes": [
+        "silver"
+      ],
+      "level": 9,
+      "hp": 139,
+      "atk": 26,
+      "def": 19,
+      "dodge": 12,
+      "speed": 20,
+      "money": 103,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 15,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_brothel",
+        "night": "changan_brothel"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城这一行的当家，姑娘们的账都过她的手",
+        "origin": "原是替人管账的，上一任掌事走了，她接的手。",
+        "now": "楼里有个姑娘攒赎身钱，她装作不知道。",
+        "want": "给自己留一条走得出去的路",
+        "fear": "怕哪一天官面翻脸",
+        "voice": {
+          "tone": "油滑，见人说人话",
+          "catchphrase": "银子归银子，情分归情分。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "坐在楼上靠栏的位置，楼下谁进谁出她看得清楚"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "风尘",
+          "债"
+        ]
+      }
+    },
+    "cy_ca_huanguan_1": {
+      "id": "cy_ca_huanguan_1",
+      "name": "郑致仕",
+      "gender": "male",
+      "tag": "official",
+      "title": "致仕员外",
+      "room": "changan_huanguan_lane",
+      "home": "house:cy_ca_huanguan_1",
+      "personality": "yinzhi",
+      "desc": "说话前先看你一眼，像在心里过了一遍章程。",
+      "talk": [
+        "文书压着，急不得。",
+        "照着规矩来。"
+      ],
+      "age": 45,
+      "likes": [
+        "tea"
+      ],
+      "level": 12,
+      "hp": 182,
+      "atk": 29,
+      "def": 18,
+      "dodge": 11,
+      "speed": 17,
+      "money": 130,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 18,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_huanguan_lane",
+        "night": "changan_huanguan_lane"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城公门里管文书的，笔比刀还快",
+        "origin": "读书没读出来，考了个书办的位置，一坐十几年。",
+        "now": "有一桩旧案要重提，他手上的册子对不上。",
+        "want": "升一级，或者至少不出错",
+        "fear": "怕留一份见不得光的档在手里",
+        "voice": {
+          "tone": "阴沉，话里总留着半句",
+          "catchphrase": "这个……得照着规矩来。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "伏在案上写字，写完吹一吹墨"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "官",
+          "书"
+        ]
+      }
+    },
+    "cy_ca_home_01": {
+      "id": "cy_ca_home_01",
+      "name": "郑云章",
+      "gender": "male",
+      "tag": "richman",
+      "title": "郑宅主人",
+      "room": "ca_home_01",
+      "home": "house:cy_ca_home_01",
+      "personality": "yinzhi",
+      "desc": "手上戴着一枚玉扳指，转来转去。",
+      "talk": [
+        "坐。",
+        "这事我记下了。"
+      ],
+      "age": 53,
+      "likes": [
+        "book"
+      ],
+      "level": 14,
+      "hp": 92,
+      "atk": 25,
+      "def": 20,
+      "dodge": 13,
+      "speed": 19,
+      "money": 152,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 11,
+      "carry": {
+        "money": 24,
+        "items": []
+      },
+      "schedule": {
+        "day": "ca_home_01",
+        "night": "ca_home_01"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城有田产的人家，几进的院子，两房的仆役",
+        "origin": "他自己挣出来的，从头一笔生意做起。",
+        "now": "儿子在外头做官，他最怕儿子出事牵连本家。",
+        "want": "在族里说一句话，谁都要听",
+        "fear": "怕家业败在自己手上",
+        "voice": {
+          "tone": "阴沉，话里总留着半句",
+          "catchphrase": "好说，都是乡里乡亲的。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在堂上，看人送来的帖子，看完放到一边"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "富"
+        ]
+      }
+    },
+    "cy_ca_home_02": {
+      "id": "cy_ca_home_02",
+      "name": "陈敬之",
+      "gender": "male",
+      "tag": "scholar",
+      "title": "陈宅西席",
+      "room": "ca_home_02",
+      "home": "house:cy_ca_home_02",
+      "personality": "wenwan",
+      "desc": "一眼看得出是熬了夜的，眼底青着。",
+      "talk": [
+        "书里的话，未必作数。",
+        "考完了再说吧。"
+      ],
+      "age": 48,
+      "likes": [
+        "wine"
+      ],
+      "level": 7,
+      "hp": 137,
+      "atk": 30,
+      "def": 13,
+      "dodge": 18,
+      "speed": 14,
+      "money": 193,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 10,
+      "carry": {
+        "money": 33,
+        "items": []
+      },
+      "schedule": {
+        "day": "ca_home_02",
+        "night": "ca_home_02"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城的读书人，屋里的书比家具多",
+        "origin": "家里供他念书，把地都卖了，他还没考出来。",
+        "now": "再考一场，家里就真拿不出盘缠了。",
+        "want": "让家里那些卖地的钱不算白花",
+        "fear": "怕读了一辈子书，到头来什么都不是",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "书中自有……书中自有。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "在灯下抄书，抄一会儿就抬头揉眼睛"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "儒"
+        ]
+      }
+    },
+    "cy_ca_home_03": {
+      "id": "cy_ca_home_03",
+      "name": "秦九娘",
+      "gender": "female",
+      "title": "秦宅主母",
+      "room": "ca_home_03",
+      "home": "house:cy_ca_home_03",
+      "personality": "baozhao",
+      "desc": "在自家门口站着，见人来了，先点了个头。",
+      "talk": [
+        "吃了没？",
+        "有事您说话。"
+      ],
+      "age": 47,
+      "likes": [
+        "incense"
+      ],
+      "level": 16,
+      "hp": 118,
+      "atk": 15,
+      "def": 18,
+      "dodge": 15,
+      "speed": 13,
+      "money": 218,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 26,
+        "items": []
+      },
+      "schedule": {
+        "day": "ca_home_03",
+        "night": "ca_home_03"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城的寻常住户，早出晚归",
+        "origin": "从别处迁来的，来了就没再走。",
+        "now": "月初刚交了一笔钱，手头正紧。",
+        "want": "把欠街坊的人情还上",
+        "fear": "怕出事",
+        "voice": {
+          "tone": "急躁，说翻脸就翻脸",
+          "catchphrase": "您先忙，您先忙。"
+        },
+        "routine": [
+          {
+            "at": "dusk",
+            "act": "靠在门框上剥花生，剥一颗吃一颗"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "邻"
+        ]
+      }
+    },
+    "cy_ca_home_04": {
+      "id": "cy_ca_home_04",
+      "name": "卫老丈",
+      "gender": "male",
+      "title": "卫宅老人",
+      "room": "ca_home_04",
+      "home": "house:cy_ca_home_04",
+      "personality": "mune",
+      "desc": "手上做着活，眼睛却瞟着街上。",
+      "talk": [
+        "有事您说话。",
+        "吃了没？"
+      ],
+      "age": 60,
+      "likes": [
+        "wine"
+      ],
+      "level": 9,
+      "hp": 147,
+      "atk": 32,
+      "def": 11,
+      "dodge": 18,
+      "speed": 12,
+      "money": 187,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 23,
+        "items": []
+      },
+      "schedule": {
+        "day": "ca_home_04",
+        "night": "ca_home_04"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "长安城住着多年的老街坊，见面点个头",
+        "origin": "爹娘走得早，是街坊们看着长大的。",
+        "now": "隔壁那家在办喜事，他去凑了个份子。",
+        "want": "让孩子有个正经出路",
+        "fear": "怕日子过不下去",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "这世道，不都这样么。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "跟隔壁墙头上那位隔着墙说闲话"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "邻"
+        ]
+      }
+    },
+    "cy_gs_town_1": {
+      "id": "cy_gs_town_1",
+      "name": "柳渡娘",
+      "gender": "female",
+      "tag": "boatman",
+      "title": "船娘",
+      "room": "gusu_town",
+      "home": "house:cy_gs_town_1",
+      "personality": "wenwan",
+      "desc": "一身水气，晒得比谁都黑。",
+      "talk": [
+        "坐稳了。",
+        "这条水，我熟。"
+      ],
+      "age": 60,
+      "likes": [
+        "sword"
+      ],
+      "level": 9,
+      "hp": 203,
+      "atk": 16,
+      "def": 11,
+      "dodge": 12,
+      "speed": 16,
+      "money": 95,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 63,
+        "items": []
+      },
+      "schedule": {
+        "day": "gusu_town",
+        "night": "gusu_town"
+      },
+      "tier": "B",
+      "district": "gusu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "姑苏水上的船家，一条船养活一家人",
+        "origin": "原先在码头扛包，攒钱买了一条旧船。",
+        "now": "船底该补了，她一直拖着。",
+        "want": "给儿子攒一份不在船上的活路",
+        "fear": "怕水",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "这条水路，我比谁都熟。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在船尾，一只手搭在橹上，随水轻轻晃"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "船"
+        ]
+      },
+      "quests": [
+        "sq_cy_gs_du"
+      ]
+    },
+    "cy_gs_yanzi_1": {
+      "id": "cy_gs_yanzi_1",
+      "name": "祝园管",
+      "gender": "male",
+      "tag": "artisan",
+      "title": "园林管事",
+      "room": "gusu_yanzi",
+      "home": "house:cy_gs_yanzi_1",
+      "personality": "yinzhi",
+      "desc": "腰上挂着一排小工具，走一步碰出一串轻响。",
+      "talk": [
+        "活儿要做细，急不来。",
+        "看一眼不打紧，别碰。"
+      ],
+      "age": 25,
+      "likes": [
+        "flower"
+      ],
+      "level": 14,
+      "hp": 180,
+      "atk": 17,
+      "def": 12,
+      "dodge": 7,
+      "speed": 19,
+      "money": 236,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 11,
+      "carry": {
+        "money": 24,
+        "items": []
+      },
+      "schedule": {
+        "day": "gusu_yanzi",
+        "night": "gusu_yanzi"
+      },
+      "tier": "B",
+      "district": "gusu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "姑苏做手艺的，一双手比嘴灵，桌上的工具摆得比谁都齐",
+        "origin": "原本在别处做工，那段日子里主家败了，他带着手艺自己出来。",
+        "now": "近来接的活越来越杂，肯下本钱的主儿却越来越少。",
+        "want": "让这手艺在自己手上不断",
+        "fear": "怕手艺断在他这一辈",
+        "voice": {
+          "tone": "阴沉，话里总留着半句",
+          "catchphrase": "这活儿，快不了。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在窗前做活，头也不抬，手却一直没停"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "工"
+        ]
+      }
+    },
+    "cy_gs_canhe_1": {
+      "id": "cy_gs_canhe_1",
+      "name": "蒋评弹",
+      "gender": "male",
+      "tag": "actor",
+      "title": "评弹艺人",
+      "room": "gusu_canhe",
+      "home": "house:cy_gs_canhe_1",
+      "personality": "haoshuang",
+      "desc": "眼角画着一道，不知是忘了卸，还是新勾的。",
+      "talk": [
+        "听我唱一段？",
+        "嗓子今儿不太开。"
+      ],
+      "age": 45,
+      "likes": [
+        "flower"
+      ],
+      "level": 6,
+      "hp": 124,
+      "atk": 25,
+      "def": 20,
+      "dodge": 13,
+      "speed": 15,
+      "money": 168,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 11,
+      "carry": {
+        "money": 60,
+        "items": []
+      },
+      "schedule": {
+        "day": "gusu_canhe",
+        "night": "gusu_canhe"
+      },
+      "tier": "B",
+      "district": "gusu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "姑苏戏班里的，嗓子一亮半条街听得见",
+        "origin": "原先是个读书人，家道败了，改唱了戏。",
+        "now": "班主欠了他三个月的份子钱。",
+        "want": "把欠的份子讨回来，好寄回家",
+        "fear": "怕嗓子坏了",
+        "voice": {
+          "tone": "爽快，话里带笑",
+          "catchphrase": "台上的人，谢了幕就没了。"
+        },
+        "routine": [
+          {
+            "at": "dusk",
+            "act": "在后台对着镜子勾脸，一笔一笔很慢"
+          }
+        ],
+        "arc": {
+          "init": "一开口就是笑，先递茶再说话。",
+          "warm": "把你当自己人，有好处先想到你。"
+        },
+        "marks": [
+          "艺"
+        ]
+      },
+      "quests": [
+        "sq_cy_gs_qu"
+      ]
+    },
+    "cy_gs_zhai_1": {
+      "id": "cy_gs_zhai_1",
+      "name": "沈绣娘",
+      "gender": "female",
+      "tag": "artisan",
+      "title": "绣娘",
+      "room": "gusu_zhai_lane",
+      "home": "house:cy_gs_zhai_1",
+      "personality": "wenwan",
+      "desc": "衣裳上沾着漆点，怎么洗都留着一片印子。",
+      "talk": [
+        "看一眼不打紧，别碰。",
+        "活儿要做细，急不来。"
+      ],
+      "age": 50,
+      "likes": [
+        "wine"
+      ],
+      "level": 9,
+      "hp": 111,
+      "atk": 32,
+      "def": 23,
+      "dodge": 18,
+      "speed": 16,
+      "money": 219,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 39,
+        "items": []
+      },
+      "schedule": {
+        "day": "gusu_zhai_lane",
+        "night": "gusu_zhai_lane"
+      },
+      "tier": "B",
+      "district": "gusu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "姑苏在这一行里熬了半辈子的匠人，活计只认细不认快",
+        "origin": "自小跟师父学的手艺，师父临走前把家伙什都留给了她。",
+        "now": "她想收个徒弟，来问的几个都嫌这行吃苦。",
+        "want": "做出一件连自己都挑不出毛病的活计",
+        "fear": "怕为了吃饭，把活计做糙了",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "等她收完这道口子。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在窗前做活，头也不抬，手却一直没停"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "工"
+        ]
+      },
+      "quests": [
+        "sq_cy_gs_xiu"
+      ]
+    },
+    "cy_gs_home_01": {
+      "id": "cy_gs_home_01",
+      "name": "慕容管事",
+      "gender": "male",
+      "title": "别院管事",
+      "room": "gs_home_01",
+      "home": "house:cy_gs_home_01",
+      "personality": "yinzhi",
+      "desc": "手上做着活，眼睛却瞟着街上。",
+      "talk": [
+        "吃了没？",
+        "有事您说话。"
+      ],
+      "age": 47,
+      "likes": [
+        "food"
+      ],
+      "level": 16,
+      "hp": 126,
+      "atk": 27,
+      "def": 10,
+      "dodge": 15,
+      "speed": 13,
+      "money": 102,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 34,
+        "items": []
+      },
+      "schedule": {
+        "day": "gs_home_01",
+        "night": "gs_home_01"
+      },
+      "tier": "B",
+      "district": "gusu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "姑苏的寻常住户，早出晚归",
+        "origin": "从别处迁来的，来了就没再走。",
+        "now": "月初刚交了一笔钱，手头正紧。",
+        "want": "把欠街坊的人情还上",
+        "fear": "怕出事",
+        "voice": {
+          "tone": "阴沉，话里总留着半句",
+          "catchphrase": "您先忙，您先忙。"
+        },
+        "routine": [
+          {
+            "at": "dusk",
+            "act": "靠在门框上剥花生，剥一颗吃一颗"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "邻"
+        ]
+      }
+    },
+    "cy_gs_home_02": {
+      "id": "cy_gs_home_02",
+      "name": "刘塾师",
+      "gender": "male",
+      "tag": "scholar",
+      "title": "刘家塾师",
+      "room": "gs_home_02",
+      "home": "house:cy_gs_home_02",
+      "personality": "wenwan",
+      "desc": "一眼看得出是熬了夜的，眼底青着。",
+      "talk": [
+        "书里的话，未必作数。",
+        "考完了再说吧。"
+      ],
+      "age": 32,
+      "likes": [
+        "sword"
+      ],
+      "level": 9,
+      "hp": 103,
+      "atk": 14,
+      "def": 15,
+      "dodge": 8,
+      "speed": 12,
+      "money": 67,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 31,
+        "items": []
+      },
+      "schedule": {
+        "day": "gs_home_02",
+        "night": "gs_home_02"
+      },
+      "tier": "B",
+      "district": "gusu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "姑苏的读书人，屋里的书比家具多",
+        "origin": "家里供他念书，把地都卖了，他还没考出来。",
+        "now": "再考一场，家里就真拿不出盘缠了。",
+        "want": "让家里那些卖地的钱不算白花",
+        "fear": "怕读了一辈子书，到头来什么都不是",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "书中自有……书中自有。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "在灯下抄书，抄一会儿就抬头揉眼睛"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "儒"
+        ]
+      }
+    },
+    "cy_gs_home_03": {
+      "id": "cy_gs_home_03",
+      "name": "赵船姑",
+      "gender": "female",
+      "tag": "boatman",
+      "title": "赵家船娘",
+      "room": "gs_home_03",
+      "home": "house:cy_gs_home_03",
+      "personality": "haoshuang",
+      "desc": "一身水气，晒得比谁都黑。",
+      "talk": [
+        "这条水，我熟。",
+        "坐稳了。"
+      ],
+      "age": 53,
+      "likes": [
+        "flower"
+      ],
+      "level": 6,
+      "hp": 100,
+      "atk": 23,
+      "def": 12,
+      "dodge": 9,
+      "speed": 11,
+      "money": 108,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 11,
+      "carry": {
+        "money": 64,
+        "items": []
+      },
+      "schedule": {
+        "day": "gs_home_03",
+        "night": "gs_home_03"
+      },
+      "tier": "B",
+      "district": "gusu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "姑苏摆渡的，水底下哪里有暗流她闭着眼也摸得到",
+        "origin": "在船上生的，也在船上长大，脚一沾地反倒晃。",
+        "now": "近来水上不太平，夜里的船她不敢接。",
+        "want": "换一条新船，或者把这条再修十年",
+        "fear": "怕夜里船上遇上不该遇上的人",
+        "voice": {
+          "tone": "爽快，话里带笑",
+          "catchphrase": "坐稳了，别乱动。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在船尾，一只手搭在橹上，随水轻轻晃"
+          }
+        ],
+        "arc": {
+          "init": "一开口就是笑，先递茶再说话。",
+          "warm": "把你当自己人，有好处先想到你。"
+        },
+        "marks": [
+          "船"
+        ]
+      }
+    },
+    "cy_gs_fengqiao_1": {
+      "id": "cy_gs_fengqiao_1",
+      "name": "阮桥婆",
+      "gender": "female",
+      "tag": "vendor",
+      "title": "枫桥摊主",
+      "room": "gusu_fengqiao",
+      "home": "house:cy_gs_fengqiao_1",
+      "personality": "baozhao",
+      "desc": "蹲在摊子后面，把货来回摆正。",
+      "talk": [
+        "看一眼，不买也看一眼。",
+        "就剩这些了，便宜给你。"
+      ],
+      "age": 46,
+      "likes": [
+        "silver"
+      ],
+      "level": 13,
+      "hp": 159,
+      "atk": 32,
+      "def": 15,
+      "dodge": 18,
+      "speed": 20,
+      "money": 275,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 59,
+        "items": []
+      },
+      "schedule": {
+        "day": "gusu_fengqiao",
+        "night": "gusu_fengqiao"
+      },
+      "tier": "B",
+      "district": "gusu",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "姑苏摆摊的，日头没出就支起棚子，天黑才收",
+        "origin": "原是给大户做事的，被辞了以后摆起了摊。",
+        "now": "这几天摊前的路被挖开了，人过不来。",
+        "want": "让家里最小的那个念上书",
+        "fear": "怕一场雨把棚子和货一起泡了",
+        "voice": {
+          "tone": "火爆，一句话就顶回来",
+          "catchphrase": "就剩这些了，便宜些给你。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "蹲在摊子后面把货一样样摆正，摆完又摆一遍"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_hb_1": {
+      "id": "cy_hb_1",
+      "name": "雷把头",
+      "gender": "male",
+      "tag": "boatman",
+      "title": "船帮把头",
+      "room": "jn_harbor",
+      "home": "house:cy_hb_1",
+      "personality": "baozhao",
+      "desc": "裤脚挽到膝上，脚趾抠着船板。",
+      "talk": [
+        "坐稳了。",
+        "这条水，我熟。"
+      ],
+      "age": 55,
+      "likes": [
+        "incense"
+      ],
+      "level": 12,
+      "hp": 170,
+      "atk": 23,
+      "def": 14,
+      "dodge": 13,
+      "speed": 17,
+      "money": 114,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 54,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_harbor",
+        "night": "jn_harbor"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头水上的船家，一条船养活一家人",
+        "origin": "原先在码头扛包，攒钱买了一条旧船。",
+        "now": "船底该补了，他一直拖着。",
+        "want": "给儿子攒一份不在船上的活路",
+        "fear": "怕水",
+        "voice": {
+          "tone": "急躁，说翻脸就翻脸",
+          "catchphrase": "这条水路，我比谁都熟。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在船尾，一只手搭在橹上，随水轻轻晃"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "船"
+        ]
+      },
+      "quests": [
+        "sq_cy_hb_ren"
+      ]
+    },
+    "cy_hb_2": {
+      "id": "cy_hb_2",
+      "name": "石纤夫",
+      "gender": "male",
+      "tag": "porter",
+      "title": "纤夫",
+      "room": "jn_harbor",
+      "home": "house:cy_hb_2",
+      "personality": "mune",
+      "desc": "一只手抠着箩筐的绳子，指节粗得不像话。",
+      "talk": [
+        "让一让，借光！",
+        "这担子沉，别撞着。"
+      ],
+      "age": 44,
+      "likes": [
+        "music"
+      ],
+      "level": 17,
+      "hp": 115,
+      "atk": 14,
+      "def": 19,
+      "dodge": 10,
+      "speed": 16,
+      "money": 223,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 23,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_harbor",
+        "night": "jn_harbor"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头街口扛活的脚夫，一副竹杠两只箩，肩膀上的茧比皮还厚",
+        "origin": "从小就跟着大人挑担，肩膀练出来了，别的没学会。",
+        "now": "近来活少，一帮人在街口蹲着等，谁先上前谁挨骂。",
+        "want": "攒够钱，回乡把老娘接来",
+        "fear": "怕哪一趟挑不动，把腰闪了",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "多重都扛得起。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "蹲在街口把箩筐摆正，等人来叫"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "工"
+        ]
+      }
+    },
+    "cy_hb_3": {
+      "id": "cy_hb_3",
+      "name": "窦栈长",
+      "gender": "male",
+      "tag": "warehouser",
+      "title": "货栈掌柜",
+      "room": "jn_harbor_shed",
+      "home": "house:cy_hb_3",
+      "personality": "youhua",
+      "desc": "一身靛蓝褂子，腰间挂着一大串钥匙。",
+      "talk": [
+        "存货要单子，取货也要单子。",
+        "你的货，还压在里头呢。"
+      ],
+      "age": 27,
+      "likes": [
+        "book"
+      ],
+      "level": 14,
+      "hp": 160,
+      "atk": 35,
+      "def": 16,
+      "dodge": 13,
+      "speed": 11,
+      "money": 120,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 7,
+      "carry": {
+        "money": 24,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_harbor_shed",
+        "night": "jn_harbor_shed"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头货栈的掌柜，货物进出都过他的手",
+        "origin": "这间货栈是他爹留下的，他从十几岁起就在仓里跑。",
+        "now": "仓里有一批货存了半年没人来取，他心里犯疑。",
+        "want": "让这间栈，安安生生再开二十年",
+        "fear": "怕仓里出一件见不得光的事",
+        "voice": {
+          "tone": "滑不留手",
+          "catchphrase": "存多久都成，只要银子不缺。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "拿着货单在仓里踱，一垛一垛对过去"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商",
+          "栈"
+        ]
+      },
+      "quests": [
+        "sq_cy_hb_huo"
+      ]
+    },
+    "cy_hb_4": {
+      "id": "cy_hb_4",
+      "name": "邱税吏",
+      "gender": "male",
+      "tag": "taxman",
+      "title": "码头税吏",
+      "room": "jn_harbor_shed",
+      "home": "house:cy_hb_4",
+      "personality": "yinzhi",
+      "desc": "脸上堆着笑，眼睛却盯着人的手。",
+      "talk": [
+        "照章程来，一两不能少。",
+        "我也当差，您担待。"
+      ],
+      "age": 48,
+      "likes": [
+        "silver"
+      ],
+      "level": 7,
+      "hp": 105,
+      "atk": 16,
+      "def": 21,
+      "dodge": 10,
+      "speed": 10,
+      "money": 157,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 10,
+      "carry": {
+        "money": 49,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_harbor_shed",
+        "night": "jn_harbor_shed"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头管收税的税吏，腰上挂着一串短尺与秤砣",
+        "origin": "上头的差使压下来，他接也得接，不接也得接。",
+        "now": "这一季的税比往年重，他下街几趟，挨了不少骂。",
+        "want": "攒够钱，把这个得罪人的缺辞了",
+        "fear": "怕逼出人命来",
+        "voice": {
+          "tone": "阴沉，话都想过才说",
+          "catchphrase": "我也是当差，您担待。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "把税册摊在桌上，一笔一笔勾过"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "官",
+          "税"
+        ]
+      }
+    },
+    "cy_hb_5": {
+      "id": "cy_hb_5",
+      "name": "鲍掌柜",
+      "gender": "male",
+      "tag": "innkeeper",
+      "title": "船家客栈掌柜",
+      "room": "jn_harbor_inn",
+      "home": "house:cy_hb_5",
+      "personality": "wenwan",
+      "desc": "站在柜台后头，眼睛却把满屋子的人都数了一遍。",
+      "talk": [
+        "住店还是打尖？",
+        "后堂还有位子。"
+      ],
+      "age": 31,
+      "likes": [
+        "food"
+      ],
+      "level": 12,
+      "hp": 166,
+      "atk": 33,
+      "def": 10,
+      "dodge": 11,
+      "speed": 21,
+      "money": 178,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 10,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_harbor_inn",
+        "night": "jn_harbor_inn"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头一处铺面的掌柜，柜台后就那一张椅子，坐出了坑",
+        "origin": "学徒出身，替人站了六年柜台，攒够了钱自己盘下一间。",
+        "now": "近来账上总差那么一点，对不上，又找不出错在哪。",
+        "want": "让这间铺子的招牌，在他手里再亮二十年",
+        "fear": "怕哪天算错一笔大数，把家底赔进去",
+        "voice": {
+          "tone": "轻声细语",
+          "catchphrase": "这个价，我可是照本钱给您的。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "站在柜台后头拨算盘，眼睛时不时往街上瞟一眼"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_hb_6": {
+      "id": "cy_hb_6",
+      "name": "屈水鬼",
+      "gender": "male",
+      "tag": "diver",
+      "title": "打捞人",
+      "room": "jn_harbor_wharf",
+      "home": "house:cy_hb_6",
+      "personality": "mune",
+      "desc": "脚上只踩着一双草鞋，脚趾抠着地。",
+      "talk": [
+        "水底下的事，说了你也不信。",
+        "没下水，别论价。"
+      ],
+      "age": 28,
+      "likes": [
+        "jade"
+      ],
+      "level": 13,
+      "hp": 191,
+      "atk": 20,
+      "def": 15,
+      "dodge": 8,
+      "speed": 16,
+      "money": 127,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 31,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_harbor_wharf",
+        "night": "jn_harbor_wharf"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头水里的打捞人，一身水性，一有沉船的活就有人来找他",
+        "origin": "当年救过一个落水的人，从此就干上了这一行。",
+        "now": "近来水底下沉过一条船，船东出的价高，他却迟迟没下水。",
+        "want": "攒够钱，上岸做一门不沾水的营生",
+        "fear": "怕这一趟下去上不来",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "出水才论价。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在岸边搓水草绳，绳结打得又紧又匀"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "水"
+        ]
+      },
+      "quests": [
+        "sq_cy_hb_chuan"
+      ]
+    },
+    "cy_hb_7": {
+      "id": "cy_hb_7",
+      "name": "洪鱼婆",
+      "gender": "female",
+      "tag": "vendor",
+      "title": "鱼市摊主",
+      "room": "jn_harbor_stall",
+      "home": "house:cy_hb_7",
+      "personality": "baozhao",
+      "desc": "担子卸在脚边，一样样码得整齐。",
+      "talk": [
+        "看一眼，不买也看一眼。",
+        "就剩这些了，便宜给你。"
+      ],
+      "age": 29,
+      "likes": [
+        "flower"
+      ],
+      "level": 14,
+      "hp": 140,
+      "atk": 17,
+      "def": 12,
+      "dodge": 19,
+      "speed": 19,
+      "money": 184,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 11,
+      "carry": {
+        "money": 12,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_harbor_stall",
+        "night": "jn_harbor_stall"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头摆摊的，日头没出就支起棚子，天黑才收",
+        "origin": "原是给大户做事的，被辞了以后摆起了摊。",
+        "now": "这几天摊前的路被挖开了，人过不来。",
+        "want": "让家里最小的那个念上书",
+        "fear": "怕一场雨把棚子和货一起泡了",
+        "voice": {
+          "tone": "急躁，说翻脸就翻脸",
+          "catchphrase": "就剩这些了，便宜些给你。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "蹲在摊子后面把货一样样摆正，摆完又摆一遍"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_hb_8": {
+      "id": "cy_hb_8",
+      "name": "裘小贩",
+      "gender": "male",
+      "tag": "vendor",
+      "title": "后街小贩",
+      "room": "jn_harbor_backstreet",
+      "home": "house:cy_hb_8",
+      "personality": "youhua",
+      "desc": "嗓子比谁都亮，叫卖的调子拖着尾。",
+      "talk": [
+        "就剩这些了，便宜给你。",
+        "看一眼，不买也看一眼。"
+      ],
+      "age": 34,
+      "likes": [
+        "wine"
+      ],
+      "level": 11,
+      "hp": 165,
+      "atk": 18,
+      "def": 17,
+      "dodge": 6,
+      "speed": 14,
+      "money": 141,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 6,
+      "carry": {
+        "money": 37,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_harbor_backstreet",
+        "night": "jn_harbor_backstreet"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头挑担行走的小贩，一条街叫下来嗓子先哑",
+        "origin": "家里兄弟多，分不到田，出来自己做点小买卖。",
+        "now": "进的一批货压在手里，眼看到了要坏的时候。",
+        "want": "攒够钱在街上盘个有门面的铺子",
+        "fear": "怕城里的规矩又改，摊子摆不成",
+        "voice": {
+          "tone": "油滑，见人说人话",
+          "catchphrase": "看一眼，不买也看一眼。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "蹲在摊子后面把货一样样摆正，摆完又摆一遍"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "cy_hb_9": {
+      "id": "cy_hb_9",
+      "name": "毕老更",
+      "gender": "male",
+      "tag": "watchman",
+      "title": "码头更夫",
+      "room": "jn_harbor_backstreet",
+      "home": "house:cy_hb_9",
+      "personality": "mune",
+      "desc": "灰布短袄上打着补丁，补丁的针脚倒是齐整。",
+      "talk": [
+        "天干物燥，小心火烛——",
+        "夜里别乱走。"
+      ],
+      "age": 61,
+      "likes": [
+        "tea"
+      ],
+      "level": 8,
+      "hp": 202,
+      "atk": 15,
+      "def": 22,
+      "dodge": 19,
+      "speed": 21,
+      "money": 62,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 58,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_harbor_backstreet",
+        "night": "jn_harbor_backstreet"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头打更的，一夜敲五遍梆子，街上有事他最先知道",
+        "origin": "原本是个走街串巷的货郎，腿脚好，改做了更夫。",
+        "now": "近来夜里街上不安静，他敲梆子的手比从前紧了。",
+        "want": "让街坊夜里睡得踏实些",
+        "fear": "怕哪一夜撞上不该撞上的人",
+        "voice": {
+          "tone": "钝，问三句答一句",
+          "catchphrase": "又到三更了。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "提着灯笼沿街走，走几步敲一下梆子"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "役"
+        ]
+      }
+    },
+    "cy_hb_10": {
+      "id": "cy_hb_10",
+      "name": "褚船家",
+      "gender": "male",
+      "tag": "boatman",
+      "title": "褚宅船家",
+      "room": "hb_home_01",
+      "home": "house:cy_hb_10",
+      "personality": "haoshuang",
+      "desc": "手里的橹把磨得发亮，是几十年的手印。",
+      "talk": [
+        "这条水，我熟。",
+        "坐稳了。"
+      ],
+      "age": 53,
+      "likes": [
+        "flower"
+      ],
+      "level": 12,
+      "hp": 130,
+      "atk": 15,
+      "def": 14,
+      "dodge": 15,
+      "speed": 13,
+      "money": 242,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 42,
+        "items": []
+      },
+      "schedule": {
+        "day": "hb_home_01",
+        "night": "hb_home_01"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头摆渡的，水底下哪里有暗流他闭着眼也摸得到",
+        "origin": "在船上生的，也在船上长大，脚一沾地反倒晃。",
+        "now": "近来水上不太平，夜里的船他不敢接。",
+        "want": "换一条新船，或者把这条再修十年",
+        "fear": "怕夜里船上遇上不该遇上的人",
+        "voice": {
+          "tone": "爽快，话里带笑",
+          "catchphrase": "坐稳了，别乱动。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在船尾，一只手搭在橹上，随水轻轻晃"
+          }
+        ],
+        "arc": {
+          "init": "一开口就是笑，先递茶再说话。",
+          "warm": "把你当自己人，有好处先想到你。"
+        },
+        "marks": [
+          "船"
+        ]
+      }
+    },
+    "cy_hb_11": {
+      "id": "cy_hb_11",
+      "name": "尤百工",
+      "gender": "male",
+      "tag": "artisan",
+      "title": "尤宅木匠",
+      "room": "hb_home_02",
+      "home": "house:cy_hb_11",
+      "personality": "mune",
+      "desc": "衣裳上沾着漆点，怎么洗都留着一片印子。",
+      "talk": [
+        "活儿要做细，急不来。",
+        "看一眼不打紧，别碰。"
+      ],
+      "age": 36,
+      "likes": [
+        "wine"
+      ],
+      "level": 15,
+      "hp": 117,
+      "atk": 20,
+      "def": 9,
+      "dodge": 14,
+      "speed": 18,
+      "money": 81,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 6,
+      "carry": {
+        "money": 21,
+        "items": []
+      },
+      "schedule": {
+        "day": "hb_home_02",
+        "night": "hb_home_02"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头做手艺的，一双手比嘴灵，桌上的工具摆得比谁都齐",
+        "origin": "原本在别处做工，那段日子里主家败了，他带着手艺自己出来。",
+        "now": "近来接的活越来越杂，肯下本钱的主儿却越来越少。",
+        "want": "让这手艺在自己手上不断",
+        "fear": "怕手艺断在他这一辈",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "这活儿，快不了。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在窗前做活，头也不抬，手却一直没停"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "工"
+        ]
+      }
+    },
+    "cy_hb_12": {
+      "id": "cy_hb_12",
+      "name": "陈寡妇",
+      "gender": "female",
+      "title": "陈宅寡妇",
+      "room": "hb_home_03",
+      "home": "house:cy_hb_12",
+      "personality": "wenwan",
+      "desc": "手上做着活，眼睛却瞟着街上。",
+      "talk": [
+        "吃了没？",
+        "有事您说话。"
+      ],
+      "age": 25,
+      "likes": [
+        "tea"
+      ],
+      "level": 14,
+      "hp": 120,
+      "atk": 27,
+      "def": 16,
+      "dodge": 17,
+      "speed": 11,
+      "money": 248,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 7,
+      "carry": {
+        "money": 44,
+        "items": []
+      },
+      "schedule": {
+        "day": "hb_home_03",
+        "night": "hb_home_03"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头街面上的人，日子过得不宽裕也不算差",
+        "origin": "从别处迁来的，来了就没再走。",
+        "now": "月初刚交了一笔钱，手头正紧。",
+        "want": "把欠街坊的人情还上",
+        "fear": "怕出事",
+        "voice": {
+          "tone": "轻声细语",
+          "catchphrase": "您先忙，您先忙。"
+        },
+        "routine": [
+          {
+            "at": "dusk",
+            "act": "靠在门框上剥花生，剥一颗吃一颗"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "邻"
+        ]
+      }
+    },
+    "cy_hb_13": {
+      "id": "cy_hb_13",
+      "name": "黄季伯",
+      "gender": "male",
+      "title": "黄宅老人",
+      "room": "hb_home_04",
+      "home": "house:cy_hb_13",
+      "personality": "mune",
+      "desc": "在自家门口站着，见人来了，先点了个头。",
+      "talk": [
+        "有事您说话。",
+        "吃了没？"
+      ],
+      "age": 28,
+      "likes": [
+        "sword"
+      ],
+      "level": 17,
+      "hp": 91,
+      "atk": 20,
+      "def": 19,
+      "dodge": 16,
+      "speed": 16,
+      "money": 139,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 59,
+        "items": []
+      },
+      "schedule": {
+        "day": "hb_home_04",
+        "night": "hb_home_04"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头住着多年的老街坊，见面点个头",
+        "origin": "爹娘走得早，是街坊们看着长大的。",
+        "now": "隔壁那家在办喜事，他去凑了个份子。",
+        "want": "让孩子有个正经出路",
+        "fear": "怕日子过不下去",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "这世道，不都这样么。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "跟隔壁墙头上那位隔着墙说闲话"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "邻"
+        ]
+      }
+    },
+    "cy_hb_14": {
+      "id": "cy_hb_14",
+      "name": "费老艄",
+      "gender": "male",
+      "tag": "boatman",
+      "title": "乌篷船艄公",
+      "room": "jn_boat",
+      "home": "house:cy_hb_14",
+      "personality": "mune",
+      "desc": "裤脚挽到膝上，脚趾抠着船板。",
+      "talk": [
+        "坐稳了。",
+        "这条水，我熟。"
+      ],
+      "age": 53,
+      "likes": [
+        "flower"
+      ],
+      "level": 8,
+      "hp": 110,
+      "atk": 35,
+      "def": 10,
+      "dodge": 13,
+      "speed": 13,
+      "money": 98,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 30,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_boat",
+        "night": "jn_boat"
+      },
+      "tier": "B",
+      "district": "harbor",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "江口码头水上的船家，一条船养活一家人",
+        "origin": "原先在码头扛包，攒钱买了一条旧船。",
+        "now": "船底该补了，他一直拖着。",
+        "want": "给儿子攒一份不在船上的活路",
+        "fear": "怕一场风浪把船打翻",
+        "voice": {
+          "tone": "钝，问三句答一句",
+          "catchphrase": "这条水路，我比谁都熟。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在船尾，一只手搭在橹上，随水轻轻晃"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "船"
+        ]
+      }
+    },
+    "cy_sy_1": {
+      "id": "cy_sy_1",
+      "name": "孔昭文",
+      "gender": "male",
+      "tag": "academic",
+      "title": "书院夫子",
+      "room": "jn_school",
+      "home": "house:cy_sy_1",
+      "personality": "wenwan",
+      "desc": "眼底青着，一看就是熬了夜。",
+      "talk": [
+        "书要读进心里，不是摆在案上。",
+        "别出声，这儿是书楼。"
+      ],
+      "age": 29,
+      "likes": [
+        "food"
+      ],
+      "level": 14,
+      "hp": 208,
+      "atk": 17,
+      "def": 16,
+      "dodge": 15,
+      "speed": 11,
+      "money": 96,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 7,
+      "carry": {
+        "money": 44,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_school",
+        "night": "jn_school"
+      },
+      "tier": "B",
+      "district": "shuyuan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "白鹿书院的教书先生，讲义卷了角，袖口总沾着一点墨",
+        "origin": "祖上三代都是教书的，他的讲席是他爹坐过的。",
+        "now": "新抄的书页压在案上，等着装订。",
+        "want": "把师父留下的那部书抄完",
+        "fear": "怕书院的规矩一天比一天松",
+        "voice": {
+          "tone": "轻声细语",
+          "catchphrase": "书背熟了再来。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在讲席上，眼睛扫过底下每一张脸"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "儒"
+        ]
+      }
+    },
+    "cy_sy_2": {
+      "id": "cy_sy_2",
+      "name": "施静庵",
+      "gender": "male",
+      "tag": "academic",
+      "title": "藏书楼管书",
+      "room": "jn_school_lib",
+      "home": "house:cy_sy_2",
+      "personality": "mune",
+      "desc": "袖口沾着一点墨，书卷气从衣裳里透出来。",
+      "talk": [
+        "别出声，这儿是书楼。",
+        "书要读进心里，不是摆在案上。"
+      ],
+      "age": 26,
+      "likes": [
+        "wine"
+      ],
+      "level": 7,
+      "hp": 205,
+      "atk": 26,
+      "def": 9,
+      "dodge": 14,
+      "speed": 10,
+      "money": 257,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 6,
+      "carry": {
+        "money": 49,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_school_lib",
+        "night": "jn_school_lib"
+      },
+      "tier": "B",
+      "district": "shuyuan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "白鹿书院坐馆的夫子，一屋子学生，十个里有九个在走神",
+        "origin": "家里供他念书，把地都卖了，他还没考出来。",
+        "now": "山下新开了学堂，学费收得比这儿低。",
+        "want": "教出个能上榜的学生",
+        "fear": "怕读了一辈子书，到头来什么都不是",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "书中自有……书中自有。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在书架间踱着，手指一路划过书脊"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "儒"
+        ]
+      }
+    },
+    "cy_sy_3": {
+      "id": "cy_sy_3",
+      "name": "崔子敬",
+      "gender": "male",
+      "tag": "academic",
+      "title": "书院山长",
+      "room": "jn_school_hall",
+      "home": "house:cy_sy_3",
+      "personality": "yinzhi",
+      "desc": "眼底青着，一看就是熬了夜。",
+      "talk": [
+        "书要读进心里，不是摆在案上。",
+        "别出声，这儿是书楼。"
+      ],
+      "age": 35,
+      "likes": [
+        "book"
+      ],
+      "level": 12,
+      "hp": 130,
+      "atk": 27,
+      "def": 14,
+      "dodge": 11,
+      "speed": 17,
+      "money": 94,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 14,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_school_hall",
+        "night": "jn_school_hall"
+      },
+      "tier": "B",
+      "district": "shuyuan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "白鹿书院念书的学子，案头堆着书，人却趴在书上睡着了",
+        "origin": "打小在书院里长大，先在藏书楼抄了三年书。",
+        "now": "这一科又有两个学生要去应试，他比他们还上心。",
+        "want": "把讲义从头到尾理一遍",
+        "fear": "怕误人子弟",
+        "voice": {
+          "tone": "阴沉，话里总留着半句",
+          "catchphrase": "别出声，这里是书楼。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "在灯下抄书，抄一会儿就抬头揉眼睛"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "儒"
+        ]
+      }
+    },
+    "cy_sy_4": {
+      "id": "cy_sy_4",
+      "name": "康慕贤",
+      "gender": "male",
+      "tag": "academic",
+      "title": "东斋学子",
+      "room": "jn_school_room1",
+      "home": "house:cy_sy_4",
+      "personality": "haoshuang",
+      "desc": "袖口沾着一点墨，书卷气从衣裳里透出来。",
+      "talk": [
+        "别出声，这儿是书楼。",
+        "书要读进心里，不是摆在案上。"
+      ],
+      "age": 34,
+      "likes": [
+        "jade"
+      ],
+      "level": 13,
+      "hp": 119,
+      "atk": 14,
+      "def": 15,
+      "dodge": 8,
+      "speed": 16,
+      "money": 275,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 19,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_school_room1",
+        "night": "jn_school_room1"
+      },
+      "tier": "B",
+      "district": "shuyuan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "白鹿书院管书的人，架上哪本书缺了角，他闭着眼也摸得出",
+        "origin": "年轻时也考过，考到三十岁上收了心，回来教书。",
+        "now": "藏书楼里少了几本，他记着，没声张。",
+        "want": "中一次，哪怕只是末名",
+        "fear": "怕书院的规矩一天比一天松",
+        "voice": {
+          "tone": "豪爽，笑声先到",
+          "catchphrase": "这句，你且再想想。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在讲席上，眼睛扫过底下每一张脸"
+          }
+        ],
+        "arc": {
+          "init": "一开口就是笑，先递茶再说话。",
+          "warm": "把你当自己人，有好处先想到你。"
+        },
+        "marks": [
+          "儒"
+        ]
+      }
+    },
+    "cy_sy_5": {
+      "id": "cy_sy_5",
+      "name": "童苦读",
+      "gender": "male",
+      "tag": "academic",
+      "title": "西斋寒士",
+      "room": "jn_school_room2",
+      "home": "house:cy_sy_5",
+      "personality": "qienuo",
+      "desc": "手里攥着半卷书，走两步看一眼。",
+      "talk": [
+        "书要读进心里，不是摆在案上。",
+        "别出声，这儿是书楼。"
+      ],
+      "age": 55,
+      "likes": [
+        "tea"
+      ],
+      "level": 10,
+      "hp": 148,
+      "atk": 23,
+      "def": 12,
+      "dodge": 9,
+      "speed": 15,
+      "money": 264,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 11,
+      "carry": {
+        "money": 52,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_school_room2",
+        "night": "jn_school_room2"
+      },
+      "tier": "B",
+      "district": "shuyuan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "白鹿书院的教书先生，讲义卷了角，袖口总沾着一点墨",
+        "origin": "祖上三代都是教书的，他的讲席是他爹坐过的。",
+        "now": "新抄的书页压在案上，等着装订。",
+        "want": "把师父留下的那部书抄完",
+        "fear": "怕读了一辈子书，到头来什么都不是",
+        "voice": {
+          "tone": "紧张，先看人脸色",
+          "catchphrase": "书背熟了再来。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在书架间踱着，手指一路划过书脊"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "儒"
+        ]
+      }
+    },
+    "cy_sy_6": {
+      "id": "cy_sy_6",
+      "name": "缪书童",
+      "gender": "male",
+      "tag": "academic",
+      "title": "书院书童",
+      "room": "jn_school_yard",
+      "home": "house:cy_sy_6",
+      "personality": "mune",
+      "desc": "眼底青着，一看就是熬了夜。",
+      "talk": [
+        "别出声，这儿是书楼。",
+        "书要读进心里，不是摆在案上。"
+      ],
+      "age": 32,
+      "likes": [
+        "silver"
+      ],
+      "level": 11,
+      "hp": 145,
+      "atk": 24,
+      "def": 21,
+      "dodge": 10,
+      "speed": 18,
+      "money": 237,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 10,
+      "carry": {
+        "money": 69,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_school_yard",
+        "night": "jn_school_yard"
+      },
+      "tier": "B",
+      "district": "shuyuan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "白鹿书院坐馆的夫子，一屋子学生，十个里有九个在走神",
+        "origin": "家里供他念书，把地都卖了，他还没考出来。",
+        "now": "山下新开了学堂，学费收得比这儿低。",
+        "want": "教出个能上榜的学生",
+        "fear": "怕误人子弟",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "书中自有……书中自有。"
+        },
+        "routine": [
+          {
+            "at": "night",
+            "act": "在灯下抄书，抄一会儿就抬头揉眼睛"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "儒"
+        ]
+      }
+    },
+    "cy_sy_7": {
+      "id": "cy_sy_7",
+      "name": "巩药圃",
+      "gender": "male",
+      "tag": "academic",
+      "title": "药圃管事",
+      "room": "jn_school_herb",
+      "home": "house:cy_sy_7",
+      "personality": "lengmo",
+      "desc": "眼底青着，一看就是熬了夜。",
+      "talk": [
+        "书要读进心里，不是摆在案上。",
+        "别出声，这儿是书楼。"
+      ],
+      "age": 57,
+      "likes": [
+        "flower"
+      ],
+      "level": 8,
+      "hp": 142,
+      "atk": 17,
+      "def": 10,
+      "dodge": 15,
+      "speed": 17,
+      "money": 258,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 50,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_school_herb",
+        "night": "jn_school_herb"
+      },
+      "tier": "B",
+      "district": "shuyuan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "白鹿书院念书的学子，案头堆着书，人却趴在书上睡着了",
+        "origin": "打小在书院里长大，先在藏书楼抄了三年书。",
+        "now": "这一科又有两个学生要去应试，他比他们还上心。",
+        "want": "把讲义从头到尾理一遍",
+        "fear": "怕书院的规矩一天比一天松",
+        "voice": {
+          "tone": "淡淡的，事不关己",
+          "catchphrase": "别出声，这里是书楼。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在讲席上，眼睛扫过底下每一张脸"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "儒"
+        ]
+      }
+    },
+    "cy_sy_8": {
+      "id": "cy_sy_8",
+      "name": "桑抄书",
+      "gender": "male",
+      "tag": "academic",
+      "title": "书轩抄书人",
+      "room": "jn_study_2",
+      "home": "house:cy_sy_8",
+      "personality": "mune",
+      "desc": "手里攥着半卷书，走两步看一眼。",
+      "talk": [
+        "别出声，这儿是书楼。",
+        "书要读进心里，不是摆在案上。"
+      ],
+      "age": 46,
+      "likes": [
+        "wine"
+      ],
+      "level": 9,
+      "hp": 187,
+      "atk": 28,
+      "def": 11,
+      "dodge": 10,
+      "speed": 16,
+      "money": 87,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 35,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_study_2",
+        "night": "jn_study_2"
+      },
+      "tier": "B",
+      "district": "shuyuan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "白鹿书院管书的人，架上哪本书缺了角，他闭着眼也摸得出",
+        "origin": "年轻时也考过，考到三十岁上收了心，回来教书。",
+        "now": "藏书楼里少了几本，他记着，没声张。",
+        "want": "中一次，哪怕只是末名",
+        "fear": "怕读了一辈子书，到头来什么都不是",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "这句，你且再想想。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在书架间踱着，手指一路划过书脊"
+          }
+        ],
+        "arc": {
+          "init": "你不问，他不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "儒"
+        ]
+      }
+    },
+    "cy_sy_9": {
+      "id": "cy_sy_9",
+      "name": "葛师娘",
+      "gender": "female",
+      "title": "书斋帮佣",
+      "room": "hm_npcv_102",
+      "home": "house:cy_sy_9",
+      "personality": "wenwan",
+      "desc": "衣裳半新不旧，脸上带着这个岁数该有的疲色。",
+      "talk": [
+        "吃了没？",
+        "有事您说话。"
+      ],
+      "age": 41,
+      "likes": [
+        "flower"
+      ],
+      "level": 10,
+      "hp": 200,
+      "atk": 33,
+      "def": 8,
+      "dodge": 15,
+      "speed": 11,
+      "money": 264,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 7,
+      "carry": {
+        "money": 64,
+        "items": []
+      },
+      "schedule": {
+        "day": "hm_npcv_102",
+        "night": "hm_npcv_102"
+      },
+      "tier": "B",
+      "district": "shuyuan",
+      "homeless": true,
+      "portrait": {
+        "v": 1,
+        "tier": "B",
+        "lock": false,
+        "role": "白鹿书院街面上的人，日子过得不宽裕也不算差",
+        "origin": "从别处迁来的，来了就没再走。",
+        "now": "月初刚交了一笔钱，手头正紧。",
+        "want": "把欠街坊的人情还上",
+        "fear": "怕出事",
+        "voice": {
+          "tone": "轻声细语",
+          "catchphrase": "您先忙，您先忙。"
+        },
+        "routine": [
+          {
+            "at": "dusk",
+            "act": "靠在门框上剥花生，剥一颗吃一颗"
+          }
+        ],
+        "arc": {
+          "init": "你不问，她不开口。",
+          "warm": "偶尔会多说两句，说完自己也觉得多余。"
+        },
+        "marks": [
+          "邻"
+        ]
+      }
+    }
+  },
+  "quests": {
+    "sq_cy_xy_ma": {
+      "id": "sq_cy_xy_ma",
+      "name": "马市那匹病马",
+      "type": "支线",
+      "npc": "cy_xy_market_1",
+      "giver": "cy_xy_market_1",
+      "level": 8,
+      "desc": "马市的马洪守了两夜，那匹马还是不吃草料。这马是替一个不相识的人寄养的。",
+      "stages": [
+        {
+          "desc": "去襄阳城·马市",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "xiangyang_market",
+              "count": 1,
+              "var": "sq_cy_xy_ma_go0",
+              "desc": "去襄阳城·马市"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "槽边那匹马侧躺着，鼻孔一张一合。前蹄内侧肿了一块，肿得齐整，不像是磕的。"
+            },
+            {
+              "type": "say",
+              "raw": "「药也灌了，夜里还是叫。」马洪蹲在槽边，是两夜没合眼的样子。"
+            }
+          ]
+        },
+        {
+          "desc": "去襄阳城·铁巷",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "xiangyang_lane",
+              "count": 1,
+              "var": "sq_cy_xy_ma_go1",
+              "desc": "去襄阳城·铁巷"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "铁匠铺的炉子还热着。韩铁山听完，把手里的钳子搁下，去后头翻了翻，翻出一枚断了的铁蒺藜。"
+            },
+            {
+              "type": "say",
+              "raw": "「蹄子底下那处，不是病。是钉的。钉进去再拔出来，伤口就长成这样。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那匹马|把这事原原本本告诉马洪>flag:sq_cy_xy_ma_done;+exp:260;+money:80;+karma:15;favor:cy_xy_market_1:30;incvar:favor_cy_xy_market_1:30;;算了，马贩子的事，别掺和>flag:sq_cy_xy_ma_done;+exp:120;+money:40;favor:cy_xy_market_1:-10;incvar:favor_cy_xy_market_1:-10"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "马洪把那匹马牵到了墙根底下，扯了块旧布，把蹄子裹上。"
+        }
+      ]
+    },
+    "sq_cy_xy_shu": {
+      "id": "sq_cy_xy_shu",
+      "name": "说书人的《岳家将》",
+      "type": "支线",
+      "npc": "cy_xy_street_1",
+      "giver": "cy_xy_street_1",
+      "level": 12,
+      "desc": "北街茶棚的花伯当近来不乐意说《岳家将》。点这书的人一天比一天多，他却把醒木按在桌上，不响。",
+      "stages": [
+        {
+          "desc": "去襄阳城·汉江楼",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "xiangyang_tavern",
+              "count": 1,
+              "var": "sq_cy_xy_shu_go0",
+              "desc": "去襄阳城·汉江楼"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "汉江楼二楼坐着几个人，点的正是《岳家将》。跑堂的韦小六压着嗓子说，那几位是外乡口音，坐了三天了。"
+            },
+            {
+              "type": "say",
+              "raw": "「他们不是来听书的。」"
+            }
+          ]
+        },
+        {
+          "desc": "去襄阳城·北街",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "xiangyang_street",
+              "count": 1,
+              "var": "sq_cy_xy_shu_go1",
+              "desc": "去襄阳城·北街"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "茶棚里只坐着两三个闲人。花伯当把醒木在手心里摩了两下，到底没拍下去。"
+            },
+            {
+              "type": "say",
+              "raw": "「说了，是替人传话；不说，这棚子就开不下去。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那部《岳家将》|替他说，把话当着众人摊开>flag:sq_cy_xy_shu_done;+exp:300;+karma:20;+rep:武林:10;favor:cy_xy_street_1:35;incvar:favor_cy_xy_street_1:35;;劝他换个段子，别惹是非>flag:sq_cy_xy_shu_done;+exp:140;+money:60;favor:cy_xy_street_1:-15;incvar:favor_cy_xy_street_1:-15"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "那棚子第二天照旧开着，段子换了。"
+        }
+      ]
+    },
+    "sq_cy_xy_lu": {
+      "id": "sq_cy_xy_lu",
+      "name": "铁巷那批私活",
+      "type": "支线",
+      "npc": "cy_xy_lane_1",
+      "giver": "cy_xy_lane_1",
+      "level": 18,
+      "desc": "铁巷的韩铁山接了一批兵器的活，出的价不低。可那款式不像自用 —— 刀身比寻常的窄，刀柄却长。",
+      "stages": [
+        {
+          "desc": "去襄阳城·铁巷",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "xiangyang_lane",
+              "count": 1,
+              "var": "sq_cy_xy_lu_go0",
+              "desc": "去襄阳城·铁巷"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "炉子边上堆着十来把半成的刀，刀身比营里的窄半分，刀柄却长出一截。"
+            },
+            {
+              "type": "say",
+              "raw": "「这不是给官府做的。」韩铁山敲了敲刀背，声音发闷。"
+            }
+          ]
+        },
+        {
+          "desc": "去襄阳城·将门巷",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "xiangyang_jiangmen_lane",
+              "count": 1,
+              "var": "sq_cy_xy_lu_go1",
+              "desc": "去襄阳城·将门巷"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "将门巷的老军倪老爹看了一眼刀的样子，脸色沉了沉，把刀递了回来。"
+            },
+            {
+              "type": "say",
+              "raw": "「这条巷子，从前姓过一回寇。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那批兵器|把事报给牙将戚振>flag:sq_cy_xy_lu_done;+exp:340;+rep:朝廷:20;+money:150;favor:cy_xy_lane_1:-20;incvar:favor_cy_xy_lane_1:-20;;把刀的样子记下，先不动声色>flag:sq_cy_xy_lu_done;+exp:220;favor:cy_xy_lane_1:30;incvar:favor_cy_xy_lane_1:30"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "炉子照旧烧着，只是那批刀再没打过第二遍。"
+        }
+      ],
+      "require": {
+        "flag": "sq_cy_xy_ma_done"
+      }
+    },
+    "sq_cy_ly_hua": {
+      "id": "sq_cy_ly_hua",
+      "name": "花巷那几株名品",
+      "type": "支线",
+      "npc": "cy_ly_lane_1",
+      "giver": "cy_ly_lane_1",
+      "level": 10,
+      "desc": "花巷的盛花姑养了三十年花。今年时气不对，主家几株名品的叶子先黄了，催得紧。",
+      "stages": [
+        {
+          "desc": "去洛阳城·花巷",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "luoyang_lane",
+              "count": 1,
+              "var": "sq_cy_ly_hua_go0",
+              "desc": "去洛阳城·花巷"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "花架上那几株的叶尖先焦了，土还是湿的。盛花姑蹲下去捏了一把土，搓开看了半天。"
+            },
+            {
+              "type": "say",
+              "raw": "「浇的水没错。是这土不对。」"
+            }
+          ]
+        },
+        {
+          "desc": "去洛阳城·牡丹大街",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "luoyang_street",
+              "count": 1,
+              "var": "sq_cy_ly_hua_go1",
+              "desc": "去洛阳城·牡丹大街"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "街上卖花土的那家，今年换了新货，堆在当街，人却不大招呼。"
+            },
+            {
+              "type": "say",
+              "raw": "「同一批土，别人家的花也黄，来问的却都只回来找我。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那几株名品|回园里取自己的土，替她换上>flag:sq_cy_ly_hua_done;+exp:240;+money:60;+karma:15;favor:cy_ly_lane_1:35;incvar:favor_cy_ly_lane_1:35;;把卖土那家捅到衙门去>flag:sq_cy_ly_hua_done;+exp:260;+rep:朝廷:15;favor:cy_ly_lane_1:20;incvar:favor_cy_ly_lane_1:20"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "那年牡丹照开。"
+        }
+      ]
+    },
+    "sq_cy_ly_zhang": {
+      "id": "sq_cy_ly_zhang",
+      "name": "牡丹阁那本账",
+      "type": "支线",
+      "npc": "cy_ly_brothel_1",
+      "giver": "cy_ly_brothel_1",
+      "level": 16,
+      "desc": "牡丹阁的姚掌事手里有一本账。账上多出一个名字，写了两年，人却从没露过面。",
+      "stages": [
+        {
+          "desc": "去洛阳城·牡丹阁",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "luoyang_brothel",
+              "count": 1,
+              "var": "sq_cy_ly_zhang_go0",
+              "desc": "去洛阳城·牡丹阁"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "那本账摊在案上。最后一页那名字旁边，压着一方没有盖下去的印。"
+            },
+            {
+              "type": "say",
+              "raw": "「每月初一有人来送钱，不进门，放下就走。」"
+            }
+          ]
+        },
+        {
+          "desc": "去天香楼·牡丹雅间",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "luoyang_tavern_up",
+              "count": 1,
+              "var": "sq_cy_ly_zhang_go1",
+              "desc": "去天香楼·牡丹雅间"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "雅间里那位老吏听完，端着茶没喝，只把茶盏在手里转了半圈。"
+            },
+            {
+              "type": "say",
+              "raw": "「那印是旧衙门的，废了十年了。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那本账|交给衙门，把来路查清>flag:sq_cy_ly_zhang_done;+exp:320;+rep:朝廷:25;+money:120;favor:cy_ly_brothel_1:-20;incvar:favor_cy_ly_brothel_1:-20;;替她把这一页撕了，往后每月初一照旧没人来>flag:sq_cy_ly_zhang_done;+exp:200;+money:200;+karma:-10;favor:cy_ly_brothel_1:35;incvar:favor_cy_ly_brothel_1:35"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "账本合上，压在原来的地方。"
+        }
+      ]
+    },
+    "sq_cy_ly_an": {
+      "id": "sq_cy_ly_an",
+      "name": "雅间里的旧案",
+      "type": "支线",
+      "npc": "cy_ly_tavern_up_1",
+      "giver": "cy_ly_tavern_up_1",
+      "level": 24,
+      "desc": "洛阳城天香楼的雅间里，那位致仕的老吏坐了半年。他要说的那桩旧案，牵着他自己。",
+      "stages": [
+        {
+          "desc": "去天香楼·牡丹雅间",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "luoyang_tavern_up",
+              "count": 1,
+              "var": "sq_cy_ly_an_go0",
+              "desc": "去天香楼·牡丹雅间"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "老吏从袖里取出一张发黄的纸，边角磨得圆了，折痕处快要断开。"
+            },
+            {
+              "type": "say",
+              "raw": "「这案子结的时候，我还是个抄公文的。」"
+            }
+          ]
+        },
+        {
+          "desc": "去洛阳城·南市",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "luoyang_market",
+              "count": 1,
+              "var": "sq_cy_ly_an_go1",
+              "desc": "去洛阳城·南市"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "南市那间老铺还开着。柜台后头那位掌柜，是当年案里唯一活下来的人。"
+            },
+            {
+              "type": "say",
+              "raw": "「他认得我的字。」老吏站在门口，没进去。"
+            },
+            {
+              "type": "menu",
+              "raw": "那桩旧案|替他递到府台案头，从头再理一遍>flag:sq_cy_ly_an_done;+exp:380;+rep:朝廷:35;+karma:20;favor:cy_ly_tavern_up_1:40;incvar:favor_cy_ly_tavern_up_1:40;;劝他把话咽回去，安度晚年>flag:sq_cy_ly_an_done;+exp:220;+money:180;favor:cy_ly_tavern_up_1:-25;incvar:favor_cy_ly_tavern_up_1:-25"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "那张纸他重新折好，收回了袖里。"
+        }
+      ],
+      "require": {
+        "flag": "sq_cy_ly_zhang_done"
+      }
+    },
+    "sq_cy_cd_jin": {
+      "id": "sq_cy_cd_jin",
+      "name": "蜀锦市那批货",
+      "type": "支线",
+      "npc": "cy_cd_market_1",
+      "giver": "cy_cd_market_1",
+      "level": 14,
+      "desc": "蜀锦市的杨锦堂压了一批货，行情一天比一天低。他说，这批货的来路有点绕。",
+      "stages": [
+        {
+          "desc": "去成都府·蜀锦市",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "chengdu_market",
+              "count": 1,
+              "var": "sq_cy_cd_jin_go0",
+              "desc": "去成都府·蜀锦市"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "仓里那批锦码得高，花色是好花色，只是每匹的角上都缺了一小块，缺得整齐。"
+            },
+            {
+              "type": "say",
+              "raw": "「缺角的地方，原本是有印记的。」"
+            }
+          ]
+        },
+        {
+          "desc": "去成都府·锦官大街",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "chengdu_street",
+              "count": 1,
+              "var": "sq_cy_cd_jin_go1",
+              "desc": "去成都府·锦官大街"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "街尾那间铺子的主人听见「缺角」两个字，手里的剪子停了一下。"
+            },
+            {
+              "type": "say",
+              "raw": "「这批锦，是官造。少一道角，就少一道账。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那批蜀锦|让他原样送去衙门，落一笔功>flag:sq_cy_cd_jin_done;+exp:320;+rep:朝廷:25;+money:200;favor:cy_cd_market_1:20;incvar:favor_cy_cd_market_1:20;;劝他趁早出手，别砸在手里>flag:sq_cy_cd_jin_done;+exp:200;+money:80;+karma:-10;favor:cy_cd_market_1:30;incvar:favor_cy_cd_market_1:30"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "那批锦出城那天，杨锦堂在门口站了很久。"
+        }
+      ]
+    },
+    "sq_cy_cd_yao": {
+      "id": "sq_cy_cd_yao",
+      "name": "药商收进来的那一味",
+      "type": "支线",
+      "npc": "cy_cd_tavern_up_1",
+      "giver": "cy_cd_tavern_up_1",
+      "level": 20,
+      "desc": "望江楼竹风轩的药商瞿药师，近来收进来几味药，成色不对，捏在手里看了半天。",
+      "stages": [
+        {
+          "desc": "去望江楼·竹风轩",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "chengdu_tavern_up",
+              "count": 1,
+              "var": "sq_cy_cd_yao_go0",
+              "desc": "去望江楼·竹风轩"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "药包摊在桌上，一股子陈味。瞿药师用指甲刮了刮，粉末发白，捻开来是碎的。"
+            },
+            {
+              "type": "say",
+              "raw": "「这不是川里的药。川里晒不出这个色。」"
+            }
+          ]
+        },
+        {
+          "desc": "去成都府·锦里门",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "chengdu_gate",
+              "count": 1,
+              "var": "sq_cy_cd_yao_go1",
+              "desc": "去成都府·锦里门"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "城门那批新到的药车还停着，押货的人坐在车辕上，不肯卸。"
+            },
+            {
+              "type": "say",
+              "raw": "「货单上写的是当归。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那批药|当场拆一包，验给他看>flag:sq_cy_cd_yao_done;+exp:300;+rep:朝廷:15;+money:120;favor:cy_cd_tavern_up_1:35;incvar:favor_cy_cd_tavern_up_1:35;;记下押货人的样貌，回头再说>flag:sq_cy_cd_yao_done;+exp:220;+money:60;favor:cy_cd_tavern_up_1:20;incvar:favor_cy_cd_tavern_up_1:20"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "那批药退了回去。"
+        }
+      ]
+    },
+    "sq_cy_cd_zhu": {
+      "id": "sq_cy_cd_zhu",
+      "name": "竹巷那批竹笼",
+      "type": "支线",
+      "npc": "cy_cd_lane_1",
+      "giver": "cy_cd_lane_1",
+      "level": 26,
+      "desc": "竹巷的屈竹生做了半辈子竹器。有人订了一批竹笼，尺寸古怪，不像装鸟的。",
+      "stages": [
+        {
+          "desc": "去成都府·竹巷",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "chengdu_lane",
+              "count": 1,
+              "var": "sq_cy_cd_zhu_go0",
+              "desc": "去成都府·竹巷"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "院里堆着一批半成的竹笼，编得极密，笼口却留着活扣，是能反手扣上的。"
+            },
+            {
+              "type": "say",
+              "raw": "「装鸟的笼子，不必留这个。」"
+            }
+          ]
+        },
+        {
+          "desc": "去成都府·锦里宅巷",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "chengdu_jinli_lane",
+              "count": 1,
+              "var": "sq_cy_cd_zhu_go1",
+              "desc": "去成都府·锦里宅巷"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "巷子尽头那户人家的后门，比正门修得还结实，门上没挂匾。"
+            },
+            {
+              "type": "say",
+              "raw": "「订笼子的人，住这儿。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那批竹笼|把订户的样子说给守城兵听>flag:sq_cy_cd_zhu_done;+exp:320;+rep:朝廷:20;+money:140;favor:cy_cd_lane_1:-15;incvar:favor_cy_cd_lane_1:-15;;让他照做，只当没看见>flag:sq_cy_cd_zhu_done;+exp:200;+money:220;+karma:-10;favor:cy_cd_lane_1:30;incvar:favor_cy_cd_lane_1:30"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "那批竹笼后来再没做完。"
+        }
+      ],
+      "require": {
+        "flag": "sq_cy_cd_jin_done"
+      }
+    },
+    "sq_cy_ca_hu": {
+      "id": "sq_cy_ca_hu",
+      "name": "西市口那批胡货",
+      "type": "支线",
+      "npc": "cy_ca_market_2",
+      "giver": "cy_ca_market_2",
+      "level": 22,
+      "desc": "西市的胡商苏禄有一批货被扣在西市口，说是货单对不上。他一口汉话说得比谁都溜。",
+      "stages": [
+        {
+          "desc": "去长安城·西市",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "changan_market",
+              "count": 1,
+              "var": "sq_cy_ca_hu_go0",
+              "desc": "去长安城·西市"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "西市口那几辆车停着旁侧。货单递过来，一页上的字是两种笔迹，前一半潦草，后一半端方。"
+            },
+            {
+              "type": "say",
+              "raw": "「前一半是我写的。后一半，谁知道是谁添的。」"
+            }
+          ]
+        },
+        {
+          "desc": "去长安城·朱雀大街",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "changan_street",
+              "count": 1,
+              "var": "sq_cy_ca_hu_go1",
+              "desc": "去长安城·朱雀大街"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "六部书吏窦书办接过货单，只扫了一眼，就把纸角压在了镇纸底下。"
+            },
+            {
+              "type": "say",
+              "raw": "「这后一半的字，是官里的体。写得比我还正。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那批货|替他作保，把货领出来>flag:sq_cy_ca_hu_done;+exp:280;+money:150;+karma:10;favor:cy_ca_market_2:35;incvar:favor_cy_ca_market_2:35;;按规矩来，让他等着>flag:sq_cy_ca_hu_done;+exp:220;+rep:朝廷:20;favor:cy_ca_market_2:-20;incvar:favor_cy_ca_market_2:-20"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "那几辆车后来还是走了，货单换了一张新的。"
+        }
+      ]
+    },
+    "sq_cy_ca_yan": {
+      "id": "sq_cy_ca_yan",
+      "name": "仵作那张验单",
+      "type": "支线",
+      "npc": "cy_ca_tavern_up_1",
+      "giver": "cy_ca_tavern_up_1",
+      "level": 30,
+      "desc": "大理寺的仵作袁仵作，近来手上的验单越写越慢。上头要他把一桩命案写成「病故」。",
+      "stages": [
+        {
+          "desc": "去醉仙楼·凌云阁",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "changan_tavern_up",
+              "count": 1,
+              "var": "sq_cy_ca_yan_go0",
+              "desc": "去醉仙楼·凌云阁"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "验单摊在桌上，「伤处」那一栏空着。袁仵作用指节敲了敲那张纸，敲了三下。"
+            },
+            {
+              "type": "say",
+              "raw": "「伤在这儿。写不写，是两回事。」"
+            }
+          ]
+        },
+        {
+          "desc": "去长安城·平康坊",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "changan_lane",
+              "count": 1,
+              "var": "sq_cy_ca_yan_go1",
+              "desc": "去长安城·平康坊"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "平康坊那位赴考的举子，手里也有一份同一桩案子的抄件，边角写满了小字。"
+            },
+            {
+              "type": "say",
+              "raw": "「这案子我抄过。尸首抬出去那天，坊门开得比平常早。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那张验单|照着伤处写，一个字不瞒>flag:sq_cy_ca_yan_done;+exp:400;+rep:朝廷:30;+karma:25;favor:cy_ca_tavern_up_1:40;incvar:favor_cy_ca_tavern_up_1:40;;按上头的意思写，把这案子揭过去>flag:sq_cy_ca_yan_done;+exp:220;+money:260;+karma:-20;favor:cy_ca_tavern_up_1:-25;incvar:favor_cy_ca_tavern_up_1:-25"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "验单递上去了。"
+        }
+      ]
+    },
+    "sq_cy_ca_ju": {
+      "id": "sq_cy_ca_ju",
+      "name": "平康坊的举子",
+      "type": "支线",
+      "npc": "cy_ca_lane_1",
+      "giver": "cy_ca_lane_1",
+      "level": 34,
+      "desc": "平康坊的举子于慎行，为着那桩案子，把备考的日子都耽搁了。他说，这案子和他爹有关。",
+      "stages": [
+        {
+          "desc": "去长安城·平康坊",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "changan_lane",
+              "count": 1,
+              "var": "sq_cy_ca_ju_go0",
+              "desc": "去长安城·平康坊"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "案头摊着的是一叠抄件，密密麻麻写着小字，墨色一层压一层。时文反倒压在底下，一动没动。"
+            },
+            {
+              "type": "say",
+              "raw": "「我爹当年也递过一份验单。递到一半，撤回来了。」"
+            }
+          ]
+        },
+        {
+          "desc": "去长安城·醉仙楼",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "changan_tavern",
+              "count": 1,
+              "var": "sq_cy_ca_ju_go1",
+              "desc": "去长安城·醉仙楼"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "醉仙楼二楼，考生邢元度把酒盏推过来，没说话，只看着他。"
+            },
+            {
+              "type": "say",
+              "raw": "「这一科，你考不考？」"
+            },
+            {
+              "type": "menu",
+              "raw": "你的功课|劝他先考完，案子的事我替他盯着>flag:sq_cy_ca_ju_done;+exp:340;+rep:朝廷:15;+money:120;favor:cy_ca_lane_1:40;incvar:favor_cy_ca_lane_1:40;;帮他把抄件递上去，考不考另说>flag:sq_cy_ca_ju_done;+exp:360;+karma:20;favor:cy_ca_lane_1:30;incvar:favor_cy_ca_lane_1:30"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "他那年还是进了考场。"
+        }
+      ],
+      "require": {
+        "flag": "sq_cy_ca_yan_done"
+      }
+    },
+    "sq_cy_gs_du": {
+      "id": "sq_cy_gs_du",
+      "name": "夜里的那几趟渡",
+      "type": "支线",
+      "npc": "cy_gs_town_1",
+      "giver": "cy_gs_town_1",
+      "level": 12,
+      "desc": "姑苏城外的柳渡娘摆渡十年。近来夜里总有人要过河，却不肯上灯。",
+      "stages": [
+        {
+          "desc": "去姑苏城外",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "gusu_town",
+              "count": 1,
+              "var": "sq_cy_gs_du_go0",
+              "desc": "去姑苏城外"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "渡口的船夜里没系好，缆绳是重新接过的一道，接得很急。"
+            },
+            {
+              "type": "say",
+              "raw": "「我摆我的渡，不问是谁。可这几趟，他们连脸都不露。」"
+            }
+          ]
+        },
+        {
+          "desc": "去姑苏·燕子坞",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "gusu_yanzi",
+              "count": 1,
+              "var": "sq_cy_gs_du_go1",
+              "desc": "去姑苏·燕子坞"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "燕子坞的管事祝园管听完，把手里那把剪子收进袖里，剪口上还挂着一小截枝。"
+            },
+            {
+              "type": "say",
+              "raw": "「夜里过河的，是去做生意。做的什么生意，你猜猜看。」"
+            },
+            {
+              "type": "menu",
+              "raw": "夜里那几趟渡|替她盯着，看看是什么人>flag:sq_cy_gs_du_done;+exp:300;+rep:朝廷:15;+money:140;favor:cy_gs_town_1:35;incvar:favor_cy_gs_town_1:35;;叫她往后夜里不接这档子活>flag:sq_cy_gs_du_done;+exp:200;+money:60;favor:cy_gs_town_1:25;incvar:favor_cy_gs_town_1:25"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "渡口的灯，往后夜里也点着了。"
+        }
+      ]
+    },
+    "sq_cy_gs_xiu": {
+      "id": "sq_cy_gs_xiu",
+      "name": "绣娘绷子上那半幅",
+      "type": "支线",
+      "npc": "cy_gs_zhai_1",
+      "giver": "cy_gs_zhai_1",
+      "level": 18,
+      "desc": "世家巷的沈绣娘接了一幅大活，绣的是半张图。主家给的纹样，她越绣越觉得不对。",
+      "stages": [
+        {
+          "desc": "去姑苏·世家巷",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "gusu_zhai_lane",
+              "count": 1,
+              "var": "sq_cy_gs_xiu_go0",
+              "desc": "去姑苏·世家巷"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "绷子上那半幅绣品，针脚细密得能数得清，绣出来的却是一段水道与两处标记。"
+            },
+            {
+              "type": "say",
+              "raw": "「绣了二十年，头一回绣这个。这不是花，也不是鸟。」"
+            }
+          ]
+        },
+        {
+          "desc": "去参合庄",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "gusu_canhe",
+              "count": 1,
+              "var": "sq_cy_gs_xiu_go1",
+              "desc": "去参合庄"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "参合庄里唱评弹的蒋评弹瞥了一眼绷子，曲子停了半拍，才接下去。"
+            },
+            {
+              "type": "say",
+              "raw": "「这一带的水道，我唱过。哪一段有暗礁，词里都写着。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那半幅绣品|把纹样的来处问清楚>flag:sq_cy_gs_xiu_done;+exp:300;+rep:朝廷:20;+money:120;favor:cy_gs_zhai_1:30;incvar:favor_cy_gs_zhai_1:30;;让她绣完，只当不知道>flag:sq_cy_gs_xiu_done;+exp:200;+money:200;+karma:-10;favor:cy_gs_zhai_1:20;incvar:favor_cy_gs_zhai_1:20"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "那幅绣品最后还是交了。"
+        }
+      ]
+    },
+    "sq_cy_gs_qu": {
+      "id": "sq_cy_gs_qu",
+      "name": "那支只在姑苏唱的曲子",
+      "type": "支线",
+      "npc": "cy_gs_canhe_1",
+      "giver": "cy_gs_canhe_1",
+      "level": 26,
+      "desc": "参合庄的蒋评弹有一支曲子，唱了半辈子，只在姑苏唱。近来有人出高价，要他把词写下来。",
+      "stages": [
+        {
+          "desc": "去参合庄",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "gusu_canhe",
+              "count": 1,
+              "var": "sq_cy_gs_qu_go0",
+              "desc": "去参合庄"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "蒋评弹拨了两下弦，那支曲子的调子起了个头，又生生收住。"
+            },
+            {
+              "type": "say",
+              "raw": "「这支曲子，是替人传的信。信传到了，曲子就该歇着。」"
+            }
+          ]
+        },
+        {
+          "desc": "去姑苏城外",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "gusu_town",
+              "count": 1,
+              "var": "sq_cy_gs_qu_go1",
+              "desc": "去姑苏城外"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "渡口那头的茶馆里，那几位客人等得不耐烦了，茶换了三回。"
+            },
+            {
+              "type": "say",
+              "raw": "「一个唱曲的，架子倒比官还大。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那支曲子|让他把词留着，一个字也别写>flag:sq_cy_gs_qu_done;+exp:340;+karma:20;+rep:武林:15;favor:cy_gs_canhe_1:40;incvar:favor_cy_gs_canhe_1:40;;劝他写下来，换一笔安身钱>flag:sq_cy_gs_qu_done;+exp:220;+money:300;+karma:-15;favor:cy_gs_canhe_1:-20;incvar:favor_cy_gs_canhe_1:-20"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "那支曲子往后照旧在庄里唱。"
+        }
+      ],
+      "require": {
+        "flag": "sq_cy_gs_xiu_done"
+      }
+    },
+    "sq_cy_hb_ren": {
+      "id": "sq_cy_hb_ren",
+      "name": "把头手底下那几十号人",
+      "type": "支线",
+      "npc": "cy_hb_1",
+      "giver": "cy_hb_1",
+      "level": 10,
+      "desc": "江口码头的雷把头手底下几十号纤夫。近来有几趟货的工钱，压着一直没发。",
+      "stages": [
+        {
+          "desc": "去江口码头",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_harbor",
+              "count": 1,
+              "var": "sq_cy_hb_ren_go0",
+              "desc": "去江口码头"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "纤夫们蹲在岸边，绳子搭在肩上，谁也没起身。绳子上晒出一层白霜似的盐。"
+            },
+            {
+              "type": "say",
+              "raw": "「货主说钱在栈里，栈里说没见着钱。两句话，夹着我们这几十口人。」"
+            }
+          ]
+        },
+        {
+          "desc": "去码头·货栈",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "jn_harbor_shed",
+              "count": 1,
+              "var": "sq_cy_hb_ren_go1",
+              "desc": "去码头·货栈"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "货栈的窦栈长把账摊开，指着一行空着的地方，指头停在那儿不动。"
+            },
+            {
+              "type": "say",
+              "raw": "「银子到过这儿，又走了。走的时候，单子上是有人签了字的。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那笔工钱|替他们把银子追到底>flag:sq_cy_hb_ren_done;+exp:340;+rep:丐帮:20;+karma:20;+money:60;favor:cy_hb_1:40;incvar:favor_cy_hb_1:40;;劝他把这趟活认了，先开工>flag:sq_cy_hb_ren_done;+exp:200;+money:180;favor:cy_hb_1:-15;incvar:favor_cy_hb_1:-15"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "第二天码头照常开工。"
+        }
+      ]
+    },
+    "sq_cy_hb_huo": {
+      "id": "sq_cy_hb_huo",
+      "name": "栈里那批没人取的货",
+      "type": "支线",
+      "npc": "cy_hb_3",
+      "giver": "cy_hb_3",
+      "level": 20,
+      "desc": "货栈的窦栈长仓里有一批货，存了半年没人来取。货单上的名字，查无此人。",
+      "stages": [
+        {
+          "desc": "去码头·货栈",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_harbor_shed",
+              "count": 1,
+              "var": "sq_cy_hb_huo_go0",
+              "desc": "去码头·货栈"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "仓角那批货码在最里头，麻布裹得严实，上头落了厚厚一层灰，只有一角被人抹过。"
+            },
+            {
+              "type": "say",
+              "raw": "「半年了，连问都没人来问一声。」"
+            }
+          ]
+        },
+        {
+          "desc": "去码头·栈桥",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "jn_harbor_wharf",
+              "count": 1,
+              "var": "sq_cy_hb_huo_go1",
+              "desc": "去码头·栈桥"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "栈桥那头，打捞人屈水鬼把手里的水草绳收了收，绳结打了一半停住。"
+            },
+            {
+              "type": "say",
+              "raw": "「半年前沉过一条船。船主没找过官府，也没找过我。」"
+            },
+            {
+              "type": "menu",
+              "raw": "仓里那批货|报官，让衙门来开仓>flag:sq_cy_hb_huo_done;+exp:320;+rep:朝廷:25;+money:150;favor:cy_hb_3:-20;incvar:favor_cy_hb_3:-20;;原样留着，等他来取>flag:sq_cy_hb_huo_done;+exp:220;+money:100;favor:cy_hb_3:30;incvar:favor_cy_hb_3:30"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "那批货原样码着。"
+        }
+      ]
+    },
+    "sq_cy_hb_chuan": {
+      "id": "sq_cy_hb_chuan",
+      "name": "水底那口箱子",
+      "type": "支线",
+      "npc": "cy_hb_6",
+      "giver": "cy_hb_6",
+      "level": 30,
+      "desc": "打捞人屈水鬼近来迟迟不下水。他说，水底那条船里，有件他不敢碰的东西。",
+      "stages": [
+        {
+          "desc": "去码头·栈桥",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_harbor_wharf",
+              "count": 1,
+              "var": "sq_cy_hb_chuan_go0",
+              "desc": "去码头·栈桥"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "屈水鬼把水草绳一圈圈盘好，又解开，盘了三回。岸边那身皮肉晒得发白。"
+            },
+            {
+              "type": "say",
+              "raw": "「舱里有一口箱子。锁是新的，链子也是新的。」"
+            }
+          ]
+        },
+        {
+          "desc": "去江口码头·货栈后街",
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "jn_harbor_backstreet",
+              "count": 1,
+              "var": "sq_cy_hb_chuan_go1",
+              "desc": "去江口码头·货栈后街"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "后街那间小铺的掌柜裘小贩，一听「沉船」两个字，脸就先白了，手里的秤砣压不住。"
+            },
+            {
+              "type": "say",
+              "raw": "「那船上的东西，原本是寄在我这儿的。寄的人，也没再回来。」"
+            },
+            {
+              "type": "menu",
+              "raw": "水底那口箱子|陪他下去，把箱子捞上来>flag:sq_cy_hb_chuan_done;+exp:400;+money:260;+karma:15;favor:cy_hb_6:40;incvar:favor_cy_hb_6:40;;让他别下水，这事到此为止>flag:sq_cy_hb_chuan_done;+exp:240;+rep:朝廷:10;favor:cy_hb_6:20;incvar:favor_cy_hb_6:20"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "渡口的江水照旧浑着。"
+        }
+      ],
+      "require": {
+        "flag": "sq_cy_hb_huo_done"
+      }
+    }
+  }
+}

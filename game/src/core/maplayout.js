@@ -220,6 +220,78 @@ function layoutAll(rooms, regions, currentRoomId, terrain) {
 }
 
 /**
+ * 区域之间的「路牌」：每个区域块四向最近的那个邻居。
+ *
+ * 主人 2026-10-11 要求：「地图界面每个区域都有边界，能不能在地图上边界处
+ * 提示该方向继续往前走通往哪个区域的」。
+ *
+ * 判据是**纯几何**的，不看出口（出口只会告诉你「隔壁那间叫什么」，
+ * 说不了「这一整片往东是谁」）：
+ *   ① 目标块在指定方向上**完全错开**（东：b.x ≥ a.x + a.w）；
+ *   ② 两者在**垂直方向上有交叠** —— 不然「东边那块」其实是斜对面的，
+ *      说「往东走能到它」就是骗人；交叠了才算真贴着同一条边；
+ *   ③ 在满足 ①② 的里面取**距离最近**的（中间隔着两排的那块不算数）。
+ *
+ * @param {Object} regionBoxes  { regionId: {x,y,w,h} }
+ * @returns {Object} { regionId: { n?:regionId, e?:regionId, s?:regionId, w?:regionId } }
+ */
+function computeRegionNeighbors(regionBoxes) {
+  const ids = Object.keys(regionBoxes);
+  const out = {};
+  ids.forEach(id => { out[id] = {}; });
+  const overlap = (a0, aLen, b0, bLen) => Math.max(a0, b0) < Math.min(a0 + aLen, b0 + bLen);
+  const DIRS = [
+    ['e', (a, b) => b.x >= a.x + a.w, 'x', (a, b) => b.x - (a.x + a.w)],
+    ['w', (a, b) => b.x + b.w <= a.x, 'x', (a, b) => a.x - (b.x + b.w)],
+    ['s', (a, b) => b.y >= a.y + a.h, 'y', (a, b) => b.y - (a.y + a.h)],
+    ['n', (a, b) => b.y + b.h <= a.y, 'y', (a, b) => a.y - (b.y + b.h)],
+  ];
+  /* 交叠长度：同样是「只隔 3 格」，交叠 10 格的那块才真是「挨着这条边」，
+     交叠 1 格的是斜着蹭过去。这个当**第二关键字**，否则两块并列时
+     靠 Map 的遍历顺序决定选谁 —— 结果就是 A 的东邻是 B、B 的西邻是 C，
+     两边对不上（实测 19 条对不上，全是并列举错人）。 */
+  const overlapLen = (a0, aLen, b0, bLen) =>
+    Math.max(0, Math.min(a0 + aLen, b0 + bLen) - Math.max(a0, b0));
+
+  for (const aId of ids) {
+    const a = regionBoxes[aId];
+    for (const [dir, ahead, axis, gap] of DIRS) {
+      let best = null;
+      for (const bId of ids) {
+        if (bId === aId) continue;
+        const b = regionBoxes[bId];
+        if (!ahead(a, b)) continue;
+        /* 东/西看 y 有没有交叠，南/北看 x 有没有交叠 */
+        const ov = axis === 'x'
+          ? overlapLen(a.y, a.h, b.y, b.h)
+          : overlapLen(a.x, a.w, b.x, b.w);
+        if (!ov) continue;
+        const g = gap(a, b);
+        if (!best || g < best.gap || (g === best.gap && ov > best.ov) ||
+          (g === best.gap && ov === best.ov && bId < best.id)) {
+          best = { id: bId, gap: g, ov };
+        }
+      }
+      if (best) out[aId][dir] = best.id;
+    }
+  }
+
+  /* 只留**互认**的那一份：A 的东邻是 B，还得 B 的西邻也认 A。
+     并列选错人时两边会各指一块，留着就是「牌子说着往东是华山，
+     可华山那块牌子说往西是别处」—— 玩家顺着牌子走会走岔。
+     宁可少一块牌子，也不要一块会骗人的牌子。 */
+  const FLIP = { e: 'w', w: 'e', n: 's', s: 'n' };
+  for (const aId of ids) {
+    const mine = out[aId];
+    for (const dir of Object.keys(mine)) {
+      const other = out[mine[dir]];
+      if (!other || other[FLIP[dir]] !== aId) delete mine[dir];
+    }
+  }
+  return out;
+}
+
+/**
  * 区域装箱：把每个区域当成一个矩形块，按行排列（类似文字流），
  * 保证同区域房间聚块、区域间不重叠。
  */
@@ -372,6 +444,11 @@ function packRegions(rooms, regions, byRegion, currentRoomId, terrain) {
     occupied.add(x + ',' + y);
   });
 
+  /* 区域四向邻居：前端在世界地图上把「往东继续走是 XX」贴在区域边界处。
+   * 必须**装箱完成之后**再算 —— 邻居关系就是装箱结果的副产物。 */
+  const nbMap = computeRegionNeighbors(regionBoxes);
+  for (const k in regionBoxes) regionBoxes[k].neighbors = nbMap[k] || {};
+
   /* 总边界：以 regionBox 为准（box 已被 terrain 撑大，房间只占其中一部分）。
    * ⚠️ 若只按房间算 bounds，terrain 撑出来的边框会被裁掉，
    *   前端画区域底色时右边/下边会缺一条。 */
@@ -398,4 +475,4 @@ function packRegions(rooms, regions, byRegion, currentRoomId, terrain) {
   };
 }
 
-module.exports = { layoutRooms, layoutAll, packRegions, bfsDistance, findPath, DIR_LABEL, DIR_DELTA, dirLabel };
+module.exports = { layoutRooms, layoutAll, packRegions, computeRegionNeighbors, bfsDistance, findPath, DIR_LABEL, DIR_DELTA, dirLabel };

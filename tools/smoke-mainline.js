@@ -23,6 +23,28 @@ function boot(seed) {
 }
 const Q = 'q_main_jianghu';
 
+/** 从 cond 里找出「击败名宿」那一条（含嵌套在 `and`/`or`/数组里的写法）。
+ *
+ *  ⚠️ 为什么不能只看 `cond.fn === 'defeatLegend'`：
+ *     `design/21` §2.9.1（C3）把「击败一位名宿」**挪到第四幕之后**结算，
+ *     cond 因此从 `{fn:'defeatLegend'}` 变成
+ *     `{and:[{fn:'defeatLegend'},{flag:'act4_done'}]}`。
+ *     老写法死认顶层 `fn`，改完就再也匹配不到 → 本测试整段静默跳过（假绿）。
+ *  返回该 stage 的 cond 里是否含 defeatLegend（有则 true）。 */
+function hasLegendCond(cond) {
+  if (!cond) return false;
+  if (typeof cond !== 'object') return false;
+  if (cond.fn === 'defeatLegend') return true;
+  if (Array.isArray(cond)) return cond.some(hasLegendCond);
+  for (const k of ['and', 'or', 'not']) {
+    if (cond[k]) {
+      const v = cond[k];
+      if (Array.isArray(v) ? v.some(hasLegendCond) : hasLegendCond(v)) return true;
+    }
+  }
+  return false;
+}
+
 sec('① 主线基础');
 const e0 = boot();
 {
@@ -65,8 +87,11 @@ sec('③ learned_* flag（阶段4 flagsAny 的前提）');
   const e = boot();
   const w = e.world, p = w.player;
   /* 真技能 id，别用简称 */
-  const r = p.learnSkill('jiuyin_zhenjing');
-  ok('学会九阴真经', r.ok, r.msg);
+  /* ⚠️ force：九阴真经在真实游戏里是「剧情/奇遇传功」来的（书铺没卖它的书），
+     武学重制后**只有玩家自学**（读书 / train）才卡「须先学会基础武学」，
+     剧情授予走 force —— 这里照真实路径模拟。 */
+  const r = p.learnSkill('jiuyin_zhenjing', { force: true });
+  ok('学会九阴真经（剧情传功路径）', r.ok, r.msg);
   ok('学完记下 learned_<真skillId>', p.hasFlag('learned_jiuyin_zhenjing'),
     'flags=' + JSON.stringify(Object.keys(p.flags).filter(k => k.startsWith('learned_'))));
   ok('flag 用真 id，不是简称 learned_yijin', !p.hasFlag('learned_jiuyin'));
@@ -113,7 +138,7 @@ sec('④ 主线必须能交掉（阶段推进链）');
       const bad = st.cond.flagsAny.filter(f => f.startsWith('learned_') && !w.getSkill(f.slice(8)));
       ok('阶段' + i + ' 的 learned_* flag 都有真技能', bad.length === 0, bad.join(','));
     }
-    if (st.cond && st.cond.fn === 'defeatLegend') {
+    if (hasLegendCond(st.cond)) {
       /* 名单**从引擎读**（`world.legendIds`），不在测试里再抄一份 ——
          抄两份的下场是「改了引擎忘了改测试」，断言就成了摆设。 */
       const pool = (w.legendIds || []).slice();
@@ -168,9 +193,15 @@ sec('⑤ 全流程模拟：能不能真走到 99');
     if (stage.cond) {
       if (stage.cond.hasSect) { p.sect = '华山派'; p.setVar('hasSect', 1); }
       if (stage.cond.fn === 'anySkill100') {
-        p.learnSkill('huashan_sword');
+        /* 武学重制：门派入门先授基础武学，弟子才练得动本门功夫
+           （huashan_sword 的上限 = basic_sword 的等级，所以两门都要给）。 */
+        p.learnSkill('basic_sword', { force: true });
+        p.learnSkill('huashan_sword', { force: true });   // 门派入门即授这条真实路径
         /* exp 曲线是 1.09^lv，lv60 以后单级要 1e5+，给小数点级别的 exp 只会涨 1~2 级。
-           这里是「条件可否满足」的可满足性测试，直接给足量级（真玩家靠修炼攒）。 */
+           这里是「条件可否满足」的可满足性测试，直接给足量级（真玩家靠修炼攒）。
+           ⚠️ 顺序要紧：huashan_sword 的上限 = basic_sword 的等级，
+              必须**先把基础武学顶上去**，再练衍生，否则衍生停在 1 级。 */
+        p.gainSkillExp('basic_sword', 1e12);
         p.gainSkillExp('huashan_sword', 1e12);
       }
       if (stage.cond.fn === 'sideQuestsDone') {
@@ -179,11 +210,18 @@ sec('⑤ 全流程模拟：能不能真走到 99');
         ok('库里至少有 5 条支线可完成', sqs.length >= 5, 'n=' + sqs.length);
         for (const s of sqs) p.quests[s] = 99;
       }
-      if (stage.cond.fn === 'defeatLegend') {
+      if (hasLegendCond(stage.cond)) {
+        /* ⚠️ design/21 §2.9.1（C3）：这一段的 cond 现在是
+           `{and:[{fn:'defeatLegend'},{flag:'act4_done'}]}` ——
+           「击败一位名宿」被**挪到第四幕之后**结算。
+           原因：原先把绝顶内功当第一幕的入场券，玩家带着顶级内功进第三幕，
+           假秘籍就没了诱惑力、东方不败也没了压迫感。
+           所以这里必须先把 `act4_done` 置上（模拟「已经走完第四幕」）。 */
+        p.setFlag('act4_done', true);
         const n = w.spawnNpc((w.legendIds || [])[0] || 'blood_saber', p.room, 1, true);
         w.onNpcDown(n);
       }
-      if (stage.cond.flagsAny) p.learnSkill('jiuyin_zhenjing');
+      if (stage.cond.flagsAny) p.learnSkill('jiuyin_zhenjing', { force: true });
     }
     /* targets */
     for (const t of (stage.targets || [])) p.setVar(t.var || `q_${Q}_${t.id}`, t.count || 1);
@@ -226,10 +264,14 @@ sec('⑥ 真·交任务：找委托人一步步推到完成（99）');
     /* 逐步推。每轮先凑条件，再交任务，直到 stage 变成 99 */
     const round = [
       ['stage0 入派', () => { p.sect = '少林'; p.setVar('hasSect', 1); }],
-      ['stage1 武学百级', () => { p.learnSkill('huashan_sword'); p.gainSkillExp('huashan_sword', 1e12); }],
+      ['stage1 武学百级', () => { p.learnSkill('basic_sword', { force: true }); p.learnSkill('huashan_sword', { force: true }); p.gainSkillExp('basic_sword', 1e12); p.gainSkillExp('huashan_sword', 1e12); }],
       ['stage2 五桩支线', () => { for (const s of Object.keys(w.data.quests).filter(i => /^sq_/.test(i)).slice(0, 5)) p.quests[s] = 99; }],
-      ['stage3 击败名宿', () => { w.onNpcDown(w.spawnNpc((w.legendIds || [])[0] || 'blood_saber', p.room, 1, true)); }],
-      ['stage4 绝顶内功', () => { p.learnSkill('jiuyin_zhenjing'); }],
+      ['stage3 击败名宿', () => {
+        /* C3：这一段要求在第四幕之后结算（cond 里有 `act4_done`），先置上 */
+        p.setFlag('act4_done', true);
+        w.onNpcDown(w.spawnNpc((w.legendIds || [])[0] || 'blood_saber', p.room, 1, true));
+      }],
+      ['stage4 绝顶内功', () => { p.learnSkill('jiuyin_zhenjing', { force: true }); }],
     ];
     for (const [label, prep] of round) {
       const before = p.questStage(Q);

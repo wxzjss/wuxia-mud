@@ -1,0 +1,1753 @@
+{
+  "skills": {
+    "con_xuanjia_fist": {
+      "id": "con_xuanjia_fist",
+      "name": "玄甲拳",
+      "type": "拳",
+      "category": "外功",
+      "grade": 1,
+      "maxLevel": 900,
+      "difficulty": 1.82,
+      "trainCost": 520,
+      "damageMult": 2.25,
+      "accuracy": 96,
+      "mpCost": 36,
+      "effects": [
+        {
+          "type": "buff",
+          "name": "蓄力",
+          "turns": 3,
+          "mods": {
+            "atk": 45
+          }
+        }
+      ],
+      "base": "basic_fist",
+      "faction": true,
+      "desc": "禁军操练的拳法，一招一式都照尺子量出来的。"
+    },
+    "con_tianzi_sword": {
+      "id": "con_tianzi_sword",
+      "name": "天子剑",
+      "type": "剑",
+      "category": "外功",
+      "grade": 1,
+      "maxLevel": 900,
+      "difficulty": 1.82,
+      "trainCost": 520,
+      "damageMult": 2.25,
+      "accuracy": 96,
+      "mpCost": 36,
+      "effects": [
+        {
+          "type": "ignoreDef"
+        }
+      ],
+      "base": "basic_sword",
+      "faction": true,
+      "desc": "御前侍卫才准学的剑。剑鞘上缠的是明黄绦子。"
+    },
+    "con_jinyi_neigong": {
+      "id": "con_jinyi_neigong",
+      "name": "锦衣内功",
+      "type": "内功",
+      "category": "内功",
+      "grade": 1,
+      "maxLevel": 900,
+      "difficulty": 1.82,
+      "trainCost": 520,
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "mpBonus": 610,
+      "bonus": {
+        "maxMp": 300,
+        "maxHp": 200
+      },
+      "effects": [],
+      "base": "basic_force",
+      "faction": true,
+      "desc": "锦衣卫的吐纳法，练的是耐得住刑、熬得住夜。"
+    },
+    "con_zhenfu_guard": {
+      "id": "con_zhenfu_guard",
+      "name": "镇抚刀盾",
+      "type": "招架",
+      "category": "外功",
+      "grade": 4,
+      "maxLevel": 750,
+      "difficulty": 1.4,
+      "trainCost": 340,
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "effects": [],
+      "base": "basic_parry",
+      "faction": true,
+      "desc": "北镇抚司的护身架子，先护住自己再谈拿人。"
+    },
+    "dongchang_soaring": {
+      "id": "dongchang_soaring",
+      "name": "东厂提纵",
+      "type": "轻功",
+      "category": "外功",
+      "grade": 4,
+      "maxLevel": 750,
+      "difficulty": 1.4,
+      "trainCost": 340,
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "effects": [],
+      "base": "basic_dodge",
+      "faction": true,
+      "desc": "翻墙进院不出声，是番子吃饭的本事。"
+    },
+    "dongchang_soul": {
+      "id": "dongchang_soul",
+      "name": "摄魂爪",
+      "type": "拳",
+      "category": "旁门",
+      "grade": 2,
+      "maxLevel": 850,
+      "difficulty": 1.68,
+      "trainCost": 460,
+      "damageMult": 2.1,
+      "accuracy": 95,
+      "mpCost": 32,
+      "effects": [
+        {
+          "type": "confuse",
+          "chance": 0.3,
+          "turns": 2
+        }
+      ],
+      "base": "basic_fist",
+      "faction": true,
+      "desc": "抓人先抓胆。被拿住的多半自己就招了。"
+    },
+    "biao_escort_blade": {
+      "id": "biao_escort_blade",
+      "name": "保镖刀法",
+      "type": "刀",
+      "category": "外功",
+      "grade": 5,
+      "maxLevel": 700,
+      "difficulty": 1.26,
+      "trainCost": 280,
+      "damageMult": 1.65,
+      "accuracy": 92,
+      "mpCost": 20,
+      "effects": [
+        {
+          "type": "buff",
+          "name": "铁壁",
+          "turns": 3,
+          "mods": {
+            "parry": 30,
+            "def": 20
+          }
+        }
+      ],
+      "base": "basic_blade",
+      "faction": true,
+      "desc": "镖行的看家刀。不图伤敌，只求货在人在。"
+    },
+    "biao_horse_fist": {
+      "id": "biao_horse_fist",
+      "name": "走马拳",
+      "type": "拳",
+      "category": "外功",
+      "grade": 8,
+      "maxLevel": 550,
+      "difficulty": 0.84,
+      "trainCost": 100,
+      "damageMult": 1.2,
+      "accuracy": 89,
+      "mpCost": 8,
+      "effects": [],
+      "base": "basic_fist",
+      "faction": true,
+      "desc": "押车时在马背上使得的拳，稳字当先。"
+    },
+    "bang_wharf_staff": {
+      "id": "bang_wharf_staff",
+      "name": "码头棍",
+      "type": "棍",
+      "category": "外功",
+      "grade": 8,
+      "maxLevel": 550,
+      "difficulty": 0.84,
+      "trainCost": 100,
+      "damageMult": 1.2,
+      "accuracy": 89,
+      "mpCost": 8,
+      "effects": [],
+      "base": "basic_staff",
+      "faction": true,
+      "desc": "挑担的扁担也能使。帮里人打群架全靠它。"
+    },
+    "bang_river_force": {
+      "id": "bang_river_force",
+      "name": "踏浪功",
+      "type": "内功",
+      "category": "内功",
+      "grade": 6,
+      "maxLevel": 650,
+      "difficulty": 1.12,
+      "trainCost": 220,
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "mpBonus": 260,
+      "bonus": {
+        "maxMp": 300,
+        "maxHp": 200
+      },
+      "effects": [],
+      "base": "basic_force",
+      "faction": true,
+      "desc": "水上讨生活的人练的，气沉得住，人就不沉。"
+    },
+    "salt_iron_palm": {
+      "id": "salt_iron_palm",
+      "name": "盐铁掌",
+      "type": "拳",
+      "category": "旁门",
+      "grade": 3,
+      "maxLevel": 800,
+      "difficulty": 1.54,
+      "trainCost": 400,
+      "damageMult": 1.95,
+      "accuracy": 94,
+      "mpCost": 28,
+      "effects": [
+        {
+          "type": "buff",
+          "name": "摧坚",
+          "turns": 3,
+          "mods": {
+            "armorPen": 0.2
+          }
+        }
+      ],
+      "base": "basic_fist",
+      "faction": true,
+      "desc": "盐帮的东西，掌心常年沾着盐，打人身上火辣辣地疼。"
+    },
+    "merchant_sleeve": {
+      "id": "merchant_sleeve",
+      "name": "袖里乾坤",
+      "type": "暗器",
+      "category": "旁门",
+      "grade": 4,
+      "maxLevel": 750,
+      "difficulty": 1.4,
+      "trainCost": 340,
+      "damageMult": 1.8,
+      "accuracy": 93,
+      "mpCost": 24,
+      "effects": [
+        {
+          "type": "dot",
+          "name": "毒",
+          "turns": 4,
+          "value": 36
+        }
+      ],
+      "base": "basic_throw",
+      "faction": true,
+      "desc": "商会上不了台面的手段。袖子里的东西，看的人都没了。"
+    },
+    "sa_drunk_fist": {
+      "id": "sa_drunk_fist",
+      "name": "醉八仙",
+      "type": "拳",
+      "category": "旁门",
+      "grade": 4,
+      "maxLevel": 750,
+      "difficulty": 1.4,
+      "trainCost": 340,
+      "damageMult": 1.8,
+      "accuracy": 93,
+      "mpCost": 24,
+      "effects": [
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.35
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "standalone": true,
+      "desc": "脚下打晃，招式却半点不乱。真醉的人使不出来，装醉的人也使不出来。"
+    },
+    "sa_qimen_escape": {
+      "id": "sa_qimen_escape",
+      "name": "奇门遁甲",
+      "type": "拳",
+      "category": "旁门",
+      "grade": 2,
+      "maxLevel": 850,
+      "difficulty": 1.68,
+      "trainCost": 460,
+      "damageMult": 2.1,
+      "accuracy": 95,
+      "mpCost": 32,
+      "effects": [
+        {
+          "type": "buff",
+          "name": "遁形",
+          "turns": 3,
+          "mods": {
+            "dodge": 60
+          }
+        }
+      ],
+      "standalone": true,
+      "desc": "这门功夫不打人，教的是怎么让人打不着你。阵图一半在纸上，一半在人身上。"
+    },
+    "sa_turtle_breath": {
+      "id": "sa_turtle_breath",
+      "name": "龟息功",
+      "type": "内功",
+      "category": "旁门",
+      "grade": 3,
+      "maxLevel": 800,
+      "difficulty": 1.54,
+      "trainCost": 400,
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "mpBonus": 470,
+      "bonus": {
+        "maxMp": 300,
+        "maxHp": 200
+      },
+      "effects": [],
+      "standalone": true,
+      "desc": "一躺能躺三天，气息细得像没了。装死的、避祸的，都靠这门功夫。"
+    },
+    "sa_face_change": {
+      "id": "sa_face_change",
+      "name": "易容术",
+      "type": "拳",
+      "category": "旁门",
+      "grade": 5,
+      "maxLevel": 700,
+      "difficulty": 1.26,
+      "trainCost": 280,
+      "damageMult": 1.65,
+      "accuracy": 92,
+      "mpCost": 20,
+      "effects": [],
+      "standalone": true,
+      "desc": "换张脸比换件衣裳费事些。见过的脸多了，就什么脸都能捏。"
+    },
+    "sa_bone_shrink": {
+      "id": "sa_bone_shrink",
+      "name": "缩骨功",
+      "type": "轻功",
+      "category": "旁门",
+      "grade": 4,
+      "maxLevel": 750,
+      "difficulty": 1.4,
+      "trainCost": 340,
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "effects": [
+        {
+          "type": "buff",
+          "name": "缩骨",
+          "turns": 3,
+          "mods": {
+            "dodge": 45,
+            "speed": 25
+          }
+        }
+      ],
+      "standalone": true,
+      "desc": "锁骨一收，人矮半尺。钻窗、脱铐、藏进箱子都使得。"
+    },
+    "sa_drug_resist": {
+      "id": "sa_drug_resist",
+      "name": "辟毒诀",
+      "type": "内功",
+      "category": "旁门",
+      "grade": 4,
+      "maxLevel": 750,
+      "difficulty": 1.4,
+      "trainCost": 340,
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "mpBonus": 400,
+      "bonus": {
+        "maxMp": 300,
+        "maxHp": 200
+      },
+      "effects": [
+        {
+          "type": "buff",
+          "name": "辟毒",
+          "turns": 9999,
+          "mods": {
+            "def": 15
+          }
+        }
+      ],
+      "standalone": true,
+      "desc": "江湖上凡是要命的饭局，都得先有点这个底子。"
+    },
+    "cn_wind_step": {
+      "id": "cn_wind_step",
+      "name": "疾风步",
+      "type": "轻功",
+      "category": "外功",
+      "grade": 6,
+      "maxLevel": 650,
+      "difficulty": 1.12,
+      "trainCost": 220,
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "bonus": {
+        "dodge": 70,
+        "speed": 20
+      },
+      "effects": [],
+      "base": "basic_dodge",
+      "desc": "跑得快不算本事，跑得久才算。"
+    },
+    "cn_iron_shirt": {
+      "id": "cn_iron_shirt",
+      "name": "金钟罩",
+      "type": "招架",
+      "category": "外功",
+      "grade": 5,
+      "maxLevel": 700,
+      "difficulty": 1.26,
+      "trainCost": 280,
+      "damageMult": 0,
+      "accuracy": 0,
+      "mpCost": 0,
+      "bonus": {
+        "parry": 60
+      },
+      "effects": [],
+      "base": "basic_parry",
+      "desc": "硬桥硬马地挨。练到家的能让人砍两刀不破皮。"
+    },
+    "cn_hidden_blade": {
+      "id": "cn_hidden_blade",
+      "name": "袖刀",
+      "type": "刀",
+      "category": "外功",
+      "grade": 7,
+      "maxLevel": 600,
+      "difficulty": 0.98,
+      "trainCost": 160,
+      "damageMult": 1.35,
+      "accuracy": 90,
+      "mpCost": 12,
+      "effects": [],
+      "base": "basic_blade",
+      "desc": "刀藏袖里，出手就到了眼前。"
+    },
+    "cn_long_fist": {
+      "id": "cn_long_fist",
+      "name": "太祖长拳",
+      "type": "拳",
+      "category": "外功",
+      "grade": 8,
+      "maxLevel": 550,
+      "difficulty": 0.84,
+      "trainCost": 100,
+      "damageMult": 1.2,
+      "accuracy": 89,
+      "mpCost": 8,
+      "effects": [],
+      "base": "basic_fist",
+      "desc": "庙会上打把式卖艺的都会。架子简单，脉络却正。"
+    },
+    "cn_bone_needle": {
+      "id": "cn_bone_needle",
+      "name": "骨针",
+      "type": "暗器",
+      "category": "外功",
+      "grade": 6,
+      "maxLevel": 650,
+      "difficulty": 1.12,
+      "trainCost": 220,
+      "damageMult": 1.5,
+      "accuracy": 91,
+      "mpCost": 16,
+      "effects": [
+        {
+          "type": "dot",
+          "name": "骨刺",
+          "turns": 3,
+          "value": 30
+        }
+      ],
+      "base": "basic_throw",
+      "desc": "鱼骨也能当暗器。海边的人使这个最顺手。"
+    },
+    "cn_breath_art": {
+      "id": "cn_breath_art",
+      "name": "小周天",
+      "type": "内功",
+      "category": "外功",
+      "grade": 7,
+      "maxLevel": 600,
+      "difficulty": 0.98,
+      "trainCost": 160,
+      "damageMult": 0,
+      "accuracy": 90,
+      "mpCost": 0,
+      "mpBonus": 190,
+      "bonus": {
+        "maxMp": 250,
+        "maxHp": 150
+      },
+      "effects": [],
+      "base": "basic_force",
+      "desc": "寻常人家也传的吐纳法，管用，不出奇。"
+    },
+    "cn_staff_sweep": {
+      "id": "cn_staff_sweep",
+      "name": "横扫千军",
+      "type": "棍",
+      "category": "外功",
+      "grade": 5,
+      "maxLevel": 700,
+      "difficulty": 1.26,
+      "trainCost": 280,
+      "damageMult": 1.65,
+      "accuracy": 92,
+      "mpCost": 20,
+      "effects": [
+        {
+          "type": "aoe"
+        }
+      ],
+      "base": "basic_staff",
+      "desc": "棍法里最横的一式，一招扫开半圈人。"
+    },
+    "cn_whip_bind": {
+      "id": "cn_whip_bind",
+      "name": "缠丝鞭",
+      "type": "鞭",
+      "category": "外功",
+      "grade": 6,
+      "maxLevel": 650,
+      "difficulty": 1.12,
+      "trainCost": 220,
+      "damageMult": 1.5,
+      "accuracy": 91,
+      "mpCost": 16,
+      "effects": [
+        {
+          "type": "slow",
+          "value": 30,
+          "turns": 3
+        }
+      ],
+      "base": "basic_whip",
+      "desc": "鞭子是软的，缠上就往回拖。"
+    }
+  },
+  "items": {
+    "t_herb_1000": {
+      "id": "t_herb_1000",
+      "name": "千年雪参",
+      "type": "treasure",
+      "category": "天材地果",
+      "quality": "epic",
+      "desc": "雪线以上才长。挖出来的人多半没回来。",
+      "value": 9000,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "资质",
+            6
+          ]
+        }
+      ]
+    },
+    "t_lingzhi_purple": {
+      "id": "t_lingzhi_purple",
+      "name": "紫府灵芝",
+      "type": "treasure",
+      "category": "天材地果",
+      "quality": "epic",
+      "desc": "灵芝上的纹路像云，看久了人会发怔。",
+      "value": 9000,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "悟性",
+            6
+          ]
+        }
+      ]
+    },
+    "t_dragon_grass": {
+      "id": "t_dragon_grass",
+      "name": "龙涎草",
+      "type": "treasure",
+      "category": "天材地果",
+      "quality": "epic",
+      "desc": "长在崖缝里，风一过就有一股腥甜味。",
+      "value": 8000,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "根骨",
+            6
+          ]
+        }
+      ]
+    },
+    "t_ice_marrow": {
+      "id": "t_ice_marrow",
+      "name": "玄冰髓",
+      "type": "treasure",
+      "category": "天材地果",
+      "quality": "rare",
+      "desc": "握在手里，半条胳膊是麻的。",
+      "value": 7000,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "定力",
+            5
+          ]
+        }
+      ]
+    },
+    "t_fire_sand": {
+      "id": "t_fire_sand",
+      "name": "赤炎砂",
+      "type": "treasure",
+      "category": "天材地果",
+      "quality": "rare",
+      "desc": "沙是红的，倒在掌心烫得跳脚。",
+      "value": 7000,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "力量",
+            5
+          ]
+        }
+      ]
+    },
+    "t_wash_marrow": {
+      "id": "t_wash_marrow",
+      "name": "洗髓花",
+      "type": "treasure",
+      "category": "天材地果",
+      "quality": "rare",
+      "desc": "花瓣碰一下就落。听说是拿来洗筋伐髓的。",
+      "value": 6000,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "资质",
+            4
+          ]
+        }
+      ]
+    },
+    "t_soul_herb": {
+      "id": "t_soul_herb",
+      "name": "九叶还魂草",
+      "type": "treasure",
+      "category": "天材地果",
+      "quality": "epic",
+      "desc": "九片叶子，缺一片就没用了。",
+      "value": 12000,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "根骨",
+            4
+          ]
+        }
+      ]
+    },
+    "t_jade_fruit": {
+      "id": "t_jade_fruit",
+      "name": "玉髓果",
+      "type": "treasure",
+      "category": "天材地果",
+      "quality": "rare",
+      "desc": "果肉像玉，咬下去是凉的。",
+      "value": 6500,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "身法",
+            5
+          ]
+        }
+      ]
+    },
+    "t_star_dew": {
+      "id": "t_star_dew",
+      "name": "星辰露",
+      "type": "treasure",
+      "category": "天材地果",
+      "quality": "rare",
+      "desc": "只在无月的夜里凝在叶尖上。",
+      "value": 6000,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "福缘",
+            5
+          ]
+        }
+      ]
+    },
+    "t_iron_root": {
+      "id": "t_iron_root",
+      "name": "铁骨藤",
+      "type": "treasure",
+      "category": "天材地果",
+      "quality": "rare",
+      "desc": "藤条硬得像铁，煮水喝能壮骨。",
+      "value": 5500,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "根骨",
+            5
+          ]
+        }
+      ]
+    },
+    "t_cloud_tea": {
+      "id": "t_cloud_tea",
+      "name": "云雾茶",
+      "type": "treasure",
+      "category": "天材地果",
+      "quality": "fine",
+      "desc": "山寺里待客的茶，喝下去心就静了。",
+      "value": 1800,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "定力",
+            3
+          ]
+        }
+      ]
+    },
+    "t_wolf_fang": {
+      "id": "t_wolf_fang",
+      "name": "狼牙丹",
+      "type": "treasure",
+      "category": "天材地果",
+      "quality": "fine",
+      "desc": "用头狼的牙磨成的粉，药性烈。",
+      "value": 2200,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "力量",
+            3
+          ]
+        }
+      ]
+    },
+    "t_moon_flower": {
+      "id": "t_moon_flower",
+      "name": "月见花",
+      "type": "treasure",
+      "category": "天材地果",
+      "quality": "fine",
+      "desc": "夜里才开，天亮就合上。",
+      "value": 2400,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "悟性",
+            3
+          ]
+        }
+      ]
+    },
+    "t_deep_ginseng": {
+      "id": "t_deep_ginseng",
+      "name": "老山参",
+      "type": "treasure",
+      "category": "天材地果",
+      "quality": "fine",
+      "desc": "药铺里能卖个好价，也可能被人半路截走。",
+      "value": 2600,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "资质",
+            3
+          ]
+        }
+      ]
+    },
+    "t_bone_powder": {
+      "id": "t_bone_powder",
+      "name": "续骨散",
+      "type": "treasure",
+      "category": "天材地果",
+      "quality": "common",
+      "desc": "跌打郎中案头常备的东西。",
+      "value": 1200,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+attr",
+          "args": [
+            "根骨",
+            2
+          ]
+        }
+      ]
+    },
+    "c_mihun_xiang": {
+      "id": "c_mihun_xiang",
+      "name": "迷魂香",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "点着了往门缝里吹。屋里的人会自己把话说出来。",
+      "value": 900,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+buff",
+          "args": [
+            {
+              "name": "迷香",
+              "turns": 2,
+              "mods": {
+                "dodge": -40,
+                "parry": -30
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c_bixue_zhen": {
+      "id": "c_bixue_zhen",
+      "name": "闭穴针",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "扎进穴道，手上就使不出劲。解针的手法各家不同。",
+      "value": 1400,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+buff",
+          "args": [
+            {
+              "name": "闭穴",
+              "turns": 2,
+              "mods": {
+                "speed": -50,
+                "atk": -30
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c_lihua_zhen": {
+      "id": "c_lihua_zhen",
+      "name": "暴雨梨花针",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "一个铁筒里装着二十七根针。开筒之后，就没有回头路。",
+      "value": 2600,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+buff",
+          "args": [
+            {
+              "name": "疾发",
+              "turns": 3,
+              "mods": {
+                "atk": 40,
+                "speed": 30
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c_jiedu_dan": {
+      "id": "c_jiedu_dan",
+      "name": "解毒丹",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "药铺里买得到，管不管用看配药的人。",
+      "value": 300,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "custom",
+          "fn": "cure",
+          "args": []
+        }
+      ]
+    },
+    "c_xionghuang": {
+      "id": "c_xionghuang",
+      "name": "雄黄酒",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "端午喝剩下的。灌下去，肚子里那点东西就不闹了。",
+      "value": 200,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "custom",
+          "fn": "cure",
+          "args": []
+        }
+      ]
+    },
+    "c_jinzhong_fu": {
+      "id": "c_jinzhong_fu",
+      "name": "金钟符",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "画符的人说这符顶得住三刀。信不信由你。",
+      "value": 500,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+buff",
+          "args": [
+            {
+              "name": "金钟",
+              "turns": 20,
+              "mods": {
+                "def": 45
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c_dali_wan": {
+      "id": "c_dali_wan",
+      "name": "大力丸",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "药丸是黑的，嚼起来一股松香味。",
+      "value": 450,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+buff",
+          "args": [
+            {
+              "name": "神力",
+              "turns": 20,
+              "mods": {
+                "atk": 35
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c_huoxue_san": {
+      "id": "c_huoxue_san",
+      "name": "活血散",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "走镖的行囊里总有一包。",
+      "value": 260,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+hp",
+          "args": [
+            120
+          ]
+        }
+      ]
+    },
+    "c_huiqi_dan": {
+      "id": "c_huiqi_dan",
+      "name": "回气丹",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "打完一场，咽一颗，胸口那处壅塞就开了。",
+      "value": 300,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+mp",
+          "args": [
+            120
+          ]
+        }
+      ]
+    },
+    "c_qingxin_cha": {
+      "id": "c_qingxin_cha",
+      "name": "清心茶",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "苦得厉害，喝完眼睛反而亮了。",
+      "value": 380,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+buff",
+          "args": [
+            {
+              "name": "清明",
+              "turns": 10,
+              "mods": {
+                "critRate": 0.08
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c_tiebu_shan": {
+      "id": "c_tiebu_shan",
+      "name": "铁布衫药酒",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "擦在身上火辣辣的，管一阵子。",
+      "value": 420,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+buff",
+          "args": [
+            {
+              "name": "硬功",
+              "turns": 15,
+              "mods": {
+                "def": 30,
+                "parry": 20
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c_yanzhi_fen": {
+      "id": "c_yanzhi_fen",
+      "name": "胭脂粉",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "抹上脸就换个人。市井里卖得比药还快。",
+      "value": 350,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+buff",
+          "args": [
+            {
+              "name": "易容",
+              "turns": 30,
+              "mods": {
+                "dodge": 25
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c_meng_han_yao": {
+      "id": "c_meng_han_yao",
+      "name": "蒙汗药",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "下在酒里最灵。江湖上吃过这个亏的人不少。",
+      "value": 600,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+buff",
+          "args": [
+            {
+              "name": "手脚发软",
+              "turns": 3,
+              "mods": {
+                "atk": -35,
+                "speed": -35
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c_yanshi_dan": {
+      "id": "c_yanshi_dan",
+      "name": "燃石丹",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "吞下去浑身发烫。伤人，也伤自己。",
+      "value": 1600,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+buff",
+          "args": [
+            {
+              "name": "焚身",
+              "turns": 4,
+              "mods": {
+                "atk": 60,
+                "def": -20
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c_yunxing_fu": {
+      "id": "c_yunxing_fu",
+      "name": "轻身符",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "贴上之后，走路像是踩在棉花上。",
+      "value": 520,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+buff",
+          "args": [
+            {
+              "name": "轻身",
+              "turns": 20,
+              "mods": {
+                "dodge": 40,
+                "speed": 30
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c_jingxin_fu": {
+      "id": "c_jingxin_fu",
+      "name": "静心符",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "庙里求的，图个心安。",
+      "value": 560,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+buff",
+          "args": [
+            {
+              "name": "静心",
+              "turns": 20,
+              "mods": {
+                "critRate": 0.1,
+                "parry": 25
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c_dujian": {
+      "id": "c_dujian",
+      "name": "毒箭",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "箭头是黑的。拔出来一看，伤口周围也黑了。",
+      "value": 240,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+buff",
+          "args": [
+            {
+              "name": "中毒",
+              "turns": 3,
+              "mods": {
+                "def": -30
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c_xianglian": {
+      "id": "c_xianglian",
+      "name": "安魂香",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "睡前点一炉，第二天起身轻快些。",
+      "value": 480,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+buff",
+          "args": [
+            {
+              "name": "安魂",
+              "turns": 10,
+              "mods": {
+                "maxMp": 80
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c_buqi_gao": {
+      "id": "c_buqi_gao",
+      "name": "补气膏",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "一小罐黑膏，闻着像熬糊了的糖。",
+      "value": 700,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+hp",
+          "args": [
+            200
+          ]
+        },
+        {
+          "type": "+mp",
+          "args": [
+            80
+          ]
+        }
+      ]
+    },
+    "c_zhenli_fu": {
+      "id": "c_zhenli_fu",
+      "name": "真力符",
+      "type": "consumable",
+      "category": "药物",
+      "quality": "fine",
+      "desc": "符上的字一笔到底，画完的人要歇半天。",
+      "value": 1200,
+      "stackable": true,
+      "stackMax": 9,
+      "use": [
+        {
+          "type": "+buff",
+          "args": [
+            {
+              "name": "真力",
+              "turns": 12,
+              "mods": {
+                "atk": 45,
+                "critRate": 0.05
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "books": {
+    "book_sa_drunk": {
+      "id": "book_sa_drunk",
+      "name": "《醉八仙拳谱》",
+      "type": "book",
+      "teach": "sa_drunk_fist",
+      "desc": "一本手抄的册子，边角已经磨圆了。",
+      "cost": 500,
+      "timeCost": 260,
+      "value": 3600,
+      "require": {
+        "skill": "basic_force",
+        ">=": 60
+      }
+    },
+    "book_sa_qimen": {
+      "id": "book_sa_qimen",
+      "name": "《奇门遁甲残卷》",
+      "type": "book",
+      "teach": "sa_qimen_escape",
+      "desc": "一本手抄的册子，边角已经磨圆了。",
+      "cost": 500,
+      "timeCost": 260,
+      "value": 3600,
+      "require": {
+        "skill": "basic_force",
+        ">=": 60
+      }
+    },
+    "book_cn_iron": {
+      "id": "book_cn_iron",
+      "name": "《金钟罩要诀》",
+      "type": "book",
+      "teach": "cn_iron_shirt",
+      "desc": "一本手抄的册子，边角已经磨圆了。",
+      "cost": 500,
+      "timeCost": 260,
+      "value": 3600,
+      "require": {
+        "skill": "basic_force",
+        ">=": 60
+      }
+    },
+    "book_sa_face": {
+      "id": "book_sa_face",
+      "name": "《易容术》",
+      "type": "book",
+      "teach": "sa_face_change",
+      "desc": "一本手抄的册子，边角已经磨圆了。",
+      "cost": 500,
+      "timeCost": 260,
+      "value": 3600,
+      "require": {
+        "skill": "basic_force",
+        ">=": 60
+      }
+    }
+  },
+  "encounters": [
+    {
+      "id": "enc_0",
+      "name": "洞窟拳经",
+      "rooms": [
+        "wild"
+      ],
+      "chance": 0.1,
+      "effects": [
+        {
+          "type": "narrate",
+          "raw": "岩壁上的刻痕被苔藓盖住了大半，你用手掌抹了抹，看出是一路拳架子。"
+        },
+        {
+          "type": "randomitem",
+          "args": [
+            "book_cn_long_fist"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enc_1",
+      "name": "高人授艺",
+      "rooms": [
+        "wild"
+      ],
+      "chance": 0.07,
+      "effects": [
+        {
+          "type": "narrate",
+          "raw": "树底下躺着个醉汉，睁眼看你，忽然翻身起来打了一趟拳，打完倒头又睡。"
+        },
+        {
+          "type": "randomitem",
+          "args": [
+            "book_sa_drunk"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enc_2",
+      "name": "古墓机关",
+      "rooms": [
+        "wild"
+      ],
+      "chance": 0.09,
+      "effects": [
+        {
+          "type": "narrate",
+          "raw": "石阶下陷了一寸，露出个锈住的铜环。掰开来看，里头是两道符。"
+        },
+        {
+          "type": "randomitem",
+          "args": [
+            "c_jinzhong_fu",
+            "c_yunxing_fu"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enc_3",
+      "name": "江湖恩怨",
+      "rooms": [
+        "wild"
+      ],
+      "chance": 0.08,
+      "effects": [
+        {
+          "type": "narrate",
+          "raw": "林子里有人压着嗓子吵。你没出声，他们走的时候落下了个铁筒。"
+        },
+        {
+          "type": "randomitem",
+          "args": [
+            "c_lihua_zhen"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enc_4",
+      "name": "市井机缘",
+      "rooms": [
+        "wild"
+      ],
+      "chance": 0.12,
+      "effects": [
+        {
+          "type": "narrate",
+          "raw": "路边的货郎车翻了，他一边捡一边骂，看见你，塞了两样东西过来。"
+        },
+        {
+          "type": "randomitem",
+          "args": [
+            "c_dali_wan",
+            "c_huoxue_san"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enc_5",
+      "name": "天象异变",
+      "rooms": [
+        "wild"
+      ],
+      "chance": 0.06,
+      "effects": [
+        {
+          "type": "narrate",
+          "raw": "天色忽然暗了一瞬，再亮起来时，石缝里的东西好像变了位置。"
+        },
+        {
+          "type": "randomitem",
+          "args": [
+            "t_deep_ginseng"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enc_6",
+      "name": "弃尸遗物",
+      "rooms": [
+        "wild"
+      ],
+      "chance": 0.08,
+      "effects": [
+        {
+          "type": "narrate",
+          "raw": "路边倒着个人，身上没伤，手里还攥着东西。"
+        },
+        {
+          "type": "randomitem",
+          "args": [
+            "c_tiebu_shan",
+            "c_dujian"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enc_7",
+      "name": "野寺残卷",
+      "rooms": [
+        "wild"
+      ],
+      "chance": 0.05,
+      "effects": [
+        {
+          "type": "narrate",
+          "raw": "破庙的梁上塞着个布包，你够下来一看，是半本阵图。"
+        },
+        {
+          "type": "randomitem",
+          "args": [
+            "book_sa_qimen"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enc_8",
+      "name": "老树洞藏",
+      "rooms": [
+        "wild"
+      ],
+      "chance": 0.11,
+      "effects": [
+        {
+          "type": "narrate",
+          "raw": "老树的洞里有东西，是前人藏的，还是松鼠拖进去的，说不清。"
+        },
+        {
+          "type": "randomitem",
+          "args": [
+            "t_cloud_tea",
+            "t_bone_powder"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enc_9",
+      "name": "崖畔奇花",
+      "rooms": [
+        "wild"
+      ],
+      "chance": 0.09,
+      "effects": [
+        {
+          "type": "narrate",
+          "raw": "崖边上开着一朵，风越大，香气越往你这边飘。"
+        },
+        {
+          "type": "randomitem",
+          "args": [
+            "t_moon_flower"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enc_10",
+      "name": "溪底沉物",
+      "rooms": [
+        "wild"
+      ],
+      "chance": 0.1,
+      "effects": [
+        {
+          "type": "narrate",
+          "raw": "水底的石头缝里有东西亮了一下。你脱了鞋下去摸，摸出个小瓶。"
+        },
+        {
+          "type": "randomitem",
+          "args": [
+            "c_meng_han_yao"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enc_11",
+      "name": "商队遗货",
+      "rooms": [
+        "wild"
+      ],
+      "chance": 0.09,
+      "effects": [
+        {
+          "type": "narrate",
+          "raw": "官道边的车辙印很深，走远了还有一股香粉味。地上落着两样。"
+        },
+        {
+          "type": "randomitem",
+          "args": [
+            "c_mihun_xiang",
+            "c_yanzhi_fen"
+          ]
+        }
+      ]
+    }
+  ],
+  "auction": {
+    "intervalDays": 3,
+    "slots": 12,
+    "highSlots": 2,
+    "minRaise": 0.05,
+    "feeRate": 0.08,
+    "listingFee": 0.02,
+    "consignMinValue": 500,
+    "pool": [
+      "t_deep_ginseng",
+      "t_cloud_tea",
+      "t_wolf_fang",
+      "t_moon_flower",
+      "t_bone_powder",
+      "c_dali_wan",
+      "c_huoxue_san",
+      "c_jiedu_dan",
+      "c_jingxin_fu",
+      "c_yunxing_fu",
+      "c_jinzhong_fu",
+      "c_huiqi_dan",
+      "c_tiebu_shan",
+      "c_xianglian",
+      "c_qingxin_cha"
+    ],
+    "highPool": [
+      {
+        "grade": 1,
+        "w": 2
+      },
+      {
+        "grade": 2,
+        "w": 4
+      },
+      {
+        "grade": 3,
+        "w": 6
+      },
+      {
+        "grade": 4,
+        "w": 8
+      },
+      {
+        "grade": 5,
+        "w": 10
+      },
+      {
+        "grade": 6,
+        "w": 12
+      },
+      {
+        "grade": 7,
+        "w": 14
+      },
+      {
+        "grade": 8,
+        "w": 16
+      },
+      {
+        "grade": 9,
+        "w": 18
+      }
+    ],
+    "highItems": [
+      "t_herb_1000",
+      "t_lingzhi_purple",
+      "t_dragon_grass",
+      "t_ice_marrow",
+      "t_fire_sand",
+      "t_soul_herb",
+      "c_lihua_zhen",
+      "c_yanshi_dan",
+      "c_zhenli_fu",
+      "c_bixue_zhen"
+    ]
+  },
+  "rooms": {
+    "luoyang_market": {
+      "auctionHouse": true
+    },
+    "changan_market": {
+      "auctionHouse": true
+    },
+    "chengdu_market": {
+      "auctionHouse": true
+    },
+    "xiangyang_market": {
+      "auctionHouse": true
+    },
+    "jiangnan_market": {
+      "auctionHouse": true
+    },
+    "gusu_town": {
+      "auctionHouse": true
+    }
+  }
+}

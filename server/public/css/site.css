@@ -2,29 +2,61 @@
    武侠行 Mod 站 · 样式（水墨浅色）
    ========================================================================== */
 :root {
-  --paper: #f4f1e8;
-  --paper-2: #ebe6d9;
-  --paper-3: #e2dbc9;
-  --ink: #2b2721;
-  --ink-2: #4a443a;
-  --ink-3: #6f675a;
-  --ink-4: #9a917f;
-  --line: #cfc6b0;
-  --line-2: #ded6c2;
-  --red: #9c2b25;
-  --red-2: #c0413a;
-  --gold: #a8842c;
-  --jade: #3f7a63;
-  --blue: #2f5f8a;
-  --shadow: 0 2px 14px rgba(60, 48, 30, .11);
-  --shadow-2: 0 10px 40px rgba(60, 48, 30, .2);
+  /* ============================================================
+   *  Mod 站配色（主人 2026-10-11：「mod 站也暗色化」）
+   *  与游戏页 `main.css` 的 `:root` **同一套夜墨**，两处颜色逐字对齐 ——
+   *  这样从 Mod 站点「开始游戏」跳进游戏，不会出现「这边浅那边深」的割裂。
+   *  ⚠️ 改这里请同步 `game/src/renderer/css/main.css` 的对应值。
+   * ============================================================ */
+  --paper: #17140f;
+  --paper-2: #201c15;
+  --paper-3: #2a251b;
+  --ink: #e4ded1;
+  --ink-1: #f2ede1;
+  --ink-2: #c6bfae;
+  --ink-3: #9c9482;
+  --ink-4: #746d5e;
+  --line: #3a3327;
+  --line-2: #2e281f;
+  --red: #d05a4e;
+  --red-2: #e0705f;
+  --gold: #cfa64a;
+  --gold-d: #b98f34;
+  --jade: #5fa98a;
+  --jade-d: #78c1a1;
+  --blue: #6fa3cf;
+  --purple: #a98bc0;
+  --shadow: 0 2px 14px rgba(0, 0, 0, .55);
+  --shadow-2: 0 8px 40px rgba(0, 0, 0, .65);
   --radius: 7px;
   --font: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", "STSong", Georgia, serif;
   --font-ui: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui, sans-serif;
   --maxw: 1180px;
+  /* 面板与条目底（原先是写死的 #fff / var(--surface-3) 那一批） */
+  /* 🔴 「板子」必须是不透明的（同 `main.css`，两处要一起改）：
+     上一轮写成 `rgba(255,255,255,.03~.07)`，结果 Mod 卡片 / 上传弹窗全变半透明，
+     底下的字透上来。浅色那套的原值是近乎不透明的纸，这里照不透明度还原。 */
+  --surface: rgba(23, 20, 15, .82);
+  --surface-2: rgba(19, 16, 12, .86);
+  --surface-3: #241f18;
+  --surface-hi: #2e2820;
+  /* 彩色调底与描边 */
+  --tint-jade: rgba(95, 169, 138, .13);
+  --tint-gold: rgba(207, 166, 74, .14);
+  --tint-red: rgba(208, 90, 78, .13);
+  --tint-blue: rgba(111, 163, 207, .13);
+  --line-jade: rgba(95, 169, 138, .34);
+  --line-gold: rgba(207, 166, 74, .34);
+  --line-red: rgba(208, 90, 78, .32);
+  /* 实心填充（页签选中 / 主按钮 / 弹窗头 / 顶栏）。
+     这里原来一律借的是**字色**那一族的变量，浅色下它是深墨所以没错；
+     暗色下同一个变量变成近白字色 ⇒ 浅底浅字、字看不见。
+     与 `main.css` 同一套取值，两处改动要一起改。 */
+  --solid: #3a3329;
+  --solid-2: #4a4235;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; color-scheme: dark; }
 body {
   font-family: var(--font-ui); color: var(--ink); background: var(--paper);
   line-height: 1.7; min-height: 100vh;
@@ -37,25 +69,31 @@ body::before {
 }
 a { color: var(--red); text-decoration: none; }
 a:hover { text-decoration: underline; }
-code { font-family: Consolas, "Courier New", monospace; font-size: .92em; color: var(--red); background: rgba(43, 39, 33, .07); padding: 1px 6px; border-radius: 3px; }
+code { font-family: Consolas, "Courier New", monospace; font-size: .92em; color: var(--red); background: var(--surface-3); padding: 1px 6px; border-radius: 3px; }
 
 /* ---------------- 顶栏 ---------------- */
 .site-head {
   position: sticky; top: 0; z-index: 50;
-  background: linear-gradient(180deg, #3a342c, #2b2721); color: #f3eee1;
+  background: linear-gradient(180deg, #383125, var(--solid)); color: #f3eee1;
   box-shadow: 0 2px 14px rgba(40, 32, 20, .32);
 }
 .sh-inner {
   max-width: var(--maxw); margin: 0 auto; padding: 0 22px;
   height: 62px; display: flex; align-items: center; gap: 26px;
 }
-.sh-brand { display: flex; align-items: baseline; gap: 10px; }
-.sh-logo { font-family: var(--font); font-size: 22px; font-weight: 700; letter-spacing: .14em; color: #fbf6e9; }
-.sh-sub { font-size: 11.5px; color: #a99d80; letter-spacing: .18em; }
+/* ⚠️ 主人 2026-10-11 亲报的手机端问题：
+   「『武侠行』三个字与其旁边几个小字是从上往下竖着排列的」「『制作教程』『示例 mod』也是竖着的」。
+   病根：`.sh-inner` 窄屏靠 `flex-wrap` 换行，但里面的每一串**没有 nowrap** ——
+   中文默认允许逐字断行，于是宽度一不够，字就一个一个往下摞。
+   修法：每一串自己不许拆（nowrap）；窄到一行放不下时，**整串**掉到下一行（flex-wrap）。 */
+.sh-brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; min-width: 0; }
+.sh-logo { font-family: var(--font); font-size: 22px; font-weight: 700; letter-spacing: .14em; color: #fbf6e9; white-space: nowrap; }
+.sh-sub { font-size: 11.5px; color: #a99d80; letter-spacing: .18em; white-space: nowrap; }
 .sh-nav { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
 .sh-nav a {
   padding: 7px 15px; font-size: 14px; color: #d8d0b9; border-radius: 5px;
   transition: all .16s; text-decoration: none; letter-spacing: .04em;
+  white-space: nowrap;   /* 同上：导航项整串不许拆字 */
 }
 .sh-nav a:hover { background: rgba(255, 255, 255, .11); color: #fff; text-decoration: none; }
 .sh-nav a.active { background: var(--red); color: #fff; }
@@ -83,12 +121,12 @@ code { font-family: Consolas, "Courier New", monospace; font-size: .92em; color:
 /* ---------------- 首页 Hero ---------------- */
 .hero {
   text-align: center; padding: 54px 20px 46px; margin-bottom: 10px;
-  background: rgba(255, 255, 255, .55); border: 1px solid var(--line); border-radius: 12px;
+  background: var(--surface-3); border: 1px solid var(--line); border-radius: 12px;
   box-shadow: var(--shadow);
 }
 .hero-title {
   font-family: var(--font); font-size: 58px; letter-spacing: .24em; font-weight: 700;
-  text-shadow: 0 3px 0 rgba(255, 255, 255, .85), 0 12px 34px rgba(90, 70, 40, .2);
+  text-shadow: 0 3px 0 rgba(0, 0, 0, .45), 0 12px 34px rgba(0, 0, 0, .45);
   margin-bottom: 8px;
 }
 .hero-sub { font-size: 13px; letter-spacing: .32em; color: var(--ink-3); margin-bottom: 26px; }
@@ -109,18 +147,20 @@ code { font-family: Consolas, "Courier New", monospace; font-size: .92em; color:
 /* ===== 本地 Mod 文件夹卡片 ===== */
 .localmod-box {
   margin-top: 26px; padding: 18px 20px; text-align: left;
-  background: rgba(255, 255, 255, .72); border: 1px dashed var(--line);
+  background: var(--surface-3); border: 1px dashed var(--line);
   border-radius: 10px;
 }
 .lm-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .lm-title { font-size: 14.5px; font-weight: 700; color: var(--ink); letter-spacing: .04em; }
 .lm-badge {
   font-size: 12px; padding: 2px 10px; border-radius: 11px;
-  background: #efe9dc; color: var(--ink-4); border: 1px solid var(--line-2);
+  background: var(--surface-2); color: var(--ink-4); border: 1px solid var(--line-2);
 }
-.lm-badge.on { background: #e8f4ee; color: #2c6b4d; border-color: #a8cfba; }
-.lm-badge.warn { background: #fdf3e2; color: #a8752c; border-color: #e8cf9e; }
-.lm-badge.off { background: #f6f2ea; color: var(--ink-4); }
+/* 徽章前景色不许写死：原来写的是浅色主题里的深绿 / 深金，
+   底改成暗色调以后，深字压深底＝看不见。一律走变量。 */
+.lm-badge.on { background: var(--tint-jade); color: var(--jade-d); border-color: var(--line-jade); }
+.lm-badge.warn { background: var(--tint-gold); color: var(--gold); border-color: var(--line-gold); }
+.lm-badge.off { background: var(--surface-2); color: var(--ink-4); }
 .lm-desc { font-size: 13px; color: var(--ink-3); line-height: 1.85; margin-bottom: 12px; }
 .lm-desc code { font-size: 12px; }
 .lm-ops { display: flex; gap: 9px; flex-wrap: wrap; }
@@ -133,22 +173,31 @@ code { font-family: Consolas, "Courier New", monospace; font-size: .92em; color:
 .lm-item {
   display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap;
   padding: 7px 11px; margin-bottom: 5px; font-size: 13px;
-  background: #fff; border: 1px solid var(--line-2); border-radius: 6px;
+  background: var(--surface-3); border: 1px solid var(--line-2); border-radius: 6px;
 }
 .lm-name { font-weight: 600; color: var(--ink); }
 .lm-meta { font-size: 11.5px; color: var(--ink-4); }
-.lm-file { margin-left: auto; font-size: 11px; color: var(--ink-4); background: rgba(43,39,33,.05); }
+.lm-file { margin-left: auto; font-size: 11px; color: var(--ink-4); background: var(--surface-2); }
 .hero-dl-note a { color: var(--red); }
 
 /* ---------------- 按钮 ---------------- */
+/* ⚠️ 主人 2026-10-11 报的「字从上往下竖着排」不只顶栏有：
+   凡是**放在 flex 容器里、又没写 nowrap** 的短串，窄屏被挤到只剩一个字宽时，
+   中文就会逐字换行 —— 看起来就是竖排。
+   `.tag` / `.chip` / `.cnt` / `.lm-badge` / `.toc-list a` 这些「药丸」全是这个形态
+   （它们都躺在 `display:flex; flex-wrap:wrap` 的父元素里，默认可被压到 min-content＝一个字）。
+   一次性钉死：这类标签一律整串不拆。 */
+.btn, .chip, .tag, .cnt, .mc-cat, .mc-official, .mc-fork,
+.lm-badge, .lm-name, .lm-file, .toc-list a, .sh-play, .wm-x { white-space: nowrap; }
+
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 7px;
   padding: 11px 26px; font-size: 14.5px; font-family: var(--font); letter-spacing: .1em;
-  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--surface-3); border: 1px solid var(--line); border-radius: var(--radius);
   color: var(--ink-2); cursor: pointer; transition: all .18s; text-decoration: none;
 }
 .btn:hover { border-color: var(--ink-3); transform: translateY(-1px); box-shadow: var(--shadow); text-decoration: none; color: var(--ink); }
-.btn.primary { background: linear-gradient(180deg, #3c3630, #2b2721); color: #f6f1e4; border-color: #1d1a16; }
+.btn.primary { background: linear-gradient(180deg, #3c3630, var(--solid)); color: #f6f1e4; border-color: #1d1a16; }
 .btn.primary:hover { background: linear-gradient(180deg, #4a433b, #332e28); color: #fff; }
 .btn.red { background: var(--red); color: #fff; border-color: var(--red); }
 .btn.red:hover { background: var(--red-2); color: #fff; }
@@ -158,38 +207,38 @@ code { font-family: Consolas, "Courier New", monospace; font-size: .92em; color:
 /* ---------------- 工具栏 ---------------- */
 .toolbar {
   display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
-  padding: 13px 16px; background: rgba(255, 255, 255, .72); border: 1px solid var(--line);
+  padding: 13px 16px; background: var(--surface-3); border: 1px solid var(--line);
   border-radius: 9px; margin-bottom: 20px;
 }
 .tb-search {
   flex: 1; min-width: 200px; padding: 9px 14px; font-size: 14px; font-family: var(--font-ui);
-  border: 1px solid var(--line); border-radius: var(--radius); background: #fff; color: var(--ink); outline: none;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-3); color: var(--ink); outline: none;
 }
 .tb-search:focus { border-color: var(--ink-3); box-shadow: 0 0 0 3px rgba(140, 125, 95, .1); }
 .tb-select {
   padding: 9px 13px; font-size: 13.5px; font-family: var(--font-ui);
-  border: 1px solid var(--line); border-radius: var(--radius); background: #fff; color: var(--ink-2); outline: none;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-3); color: var(--ink-2); outline: none;
 }
 .tb-chips { display: flex; gap: 7px; flex-wrap: wrap; }
 .chip {
   padding: 6px 15px; font-size: 13px; border-radius: 15px; cursor: pointer;
-  background: #fff; border: 1px solid var(--line); color: var(--ink-2); transition: all .15s;
+  background: var(--surface-3); border: 1px solid var(--line); color: var(--ink-2); transition: all .15s;
 }
 .chip:hover { border-color: var(--ink-3); }
-.chip.active { background: var(--ink); color: #f6f1e4; border-color: var(--ink); }
+.chip.active { background: var(--solid); color: #f6f1e4; border-color: var(--solid); }
 
 /* ---------------- Mod 卡片网格 ---------------- */
 .mod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
 .mod-card {
   display: flex; flex-direction: column; padding: 17px 19px;
-  background: #fff; border: 1px solid var(--line); border-radius: 9px;
+  background: var(--surface-3); border: 1px solid var(--line); border-radius: 9px;
   transition: all .18s; box-shadow: 0 1px 5px rgba(90, 75, 45, .05);
 }
 .mod-card:hover { border-color: var(--ink-3); box-shadow: var(--shadow); transform: translateY(-3px); }
 /* 官方示例：左侧一道金边 + 淡金底，一眼能认出来 */
 .mod-card.official {
   border-color: rgba(168, 132, 44, .38);
-  background: linear-gradient(180deg, rgba(168, 132, 44, .055) 0%, #fff 42%);
+  background: linear-gradient(180deg, rgba(168, 132, 44, .055) 0%, var(--surface-3) 42%);
   box-shadow: inset 3px 0 0 rgba(168, 132, 44, .55), 0 1px 5px rgba(90, 75, 45, .05);
 }
 .mod-card.official:hover { border-color: rgba(168, 132, 44, .6); }
@@ -213,7 +262,7 @@ code { font-family: Consolas, "Courier New", monospace; font-size: .92em; color:
 .tag.gold { background: rgba(168, 132, 44, .1); color: var(--gold); border-color: rgba(168, 132, 44, .25); }
 .mc-ops { display: flex; gap: 8px; flex-wrap: wrap; }
 .mc-counts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-.cnt { font-size: 11px; padding: 2px 9px; background: rgba(43, 39, 33, .05); border-radius: 9px; color: var(--ink-3); }
+.cnt { font-size: 11px; padding: 2px 9px; background: var(--surface-2); border-radius: 9px; color: var(--ink-3); }
 
 .empty { padding: 60px 20px; text-align: center; font-family: var(--font); font-size: 15px; color: var(--ink-4); }
 .loading { padding: 50px; text-align: center; font-size: 14px; color: var(--ink-4); }
@@ -222,14 +271,14 @@ code { font-family: Consolas, "Courier New", monospace; font-size: .92em; color:
 .detail {
   display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start;
 }
-.detail-main { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 24px 26px; }
+.detail-main { background: var(--surface-3); border: 1px solid var(--line); border-radius: 10px; padding: 24px 26px; }
 .detail-side { position: sticky; top: 86px; }
 .detail-name { font-family: var(--font); font-size: 30px; letter-spacing: .06em; margin-bottom: 6px; }
 .detail-id { font-family: Consolas, monospace; font-size: 12.5px; color: var(--ink-4); margin-bottom: 14px; }
 .detail-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
 .detail-desc { font-family: var(--font); font-size: 15px; color: var(--ink-2); line-height: 1.95; margin-bottom: 20px; }
 .detail-sub { font-family: var(--font); font-size: 16px; letter-spacing: .08em; margin: 22px 0 11px; padding-bottom: 7px; border-bottom: 1px solid var(--line-2); }
-.side-box { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; margin-bottom: 16px; }
+.side-box { background: var(--surface-3); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; margin-bottom: 16px; }
 .side-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px dashed var(--line-2); font-size: 13.5px; }
 .side-row:last-child { border-bottom: none; }
 .side-row .k { color: var(--ink-3); }
@@ -250,39 +299,39 @@ code { font-family: Consolas, "Courier New", monospace; font-size: .92em; color:
   border-left: 4px solid var(--gold); border-radius: 0 6px 6px 0;
   font-size: 14px; color: var(--ink-2);
 }
-.doc table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 14px 0 20px; background: #fff; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+.doc table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 14px 0 20px; background: var(--surface-3); border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
 .doc th { text-align: left; padding: 10px 14px; background: var(--paper-2); font-size: 12.5px; color: var(--ink-3); letter-spacing: .06em; }
 .doc td { padding: 9px 14px; border-top: 1px solid var(--line-2); color: var(--ink-2); vertical-align: top; }
 
 .toc {
-  background: rgba(255, 255, 255, .75); border: 1px solid var(--line); border-radius: 9px;
+  background: var(--surface-3); border: 1px solid var(--line); border-radius: 9px;
   padding: 16px 20px; margin-bottom: 26px;
 }
 .toc-title { font-family: var(--font); font-size: 15px; letter-spacing: .1em; margin-bottom: 9px; color: var(--ink-3); }
 .toc-list { display: flex; flex-wrap: wrap; gap: 8px; }
-.toc-list a { font-size: 13.5px; padding: 4px 12px; background: #fff; border: 1px solid var(--line); border-radius: 13px; color: var(--ink-2); }
-.toc-list a:hover { background: var(--ink); color: #fff; border-color: var(--ink); text-decoration: none; }
+.toc-list a { font-size: 13.5px; padding: 4px 12px; background: var(--surface-3); border: 1px solid var(--line); border-radius: 13px; color: var(--ink-2); }
+.toc-list a:hover { background: var(--solid); color: #fff; border-color: var(--solid); text-decoration: none; }
 
-.step { display: flex; gap: 15px; margin-bottom: 18px; background: #fff; border: 1px solid var(--line); border-radius: 9px; padding: 16px 19px; }
+.step { display: flex; gap: 15px; margin-bottom: 18px; background: var(--surface-3); border: 1px solid var(--line); border-radius: 9px; padding: 16px 19px; }
 .step-no {
-  flex: 0 0 36px; width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: #f6f1e4;
+  flex: 0 0 36px; width: 36px; height: 36px; border-radius: 50%; background: var(--solid); color: #f6f1e4;
   display: flex; align-items: center; justify-content: center; font-family: var(--font); font-size: 18px; font-weight: 700;
 }
 .step-body { flex: 1; }
 .step-body b { font-family: var(--font); font-size: 16px; display: block; margin-bottom: 7px; }
 
 .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; margin: 16px 0; }
-.info-card { padding: 15px 18px; background: #fff; border: 1px solid var(--line); border-radius: 9px; }
+.info-card { padding: 15px 18px; background: var(--surface-3); border: 1px solid var(--line); border-radius: 9px; }
 .info-card b { font-family: var(--font); font-size: 15.5px; color: var(--red); display: block; margin-bottom: 7px; }
 .info-card p { font-size: 13.5px; color: var(--ink-2); line-height: 1.85; margin: 0; }
 
 /* ---------------- 示例 ---------------- */
-.ex-card { background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+.ex-card { background: var(--surface-3); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
 .ex-head { padding: 16px 20px; border-bottom: 1px solid var(--line-2); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .ex-title { font-family: var(--font); font-size: 18px; flex: 1; }
 .ex-desc { padding: 14px 20px 0; font-size: 13.5px; color: var(--ink-3); }
 .ex-code {
-  margin: 14px 20px 0; padding: 15px; background: #fdfcf8; border: 1px solid var(--line-2);
+  margin: 14px 20px 0; padding: 15px; background: var(--surface-3); border: 1px solid var(--line-2);
   border-radius: 7px; font-family: Consolas, monospace; font-size: 12.5px; line-height: 1.7;
   color: var(--ink-2); max-height: 380px; overflow: auto; white-space: pre;
 }
@@ -309,8 +358,8 @@ code { font-family: Consolas, "Courier New", monospace; font-size: .92em; color:
 /* ---------------- 上传弹窗 ---------------- */
 .modal-mask { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; background: rgba(40, 34, 24, .45); padding: 20px; }
 .modal-mask.hide { display: none; }
-.modal { width: min(620px, 94vw); max-height: 86vh; display: flex; flex-direction: column; background: #fbf8f0; border: 1px solid var(--line); border-radius: 11px; box-shadow: var(--shadow-2); overflow: hidden; }
-.modal-head { padding: 14px 20px; background: linear-gradient(180deg, #3a342c, #2b2721); color: #f4efe2; font-family: var(--font); font-size: 17px; letter-spacing: .1em; display: flex; justify-content: space-between; align-items: center; }
+.modal { width: min(620px, 94vw); max-height: 86vh; display: flex; flex-direction: column; background: var(--surface-3); border: 1px solid var(--line); border-radius: 11px; box-shadow: var(--shadow-2); overflow: hidden; }
+.modal-head { padding: 14px 20px; background: linear-gradient(180deg, #383125, var(--solid)); color: #f4efe2; font-family: var(--font); font-size: 17px; letter-spacing: .1em; display: flex; justify-content: space-between; align-items: center; }
 .modal-head button { background: none; border: none; color: #c9bfa8; font-size: 17px; cursor: pointer; }
 .modal-body { padding: 20px; overflow-y: auto; }
 .modal-foot { padding: 13px 20px; border-top: 1px solid var(--line-2); display: flex; justify-content: flex-end; gap: 10px; }
@@ -318,7 +367,7 @@ code { font-family: Consolas, "Courier New", monospace; font-size: .92em; color:
 .field label { display: block; font-size: 13px; color: var(--ink-3); margin-bottom: 5px; }
 .field input, .field textarea, .field select {
   width: 100%; padding: 9px 12px; font-size: 14px; font-family: var(--font-ui);
-  border: 1px solid var(--line); border-radius: var(--radius); background: #fff; color: var(--ink); outline: none;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-3); color: var(--ink); outline: none;
 }
 .field textarea { font-family: var(--font); line-height: 1.7; resize: vertical; min-height: 130px; }
 .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--ink-3); box-shadow: 0 0 0 3px rgba(140, 125, 95, .1); }
@@ -333,13 +382,13 @@ code { font-family: Consolas, "Courier New", monospace; font-size: .92em; color:
 }
 .wx-modal.on { display: flex; }
 .wm-box {
-  width: min(430px, 94vw); background: #fbf8f0; border: 1px solid var(--line);
+  width: min(430px, 94vw); background: var(--surface-3); border: 1px solid var(--line);
   border-radius: 12px; box-shadow: var(--shadow-2); overflow: hidden;
   animation: wmIn .18s ease-out;
 }
 @keyframes wmIn { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
 .wm-head {
-  padding: 14px 20px; background: linear-gradient(180deg, #3a342c, #2b2721); color: #f4efe2;
+  padding: 14px 20px; background: linear-gradient(180deg, #383125, var(--solid)); color: #f4efe2;
   font-family: var(--font); font-size: 16.5px; letter-spacing: .1em;
   display: flex; justify-content: space-between; align-items: center;
 }
@@ -347,9 +396,14 @@ code { font-family: Consolas, "Courier New", monospace; font-size: .92em; color:
 .wm-x:hover { color: #fff; }
 .wm-body { padding: 20px; }
 
-/* 
-
-
+/* ⚠️ 这里原来注释开头写了、结尾却漏了，于是**下面两段媒体查询整个被当成注释吃掉**。
+   文件里照样数得出注释结束符（是后面别的注释的行尾那个），语法检查也不报错，
+   所以「手机端媒体查询根本没生效」这件事是完全静默的 ——
+   主人报的竖排，上一轮改的就是这两段，白改了。
+   📌 写 CSS 注释时**正文里绝不要出现 `斜杠+星号` 或 `星号+斜杠` 这两个字符组合**：
+   前者会新开一段注释，后者会把当前注释提前截断。
+   截断后残留的半句会变成无法解析的垃圾 token，CSS 解析器会一路吞到下一个能闭合的地方 ——
+   连累的往往是紧随其后的整条 @media。守卫会同时查这两种情形。 */
 @media (max-width: 900px) {
   .detail { grid-template-columns: 1fr; }
   .detail-side { position: static; }
@@ -362,4 +416,48 @@ code { font-family: Consolas, "Courier New", monospace; font-size: .92em; color:
   .hero-title { font-size: 32px; letter-spacing: .14em; }
   .page-title { font-size: 23px; }
   .hero-stats { gap: 24px; }
+
+  /* 手机端顶栏：字号收一点，导航改**横向滚动**。
+     原来窄屏下 nav 换行后每一项仍被挤窄，中文就竖起来了；
+     现在每一项 nowrap + 整条可横滑，宁可多滑一下也不拆字。 */
+  .sh-inner { gap: 8px; padding: 10px 12px; }
+  .sh-logo { font-size: 19px; letter-spacing: .1em; }
+  .sh-sub { font-size: 10.5px; letter-spacing: .12em; }
+  .sh-nav {
+    gap: 2px; margin-left: 0;
+    overflow-x: auto; flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; max-width: 100%;
+  }
+  .sh-nav::-webkit-scrollbar { display: none; }
+  .sh-nav a { padding: 6px 10px; font-size: 13px; }
+  .sh-play { padding: 6px 12px; font-size: 13px; white-space: nowrap; }
+
+  /* 标题、按钮这类**短串**不许拆字。
+     ⚠️ 别把 `.hero-hint` 加进来 —— 它是一整段说明文字（三四十个字），
+     nowrap 会让它横着冲出去、把整个 hero 卡片顶宽（第一版就这么错了一次，
+     截图里那句「不用下载、不用安装、不用配环境」右边被切掉一大截）。
+     段落该换行就换行，只有段落里的 `<b>` 短强调串需要 nowrap。 */
+  .hero-sub, .btn, .hero-hint b, .page-lead b { white-space: nowrap; }
+  .hero-ops { flex-wrap: wrap; }
+}
+
+/* ---- 发布页的登录条（主人 2026-10-11：上传要登录）---- */
+.acct-bar {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin: 14px 0 6px; padding: 10px 14px;
+  background: var(--paper-2); border: 1px solid var(--line); border-radius: 8px;
+}
+.acct-bar .acct-hint { font-size: 13px; color: var(--ink-3); }
+.acct-bar input {
+  border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px;
+  font-size: 13px; font-family: inherit; background: var(--surface-3); color: var(--ink); min-width: 128px;
+}
+.acct-bar input:focus { outline: 2px solid var(--red, #9c2b25); outline-offset: -1px; }
+
+/* ---- 二创标签（主人 2026-10-11：来源可见）---- */
+.mc-fork {
+  display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 9px;
+  font-size: 11px; font-family: var(--font-ui); vertical-align: middle;
+  background: var(--tint-gold); color: var(--gold-d); border: 1px solid var(--line-gold); cursor: help;
 }

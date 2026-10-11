@@ -163,7 +163,7 @@ section('⑧ 外功淬体（耗气血/体力/药物，有生命危险）');
 }
 
 /* ============================================================ */
-section('⑨ 天材地果（服用永久提升资质/根骨）+ 习武奇才特性');
+section('⑨ 天材地果（服用永久提升资质/根骨）+ 天赋体系改版');
 {
   const e = boot(); const w = e.world, p = e.world.player;
   const apt0 = p.baseAttr['资质'], bone0 = p.baseAttr['根骨'];
@@ -172,14 +172,37 @@ section('⑨ 天材地果（服用永久提升资质/根骨）+ 习武奇才特�
   ok('use 命令成功应用', r.lines.some(l => l.kind === 'sys' && /资质/.test(l.text)), JSON.stringify(r.lines.map(l => l.text)));
   ok('资质永久+4', p.baseAttr['资质'] === apt0 + 4, `${apt0}->${p.baseAttr['资质']}`);
   ok('根骨永久+2', p.baseAttr['根骨'] === bone0 + 2, `${bone0}->${p.baseAttr['根骨']}`);
-  // 习武奇才特性已注册且 trainMult 生效
-  ok('习武奇才特性已注册', !!w.getTrait('martial_prodigy'));
-  p.traits = ['martial_prodigy']; p.recalc();
-  ok('习武奇才 trainMult=1.6', (w.getTrait('martial_prodigy') || {}).trainMult === 1.6);
-  // NPC特性强化：筋骨强健/力大无穷/身法灵活均已注册
-  ok('筋骨强健特性已注册', !!w.getTrait('iron_bone'));
-  ok('力大无穷特性已注册', !!w.getTrait('powerful'));
-  ok('身法灵活特性已注册', !!(w.getTrait('swift') && (w.getTrait('swift').attr['身法'] === 6)));
+
+  /* ============================================================
+   * 天赋体系改版（主人 2026-10-10 钦定）—— **本段是契约反转，不是回归**
+   * 主人要求：删掉属性加点、删掉「纯加属性」的天赋，改成「不搞数值」的天赋；
+   *   其中 **`martial_prodigy`（习武奇才）点名要删**。
+   * 于是老断言「习武奇才已注册 / trainMult=1.6」守的是**被废弃的旧契约**，
+   * 现在正确的契约是：这 6 个**必须不存在**，而新天赋**必须存在**。
+   * 数据落点：`game/data/68_talents.json`（用 `_delete:true` 删、新增 9 个）。 */
+  const GONE = ['martial_prodigy', 'iron_bone', 'powerful', 'swift', 'ironbone', 'genius'];
+  const stillHere = GONE.filter(t => !!w.getTrait(t));
+  ok('★ 纯数值天赋已全部删除（含主人点名的「习武奇才」）6 个',
+    stillHere.length === 0, '仍在：' + stillHere.join(','));
+  const NEWT = [['silver_tongue', '口才便给'], ['flee_master', '脚底抹油'], ['sword_heart', '剑心通明'],
+    ['insect_master', '蛊道天赋'], ['iron_will', '心如铁石'], ['poison_body', '百毒不侵'],
+    ['merchant_born', '经商奇才'], ['wanderer', '浪子情怀'], ['lucky', '福星高照']];
+  const missing = NEWT.filter(([id]) => !w.getTrait(id)).map(([id]) => id);
+  ok('★ 新天赋（不搞数值）9 个已注册', missing.length === 0, '缺：' + missing.join(','));
+  /* 每个新天赋都要**真有效果声明**（不能是空壳；效果是否被引擎消费由 43 报告与专项测试管） */
+  const noEff = NEWT.filter(([id]) => {
+    const t = w.getTrait(id) || {};
+    return !(t.effects && t.effects.length);
+  }).map(([id]) => id);
+  ok('★ 每个新天赋都带 effects（不许空壳）', noEff.length === 0, '空壳：' + noEff.join(','));
+  /* 效果文案必须能被前端渲染出来（主人原话「各天赋的效果记得写上」）——
+     这里只断数据层有可读的 type/key，文案渲染由前端测试管。 */
+  const effTypes = new Set();
+  for (const [id] of NEWT) {
+    for (const ef of ((w.getTrait(id) || {}).effects || [])) effTypes.add(ef.type);
+  }
+  ok('新天赋的效果类型不是清一色 stat（即「不搞数值」）',
+    [...effTypes].some(t => t !== 'stat'), [...effTypes].join(','));
 }
 
 /* ============================================================ */

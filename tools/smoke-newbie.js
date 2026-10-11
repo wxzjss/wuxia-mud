@@ -33,7 +33,11 @@ const txt = a => (a || []).map(x => String(x.text || '')).join(' | ');
 
 function boot(seed, birth, gender) {
   const e = new GameEngine({ seed: seed || 20261101, saveDir: SAVE_DIR });
-  e.boot(); e.newGame({ name: '试侠', gender: gender || 'male', birth: birth || 'orphan' });
+  e.boot();
+  /* ⚠️ 同上：与性别强绑定的身份（庵堂孤儿→峨眉 等）现在由后端硬校验，
+     不传 gender 就默认 male 会在女身身份上抛错。**按身份数据里的 gender 走**。 */
+  const bd = (((e.world.data || {}).meta || {}).births || {})[birth || 'orphan'] || {};
+  e.newGame({ name: '试侠', gender: gender || bd.gender || 'male', birth: birth || 'orphan' });
   return e;
 }
 const SECT_NAME = (w, id) => ((w.data.sects[id] || {}).name || id);
@@ -71,20 +75,37 @@ sec('§A 13 个身份，各指一家不同的势力');
   }
   ok('A-4 ★ 每家势力的山门房都真实存在', noGate.length === 0, noGate.join('；') || '全通');
 
-  /* 性别不合 → 顺备选（引荐信不抹平性别门槛） */
+  /* 性别不合 → 两条不同的通路，别混为一谈：
+     ① **身份本身带性别门槛**（庵堂孤儿/守墓人之后只收女、山门弃婴只收男）
+        ⇒ 后端 `World.createPlayer` **直接拒绝**（前端还会把这些身份藏起来）;
+     ② **身份没门槛、但它对应的势力有性别要求**（如武学世家→华山只收男）
+        ⇒ 照常开局，只是 `targetSectFor` **顺备选链**改去别派（引荐信不抹平性别门槛）。 */
   {
     const em = boot(102, 'nun_ward', 'female');
-    const mm = boot(103, 'nun_ward', 'male');
     ok('A-5 庵堂孤儿（女）→ 峨眉派', T.targetSectFor(em.world.player).id === 'emei',
       T.targetSectFor(em.world.player).name);
-    ok('A-6 ★ 庵堂孤儿（男）不硬塞峨眉，顺备选走', T.targetSectFor(mm.world.player).id !== 'emei',
-      T.targetSectFor(mm.world.player).name);
+    /* ⚠️ 契约更新（2026-10-10）：原先这里是「男身庵堂孤儿能开局、引导顺备选去别派」。
+       主人要求把这条路**堵死**（男性进不了峨眉，且剧情只有女性这一条线），
+       所以现在是**硬拒绝** —— 老断言守的是被废弃的旧契约。 */
+    let threw = '';
+    try { boot(103, 'nun_ward', 'male'); } catch (err) { threw = String(err && err.message || err); }
+    ok('A-6 ★ 庵堂孤儿（男）被后端直接拒绝开局（不再「偷偷改口去别派」）',
+      /只收女儿身/.test(threw), threw || '(竟然开局成功了)');
+    /* 反向对照：女身不该被拒（否则是「一刀切全拒」） */
+    let okF = true;
+    try { boot(1031, 'nun_ward', 'female'); } catch (e) { okF = false; }
+    ok('A-6b 反向对照：女身庵堂孤儿正常开局', okF);
   }
   {
     const m = boot(104, 'wuxue', 'male');
     const f = boot(105, 'wuxue', 'female');
     ok('A-7 武学世家（男）→ 华山派', T.targetSectFor(m.world.player).id === 'huashan');
-    ok('A-8 武学世家（女）→ 顺备选（华山只收男）', T.targetSectFor(f.world.player).id === 'wudang',
+    /* ⚠️ 2026-10-08 门派性别门槛核对后改了这里：华山派原来设了「只收男」，
+       女身的武学世家只能顺延到备选（武当）。可**岳灵珊就是华山女弟子**——
+       那道门槛是错的，已去掉。于是女身现在直接进华山，不再需要备选。
+       （这条断言的旧版本守的是「备选链真的会跳」，那个机制本身还在，
+         由 A-6 庵堂孤儿那条继续守着。） */
+    ok('A-8 武学世家（女）→ 华山（性别门槛已按原著去掉）', T.targetSectFor(f.world.player).id === 'huashan',
       T.targetSectFor(f.world.player).name);
   }
 }
@@ -101,7 +122,10 @@ sec('§B 楔子：13 个身份各一版，结尾交给茶摊老汉');
   for (const b of births) {
     if (!T.INTRO_VARIANTS[b]) missing.push(b);
     const it = T.introFor({ birth: b, tutorialFlags: [] }, []);
-    if (!it.show || !/卖茶的小摊/.test(it.body)) noHand.push(b);
+    /* 「楼里新来的」（主人 2026-10-11 加的女身）不走茶摊那段收束 ——
+       她人就在醉春楼开局，楔子讲的是楼里的事（`introFor` 里 handoff:false）。 */
+    if (b === 'brothel_sold') { /* 只验有楔子，不验收束 */ }
+    else if (!it.show || !/卖茶的小摊/.test(it.body)) noHand.push(b);
     /* 铁律：说玩家**自己**死掉是不许的（昏倒语义）。
        ⚠️ 别写成「出现『死』字就判红」—— 数据里 71 处有「死」
        （活死人墓 / 生死 / 死死盯着 / 雪把羊压死了），那是正常中文。

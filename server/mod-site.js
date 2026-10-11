@@ -36,10 +36,16 @@ const zipmini = require('../game/src/core/zipmini');
  * ========================================================================== */
 const ROOT = path.resolve(__dirname, '..');
 const PUBLIC_DIR = path.join(__dirname, 'public');
-const DATA_DIR = path.join(__dirname, 'site-data');
+/* ⚠️ 数据目录可用 `WX_SITE_DATA` 覆盖 —— 测试要在一个**临时目录**里跑账号与上传，
+   绝不能在开发者的真 `site-data/` 里注册账号、塞 Mod（跑一次回归就多一个假用户）。 */
+const DATA_DIR = process.env.WX_SITE_DATA
+  ? path.resolve(process.env.WX_SITE_DATA)
+  : path.join(__dirname, 'site-data');
 const FILES_DIR = path.join(DATA_DIR, 'files');
 const INDEX_FILE = path.join(DATA_DIR, 'mods.json');
 const CONFIG_FILE = path.join(DATA_DIR, 'config.json');
+const ACCOUNTS_FILE = path.join(DATA_DIR, 'accounts.json');
+const SESSIONS_FILE = path.join(DATA_DIR, 'sessions.json');
 
 const PORT = parseInt(process.argv[2], 10) || parseInt(process.env.SITE_PORT, 10) || 8788;
 
@@ -58,6 +64,34 @@ const MIME = {
 };
 
 const CATEGORIES = ['剧情', '地图', '功能', '功法', '物品', '门派', '任务', '综合', '美化'];
+
+/* ==========================================================================
+ *  Mod 隐藏溯源 ID（主人 2026-10-11）
+ *  --------------------------------------------------------------------------
+ *  要堵的是这条路：**下载别人的 Mod → 导入制作器 → 改两笔 → 当自己的发上来**。
+ *
+ *  做法：发布时给每一份 Mod 分配一个隐藏 ID（`_wxTrace`），写进站点保存的
+ *  `mod.json` 里。于是**下载回来的人拿到的文件天生带着它**；制作器导入时会
+ *  原样保留（界面上不显示，也不进游戏世界数据）。再发布时服务端认这个 ID：
+ *    · 没有 → 新作品，发一个新的给它
+ *    · 有，且指向**别人**（含官方示例）→ 拒绝，并点名说出这是谁的作品
+ *
+ *  ⚠️ 它挡的是「顺手拿来当自己的」，挡不住铁了心手工删字段的人 ——
+ *     前端不可信，这是任何客户端侧方案的边界。真正的底线在服务端：
+ *     **署名与归属**（`owner`）由服务端写死，前端说破天也不作数。
+ * ========================================================================== */
+const TRACE_KEY = '_wxTrace';
+const OFFICIAL_OWNER = '@official';      /* 官方示例的归属，与任何玩家账号都不同名 */
+
+function newTrace() {
+  return 'wxt-' + require('crypto').randomBytes(8).toString('hex');
+}
+/** 取出内容里带的隐藏溯源 ID（没有就返回空串） */
+function traceOf(json) {
+  if (!json || typeof json !== 'object') return '';
+  const v = json[TRACE_KEY];
+  return v ? String(v).slice(0, 64) : '';
+}
 
 /* ==========================================================================
  *  存储
@@ -171,6 +205,11 @@ function seedOfficialMods() {
       name: String(json.name || id).slice(0, 60),
       version: String(json.version || '1.0.0').slice(0, 20),
       author: String(json.author || '武侠行官方').slice(0, 40),
+      /* 官方示例也带隐藏溯源（主人：「官方示例 Mod 更是如此」）——
+         值优先取 mod.json 里本来就写好的那个，这样**从游戏目录导入**与
+         **从站点下载**两条路拿到的是同一个 ID，都指回官方。 */
+      trace: traceOf(json) || newTrace(),
+      owner: OFFICIAL_OWNER,
       category: CATEGORIES.indexOf(json.category) >= 0 ? json.category : '综合',
       desc: String(json.desc || json.description || '').slice(0, 600),
       tags: Array.isArray(json.tags) ? json.tags.slice(0, 10).map(t => String(t).slice(0, 20)) : [],
@@ -382,6 +421,7 @@ function apiList(query) {
   const slim = pageList.map(m => ({
     id: m.id, name: m.name, version: m.version, author: m.author,
     category: m.category, desc: m.desc, tags: m.tags, counts: m.counts,
+    forkOf: m.forkOf || null,
     downloads: m.downloads || 0, time: m.time, updated: m.updated,
     hasFile: !!m.file, size: m.size || 0, official: !!m.official
   }));
@@ -400,12 +440,128 @@ function apiDetail(id) {
 }
 
 /* ==========================================================================
+ *  账号：本站轻量登录
+ *  --------------------------------------------------------------------------
+ *  主人 2026-10-11：「把 mod 制作器里的『一键上传 mod 网站』功能做成需要玩家登录
+ *  才能使用」，紧接着还要「在制作器里加『我制作的 Mod』以便更新」——
+ *  后一件天然要求「知道你是谁」，所以两件事是同一件：先有登录，才有归属。
+ *
+ *  在此之前上传是**全匿名**的（`author` 由前端自己填一个昵称），一上线就会有人
+ *  顶着别人的名号发 Mod，也无从做「我的作品」。
+ *
+ *  零依赖实现：口令用 Node 内置 `crypto.scryptSync` 加随机盐哈希（**不存明文**），
+ *  登录发随机 token，token 表落盘（服务重启不掉线）。
+ *  ⚠️ 这是「本站轻量账号」，别当网银口令用；但也不许退化成「填个名字就算登录」。
+ * ========================================================================== */
+const SESSION_DAYS = 30;
+
+function readAccounts() {
+  try { return JSON.parse(fs.readFileSync(ACCOUNTS_FILE, 'utf-8')); }
+  catch (e) { return { users: {} }; }
+}
+function writeAccounts(a) { fs.writeFileSync(ACCOUNTS_FILE, JSON.stringify(a, null, 2), 'utf-8'); }
+function readSessions() {
+  try { return JSON.parse(fs.readFileSync(SESSIONS_FILE, 'utf-8')); }
+  catch (e) { return { tokens: {} }; }
+}
+function writeSessions(s) { fs.writeFileSync(SESSIONS_FILE, JSON.stringify(s, null, 2), 'utf-8'); }
+
+function hashPass(pass, salt) {
+  return require('crypto').scryptSync(String(pass), String(salt), 32).toString('hex');
+}
+function normUser(n) { return String(n || '').trim(); }
+
+/** 拿 token 换用户名；无效/过期返回 null */
+function whoami(token) {
+  const tk = normUser(token);
+  if (!tk) return null;
+  const s = readSessions();
+  const rec = (s.tokens || {})[tk];
+  if (!rec) return null;
+  if (rec.exp && rec.exp < Date.now()) return null;
+  return rec.name || null;
+}
+function issueToken(name) {
+  const token = require('crypto').randomBytes(24).toString('hex');
+  const s = readSessions();
+  s.tokens = s.tokens || {};
+  s.tokens[token] = { name, exp: Date.now() + SESSION_DAYS * 86400000, at: Date.now() };
+  writeSessions(s);
+  return token;
+}
+
+function apiRegister(body) {
+  const cfg = readConfig();
+  if (cfg.allowRegister === false) return { ok: false, error: '本站已关闭注册' };
+  const name = normUser(body.name);
+  const pass = String(body.pass || '');
+  if (name.length < 2 || name.length > 16) return { ok: false, error: '昵称要 2~16 个字' };
+  if (/\s/.test(name)) return { ok: false, error: '昵称里不能有空格' };
+  if (pass.length < 6) return { ok: false, error: '口令至少 6 位' };
+  const a = readAccounts();
+  const key = name.toLowerCase();
+  if (a.users[key]) return { ok: false, error: '这个名字已经有人用了' };
+  const salt = require('crypto').randomBytes(16).toString('hex');
+  a.users[key] = { name, salt, hash: hashPass(pass, salt), created: Date.now() };
+  writeAccounts(a);
+  return { ok: true, name, token: issueToken(name), created: true };
+}
+
+function apiLogin(body) {
+  const name = normUser(body.name);
+  const pass = String(body.pass || '');
+  if (!name || !pass) return { ok: false, error: '昵称与口令都要填' };
+  const a = readAccounts();
+  const u = a.users[name.toLowerCase()];
+  /* ⚠️ 两条错误分开说：「没有这个账号」是给记错名字的人的，
+     「口令不对」是给记错口令的人的。合并成一句「登录失败」看着更安全，
+     但在这种小站上只会让人反复试到放弃。 */
+  if (!u) return { ok: false, error: '没有这个账号，先注册一个吧' };
+  if (hashPass(pass, u.salt) !== u.hash) return { ok: false, error: '口令不对' };
+  return { ok: true, name: u.name, token: issueToken(u.name) };
+}
+
+function apiLogout(token) {
+  const tk = normUser(token);
+  const s = readSessions();
+  if (tk && s.tokens && s.tokens[tk]) { delete s.tokens[tk]; writeSessions(s); }
+  return { ok: true };
+}
+
+/** 「我」是谁 + 我发布过哪些 Mod（主人要的「我制作的 Mod」） */
+function apiMyMods(token) {
+  const name = whoami(token);
+  if (!name) return { ok: false, needLogin: true, error: '请先登录' };
+  const idx = readIndex();
+  /* 归属认 `owner`（上传时由服务端写死成账号名，前端伪造不了）。
+     历史上匿名发的那批没有 owner —— 它们**不**算任何人的作品。 */
+  const mine = (idx.mods || []).filter(m => m.owner === name);
+  return {
+    ok: true, name,
+    mods: mine.map(m => ({
+      id: m.id, name: m.name, version: m.version, category: m.category,
+      desc: m.desc || '', tags: m.tags || [],
+      updated: m.updated || m.time || 0, timeText: m.timeText || '',
+      downloads: m.downloads || 0, counts: m.counts || {},
+    })),
+  };
+}
+
+/** 未登录的提示统一从这里出，免得各接口各说各话 */
+const NEED_LOGIN = { ok: false, needLogin: true, error: '请先登录（在 Mod 制作器右上角「登录」）' };
+
+/* ==========================================================================
  *  API：上传
  *  body: { json?: string, base64?: string, name?, note?, author?, force? }
  * ========================================================================== */
 function apiUpload(body) {
   const cfg = readConfig();
   if (!cfg.allowUpload) return { ok: false, error: '本站点已关闭上传' };
+
+  /* 主人 2026-10-11：**上传必须登录**（连同「我制作的 Mod」一起做的）。
+     匿名发布一上线，就会有人顶着别人的名号乱发东西。 */
+  const me = whoami(body.token);
+  if (!me) return NEED_LOGIN;
 
   let jsonStr = body.json || null;
   let zipB64 = body.base64 || null;
@@ -439,12 +595,51 @@ function apiUpload(body) {
 
   const idx = readIndex();
   const old = (idx.mods || []).find(m => m.id === id);
+  /* 别人的作品不许顶掉 —— 有了登录，「这是谁的作品」才立得住 */
+  if (old && old.owner && old.owner !== me) {
+    return { ok: false, error: `「${id}」是 ${old.owner} 的作品，你改不了（换个 ID 再发）` };
+  }
+
+  /* ★ 隐藏溯源 → **二创**（主人 2026-10-11：「可以做成二创」）
+   *
+   *  基于别人的作品改，是允许的 —— 但要**说清楚是从谁那儿来的**：
+   *  记录里钉一个 `forkOf`（来源 id / 名字 / 原作者），前端伪造不了，
+   *  站点上也明明白白标出来。想**当自己的原创**发，是发不成的。
+   *  这跟上一版「一律拒绝」守的是同一件事，只是把门口从「不许进」
+   *  换成了「进来可以，得报上来路」。 */
+  let trace = traceOf(json);
+  const src = trace ? (idx.mods || []).find(m => m.trace === trace) : null;
+  let forkOf = null;
+  if (src && src.owner && src.owner !== me) {
+    forkOf = {
+      id: src.id,
+      name: src.name || src.id,
+      owner: src.owner,
+      official: src.owner === OFFICIAL_OWNER,
+    };
+    /* 二创作品拿一个**自己的新 ID**：它已经是一件新东西。
+       不换的话，「A → B（二创）→ 别人再下载 B 去改」会被算成「二创自 A」，
+       中间那个 B 就被抹掉了。 */
+    trace = newTrace();
+  } else if (!src) {
+    /* 内容里没有可认的溯源（全新作品，或一个查无此人的伪造 ID）→ 发一个新的；
+       若这是自己那份老记录的更新，沿用它原来的，别把自己也当成新的。 */
+    trace = (old && old.trace) ? old.trace : newTrace();
+  }
+  /* 自己那份在更新：src.owner === me，trace 原样留着（上面两支都不进） */
 
   const rec = {
     id,
     name: String(json.name).slice(0, 60),
     version: String(json.version || '1.0.0').slice(0, 20),
-    author: String(json.author || body.author || '匿名侠客').slice(0, 40),
+    /* 署名一律取账号名 —— 前端传什么都不作数（否则「登录」只是个摆设） */
+    author: String(me).slice(0, 40),
+    owner: String(me),
+    /* 隐藏溯源：既存进记录，也写回**保存的 json** ——
+       这样下载的人拿到的文件天生带着它（这就是「下载的 Mod 自带隐藏 ID」）。 */
+    trace,
+    /* 二创标注：不是原创就写清来源（null = 原创） */
+    forkOf,
     category: CATEGORIES.indexOf(json.category) >= 0 ? json.category : '综合',
     desc: String(json.desc || '').slice(0, 600),
     tags: Array.isArray(json.tags) ? json.tags.slice(0, 10).map(t => String(t).slice(0, 20)) : [],
@@ -452,7 +647,7 @@ function apiUpload(body) {
     requires: Array.isArray(json.requires) ? json.requires : [],
     counts,
     note: String(body.note || '').slice(0, 300),
-    json: json,                    /* 完整内容，便于客户端直接下载安装 */
+    json: Object.assign({}, json, { [TRACE_KEY]: trace }),   /* 完整内容（含隐藏溯源），便于客户端直接下载安装 */
     downloads: old ? (old.downloads || 0) : 0,
     time: old ? old.time : Date.now(),
     updated: Date.now(),
@@ -493,10 +688,13 @@ function apiUpload(body) {
     ok: true,
     id,
     updated: !!old,
+    /* 顶层也给一份 forkOf：制作器与转发层直接读这里最省事 */
+    forkOf: rec.forkOf || null,
     url: 'mod.html?id=' + encodeURIComponent(id),
     mod: {
       id: rec.id, name: rec.name, version: rec.version,
-      author: rec.author, category: rec.category, counts: rec.counts
+      author: rec.author, category: rec.category, counts: rec.counts,
+      forkOf: rec.forkOf || null
     }
   };
 }
@@ -522,6 +720,18 @@ function readModJsonFromZip(buf) {
 /* ==========================================================================
  *  API：下载
  * ========================================================================== */
+/**
+ * 下载时把隐藏溯源塞进 json。
+ * 为什么不能只靠发布时写进去：**发布机制上线之前**已经存在的那批记录
+ * （以及官方播种的早期条目）身上没有这行 —— 不补的话，那一批等于没被保护。
+ */
+function withTrace(m) {
+  const j = Object.assign({}, (m && m.json) || {});
+  const t = (m && m.trace) || '';
+  if (t) j[TRACE_KEY] = t;
+  return j;
+}
+
 function apiDownload(id) {
   const idx = readIndex();
   const m = (idx.mods || []).find(x => x.id === id);
@@ -535,7 +745,7 @@ function apiDownload(id) {
     id: m.id,
     name: m.name,
     version: m.version,
-    json: JSON.stringify(m.json, null, 2),
+    json: JSON.stringify(withTrace(m), null, 2),
     base64: null
   };
 
@@ -994,6 +1204,22 @@ async function handle(req, res) {
         });
       }
 
+      /* /api/account/...   本站账号（主人 2026-10-11：上传要登录 + 我制作的 Mod） */
+      if (head === 'account') {
+        const act = seg[1] || '';
+        const body = (method === 'POST') ? await readJsonBody(req) : {};
+        const token = body.token || req.headers['x-wx-token'] || (query && query.token) || '';
+        if (act === 'register' && method === 'POST') return sendJson(res, 200, apiRegister(body));
+        if (act === 'login' && method === 'POST') return sendJson(res, 200, apiLogin(body));
+        if (act === 'logout' && method === 'POST') return sendJson(res, 200, apiLogout(token));
+        if (act === 'me' && method === 'GET') {
+          const who = whoami(token);
+          return sendJson(res, 200, who ? { ok: true, name: who } : { ok: false, needLogin: true, error: '未登录' });
+        }
+        if (act === 'mods' && method === 'GET') return sendJson(res, 200, apiMyMods(token));
+        return sendJson(res, 404, { ok: false, error: '未知账号接口：' + act });
+      }
+
       /* /api/mods ... */
       if (head === 'mods') {
         /* GET /api/mods */
@@ -1141,4 +1367,4 @@ if (require.main === module) {
   start();
 }
 
-module.exports = { start, createSiteServer, handle, apiList, apiUpload, apiDownload, apiDetail, countContent, apiDownloadGame, apiGamePackInfo, buildGameZip, seedOfficialMods, resolveGameUrl };
+module.exports = { start, createSiteServer, handle, apiList, apiUpload, apiDownload, apiDetail, countContent, apiDownloadGame, apiGamePackInfo, buildGameZip, seedOfficialMods, resolveGameUrl, apiRegister, apiLogin, apiLogout, apiMyMods, whoami, ensureDirs, readIndex, writeIndex };

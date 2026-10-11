@@ -3,7 +3,6 @@
     "huashan": {
       "id": "huashan", "name": "华山派", "align": "正道", "region": "huashan",
       "desc": "五岳剑派之一，剑法轻灵，门户严谨。掌门岳不群有「君子剑」之名。",
-      "require": { "gender": "male" },
       "ranks": ["外门弟子", "内门弟子", "执事弟子", "首座弟子", "副掌门", "掌门"],
       "rankCost": 300,
       "skills": ["huashan_sword", "huashan_sword_art", "zixia_gong", "huashan_qinggong", "huashan_jianyi"],

@@ -1,0 +1,2637 @@
+{
+  "sects": {
+    "huashan": {
+      "tier": "一流",
+      "story": "剑气两宗在这山头上吵了上百年。思过崖石壁上的剑痕，一半是前辈留下的，一半是后来人自己划的。",
+      "entrySkills": [
+        "huashan_sword",
+        "basic_force",
+        "huashan_force_1",
+        "basic_parry",
+        "basic_dodge",
+        "huashan_atk_1",
+        "basic_sword",
+        "huashan_qimen_1"
+      ],
+      "skills": [
+        "huashan_sword",
+        "huashan_sword_art",
+        "zixia_gong",
+        "huashan_qinggong",
+        "huashan_jianyi",
+        "huashan_force_1",
+        "huashan_force_2",
+        "huashan_force_3",
+        "huashan_guard_1",
+        "huashan_guard_2",
+        "huashan_guard_3",
+        "huashan_fly_1",
+        "huashan_fly_2",
+        "huashan_fly_3",
+        "huashan_atk_1",
+        "huashan_atk_2",
+        "huashan_atk_3",
+        "huashan_qimen_1",
+        "huashan_qimen_2",
+        "huashan_qimen_3"
+      ]
+    },
+    "shaolin": {
+      "tier": "一流",
+      "story": "晨钟暮鼓，千年的规矩压着一代代人。藏经阁那位扫地的老僧从不说话，也没人问过他会什么。",
+      "entrySkills": [
+        "shaolin_changquan",
+        "basic_force",
+        "shaolin_force_1",
+        "basic_parry",
+        "basic_dodge",
+        "shaolin_atk_1",
+        "basic_fist",
+        "shaolin_qimen_1"
+      ],
+      "skills": [
+        "shaolin_changquan",
+        "weituo_zhang",
+        "damo_sword",
+        "yijinjing",
+        "shaolin_bu",
+        "shaolin_force_1",
+        "shaolin_force_2",
+        "shaolin_force_3",
+        "shaolin_guard_1",
+        "shaolin_guard_2",
+        "shaolin_guard_3",
+        "shaolin_fly_1",
+        "shaolin_fly_2",
+        "shaolin_fly_3",
+        "shaolin_atk_1",
+        "shaolin_atk_2",
+        "shaolin_atk_3",
+        "shaolin_qimen_1",
+        "shaolin_qimen_2",
+        "shaolin_qimen_3"
+      ]
+    },
+    "wudang": {
+      "tier": "一流",
+      "story": "紫霄宫的鹤落在丹炉边，等一炉丹煮好。道长们推手推得慢，慢得像是故意的。",
+      "entrySkills": [
+        "wudang_taiji",
+        "basic_force",
+        "tixu_zhang",
+        "wudang_force_1",
+        "basic_parry",
+        "basic_dodge",
+        "wudang_atk_1",
+        "basic_fist",
+        "wudang_qimen_1",
+        "basic_sword"
+      ],
+      "skills": [
+        "wudang_taiji",
+        "taiji_sword",
+        "chunyang_gong",
+        "tixu_zhang",
+        "wudang_force_1",
+        "wudang_force_2",
+        "wudang_force_3",
+        "wudang_guard_1",
+        "wudang_guard_2",
+        "wudang_guard_3",
+        "wudang_fly_1",
+        "wudang_fly_2",
+        "wudang_fly_3",
+        "wudang_atk_1",
+        "wudang_atk_2",
+        "wudang_atk_3",
+        "wudang_qimen_1",
+        "wudang_qimen_2",
+        "wudang_qimen_3"
+      ]
+    },
+    "emei": {
+      "tier": "一流",
+      "story": "金顶佛光下，师太手里的戒尺比剑还快。门规严，可山门里的姑娘们笑起来也真。",
+      "entrySkills": [
+        "emei_sword",
+        "basic_force",
+        "emei_force_1",
+        "basic_parry",
+        "basic_dodge",
+        "emei_atk_1",
+        "basic_sword",
+        "emei_qimen_1",
+        "basic_throw"
+      ],
+      "skills": [
+        "emei_sword",
+        "emei_ci",
+        "foguang_gong",
+        "shaolin_bu",
+        "emei_force_1",
+        "emei_force_2",
+        "emei_force_3",
+        "emei_guard_1",
+        "emei_guard_2",
+        "emei_guard_3",
+        "emei_fly_1",
+        "emei_fly_2",
+        "emei_fly_3",
+        "emei_atk_1",
+        "emei_atk_2",
+        "emei_atk_3",
+        "emei_qimen_1",
+        "emei_qimen_2",
+        "emei_qimen_3"
+      ]
+    },
+    "gaibang": {
+      "tier": "一流",
+      "story": "破庙里议事，来的都是穿得最破的人。帮主的打狗棒从来不真打狗。",
+      "entrySkills": [
+        "basic_staff",
+        "basic_fist",
+        "gaibang_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "gaibang_atk_1",
+        "gaibang_qimen_1"
+      ],
+      "skills": [
+        "dagou_bangfa",
+        "xianglong_zhang",
+        "beggar_qinggong",
+        "gaibang_force_1",
+        "gaibang_force_2",
+        "gaibang_force_3",
+        "gaibang_guard_1",
+        "gaibang_guard_2",
+        "gaibang_guard_3",
+        "gaibang_fly_1",
+        "gaibang_fly_2",
+        "gaibang_fly_3",
+        "gaibang_atk_1",
+        "gaibang_atk_2",
+        "gaibang_atk_3",
+        "gaibang_qimen_1",
+        "gaibang_qimen_2",
+        "gaibang_qimen_3"
+      ]
+    },
+    "mojiao": {
+      "tier": "一流",
+      "story": "黑木崖上喊一声教主，半座山都静了。教里什么人都有，有很坏的，也有被外头逼成这样的。",
+      "entrySkills": [
+        "heimu_zhang",
+        "basic_force",
+        "mojiao_force_1",
+        "basic_parry",
+        "basic_dodge",
+        "mojiao_atk_1",
+        "basic_fist",
+        "mojiao_qimen_1"
+      ],
+      "skills": [
+        "heimu_zhang",
+        "xixing_dafa",
+        "xuedao",
+        "mojiao_force_1",
+        "mojiao_force_2",
+        "mojiao_force_3",
+        "mojiao_guard_1",
+        "mojiao_guard_2",
+        "mojiao_guard_3",
+        "mojiao_fly_1",
+        "mojiao_fly_2",
+        "mojiao_fly_3",
+        "mojiao_atk_1",
+        "mojiao_atk_2",
+        "mojiao_atk_3",
+        "mojiao_qimen_1",
+        "mojiao_qimen_2",
+        "mojiao_qimen_3"
+      ]
+    },
+    "dali": {
+      "tier": "一流",
+      "story": "段氏的世子不爱武功爱佛经，偏偏一身内功厚得吓人。皇宫里那几位，练武更像在修行。",
+      "entrySkills": [
+        "yiyang_zhi",
+        "dali_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "dali_atk_1",
+        "basic_fist",
+        "dali_qimen_1",
+        "basic_sword"
+      ],
+      "skills": [
+        "yiyang_zhi",
+        "liumai_shenjian",
+        "dali_force_1",
+        "dali_force_2",
+        "dali_force_3",
+        "dali_guard_1",
+        "dali_guard_2",
+        "dali_guard_3",
+        "dali_fly_1",
+        "dali_fly_2",
+        "dali_fly_3",
+        "dali_atk_1",
+        "dali_atk_2",
+        "dali_atk_3",
+        "dali_qimen_1",
+        "dali_qimen_2",
+        "dali_qimen_3"
+      ]
+    },
+    "tangmen": {
+      "tier": "二流",
+      "story": "蜀中唐门的门规只有一条要紧：不许对外人露脸。看过的人，通常也不必再看第二次。",
+      "entrySkills": [
+        "tangmen_anqi",
+        "tangmen_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "tangmen_atk_1",
+        "basic_throw",
+        "tangmen_qimen_1",
+        "basic_poison"
+      ],
+      "skills": [
+        "tangmen_anqi",
+        "tangmen_du",
+        "tangmen_force_1",
+        "tangmen_force_2",
+        "tangmen_force_3",
+        "tangmen_guard_1",
+        "tangmen_guard_2",
+        "tangmen_guard_3",
+        "tangmen_fly_1",
+        "tangmen_fly_2",
+        "tangmen_fly_3",
+        "tangmen_atk_1",
+        "tangmen_atk_2",
+        "tangmen_atk_3",
+        "tangmen_qimen_1",
+        "tangmen_qimen_2",
+        "tangmen_qimen_3"
+      ]
+    },
+    "miaojiang": {
+      "tier": "二流",
+      "story": "苗疆的瘴气里养不出娇气的人。蛊是她们养大的，也算家人。",
+      "entrySkills": [
+        "miao_gu",
+        "miaojiang_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "miaojiang_atk_1",
+        "basic_throw",
+        "miaojiang_qimen_1",
+        "basic_poison",
+        "basic_fist"
+      ],
+      "skills": [
+        "miao_gu",
+        "ice_silk_zhang",
+        "miaojiang_force_1",
+        "miaojiang_force_2",
+        "miaojiang_force_3",
+        "miaojiang_guard_1",
+        "miaojiang_guard_2",
+        "miaojiang_guard_3",
+        "miaojiang_fly_1",
+        "miaojiang_fly_2",
+        "miaojiang_fly_3",
+        "miaojiang_atk_1",
+        "miaojiang_atk_2",
+        "miaojiang_atk_3",
+        "miaojiang_qimen_1",
+        "miaojiang_qimen_2",
+        "miaojiang_qimen_3"
+      ]
+    },
+    "taohua": {
+      "tier": "二流",
+      "story": "岛上的桃树按着阵法种，走错一步就绕回原地。岛主弹琴的时候，仆役们都不敢喘气。",
+      "entrySkills": [
+        "kuangfeng_daofa",
+        "taohua_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "taohua_atk_1",
+        "basic_blade",
+        "taohua_qimen_1"
+      ],
+      "skills": [
+        "kuangfeng_daofa",
+        "lingbo_weibu",
+        "yiyang_zhi",
+        "taohua_force_1",
+        "taohua_force_2",
+        "taohua_force_3",
+        "taohua_guard_1",
+        "taohua_guard_2",
+        "taohua_guard_3",
+        "taohua_fly_1",
+        "taohua_fly_2",
+        "taohua_fly_3",
+        "taohua_atk_1",
+        "taohua_atk_2",
+        "taohua_atk_3",
+        "taohua_qimen_1",
+        "taohua_qimen_2",
+        "taohua_qimen_3"
+      ]
+    },
+    "gumu": {
+      "tier": "二流",
+      "story": "活死人墓里寒玉床冷得刺骨。派中人少，少到晚辈的名字都要按辈分一个个数。",
+      "entrySkills": [
+        "basic_sword",
+        "lingbo_weibu",
+        "gumu_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "gumu_atk_1",
+        "gumu_qimen_1"
+      ],
+      "skills": [
+        "emei_sword",
+        "lingbo_weibu",
+        "jiuyin_zhenjing",
+        "gumu_force_1",
+        "gumu_force_2",
+        "gumu_force_3",
+        "gumu_guard_1",
+        "gumu_guard_2",
+        "gumu_guard_3",
+        "gumu_fly_1",
+        "gumu_fly_2",
+        "gumu_fly_3",
+        "gumu_atk_1",
+        "gumu_atk_2",
+        "gumu_atk_3",
+        "gumu_qimen_1",
+        "gumu_qimen_2",
+        "gumu_qimen_3"
+      ]
+    },
+    "xingxiu": {
+      "tier": "二流",
+      "story": "星宿海的弟子每天争「大师兄」这个称呼，争赢的第二天就防着别人背后下手。",
+      "entrySkills": [
+        "cuixin_zhang",
+        "xingxiu_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "xingxiu_atk_1",
+        "basic_fist",
+        "xingxiu_qimen_1",
+        "basic_poison"
+      ],
+      "skills": [
+        "tangmen_du",
+        "cuixin_zhang",
+        "xingxiu_force_1",
+        "xingxiu_force_2",
+        "xingxiu_force_3",
+        "xingxiu_guard_1",
+        "xingxiu_guard_2",
+        "xingxiu_guard_3",
+        "xingxiu_fly_1",
+        "xingxiu_fly_2",
+        "xingxiu_fly_3",
+        "xingxiu_atk_1",
+        "xingxiu_atk_2",
+        "xingxiu_atk_3",
+        "xingxiu_qimen_1",
+        "xingxiu_qimen_2",
+        "xingxiu_qimen_3"
+      ]
+    },
+    "xuedao": {
+      "tier": "二流",
+      "story": "西域的刀口舔血久了，人就长那样。山下的仇结了一层又一层，谁也记不清第一桩。",
+      "entrySkills": [
+        "xuedao",
+        "xuedao_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "xuedao_atk_1",
+        "basic_blade",
+        "xuedao_qimen_1"
+      ],
+      "skills": [
+        "xuedao",
+        "xuedao_force_1",
+        "xuedao_force_2",
+        "xuedao_force_3",
+        "xuedao_guard_1",
+        "xuedao_guard_2",
+        "xuedao_guard_3",
+        "xuedao_fly_1",
+        "xuedao_fly_2",
+        "xuedao_fly_3",
+        "xuedao_atk_1",
+        "xuedao_atk_2",
+        "xuedao_atk_3",
+        "xuedao_qimen_1",
+        "xuedao_qimen_2",
+        "xuedao_qimen_3"
+      ]
+    },
+    "xiake": {
+      "tier": "秘境",
+      "story": "十年才从海上浮出来一次。岛上的石壁刻着些看不懂的东西，看懂了的人都没下来过。",
+      "entrySkills": [
+        "basic_force",
+        "basic_parry",
+        "basic_dodge"
+      ],
+      "skills": [
+        "jiuyang_shengong",
+        "jiuyin_zhenjing",
+        "dugu_jiujian"
+      ]
+    },
+    "taishan": {
+      "id": "taishan",
+      "name": "泰山派",
+      "align": "正道",
+      "tier": "二流",
+      "region": "changan",
+      "story": "五岳里资历最老的一家，偏偏这些年在并派的议论里最不服气。山门前的松树比掌门还老。",
+      "trial": "在十八盘上走一趟不歇脚，再与守山弟子过三十招。",
+      "desc": "五岳里资历最老的一家，偏偏这些年在并派的议论里最不服气。山门前的松树比掌门还老。",
+      "require": {
+        "attr": "根骨",
+        ">=": 14
+      },
+      "ranks": [
+        "外门弟子",
+        "内门弟子",
+        "执剑弟子",
+        "首座",
+        "长老",
+        "掌门"
+      ],
+      "rankCost": 320,
+      "skills": [
+        "taishan_force_1",
+        "taishan_force_2",
+        "taishan_force_3",
+        "taishan_guard_1",
+        "taishan_guard_2",
+        "taishan_guard_3",
+        "taishan_fly_1",
+        "taishan_fly_2",
+        "taishan_fly_3",
+        "taishan_atk_1",
+        "taishan_atk_2",
+        "taishan_atk_3",
+        "taishan_qimen_1",
+        "taishan_qimen_2",
+        "taishan_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "taishan_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "taishan_atk_1",
+        "basic_sword",
+        "taishan_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "taishan_force_1",
+          "taishan_guard_1",
+          "taishan_fly_1"
+        ],
+        "2": [
+          "taishan_atk_1",
+          "taishan_qimen_1"
+        ],
+        "3": [
+          "taishan_atk_2",
+          "taishan_qimen_2"
+        ],
+        "4": [
+          "taishan_force_2",
+          "taishan_guard_2",
+          "taishan_fly_2"
+        ],
+        "5": [
+          "taishan_atk_3",
+          "taishan_qimen_3",
+          "taishan_force_3",
+          "taishan_guard_3",
+          "taishan_fly_3"
+        ]
+      }
+    },
+    "hengshan": {
+      "id": "hengshan",
+      "name": "衡山派",
+      "align": "正道",
+      "tier": "二流",
+      "region": "xiangyang",
+      "story": "剑法人人都学，可衡山的看家本事在琴上。掌门说，听不出调子里那点杀意，剑就白练了。",
+      "trial": "听一曲琴，说出曲中杀气在哪个字上。",
+      "desc": "剑法人人都学，可衡山的看家本事在琴上。掌门说，听不出调子里那点杀意，剑就白练了。",
+      "require": {
+        "attr": "悟性",
+        ">=": 13
+      },
+      "ranks": [
+        "外门弟子",
+        "内门弟子",
+        "执剑弟子",
+        "首座",
+        "长老",
+        "掌门"
+      ],
+      "rankCost": 320,
+      "skills": [
+        "hengshan_force_1",
+        "hengshan_force_2",
+        "hengshan_force_3",
+        "hengshan_guard_1",
+        "hengshan_guard_2",
+        "hengshan_guard_3",
+        "hengshan_fly_1",
+        "hengshan_fly_2",
+        "hengshan_fly_3",
+        "hengshan_atk_1",
+        "hengshan_atk_2",
+        "hengshan_atk_3",
+        "hengshan_qimen_1",
+        "hengshan_qimen_2",
+        "hengshan_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "hengshan_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "hengshan_atk_1",
+        "basic_sword",
+        "hengshan_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "hengshan_force_1",
+          "hengshan_guard_1",
+          "hengshan_fly_1"
+        ],
+        "2": [
+          "hengshan_atk_1",
+          "hengshan_qimen_1"
+        ],
+        "3": [
+          "hengshan_atk_2",
+          "hengshan_qimen_2"
+        ],
+        "4": [
+          "hengshan_force_2",
+          "hengshan_guard_2",
+          "hengshan_fly_2"
+        ],
+        "5": [
+          "hengshan_atk_3",
+          "hengshan_qimen_3",
+          "hengshan_force_3",
+          "hengshan_guard_3",
+          "hengshan_fly_3"
+        ]
+      }
+    },
+    "hengshanN": {
+      "id": "hengshanN",
+      "name": "恒山派",
+      "align": "正道",
+      "tier": "二流",
+      "region": "changan",
+      "story": "庵堂里的尼姑们带剑，也带药箱。山上香火不旺，来求医的倒不少。",
+      "trial": "抄一遍药方，替三位伤者换过药。",
+      "desc": "庵堂里的尼姑们带剑，也带药箱。山上香火不旺，来求医的倒不少。",
+      "require": {
+        "attr": "悟性",
+        ">=": 12
+      },
+      "ranks": [
+        "记名弟子",
+        "入门弟子",
+        "入室弟子",
+        "首座",
+        "长老",
+        "掌门"
+      ],
+      "rankCost": 320,
+      "skills": [
+        "hengshanN_force_1",
+        "hengshanN_force_2",
+        "hengshanN_force_3",
+        "hengshanN_guard_1",
+        "hengshanN_guard_2",
+        "hengshanN_guard_3",
+        "hengshanN_fly_1",
+        "hengshanN_fly_2",
+        "hengshanN_fly_3",
+        "hengshanN_atk_1",
+        "hengshanN_atk_2",
+        "hengshanN_atk_3",
+        "hengshanN_qimen_1",
+        "hengshanN_qimen_2",
+        "hengshanN_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "hengshanN_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "hengshanN_atk_1",
+        "basic_sword",
+        "hengshanN_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "hengshanN_force_1",
+          "hengshanN_guard_1",
+          "hengshanN_fly_1"
+        ],
+        "2": [
+          "hengshanN_atk_1",
+          "hengshanN_qimen_1"
+        ],
+        "3": [
+          "hengshanN_atk_2",
+          "hengshanN_qimen_2"
+        ],
+        "4": [
+          "hengshanN_force_2",
+          "hengshanN_guard_2",
+          "hengshanN_fly_2"
+        ],
+        "5": [
+          "hengshanN_atk_3",
+          "hengshanN_qimen_3",
+          "hengshanN_force_3",
+          "hengshanN_guard_3",
+          "hengshanN_fly_3"
+        ]
+      }
+    },
+    "qingcheng": {
+      "id": "qingcheng",
+      "name": "青城派",
+      "align": "中立",
+      "tier": "二流",
+      "region": "chengdu",
+      "story": "青城山雾大，弟子们练剑时对手常是自己的影子。掌门那手摧心掌，伤在内里，外头看不出来。",
+      "trial": "从后山崖壁摘一枝松，掉下来就再来一年。",
+      "desc": "青城山雾大，弟子们练剑时对手常是自己的影子。掌门那手摧心掌，伤在内里，外头看不出来。",
+      "require": {
+        "attr": "身法",
+        ">=": 14
+      },
+      "ranks": [
+        "外门弟子",
+        "内门弟子",
+        "入室弟子",
+        "首座",
+        "长老",
+        "掌门"
+      ],
+      "rankCost": 330,
+      "skills": [
+        "qingcheng_force_1",
+        "qingcheng_force_2",
+        "qingcheng_force_3",
+        "qingcheng_guard_1",
+        "qingcheng_guard_2",
+        "qingcheng_guard_3",
+        "qingcheng_fly_1",
+        "qingcheng_fly_2",
+        "qingcheng_fly_3",
+        "qingcheng_atk_1",
+        "qingcheng_atk_2",
+        "qingcheng_atk_3",
+        "qingcheng_qimen_1",
+        "qingcheng_qimen_2",
+        "qingcheng_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "qingcheng_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "qingcheng_atk_1",
+        "basic_sword",
+        "qingcheng_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "qingcheng_force_1",
+          "qingcheng_guard_1",
+          "qingcheng_fly_1"
+        ],
+        "2": [
+          "qingcheng_atk_1",
+          "qingcheng_qimen_1"
+        ],
+        "3": [
+          "qingcheng_atk_2",
+          "qingcheng_qimen_2"
+        ],
+        "4": [
+          "qingcheng_force_2",
+          "qingcheng_guard_2",
+          "qingcheng_fly_2"
+        ],
+        "5": [
+          "qingcheng_atk_3",
+          "qingcheng_qimen_3",
+          "qingcheng_force_3",
+          "qingcheng_guard_3",
+          "qingcheng_fly_3"
+        ]
+      }
+    },
+    "kongtong": {
+      "id": "kongtong",
+      "name": "崆峒派",
+      "align": "中立",
+      "tier": "二流",
+      "region": "changan",
+      "story": "七伤拳的名声比崆峒山还大。练这门功夫的人，先伤的是自己，门里老人都知道。",
+      "trial": "在石桩上打满一百拳，桩不倒就算过。",
+      "desc": "七伤拳的名声比崆峒山还大。练这门功夫的人，先伤的是自己，门里老人都知道。",
+      "require": {
+        "attr": "力量",
+        ">=": 15
+      },
+      "ranks": [
+        "外门弟子",
+        "内门弟子",
+        "入室弟子",
+        "首座",
+        "长老",
+        "掌门"
+      ],
+      "rankCost": 340,
+      "skills": [
+        "kongtong_force_1",
+        "kongtong_force_2",
+        "kongtong_force_3",
+        "kongtong_guard_1",
+        "kongtong_guard_2",
+        "kongtong_guard_3",
+        "kongtong_fly_1",
+        "kongtong_fly_2",
+        "kongtong_fly_3",
+        "kongtong_atk_1",
+        "kongtong_atk_2",
+        "kongtong_atk_3",
+        "kongtong_qimen_1",
+        "kongtong_qimen_2",
+        "kongtong_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "kongtong_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "kongtong_atk_1",
+        "basic_fist",
+        "kongtong_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "kongtong_force_1",
+          "kongtong_guard_1",
+          "kongtong_fly_1"
+        ],
+        "2": [
+          "kongtong_atk_1",
+          "kongtong_qimen_1"
+        ],
+        "3": [
+          "kongtong_atk_2",
+          "kongtong_qimen_2"
+        ],
+        "4": [
+          "kongtong_force_2",
+          "kongtong_guard_2",
+          "kongtong_fly_2"
+        ],
+        "5": [
+          "kongtong_atk_3",
+          "kongtong_qimen_3",
+          "kongtong_force_3",
+          "kongtong_guard_3",
+          "kongtong_fly_3"
+        ]
+      }
+    },
+    "kunlun": {
+      "id": "kunlun",
+      "name": "昆仑派",
+      "align": "中立",
+      "tier": "二流",
+      "region": "xixia",
+      "story": "两条剑同时使，是昆仑的老规矩。学不会左右分心的，一辈子只能用一柄。",
+      "trial": "在雪地里站一夜，天亮时手还能握稳剑。",
+      "desc": "两条剑同时使，是昆仑的老规矩。学不会左右分心的，一辈子只能用一柄。",
+      "require": {
+        "karma": ">=0"
+      },
+      "ranks": [
+        "外门弟子",
+        "内门弟子",
+        "执剑弟子",
+        "首座",
+        "长老",
+        "掌门"
+      ],
+      "rankCost": 340,
+      "skills": [
+        "kunlun_force_1",
+        "kunlun_force_2",
+        "kunlun_force_3",
+        "kunlun_guard_1",
+        "kunlun_guard_2",
+        "kunlun_guard_3",
+        "kunlun_fly_1",
+        "kunlun_fly_2",
+        "kunlun_fly_3",
+        "kunlun_atk_1",
+        "kunlun_atk_2",
+        "kunlun_atk_3",
+        "kunlun_qimen_1",
+        "kunlun_qimen_2",
+        "kunlun_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "kunlun_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "kunlun_atk_1",
+        "basic_sword",
+        "kunlun_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "kunlun_force_1",
+          "kunlun_guard_1",
+          "kunlun_fly_1"
+        ],
+        "2": [
+          "kunlun_atk_1",
+          "kunlun_qimen_1"
+        ],
+        "3": [
+          "kunlun_atk_2",
+          "kunlun_qimen_2"
+        ],
+        "4": [
+          "kunlun_force_2",
+          "kunlun_guard_2",
+          "kunlun_fly_2"
+        ],
+        "5": [
+          "kunlun_atk_3",
+          "kunlun_qimen_3",
+          "kunlun_force_3",
+          "kunlun_guard_3",
+          "kunlun_fly_3"
+        ]
+      }
+    },
+    "diancang": {
+      "id": "diancang",
+      "name": "点苍派",
+      "align": "中立",
+      "tier": "二流",
+      "region": "dali",
+      "story": "苍山十九峰，派里十九个剑诀。掌门说剑意不在山中，在过日子的人手里。",
+      "trial": "看渔翁撒网，午后比划出来。",
+      "desc": "苍山十九峰，派里十九个剑诀。掌门说剑意不在山中，在过日子的人手里。",
+      "require": {
+        "attr": "悟性",
+        ">=": 14
+      },
+      "ranks": [
+        "外门弟子",
+        "内门弟子",
+        "执剑弟子",
+        "首座",
+        "长老",
+        "掌门"
+      ],
+      "rankCost": 330,
+      "skills": [
+        "diancang_force_1",
+        "diancang_force_2",
+        "diancang_force_3",
+        "diancang_guard_1",
+        "diancang_guard_2",
+        "diancang_guard_3",
+        "diancang_fly_1",
+        "diancang_fly_2",
+        "diancang_fly_3",
+        "diancang_atk_1",
+        "diancang_atk_2",
+        "diancang_atk_3",
+        "diancang_qimen_1",
+        "diancang_qimen_2",
+        "diancang_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "diancang_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "diancang_atk_1",
+        "basic_sword",
+        "diancang_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "diancang_force_1",
+          "diancang_guard_1",
+          "diancang_fly_1"
+        ],
+        "2": [
+          "diancang_atk_1",
+          "diancang_qimen_1"
+        ],
+        "3": [
+          "diancang_atk_2",
+          "diancang_qimen_2"
+        ],
+        "4": [
+          "diancang_force_2",
+          "diancang_guard_2",
+          "diancang_fly_2"
+        ],
+        "5": [
+          "diancang_atk_3",
+          "diancang_qimen_3",
+          "diancang_force_3",
+          "diancang_guard_3",
+          "diancang_fly_3"
+        ]
+      }
+    },
+    "tiezhang": {
+      "id": "tiezhang",
+      "name": "铁掌帮",
+      "align": "中立",
+      "tier": "二流",
+      "region": "xiangyang",
+      "story": "铁掌水上漂，说的是帮主的轻功。掌是真硬，人也真不讲道理。",
+      "trial": "一掌劈开三块青砖。",
+      "desc": "铁掌水上漂，说的是帮主的轻功。掌是真硬，人也真不讲道理。",
+      "require": {
+        "attr": "力量",
+        ">=": 16
+      },
+      "ranks": [
+        "帮众",
+        "头目",
+        "舵主",
+        "香主",
+        "长老",
+        "帮主"
+      ],
+      "rankCost": 330,
+      "skills": [
+        "tiezhang_force_1",
+        "tiezhang_force_2",
+        "tiezhang_force_3",
+        "tiezhang_guard_1",
+        "tiezhang_guard_2",
+        "tiezhang_guard_3",
+        "tiezhang_fly_1",
+        "tiezhang_fly_2",
+        "tiezhang_fly_3",
+        "tiezhang_atk_1",
+        "tiezhang_atk_2",
+        "tiezhang_atk_3",
+        "tiezhang_qimen_1",
+        "tiezhang_qimen_2",
+        "tiezhang_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "tiezhang_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "tiezhang_atk_1",
+        "basic_fist",
+        "tiezhang_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "tiezhang_force_1",
+          "tiezhang_guard_1",
+          "tiezhang_fly_1"
+        ],
+        "2": [
+          "tiezhang_atk_1",
+          "tiezhang_qimen_1"
+        ],
+        "3": [
+          "tiezhang_atk_2",
+          "tiezhang_qimen_2"
+        ],
+        "4": [
+          "tiezhang_force_2",
+          "tiezhang_guard_2",
+          "tiezhang_fly_2"
+        ],
+        "5": [
+          "tiezhang_atk_3",
+          "tiezhang_qimen_3",
+          "tiezhang_force_3",
+          "tiezhang_guard_3",
+          "tiezhang_fly_3"
+        ]
+      }
+    },
+    "hehuan": {
+      "id": "hehuan",
+      "name": "合欢宗",
+      "align": "邪道",
+      "tier": "二流",
+      "region": "qinglou",
+      "story": "楼子背后的宗家。白日里是弹唱的、陪酒的、写曲子的；夜里换一身衣裳，做的是另一桩买卖。门里不教你打人，教你怎么让人不打你，以及怎么把人留住。",
+      "trial": "不考较武功，只看你肯不肯把脸面放下。",
+      "desc": "楼子背后的宗家。白日里是弹唱的、陪酒的、写曲子的；夜里换一身衣裳，做的是另一桩买卖。门里不教你打人，教你怎么让人不打你，以及怎么把人留住。",
+      "require": {},
+      "ranks": [
+        "外门",
+        "内门",
+        "媚使",
+        "堂主",
+        "长老",
+        "宗主"
+      ],
+      "rankCost": 300,
+      "skills": [
+        "hehuan_force_1",
+        "hehuan_force_2",
+        "hehuan_force_3",
+        "hehuan_guard_1",
+        "hehuan_guard_2",
+        "hehuan_guard_3",
+        "hehuan_fly_1",
+        "hehuan_fly_2",
+        "hehuan_fly_3",
+        "hehuan_atk_1",
+        "hehuan_atk_2",
+        "hehuan_atk_3",
+        "hehuan_qimen_1",
+        "hehuan_qimen_2",
+        "hehuan_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "hehuan_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "hehuan_atk_1",
+        "basic_fist",
+        "hehuan_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "hehuan_force_1",
+          "hehuan_guard_1",
+          "hehuan_fly_1"
+        ],
+        "2": [
+          "hehuan_atk_1",
+          "hehuan_qimen_1"
+        ],
+        "3": [
+          "hehuan_atk_2",
+          "hehuan_qimen_2"
+        ],
+        "4": [
+          "hehuan_force_2",
+          "hehuan_guard_2",
+          "hehuan_fly_2"
+        ],
+        "5": [
+          "hehuan_atk_3",
+          "hehuan_qimen_3",
+          "hehuan_force_3",
+          "hehuan_guard_3",
+          "hehuan_fly_3"
+        ]
+      }
+    },
+    "jindao": {
+      "id": "jindao",
+      "name": "金刀门",
+      "align": "中立",
+      "tier": "三流",
+      "region": "luoyang",
+      "story": "城东一处小院，挂了块金漆招牌，专收想学刀护家的后生。招牌褪色了也没人重漆。",
+      "trial": "在门口交了束脩，领一把木刀就算入门。",
+      "desc": "城东一处小院，挂了块金漆招牌，专收想学刀护家的后生。招牌褪色了也没人重漆。",
+      "require": {},
+      "ranks": [
+        "门徒",
+        "弟子",
+        "亲传弟子",
+        "管事",
+        "长老",
+        "门主"
+      ],
+      "rankCost": 180,
+      "skills": [
+        "jindao_force_1",
+        "jindao_force_2",
+        "jindao_force_3",
+        "jindao_guard_1",
+        "jindao_guard_2",
+        "jindao_guard_3",
+        "jindao_fly_1",
+        "jindao_fly_2",
+        "jindao_fly_3",
+        "jindao_atk_1",
+        "jindao_atk_2",
+        "jindao_atk_3",
+        "jindao_qimen_1",
+        "jindao_qimen_2",
+        "jindao_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "jindao_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "jindao_atk_1",
+        "basic_blade",
+        "jindao_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "jindao_force_1",
+          "jindao_guard_1",
+          "jindao_fly_1"
+        ],
+        "2": [
+          "jindao_atk_1",
+          "jindao_qimen_1"
+        ],
+        "3": [
+          "jindao_atk_2",
+          "jindao_qimen_2"
+        ],
+        "4": [
+          "jindao_force_2",
+          "jindao_guard_2",
+          "jindao_fly_2"
+        ],
+        "5": [
+          "jindao_atk_3",
+          "jindao_qimen_3",
+          "jindao_force_3",
+          "jindao_guard_3",
+          "jindao_fly_3"
+        ]
+      }
+    },
+    "wuhu": {
+      "id": "wuhu",
+      "name": "五虎断门刀",
+      "align": "中立",
+      "tier": "三流",
+      "region": "changan",
+      "story": "刀法是家传的，传到这一代只剩下五招。老爷子不肯承认，还在门外挂了「五虎」的幌子。",
+      "trial": "报上名号即可。",
+      "desc": "刀法是家传的，传到这一代只剩下五招。老爷子不肯承认，还在门外挂了「五虎」的幌子。",
+      "require": {},
+      "ranks": [
+        "门人",
+        "弟子",
+        "真传",
+        "教头",
+        "长老",
+        "门主"
+      ],
+      "rankCost": 180,
+      "skills": [
+        "wuhu_force_1",
+        "wuhu_force_2",
+        "wuhu_force_3",
+        "wuhu_guard_1",
+        "wuhu_guard_2",
+        "wuhu_guard_3",
+        "wuhu_fly_1",
+        "wuhu_fly_2",
+        "wuhu_fly_3",
+        "wuhu_atk_1",
+        "wuhu_atk_2",
+        "wuhu_atk_3",
+        "wuhu_qimen_1",
+        "wuhu_qimen_2",
+        "wuhu_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "wuhu_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "wuhu_atk_1",
+        "basic_blade",
+        "wuhu_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "wuhu_force_1",
+          "wuhu_guard_1",
+          "wuhu_fly_1"
+        ],
+        "2": [
+          "wuhu_atk_1",
+          "wuhu_qimen_1"
+        ],
+        "3": [
+          "wuhu_atk_2",
+          "wuhu_qimen_2"
+        ],
+        "4": [
+          "wuhu_force_2",
+          "wuhu_guard_2",
+          "wuhu_fly_2"
+        ],
+        "5": [
+          "wuhu_atk_3",
+          "wuhu_qimen_3",
+          "wuhu_force_3",
+          "wuhu_guard_3",
+          "wuhu_fly_3"
+        ]
+      }
+    },
+    "feihu": {
+      "id": "feihu",
+      "name": "飞虎镖局",
+      "align": "中立",
+      "tier": "三流",
+      "region": "changan",
+      "story": "走镖的兄弟一条命换一趟银子。旗子在，镖就在。",
+      "trial": "帮着走过一趟镖，护得住货就是同门。",
+      "desc": "走镖的兄弟一条命换一趟银子。旗子在，镖就在。",
+      "require": {},
+      "ranks": [
+        "趟子手",
+        "镖师",
+        "镖头",
+        "总镖头",
+        "副局主",
+        "局主"
+      ],
+      "rankCost": 190,
+      "skills": [
+        "feihu_force_1",
+        "feihu_force_2",
+        "feihu_force_3",
+        "feihu_guard_1",
+        "feihu_guard_2",
+        "feihu_guard_3",
+        "feihu_fly_1",
+        "feihu_fly_2",
+        "feihu_fly_3",
+        "feihu_atk_1",
+        "feihu_atk_2",
+        "feihu_atk_3",
+        "feihu_qimen_1",
+        "feihu_qimen_2",
+        "feihu_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "feihu_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "feihu_atk_1",
+        "basic_blade",
+        "feihu_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "feihu_force_1",
+          "feihu_guard_1",
+          "feihu_fly_1"
+        ],
+        "2": [
+          "feihu_atk_1",
+          "feihu_qimen_1"
+        ],
+        "3": [
+          "feihu_atk_2",
+          "feihu_qimen_2"
+        ],
+        "4": [
+          "feihu_force_2",
+          "feihu_guard_2",
+          "feihu_fly_2"
+        ],
+        "5": [
+          "feihu_atk_3",
+          "feihu_qimen_3",
+          "feihu_force_3",
+          "feihu_guard_3",
+          "feihu_fly_3"
+        ]
+      }
+    },
+    "zhenyuan": {
+      "id": "zhenyuan",
+      "name": "镇远镖局",
+      "align": "中立",
+      "tier": "三流",
+      "region": "luoyang",
+      "story": "老镖局了，旗子上补过三回。老局主说，镖行的规矩比刀法要紧。",
+      "trial": "扛得起院子里那对石锁。",
+      "desc": "老镖局了，旗子上补过三回。老局主说，镖行的规矩比刀法要紧。",
+      "require": {},
+      "ranks": [
+        "趟子手",
+        "镖师",
+        "镖头",
+        "总镖头",
+        "副局主",
+        "局主"
+      ],
+      "rankCost": 190,
+      "skills": [
+        "zhenyuan_force_1",
+        "zhenyuan_force_2",
+        "zhenyuan_force_3",
+        "zhenyuan_guard_1",
+        "zhenyuan_guard_2",
+        "zhenyuan_guard_3",
+        "zhenyuan_fly_1",
+        "zhenyuan_fly_2",
+        "zhenyuan_fly_3",
+        "zhenyuan_atk_1",
+        "zhenyuan_atk_2",
+        "zhenyuan_atk_3",
+        "zhenyuan_qimen_1",
+        "zhenyuan_qimen_2",
+        "zhenyuan_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "zhenyuan_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "zhenyuan_atk_1",
+        "basic_blade",
+        "zhenyuan_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "zhenyuan_force_1",
+          "zhenyuan_guard_1",
+          "zhenyuan_fly_1"
+        ],
+        "2": [
+          "zhenyuan_atk_1",
+          "zhenyuan_qimen_1"
+        ],
+        "3": [
+          "zhenyuan_atk_2",
+          "zhenyuan_qimen_2"
+        ],
+        "4": [
+          "zhenyuan_force_2",
+          "zhenyuan_guard_2",
+          "zhenyuan_fly_2"
+        ],
+        "5": [
+          "zhenyuan_atk_3",
+          "zhenyuan_qimen_3",
+          "zhenyuan_force_3",
+          "zhenyuan_guard_3",
+          "zhenyuan_fly_3"
+        ]
+      }
+    },
+    "shenquan": {
+      "id": "shenquan",
+      "name": "神拳门",
+      "align": "中立",
+      "tier": "三流",
+      "region": "cunzhen",
+      "story": "门主是个退伍的老兵，拳架子打得极正，就是没创出什么名堂。镇上孩子都跟他学过两天。",
+      "trial": "与门主过两招，撑住十息。",
+      "desc": "门主是个退伍的老兵，拳架子打得极正，就是没创出什么名堂。镇上孩子都跟他学过两天。",
+      "require": {},
+      "ranks": [
+        "门徒",
+        "弟子",
+        "入室",
+        "教习",
+        "长老",
+        "门主"
+      ],
+      "rankCost": 170,
+      "skills": [
+        "shenquan_force_1",
+        "shenquan_force_2",
+        "shenquan_force_3",
+        "shenquan_guard_1",
+        "shenquan_guard_2",
+        "shenquan_guard_3",
+        "shenquan_fly_1",
+        "shenquan_fly_2",
+        "shenquan_fly_3",
+        "shenquan_atk_1",
+        "shenquan_atk_2",
+        "shenquan_atk_3",
+        "shenquan_qimen_1",
+        "shenquan_qimen_2",
+        "shenquan_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "shenquan_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "shenquan_atk_1",
+        "basic_fist",
+        "shenquan_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "shenquan_force_1",
+          "shenquan_guard_1",
+          "shenquan_fly_1"
+        ],
+        "2": [
+          "shenquan_atk_1",
+          "shenquan_qimen_1"
+        ],
+        "3": [
+          "shenquan_atk_2",
+          "shenquan_qimen_2"
+        ],
+        "4": [
+          "shenquan_force_2",
+          "shenquan_guard_2",
+          "shenquan_fly_2"
+        ],
+        "5": [
+          "shenquan_atk_3",
+          "shenquan_qimen_3",
+          "shenquan_force_3",
+          "shenquan_guard_3",
+          "shenquan_fly_3"
+        ]
+      }
+    },
+    "tieqiang": {
+      "id": "tieqiang",
+      "name": "铁枪门",
+      "align": "中立",
+      "tier": "三流",
+      "region": "luoyang",
+      "story": "武场里立着三十六杆枪，最重的那杆没人使得动，就摆在门口当招牌。",
+      "trial": "举得起那杆铁枪。",
+      "desc": "武场里立着三十六杆枪，最重的那杆没人使得动，就摆在门口当招牌。",
+      "require": {},
+      "ranks": [
+        "门徒",
+        "弟子",
+        "亲传",
+        "教头",
+        "长老",
+        "门主"
+      ],
+      "rankCost": 180,
+      "skills": [
+        "tieqiang_force_1",
+        "tieqiang_force_2",
+        "tieqiang_force_3",
+        "tieqiang_guard_1",
+        "tieqiang_guard_2",
+        "tieqiang_guard_3",
+        "tieqiang_fly_1",
+        "tieqiang_fly_2",
+        "tieqiang_fly_3",
+        "tieqiang_atk_1",
+        "tieqiang_atk_2",
+        "tieqiang_atk_3",
+        "tieqiang_qimen_1",
+        "tieqiang_qimen_2",
+        "tieqiang_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "tieqiang_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "tieqiang_atk_1",
+        "basic_staff",
+        "tieqiang_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "tieqiang_force_1",
+          "tieqiang_guard_1",
+          "tieqiang_fly_1"
+        ],
+        "2": [
+          "tieqiang_atk_1",
+          "tieqiang_qimen_1"
+        ],
+        "3": [
+          "tieqiang_atk_2",
+          "tieqiang_qimen_2"
+        ],
+        "4": [
+          "tieqiang_force_2",
+          "tieqiang_guard_2",
+          "tieqiang_fly_2"
+        ],
+        "5": [
+          "tieqiang_atk_3",
+          "tieqiang_qimen_3",
+          "tieqiang_force_3",
+          "tieqiang_guard_3",
+          "tieqiang_fly_3"
+        ]
+      }
+    },
+    "kuaidao": {
+      "id": "kuaidao",
+      "name": "快刀门",
+      "align": "中立",
+      "tier": "三流",
+      "region": "chengdu",
+      "story": "门里只讲一个字：快。慢的都被打发去后院劈柴了。",
+      "trial": "接住教习三刀不掉兵器。",
+      "desc": "门里只讲一个字：快。慢的都被打发去后院劈柴了。",
+      "require": {},
+      "ranks": [
+        "门徒",
+        "弟子",
+        "快手",
+        "教习",
+        "长老",
+        "门主"
+      ],
+      "rankCost": 180,
+      "skills": [
+        "kuaidao_force_1",
+        "kuaidao_force_2",
+        "kuaidao_force_3",
+        "kuaidao_guard_1",
+        "kuaidao_guard_2",
+        "kuaidao_guard_3",
+        "kuaidao_fly_1",
+        "kuaidao_fly_2",
+        "kuaidao_fly_3",
+        "kuaidao_atk_1",
+        "kuaidao_atk_2",
+        "kuaidao_atk_3",
+        "kuaidao_qimen_1",
+        "kuaidao_qimen_2",
+        "kuaidao_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "kuaidao_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "kuaidao_atk_1",
+        "basic_blade",
+        "kuaidao_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "kuaidao_force_1",
+          "kuaidao_guard_1",
+          "kuaidao_fly_1"
+        ],
+        "2": [
+          "kuaidao_atk_1",
+          "kuaidao_qimen_1"
+        ],
+        "3": [
+          "kuaidao_atk_2",
+          "kuaidao_qimen_2"
+        ],
+        "4": [
+          "kuaidao_force_2",
+          "kuaidao_guard_2",
+          "kuaidao_fly_2"
+        ],
+        "5": [
+          "kuaidao_atk_3",
+          "kuaidao_qimen_3",
+          "kuaidao_force_3",
+          "kuaidao_guard_3",
+          "kuaidao_fly_3"
+        ]
+      }
+    },
+    "luohan": {
+      "id": "luohan",
+      "name": "罗汉门",
+      "align": "中立",
+      "tier": "三流",
+      "region": "xiangyang",
+      "story": "挂着少林的边，其实跟少林没半点关系。门主也不否认，只说拳是真的。",
+      "trial": "扎半个时辰的马步。",
+      "desc": "挂着少林的边，其实跟少林没半点关系。门主也不否认，只说拳是真的。",
+      "require": {},
+      "ranks": [
+        "门徒",
+        "弟子",
+        "入室",
+        "教习",
+        "长老",
+        "门主"
+      ],
+      "rankCost": 170,
+      "skills": [
+        "luohan_force_1",
+        "luohan_force_2",
+        "luohan_force_3",
+        "luohan_guard_1",
+        "luohan_guard_2",
+        "luohan_guard_3",
+        "luohan_fly_1",
+        "luohan_fly_2",
+        "luohan_fly_3",
+        "luohan_atk_1",
+        "luohan_atk_2",
+        "luohan_atk_3",
+        "luohan_qimen_1",
+        "luohan_qimen_2",
+        "luohan_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "luohan_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "luohan_atk_1",
+        "basic_fist",
+        "luohan_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "luohan_force_1",
+          "luohan_guard_1",
+          "luohan_fly_1"
+        ],
+        "2": [
+          "luohan_atk_1",
+          "luohan_qimen_1"
+        ],
+        "3": [
+          "luohan_atk_2",
+          "luohan_qimen_2"
+        ],
+        "4": [
+          "luohan_force_2",
+          "luohan_guard_2",
+          "luohan_fly_2"
+        ],
+        "5": [
+          "luohan_atk_3",
+          "luohan_qimen_3",
+          "luohan_force_3",
+          "luohan_guard_3",
+          "luohan_fly_3"
+        ]
+      }
+    },
+    "wuyun": {
+      "id": "wuyun",
+      "name": "五云手温家",
+      "align": "中立",
+      "tier": "三流",
+      "region": "chengdu",
+      "story": "做皮货兼使毒的小家族，祖传一手五云手，传男不传女——偏偏这一代只有个女儿。",
+      "trial": "送上一份像样的礼。",
+      "desc": "做皮货兼使毒的小家族，祖传一手五云手，传男不传女——偏偏这一代只有个女儿。",
+      "require": {},
+      "ranks": [
+        "外姓弟子",
+        "弟子",
+        "亲传",
+        "管事",
+        "长老",
+        "家主"
+      ],
+      "rankCost": 190,
+      "skills": [
+        "wuyun_force_1",
+        "wuyun_force_2",
+        "wuyun_force_3",
+        "wuyun_guard_1",
+        "wuyun_guard_2",
+        "wuyun_guard_3",
+        "wuyun_fly_1",
+        "wuyun_fly_2",
+        "wuyun_fly_3",
+        "wuyun_atk_1",
+        "wuyun_atk_2",
+        "wuyun_atk_3",
+        "wuyun_qimen_1",
+        "wuyun_qimen_2",
+        "wuyun_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "wuyun_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "wuyun_atk_1",
+        "basic_fist",
+        "wuyun_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "wuyun_force_1",
+          "wuyun_guard_1",
+          "wuyun_fly_1"
+        ],
+        "2": [
+          "wuyun_atk_1",
+          "wuyun_qimen_1"
+        ],
+        "3": [
+          "wuyun_atk_2",
+          "wuyun_qimen_2"
+        ],
+        "4": [
+          "wuyun_force_2",
+          "wuyun_guard_2",
+          "wuyun_fly_2"
+        ],
+        "5": [
+          "wuyun_atk_3",
+          "wuyun_qimen_3",
+          "wuyun_force_3",
+          "wuyun_guard_3",
+          "wuyun_fly_3"
+        ]
+      }
+    },
+    "dafeng": {
+      "id": "dafeng",
+      "name": "大风云飞门",
+      "align": "中立",
+      "tier": "三流",
+      "region": "changan",
+      "story": "门里人人自称轻功好，其实大半是跑得快。门主说跑得快也算本事。",
+      "trial": "从三丈高的墙头跳下来。",
+      "desc": "门里人人自称轻功好，其实大半是跑得快。门主说跑得快也算本事。",
+      "require": {},
+      "ranks": [
+        "门徒",
+        "弟子",
+        "亲传",
+        "教头",
+        "长老",
+        "门主"
+      ],
+      "rankCost": 180,
+      "skills": [
+        "dafeng_force_1",
+        "dafeng_force_2",
+        "dafeng_force_3",
+        "dafeng_guard_1",
+        "dafeng_guard_2",
+        "dafeng_guard_3",
+        "dafeng_fly_1",
+        "dafeng_fly_2",
+        "dafeng_fly_3",
+        "dafeng_atk_1",
+        "dafeng_atk_2",
+        "dafeng_atk_3",
+        "dafeng_qimen_1",
+        "dafeng_qimen_2",
+        "dafeng_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "dafeng_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "dafeng_atk_1",
+        "basic_blade",
+        "dafeng_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "dafeng_force_1",
+          "dafeng_guard_1",
+          "dafeng_fly_1"
+        ],
+        "2": [
+          "dafeng_atk_1",
+          "dafeng_qimen_1"
+        ],
+        "3": [
+          "dafeng_atk_2",
+          "dafeng_qimen_2"
+        ],
+        "4": [
+          "dafeng_force_2",
+          "dafeng_guard_2",
+          "dafeng_fly_2"
+        ],
+        "5": [
+          "dafeng_atk_3",
+          "dafeng_qimen_3",
+          "dafeng_force_3",
+          "dafeng_guard_3",
+          "dafeng_fly_3"
+        ]
+      }
+    },
+    "huanghe": {
+      "id": "huanghe",
+      "name": "黄河帮",
+      "align": "中立",
+      "tier": "三流",
+      "region": "harbor",
+      "story": "撑船拉纤的抱团讨生活。会水性，也会几下棍棒，为的是守住自己的码头。",
+      "trial": "在帮里帮工三天。",
+      "desc": "撑船拉纤的抱团讨生活。会水性，也会几下棍棒，为的是守住自己的码头。",
+      "require": {},
+      "ranks": [
+        "帮众",
+        "水手",
+        "头目",
+        "舵主",
+        "长老",
+        "帮主"
+      ],
+      "rankCost": 170,
+      "skills": [
+        "huanghe_force_1",
+        "huanghe_force_2",
+        "huanghe_force_3",
+        "huanghe_guard_1",
+        "huanghe_guard_2",
+        "huanghe_guard_3",
+        "huanghe_fly_1",
+        "huanghe_fly_2",
+        "huanghe_fly_3",
+        "huanghe_atk_1",
+        "huanghe_atk_2",
+        "huanghe_atk_3",
+        "huanghe_qimen_1",
+        "huanghe_qimen_2",
+        "huanghe_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "huanghe_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "huanghe_atk_1",
+        "basic_staff",
+        "huanghe_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "huanghe_force_1",
+          "huanghe_guard_1",
+          "huanghe_fly_1"
+        ],
+        "2": [
+          "huanghe_atk_1",
+          "huanghe_qimen_1"
+        ],
+        "3": [
+          "huanghe_atk_2",
+          "huanghe_qimen_2"
+        ],
+        "4": [
+          "huanghe_force_2",
+          "huanghe_guard_2",
+          "huanghe_fly_2"
+        ],
+        "5": [
+          "huanghe_atk_3",
+          "huanghe_qimen_3",
+          "huanghe_force_3",
+          "huanghe_guard_3",
+          "huanghe_fly_3"
+        ]
+      }
+    },
+    "taihu": {
+      "id": "taihu",
+      "name": "太湖帮",
+      "align": "中立",
+      "tier": "三流",
+      "region": "gusu",
+      "story": "湖上的买卖不好做，帮里的船比人多。逢年过节，帮主还得亲自出湖收例钱。",
+      "trial": "能划船绕湖一圈。",
+      "desc": "湖上的买卖不好做，帮里的船比人多。逢年过节，帮主还得亲自出湖收例钱。",
+      "require": {},
+      "ranks": [
+        "帮众",
+        "水手",
+        "头目",
+        "舵主",
+        "长老",
+        "帮主"
+      ],
+      "rankCost": 180,
+      "skills": [
+        "taihu_force_1",
+        "taihu_force_2",
+        "taihu_force_3",
+        "taihu_guard_1",
+        "taihu_guard_2",
+        "taihu_guard_3",
+        "taihu_fly_1",
+        "taihu_fly_2",
+        "taihu_fly_3",
+        "taihu_atk_1",
+        "taihu_atk_2",
+        "taihu_atk_3",
+        "taihu_qimen_1",
+        "taihu_qimen_2",
+        "taihu_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "taihu_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "taihu_atk_1",
+        "basic_blade",
+        "taihu_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "taihu_force_1",
+          "taihu_guard_1",
+          "taihu_fly_1"
+        ],
+        "2": [
+          "taihu_atk_1",
+          "taihu_qimen_1"
+        ],
+        "3": [
+          "taihu_atk_2",
+          "taihu_qimen_2"
+        ],
+        "4": [
+          "taihu_force_2",
+          "taihu_guard_2",
+          "taihu_fly_2"
+        ],
+        "5": [
+          "taihu_atk_3",
+          "taihu_qimen_3",
+          "taihu_force_3",
+          "taihu_guard_3",
+          "taihu_fly_3"
+        ]
+      }
+    },
+    "poyang": {
+      "id": "poyang",
+      "name": "鄱阳帮",
+      "align": "中立",
+      "tier": "三流",
+      "region": "gusu",
+      "story": "跟太湖帮是几十年的对头。一年里总有几回，两家的小船在水面上撞得火星四溅。",
+      "trial": "帮着卸一船货。",
+      "desc": "跟太湖帮是几十年的对头。一年里总有几回，两家的小船在水面上撞得火星四溅。",
+      "require": {},
+      "ranks": [
+        "帮众",
+        "水手",
+        "头目",
+        "舵主",
+        "长老",
+        "帮主"
+      ],
+      "rankCost": 180,
+      "skills": [
+        "poyang_force_1",
+        "poyang_force_2",
+        "poyang_force_3",
+        "poyang_guard_1",
+        "poyang_guard_2",
+        "poyang_guard_3",
+        "poyang_fly_1",
+        "poyang_fly_2",
+        "poyang_fly_3",
+        "poyang_atk_1",
+        "poyang_atk_2",
+        "poyang_atk_3",
+        "poyang_qimen_1",
+        "poyang_qimen_2",
+        "poyang_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "poyang_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "poyang_atk_1",
+        "basic_staff",
+        "poyang_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "poyang_force_1",
+          "poyang_guard_1",
+          "poyang_fly_1"
+        ],
+        "2": [
+          "poyang_atk_1",
+          "poyang_qimen_1"
+        ],
+        "3": [
+          "poyang_atk_2",
+          "poyang_qimen_2"
+        ],
+        "4": [
+          "poyang_force_2",
+          "poyang_guard_2",
+          "poyang_fly_2"
+        ],
+        "5": [
+          "poyang_atk_3",
+          "poyang_qimen_3",
+          "poyang_force_3",
+          "poyang_guard_3",
+          "poyang_fly_3"
+        ]
+      }
+    },
+    "qingzhu": {
+      "id": "qingzhu",
+      "name": "青竹帮",
+      "align": "中立",
+      "tier": "三流",
+      "region": "jiangnan",
+      "story": "靠竹子吃饭的帮口，从山里砍到城里卖。帮里最值钱的家当是那几片竹山。",
+      "trial": "扛一捆青竹进门。",
+      "desc": "靠竹子吃饭的帮口，从山里砍到城里卖。帮里最值钱的家当是那几片竹山。",
+      "require": {},
+      "ranks": [
+        "帮众",
+        "弟子",
+        "头目",
+        "执事",
+        "长老",
+        "帮主"
+      ],
+      "rankCost": 170,
+      "skills": [
+        "qingzhu_force_1",
+        "qingzhu_force_2",
+        "qingzhu_force_3",
+        "qingzhu_guard_1",
+        "qingzhu_guard_2",
+        "qingzhu_guard_3",
+        "qingzhu_fly_1",
+        "qingzhu_fly_2",
+        "qingzhu_fly_3",
+        "qingzhu_atk_1",
+        "qingzhu_atk_2",
+        "qingzhu_atk_3",
+        "qingzhu_qimen_1",
+        "qingzhu_qimen_2",
+        "qingzhu_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "qingzhu_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "qingzhu_atk_1",
+        "basic_blade",
+        "qingzhu_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "qingzhu_force_1",
+          "qingzhu_guard_1",
+          "qingzhu_fly_1"
+        ],
+        "2": [
+          "qingzhu_atk_1",
+          "qingzhu_qimen_1"
+        ],
+        "3": [
+          "qingzhu_atk_2",
+          "qingzhu_qimen_2"
+        ],
+        "4": [
+          "qingzhu_force_2",
+          "qingzhu_guard_2",
+          "qingzhu_fly_2"
+        ],
+        "5": [
+          "qingzhu_atk_3",
+          "qingzhu_qimen_3",
+          "qingzhu_force_3",
+          "qingzhu_guard_3",
+          "qingzhu_fly_3"
+        ]
+      }
+    },
+    "jujing": {
+      "id": "jujing",
+      "name": "巨鲸帮",
+      "align": "中立",
+      "tier": "三流",
+      "region": "harbor",
+      "story": "海上讨生活的人，名字起得凶，日子过得苦。帮主那条船补过七八回。",
+      "trial": "跟着出海走一趟。",
+      "desc": "海上讨生活的人，名字起得凶，日子过得苦。帮主那条船补过七八回。",
+      "require": {},
+      "ranks": [
+        "帮众",
+        "水手",
+        "头目",
+        "舵主",
+        "长老",
+        "帮主"
+      ],
+      "rankCost": 190,
+      "skills": [
+        "jujing_force_1",
+        "jujing_force_2",
+        "jujing_force_3",
+        "jujing_guard_1",
+        "jujing_guard_2",
+        "jujing_guard_3",
+        "jujing_fly_1",
+        "jujing_fly_2",
+        "jujing_fly_3",
+        "jujing_atk_1",
+        "jujing_atk_2",
+        "jujing_atk_3",
+        "jujing_qimen_1",
+        "jujing_qimen_2",
+        "jujing_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "jujing_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "jujing_atk_1",
+        "basic_blade",
+        "jujing_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "jujing_force_1",
+          "jujing_guard_1",
+          "jujing_fly_1"
+        ],
+        "2": [
+          "jujing_atk_1",
+          "jujing_qimen_1"
+        ],
+        "3": [
+          "jujing_atk_2",
+          "jujing_qimen_2"
+        ],
+        "4": [
+          "jujing_force_2",
+          "jujing_guard_2",
+          "jujing_fly_2"
+        ],
+        "5": [
+          "jujing_atk_3",
+          "jujing_qimen_3",
+          "jujing_force_3",
+          "jujing_guard_3",
+          "jujing_fly_3"
+        ]
+      }
+    },
+    "jinlong": {
+      "id": "jinlong",
+      "name": "金龙帮",
+      "align": "中立",
+      "tier": "三流",
+      "region": "jiangnan",
+      "story": "帮口堂口修得最气派，里面的账却不太经得起查。",
+      "trial": "在帮口茶楼里坐一天，认全几位头目。",
+      "desc": "帮口堂口修得最气派，里面的账却不太经得起查。",
+      "require": {},
+      "ranks": [
+        "帮众",
+        "弟子",
+        "头目",
+        "执事",
+        "长老",
+        "帮主"
+      ],
+      "rankCost": 190,
+      "skills": [
+        "jinlong_force_1",
+        "jinlong_force_2",
+        "jinlong_force_3",
+        "jinlong_guard_1",
+        "jinlong_guard_2",
+        "jinlong_guard_3",
+        "jinlong_fly_1",
+        "jinlong_fly_2",
+        "jinlong_fly_3",
+        "jinlong_atk_1",
+        "jinlong_atk_2",
+        "jinlong_atk_3",
+        "jinlong_qimen_1",
+        "jinlong_qimen_2",
+        "jinlong_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "jinlong_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "jinlong_atk_1",
+        "basic_fist",
+        "jinlong_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "jinlong_force_1",
+          "jinlong_guard_1",
+          "jinlong_fly_1"
+        ],
+        "2": [
+          "jinlong_atk_1",
+          "jinlong_qimen_1"
+        ],
+        "3": [
+          "jinlong_atk_2",
+          "jinlong_qimen_2"
+        ],
+        "4": [
+          "jinlong_force_2",
+          "jinlong_guard_2",
+          "jinlong_fly_2"
+        ],
+        "5": [
+          "jinlong_atk_3",
+          "jinlong_qimen_3",
+          "jinlong_force_3",
+          "jinlong_guard_3",
+          "jinlong_fly_3"
+        ]
+      }
+    },
+    "wuliang": {
+      "id": "wuliang",
+      "name": "无量剑派",
+      "align": "中立",
+      "tier": "三流",
+      "region": "dali",
+      "story": "滇西一座小山头，东宗西宗年年比剑，比来比去都是那几式。掌门说，今年一定分出胜负。",
+      "trial": "走个过场即可。",
+      "desc": "滇西一座小山头，东宗西宗年年比剑，比来比去都是那几式。掌门说，今年一定分出胜负。",
+      "require": {},
+      "ranks": [
+        "弟子",
+        "入门弟子",
+        "执剑弟子",
+        "首座",
+        "长老",
+        "掌门"
+      ],
+      "rankCost": 180,
+      "skills": [
+        "wuliang_force_1",
+        "wuliang_force_2",
+        "wuliang_force_3",
+        "wuliang_guard_1",
+        "wuliang_guard_2",
+        "wuliang_guard_3",
+        "wuliang_fly_1",
+        "wuliang_fly_2",
+        "wuliang_fly_3",
+        "wuliang_atk_1",
+        "wuliang_atk_2",
+        "wuliang_atk_3",
+        "wuliang_qimen_1",
+        "wuliang_qimen_2",
+        "wuliang_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "wuliang_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "wuliang_atk_1",
+        "basic_sword",
+        "wuliang_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "wuliang_force_1",
+          "wuliang_guard_1",
+          "wuliang_fly_1"
+        ],
+        "2": [
+          "wuliang_atk_1",
+          "wuliang_qimen_1"
+        ],
+        "3": [
+          "wuliang_atk_2",
+          "wuliang_qimen_2"
+        ],
+        "4": [
+          "wuliang_force_2",
+          "wuliang_guard_2",
+          "wuliang_fly_2"
+        ],
+        "5": [
+          "wuliang_atk_3",
+          "wuliang_qimen_3",
+          "wuliang_force_3",
+          "wuliang_guard_3",
+          "wuliang_fly_3"
+        ]
+      }
+    },
+    "funiu": {
+      "id": "funiu",
+      "name": "伏牛派",
+      "align": "中立",
+      "tier": "三流",
+      "region": "xiangyang",
+      "story": "山里人练的拳，讲的是怎么把一头牛按倒。听着土，用起来顶事。",
+      "trial": "在牛棚住满七日。",
+      "desc": "山里人练的拳，讲的是怎么把一头牛按倒。听着土，用起来顶事。",
+      "require": {},
+      "ranks": [
+        "门徒",
+        "弟子",
+        "亲传",
+        "教头",
+        "长老",
+        "掌门"
+      ],
+      "rankCost": 170,
+      "skills": [
+        "funiu_force_1",
+        "funiu_force_2",
+        "funiu_force_3",
+        "funiu_guard_1",
+        "funiu_guard_2",
+        "funiu_guard_3",
+        "funiu_fly_1",
+        "funiu_fly_2",
+        "funiu_fly_3",
+        "funiu_atk_1",
+        "funiu_atk_2",
+        "funiu_atk_3",
+        "funiu_qimen_1",
+        "funiu_qimen_2",
+        "funiu_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "funiu_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "funiu_atk_1",
+        "basic_fist",
+        "funiu_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "funiu_force_1",
+          "funiu_guard_1",
+          "funiu_fly_1"
+        ],
+        "2": [
+          "funiu_atk_1",
+          "funiu_qimen_1"
+        ],
+        "3": [
+          "funiu_atk_2",
+          "funiu_qimen_2"
+        ],
+        "4": [
+          "funiu_force_2",
+          "funiu_guard_2",
+          "funiu_fly_2"
+        ],
+        "5": [
+          "funiu_atk_3",
+          "funiu_qimen_3",
+          "funiu_force_3",
+          "funiu_guard_3",
+          "funiu_fly_3"
+        ]
+      }
+    },
+    "baisheng": {
+      "id": "baisheng",
+      "name": "百胜刀门",
+      "align": "中立",
+      "tier": "三流",
+      "region": "luoyang",
+      "story": "名字取得大，战绩也就那样。门主每次被人问起，都说是「百胜」不是「百战百胜」。",
+      "trial": "打赢门里最弱的那个。",
+      "desc": "名字取得大，战绩也就那样。门主每次被人问起，都说是「百胜」不是「百战百胜」。",
+      "require": {},
+      "ranks": [
+        "门徒",
+        "弟子",
+        "快手",
+        "教习",
+        "长老",
+        "门主"
+      ],
+      "rankCost": 180,
+      "skills": [
+        "baisheng_force_1",
+        "baisheng_force_2",
+        "baisheng_force_3",
+        "baisheng_guard_1",
+        "baisheng_guard_2",
+        "baisheng_guard_3",
+        "baisheng_fly_1",
+        "baisheng_fly_2",
+        "baisheng_fly_3",
+        "baisheng_atk_1",
+        "baisheng_atk_2",
+        "baisheng_atk_3",
+        "baisheng_qimen_1",
+        "baisheng_qimen_2",
+        "baisheng_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "baisheng_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "baisheng_atk_1",
+        "basic_blade",
+        "baisheng_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "baisheng_force_1",
+          "baisheng_guard_1",
+          "baisheng_fly_1"
+        ],
+        "2": [
+          "baisheng_atk_1",
+          "baisheng_qimen_1"
+        ],
+        "3": [
+          "baisheng_atk_2",
+          "baisheng_qimen_2"
+        ],
+        "4": [
+          "baisheng_force_2",
+          "baisheng_guard_2",
+          "baisheng_fly_2"
+        ],
+        "5": [
+          "baisheng_atk_3",
+          "baisheng_qimen_3",
+          "baisheng_force_3",
+          "baisheng_guard_3",
+          "baisheng_fly_3"
+        ]
+      }
+    },
+    "baituo": {
+      "id": "baituo",
+      "name": "白驼山",
+      "align": "邪道",
+      "tier": "三流",
+      "region": "xixia",
+      "story": "山上养蛇的人比住的人多。山主脾气古怪，说话时蛇就盘在他手边。",
+      "trial": "赶着蛇群走一里地。",
+      "desc": "山上养蛇的人比住的人多。山主脾气古怪，说话时蛇就盘在他手边。",
+      "require": {},
+      "ranks": [
+        "蛇奴",
+        "弟子",
+        "驱蛇人",
+        "堂主",
+        "长老",
+        "山主"
+      ],
+      "rankCost": 200,
+      "skills": [
+        "baituo_force_1",
+        "baituo_force_2",
+        "baituo_force_3",
+        "baituo_guard_1",
+        "baituo_guard_2",
+        "baituo_guard_3",
+        "baituo_fly_1",
+        "baituo_fly_2",
+        "baituo_fly_3",
+        "baituo_atk_1",
+        "baituo_atk_2",
+        "baituo_atk_3",
+        "baituo_qimen_1",
+        "baituo_qimen_2",
+        "baituo_qimen_3"
+      ],
+      "entryItems": [],
+      "entrySkills": [
+        "baituo_force_1",
+        "basic_force",
+        "basic_parry",
+        "basic_dodge",
+        "baituo_atk_1",
+        "basic_fist",
+        "baituo_qimen_1"
+      ],
+      "rankSkills": {
+        "1": [
+          "baituo_force_1",
+          "baituo_guard_1",
+          "baituo_fly_1"
+        ],
+        "2": [
+          "baituo_atk_1",
+          "baituo_qimen_1"
+        ],
+        "3": [
+          "baituo_atk_2",
+          "baituo_qimen_2"
+        ],
+        "4": [
+          "baituo_force_2",
+          "baituo_guard_2",
+          "baituo_fly_2"
+        ],
+        "5": [
+          "baituo_atk_3",
+          "baituo_qimen_3",
+          "baituo_force_3",
+          "baituo_guard_3",
+          "baituo_fly_3"
+        ]
+      }
+    }
+  }
+}

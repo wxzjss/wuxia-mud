@@ -16,6 +16,7 @@ const { fmtTime, shichen, stars, clamp, fuzzyFind, normalizeCmd } = require('./u
 const mapLayout = require('./maplayout');
 const tutorial = require('./tutorial');
 const social = require('./social');
+const storybeat = require('./storybeat');
 
 /* 「可与名宿一战」的名单 —— `defeatLegend` 条件就认它。
  *
@@ -60,6 +61,9 @@ const TAG_NAMES = {
  * -------------------------------------------------------------------- */
 const TEST_SAVE_PREFIXES = ['test_', 'smoke_', '_inst_', '_local_', 'tmp_'];
 const TEST_SAVE_IDS = new Set(['test_slot']);
+/* 服务端兜底存档的槽位名（见 saveLive/restoreLive）。
+   它**不列进玩家存档列表** —— 那是给自己用的安全带，不是给玩家点的档。 */
+const LIVE_SLOT = '_live';
 
 function tagNameCN(t) { return t ? (TAG_NAMES[t] || t) : null; }
 
@@ -136,6 +140,7 @@ class GameEngine {
     const modLog = w.loadMods(modList);
     registerBuiltinFns(w);
     this.cmds = buildCommands(w);
+    this._wireTutorialAliases();
     this.ready = true;
     this.bootLog = []
       .concat(modLog.filter(l => l.level !== 'info'))
@@ -145,7 +150,12 @@ class GameEngine {
     for (const u of w.uiExtensions) { /* 传给 UI */ }
     if (saveId) {
       const s = this.readSave(saveId);
-      if (s) { w.deserialize(s, modList); this.restoreRelations(); }
+      if (s) {
+        w.deserialize(s, modList);
+        this.restoreRelations();
+        /* 读档同样补记「剧情已讲过」的账（理由同 loadSave） */
+        try { storybeat.markSeen(w, w.player); } catch (e) { /* ignore */ }
+      }
     }
     return { bootLog: this.bootLog, mods: this.modLoader.mods.map(m => ({ id: m.id, name: m.name, version: m.version, enabled: m.enabled, category: m.category })) };
   }
@@ -154,15 +164,36 @@ class GameEngine {
   reload() {
     this.modLoader.scan();
     const playerSave = this.world.player ? this.world.serialize() : null;
-    this.world = new World({ dataDirs: [this.dataDir], modDirs: [this.modsDir], seed: this.world.seed });
-    this.world.loadBaseData();
-    this.world.loadMods(this.modLoader.getEnabledModList());
-    registerBuiltinFns(this.world);
-    this.cmds = buildCommands(this.world);
+    const prevWorld = this.world;
+    const w = new World({ dataDirs: [this.dataDir], modDirs: [this.modsDir], seed: this.world.seed });
+    w.loadBaseData();
+    w.loadMods(this.modLoader.getEnabledModList());
+    registerBuiltinFns(w);
     if (playerSave) {
-      try { this.world.deserialize(playerSave, this.modLoader.getEnabledModList()); this.restoreRelations(); } catch (e) { /* 兼容性失败则忽略 */ }
+      try {
+        w.deserialize(playerSave, this.modLoader.getEnabledModList());
+        /* 读档「没报错」也可能没拿到角色（serialize 缺字段时静默降级）——补一道断言 */
+        if (!w.player) throw new Error('读档后没有取到角色');
+      } catch (e) {
+        /* 🔴 读档失败**绝不能静默吞掉**（原文是一句 catch 后写「兼容性失败则忽略」）：
+           吞掉的后果是 `world.player` 变成 null，而前端**还停在游戏界面** ——
+           玩家看到「角色名字没了 / 气血 0/1 / 内力 0/1 / 金钱 undefined 文」
+           外加一行红字「请先创建角色」（主人亲报的现象，一字不差）。
+           正确做法：**退回旧世界**（玩家一切照旧，只是 mod 没换成），
+           并把原因挂在 `reloadError` 上给上层显示 —— 宁可明确失败，不许静默丢人。 */
+        this.reloadError = String((e && e.message) || e);
+        this.world = prevWorld;
+        this.cmds = buildCommands(prevWorld);
+        this._wireTutorialAliases();
+        return { mods: this.modLoader.mods.length, ok: false, error: this.reloadError };
+      }
     }
-    return { mods: this.modLoader.mods.length };
+    this.world = w;
+    this.cmds = buildCommands(w);
+    this._wireTutorialAliases();
+    this.restoreRelations();
+    this.reloadError = null;
+    return { mods: this.modLoader.mods.length, ok: true };
   }
 
   /**
@@ -218,6 +249,10 @@ class GameEngine {
     // 触发主线任务
     p.setQuestStage('q_main_jianghu', 0);
     p.setFlag('visited_' + p.room, true);
+    /* ⚠️ 这里**刻意不**调 `storybeat.markSeen`：新开一局时第一屏就该有剧情
+       （第 1 章旁白 + 老汉那句话 + 主线开题），正是主人要的那件事。
+       markSeen 只用在「读档」上 —— 老存档没有 `_storyBeat` 这笔账，
+       不补记的话读一次档会把几十桩进行中的任务一口气念一遍。 */
     return this.view();
   }
 
@@ -270,6 +305,21 @@ class GameEngine {
         if (!n.portrait[k]) continue;
         push(label, trust >= need ? null : `需交情（trust≥${need}）`);
       }
+      /* ②b 画像钩子（hooks）：他手里那件「你能帮着做的事」。
+         这是画像里唯一指向「接下来能干什么」的一栏 —— 原先前端一个入口都没有，
+         玩家不知道能问，等于 51 个人的钩子白写。这里把标题摆进「询问」面板，
+         并按 trigger 现算「现在能不能问出来」（触发条件见 commands.js 的 ask 分支）。
+         ⚠️ 先同步 trust：hooks 的 trigger 读 `var: trust_<id>`，不同步就恒不成立。 */
+      if (n.portrait.hooks && n.portrait.hooks.length) {
+        const w0 = this.world, p0 = w0.player;
+        try { w0.syncTrustVar(n); } catch (e) { /* 老档没有该方法时静默跳过 */ }
+        for (const h of n.portrait.hooks.slice(0, 2)) {
+          if (!h || !h.title) continue;
+          const open = !h.trigger || evalCond(h.trigger, { player: p0, world: w0 });
+          const doneYet = n.pstate && n.pstate.hooks && n.pstate.hooks[h.id];
+          push(h.title, doneYet ? '已记下' : (open ? null : '交情还不够（先替他办点事）'));
+        }
+      }
     }
     /* ③ 通用兜底：任何 NPC 都接得住这一轮 */
     for (const g of ['你是谁', '近况', '江湖消息']) push(g, null);
@@ -293,7 +343,22 @@ class GameEngine {
     }
   }
 
-  view() {
+  /**
+   * @param {{map?: boolean}} [opts]
+   *   `opts.map === false` → **不带整张地图**。
+   *
+   *   🔴 主人 2026-10-11：「点击一个按钮后会输出一段英文指令，然后卡顿一下
+   *      （大概 0.5 秒？）才有效，有没有办法把卡顿问题解决掉」。
+   *      实测：`exec()` 每次回给前端的 JSON 是 **280 KB**，其中 `map` 一项就占 **247 KB**
+   *      （88%：454 个房间 + 区域框 + 格心坐标全在里面）。
+   *      服务端自己只花 **3.9 ms** —— 时间全耗在「把 247 KB 地图每次重传一遍」上。
+   *      而地图**只在玩家打开「地图」面板时才用得到**（前端读 `S.view.map`
+   *      的地方全在 `bindPanelActions('map')` 里），走路/说话/看东西根本不需要它。
+   *      所以：**指令回包一律不带地图**（27 KB，小 10 倍），
+   *      只有 `/api/view`（面板数据通道）才带上。
+   */
+  view(opts) {
+    const withMap = !opts || opts.map !== false;
     const w = this.world, p = w.player;
     if (!p) return { ok: false, needCreate: true, meta: w.data.meta };
     const room = w.getRoom(p.room);
@@ -323,6 +388,12 @@ class GameEngine {
       level: n.level, hp: n.hp, maxHp: n.maxHp, hostile: n.hostile,
       /* 被打倒（还没被补刀）→ NPC 菜单里才给「装进麻袋」入口 */
       knockedOut: !!n.knockedOut,
+      /* 绑架成功率（主人 2026-10-11：「『绑架』按钮右侧会显示成功率」）。
+         ⚠️ 与真动手时那次掷骰子**同一个函数**（kidnap.assess）——
+            两边各算一套，迟早出现「写着 70% 却输十次」。 */
+      kidnap: (function () {
+        try { return require('./kidnap').assess(w, p, n); } catch (e) { return null; }
+      })(),
       hasQuest: !!(n.def && n.def.quests && n.def.quests.some(q => p.questStage(q) < 0)),
       canReport: !!(n.def && n.def.quests && n.def.quests.some(q => p.questStage(q) >= 0 && p.questStage(q) < 99)),
       shop: !!n.shop, canTeach: !!(n.def && n.def.teach),
@@ -425,16 +496,36 @@ class GameEngine {
       player: this.playerBrief(),
       combat: w.battle ? this.combatView() : null,
       quests,
-      map: this.mapView(),
+      /* 地图是回包里最大的一项（247 KB）。指令回包不带它，见 view(opts) 的注释。
+         代价：地图面板点格子时若 S.view.map 已被清掉会取不到房间 ——
+         前端 afterAction 里做了「新 view 没有 map 就沿用旧 map」的兜底。 */
+      map: withMap ? this.mapView() : undefined,
       guide: tutorial.guideState(p, p.tutorialFlags || []),
       intro: tutorial.introFor(p, p.tutorialFlags || []),
       marriage: marriage.summary(w),
       kinship: kinship.summary(w),
       home: homeMod.summary(w),
       martial: this.martialList(),
+      auction: this.auctionView(),
+      culture: (function () { try { return require('./culture').summary(this.world, this.world.player); } catch (e) { return null; } }).call(this),
+      /* 练武学面板（主人 2026-10-08）：已学会的武学清单 + 各自等级/上限。
+         未起局时给空数组（前端当「还没得练」，不是错误）。 */
+      practice: (function () {
+        if (!this.world || !this.world.player) return [];
+        try { return require('./practice').listFor(this.world, this.world.player); } catch (e) { return []; }
+      }).call(this),
+      /* 拜师名册：玩家已拜的师父（NPC 面板据此显示「请教」而不是「拜师」）。 */
+      masters: (this.world && this.world.player && this.world.player.masters) || {},
       kidnap: this.kidnapView(),
       mods: this.modLoader.mods.map(m => ({ id: m.id, name: m.name, version: m.version, author: m.author, enabled: m.enabled, category: m.category, description: m.description, counts: m.counts })),
     };
+  }
+
+  /** 拍卖行面板数据（design/40 §6.3）—— 未起局时返回 null，前端不当它是错误。 */
+  auctionView() {
+    const w = this.world;
+    if (!w.player) return null;
+    try { return require('./auction').viewOf(w); } catch (e) { return null; }
   }
 
   /** 掳人 / 奴役 / 护院 的前端数据（奴册面板）
@@ -617,6 +708,19 @@ class GameEngine {
       dead: p.dead, deathCount: p.deathCount || 0,
       reputation: p.reputation,
       starving: p.food <= 0, parched: p.water <= 0,
+      /* 当前「脱不开身」的状态（吐纳 / 双修 / 采补）。
+         主人 2026-10-11：不要「收功」按钮，点屏幕上任何别的按钮就退出这个状态。
+         前端靠它判断「这一下点击要不要先走一趟服务端把状态收掉」（本地面板指令
+         以前会直接在前端开面板，人还坐在那儿吐纳）。 */
+      busy: (function () {
+        try {
+          const d = p.vars && p.vars.dual;
+          if (d) return { kind: d.kind, name: d.name, round: d.round || 0, rounds: d.rounds || 0 };
+          const t = require('./neigong').stateOf(p);
+          if (t) return { kind: 'tune', round: t.round || 0 };
+        } catch (e) { /* ignore */ }
+        return null;
+      })(),
       prostitution: p.prostitution ? {
         sold: !!p.prostitution.sold, debt: p.prostitution.debt || 0,
         served: p.prostitution.served || 0, earnings: p.prostitution.earnings || 0,
@@ -632,16 +736,35 @@ class GameEngine {
       const sd = w.getSkill(id);
       if (!sd) continue;
       const cur = p.learned[id];
+      /* ⚠️ 上限一律用 effectiveMax（含「基础武学等级」这一项）。
+         只给 maxSkillLevelFor 的话，前端会显示「还能练到 500」，实际练到 120 就卡住 ——
+         玩家看到的是「数字不对」，而这正是武学重制最要紧的那条规则（design/40 §2.6）。 */
+      const emax = Math.max(1, p.effectiveMax(sd));
+      const own = p.maxSkillLevelFor(sd);
+      const baseSd = sd.base ? w.getSkill(sd.base) : null;
+      const baseLv = (sd.base && p.learned[sd.base]) ? (p.learned[sd.base].level || 0) : 0;
       out.push({
-        id, name: sd.name, type: sd.type, level: p.skillLevel(id), maxLevel: p.maxSkillLevelFor(sd),
+        id, name: sd.name, type: sd.type, level: p.skillLevel(id), maxLevel: emax,
         exp: cur.exp, expNeed: p.skillExpNeed(cur.level), equipped: Object.values(p.equippedSkills).includes(id),
-        desc: sd.desc, trainCost: p.trainCost(sd, cur.level), canTrain: p.skillLevel(id) < p.maxSkillLevelFor(sd),
+        /* 槽位名（武学面板要按「内功 / 剑 / 散手」分组显示，光有 equipped 布尔不够） */
+        slot: Object.keys(p.equippedSkills).find(k => p.equippedSkills[k] === id) || null,
+        standaloneActive: (p.standaloneActive || []).indexOf(id) >= 0,
+        desc: sd.desc, trainCost: p.trainCost(sd, cur.level), canTrain: p.skillLevel(id) < emax,
         effects: (sd.effects || []).map(e => e.type),
         /* 武学重制：功法五大类 + 熟练度分级（前端「武学修为」面板要用） */
         category: sd.category || sd.type || '外功',
-        profTier: require('./character').profTierIndex(p.skillLevel(id), (sd.maxLevel || 300)),
+        profTier: require('./character').profTierIndex(p.skillLevel(id), emax),
         weaponType: sd.weaponType || null,
         damageMult: sd.damageMult != null ? sd.damageMult : null,
+        /* 武学重制新增三件（§2.6）：品级 / 绑在哪门基础武学（及其等级）/ 上限是谁卡的 */
+        grade: sd.grade || null,
+        isBasic: !!sd.isBasic,
+        standalone: !!sd.standalone,
+        base: sd.base || null,
+        baseName: baseSd ? baseSd.name : null,
+        baseLevel: baseLv,
+        limitBy: (!baseSd || emax >= own) ? '自身' : '基础武学',
+        moves: [].concat(sd.moves || []).map(m => ({ id: m.id, name: m.name, mpCost: m.mpCost || 0, cooldown: m.cooldown || 0 })),
       });
     }
     return out.sort((a, b) => String(a.category).localeCompare(String(b.category)) || b.level - a.level);
@@ -833,6 +956,16 @@ class GameEngine {
     /* --- 从当前位置做距离场：用于「相邻1步 / 附近3步 / 已探明」分级 --- */
     const dist = mapLayout.bfsDistance(allRooms, room.id, 99);
 
+    /* 当前房间里**跨出本区域**的那些出口 —— 前端在地图抬头标「东→华山派」。
+       ⚠️ 必须在这里按**真出口**算，不能让前端拿坐标去反查隔壁那间是谁：
+       区域装箱（packRegions）会在区域之间留 2 格空当，跨区域的房间**在图上从来不相邻**，
+       照坐标反查永远是「查无此人」（实测一条都命中不了）。 */
+    const crossExits = {};
+    for (const dir of Object.keys(room.exits || {})) {
+      const t = allRooms[room.exits[dir]];
+      if (t && t.region && t.region !== room.region) crossExits[dir] = t.region;
+    }
+
     const rooms = Object.values(allRooms).map(r => {
       const c = layout.cells[r.id] || { x: 0, y: 0, z: 0 };
       const d = dist[r.id];
@@ -841,6 +974,7 @@ class GameEngine {
         id: r.id, name: r.name, region: r.region,
         x: c.x, y: c.y, z: c.z,
         exits: Object.keys(r.exits || {}),
+        crossExits: r.id === room.id ? crossExits : null,
         current: r.id === room.id,
         visited,
         /* 分级：当前 / 相邻(1步) / 已知(去过) / 附近(可达<=4步) / 未知 */
@@ -852,12 +986,24 @@ class GameEngine {
 
     const regions = Object.values(w.data.regions).map(r => {
       const inRegion = rooms.filter(x => x.region === r.id);
+      /* 「飞往」（主人 2026-10-11）：区域自带的 `entry` 就是它的门户房间，
+         玩家**去过那个入口**才准飞 —— 没去过的只能在地图上看看。
+         这里把判定算好交给前端，前端不自己猜（它拿不到 flags）。 */
+      /* ⚠️ 区域没写 `entry` 时**回落到本区第一个房间**，不要直接判定「不能飞」。
+         基础数据里 34 个区域都写了 entry，但官方那个「地图 Mod 示例」
+         （听雨山庄）没写 —— 玩家自制 Mod 更不会知道要补这个字段。
+         逼 Mod 作者写新字段 = 新功能一到 Mod 就废，所以这里给个合理的兜底。 */
+      const entryId = r.entry || (inRegion[0] && inRegion[0].id) || null;
+      const entryRoom = entryId ? allRooms[entryId] : null;
       return {
         id: r.id, name: r.name, color: r.color, desc: r.desc,
         count: inRegion.length,
         visitedCount: inRegion.filter(x => x.visited).length,
         hasCurrent: inRegion.some(x => x.current),
         rooms: inRegion,
+        entry: entryId,
+        entryName: entryRoom ? entryRoom.name : null,
+        canFly: !!(entryId && p.hasFlag('visited_' + entryId)),
       };
     });
 
@@ -1026,6 +1172,99 @@ class GameEngine {
         ? (n.hp / n.maxHp < 0.3 ? '伤势不轻' : n.hp / n.maxHp < 0.6 ? '身上带伤' : '略有疲态')
         : '看上去气色如常',
       personality: per ? { id: per.id, name: per.name || per.id, desc: per.desc || '' } : null,
+      /* 是不是玩家的师父（主人 2026-10-08 的拜师线）：是 → 面板上出「请教」，否 → 出「拜师」。 */
+      isMaster: !!(w.player && w.player.masters && w.player.masters[(n.defId || n.id)]),
+      /* ---- 出师 / 退出师门（主人 2026-10-11）----
+         `sectMaster` 为真 = 这是**门派里的师父** —— 面板据此不出「出师」按钮
+         （门内换人走「向更高职位的人拜师」）。
+         `graduate.ok` 为假时按钮仍在、只灰掉并给出差在哪 ——
+         按钮凭空消失，玩家只会以为这条路没做。 */
+      sectMaster: (function () {
+        try { return require('./discipleship').isSectMaster(w.player, n); } catch (e) { return false; }
+      })(),
+      graduate: (function () {
+        if (!w.player || !w.player.masters || !w.player.masters[(n.defId || n.id)]) return null;
+        try {
+          const c = require('./discipleship').canGraduate(w, w.player, n);
+          return c.ok ? { can: true, need: c.need } : { can: false, why: c.why };
+        } catch (e) { return null; }
+      })(),
+      /* 「点名字、开互动面板」那一步的过渡句（主人 2026-10-08）：
+         「看了一眼」是**这一步**说的 —— 「看」那一路给的是仔细观察的细节（手上的茧之类），
+         两者分工别搞混。前端拿到后先把这句落进日志，再弹面板。 */
+      glance: (function () {
+        try { return require('./observe').glanceAt(w, n); } catch (e) { return null; }
+      })(),
+      /* 能不能向这个人发起挑战（门内争位）：同门 + 他位次比你高一位 + 贡献够押。
+         不满足时给一句 why，面板上把按钮灰掉但**仍然显示**，让玩家知道这儿有这条路。 */
+      challenge: (function () {
+        if (!w.player || !w.player.sect) return null;
+        try {
+          const SL = require('./sectlife');
+          const c = SL.canChallenge(w, w.player, n);
+          return c.ok ? { can: true, need: c.need, to: c.to } : { can: false, why: c.why };
+        } catch (e) { return null; }
+      })(),
+      /* ---- 人物故事（主人 2026-10-10）：好感 > 60 才给看 ----
+         故事就是画像里写的那几段（来历 / 现在 / 想要 / 怕什么）。
+         门槛不到时**不隐藏入口**，只回一句「他还信不过你」——
+         让玩家知道这里还有东西，而不是以为这个人没有故事。 */
+      lifeStory: (() => {
+        const need = 60;
+        const ok = Math.round(n.favor || 0) > need;
+        const pick = k => (ok && pt && pt[k]) ? tpl(pt[k]) : null;
+        return {
+          unlocked: ok, need, role: pt && pt.role ? tpl(pt.role) : '',
+          origin: pick('origin'), now: pick('now'), want: pick('want'), fear: pick('fear'),
+        };
+      })(),
+      /* ---- 双修 / 采补（主人 2026-10-11 从「秘技」搬过来的）----
+         判定一律放后端一处算（晚上 / 旁边有没有人 / 双方关系 / 对方家世与配偶 / 好感 /
+         冷却），前端只画按钮 —— 两边各写一套门槛，迟早分家。
+         `can:false` 时按钮仍然显示、只灰掉，并把差什么说出来（按钮凭空消失，玩家只会以为没做）。 */
+      dual: (function () {
+        try {
+          const c = require('./dualcultivate').evaluate(w, p, n, 'dual');
+          return c.ok ? { can: true } : { can: false, why: c.why };
+        } catch (e) { return null; }
+      })(),
+      drain: (function () {
+        try {
+          const c = require('./dualcultivate').evaluate(w, p, n, 'drain');
+          return c.ok ? { can: true } : { can: false, why: c.why };
+        } catch (e) { return null; }
+      })(),
+      /* ---- 徒弟：传功 / 灌顶（主人 2026-10-10）---- */
+      isDisciple: ((p.disciples || []).indexOf(n.id) >= 0),
+      maxMp: Math.floor(n.maxMp || 0),
+      /* 能传给这个徒弟的功法（面板要列出来给玩家点） */
+      teachables: ((p.disciples || []).indexOf(n.id) >= 0)
+        ? Object.keys(p.learned || {}).map(sid => {
+          const sd = w.getSkill(sid);
+          if (!sd) return null;
+          const lv = (p.learned[sid] && p.learned[sid].level) || 0;
+          const has = (n.learned && n.learned[sid] && n.learned[sid].level) || 0;
+          return { id: sid, name: sd.name, level: lv, can: has < Math.floor(lv * 0.6) };
+        }).filter(Boolean).filter(x => x.can).slice(0, 30)
+        : [],
+      /* ---- 交互面板上的按钮（战斗外秘技 + 结缘线）----
+         秘技只对弱者使得出、按差距掷骰；`can/why` 由 arts.js 统一算，前端只负责画。 */
+      arts: (() => { try { return require('./arts').listFor(w, p, n); } catch (e) { return []; } })(),
+      marks: (() => { try { return require('./arts').marksOf(n); } catch (e) { return []; } })(),
+      bonds: (() => {
+        try {
+          const M = require('./marriage');
+          const taken = M.npcTaken(w, n);
+          const linked = (p.spouses || []).concat(p.bonds || []).some(x => (x.npcId || x.id) === (n.defId || n.id));
+          return {
+            isLover: ((p.lovers || []).some(x => (x.npcId || x.id) === (n.defId || n.id))),
+            isSpouse: linked,
+            takenByOther: taken ? (taken.name || '有人') : null,
+            canBond: !linked,
+            favorNeed: M.marryFavorNeed ? M.marryFavorNeed(w, n) : 80,
+          };
+        } catch (e) { return null; }
+      })(),
       /* 关系：说人话，不甩数字（好感/信任折算成一句话）。
          ⚠️ 第三人称必须过 `pronounOf`（B11 的单一入口）——
          写死「他」会让药婆婆、灭绝师太这些女角色一律被叫「他」。 */
@@ -1083,7 +1322,23 @@ class GameEngine {
    * ------------------------------------------------------------------ */
   exec(input, opts) {
     const w = this.world, p = w.player;
-    if (!p) return { lines: [{ kind: 'warn', text: '请先创建角色。' }], view: this.view() };
+    /* 没角色两种情况要分开说（主人亲报的那句「请先创建角色」就出在这儿）：
+       · 真·还没起局（停在标题界面）→ 「请先创建角色」是对的
+       · **本来在玩、角色却没了**（沙箱闲置回收进程重启）→ 玩家看着自己的角色
+         突然消失，再被告知「请先创建角色」，只会以为进度全丢了。
+         这种一律打 noPlayer 标记，由前端去 `restoreLive()` 把人接回来。 */
+    if (!p) {
+      const canRestore = !!this.readSave(LIVE_SLOT);
+      return {
+        lines: [{
+          kind: 'warn',
+          text: canRestore ? '（这一局断了一下，正在替你接回来……）' : '请先创建角色。',
+        }],
+        noPlayer: true,
+        canRestore,
+        view: this.view({ map: false }),
+      };
+    }
     const ctx = { player: p, world: w, engine: this };
     const before = p.room;
     /* B13 连带收尾：读档迁移提示「只顶在下一屏房间描述前」，玩家一动就撤掉，不长期挂描述上。 */
@@ -1099,6 +1354,27 @@ class GameEngine {
        示例 mod 与新写的 NPC 用映射写法就崩）。
        现在兜住：给玩家一行**明确的回执**（不静默），并把栈打到服务端日志（可排查）。
        ⚠️ 别把回执删成静默 —— 那正是本项目最忌的「不报错就不生效」。 */
+    /* 吐纳 / 双修 / 采补当中「脱不开身」——
+       主人 2026-10-11：「吐纳的动不了改成点击页面任意其他按钮自动退出吐纳状态」，
+       双修采补同理，而且**不要「收功」按钮**。
+       ⇒ 所以这里不再是「拒绝执行」，而是「先退出这个状态，再照常执行这道指令」：
+         玩家点「背包」就真的开背包，只是人从坐忘里醒过来（屏幕上会写明退出）。
+       ⚠️ 继续类（吐纳/双修/采补）与显式退出类（收功/散功/起身）不进自动退出分支 ——
+          否则「再敲一次接着熬」会把自己打断，而「收功」会先退一次、再报一次「你并没有在吐纳」。 */
+    const exitBusy = [];
+    if (p.vars && (p.vars.dual || p.vars.tuning)) {
+      const head = String(norm || '').trim().split(/\s+/)[0] || '';
+      const KEEP = ['双修', '合修', 'dual', '采补', '采战', 'drain',
+        '吐纳', '行功', '调息', 'tuna', '收功', '散功', '起身'];
+      if (KEEP.indexOf(head) < 0) {
+        try {
+          exitBusy.push(...(p.vars.dual
+            ? require('./dualcultivate').stop(w, p).lines
+            : require('./neigong').stop(w, p).lines));
+        } catch (e) { /* 退不成也不能把人锁死：照常往下走 */ }
+      }
+    }
+
     let res;
     try {
       res = this.cmds.execute(norm, ctx);
@@ -1107,15 +1383,45 @@ class GameEngine {
       res = { lines: [{ kind: 'warn', text: `（「${input}」这道指令出了岔子，已经记下来了。）` }] };
     }
     const lines = res.lines || [];
+    /* 退出吐纳 / 双修的那几句，排在**这条指令自己的输出之前** ——
+       玩家先看到「醒过来了」，再看「背包里有什么」；顺序反了会以为状态还在。 */
+    if (exitBusy.length) lines.unshift(...exitBusy);
     // 后处理
     w.advanceTime(1);
     /* 世界动态 W5/W7：把「推进时间时」世界抛出的 storyline 台词排进玩家输出。
        （storyline 产品侧零消费者 —— 以前 onTick / onDayTick 的台词 emit 出去就沉了。） */
     this._drainWorldLines(lines);
     this.postProcess(lines, before, opts);
+    /* 剧情上屏（storybeat）：教程章节 / 任务阶段往前走了一格，就在这一屏补讲出来。
+       放在 postProcess **之后** —— 任务计数刚结算完，这道指令带来的推进当场就能看见，
+       不用玩家再去翻「任务」面板（主人 2026-10-11 追问的就是这个）。
+       ⚠️ 一处接线就全覆盖：面板点出来的、敲指令敲出来的、打架打出来的都走 exec。 */
+    try { lines.push(...storybeat.reconcile(w, p)); } catch (e) { /* 讲不成不该挡着玩 */ }
     const out = { lines, ...res };
-    out.view = this.view();
+    /* ⚠️ 指令回包**不带地图**（`map: false`）。这里是所有指令的总出口 ——
+       漏掉这一处，上面六处 `map: false` 全白改（实测 274 KB，一点没瘦）。
+       地图 247 KB / 回包 280 KB，只在你打开「地图」面板时才需要。 */
+    out.view = res.view || this.view({ map: false });
     return out;
+  }
+
+  /* 新手引导：把「指令注册表里的别名」喂给 tutorial，用于「按规范名反查引导标记」。
+   *
+   * ⚠️ 为什么需要：`tutorial.CMD_FLAGS` 是**手抄的别名表**，而真正的别名表长在
+   *   `commands.js` 的 `reg([...])` 里。两处不同步 = **静默失效**：
+   *   主人点屏幕上的「打坐」按钮（发的是英文 `meditate`），教程第三章
+   *   「身上得有点底子」就**永远点不亮**——因为手抄表里只有 `打坐/lian/train/练功/修炼`。
+   *   现在把 `cmds.CMD[k].names[0]`（规范名）连同全部别名注入，加别名不用再改 tutorial。
+   *   三个建 cmds 的地方（boot / reload / load）都必须调，否则读档后又漂回去。 */
+  _wireTutorialAliases() {
+    const CMD = (this.cmds && this.cmds.CMD) || {};
+    const map = {};
+    for (const k of Object.keys(CMD)) {
+      const names = (CMD[k] && CMD[k].names) || [k];
+      const canon = String(names[0] || k).trim().toLowerCase();
+      map[String(k).trim().toLowerCase()] = canon;
+    }
+    tutorial.setCmdAliases(map);
   }
 
   /* 新手引导：把玩家执行过的指令翻译成引导标记 */
@@ -1264,7 +1570,7 @@ class GameEngine {
   /** 处理 UI 菜单点击 */
   menuPick(opt) {
     const w = this.world, p = w.player;
-    if (!opt || !opt.effects) return { lines: [], view: this.view() };
+    if (!opt || !opt.effects) return { lines: [], view: this.view({ map: false }) };
     const ctx = { player: p, world: w, engine: this };
     const lines = evalEffects(opt.effects, ctx);
     if (opt.goto) {
@@ -1274,7 +1580,7 @@ class GameEngine {
     w.advanceTime(1);
     this._drainWorldLines(lines);
     this.postProcess(lines, p.room);
-    return { lines, view: this.view() };
+    return { lines, view: this.view({ map: false }) };
   }
 
   /** 把推进时间期间世界抛出的 storyline 台词（W5/W7/onTick/worldTick）排进输出。
@@ -1293,7 +1599,7 @@ class GameEngine {
    * ------------------------------------------------------------------ */
   combatAction(action, payload) {
     const w = this.world, p = w.player;
-    if (!w.battle) return { lines: [{ kind: 'warn', text: '你并没有在战斗。' }], view: this.view() };
+    if (!w.battle) return { lines: [{ kind: 'warn', text: '你并没有在战斗。' }], view: this.view({ map: false }) };
     let r;
     if (action === 'flee') r = w.combatStep('flee');
     else if (action === 'skill') r = w.combatStep({ type: 'skill', skill: payload.skill });
@@ -1301,7 +1607,7 @@ class GameEngine {
     else r = w.combatStep();
     const lines = r ? r.lines : [];
     this.postProcess(lines, p.room);
-    return { lines, view: this.view() };
+    return { lines, view: this.view({ map: false }) };
   }
 
   /* ------------------------------------------------------------------ *
@@ -1339,8 +1645,8 @@ class GameEngine {
       try {
         const j = JSON.parse(fs.readFileSync(path.join(this.saveDir, f), 'utf8'));
         const id = f.replace(/\.json$/, '');
-        /* B1：测试/调试档一律不列出。 */
-        if (this._isTestSave(id, j)) continue;
+        /* B1：测试/调试档一律不列出。兜底档同理（那是我自己的安全带，不是玩家的档）。 */
+        if (id === LIVE_SLOT || this._isTestSave(id, j)) continue;
         out.push({ id, name: j.player ? j.player.name : '?', level: j.player ? j.player.level : 1,
           savedAt: j.savedAt, time: j.clockMinutes, room: j.player ? j.player.room : '', mods: (j.mods || []).length });
       } catch (e) { /* ignore */ }
@@ -1394,12 +1700,50 @@ class GameEngine {
     this.world.deserialize(s, this.modLoader.getEnabledModList());
     registerBuiltinFns(this.world);
     this.cmds = buildCommands(this.world);
-    return { ok: true, msg: '读档成功。', view: this.view() };
+    /* 老存档没有 `p.vars._storyBeat` 这笔账 —— 不补记，读档后第一条指令
+       会把几十桩进行中的任务和当前教程章节一口气念一遍（剧情上屏的副作用）。
+       读档＝「这些早讲过了」，补一笔账最省事也最不打扰。 */
+    try { storybeat.markSeen(this.world, this.world.player); } catch (e) { /* ignore */ }
+    return { ok: true, msg: '读档成功。', view: this.view({ map: false }) };
   }
 
   deleteSave(id) {
     const fp = path.join(this.saveDir, id + '.json');
     try { fs.unlinkSync(fp); return { ok: true }; } catch (e) { return { ok: false, msg: e.message }; }
+  }
+
+  /* ────────────────────────────────────────────────────────────────
+   *  服务端兜底存档（_live）
+   *
+   *  病症（主人亲报）：「游戏过程中如果一段时间没操作，再点按钮时屏幕上出现
+   *  『请先创建角色』，同时各属性变为零、玩家名字也消失了。」
+   *
+   *  根因两截：
+   *    ① 线上沙箱**闲置会回收进程**。世界里的一切（包括 world.player）都在内存，
+   *       重启后 `world.player` 就是 null —— 而玩家浏览器那一页还开着，
+   *       于是下一条指令变成 `{lines:['请先创建角色'], view: 没有 player 的视图}`。
+   *    ② 前端 `afterAction` **无条件** `S.view = d.view` —— 空视图把有角色的视图盖掉了，
+   *       名字、属性当场清零（那半截在 ui.js 的 applyView 里修）。
+   *
+   *  这一对方法是第 ① 截的答案：定期把当前世界落到 `saves/_live.json`，
+   *  进程重启后第一次收到请求时先把它接回来 —— 玩家**感觉不到断过**。
+   *  ⚠️ 与玩家的 autosave_<device> 不是一回事：那是玩家的档（要出现在读取列表里），
+   *     这是服务端的安全带（不该出现在列表里，也不该被玩家手动读到旧数据）。
+   * ──────────────────────────────────────────────────────────────── */
+  saveLive() {
+    if (!this.world.player) return { ok: false, msg: '还没起局，没什么可兜的。' };
+    return this.save(LIVE_SLOT);
+  }
+
+  /** 进程重启后把玩家接回来。已经有玩家就什么都不做（幂等）。 */
+  restoreLive() {
+    if (this.world.player) return { ok: false, msg: '局中有人在，不用接。' };
+    if (!this.readSave(LIVE_SLOT)) return { ok: false, msg: '没有兜底档。' };
+    const r = this.loadSave(LIVE_SLOT);
+    if (!r.ok) return r;
+    /* 读档后关系字段要重打（与 boot(saveId) 同一条规矩，见 restoreRelations 注释） */
+    try { this.restoreRelations(); } catch (e) { /* 关系重建失败不该把人挡在门外 */ }
+    return r;
   }
 
   /* ------------------------------------------------------------------ *

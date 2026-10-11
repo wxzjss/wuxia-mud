@@ -1,0 +1,46 @@
+{
+  "relationsOverride": {
+    "huashan|taishan": -30,
+    "huashan|hengshan": -18,
+    "huashan|hengshanN": -12,
+    "taishan|hengshanN": 20,
+    "tangmen|miaojiang": -45,
+    "gaibang|mojiao": -35,
+    "taihu|poyang": -50,
+    "jindao|baisheng": -35,
+    "qingcheng|tangmen": -30,
+    "kunlun|baituo": -40,
+    "hengshan|hengshanN": -10,
+    "kuaidao|baisheng": -28,
+    "tiezhang|funiu": -32,
+    "wudang|kunlun": 15,
+    "shaolin|luohan": -22,
+    "diancang|wuliang": -26,
+    "mojiao|baituo": 18,
+    "xuedao|baituo": 12
+  },
+  "factionFeud": {
+    "huashan|taishan": "五岳并派之争，泰山不服华山居首",
+    "huashan|hengshan": "并派的话提了两回，衡山的琴声里都听得出火气",
+    "huashan|mojiao": "剑宗气宗之乱时魔教趁虚而入，华山折了两位长老",
+    "shaolin|xingxiu": "星宿老仙偷过少林《易筋经》的半页注",
+    "miaojiang|tangmen": "都用毒，又都盯着蜀中的药山，结了几代人的梁子",
+    "emei|xuedao": "血刀门劫过峨眉的尼，灭绝师太提剑追了三百里",
+    "gaibang|mojiao": "丐帮七袋弟子的打狗棒，被魔教挂在黑木崖上示众",
+    "dali|xingxiu": "段氏一阳指破过星宿的化功大法，丁春秋记恨至今",
+    "taihu|poyang": "两家的船在湖上撞了几十年，年年都有人落水",
+    "jindao|baisheng": "同在洛阳开馆授徒，抢徒弟抢了二十年",
+    "qingcheng|tangmen": "青城嫌唐门使毒下作，唐门笑青城假清高",
+    "kunlun|baituo": "白驼山的蛇爬进了昆仑的雪线",
+    "hengshan|hengshanN": "同为五岳，前些年为一处田产闹到各自派人下山",
+    "kuaidao|baisheng": "成都与洛阳两家刀馆互派弟子踢过场子",
+    "tiezhang|funiu": "铁掌帮要码头，伏牛派要山场，谁也不让",
+    "shaolin|luohan": "罗汉门挂着少林的边，少林不认这门亲",
+    "diancang|wuliang": "滇西两派年年比剑，比出了真火",
+    "xingxiu|baituo": "星宿海与白驼山争西域商道"
+  },
+  "meta": {
+    "relationsOverride_note": "手设势力关系覆盖（design/40 §5.5-⑦）：默认矩阵只按阵营推，同阵营世仇推不出来，靠这张表补。",
+    "factionFeud_note": "两派之间的梁子（纯文本）：邦交面板与见面摩擦文案共用。"
+  }
+}

@@ -1,0 +1,5720 @@
+{
+  "rooms": {
+    "taishan_gate": {
+      "id": "taishan_gate",
+      "name": "泰山派·山门",
+      "region": "changan",
+      "desc": "五岳里资历最老的一家，偏偏这些年在并派的议论里最不服气。山门前的松树比掌门还老。",
+      "exits": {
+        "u": "taishan_hall",
+        "nw": "changan_street"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 泰山派",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "taishan_hall": {
+      "id": "taishan_hall",
+      "name": "泰山派·演武场",
+      "region": "changan",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "taishan_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "hengshan_gate": {
+      "id": "hengshan_gate",
+      "name": "衡山派·山门",
+      "region": "xiangyang",
+      "desc": "剑法人人都学，可衡山的看家本事在琴上。掌门说，听不出调子里那点杀意，剑就白练了。",
+      "exits": {
+        "u": "hengshan_hall",
+        "nw": "xiangyang_street"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 衡山派",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "hengshan_hall": {
+      "id": "hengshan_hall",
+      "name": "衡山派·演武场",
+      "region": "xiangyang",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "hengshan_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "hengshanN_gate": {
+      "id": "hengshanN_gate",
+      "name": "恒山派·山门",
+      "region": "changan",
+      "desc": "庵堂里的尼姑们带剑，也带药箱。山上香火不旺，来求医的倒不少。",
+      "exits": {
+        "u": "hengshanN_hall",
+        "ne": "changan_street"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 恒山派",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "hengshanN_hall": {
+      "id": "hengshanN_hall",
+      "name": "恒山派·演武场",
+      "region": "changan",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "hengshanN_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "qingcheng_gate": {
+      "id": "qingcheng_gate",
+      "name": "青城派·山门",
+      "region": "chengdu",
+      "desc": "青城山雾大，弟子们练剑时对手常是自己的影子。掌门那手摧心掌，伤在内里，外头看不出来。",
+      "exits": {
+        "u": "qingcheng_hall",
+        "nw": "chengdu_street"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 青城派",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "qingcheng_hall": {
+      "id": "qingcheng_hall",
+      "name": "青城派·演武场",
+      "region": "chengdu",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "qingcheng_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "kongtong_gate": {
+      "id": "kongtong_gate",
+      "name": "崆峒派·山门",
+      "region": "changan",
+      "desc": "七伤拳的名声比崆峒山还大。练这门功夫的人，先伤的是自己，门里老人都知道。",
+      "exits": {
+        "u": "kongtong_hall",
+        "w": "changan_market"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 崆峒派",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "kongtong_hall": {
+      "id": "kongtong_hall",
+      "name": "崆峒派·演武场",
+      "region": "changan",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "kongtong_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "kunlun_gate": {
+      "id": "kunlun_gate",
+      "name": "昆仑派·山门",
+      "region": "xixia",
+      "desc": "两条剑同时使，是昆仑的老规矩。学不会左右分心的，一辈子只能用一柄。",
+      "exits": {
+        "u": "kunlun_hall",
+        "sw": "road_xixia_1"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 昆仑派",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "kunlun_hall": {
+      "id": "kunlun_hall",
+      "name": "昆仑派·演武场",
+      "region": "xixia",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "kunlun_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "diancang_gate": {
+      "id": "diancang_gate",
+      "name": "点苍派·山门",
+      "region": "dali",
+      "desc": "苍山十九峰，派里十九个剑诀。掌门说剑意不在山中，在过日子的人手里。",
+      "exits": {
+        "u": "diancang_hall",
+        "sw": "road_dali_1"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 点苍派",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "diancang_hall": {
+      "id": "diancang_hall",
+      "name": "点苍派·演武场",
+      "region": "dali",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "diancang_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "tiezhang_gate": {
+      "id": "tiezhang_gate",
+      "name": "铁掌帮·山门",
+      "region": "xiangyang",
+      "desc": "铁掌水上漂，说的是帮主的轻功。掌是真硬，人也真不讲道理。",
+      "exits": {
+        "u": "tiezhang_hall",
+        "ne": "xiangyang_street"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 铁掌帮",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "tiezhang_hall": {
+      "id": "tiezhang_hall",
+      "name": "铁掌帮·演武场",
+      "region": "xiangyang",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "tiezhang_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "jindao_gate": {
+      "id": "jindao_gate",
+      "name": "金刀门·山门",
+      "region": "luoyang",
+      "desc": "城东一处小院，挂了块金漆招牌，专收想学刀护家的后生。招牌褪色了也没人重漆。",
+      "exits": {
+        "u": "jindao_hall",
+        "nw": "luoyang_street"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 金刀门",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "jindao_hall": {
+      "id": "jindao_hall",
+      "name": "金刀门·演武场",
+      "region": "luoyang",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "jindao_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "wuhu_gate": {
+      "id": "wuhu_gate",
+      "name": "五虎断门刀·山门",
+      "region": "changan",
+      "desc": "刀法是家传的，传到这一代只剩下五招。老爷子不肯承认，还在门外挂了「五虎」的幌子。",
+      "exits": {
+        "u": "wuhu_hall",
+        "n": "changan_market"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 五虎断门刀",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "wuhu_hall": {
+      "id": "wuhu_hall",
+      "name": "五虎断门刀·演武场",
+      "region": "changan",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "wuhu_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "feihu_gate": {
+      "id": "feihu_gate",
+      "name": "飞虎镖局·山门",
+      "region": "changan",
+      "desc": "走镖的兄弟一条命换一趟银子。旗子在，镖就在。",
+      "exits": {
+        "u": "feihu_hall",
+        "s": "changan_market"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 飞虎镖局",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "feihu_hall": {
+      "id": "feihu_hall",
+      "name": "飞虎镖局·演武场",
+      "region": "changan",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "feihu_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "zhenyuan_gate": {
+      "id": "zhenyuan_gate",
+      "name": "镇远镖局·山门",
+      "region": "luoyang",
+      "desc": "老镖局了，旗子上补过三回。老局主说，镖行的规矩比刀法要紧。",
+      "exits": {
+        "u": "zhenyuan_hall",
+        "ne": "luoyang_street"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 镇远镖局",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "zhenyuan_hall": {
+      "id": "zhenyuan_hall",
+      "name": "镇远镖局·演武场",
+      "region": "luoyang",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "zhenyuan_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "shenquan_gate": {
+      "id": "shenquan_gate",
+      "name": "神拳门·山门",
+      "region": "cunzhen",
+      "desc": "门主是个退伍的老兵，拳架子打得极正，就是没创出什么名堂。镇上孩子都跟他学过两天。",
+      "exits": {
+        "u": "shenquan_hall",
+        "w": "cunzhen_gate"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 神拳门",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "shenquan_hall": {
+      "id": "shenquan_hall",
+      "name": "神拳门·演武场",
+      "region": "cunzhen",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "shenquan_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "tieqiang_gate": {
+      "id": "tieqiang_gate",
+      "name": "铁枪门·山门",
+      "region": "luoyang",
+      "desc": "武场里立着三十六杆枪，最重的那杆没人使得动，就摆在门口当招牌。",
+      "exits": {
+        "u": "tieqiang_hall",
+        "w": "luoyang_market"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 铁枪门",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "tieqiang_hall": {
+      "id": "tieqiang_hall",
+      "name": "铁枪门·演武场",
+      "region": "luoyang",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "tieqiang_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "kuaidao_gate": {
+      "id": "kuaidao_gate",
+      "name": "快刀门·山门",
+      "region": "chengdu",
+      "desc": "门里只讲一个字：快。慢的都被打发去后院劈柴了。",
+      "exits": {
+        "u": "kuaidao_hall",
+        "ne": "chengdu_street"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 快刀门",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "kuaidao_hall": {
+      "id": "kuaidao_hall",
+      "name": "快刀门·演武场",
+      "region": "chengdu",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "kuaidao_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "luohan_gate": {
+      "id": "luohan_gate",
+      "name": "罗汉门·山门",
+      "region": "xiangyang",
+      "desc": "挂着少林的边，其实跟少林没半点关系。门主也不否认，只说拳是真的。",
+      "exits": {
+        "u": "luohan_hall",
+        "w": "xiangyang_market"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 罗汉门",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "luohan_hall": {
+      "id": "luohan_hall",
+      "name": "罗汉门·演武场",
+      "region": "xiangyang",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "luohan_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "wuyun_gate": {
+      "id": "wuyun_gate",
+      "name": "五云手温家·山门",
+      "region": "chengdu",
+      "desc": "做皮货兼使毒的小家族，祖传一手五云手，传男不传女——偏偏这一代只有个女儿。",
+      "exits": {
+        "u": "wuyun_hall",
+        "w": "chengdu_market"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 五云手温家",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "wuyun_hall": {
+      "id": "wuyun_hall",
+      "name": "五云手温家·演武场",
+      "region": "chengdu",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "wuyun_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "dafeng_gate": {
+      "id": "dafeng_gate",
+      "name": "大风云飞门·山门",
+      "region": "changan",
+      "desc": "门里人人自称轻功好，其实大半是跑得快。门主说跑得快也算本事。",
+      "exits": {
+        "u": "dafeng_hall",
+        "sw": "changan_market"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 大风云飞门",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "dafeng_hall": {
+      "id": "dafeng_hall",
+      "name": "大风云飞门·演武场",
+      "region": "changan",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "dafeng_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "huanghe_gate": {
+      "id": "huanghe_gate",
+      "name": "黄河帮·山门",
+      "region": "harbor",
+      "desc": "撑船拉纤的抱团讨生活。会水性，也会几下棍棒，为的是守住自己的码头。",
+      "exits": {
+        "u": "huanghe_hall",
+        "w": "jn_harbor_stall"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 黄河帮",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "huanghe_hall": {
+      "id": "huanghe_hall",
+      "name": "黄河帮·演武场",
+      "region": "harbor",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "huanghe_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "taihu_gate": {
+      "id": "taihu_gate",
+      "name": "太湖帮·山门",
+      "region": "gusu",
+      "desc": "湖上的买卖不好做，帮里的船比人多。逢年过节，帮主还得亲自出湖收例钱。",
+      "exits": {
+        "u": "taihu_hall",
+        "e": "gusu_town"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 太湖帮",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "taihu_hall": {
+      "id": "taihu_hall",
+      "name": "太湖帮·演武场",
+      "region": "gusu",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "taihu_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "poyang_gate": {
+      "id": "poyang_gate",
+      "name": "鄱阳帮·山门",
+      "region": "gusu",
+      "desc": "跟太湖帮是几十年的对头。一年里总有几回，两家的小船在水面上撞得火星四溅。",
+      "exits": {
+        "u": "poyang_hall",
+        "n": "gusu_town"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 鄱阳帮",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "poyang_hall": {
+      "id": "poyang_hall",
+      "name": "鄱阳帮·演武场",
+      "region": "gusu",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "poyang_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "qingzhu_gate": {
+      "id": "qingzhu_gate",
+      "name": "青竹帮·山门",
+      "region": "jiangnan",
+      "desc": "靠竹子吃饭的帮口，从山里砍到城里卖。帮里最值钱的家当是那几片竹山。",
+      "exits": {
+        "u": "qingzhu_hall",
+        "e": "jiangnan_market"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 青竹帮",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "qingzhu_hall": {
+      "id": "qingzhu_hall",
+      "name": "青竹帮·演武场",
+      "region": "jiangnan",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "qingzhu_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "jujing_gate": {
+      "id": "jujing_gate",
+      "name": "巨鲸帮·山门",
+      "region": "harbor",
+      "desc": "海上讨生活的人，名字起得凶，日子过得苦。帮主那条船补过七八回。",
+      "exits": {
+        "u": "jujing_hall",
+        "e": "jn_harbor_stall"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 巨鲸帮",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "jujing_hall": {
+      "id": "jujing_hall",
+      "name": "巨鲸帮·演武场",
+      "region": "harbor",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "jujing_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "jinlong_gate": {
+      "id": "jinlong_gate",
+      "name": "金龙帮·山门",
+      "region": "gusu",
+      "desc": "帮口堂口修得最气派，里面的账却不太经得起查。",
+      "exits": {
+        "u": "jinlong_hall",
+        "sw": "gusu_town"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 金龙帮",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "jinlong_hall": {
+      "id": "jinlong_hall",
+      "name": "金龙帮·演武场",
+      "region": "gusu",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "jinlong_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "wuliang_gate": {
+      "id": "wuliang_gate",
+      "name": "无量剑派·山门",
+      "region": "dali",
+      "desc": "滇西一座小山头，东宗西宗年年比剑，比来比去都是那几式。掌门说，今年一定分出胜负。",
+      "exits": {
+        "u": "wuliang_hall",
+        "se": "road_dali_1"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 无量剑派",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "wuliang_hall": {
+      "id": "wuliang_hall",
+      "name": "无量剑派·演武场",
+      "region": "dali",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "wuliang_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "funiu_gate": {
+      "id": "funiu_gate",
+      "name": "伏牛派·山门",
+      "region": "xiangyang",
+      "desc": "山里人练的拳，讲的是怎么把一头牛按倒。听着土，用起来顶事。",
+      "exits": {
+        "u": "funiu_hall",
+        "n": "xiangyang_market"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 伏牛派",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "funiu_hall": {
+      "id": "funiu_hall",
+      "name": "伏牛派·演武场",
+      "region": "xiangyang",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "funiu_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "baisheng_gate": {
+      "id": "baisheng_gate",
+      "name": "百胜刀门·山门",
+      "region": "luoyang",
+      "desc": "名字取得大，战绩也就那样。门主每次被人问起，都说是「百胜」不是「百战百胜」。",
+      "exits": {
+        "u": "baisheng_hall",
+        "n": "luoyang_market"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 百胜刀门",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "baisheng_hall": {
+      "id": "baisheng_hall",
+      "name": "百胜刀门·演武场",
+      "region": "luoyang",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "baisheng_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "baituo_gate": {
+      "id": "baituo_gate",
+      "name": "白驼山·山门",
+      "region": "xixia",
+      "desc": "山上养蛇的人比住的人多。山主脾气古怪，说话时蛇就盘在他手边。",
+      "exits": {
+        "u": "baituo_hall",
+        "se": "road_xixia_1"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 白驼山",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "baituo_hall": {
+      "id": "baituo_hall",
+      "name": "白驼山·演武场",
+      "region": "xixia",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "baituo_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "hehuan_gate": {
+      "id": "hehuan_gate",
+      "name": "合欢宗·山门",
+      "region": "qinglou",
+      "desc": "楼子背后的宗家。白日里是弹唱的、陪酒的、写曲子的；夜里换一身衣裳，做的是另一桩买卖。门里不教你打人，教你怎么让人不打你，以及怎么把人留住。",
+      "exits": {
+        "u": "hehuan_hall",
+        "e": "jn_brothel_gate"
+      },
+      "actions": [
+        {
+          "cmd": "拜师 合欢宗",
+          "label": "拜入门下",
+          "keywords": [
+            "拜师",
+            "入门",
+            "投师"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山门里走出一个人，上下打量了你两眼。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "hehuan_hall": {
+      "id": "hehuan_hall",
+      "name": "合欢宗·演武场",
+      "region": "qinglou",
+      "desc": "场子里三五个弟子正拆招，见有人来，停下手看你。地上踩出的脚印一层压着一层。",
+      "exits": {
+        "d": "hehuan_gate"
+      },
+      "actions": [
+        {
+          "cmd": "练功",
+          "label": "跟着比划",
+          "keywords": [
+            "练功",
+            "练武",
+            "比划"
+          ],
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你照着他们的架子比划了两下，手臂有些酸。"
+            }
+          ],
+          "failMsg": null
+        }
+      ]
+    },
+    "changan_street": {
+      "id": "changan_street",
+      "exits": {
+        "se": "taishan_gate",
+        "sw": "hengshanN_gate"
+      }
+    },
+    "xiangyang_street": {
+      "id": "xiangyang_street",
+      "exits": {
+        "se": "hengshan_gate",
+        "sw": "tiezhang_gate"
+      }
+    },
+    "chengdu_street": {
+      "id": "chengdu_street",
+      "exits": {
+        "se": "qingcheng_gate",
+        "sw": "kuaidao_gate"
+      }
+    },
+    "changan_market": {
+      "id": "changan_market",
+      "exits": {
+        "e": "kongtong_gate",
+        "s": "wuhu_gate",
+        "n": "feihu_gate",
+        "ne": "dafeng_gate"
+      }
+    },
+    "road_xixia_1": {
+      "id": "road_xixia_1",
+      "exits": {
+        "ne": "kunlun_gate",
+        "nw": "baituo_gate"
+      }
+    },
+    "road_dali_1": {
+      "id": "road_dali_1",
+      "exits": {
+        "ne": "diancang_gate",
+        "nw": "wuliang_gate"
+      }
+    },
+    "luoyang_street": {
+      "id": "luoyang_street",
+      "exits": {
+        "se": "jindao_gate",
+        "sw": "zhenyuan_gate"
+      }
+    },
+    "cunzhen_gate": {
+      "id": "cunzhen_gate",
+      "exits": {
+        "e": "shenquan_gate"
+      }
+    },
+    "luoyang_market": {
+      "id": "luoyang_market",
+      "exits": {
+        "e": "tieqiang_gate",
+        "s": "baisheng_gate"
+      }
+    },
+    "xiangyang_market": {
+      "id": "xiangyang_market",
+      "exits": {
+        "e": "luohan_gate",
+        "s": "funiu_gate"
+      }
+    },
+    "chengdu_market": {
+      "id": "chengdu_market",
+      "exits": {
+        "e": "wuyun_gate"
+      }
+    },
+    "jn_harbor_stall": {
+      "id": "jn_harbor_stall",
+      "exits": {
+        "e": "huanghe_gate",
+        "w": "jujing_gate"
+      }
+    },
+    "gusu_town": {
+      "id": "gusu_town",
+      "exits": {
+        "w": "taihu_gate",
+        "s": "poyang_gate",
+        "ne": "jinlong_gate"
+      }
+    },
+    "jiangnan_market": {
+      "id": "jiangnan_market",
+      "exits": {
+        "w": "qingzhu_gate"
+      }
+    },
+    "jn_brothel_gate": {
+      "id": "jn_brothel_gate",
+      "exits": {
+        "w": "hehuan_gate"
+      }
+    }
+  },
+  "npcs": {
+    "taishan_master": {
+      "id": "taishan_master",
+      "name": "泰山派掌门",
+      "title": "一派之主",
+      "gender": "male",
+      "room": "taishan_gate",
+      "sect": "taishan",
+      "rank": 5,
+      "tier": "B",
+      "desc": "泰山派当家的。手上有几手真功夫，脾气也硬。",
+      "attr": {
+        "力量": 52,
+        "根骨": 55,
+        "身法": 52,
+        "悟性": 45,
+        "福缘": 40,
+        "定力": 55,
+        "资质": 45
+      },
+      "hp": 2400,
+      "mp": 1800,
+      "atk": 240,
+      "def": 150,
+      "dodge": 130,
+      "parry": 120,
+      "speed": 80,
+      "skills": {
+        "剑": "taishan_atk_3",
+        "内功": "taishan_force_3",
+        "招架": "taishan_guard_3",
+        "轻功": "taishan_fly_3"
+      },
+      "learned": {
+        "taishan_atk_3": {
+          "level": 420
+        },
+        "taishan_force_3": {
+          "level": 430
+        },
+        "taishan_guard_3": {
+          "level": 360
+        },
+        "taishan_fly_3": {
+          "level": 340
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "taishan_atk_1",
+        "taishan_atk_3",
+        "taishan_force_1",
+        "taishan_force_3",
+        "taishan_guard_1",
+        "taishan_guard_3",
+        "taishan_fly_1",
+        "taishan_qimen_3"
+      ],
+      "quests": [],
+      "talk": [
+        "在十八盘上走一趟不歇脚，再与守山弟子过三十招。",
+        "拜了师就是自家人，出门别丢门派的脸。",
+        "本门的功夫，练得住才拿得走。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "五岳里资历最老的一家，偏偏这些年在并派的议论里最不服气。山门前的松树比掌门还老。"
+        }
+      ]
+    },
+    "taishan_disciple": {
+      "id": "taishan_disciple",
+      "name": "泰山派弟子",
+      "title": "门中弟子",
+      "gender": "male",
+      "room": "taishan_hall",
+      "sect": "taishan",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "剑": "taishan_atk_1",
+        "内功": "taishan_force_1"
+      },
+      "learned": {
+        "taishan_atk_1": {
+          "level": 80
+        },
+        "taishan_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "五岳里资历最老的一家，偏偏这些年在并派的议论里最不服气。山门前的松树比掌门还老。"
+        }
+      ]
+    },
+    "hengshan_master": {
+      "id": "hengshan_master",
+      "name": "衡山派掌门",
+      "title": "一派之主",
+      "gender": "male",
+      "room": "hengshan_gate",
+      "sect": "hengshan",
+      "rank": 5,
+      "tier": "B",
+      "desc": "衡山派当家的。手上有几手真功夫，脾气也硬。",
+      "attr": {
+        "力量": 52,
+        "根骨": 55,
+        "身法": 52,
+        "悟性": 45,
+        "福缘": 40,
+        "定力": 55,
+        "资质": 45
+      },
+      "hp": 2400,
+      "mp": 1800,
+      "atk": 240,
+      "def": 150,
+      "dodge": 130,
+      "parry": 120,
+      "speed": 80,
+      "skills": {
+        "剑": "hengshan_atk_3",
+        "内功": "hengshan_force_3",
+        "招架": "hengshan_guard_3",
+        "轻功": "hengshan_fly_3"
+      },
+      "learned": {
+        "hengshan_atk_3": {
+          "level": 420
+        },
+        "hengshan_force_3": {
+          "level": 430
+        },
+        "hengshan_guard_3": {
+          "level": 360
+        },
+        "hengshan_fly_3": {
+          "level": 340
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "hengshan_atk_1",
+        "hengshan_atk_3",
+        "hengshan_force_1",
+        "hengshan_force_3",
+        "hengshan_guard_1",
+        "hengshan_guard_3",
+        "hengshan_fly_1",
+        "hengshan_qimen_3"
+      ],
+      "quests": [],
+      "talk": [
+        "听一曲琴，说出曲中杀气在哪个字上。",
+        "拜了师就是自家人，出门别丢门派的脸。",
+        "本门的功夫，练得住才拿得走。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "剑法人人都学，可衡山的看家本事在琴上。掌门说，听不出调子里那点杀意，剑就白练了。"
+        }
+      ]
+    },
+    "hengshan_disciple": {
+      "id": "hengshan_disciple",
+      "name": "衡山派弟子",
+      "title": "门中弟子",
+      "gender": "female",
+      "room": "hengshan_hall",
+      "sect": "hengshan",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "剑": "hengshan_atk_1",
+        "内功": "hengshan_force_1"
+      },
+      "learned": {
+        "hengshan_atk_1": {
+          "level": 80
+        },
+        "hengshan_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "剑法人人都学，可衡山的看家本事在琴上。掌门说，听不出调子里那点杀意，剑就白练了。"
+        }
+      ]
+    },
+    "hengshanN_master": {
+      "id": "hengshanN_master",
+      "name": "恒山派掌门",
+      "title": "一派之主",
+      "gender": "male",
+      "room": "hengshanN_gate",
+      "sect": "hengshanN",
+      "rank": 5,
+      "tier": "B",
+      "desc": "恒山派当家的。手上有几手真功夫，脾气也硬。",
+      "attr": {
+        "力量": 52,
+        "根骨": 55,
+        "身法": 52,
+        "悟性": 45,
+        "福缘": 40,
+        "定力": 55,
+        "资质": 45
+      },
+      "hp": 2400,
+      "mp": 1800,
+      "atk": 240,
+      "def": 150,
+      "dodge": 130,
+      "parry": 120,
+      "speed": 80,
+      "skills": {
+        "剑": "hengshanN_atk_3",
+        "内功": "hengshanN_force_3",
+        "招架": "hengshanN_guard_3",
+        "轻功": "hengshanN_fly_3"
+      },
+      "learned": {
+        "hengshanN_atk_3": {
+          "level": 420
+        },
+        "hengshanN_force_3": {
+          "level": 430
+        },
+        "hengshanN_guard_3": {
+          "level": 360
+        },
+        "hengshanN_fly_3": {
+          "level": 340
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "hengshanN_atk_1",
+        "hengshanN_atk_3",
+        "hengshanN_force_1",
+        "hengshanN_force_3",
+        "hengshanN_guard_1",
+        "hengshanN_guard_3",
+        "hengshanN_fly_1",
+        "hengshanN_qimen_3"
+      ],
+      "quests": [],
+      "talk": [
+        "抄一遍药方，替三位伤者换过药。",
+        "拜了师就是自家人，出门别丢门派的脸。",
+        "本门的功夫，练得住才拿得走。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "庵堂里的尼姑们带剑，也带药箱。山上香火不旺，来求医的倒不少。"
+        }
+      ]
+    },
+    "hengshanN_disciple": {
+      "id": "hengshanN_disciple",
+      "name": "恒山派弟子",
+      "title": "门中弟子",
+      "gender": "male",
+      "room": "hengshanN_hall",
+      "sect": "hengshanN",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "剑": "hengshanN_atk_1",
+        "内功": "hengshanN_force_1"
+      },
+      "learned": {
+        "hengshanN_atk_1": {
+          "level": 80
+        },
+        "hengshanN_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "庵堂里的尼姑们带剑，也带药箱。山上香火不旺，来求医的倒不少。"
+        }
+      ]
+    },
+    "qingcheng_master": {
+      "id": "qingcheng_master",
+      "name": "青城派掌门",
+      "title": "一派之主",
+      "gender": "male",
+      "room": "qingcheng_gate",
+      "sect": "qingcheng",
+      "rank": 5,
+      "tier": "B",
+      "desc": "青城派当家的。手上有几手真功夫，脾气也硬。",
+      "attr": {
+        "力量": 52,
+        "根骨": 55,
+        "身法": 52,
+        "悟性": 45,
+        "福缘": 40,
+        "定力": 55,
+        "资质": 45
+      },
+      "hp": 2400,
+      "mp": 1800,
+      "atk": 240,
+      "def": 150,
+      "dodge": 130,
+      "parry": 120,
+      "speed": 80,
+      "skills": {
+        "剑": "qingcheng_atk_3",
+        "内功": "qingcheng_force_3",
+        "招架": "qingcheng_guard_3",
+        "轻功": "qingcheng_fly_3"
+      },
+      "learned": {
+        "qingcheng_atk_3": {
+          "level": 420
+        },
+        "qingcheng_force_3": {
+          "level": 430
+        },
+        "qingcheng_guard_3": {
+          "level": 360
+        },
+        "qingcheng_fly_3": {
+          "level": 340
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "qingcheng_atk_1",
+        "qingcheng_atk_3",
+        "qingcheng_force_1",
+        "qingcheng_force_3",
+        "qingcheng_guard_1",
+        "qingcheng_guard_3",
+        "qingcheng_fly_1",
+        "qingcheng_qimen_3"
+      ],
+      "quests": [],
+      "talk": [
+        "从后山崖壁摘一枝松，掉下来就再来一年。",
+        "拜了师就是自家人，出门别丢门派的脸。",
+        "本门的功夫，练得住才拿得走。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "青城山雾大，弟子们练剑时对手常是自己的影子。掌门那手摧心掌，伤在内里，外头看不出来。"
+        }
+      ]
+    },
+    "qingcheng_disciple": {
+      "id": "qingcheng_disciple",
+      "name": "青城派弟子",
+      "title": "门中弟子",
+      "gender": "female",
+      "room": "qingcheng_hall",
+      "sect": "qingcheng",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "剑": "qingcheng_atk_1",
+        "内功": "qingcheng_force_1"
+      },
+      "learned": {
+        "qingcheng_atk_1": {
+          "level": 80
+        },
+        "qingcheng_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "青城山雾大，弟子们练剑时对手常是自己的影子。掌门那手摧心掌，伤在内里，外头看不出来。"
+        }
+      ]
+    },
+    "kongtong_master": {
+      "id": "kongtong_master",
+      "name": "崆峒派掌门",
+      "title": "一派之主",
+      "gender": "male",
+      "room": "kongtong_gate",
+      "sect": "kongtong",
+      "rank": 5,
+      "tier": "B",
+      "desc": "崆峒派当家的。手上有几手真功夫，脾气也硬。",
+      "attr": {
+        "力量": 52,
+        "根骨": 55,
+        "身法": 52,
+        "悟性": 45,
+        "福缘": 40,
+        "定力": 55,
+        "资质": 45
+      },
+      "hp": 2400,
+      "mp": 1800,
+      "atk": 240,
+      "def": 150,
+      "dodge": 130,
+      "parry": 120,
+      "speed": 80,
+      "skills": {
+        "拳": "kongtong_atk_3",
+        "内功": "kongtong_force_3",
+        "招架": "kongtong_guard_3",
+        "轻功": "kongtong_fly_3"
+      },
+      "learned": {
+        "kongtong_atk_3": {
+          "level": 420
+        },
+        "kongtong_force_3": {
+          "level": 430
+        },
+        "kongtong_guard_3": {
+          "level": 360
+        },
+        "kongtong_fly_3": {
+          "level": 340
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "kongtong_atk_1",
+        "kongtong_atk_3",
+        "kongtong_force_1",
+        "kongtong_force_3",
+        "kongtong_guard_1",
+        "kongtong_guard_3",
+        "kongtong_fly_1",
+        "kongtong_qimen_3"
+      ],
+      "quests": [],
+      "talk": [
+        "在石桩上打满一百拳，桩不倒就算过。",
+        "拜了师就是自家人，出门别丢门派的脸。",
+        "本门的功夫，练得住才拿得走。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "七伤拳的名声比崆峒山还大。练这门功夫的人，先伤的是自己，门里老人都知道。"
+        }
+      ]
+    },
+    "kongtong_disciple": {
+      "id": "kongtong_disciple",
+      "name": "崆峒派弟子",
+      "title": "门中弟子",
+      "gender": "male",
+      "room": "kongtong_hall",
+      "sect": "kongtong",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "拳": "kongtong_atk_1",
+        "内功": "kongtong_force_1"
+      },
+      "learned": {
+        "kongtong_atk_1": {
+          "level": 80
+        },
+        "kongtong_force_1": {
+          "level": 70
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "七伤拳的名声比崆峒山还大。练这门功夫的人，先伤的是自己，门里老人都知道。"
+        }
+      ]
+    },
+    "kunlun_master": {
+      "id": "kunlun_master",
+      "name": "昆仑派掌门",
+      "title": "一派之主",
+      "gender": "male",
+      "room": "kunlun_gate",
+      "sect": "kunlun",
+      "rank": 5,
+      "tier": "B",
+      "desc": "昆仑派当家的。手上有几手真功夫，脾气也硬。",
+      "attr": {
+        "力量": 52,
+        "根骨": 55,
+        "身法": 52,
+        "悟性": 45,
+        "福缘": 40,
+        "定力": 55,
+        "资质": 45
+      },
+      "hp": 2400,
+      "mp": 1800,
+      "atk": 240,
+      "def": 150,
+      "dodge": 130,
+      "parry": 120,
+      "speed": 80,
+      "skills": {
+        "剑": "kunlun_atk_3",
+        "内功": "kunlun_force_3",
+        "招架": "kunlun_guard_3",
+        "轻功": "kunlun_fly_3"
+      },
+      "learned": {
+        "kunlun_atk_3": {
+          "level": 420
+        },
+        "kunlun_force_3": {
+          "level": 430
+        },
+        "kunlun_guard_3": {
+          "level": 360
+        },
+        "kunlun_fly_3": {
+          "level": 340
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "kunlun_atk_1",
+        "kunlun_atk_3",
+        "kunlun_force_1",
+        "kunlun_force_3",
+        "kunlun_guard_1",
+        "kunlun_guard_3",
+        "kunlun_fly_1",
+        "kunlun_qimen_3"
+      ],
+      "quests": [],
+      "talk": [
+        "在雪地里站一夜，天亮时手还能握稳剑。",
+        "拜了师就是自家人，出门别丢门派的脸。",
+        "本门的功夫，练得住才拿得走。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "两条剑同时使，是昆仑的老规矩。学不会左右分心的，一辈子只能用一柄。"
+        }
+      ]
+    },
+    "kunlun_disciple": {
+      "id": "kunlun_disciple",
+      "name": "昆仑派弟子",
+      "title": "门中弟子",
+      "gender": "female",
+      "room": "kunlun_hall",
+      "sect": "kunlun",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "剑": "kunlun_atk_1",
+        "内功": "kunlun_force_1"
+      },
+      "learned": {
+        "kunlun_atk_1": {
+          "level": 80
+        },
+        "kunlun_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "两条剑同时使，是昆仑的老规矩。学不会左右分心的，一辈子只能用一柄。"
+        }
+      ]
+    },
+    "diancang_master": {
+      "id": "diancang_master",
+      "name": "点苍派掌门",
+      "title": "一派之主",
+      "gender": "male",
+      "room": "diancang_gate",
+      "sect": "diancang",
+      "rank": 5,
+      "tier": "B",
+      "desc": "点苍派当家的。手上有几手真功夫，脾气也硬。",
+      "attr": {
+        "力量": 52,
+        "根骨": 55,
+        "身法": 52,
+        "悟性": 45,
+        "福缘": 40,
+        "定力": 55,
+        "资质": 45
+      },
+      "hp": 2400,
+      "mp": 1800,
+      "atk": 240,
+      "def": 150,
+      "dodge": 130,
+      "parry": 120,
+      "speed": 80,
+      "skills": {
+        "剑": "diancang_atk_3",
+        "内功": "diancang_force_3",
+        "招架": "diancang_guard_3",
+        "轻功": "diancang_fly_3"
+      },
+      "learned": {
+        "diancang_atk_3": {
+          "level": 420
+        },
+        "diancang_force_3": {
+          "level": 430
+        },
+        "diancang_guard_3": {
+          "level": 360
+        },
+        "diancang_fly_3": {
+          "level": 340
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "diancang_atk_1",
+        "diancang_atk_3",
+        "diancang_force_1",
+        "diancang_force_3",
+        "diancang_guard_1",
+        "diancang_guard_3",
+        "diancang_fly_1",
+        "diancang_qimen_3"
+      ],
+      "quests": [],
+      "talk": [
+        "看渔翁撒网，午后比划出来。",
+        "拜了师就是自家人，出门别丢门派的脸。",
+        "本门的功夫，练得住才拿得走。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "苍山十九峰，派里十九个剑诀。掌门说剑意不在山中，在过日子的人手里。"
+        }
+      ]
+    },
+    "diancang_disciple": {
+      "id": "diancang_disciple",
+      "name": "点苍派弟子",
+      "title": "门中弟子",
+      "gender": "male",
+      "room": "diancang_hall",
+      "sect": "diancang",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "剑": "diancang_atk_1",
+        "内功": "diancang_force_1"
+      },
+      "learned": {
+        "diancang_atk_1": {
+          "level": 80
+        },
+        "diancang_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "苍山十九峰，派里十九个剑诀。掌门说剑意不在山中，在过日子的人手里。"
+        }
+      ]
+    },
+    "tiezhang_master": {
+      "id": "tiezhang_master",
+      "name": "铁掌帮掌门",
+      "title": "一派之主",
+      "gender": "male",
+      "room": "tiezhang_gate",
+      "sect": "tiezhang",
+      "rank": 5,
+      "tier": "B",
+      "desc": "铁掌帮当家的。手上有几手真功夫，脾气也硬。",
+      "attr": {
+        "力量": 52,
+        "根骨": 55,
+        "身法": 52,
+        "悟性": 45,
+        "福缘": 40,
+        "定力": 55,
+        "资质": 45
+      },
+      "hp": 2400,
+      "mp": 1800,
+      "atk": 240,
+      "def": 150,
+      "dodge": 130,
+      "parry": 120,
+      "speed": 80,
+      "skills": {
+        "拳": "tiezhang_atk_3",
+        "内功": "tiezhang_force_3",
+        "招架": "tiezhang_guard_3",
+        "轻功": "tiezhang_fly_3"
+      },
+      "learned": {
+        "tiezhang_atk_3": {
+          "level": 420
+        },
+        "tiezhang_force_3": {
+          "level": 430
+        },
+        "tiezhang_guard_3": {
+          "level": 360
+        },
+        "tiezhang_fly_3": {
+          "level": 340
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "tiezhang_atk_1",
+        "tiezhang_atk_3",
+        "tiezhang_force_1",
+        "tiezhang_force_3",
+        "tiezhang_guard_1",
+        "tiezhang_guard_3",
+        "tiezhang_fly_1",
+        "tiezhang_qimen_3"
+      ],
+      "quests": [],
+      "talk": [
+        "一掌劈开三块青砖。",
+        "拜了师就是自家人，出门别丢门派的脸。",
+        "本门的功夫，练得住才拿得走。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "铁掌水上漂，说的是帮主的轻功。掌是真硬，人也真不讲道理。"
+        }
+      ]
+    },
+    "tiezhang_disciple": {
+      "id": "tiezhang_disciple",
+      "name": "铁掌帮弟子",
+      "title": "门中弟子",
+      "gender": "female",
+      "room": "tiezhang_hall",
+      "sect": "tiezhang",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "拳": "tiezhang_atk_1",
+        "内功": "tiezhang_force_1"
+      },
+      "learned": {
+        "tiezhang_atk_1": {
+          "level": 80
+        },
+        "tiezhang_force_1": {
+          "level": 70
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "铁掌水上漂，说的是帮主的轻功。掌是真硬，人也真不讲道理。"
+        }
+      ]
+    },
+    "jindao_master": {
+      "id": "jindao_master",
+      "name": "金刀门掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "jindao_gate",
+      "sect": "jindao",
+      "rank": 5,
+      "tier": "C",
+      "desc": "金刀门当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "刀": "jindao_atk_1",
+        "内功": "jindao_force_1",
+        "招架": "jindao_guard_1",
+        "轻功": "jindao_fly_1"
+      },
+      "learned": {
+        "jindao_atk_1": {
+          "level": 160
+        },
+        "jindao_force_1": {
+          "level": 180
+        },
+        "jindao_guard_1": {
+          "level": 120
+        },
+        "jindao_fly_1": {
+          "level": 110
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "jindao_atk_1",
+        "jindao_force_1",
+        "jindao_guard_1",
+        "jindao_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "城东一处小院，挂了块金漆招牌，专收想学刀护家的后生。招牌褪色了也没人重漆。"
+        }
+      ]
+    },
+    "jindao_disciple": {
+      "id": "jindao_disciple",
+      "name": "金刀门弟子",
+      "title": "门中弟子",
+      "gender": "male",
+      "room": "jindao_hall",
+      "sect": "jindao",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "刀": "jindao_atk_1",
+        "内功": "jindao_force_1"
+      },
+      "learned": {
+        "jindao_atk_1": {
+          "level": 80
+        },
+        "jindao_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "城东一处小院，挂了块金漆招牌，专收想学刀护家的后生。招牌褪色了也没人重漆。"
+        }
+      ]
+    },
+    "wuhu_master": {
+      "id": "wuhu_master",
+      "name": "五虎断门刀掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "wuhu_gate",
+      "sect": "wuhu",
+      "rank": 5,
+      "tier": "C",
+      "desc": "五虎断门刀当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "刀": "wuhu_atk_1",
+        "内功": "wuhu_force_1",
+        "招架": "wuhu_guard_1",
+        "轻功": "wuhu_fly_1"
+      },
+      "learned": {
+        "wuhu_atk_1": {
+          "level": 160
+        },
+        "wuhu_force_1": {
+          "level": 180
+        },
+        "wuhu_guard_1": {
+          "level": 120
+        },
+        "wuhu_fly_1": {
+          "level": 110
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "wuhu_atk_1",
+        "wuhu_force_1",
+        "wuhu_guard_1",
+        "wuhu_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "刀法是家传的，传到这一代只剩下五招。老爷子不肯承认，还在门外挂了「五虎」的幌子。"
+        }
+      ]
+    },
+    "wuhu_disciple": {
+      "id": "wuhu_disciple",
+      "name": "五虎断门刀弟子",
+      "title": "门中弟子",
+      "gender": "female",
+      "room": "wuhu_hall",
+      "sect": "wuhu",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "刀": "wuhu_atk_1",
+        "内功": "wuhu_force_1"
+      },
+      "learned": {
+        "wuhu_atk_1": {
+          "level": 80
+        },
+        "wuhu_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "刀法是家传的，传到这一代只剩下五招。老爷子不肯承认，还在门外挂了「五虎」的幌子。"
+        }
+      ]
+    },
+    "feihu_master": {
+      "id": "feihu_master",
+      "name": "飞虎镖局掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "feihu_gate",
+      "sect": "feihu",
+      "rank": 5,
+      "tier": "C",
+      "desc": "飞虎镖局当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "刀": "feihu_atk_1",
+        "内功": "feihu_force_1",
+        "招架": "feihu_guard_1",
+        "轻功": "feihu_fly_1"
+      },
+      "learned": {
+        "feihu_atk_1": {
+          "level": 160
+        },
+        "feihu_force_1": {
+          "level": 180
+        },
+        "feihu_guard_1": {
+          "level": 120
+        },
+        "feihu_fly_1": {
+          "level": 110
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "feihu_atk_1",
+        "feihu_force_1",
+        "feihu_guard_1",
+        "feihu_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "走镖的兄弟一条命换一趟银子。旗子在，镖就在。"
+        }
+      ]
+    },
+    "feihu_disciple": {
+      "id": "feihu_disciple",
+      "name": "飞虎镖局弟子",
+      "title": "门中弟子",
+      "gender": "male",
+      "room": "feihu_hall",
+      "sect": "feihu",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "刀": "feihu_atk_1",
+        "内功": "feihu_force_1"
+      },
+      "learned": {
+        "feihu_atk_1": {
+          "level": 80
+        },
+        "feihu_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "走镖的兄弟一条命换一趟银子。旗子在，镖就在。"
+        }
+      ]
+    },
+    "zhenyuan_master": {
+      "id": "zhenyuan_master",
+      "name": "镇远镖局掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "zhenyuan_gate",
+      "sect": "zhenyuan",
+      "rank": 5,
+      "tier": "C",
+      "desc": "镇远镖局当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "刀": "zhenyuan_atk_1",
+        "内功": "zhenyuan_force_1",
+        "招架": "zhenyuan_guard_1",
+        "轻功": "zhenyuan_fly_1"
+      },
+      "learned": {
+        "zhenyuan_atk_1": {
+          "level": 160
+        },
+        "zhenyuan_force_1": {
+          "level": 180
+        },
+        "zhenyuan_guard_1": {
+          "level": 120
+        },
+        "zhenyuan_fly_1": {
+          "level": 110
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "zhenyuan_atk_1",
+        "zhenyuan_force_1",
+        "zhenyuan_guard_1",
+        "zhenyuan_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "老镖局了，旗子上补过三回。老局主说，镖行的规矩比刀法要紧。"
+        }
+      ]
+    },
+    "zhenyuan_disciple": {
+      "id": "zhenyuan_disciple",
+      "name": "镇远镖局弟子",
+      "title": "门中弟子",
+      "gender": "female",
+      "room": "zhenyuan_hall",
+      "sect": "zhenyuan",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "刀": "zhenyuan_atk_1",
+        "内功": "zhenyuan_force_1"
+      },
+      "learned": {
+        "zhenyuan_atk_1": {
+          "level": 80
+        },
+        "zhenyuan_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "老镖局了，旗子上补过三回。老局主说，镖行的规矩比刀法要紧。"
+        }
+      ]
+    },
+    "shenquan_master": {
+      "id": "shenquan_master",
+      "name": "神拳门掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "shenquan_gate",
+      "sect": "shenquan",
+      "rank": 5,
+      "tier": "C",
+      "desc": "神拳门当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "拳": "shenquan_atk_1",
+        "内功": "shenquan_force_1",
+        "招架": "shenquan_guard_1",
+        "轻功": "shenquan_fly_1"
+      },
+      "learned": {
+        "shenquan_atk_1": {
+          "level": 160
+        },
+        "shenquan_force_1": {
+          "level": 180
+        },
+        "shenquan_guard_1": {
+          "level": 120
+        },
+        "shenquan_fly_1": {
+          "level": 110
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "shenquan_atk_1",
+        "shenquan_force_1",
+        "shenquan_guard_1",
+        "shenquan_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "门主是个退伍的老兵，拳架子打得极正，就是没创出什么名堂。镇上孩子都跟他学过两天。"
+        }
+      ]
+    },
+    "shenquan_disciple": {
+      "id": "shenquan_disciple",
+      "name": "神拳门弟子",
+      "title": "门中弟子",
+      "gender": "male",
+      "room": "shenquan_hall",
+      "sect": "shenquan",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "拳": "shenquan_atk_1",
+        "内功": "shenquan_force_1"
+      },
+      "learned": {
+        "shenquan_atk_1": {
+          "level": 80
+        },
+        "shenquan_force_1": {
+          "level": 70
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "门主是个退伍的老兵，拳架子打得极正，就是没创出什么名堂。镇上孩子都跟他学过两天。"
+        }
+      ]
+    },
+    "tieqiang_master": {
+      "id": "tieqiang_master",
+      "name": "铁枪门掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "tieqiang_gate",
+      "sect": "tieqiang",
+      "rank": 5,
+      "tier": "C",
+      "desc": "铁枪门当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "棍": "tieqiang_atk_1",
+        "内功": "tieqiang_force_1",
+        "招架": "tieqiang_guard_1",
+        "轻功": "tieqiang_fly_1"
+      },
+      "learned": {
+        "tieqiang_atk_1": {
+          "level": 160
+        },
+        "tieqiang_force_1": {
+          "level": 180
+        },
+        "tieqiang_guard_1": {
+          "level": 120
+        },
+        "tieqiang_fly_1": {
+          "level": 110
+        }
+      },
+      "equipment": {
+        "武器": "bamboo_stick"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "tieqiang_atk_1",
+        "tieqiang_force_1",
+        "tieqiang_guard_1",
+        "tieqiang_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "武场里立着三十六杆枪，最重的那杆没人使得动，就摆在门口当招牌。"
+        }
+      ]
+    },
+    "tieqiang_disciple": {
+      "id": "tieqiang_disciple",
+      "name": "铁枪门弟子",
+      "title": "门中弟子",
+      "gender": "female",
+      "room": "tieqiang_hall",
+      "sect": "tieqiang",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "棍": "tieqiang_atk_1",
+        "内功": "tieqiang_force_1"
+      },
+      "learned": {
+        "tieqiang_atk_1": {
+          "level": 80
+        },
+        "tieqiang_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "bamboo_stick"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "武场里立着三十六杆枪，最重的那杆没人使得动，就摆在门口当招牌。"
+        }
+      ]
+    },
+    "kuaidao_master": {
+      "id": "kuaidao_master",
+      "name": "快刀门掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "kuaidao_gate",
+      "sect": "kuaidao",
+      "rank": 5,
+      "tier": "C",
+      "desc": "快刀门当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "刀": "kuaidao_atk_1",
+        "内功": "kuaidao_force_1",
+        "招架": "kuaidao_guard_1",
+        "轻功": "kuaidao_fly_1"
+      },
+      "learned": {
+        "kuaidao_atk_1": {
+          "level": 160
+        },
+        "kuaidao_force_1": {
+          "level": 180
+        },
+        "kuaidao_guard_1": {
+          "level": 120
+        },
+        "kuaidao_fly_1": {
+          "level": 110
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "kuaidao_atk_1",
+        "kuaidao_force_1",
+        "kuaidao_guard_1",
+        "kuaidao_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "门里只讲一个字：快。慢的都被打发去后院劈柴了。"
+        }
+      ]
+    },
+    "kuaidao_disciple": {
+      "id": "kuaidao_disciple",
+      "name": "快刀门弟子",
+      "title": "门中弟子",
+      "gender": "male",
+      "room": "kuaidao_hall",
+      "sect": "kuaidao",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "刀": "kuaidao_atk_1",
+        "内功": "kuaidao_force_1"
+      },
+      "learned": {
+        "kuaidao_atk_1": {
+          "level": 80
+        },
+        "kuaidao_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "门里只讲一个字：快。慢的都被打发去后院劈柴了。"
+        }
+      ]
+    },
+    "luohan_master": {
+      "id": "luohan_master",
+      "name": "罗汉门掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "luohan_gate",
+      "sect": "luohan",
+      "rank": 5,
+      "tier": "C",
+      "desc": "罗汉门当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "拳": "luohan_atk_1",
+        "内功": "luohan_force_1",
+        "招架": "luohan_guard_1",
+        "轻功": "luohan_fly_1"
+      },
+      "learned": {
+        "luohan_atk_1": {
+          "level": 160
+        },
+        "luohan_force_1": {
+          "level": 180
+        },
+        "luohan_guard_1": {
+          "level": 120
+        },
+        "luohan_fly_1": {
+          "level": 110
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "luohan_atk_1",
+        "luohan_force_1",
+        "luohan_guard_1",
+        "luohan_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "挂着少林的边，其实跟少林没半点关系。门主也不否认，只说拳是真的。"
+        }
+      ]
+    },
+    "luohan_disciple": {
+      "id": "luohan_disciple",
+      "name": "罗汉门弟子",
+      "title": "门中弟子",
+      "gender": "female",
+      "room": "luohan_hall",
+      "sect": "luohan",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "拳": "luohan_atk_1",
+        "内功": "luohan_force_1"
+      },
+      "learned": {
+        "luohan_atk_1": {
+          "level": 80
+        },
+        "luohan_force_1": {
+          "level": 70
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "挂着少林的边，其实跟少林没半点关系。门主也不否认，只说拳是真的。"
+        }
+      ]
+    },
+    "wuyun_master": {
+      "id": "wuyun_master",
+      "name": "五云手温家掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "wuyun_gate",
+      "sect": "wuyun",
+      "rank": 5,
+      "tier": "C",
+      "desc": "五云手温家当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "拳": "wuyun_atk_1",
+        "内功": "wuyun_force_1",
+        "招架": "wuyun_guard_1",
+        "轻功": "wuyun_fly_1"
+      },
+      "learned": {
+        "wuyun_atk_1": {
+          "level": 160
+        },
+        "wuyun_force_1": {
+          "level": 180
+        },
+        "wuyun_guard_1": {
+          "level": 120
+        },
+        "wuyun_fly_1": {
+          "level": 110
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "wuyun_atk_1",
+        "wuyun_force_1",
+        "wuyun_guard_1",
+        "wuyun_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "做皮货兼使毒的小家族，祖传一手五云手，传男不传女——偏偏这一代只有个女儿。"
+        }
+      ]
+    },
+    "wuyun_disciple": {
+      "id": "wuyun_disciple",
+      "name": "五云手温家弟子",
+      "title": "门中弟子",
+      "gender": "male",
+      "room": "wuyun_hall",
+      "sect": "wuyun",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "拳": "wuyun_atk_1",
+        "内功": "wuyun_force_1"
+      },
+      "learned": {
+        "wuyun_atk_1": {
+          "level": 80
+        },
+        "wuyun_force_1": {
+          "level": 70
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "做皮货兼使毒的小家族，祖传一手五云手，传男不传女——偏偏这一代只有个女儿。"
+        }
+      ]
+    },
+    "dafeng_master": {
+      "id": "dafeng_master",
+      "name": "大风云飞门掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "dafeng_gate",
+      "sect": "dafeng",
+      "rank": 5,
+      "tier": "C",
+      "desc": "大风云飞门当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "刀": "dafeng_atk_1",
+        "内功": "dafeng_force_1",
+        "招架": "dafeng_guard_1",
+        "轻功": "dafeng_fly_1"
+      },
+      "learned": {
+        "dafeng_atk_1": {
+          "level": 160
+        },
+        "dafeng_force_1": {
+          "level": 180
+        },
+        "dafeng_guard_1": {
+          "level": 120
+        },
+        "dafeng_fly_1": {
+          "level": 110
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "dafeng_atk_1",
+        "dafeng_force_1",
+        "dafeng_guard_1",
+        "dafeng_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "门里人人自称轻功好，其实大半是跑得快。门主说跑得快也算本事。"
+        }
+      ]
+    },
+    "dafeng_disciple": {
+      "id": "dafeng_disciple",
+      "name": "大风云飞门弟子",
+      "title": "门中弟子",
+      "gender": "female",
+      "room": "dafeng_hall",
+      "sect": "dafeng",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "刀": "dafeng_atk_1",
+        "内功": "dafeng_force_1"
+      },
+      "learned": {
+        "dafeng_atk_1": {
+          "level": 80
+        },
+        "dafeng_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "门里人人自称轻功好，其实大半是跑得快。门主说跑得快也算本事。"
+        }
+      ]
+    },
+    "huanghe_master": {
+      "id": "huanghe_master",
+      "name": "黄河帮掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "huanghe_gate",
+      "sect": "huanghe",
+      "rank": 5,
+      "tier": "C",
+      "desc": "黄河帮当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "棍": "huanghe_atk_1",
+        "内功": "huanghe_force_1",
+        "招架": "huanghe_guard_1",
+        "轻功": "huanghe_fly_1"
+      },
+      "learned": {
+        "huanghe_atk_1": {
+          "level": 160
+        },
+        "huanghe_force_1": {
+          "level": 180
+        },
+        "huanghe_guard_1": {
+          "level": 120
+        },
+        "huanghe_fly_1": {
+          "level": 110
+        }
+      },
+      "equipment": {
+        "武器": "bamboo_stick"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "huanghe_atk_1",
+        "huanghe_force_1",
+        "huanghe_guard_1",
+        "huanghe_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "撑船拉纤的抱团讨生活。会水性，也会几下棍棒，为的是守住自己的码头。"
+        }
+      ]
+    },
+    "huanghe_disciple": {
+      "id": "huanghe_disciple",
+      "name": "黄河帮弟子",
+      "title": "门中弟子",
+      "gender": "male",
+      "room": "huanghe_hall",
+      "sect": "huanghe",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "棍": "huanghe_atk_1",
+        "内功": "huanghe_force_1"
+      },
+      "learned": {
+        "huanghe_atk_1": {
+          "level": 80
+        },
+        "huanghe_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "bamboo_stick"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "撑船拉纤的抱团讨生活。会水性，也会几下棍棒，为的是守住自己的码头。"
+        }
+      ]
+    },
+    "taihu_master": {
+      "id": "taihu_master",
+      "name": "太湖帮掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "taihu_gate",
+      "sect": "taihu",
+      "rank": 5,
+      "tier": "C",
+      "desc": "太湖帮当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "刀": "taihu_atk_1",
+        "内功": "taihu_force_1",
+        "招架": "taihu_guard_1",
+        "轻功": "taihu_fly_1"
+      },
+      "learned": {
+        "taihu_atk_1": {
+          "level": 160
+        },
+        "taihu_force_1": {
+          "level": 180
+        },
+        "taihu_guard_1": {
+          "level": 120
+        },
+        "taihu_fly_1": {
+          "level": 110
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "taihu_atk_1",
+        "taihu_force_1",
+        "taihu_guard_1",
+        "taihu_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "湖上的买卖不好做，帮里的船比人多。逢年过节，帮主还得亲自出湖收例钱。"
+        }
+      ]
+    },
+    "taihu_disciple": {
+      "id": "taihu_disciple",
+      "name": "太湖帮弟子",
+      "title": "门中弟子",
+      "gender": "female",
+      "room": "taihu_hall",
+      "sect": "taihu",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "刀": "taihu_atk_1",
+        "内功": "taihu_force_1"
+      },
+      "learned": {
+        "taihu_atk_1": {
+          "level": 80
+        },
+        "taihu_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "湖上的买卖不好做，帮里的船比人多。逢年过节，帮主还得亲自出湖收例钱。"
+        }
+      ]
+    },
+    "poyang_master": {
+      "id": "poyang_master",
+      "name": "鄱阳帮掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "poyang_gate",
+      "sect": "poyang",
+      "rank": 5,
+      "tier": "C",
+      "desc": "鄱阳帮当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "棍": "poyang_atk_1",
+        "内功": "poyang_force_1",
+        "招架": "poyang_guard_1",
+        "轻功": "poyang_fly_1"
+      },
+      "learned": {
+        "poyang_atk_1": {
+          "level": 160
+        },
+        "poyang_force_1": {
+          "level": 180
+        },
+        "poyang_guard_1": {
+          "level": 120
+        },
+        "poyang_fly_1": {
+          "level": 110
+        }
+      },
+      "equipment": {
+        "武器": "bamboo_stick"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "poyang_atk_1",
+        "poyang_force_1",
+        "poyang_guard_1",
+        "poyang_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "跟太湖帮是几十年的对头。一年里总有几回，两家的小船在水面上撞得火星四溅。"
+        }
+      ]
+    },
+    "poyang_disciple": {
+      "id": "poyang_disciple",
+      "name": "鄱阳帮弟子",
+      "title": "门中弟子",
+      "gender": "male",
+      "room": "poyang_hall",
+      "sect": "poyang",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "棍": "poyang_atk_1",
+        "内功": "poyang_force_1"
+      },
+      "learned": {
+        "poyang_atk_1": {
+          "level": 80
+        },
+        "poyang_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "bamboo_stick"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "跟太湖帮是几十年的对头。一年里总有几回，两家的小船在水面上撞得火星四溅。"
+        }
+      ]
+    },
+    "qingzhu_master": {
+      "id": "qingzhu_master",
+      "name": "青竹帮掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "qingzhu_gate",
+      "sect": "qingzhu",
+      "rank": 5,
+      "tier": "C",
+      "desc": "青竹帮当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "刀": "qingzhu_atk_1",
+        "内功": "qingzhu_force_1",
+        "招架": "qingzhu_guard_1",
+        "轻功": "qingzhu_fly_1"
+      },
+      "learned": {
+        "qingzhu_atk_1": {
+          "level": 160
+        },
+        "qingzhu_force_1": {
+          "level": 180
+        },
+        "qingzhu_guard_1": {
+          "level": 120
+        },
+        "qingzhu_fly_1": {
+          "level": 110
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "qingzhu_atk_1",
+        "qingzhu_force_1",
+        "qingzhu_guard_1",
+        "qingzhu_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "靠竹子吃饭的帮口，从山里砍到城里卖。帮里最值钱的家当是那几片竹山。"
+        }
+      ]
+    },
+    "qingzhu_disciple": {
+      "id": "qingzhu_disciple",
+      "name": "青竹帮弟子",
+      "title": "门中弟子",
+      "gender": "female",
+      "room": "qingzhu_hall",
+      "sect": "qingzhu",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "刀": "qingzhu_atk_1",
+        "内功": "qingzhu_force_1"
+      },
+      "learned": {
+        "qingzhu_atk_1": {
+          "level": 80
+        },
+        "qingzhu_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "靠竹子吃饭的帮口，从山里砍到城里卖。帮里最值钱的家当是那几片竹山。"
+        }
+      ]
+    },
+    "jujing_master": {
+      "id": "jujing_master",
+      "name": "巨鲸帮掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "jujing_gate",
+      "sect": "jujing",
+      "rank": 5,
+      "tier": "C",
+      "desc": "巨鲸帮当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "刀": "jujing_atk_1",
+        "内功": "jujing_force_1",
+        "招架": "jujing_guard_1",
+        "轻功": "jujing_fly_1"
+      },
+      "learned": {
+        "jujing_atk_1": {
+          "level": 160
+        },
+        "jujing_force_1": {
+          "level": 180
+        },
+        "jujing_guard_1": {
+          "level": 120
+        },
+        "jujing_fly_1": {
+          "level": 110
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "jujing_atk_1",
+        "jujing_force_1",
+        "jujing_guard_1",
+        "jujing_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "海上讨生活的人，名字起得凶，日子过得苦。帮主那条船补过七八回。"
+        }
+      ]
+    },
+    "jujing_disciple": {
+      "id": "jujing_disciple",
+      "name": "巨鲸帮弟子",
+      "title": "门中弟子",
+      "gender": "male",
+      "room": "jujing_hall",
+      "sect": "jujing",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "刀": "jujing_atk_1",
+        "内功": "jujing_force_1"
+      },
+      "learned": {
+        "jujing_atk_1": {
+          "level": 80
+        },
+        "jujing_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "海上讨生活的人，名字起得凶，日子过得苦。帮主那条船补过七八回。"
+        }
+      ]
+    },
+    "jinlong_master": {
+      "id": "jinlong_master",
+      "name": "金龙帮掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "jinlong_gate",
+      "sect": "jinlong",
+      "rank": 5,
+      "tier": "C",
+      "desc": "金龙帮当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "拳": "jinlong_atk_1",
+        "内功": "jinlong_force_1",
+        "招架": "jinlong_guard_1",
+        "轻功": "jinlong_fly_1"
+      },
+      "learned": {
+        "jinlong_atk_1": {
+          "level": 160
+        },
+        "jinlong_force_1": {
+          "level": 180
+        },
+        "jinlong_guard_1": {
+          "level": 120
+        },
+        "jinlong_fly_1": {
+          "level": 110
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "jinlong_atk_1",
+        "jinlong_force_1",
+        "jinlong_guard_1",
+        "jinlong_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "帮口堂口修得最气派，里面的账却不太经得起查。"
+        }
+      ]
+    },
+    "jinlong_disciple": {
+      "id": "jinlong_disciple",
+      "name": "金龙帮弟子",
+      "title": "门中弟子",
+      "gender": "female",
+      "room": "jinlong_hall",
+      "sect": "jinlong",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "拳": "jinlong_atk_1",
+        "内功": "jinlong_force_1"
+      },
+      "learned": {
+        "jinlong_atk_1": {
+          "level": 80
+        },
+        "jinlong_force_1": {
+          "level": 70
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "帮口堂口修得最气派，里面的账却不太经得起查。"
+        }
+      ]
+    },
+    "wuliang_master": {
+      "id": "wuliang_master",
+      "name": "无量剑派掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "wuliang_gate",
+      "sect": "wuliang",
+      "rank": 5,
+      "tier": "C",
+      "desc": "无量剑派当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "剑": "wuliang_atk_1",
+        "内功": "wuliang_force_1",
+        "招架": "wuliang_guard_1",
+        "轻功": "wuliang_fly_1"
+      },
+      "learned": {
+        "wuliang_atk_1": {
+          "level": 160
+        },
+        "wuliang_force_1": {
+          "level": 180
+        },
+        "wuliang_guard_1": {
+          "level": 120
+        },
+        "wuliang_fly_1": {
+          "level": 110
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "wuliang_atk_1",
+        "wuliang_force_1",
+        "wuliang_guard_1",
+        "wuliang_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "滇西一座小山头，东宗西宗年年比剑，比来比去都是那几式。掌门说，今年一定分出胜负。"
+        }
+      ]
+    },
+    "wuliang_disciple": {
+      "id": "wuliang_disciple",
+      "name": "无量剑派弟子",
+      "title": "门中弟子",
+      "gender": "male",
+      "room": "wuliang_hall",
+      "sect": "wuliang",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "剑": "wuliang_atk_1",
+        "内功": "wuliang_force_1"
+      },
+      "learned": {
+        "wuliang_atk_1": {
+          "level": 80
+        },
+        "wuliang_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "滇西一座小山头，东宗西宗年年比剑，比来比去都是那几式。掌门说，今年一定分出胜负。"
+        }
+      ]
+    },
+    "funiu_master": {
+      "id": "funiu_master",
+      "name": "伏牛派掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "funiu_gate",
+      "sect": "funiu",
+      "rank": 5,
+      "tier": "C",
+      "desc": "伏牛派当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "拳": "funiu_atk_1",
+        "内功": "funiu_force_1",
+        "招架": "funiu_guard_1",
+        "轻功": "funiu_fly_1"
+      },
+      "learned": {
+        "funiu_atk_1": {
+          "level": 160
+        },
+        "funiu_force_1": {
+          "level": 180
+        },
+        "funiu_guard_1": {
+          "level": 120
+        },
+        "funiu_fly_1": {
+          "level": 110
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "funiu_atk_1",
+        "funiu_force_1",
+        "funiu_guard_1",
+        "funiu_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "山里人练的拳，讲的是怎么把一头牛按倒。听着土，用起来顶事。"
+        }
+      ]
+    },
+    "funiu_disciple": {
+      "id": "funiu_disciple",
+      "name": "伏牛派弟子",
+      "title": "门中弟子",
+      "gender": "female",
+      "room": "funiu_hall",
+      "sect": "funiu",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "拳": "funiu_atk_1",
+        "内功": "funiu_force_1"
+      },
+      "learned": {
+        "funiu_atk_1": {
+          "level": 80
+        },
+        "funiu_force_1": {
+          "level": 70
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "山里人练的拳，讲的是怎么把一头牛按倒。听着土，用起来顶事。"
+        }
+      ]
+    },
+    "baisheng_master": {
+      "id": "baisheng_master",
+      "name": "百胜刀门掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "baisheng_gate",
+      "sect": "baisheng",
+      "rank": 5,
+      "tier": "C",
+      "desc": "百胜刀门当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "刀": "baisheng_atk_1",
+        "内功": "baisheng_force_1",
+        "招架": "baisheng_guard_1",
+        "轻功": "baisheng_fly_1"
+      },
+      "learned": {
+        "baisheng_atk_1": {
+          "level": 160
+        },
+        "baisheng_force_1": {
+          "level": 180
+        },
+        "baisheng_guard_1": {
+          "level": 120
+        },
+        "baisheng_fly_1": {
+          "level": 110
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "baisheng_atk_1",
+        "baisheng_force_1",
+        "baisheng_guard_1",
+        "baisheng_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "名字取得大，战绩也就那样。门主每次被人问起，都说是「百胜」不是「百战百胜」。"
+        }
+      ]
+    },
+    "baisheng_disciple": {
+      "id": "baisheng_disciple",
+      "name": "百胜刀门弟子",
+      "title": "门中弟子",
+      "gender": "male",
+      "room": "baisheng_hall",
+      "sect": "baisheng",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "刀": "baisheng_atk_1",
+        "内功": "baisheng_force_1"
+      },
+      "learned": {
+        "baisheng_atk_1": {
+          "level": 80
+        },
+        "baisheng_force_1": {
+          "level": 70
+        }
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "名字取得大，战绩也就那样。门主每次被人问起，都说是「百胜」不是「百战百胜」。"
+        }
+      ]
+    },
+    "baituo_master": {
+      "id": "baituo_master",
+      "name": "白驼山掌门",
+      "title": "当家",
+      "gender": "male",
+      "room": "baituo_gate",
+      "sect": "baituo",
+      "rank": 5,
+      "tier": "C",
+      "desc": "白驼山当家的。守着这一亩三分地，日子过得去。",
+      "attr": {
+        "力量": 34,
+        "根骨": 36,
+        "身法": 32,
+        "悟性": 28,
+        "福缘": 30,
+        "定力": 34,
+        "资质": 26
+      },
+      "hp": 900,
+      "mp": 600,
+      "atk": 120,
+      "def": 70,
+      "dodge": 60,
+      "parry": 60,
+      "speed": 55,
+      "skills": {
+        "拳": "baituo_atk_1",
+        "内功": "baituo_force_1",
+        "招架": "baituo_guard_1",
+        "轻功": "baituo_fly_1"
+      },
+      "learned": {
+        "baituo_atk_1": {
+          "level": 160
+        },
+        "baituo_force_1": {
+          "level": 180
+        },
+        "baituo_guard_1": {
+          "level": 120
+        },
+        "baituo_fly_1": {
+          "level": 110
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "baituo_atk_1",
+        "baituo_force_1",
+        "baituo_guard_1",
+        "baituo_fly_1"
+      ],
+      "quests": [],
+      "talk": [
+        "想学啊？先交束脩。",
+        "这里的功夫不值钱，管用就行。",
+        "练熟了能看家护院，也就够了。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "山上养蛇的人比住的人多。山主脾气古怪，说话时蛇就盘在他手边。"
+        }
+      ]
+    },
+    "baituo_disciple": {
+      "id": "baituo_disciple",
+      "name": "白驼山弟子",
+      "title": "门中弟子",
+      "gender": "female",
+      "room": "baituo_hall",
+      "sect": "baituo",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "拳": "baituo_atk_1",
+        "内功": "baituo_force_1"
+      },
+      "learned": {
+        "baituo_atk_1": {
+          "level": 80
+        },
+        "baituo_force_1": {
+          "level": 70
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "山上养蛇的人比住的人多。山主脾气古怪，说话时蛇就盘在他手边。"
+        }
+      ]
+    },
+    "hehuan_master": {
+      "id": "hehuan_master",
+      "name": "合欢宗掌门",
+      "title": "一派之主",
+      "gender": "male",
+      "room": "hehuan_gate",
+      "sect": "hehuan",
+      "rank": 5,
+      "tier": "B",
+      "desc": "合欢宗当家的。手上有几手真功夫，脾气也硬。",
+      "attr": {
+        "力量": 52,
+        "根骨": 55,
+        "身法": 52,
+        "悟性": 45,
+        "福缘": 40,
+        "定力": 55,
+        "资质": 45
+      },
+      "hp": 2400,
+      "mp": 1800,
+      "atk": 240,
+      "def": 150,
+      "dodge": 130,
+      "parry": 120,
+      "speed": 80,
+      "skills": {
+        "拳": "hehuan_atk_3",
+        "内功": "hehuan_force_3",
+        "招架": "hehuan_guard_3",
+        "轻功": "hehuan_fly_3"
+      },
+      "learned": {
+        "hehuan_atk_3": {
+          "level": 420
+        },
+        "hehuan_force_3": {
+          "level": 430
+        },
+        "hehuan_guard_3": {
+          "level": 360
+        },
+        "hehuan_fly_3": {
+          "level": 340
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "hehuan_atk_1",
+        "hehuan_atk_3",
+        "hehuan_force_1",
+        "hehuan_force_3",
+        "hehuan_guard_1",
+        "hehuan_guard_3",
+        "hehuan_fly_1",
+        "hehuan_qimen_3"
+      ],
+      "quests": [],
+      "talk": [
+        "不考较武功，只看你肯不肯把脸面放下。",
+        "拜了师就是自家人，出门别丢门派的脸。",
+        "本门的功夫，练得住才拿得走。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "楼子背后的宗家。白日里是弹唱的、陪酒的、写曲子的；夜里换一身衣裳，做的是另一桩买卖。门里不教你打人，教你怎么让人不打你，以及怎么把人留住。"
+        }
+      ]
+    },
+    "hehuan_disciple": {
+      "id": "hehuan_disciple",
+      "name": "合欢宗弟子",
+      "title": "门中弟子",
+      "gender": "male",
+      "room": "hehuan_hall",
+      "sect": "hehuan",
+      "rank": 1,
+      "tier": "C",
+      "desc": "年纪不大，手上已经有了薄茧。",
+      "attr": {
+        "力量": 20,
+        "根骨": 20,
+        "身法": 18,
+        "悟性": 16,
+        "福缘": 15,
+        "定力": 18,
+        "资质": 14
+      },
+      "hp": 420,
+      "mp": 200,
+      "atk": 70,
+      "def": 35,
+      "dodge": 38,
+      "parry": 30,
+      "speed": 40,
+      "skills": {
+        "拳": "hehuan_atk_1",
+        "内功": "hehuan_force_1"
+      },
+      "learned": {
+        "hehuan_atk_1": {
+          "level": 80
+        },
+        "hehuan_force_1": {
+          "level": 70
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [],
+      "quests": [],
+      "talk": [
+        "师父说过，招式练熟之前别出去丢人。",
+        "你也是来学本事的？"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "师父"
+          ],
+          "answer": "楼子背后的宗家。白日里是弹唱的、陪酒的、写曲子的；夜里换一身衣裳，做的是另一桩买卖。门里不教你打人，教你怎么让人不打你，以及怎么把人留住。"
+        }
+      ]
+    },
+    "tangmen_master": {
+      "id": "tangmen_master",
+      "name": "唐门门主",
+      "title": "门主",
+      "gender": "male",
+      "room": "tangmen_gate",
+      "sect": "tangmen",
+      "rank": 5,
+      "tier": "B",
+      "desc": "undefined当家的。",
+      "attr": {
+        "力量": 52,
+        "根骨": 55,
+        "身法": 52,
+        "悟性": 45,
+        "福缘": 40,
+        "定力": 55,
+        "资质": 45
+      },
+      "hp": 2400,
+      "mp": 1800,
+      "atk": 240,
+      "def": 150,
+      "dodge": 130,
+      "parry": 120,
+      "speed": 80,
+      "skills": {
+        "暗器": "tangmen_atk_3",
+        "内功": "tangmen_force_3",
+        "招架": "tangmen_guard_3",
+        "轻功": "tangmen_fly_3"
+      },
+      "learned": {
+        "tangmen_atk_3": {
+          "level": 420
+        },
+        "tangmen_force_3": {
+          "level": 430
+        },
+        "tangmen_guard_3": {
+          "level": 360
+        },
+        "tangmen_fly_3": {
+          "level": 340
+        }
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "tangmen_atk_1",
+        "tangmen_atk_3",
+        "tangmen_force_1",
+        "tangmen_force_3",
+        "tangmen_guard_1",
+        "tangmen_qimen_3"
+      ],
+      "quests": [],
+      "talk": [
+        "进了这个门，就得守这个门的规矩。",
+        "本门的功夫不外传。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "蜀中唐门的门规只有一条要紧：不许对外人露脸。看过的人，通常也不必再看第二次。"
+        }
+      ]
+    },
+    "gumu_master": {
+      "id": "gumu_master",
+      "name": "古墓掌门",
+      "title": "掌门",
+      "gender": "female",
+      "room": "gumu_mu",
+      "sect": "gumu",
+      "rank": 5,
+      "tier": "B",
+      "desc": "undefined当家的。",
+      "attr": {
+        "力量": 52,
+        "根骨": 55,
+        "身法": 52,
+        "悟性": 45,
+        "福缘": 40,
+        "定力": 55,
+        "资质": 45
+      },
+      "hp": 2400,
+      "mp": 1800,
+      "atk": 240,
+      "def": 150,
+      "dodge": 130,
+      "parry": 120,
+      "speed": 80,
+      "skills": {
+        "剑": "gumu_atk_3",
+        "内功": "gumu_force_3",
+        "招架": "gumu_guard_3",
+        "轻功": "gumu_fly_3"
+      },
+      "learned": {
+        "gumu_atk_3": {
+          "level": 420
+        },
+        "gumu_force_3": {
+          "level": 430
+        },
+        "gumu_guard_3": {
+          "level": 360
+        },
+        "gumu_fly_3": {
+          "level": 340
+        }
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "hostile": false,
+      "leavesCorpse": false,
+      "teach": [
+        "gumu_atk_1",
+        "gumu_atk_3",
+        "gumu_force_1",
+        "gumu_force_3",
+        "gumu_guard_1",
+        "gumu_qimen_3"
+      ],
+      "quests": [],
+      "talk": [
+        "进了这个门，就得守这个门的规矩。",
+        "本门的功夫不外传。"
+      ],
+      "ask": [
+        {
+          "topic": "门派",
+          "keywords": [
+            "门派",
+            "来历"
+          ],
+          "answer": "活死人墓里寒玉床冷得刺骨。派中人少，少到晚辈的名字都要按辈分一个个数。"
+        }
+      ]
+    }
+  }
+}

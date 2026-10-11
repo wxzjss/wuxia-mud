@@ -569,7 +569,10 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
       '全部定义 = ' + colDefs.join(' | '));
     const colVal = realDefs[0] || '';
 
-    /* ② 四块同值 */
+    /* ② 四块同值
+       ⚠️ 口径来回改过一次（主人 2026-10-11）：
+       先要求「输入框拉长到碰到屏幕左右两侧」（当时拆成「三块 + 通栏」），随后又要求**回滚**。
+       现在恢复成原来的四块同值 —— 输入框不许再脱离 `--col-w`。 */
     const blocks = {
       '#room-panel': decl('#room-panel'),
       '.log': decl('\\.log'),
@@ -597,6 +600,31 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
       /max-width:\s*100%/.test(exitMap), exitMap.trim().slice(0, 70));
     ok('S8-6 出口行仍居中放置（.log-line.exits → justify-content:center）',
       /justify-content:\s*center/.test(decl('\\.log-line\\.exits')));
+
+    /* ⑥-b 角色创建界面（主人 2026-10-11 亲报三条）
+       「手机版创建角色界面的『返回』与『踏入江湖』按钮 UI 太大了；
+        选择出身与天赋的框太挤了，一堆选择需要滚动去翻；创建角色界面 UI 做好一点」。
+       改前实测：单个按钮 260×53（`.btn-ink` 写死 `min-width:260px`，两个并排 = 520 > 390），
+       出身/天赋各是一个 240px 的**内层滚动框**（11 张卡各 137px，只看得见 3 张）。
+       这两条各钉一条断言 —— 它们都会「悄悄回来」：min-width 一写回去按钮立刻撑爆，
+       内层 max-height 一写回去又变成滚着翻。 */
+    ok('S8-11 ★ 创建界面的按钮放开了 .btn-ink 的 min-width（否则两个并排撑爆手机）',
+      /\.create-foot\s+\.btn-ink\s*\{[^}]*min-width:\s*0/.test(css),
+      (css.match(/\.create-foot\s+\.btn-ink\s*\{[^}]*\}/) || ['（没找到该规则）'])[0].slice(0, 70));
+    /** 取某条选择器列表的声明体（多行逗号列表也要认） */
+    const bodyOf = (sel) => {
+      const re = new RegExp('(^|[},])\\s*' + sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*(,[^{}]*)?\\{([^}]*)\\}', 'm');
+      const m = css.match(re);
+      return m ? m[3] : '';
+    };
+    const blBody = bodyOf('.birth-list') + bodyOf('.perk-list');
+    ok('S8-12 ★ 出身/天赋列表不许内层滚动（max-height + overflow-y:auto = 要滚着翻）',
+      /* 只拦「带数值的 max-height」（那是真封顶），`max-height: none` 是明确的不封顶 */
+      !/max-height\s*:\s*\d/.test(blBody) && !/overflow-y\s*:\s*auto/.test(blBody),
+      blBody.replace(/\s+/g, ' ').slice(0, 70) || '（没找到声明）');
+    ok('S8-13 ★ 卡片是「药丸」不是「大卡」（长文进详情条，否则一屏放不下）',
+      /\.bc-desc[^{]*\{[^}]*display:\s*none/.test(css)
+      && /pick-detail\s*\{/.test(css), '（详情条 .pick-detail 在）');
 
     /* ⑥ 窄屏断点：显式覆写成 none → 四块满宽（手机照旧好点） */
     const mq = (css.match(/@media\s*\(max-width:\s*820px\)\s*\{([\s\S]*?)\n\}/) || [])[1] || '';
@@ -1044,8 +1072,10 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     {
       const { rec, btn } = await clickKidnap(base, stander.name);
       ok('⑬-1 站着的人菜单里有「绑架」', !!btn, btn ? btn._label : '(没找到按钮)');
-      ok('⑬-1a ★ 站着点「绑架」→ 真发 `kill <名>`（先打，真进战斗）',
-        rec.exec.length === 1 && rec.exec[0].cmd === 'kill ' + stander.name,
+      /* 主人 2026-10-11：站着的人点「绑架」= 发「绑架 <名>」—— 先按成功率掷一次，
+         成了当场套袋、不成就动手。掷骰与判定都在后端（kidnap.kidnapAttempt）。 */
+      ok('⑬-1a ★ 站着点「绑架」→ 真发「绑架 <名>」（判定在后端）',
+        rec.exec.length === 1 && rec.exec[0].cmd === '绑架 ' + stander.name,
         rec.exec.map(x => x.cmd).join(',') || '(没发指令)');
     }
 
@@ -1053,8 +1083,8 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     {
       const { rec, btn } = await clickKidnap(base, downer.name);
       ok('⑬-2 晕着的人菜单里有「绑架」', !!btn, btn ? btn._label : '(没找到按钮)');
-      ok('⑬-2a ★ 晕着点「绑架」→ 真发 `装人 <名>`（直接装袋带走）',
-        rec.exec.length === 1 && rec.exec[0].cmd === '装人 ' + downer.name,
+      ok('⑬-2a ★ 晕着点「绑架」→ 也走「绑架 <名>」（那条路对晕着的人是 100% 必成）',
+        rec.exec.length === 1 && rec.exec[0].cmd === '绑架 ' + downer.name,
         rec.exec.map(x => x.cmd).join(',') || '(没发指令)');
     }
 

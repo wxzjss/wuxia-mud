@@ -1,0 +1,143 @@
+{
+  "skills": {
+    "basic_fist": { "grade": 9, "maxLevel": 1000, "isBasic": true },
+    "basic_sword": { "grade": 9, "maxLevel": 1000, "isBasic": true },
+    "basic_blade": { "grade": 9, "maxLevel": 1000, "isBasic": true },
+    "basic_staff": { "grade": 9, "maxLevel": 1000, "isBasic": true },
+    "basic_whip": { "grade": 9, "maxLevel": 1000, "isBasic": true },
+    "basic_dodge": { "grade": 9, "maxLevel": 1000, "isBasic": true },
+    "basic_parry": { "grade": 9, "maxLevel": 1000, "isBasic": true },
+    "basic_force": { "grade": 9, "maxLevel": 1000, "isBasic": true },
+
+    "basic_throw": {
+      "id": "basic_throw", "name": "基本暗器", "type": "暗器", "grade": 9, "isBasic": true,
+      "maxLevel": 1000, "difficulty": 0.75, "trainCost": 25, "damageMult": 1.0,
+      "accuracy": 84, "mpCost": 0, "effects": [], "category": "外功", "quality": "common",
+      "desc": "袖箭、飞蝗石、铁菩提，出手讲究一个稳字。不会这一手，暗器功夫无从谈起。"
+    },
+    "basic_poison": {
+      "id": "basic_poison", "name": "基本毒术", "type": "暗器", "grade": 9, "isBasic": true,
+      "maxLevel": 1000, "difficulty": 0.8, "trainCost": 30, "damageMult": 1.0,
+      "accuracy": 82, "mpCost": 0, "effects": [], "category": "外功", "quality": "common",
+      "desc": "辨药性、配毒方、识解药。江湖上用毒的规矩，先得把这一门弄明白。"
+    },
+    "basic_medicine": {
+      "id": "basic_medicine", "name": "基本医术", "type": "医术", "grade": 9, "isBasic": true,
+      "maxLevel": 1000, "difficulty": 0.8, "trainCost": 30, "damageMult": 0,
+      "accuracy": 0, "mpCost": 0, "effects": [], "category": "外功", "quality": "common",
+      "desc": "望闻问切、金疮止血。行走江湖，会点医总比多带两把刀强。"
+    },
+    "basic_sing": {
+      "id": "basic_sing", "name": "基本乐理", "type": "音波", "grade": 9, "isBasic": true,
+      "maxLevel": 1000, "difficulty": 0.85, "trainCost": 30, "damageMult": 0.9,
+      "accuracy": 80, "mpCost": 2, "effects": [], "category": "外功", "quality": "common",
+      "desc": "宫商角徵羽。琴箫琵琶都从这几个音起手，音律入武也是。"
+    },
+
+    "huashan_sword": { "grade": 7, "base": "basic_sword" },
+    "huashan_sword_art": { "grade": 4, "base": "huashan_sword" },
+    "huashan_jianyi": { "grade": 1, "base": "huashan_sword_art" },
+    "zixia_gong": { "grade": 1, "base": "basic_force" },
+    "huashan_qinggong": { "grade": 4, "base": "basic_dodge" },
+
+    "shaolin_changquan": { "grade": 7, "base": "basic_fist" },
+    "weituo_zhang": { "grade": 4, "base": "shaolin_changquan" },
+    "damo_sword": { "grade": 1, "base": "basic_sword" },
+    "yijinjing": { "grade": 1, "base": "basic_force" },
+    "shaolin_bu": { "grade": 4, "base": "basic_dodge" },
+
+    "wudang_taiji": { "grade": 1, "base": "basic_fist" },
+    "taiji_sword": { "grade": 1, "base": "basic_sword" },
+    "chunyang_gong": { "grade": 1, "base": "basic_force" },
+    "tixu_zhang": { "grade": 7, "base": "basic_dodge" },
+
+    "emei_sword": { "grade": 7, "base": "basic_sword" },
+    "emei_ci": { "grade": 4, "base": "basic_throw" },
+    "foguang_gong": { "grade": 1, "base": "basic_force" },
+
+    "dagou_bangfa": { "grade": 1, "base": "basic_staff" },
+    "xianglong_zhang": { "grade": 1, "base": "basic_fist" },
+    "beggar_qinggong": { "grade": 4, "base": "basic_dodge" },
+
+    "kuangfeng_daofa": { "grade": 2, "base": "basic_blade" },
+    "tangmen_anqi": { "grade": 2, "base": "basic_throw" },
+    "tangmen_du": { "grade": 2, "base": "basic_poison" },
+
+    "miao_gu": { "grade": 2, "base": "basic_poison" },
+    "ice_silk_zhang": { "grade": 2, "base": "basic_fist" },
+
+    "yiyang_zhi": { "grade": 4, "base": "basic_fist" },
+    "liumai_shenjian": { "grade": 1, "base": "yiyang_zhi", "damageMult": 2.4 },
+
+    "xixing_dafa": { "grade": 1, "base": "basic_force" },
+    "heimu_zhang": { "grade": 4, "base": "basic_fist" },
+    "xuedao": { "grade": 2, "base": "basic_blade" },
+    "cuixin_zhang": { "grade": 2, "base": "basic_fist" },
+
+    "hujia_daofa": { "grade": 3, "base": "basic_blade" },
+    "xuantie_jianfa": { "grade": 2, "base": "basic_sword" },
+    "dugu_jiujian": { "grade": 1, "base": "xuantie_jianfa", "damageMult": 2.4 },
+    "jiuyang_shengong": { "grade": 1, "base": "basic_force" },
+    "jiuyin_zhenjing": { "grade": 1, "base": "basic_force" },
+    "jiuyin_baiguzhao": { "grade": 2, "base": "basic_fist" },
+    "sunflower_manual": { "grade": 1, "base": "basic_force" },
+    "pixie_jianfa": { "grade": 1, "base": "basic_sword" },
+    "beiming_shengong": { "grade": 2, "base": "basic_force" },
+    "lingbo_weibu": { "grade": 3, "base": "basic_dodge" },
+    "dugu_sword_aura": { "grade": 3, "base": "basic_force" },
+
+    "xunchun_blade_art": { "grade": 1, "base": "basic_blade", "faction": "court" },
+    "imperial_order": { "grade": 1, "base": "basic_staff", "faction": "court" },
+    "shadow_echo": { "grade": 3, "base": "basic_fist" },
+
+    "jh_fist": { "grade": 9, "base": "basic_fist" },
+    "jh_sword": { "grade": 9, "base": "basic_sword" },
+    "jh_blade": { "grade": 9, "base": "basic_blade" },
+    "jh_staff": { "grade": 9, "base": "basic_staff" },
+    "jh_parry": { "grade": 9, "base": "basic_parry" },
+    "jh_dodge": { "grade": 9, "base": "basic_dodge" },
+    "jh_neigong": { "grade": 9, "base": "basic_force" }
+  },
+  "books": {
+    "book_basic_fist": {
+      "id": "book_basic_fist", "name": "《拳脚入门》", "type": "book",
+      "desc": "一册讲基本拳架的图谱，起手、步眼、发力都画得清楚。",
+      "teach": "basic_fist", "cost": 60, "timeCost": 50, "value": 90
+    },
+    "book_basic_staff": {
+      "id": "book_basic_staff", "name": "《棍法入门》", "type": "book",
+      "desc": "拦、扫、挑三式的分解图。",
+      "teach": "basic_staff", "cost": 70, "timeCost": 60, "value": 100
+    },
+    "book_basic_whip": {
+      "id": "book_basic_whip", "name": "《鞭法初阶》", "type": "book",
+      "desc": "长鞭的腕劲与走位，配着图解看还算明白。",
+      "teach": "basic_whip", "cost": 70, "timeCost": 60, "value": 100
+    },
+    "book_basic_parry": {
+      "id": "book_basic_parry", "name": "《格挡要诀》", "type": "book",
+      "desc": "不教你怎么赢，只教你挨打时怎么不倒下。",
+      "teach": "basic_parry", "cost": 70, "timeCost": 60, "value": 100
+    },
+    "book_basic_throw": {
+      "id": "book_basic_throw", "name": "《暗器手法》", "type": "book",
+      "desc": "袖箭怎么藏、飞蝗石怎么掷，招式不多，练熟却要功夫。",
+      "teach": "basic_throw", "cost": 70, "timeCost": 60, "value": 100
+    },
+    "book_basic_poison": {
+      "id": "book_basic_poison", "name": "《药毒辨》", "type": "book",
+      "desc": "前半页讲毒，后半页讲解。写书的人说，两样都得会才算入门。",
+      "teach": "basic_poison", "cost": 80, "timeCost": 70, "value": 120
+    },
+    "book_basic_medicine": {
+      "id": "book_basic_medicine", "name": "《本草备要》", "type": "book",
+      "desc": "寻常草药的名目用法，村野郎中案头多半有一本。",
+      "teach": "basic_medicine", "cost": 80, "timeCost": 70, "value": 120
+    },
+    "book_basic_sing": {
+      "id": "book_basic_sing", "name": "《乐理指要》", "type": "book",
+      "desc": "五音十二律的规矩。琴师看它是琴谱，武人看它另有一番天地。",
+      "teach": "basic_sing", "cost": 80, "timeCost": 70, "value": 120
+    }
+  }
+}

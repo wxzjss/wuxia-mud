@@ -61,16 +61,14 @@
         <div class="field span2">
           <label>出身（影响初始属性与物品）</label>
           <div class="birth-list" id="c-births"></div>
+          <!-- 选中项的长文放在这里，而不是塞进每张卡里 ——
+               卡里塞描述 = 11 张卡各 137px 高，手机上要翻两层滚动才看得全
+               （主人 2026-10-11：「选择出身与天赋的框太挤了一堆选择需要滚动去翻」）。 -->
+          <div class="pick-detail" id="c-birth-detail"></div>
         </div>
         <div class="field span2">
-          <label>天赋（可多选，最多 2 个）</label>
+          <label>天赋（可多选，最多 2 个）<span class="pick-count" id="c-perk-count"></span></label>
           <div class="perk-list" id="c-perks"></div>
-        </div>
-        <div class="field span2">
-          <label>属性分配（剩余点数：<b id="c-points">10</b>）</label>
-          <div class="attr-alloc" id="c-attrs"></div>
-          <button class="btn-mini" id="c-roll">随机分配</button>
-          <button class="btn-mini" id="c-reset">重置</button>
         </div>
       </div>
       <div class="create-foot">
@@ -248,6 +246,7 @@
       <button class="btn-ink small" data-act="back">← 返回</button>
       <h2>M O D  制 作 器</h2>
       <div class="mm-header-right">
+        <button class="btn-ink small" id="mm-account">登 录</button>
         <button class="btn-ink small" id="mm-import">导入 Mod</button>
         <button class="btn-ink small" id="mm-validate">检 查</button>
         <button class="btn-ink small" id="mm-save">保存到本地</button>
@@ -267,6 +266,8 @@
         <button class="mm-tab" data-tab="dialogue">⑨ 对话树</button>
         <button class="mm-tab" data-tab="functions">⑩ 功能 Mod</button>
         <button class="mm-tab" data-tab="tutorial">📖 小白教程</button>
+        <button class="mm-tab" data-tab="ids">🎭 游戏内 ID</button>
+        <button class="mm-tab" data-tab="mine">📦 我制作的 Mod</button>
         <button class="mm-tab" data-tab="json">⚙ 源码视图</button>
         <button class="mm-tab" data-tab="report">✔ 检查报告</button>
       </nav>
@@ -332,13 +333,13 @@
 
   <!-- ?v= 用于缓存穿透：改了这里就等于强制所有浏览器重新拉脚本。
        配合服务端的 no-store，确保发版后不会有人继续跑旧代码。 -->
-  <script src="js/localmods.js?v=20261010t"></script>
-  <script src="js/cloud.js?v=20261010t"></script>
-  <script src="js/app.js?v=20261010t"></script>
-  <script src="js/ui.js?v=20261010t"></script>
-  <script src="js/modmaker.js?v=20261010t"></script>
-  <script src="js/docdata.js?v=20261010t"></script>
-  <script src="js/start.js?v=20261010t"></script>
+  <script src="js/localmods.js?v=20261011w"></script>
+  <script src="js/cloud.js?v=20261011w"></script>
+  <script src="js/app.js?v=20261011w"></script>
+  <script src="js/ui.js?v=20261011w"></script>
+  <script src="js/modmaker.js?v=20261011w"></script>
+  <script src="js/docdata.js?v=20261011w"></script>
+  <script src="js/start.js?v=20261011w"></script>
 </body>
 
 </html>

@@ -36,17 +36,45 @@
       dialogues: [],
       functions: [],
       rules: [],
-      meta: {}
+      /* ⚠️ 新增的两类**必须在这里登记**：`jsonToSpec` 只拷 blankSpec 里已有的键，
+         漏登记的话，作者按 id 载入的结局/天赋一保存（或被重新导入）就没了。
+         （上一轮隐藏溯源 ID 就栽在这上面。） */
+      endings: [],
+      traits: [],
+      /* 隐藏溯源 ID（主人 2026-10-11）：**不在界面上出现**，只是跟着文件走。
+         下载/导入别人的 Mod 时它会跟着进来，上传时服务端据此认原作者。
+         ⚠️ 它必须留在 blankSpec 里 —— `jsonToSpec` 只拷 blankSpec 已有的键，
+            不在这里登记的话，导入一次就被抹掉了（隐藏 ID 等于白做）。 */
+      _wxTrace: ''
+      /* ⚠ 这里**不要**塞 `meta: {}`：制作器用的是「扁平结构」（id/name 在顶层）。
+         引擎的 normalizeSpec 判定 `spec.meta || spec`，一个空的 meta 对象是 truthy，
+         会把顶层的 id/name **整个遮掉** → 校验恒报「Mod ID 必须填写 / 请填写 Mod 名称」，
+         小白填完表单点上传被**永久拦下**，还找不到哪里错。 */
     };
   }
 
-  const TABS = ['basic', 'rooms', 'regions', 'npcs', 'items', 'skills', 'sects', 'stories', 'dialogue', 'functions', 'tutorial', 'json', 'report'];
+  const TABS = ['basic', 'rooms', 'regions', 'npcs', 'items', 'skills', 'sects', 'stories', 'dialogue', 'functions', 'ids', 'tutorial', 'mine', 'json', 'report'];
 
   const T = {
     cur: 'basic',
     dirty: false,
-    meta: null
+    meta: null,
+    /* 「游戏内 ID」那一页的当前分类与搜索词（主人 2026-10-11） */
+    idKind: 'npcs',
+    idQuery: ''
   };
+
+  /* 品级（quality）——与 core/social.js 的 QUALITY_TIERS 同口径（英文 id 为主键）。
+     小白看不懂 rare/epic，所以下拉一律显示中文：粗劣/寻常/精良/珍稀/绝世/传说。
+     武学的品级决定「请教价码 / 强度评定」，物品的品级不填则按价格自动推断。 */
+  const QUALITY = [
+    { value: 'worn', label: '粗劣' },
+    { value: 'common', label: '寻常' },
+    { value: 'fine', label: '精良' },
+    { value: 'rare', label: '珍稀' },
+    { value: 'epic', label: '绝世' },
+    { value: 'legend', label: '传说' }
+  ];
 
   /* ============================================================
    *  打开制作器
@@ -61,6 +89,7 @@
     if (!S.spec) S.spec = blankSpec();
     bindHeader();
     bindTabs();
+    refreshMeStrip();
     paintTab(T.cur);
   }
 
@@ -76,6 +105,36 @@
     if (sav && !sav.__bound) { sav.__bound = true; sav.onclick = doSave; }
     const up = $('mm-upload');
     if (up && !up.__bound) { up.__bound = true; up.onclick = doUpload; }
+    /* 账号按钮（主人 2026-10-11）：没登录 → 弹登录框；登录了 → 账号菜单 */
+    const acc = $('mm-account');
+    if (acc && !acc.__bound) {
+      acc.__bound = true;
+      acc.onclick = async () => {
+        if (!isLoggedIn()) {
+          if (await askLogin() && T.cur === 'mine') paintTab('mine');
+          return;
+        }
+        U.modal('账号',
+          '<div class="up-box">' +
+          '<div class="up-row"><label>当前账号</label><b>' + esc(S.my.name) + '</b></div>' +
+          '<div class="up-tip">你发布过的作品都在「我制作的 Mod」里，随时可以载回来改。</div>' +
+          '</div>',
+          '<button class="btn-ink" id="acc-close">关 闭</button>' +
+          '<button class="btn-ink" id="acc-my">我制作的 Mod</button>' +
+          '<button class="btn-ink" id="acc-out">退出登录</button>');
+        const c = $('acc-close'); if (c) c.onclick = () => U.closeModal();
+        const my = $('acc-my'); if (my) my.onclick = () => { U.closeModal(); tab('mine'); };
+        const out = $('acc-out');
+        if (out) out.onclick = async () => {
+          try { await api.account('logout', { token: S.my.token }); } catch (e) { /* 登出失败也照样清本地 */ }
+          global.WX.setMe(Object.assign({}, S.my || {}, { token: '' }));
+          U.closeModal();
+          refreshMeStrip();
+          U.toast('已退出登录', 'ok');
+          if (T.cur === 'mine') paintTab('mine');
+        };
+      };
+    }
   }
 
   function bindTabs() {
@@ -113,6 +172,8 @@
       case 'dialogue': html = tabDialogue(); break;
       case 'functions': html = tabFunctions(); break;
       case 'tutorial': html = tabTutorial(); break;
+      case 'ids': html = tabIds(); break;
+      case 'mine': html = tabMine(); break;
       case 'json': html = tabJson(); break;
       case 'report': html = tabReport(); break;
       default: html = '<div class="mm-empty">未知标签</div>';
@@ -280,6 +341,21 @@
         field('闪避', input('npcs.' + i + '.dodge', n.dodge != null ? n.dodge : 5, '', 'number')) +
         field('速度', input('npcs.' + i + '.speed', n.speed != null ? n.speed : 10, '', 'number')) +
         '</div>' +
+        /* ⚠️ 这四项是 2026-10-08 补的 —— 之前制作器只能编数值和描述，
+           与性格系统 / 门派体系 / 分部设计有关的字段**一个都填不了**，
+           照着示例 mod 抄出来的人物在游戏里是「没有性格、没有门派、没有分部」的。
+           示例 mod 是给人抄的模板，制作器填不出同样的东西，等于模板白给。 */
+        '<div class="mm-sub-title">脾性与归属</div><div class="mm-form-grid">' +
+        field('营生（tag）', input('npcs.' + i + '.tag', n.tag || '', '决定「细看此人」看出的行当细节：swordsman / doctor / beggar…')) +
+        field('性子（personality）', select('npcs.' + i + '.personality', n.personality || 'mune', [
+          ['haoshuang', '豪爽'], ['yinzhi', '阴鸷'], ['qienuo', '怯懦'], ['xiayi', '侠义'], ['youhua', '油滑'],
+          ['mune', '木讷'], ['wenwan', '温婉'], ['baozhao', '暴躁'], ['lengmo', '冷漠'],
+        ])) +
+        field('分部（tier）', select('npcs.' + i + '.tier', n.tier || 'C', [
+          ['A', 'A · 名角'], ['B', 'B · 有名字的'], ['C', 'C · 寻常人'], ['mob', 'mob · 杂兵'],
+        ])) +
+        field('门派（sect）', input('npcs.' + i + '.sect', n.sect || '', '门派 id（如 huashan）；留空就是散人')) +
+        '</div>' +
         field('人物描述', area('npcs.' + i + '.desc', n.desc, '他长什么样？在做什么？', 2)) +
         '<div class="mm-check-row">' +
         check('npcs.' + i + '.hostile', n.hostile, '主动攻击玩家（怪物）') +
@@ -311,18 +387,27 @@
     const s = S.spec;
     const types = T.meta ? (T.meta.itemTypes || []) : [];
     const slots = T.meta ? (T.meta.slots || []) : [];
-    const typeOpts = types.map(t => ({ value: t.value || t, label: t.label || t }));
-    const slotOpts = slots.map(t => ({ value: t.value || t, label: t.label || t }));
+    /* 类型下拉必须显示**中文**：游戏里 itemTypeCN 才是玩家话（weapon=武器、consumable=丹药）。
+       老代码 label 直接用了英文码，小白照着「小白教程」找「武器/书籍」根本找不到。 */
+    const typeCN = (T.meta && T.meta.itemTypeCN) || {};
+    const typeOpts = types.map(t => ({ value: t.value || t, label: t.label || typeCN[t.value || t] || (t.value || t) }));
+    const slotOpts = slots.map(t => ({ value: t.value || t, label: t.label || (t.value || t) }));
+    const slotVals = slotOpts.map(o => String(o.value));
 
     let h = '<div class="mm-section"><h3>物品装备</h3>' +
       '<p class="mm-tip">丹药、兵器、秘籍、任务道具……都在这里造。</p>';
 
     h += (s.items || []).map((it, i) => {
+      /* 部位同理：别处抄来的 mod 可能写英文 slot（weapon/body），
+         游戏按字面当槽位键 → 会占出一个「游戏不认的槽位」。这里当场提醒。 */
+      const slotBad = it.slot && slotVals.indexOf(String(it.slot)) < 0;
       const body = '<div class="mm-form-grid">' +
         field('物品名称 *', input('items.' + i + '.name', it.name, '例如：九转还魂丹')) +
         field('物品 ID *', input('items.' + i + '.id', it.id, '例如：jiuzhuan_dan')) +
         field('类型', select('items.' + i + '.type', it.type, typeOpts.length ? typeOpts : ['consumable', 'weapon', 'armor', 'book', 'material', 'quest'])) +
-        field('装备部位', select('items.' + i + '.slot', it.slot, slotOpts, '（非装备可不填）')) +
+        field('装备部位', select('items.' + i + '.slot', it.slot, slotOpts, '（非装备可不填）'),
+          slotBad ? ('⚠「' + it.slot + '」不是合法部位，会占出一个游戏不认的槽位！请改选：' + slotVals.join('、')) : '') +
+        field('品级', select('items.' + i + '.quality', it.quality, QUALITY, '（不填按价格推断）')) +
         field('等级要求', input('items.' + i + '.level', it.level != null ? it.level : 0, '', 'number')) +
         field('价格（文）', input('items.' + i + '.price', it.price != null ? it.price : 10, '', 'number')) +
         field('重量', input('items.' + i + '.weight', it.weight != null ? it.weight : 1, '', 'number')) +
@@ -358,6 +443,9 @@
        「没有「sword」这个槽位」。老兜底正是那串英文 —— 官方示例 mod 也照抄了它。 */
     const typeOpts = st.map(t => ({ value: t.value || t, label: t.label || t }));
     const FALLBACK_TYPES = ['拳', '剑', '刀', '棍', '鞭', '暗器', '内功', '轻功', '招架', '身法'];
+    /* 下拉最终用哪一份（元数据优先，读不到才用中文兜底） */
+    const slotOpts = typeOpts.length ? typeOpts : FALLBACK_TYPES.map(t => ({ value: t, label: t }));
+    const slotVals = slotOpts.map(o => String(o.value));
     const catList = (T.meta && T.meta.skillCategories) || ['外功', '内功', '奇门', '旁门', '魔功'];
     const catOpts = catList.map(c => ({ value: c.value || c, label: c.label || c }));
     const effects = (T.meta && T.meta.effectTypes) || [];
@@ -369,18 +457,33 @@
 
     h += (s.skills || []).map((sk, i) => {
       const exHtml = (sk.effects || []).map((e, j) => effectRow(i, j, e)).join('');
+      /* 类型是槽位键：万一（从别处导入 / 源码视图手改）写成了英文 sword/force，
+         下拉里没有这一项 → 这里直接给大白话，别让玩家进游戏才发现装不上。
+         元数据正常时下拉只有中文项，用户无从选错，这条只在异常值上出现。 */
+      const typeBad = sk.type && slotVals.indexOf(String(sk.type)) < 0;
+      const typeHint = typeBad
+        ? ('⚠「' + sk.type + '」不是合法槽位名，游戏里会装不上任何槽位！请改选：' + slotVals.join('、'))
+        : '必须选中文槽位名（拳/剑/刀…它决定这门武学装在哪）';
       const body = '<div class="mm-form-grid">' +
         field('武学名称 *', input('skills.' + i + '.name', sk.name, '例如：落英神剑掌')) +
         field('武学 ID *', input('skills.' + i + '.id', sk.id, '例如：luoying_zhang')) +
-        field('类型', select('skills.' + i + '.type', sk.type, typeOpts.length ? typeOpts : FALLBACK_TYPES)) +
+        field('类型', select('skills.' + i + '.type', sk.type, slotOpts), typeHint) +
         field('分类', select('skills.' + i + '.category', sk.category, catOpts)) +
+        field('品级', select('skills.' + i + '.quality', sk.quality || 'common', QUALITY), '影响请教价码与强度评定，中文即所选') +
         field('最高等级', input('skills.' + i + '.maxLevel', sk.maxLevel != null ? sk.maxLevel : 300, '', 'number')) +
         field('难度', input('skills.' + i + '.difficulty', sk.difficulty != null ? sk.difficulty : 1, '1~5', 'number')) +
         field('威力倍率', input('skills.' + i + '.damageMult', sk.damageMult != null ? sk.damageMult : 1, '1.0 = 普通', 'number')) +
-        field('命中加成', input('skills.' + i + '.accuracy', sk.accuracy != null ? sk.accuracy : 0, '', 'number')) +
+        field('命中加成', input('skills.' + i + '.accuracy', sk.accuracy != null ? sk.accuracy : 0, '留 0 用默认', 'number')) +
         field('内力消耗', input('skills.' + i + '.mpCost', sk.mpCost != null ? sk.mpCost : 0, '', 'number')) +
         '</div>' +
         field('武学描述', area('skills.' + i + '.desc', sk.desc, '这一招的来历、路数…', 2)) +
+        '<div class="mm-sub-title">被动加成（学会后随等级生效，内功常用）</div><div class="mm-form-grid">' +
+        field('气血上限', input('skills.' + i + '.bonus.maxHp', getPath(sk, 'bonus.maxHp'), '每 10 级 +N', 'number')) +
+        field('内力上限', input('skills.' + i + '.bonus.maxMp', getPath(sk, 'bonus.maxMp'), '每 10 级 +N', 'number')) +
+        field('攻击', input('skills.' + i + '.bonus.atk', getPath(sk, 'bonus.atk'), '每 20 级 +N', 'number')) +
+        field('防御', input('skills.' + i + '.bonus.def', getPath(sk, 'bonus.def'), '每 20 级 +N', 'number')) +
+        field('暴击', input('skills.' + i + '.bonus.critRate', getPath(sk, 'bonus.critRate'), '固定 +N', 'number')) +
+        '</div>' +
         field('学习条件', input('skills.' + i + '.require', sk.require, '例如：realm>=2 或 悟性>=20'), '不填则无门槛（realm=境界：0不通武艺~5登峰造极）') +
         '<div class="mm-sub-title">招式效果（战斗中触发）</div>' +
         '<div class="mm-effects" data-skidx="' + i + '">' + (exHtml || '<div class="mm-empty-sm">暂无效果</div>') + '</div>' +
@@ -614,6 +717,279 @@
    *  ✔ 检查报告
    * ============================================================ */
   let lastReport = null;
+  /* ============================================================
+   *  本站账号（主人 2026-10-11）
+   *    ·「一键上传到 Mod 网站」**必须登录**才能用
+   *    · 左侧加「我制作的 Mod」：把已经发出去的那件载回表单，改完再传就是更新
+   *
+   *  ⚠️ 以前「身份」只是个昵称（`S.my = {name}`），谁都能冒名发。现在换成
+   *     账号 + token：token 存进 `S.my`（localStorage），上传时带给服务端，
+   *     服务端拿它认人、并把署名**写死成账号名**（前端传 author 不作数）。
+   * ============================================================ */
+  function isLoggedIn() { return !!(S.my && S.my.token && S.my.name); }
+
+  /** 头部那个按钮上写什么：没登录写「登录」，登录了写昵称 */
+  function refreshMeStrip() {
+    const b = $('mm-account');
+    if (!b) return;
+    b.textContent = isLoggedIn() ? ('👤 ' + S.my.name) : '登 录';
+    b.classList.toggle('primary', !isLoggedIn());
+  }
+
+  /** 弹「登录 / 注册」框；resolve(true) 表示拿到 token 了 */
+  function askLogin() {
+    return new Promise(resolve => {
+      const body =
+        '<div class="up-box">' +
+        '<div class="up-tip">要往 Mod 网站发布作品，先得有个账号 —— 别人这才认得出作者是谁，' +
+        '你自己也能在「我制作的 Mod」里找回发过的东西接着改。</div>' +
+        '<div class="set-row"><label>昵称</label><input class="modal-input" id="acc-name" maxlength="16" placeholder="2~16 个字"></div>' +
+        '<div class="set-row"><label>口令</label><input class="modal-input" type="password" id="acc-pass" maxlength="32" placeholder="至少 6 位"></div>' +
+        '<div class="up-tip" id="acc-msg">第一次来？填好点「注册」；已经有账号就点「登录」。</div>' +
+        '</div>';
+      U.modal('登录 / 注册 Mod 社区', body,
+        '<button class="btn-ink" id="acc-cancel">取 消</button>' +
+        '<button class="btn-ink" id="acc-reg">注 册</button>' +
+        '<button class="btn-ink primary" id="acc-login">登 录</button>');
+
+      let settled = false;
+      const fin = v => { if (!settled) { settled = true; resolve(v); } };
+      const msg = t => { const m = $('acc-msg'); if (m) m.textContent = t; };
+      const vals = () => ({
+        name: (($('acc-name') || {}).value || '').trim(),
+        pass: (($('acc-pass') || {}).value || '')
+      });
+
+      const submit = async (action) => {
+        const v = vals();
+        if (!v.name || !v.pass) { msg('昵称和口令都要填。'); return; }
+        msg(action === 'login' ? '正在登录…' : '正在注册…');
+        try {
+          const d = await api.account(action, v);
+          if (!d || !d.ok) { msg((d && d.error) || '没成，再试一次。'); return; }
+          /* token 落进 S.my（localStorage）—— 之后上传与「我的作品」都靠它 */
+          global.WX.setMe(Object.assign({}, S.my || {}, { name: d.name, token: d.token }));
+          U.closeModal();
+          U.toast((action === 'login' ? '登录成功：' : '注册成功：') + d.name, 'ok');
+          refreshMeStrip();
+          fin(true);
+        } catch (e) { msg('连不上 Mod 网站：' + e.message); }
+      };
+      const cancel = $('acc-cancel'); if (cancel) cancel.onclick = () => { U.closeModal(); fin(false); };
+      const lg = $('acc-login'); if (lg) lg.onclick = () => submit('login');
+      const rg = $('acc-reg'); if (rg) rg.onclick = () => submit('register');
+    });
+  }
+
+  /** 没登录就弹框；返回 true 表示「可以往下走」 */
+  async function ensureLogin() {
+    if (isLoggedIn()) return true;
+    return await askLogin();
+  }
+
+  /* ============================================================
+   *  游戏内 ID 一览 + 按 ID 改（主人 2026-10-11）
+   *    「在 mod 制作器里添加游戏内各事物 id 列表……同时添加可通过 id 更改
+   *      游戏内剧情、人物、物品、功法、区域等有 id 的事物」
+   *
+   *  做法：列出游戏里**当前**的各类事物（id + 名字 + 一条摘要），点「改这个」
+   *  就把那一件的**完整内容**载进表单 —— 生成一份**同 ID 的覆盖 Mod**。
+   *  Mod 加载本来就是「同 id 覆盖」，所以这就是「按 ID 改游戏内事物」。
+   * ============================================================ */
+  const ID_KINDS = [
+    { key: 'npcs', label: '人物', tab: 'npcs' },
+    { key: 'items', label: '物品', tab: 'items' },
+    { key: 'skills', label: '武学', tab: 'skills' },
+    { key: 'rooms', label: '房间', tab: 'rooms' },
+    { key: 'regions', label: '区域', tab: 'regions' },
+    { key: 'quests', label: '剧情', tab: 'stories' },
+    { key: 'sects', label: '门派', tab: 'sects' },
+    /* 2026-10-11 扩容：库里早就有这几类了，前端一直没有入口 ——
+       作者想引用一个世界事件的 id、想把某个结局改两个字，都无从下手。 */
+    { key: 'endings', label: '结局', tab: 'stories' },
+    { key: 'traits', label: '天赋', tab: 'stories' },
+    { key: 'worldEvents', label: '世界事件', tab: 'stories', readonly: true }
+  ];
+  function idKindMeta(k) {
+    for (const x of ID_KINDS) if (x.key === k) return x;
+    return ID_KINDS[0];
+  }
+
+  function tabIds() {
+    const k = T.idKind || 'npcs';
+    return '<div class="mm-idsub">' + ID_KINDS.map(x =>
+      '<button class="mm-idk' + (x.key === k ? ' active' : '') + '" data-idkind="' + x.key + '">' + x.label + '</button>'
+    ).join('') + '</div>' +
+      '<div class="mm-idsearch">' +
+      '<input class="mm-input" id="mm-idq" placeholder="按 ID 或名字过滤（例如 master_yue / 岳不群）">' +
+      '</div>' +
+      '<div class="mm-idtip">点一行右边的「改这个」，就把它在游戏里**现在的样子**载进表单；' +
+      '改完「保存到本地」或「一键上传」，游戏内重载这个 Mod 就生效（同 ID 覆盖）。</div>' +
+      '<div id="mm-idlist"><div class="mm-empty">正在读取…</div></div>';
+  }
+
+  function wireIds() {
+    const box = $('mm-content');
+    box.querySelectorAll('[data-idkind]').forEach(b => {
+      b.onclick = () => {
+        const k = b.getAttribute('data-idkind');
+        if (k === (T.idKind || 'npcs')) return;
+        T.idKind = k;
+        T.idQuery = '';
+        paintTab('ids');
+      };
+    });
+    const qi = $('mm-idq');
+    if (qi) {
+      qi.value = T.idQuery || '';
+      qi.oninput = util.debounce(() => { T.idQuery = qi.value.trim(); loadIds(); }, 300);
+    }
+    loadIds();
+  }
+
+  async function loadIds() {
+    const list = $('mm-idlist');
+    if (!list) return;
+    const kind = T.idKind || 'npcs';
+    list.innerHTML = '<div class="mm-empty">正在读取…</div>';
+    const d = await api.gamedata(kind, { q: T.idQuery || '', limit: 600 });
+    if (!d || !d.ok) {
+      list.innerHTML = '<div class="mm-empty">' + esc((d && d.error) || '读不到游戏数据') + '</div>';
+      return;
+    }
+    if (!d.rows || !d.rows.length) {
+      list.innerHTML = '<div class="mm-empty">没有符合条件的条目。</div>';
+      return;
+    }
+    list.innerHTML =
+      '<div class="mm-idcount">共 ' + d.total + ' 条' +
+      (d.shown < d.total ? '，先显示前 ' + d.shown + ' 条（用上面的框缩小范围）' : '') + '</div>' +
+      '<div class="mm-idrows">' + d.rows.map(r =>
+        '<div class="mm-idrow">' +
+        '<div class="mm-idname"><b>' + esc(r.name || r.id) + '</b>' +
+        (r.sub ? '<span class="dim"> ' + esc(r.sub) + '</span>' : '') + '</div>' +
+        '<code class="mm-idcode">' + esc(r.id) + '</code>' +
+        '<button class="btn-ink small" data-pick="' + esc(r.id) + '">改这个</button>' +
+        '</div>').join('') + '</div>';
+    list.querySelectorAll('[data-pick]').forEach(b => {
+      b.onclick = () => pickGameId(kind, b.getAttribute('data-pick'));
+    });
+  }
+
+  /** 把游戏里这一件现在的完整内容载进表单（同 ID → 上传即覆盖它） */
+  async function pickGameId(kind, id) {
+    U.toast('正在取「' + id + '」…', 'info', 1200);
+    try {
+      const d = await api.gamedata(kind, { id });
+      if (!d || !d.ok) { U.toast((d && d.error) || '取不到', 'error'); return; }
+      /* ⚠️ 只读类别（世界事件）在这里就停下：
+         世界事件挂在 `worldEvents.onDayTick` 这个**数组**上，而引擎对数组是「整段替换」——
+         载入单条再上传，会把其余六十多条一起顶掉（这是个静默的大事故）。
+         所以只把 id 与内容摆给你看，供写 mod 时引用。 */
+      if (d.readonly) {
+        const it = d.item || {};
+        U.toast('「' + id + '」（' + (it.name || it.cat || '') + '）是只读的：' +
+          '世界事件按整组替换，改单条会把其余的全顶掉。id 可以直接抄进 mod 的 cond 里用。', 'info', 6500);
+        return;
+      }
+      const item = JSON.parse(JSON.stringify(d.item || {}));
+      const meta = idKindMeta(kind);
+      /* spec 里各类的键名与 kind 同名（npcs / items / skills / rooms / regions / quests / sects） */
+      const arr = kind;
+      if (!Array.isArray(S.spec[arr])) S.spec[arr] = [];
+      /* ⚠️ **同 id 只留一份**：数组在引擎里是「后写覆盖先写」，同一 id 出现两次
+         会让「我改的到底是哪一份」变得不可预测。 */
+      const i = S.spec[arr].findIndex(x => x && x.id === id);
+      if (i >= 0) S.spec[arr][i] = item; else S.spec[arr].push(item);
+      mark();
+      U.toast('已把「' + (item.name || id) + '」载入表单 —— 改完上传/保存即覆盖游戏里的它', 'ok', 3600);
+      tab(meta.tab);
+    } catch (e) { U.toast('取不到：' + e.message, 'error'); }
+  }
+
+  function tabMine() {
+    if (!isLoggedIn()) {
+      return '<div class="mm-empty">还没登录。<br><br>' +
+        '发布到 Mod 网站、以及查看你自己发过的作品，都要先登录。<br><br>' +
+        '<button class="btn-ink primary" id="mm-mine-login">登 录 / 注 册</button></div>';
+    }
+    return '<div class="mm-mine-head"><b>我制作的 Mod</b>' +
+      '<span class="mm-hint">共 <span id="mm-mine-count">…</span> 件 · 点「载入编辑」把它读回表单，改完再上传就是更新那一件</span></div>' +
+      '<div id="mm-mine-list"><div class="mm-empty">正在拉取你的作品…</div></div>';
+  }
+
+  async function wireMine() {
+    const btn = $('mm-mine-login');
+    if (btn) btn.onclick = async () => { if (await askLogin()) paintTab('mine'); };
+    const box = $('mm-mine-list');
+    if (!box) return;
+
+    let d = null;
+    try { d = await api.accountMine(); }
+    catch (e) { box.innerHTML = '<div class="mm-empty">连不上 Mod 网站：' + esc(e.message) + '</div>'; return; }
+
+    if (!d || !d.ok) {
+      if (d && d.needLogin) {
+        /* token 过期或被清了 —— 别把它当成「拉取失败」，直接退回未登录态重画 */
+        global.WX.setMe(Object.assign({}, S.my || {}, { token: '' }));
+        refreshMeStrip();
+        paintTab('mine');
+        return;
+      }
+      box.innerHTML = '<div class="mm-empty">' + esc((d && d.error) || '拉取失败') + '</div>';
+      return;
+    }
+
+    const cnt = $('mm-mine-count');
+    if (cnt) cnt.textContent = d.mods.length;
+    if (!d.mods.length) {
+      box.innerHTML = '<div class="mm-empty">你还没有发布过 Mod。<br>' +
+        '在「① 基本信息」填好名字和 ID，再点右上角「一键上传到 Mod 网站」。</div>';
+      return;
+    }
+
+    box.innerHTML = d.mods.map(m =>
+      '<div class="mm-mine-row">' +
+      '<div class="mm-mine-main"><b>' + esc(m.name) + '</b>' +
+      '<span class="dim"> v' + esc(m.version) + ' · ' + esc(m.category) + '</span></div>' +
+      '<div class="mm-mine-sub">' + esc(m.desc || '（没有写简介）') + '</div>' +
+      '<div class="mm-mine-meta"><code>' + esc(m.id) + '</code>' +
+      (m.timeText ? ' · ' + esc(m.timeText) : '') + ' · 下载 ' + (m.downloads || 0) + '</div>' +
+      '<div class="mm-mine-ops">' +
+      '<button class="btn-ink small" data-load="' + esc(m.id) + '">载入编辑</button>' +
+      '<button class="btn-ink small" data-open="' + esc(m.id) + '">看网页</button>' +
+      '</div></div>').join('');
+
+    box.querySelectorAll('[data-load]').forEach(b => {
+      b.onclick = () => loadMine(b.getAttribute('data-load'));
+    });
+    box.querySelectorAll('[data-open]').forEach(b => {
+      b.onclick = () => {
+        const cfg = S.siteConfig || {};
+        const base = String(cfg.siteUrl || cfg.apiBase || 'http://127.0.0.1:8788').replace(/\/api\/?$/, '').replace(/\/+$/, '');
+        window.open(base + '/mod.html?id=' + encodeURIComponent(b.getAttribute('data-open')), '_blank');
+      };
+    });
+  }
+
+  /** 把我发布过的 Mod 载回表单（改完上传 = 更新那一件） */
+  async function loadMine(id) {
+    U.toast('正在取回「' + id + '」…', 'info', 1200);
+    try {
+      const d = await api.siteRemote({ action: 'detail', id });
+      if (!d || !d.ok) { U.toast((d && d.error) || '取不回来', 'error'); return; }
+      const m = d.mod || {};
+      /* ⚠️ 站点存的是**发布当时的 mod.json**（id/name 在顶层）。
+         必须走 `jsonToSpec` 归一化 —— 直接把整条站点记录塞进表单会把
+         owner / timeText / downloads 这些**站点侧字段**一起带进来，
+         再上传就会把它们当成 mod 内容发出去。 */
+      S.spec = jsonToSpec(m.json || m);
+      T.dirty = false;
+      U.toast('已载入「' + (S.spec.name || id) + '」，改完点上传就是更新', 'ok', 3000);
+      tab('basic');
+    } catch (e) { U.toast('取回失败：' + e.message, 'error'); }
+  }
+
   function tabReport() {
     if (!lastReport) {
       return '<div class="mm-section"><h3>检查报告</h3>' +
@@ -670,6 +1046,9 @@
 
   function wireTab(name) {
     const box = $('mm-content');
+    /* 「我制作的 Mod」「游戏内 ID」都是异步拉取后自渲染的，不走下面那套表单绑定 */
+    if (name === 'mine') { wireMine(); return; }
+    if (name === 'ids') { wireIds(); return; }
 
     /* 通用输入绑定 */
     box.querySelectorAll('[data-bind]').forEach(el => {
@@ -857,7 +1236,7 @@
       case 'regions': return { id: '', name: '', color: '#7a9a7a', desc: '' };
       case 'npcs': return { id: '', name: '', room: '', level: 5, hp: 100, atk: 10, def: 5, dodge: 5, speed: 10, desc: '', talk: [] };
       case 'items': return { id: '', name: '', type: 'consumable', price: 10, weight: 1, desc: '' };
-      case 'skills': return { id: '', name: '', type: '拳', category: '外功', maxLevel: 300, difficulty: 1, damageMult: 1, mpCost: 0, desc: '', effects: [] };
+      case 'skills': return { id: '', name: '', type: '拳', category: '外功', quality: 'common', maxLevel: 300, difficulty: 1, damageMult: 1, mpCost: 0, desc: '', effects: [] };
       case 'sects': return { id: '', name: '', align: '正', desc: '', skills: [], ranks: [] };
       case 'quests': return { id: '', name: '', type: '支线', desc: '', stages: [], rewards: {} };
       case 'dialogues': return { id: '', name: '', npc: '', start: 'n1', nodes: [] };
@@ -894,6 +1273,10 @@
       gameVersion: s.gameVersion || '1.0.0',
       requires: s.requires || []
     };
+
+    /* 隐藏溯源：导入时带进来的那个原样带出去 —— 导出/上传都走这里，
+       漏掉这一行等于整套保护作废（服务端会以为这是全新作品）。 */
+    if (s._wxTrace) out._wxTrace = s._wxTrace;
 
     /* 内容集合 */
     ['rooms', 'regions', 'npcs', 'items', 'skills', 'sects', 'quests', 'dialogues'].forEach(k => {
@@ -1019,6 +1402,13 @@
   async function doUpload() {
     if (!S.spec.id || !S.spec.name) { U.toast('请先填写 Mod 名称和 ID', 'warn'); tab('basic'); return; }
 
+    /* 主人 2026-10-11：**上传必须登录**。
+       登录之后服务端才认得出「这是谁发的」——「我制作的 Mod」也才有归属。 */
+    if (!isLoggedIn()) {
+      U.toast('发布到 Mod 网站需要先登录', 'warn', 2200);
+      if (!await askLogin()) return;
+    }
+
     const rep = await runValidate(false);
     if (rep && (rep.errors || []).length) {
       U.toast('有 ' + rep.errors.length + ' 个错误，先修好再上传吧', 'warn', 3200);
@@ -1056,10 +1446,19 @@
           author: S.spec.author || (S.my && S.my.name) || '匿名侠客'
         });
         if (d.url) {
+          /* 二创就明说（主人 2026-10-11）：来源是服务端从隐藏溯源判出来的，
+             玩家自己填不了 —— 所以这句话是可信的，写出来对原作者也公平。 */
+          const fork = d.forkOf
+            ? '<div class="up-row"><label>来路</label><b>二创</b> <span class="dim">自《' +
+              esc(d.forkOf.name) + '》（' + (d.forkOf.official ? '官方' : esc(d.forkOf.owner)) + '）</span></div>'
+            : '';
           U.modal('上传成功 ✔',
-            '<div class="up-box"><div class="up-ok">你的 Mod 已经发布到 Mod 网站啦！</div>' +
+            '<div class="up-box"><div class="up-ok">' +
+            (d.forkOf ? '你的二创作品已经发布啦！' : '你的 Mod 已经发布到 Mod 网站啦！') + '</div>' +
             '<div class="up-row"><label>页面</label><a href="' + esc(d.url) + '" target="_blank">' + esc(d.url) + '</a></div>' +
             (d.id ? '<div class="up-row"><label>Mod ID</label><code>' + esc(d.id) + '</code></div>' : '') +
+            fork +
+            (d.forkOf ? '<div class="up-tip">站点上会标出「二创自《' + esc(d.forkOf.name) + '》」—— 这是规矩，不是毛病。</div>' : '') +
             '</div>',
             '<button class="btn-ink" onclick="WXUI.closeModal()">好 的</button>' +
             '<button class="btn-ink primary" id="up-open">打开网页看看</button>');
@@ -1080,6 +1479,9 @@
   global.WXMM = {
     open, tab, blankSpec, specToJson, jsonToSpec, runValidate,
     doSave, doImport, doExport, doUpload,
+    /* 给测试留的把手：「游戏内 ID → 按 ID 改」的入口，
+       不然「同 id 只留一份」这条断言只能靠模拟点击，太脆。 */
+    pickGameId, isLoggedIn,
     get spec() { return S.spec; },
     set spec(v) { S.spec = v; },
     mark, isDirty

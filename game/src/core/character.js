@@ -36,12 +36,72 @@ function profTierIndex(level, maxLevel) {
 function profTierOf(u, skillId) {
   const s = u.learned[skillId]; if (!s) return 0;
   const sd = u.world.getSkill(skillId);
-  const max = sd ? (sd.maxLevel || 300) : 300;
-  return profTierIndex(s.level, max);
+  /* ⚠️ 分母必须是 effectiveMax（含「基础武学等级」这一项），不是 sd.maxLevel。
+     否则衍生武学的上限被基础武学压到 120 之后，等级永远到不了 r=0.85 那档，
+     玩家会看到「练到顶了却还挂着『未入门』」——这是武学重制里最容易被忽略的静默错位。 */
+  const max = sd ? (typeof u.effectiveMax === 'function' ? u.effectiveMax(sd) : (sd.maxLevel || 300)) : 300;
+  return profTierIndex(s.level, Math.max(1, max));
 }
+
+/**
+ * 基础武学总表（武学重制 R2）：一门「系」的根 = 该槽位允许挂载的基础武学。
+ * 判据是「这门武学有没有基础武学」，与 category（外功/魔功/奇门/旁门）无关。
+ * 值是**数组**：一个槽位可以有两条根 —— 暗器系分「手法（basic_throw）」与
+ * 「毒术（basic_poison）」两支，唐门的满天花雨与唐门毒术各有各的根，互不挤占。
+ * ⚠️ 一族只允许一条根（内功 → 基本内功，主人点名），别随手加第二条。
+ */
+const SLOT_ROOT = {
+  内功: ['basic_force'],
+  招架: ['basic_parry'],
+  轻功: ['basic_dodge'],
+  拳: ['basic_fist'],
+  剑: ['basic_sword'],
+  刀: ['basic_blade'],
+  棍: ['basic_staff'],
+  鞭: ['basic_whip'],
+  暗器: ['basic_throw', 'basic_poison'],
+  音波: ['basic_sing'],
+  医术: ['basic_medicine'],
+};
+/** 无基础武学的武学（散学）单独激活的合计上限 */
+const STANDALONE_MAX = 3;
 function profTierMult(tier) { return PROF_TIERS[clamp(tier, 0, 5)].mult; }
 function profTierAcc(tier) { return PROF_TIERS[clamp(tier, 0, 5)].acc; }
 function profTierName(tier) { return PROF_TIERS[clamp(tier, 0, 5)].name; }
+
+/**
+ * 修习一门功夫所需的**内力上限**（主人 2026-10-11：
+ * 「有些功法必须有一定内力上限才能学」）。
+ *
+ * 数据里写了 `needMp` 就用它；没写就**按品级推**：
+ *   品级 1（绝顶绝学）8000 · 2 → 5000 · 3 → 3000 · 4 → 1500 · 5 → 600，六品及以下不设门槛。
+ * 为什么在代码里推、不往数据里灌几百个数：**品级本来就是这份刻度的依据**，
+ * 写死进数据反而会跟品级脱节（改了品级忘了改门槛 = 又一个静默不一致）。
+ */
+const NEED_MP_BY_GRADE = { 1: 8000, 2: 5000, 3: 3000, 4: 1500, 5: 600 };
+
+function needMpOf(sd) {
+  if (!sd) return 0;
+  if (sd.needMp != null) return Math.max(0, Math.floor(sd.needMp));
+  return NEED_MP_BY_GRADE[sd.grade] || 0;
+}
+
+/**
+ * 内力上限 → 熟练度上限的**品级刻度**（系数越大，这门功夫越"省内力"）。
+ * 粗浅功夫（九品，如各门基础武学）几百点内力就够把天花板顶到登峰造极；
+ * 绝顶绝学（一品）得练到上万内力才摸得着。
+ *
+ * ⚠️ 它管的是**上限（天花板）**，不是当前熟练度 ——
+ *    主人特意澄清过：「不是低品级功法只需要少量内力就能到登峰造极，
+ *    而是少量内力上限**熟练度上限**能提高到登峰造极，**当前熟练度你该练还是得练**」。
+ */
+const GRADE_MP_RATE = { 9: 1.00, 8: 0.80, 7: 0.62, 6: 0.48, 5: 0.37, 4: 0.28, 3: 0.21, 2: 0.15, 1: 0.10 };
+
+/** 取一门功法的内力→上限系数（数据没写 grade 的按八品档兜底，与旧系数 .08 同量级） */
+function mpRateFor(sd) {
+  const g = sd && sd.grade;
+  return GRADE_MP_RATE[g] != null ? GRADE_MP_RATE[g] : 0.10;
+}
 
 /* ============================================================
  * 奇经八脉（内功冲击解锁）
@@ -49,6 +109,13 @@ function profTierName(tier) { return PROF_TIERS[clamp(tier, 0, 5)].name; }
 const MERIDIAN_NAMES = { 任: '任脉', 督: '督脉', 冲: '冲脉', 带: '带脉', 阴跷: '阴跷脉', 阳跷: '阳跷脉', 阴维: '阴维脉', 阳维: '阳维脉' };
 const MERIDIAN_MAX = 8;
 function emptyMeridians() { return { 任: 0, 督: 0, 冲: 0, 带: 0, 阴跷: 0, 阳跷: 0, 阴维: 0, 阳维: 0 }; }
+
+/** 性别归一化：数据里两种写法混用（门派 require 写 'male'，创建界面存 '男'） */
+function normGender(v) {
+  if (v === 'male') return '男';
+  if (v === 'female') return '女';
+  return v;
+}
 
 class Character {
   constructor(world, def) {
@@ -104,7 +171,11 @@ class Character {
 
     // ---- 武学 ----
     this.learned = {};       // skillId -> {exp, level}
-    this.equippedSkills = Object.assign({ 拳: null, 剑: null, 刀: null, 棍: null, 鞭: null, 暗器: null, 内功: null, 轻功: null, 招架: null, 身法: null }, def.skills || {});
+    this.equippedSkills = Object.assign({ 拳: null, 剑: null, 刀: null, 棍: null, 鞭: null, 暗器: null, 内功: null, 轻功: null, 招架: null, 身法: null, 音波: null, 医术: null }, def.skills || {});
+    /* 无基础武学的「散学」单独激活池（武学重制 R2）：
+       合计 ≤3 本、跨门类共用一个池子 —— 不是按 category 分池。
+       ⚠️ 别写成 activeByCategory = {旁门: []}：那样每类各 3 本，与「合计 3 本」不符。 */
+    this.standaloneActive = Array.isArray(def.standaloneActive) ? def.standaloneActive.slice() : [];
     if (def.learned) {
       for (const k of Object.keys(def.learned)) {
         this.learned[k] = { exp: def.learned[k].exp || 0, level: def.learned[k].level || 1 };
@@ -215,20 +286,34 @@ class Character {
       parry += Math.floor(this.skillLevel(zhaojia) * 0.8);
     }
 
-    // 武学加成
+    /* 武学加成
+       ⚠️ 等级缩放必须是**收敛曲线**，不能线性乘 lv（与 NUM-01「伤害二次爆炸」同源）：
+         旧写法 v*lv/10 是按「几十级」的老量程定的；武学重制后等级抬到 1000，
+         于是 `xixing_dafa` 的 bonus.maxMp=700 在 lv=900 时被放大成 63000，
+         东方不败一个人的内力上限就冲到 71590（比玩家天花板高一整个数量级）。
+       unit = sqrt(lv / 300)：**300 级拿满 1 份 bonus**，往上收敛、往下也不至于归零
+         （lv=1 → 0.058 份，v=25 的 atk bonus 仍能 +1，不会让「刚练一级毫无收益」；
+          lv=900 → 1.73 份；上限定死 2.5 防异常数据。）
+       ⚠️ 同时补齐 dodge/parry/speed/lifesteal：这四类在全库有 400+ 处定义，
+         原先**只定义不消费**（铁律「不报错就是不生效」族），等于白写。 */
     for (const k of Object.keys(this.learned)) {
       const s = this.world.getSkill(k);
       if (!s || !s.bonus) continue;
       const lv = this.skillLevel(k);
+      const unit = Math.min(2.5, Math.sqrt(Math.max(0, lv) / 300));
+      if (unit <= 0) continue;
       for (const bk of Object.keys(s.bonus)) {
         const v = s.bonus[bk];
-        if (typeof v === 'number') {
-          if (bk === 'maxHp') maxHp += Math.floor(v * lv / 10);
-          else if (bk === 'maxMp') maxMp += Math.floor(v * lv / 10);
-          else if (bk === 'atk') atk += Math.floor(v * lv / 20);
-          else if (bk === 'def') def += Math.floor(v * lv / 20);
-          else if (bk === 'critRate') critRate += v;
-        }
+        if (typeof v !== 'number') continue;
+        if (bk === 'maxHp') maxHp += Math.floor(v * unit);
+        else if (bk === 'maxMp') maxMp += Math.floor(v * unit);
+        else if (bk === 'atk') atk += Math.floor(v * unit);
+        else if (bk === 'def') def += Math.floor(v * unit);
+        else if (bk === 'dodge') dodge += Math.floor(v * unit);
+        else if (bk === 'parry') parry += Math.floor(v * unit);
+        else if (bk === 'speed') speed += Math.floor(v * unit);
+        else if (bk === 'critRate') critRate += v;
+        else if (bk === 'lifesteal') lifesteal += v;
       }
     }
 
@@ -334,14 +419,43 @@ class Character {
     return Math.floor(50 * Math.pow(1.18, level - 1));
   }
 
-  learnSkill(skillId, silent) {
+  /**
+   * 学会一门武学。
+   * @param skillId 武学 id
+   * @param opts    `{ force: true }` = **绕过「须先学会基础武学」这一关**。
+   *   ⚠️ force 只给三类调用方用：门派入门即授（entrySkills/rankSkills）、
+   *      剧情/秘籍/奇遇的直接「授艺」（modapi 的 learnskill 效果）。
+   *      它们是「有人把功夫交到你手上」，不是玩家自己照着图谱练 ——
+   *      **玩家自学（读书 `teach`、`train`）一律走校验**。
+   */
+  learnSkill(skillId, opts) {
+    const o = (opts && typeof opts === 'object') ? opts : {};
     const sd = this.world.getSkill(skillId);
     if (!sd) return { ok: false, msg: `（不存在武学：${skillId}）` };
     if (this.learned[skillId]) return { ok: false, msg: `你已经学过${sd.name}了。` };
+    /* 武学重制（主人原话「所有武学都需要先学会对应基础武学才能学」）：
+       沿 base 链逐级前置。缺哪一门就说清哪一门，别让它变成「点了没反应」。 */
+    if (!o.force && sd.base && !this.learned[sd.base]) {
+      const bd = this.world.getSkill(sd.base);
+      return { ok: false, msg: `须先练成《${bd ? bd.name : sd.base}》，方能修习${sd.name}。` };
+    }
     if (sd.require) {
       const ctx = { player: this, world: this.world };
       const { evalCond } = require('./modapi');
       if (!evalCond(sd.require, ctx)) return { ok: false, msg: `${sd.name}的传授条件你尚未满足。` };
+    }
+    /* 修习门槛：有些功夫**内力不到根本驾驭不了**（主人 2026-10-11）。
+       刻度按品级走（见 needMpOf）—— 一品绝学要上万内力上限，粗浅功夫不设门槛。
+       ⚠️ 与 `sd.require` 一样，`force` 路径（传功 / 门派入门 / 剧情塞给你）不拦：
+          那是「有人把功夫交到你手上」，跟「自己找上门去学」不是一回事。 */
+    if (!o.force) {
+      const need = needMpOf(sd);
+      if (need > 0 && (this.maxMp || 0) < need) {
+        return {
+          ok: false,
+          msg: `${sd.name}不是这个境界能碰的 —— 须先有 ${need} 点内力上限，你现在只有 ${Math.floor(this.maxMp || 0)}。`,
+        };
+      }
     }
     this.learned[skillId] = { exp: 0, level: 1 };
     /* 🩸 记 learned_<skillId> flag：主线末段「集齐绝顶武学」靠这个判定。
@@ -365,7 +479,7 @@ class Character {
       if (!r.ok) return r;
     }
     const cur = this.learned[skillId];
-    const maxLv = this.maxSkillLevelFor(sd);
+    const maxLv = this.effectiveMax(sd);
     if (cur.level >= maxLv) return { ok: false, msg: `你的${sd.name}已臻化境，须更高修为方能再进（上限 ${maxLv} 级）。` };
     const isNeigong = sd.type === '内功';
     const mpCost = Math.max(4, Math.floor((sd.trainMpCost || (isNeigong ? 14 : 7)) * Math.pow(1.05, cur.level - 1)));
@@ -381,7 +495,10 @@ class Character {
     this.mp -= mpCost;
     const lines = [];
     if (this.world.rng.next() < okRate) {
-      const gain = Math.floor(this.skillExpNeed(cur.level) * (0.5 + apt * 0.03) * trainMult);
+      /* 内力上限加速（主人 2026-10-10：「内力上限越高，低等级武学练的提升速度越快」）：
+         内力是修为的根 —— 根扎得深，学什么都快。1200 内力上限 = 速度翻倍，此后线性。 */
+      const mpBoost = 1 + (this.maxMp || 0) / 1200;
+      const gain = Math.floor(this.skillExpNeed(cur.level) * (0.5 + apt * 0.03) * trainMult * mpBoost);
       const g = this.gainSkillExp(skillId, gain);
       lines.push(g.msg);
     } else {
@@ -412,7 +529,7 @@ class Character {
     // 冲脉受挫，略损元气（有生命危险由外功淬体承担，这里只小损）
     if (this.world.rng.next() < 0.2) {
       this.hp = clamp(this.hp - Math.floor(this.maxHp * 0.03), 1, this.maxHp);
-      return '冲脉受挫，气血翻涌，略损元气。';
+      return '冲脉受挫，胸口发闷，元气伤了些。';
     }
     return null;
   }
@@ -432,12 +549,50 @@ class Character {
     const apt = this.attrTotal('资质');
     const neigong = this.equippedSkills['内功'];
     const ngLv = neigong ? this.skillLevel(neigong) : 0;
-    /* 🩸 这里原来有 `this.level * 3`（等级制残留）。等级已删、`this.level` 只剩个
-       恒定小值，开局裸人算出来上限 ≈87 —— **任何武学都到不了 100 级**，
-       于是主线阶段1 的 `anySkill100` 和成就 `anySkill500` 永远 false，主线卡死。
-       改成纯武学维度：悟性 + 资质 + 内功修为（这三项才是「练到登峰造极」的真依据）。 */
-    const limit = Math.floor(wis * 6 + apt * 9 + ngLv * 0.8);
+    /* ⚠️ 2026-10-10 武学重制重标定：旧系数（wis*6+apt*9+ngLv*0.8）封顶只有几百，
+       而基础武学 maxLevel 已抬到 1000 → 永远够不着「登峰造极」那档。
+       新系数让凡人 240 起步、绝顶高手（悟性/资质 40+、内功千级）才摸到 1000。
+       ⚠️ 2026-10-10 内力上限轴：再加一项「内力上限 × 0.08」——
+         主人定的规矩是**内力关乎武学等级上限**，练内力就是把自己的天花板抬上去。
+         吐纳一次只涨 1 点，但它是**唯一能一直涨**的那一项。 */
+    const limit = Math.floor(wis * 10 + apt * 14 + ngLv * 1.2 + (this.maxMp || this.maxMpBase || 0) * mpRateFor(sd));
     return Math.min(doorLimit, Math.max(10, limit));
+  }
+
+  /* ---------------- 基础武学树（武学重制） ---------------- */
+
+  /** 沿 base 链上溯到根（基础武学）；无 base 或数据缺失就返回自己 */
+  skillRoot(skillId) {
+    let cur = skillId, guard = 0;
+    while (cur && guard++ < 16) {
+      const sd = this.world.getSkill(cur);
+      if (!sd || !sd.base) return cur;
+      cur = sd.base;
+    }
+    return cur;
+  }
+
+  /** 这门武学是「散学」（不属任何基础武学系）吗 —— 判据是数据上的 standalone 标记 */
+  isStandalone(sd) {
+    if (!sd) return false;
+    if (sd.standalone === true) return true;
+    return false;
+  }
+
+  /**
+   * 有效上限（武学重制核心公式，`design/40` §1.2）：
+   *   effectiveMax = min( 门内硬顶 ∩ 资质/悟性/内功上限 , 基础武学练到几级 )
+   * 主人的原话就是第三项：「基础武学练到什么级别，其他武学最多只能学到那个级别」。
+   * ⚠️ 基础武学自己没有 base ⇒ 只受前两项管（这就是「把基础武学当梯子」的玩法核心）。
+   */
+  effectiveMax(sd) {
+    if (!sd) return 0;
+    const own = this.maxSkillLevelFor(sd);
+    const baseId = sd.base;
+    if (!baseId) return own;
+    const b = this.learned[baseId];
+    const blv = b ? (b.level || 0) : 0;
+    return Math.min(own, Math.max(0, blv));
   }
 
   trainCost(sd, level) {
@@ -458,7 +613,7 @@ class Character {
     const sd = this.world.getSkill(skillId);
     if (!sd || !this.learned[skillId]) return { ok: false, msg: '（未学过该武学）' };
     const s = this.learned[skillId];
-    const maxLv = this.maxSkillLevelFor(sd);
+    const maxLv = this.effectiveMax(sd);
     let leveled = 0;
     s.exp += exp;
     while (s.level < maxLv && s.exp >= this.skillExpNeed(s.level)) {
@@ -487,7 +642,7 @@ class Character {
     while (this.exp >= this.expNeed(this.level)) {
       this.exp -= this.expNeed(this.level);
       this.level++; up++;
-      this.potential += 50 + this.level * 10;
+      // 潜能已废除（2026-10-11）：升级不再发（那个数从来没处花）。
     }
     if (up) {
       this.hp = this.maxHp; this.mp = this.maxMp;
@@ -496,10 +651,17 @@ class Character {
     this.recalc();
     return up;
   }
+  /* 潜能已废除（主人 2026-10-11：「潜能点有什么用？？？没用的话可以把这个删了」）。
+     基础玩法里**所有产出与消耗都撤掉了**，状态面板与 score 也不再显示。
+     但这个字段与方法**故意留着**：
+       · 老存档里还带着 `potential`，删字段会让读档解析出 undefined；
+       · Mod 接口（`+pot` / `get('pot')` / 制作器里的奖励字段）还挂着它，
+         外部 Mod 可能拿它做自己的经济 —— 删掉会让那些 Mod 静默失效。
+     所以这里是「对外删除、对内保留」：玩家再也见不到它，Mod 想用仍然能用。 */
   gainPotential(p) {
     // 功能 Mod 规则：潜能倍率
     if (this.world && this.world.ruleMult) p = Math.floor(p * this.world.ruleMult('pot'));
-    this.potential += p;
+    this.potential = (this.potential || 0) + p;
   }
 
   /* ---------------- 物品 ---------------- */
@@ -553,7 +715,7 @@ class Character {
 
   /* ---------------- 门派 ---------------- */
 
-  joinSect(sectId) {
+  joinSect(sectId, opts) {
     const sd = this.world.getSect(sectId);
     if (!sd) return { ok: false, msg: '（无此门派）' };
     if (this.sect) return { ok: false, msg: `你已在${this.world.getSect(this.sect) ? this.world.getSect(this.sect).name : this.sect}门下，须先脱离。` };
@@ -561,15 +723,28 @@ class Character {
        （大理想段氏要 karma≥20、少林不收女、桃花岛要悟性≥18）。
        新手线要把玩家导到自己那条线上，而他开局不满足这些条件 ——
        茶摊老汉那封引荐信就是拿来破例的（`tutorial.handOutLetter` 写 tutPass）。
-       只对**他本人那一家**有效，拜别家照旧卡门槛。 */
+       只对**他本人那一家**有效，拜别家照旧卡门槛。
+       ⚠️ `opts.force` 是**收徒大典**那条路：大典存在的意义就是收「常例不收的人」，
+          人家当面考过你了，还拿 require 卡一道就是自相矛盾。 */
     const referral = this.vars && this.vars.tutPass === sectId;
-    if (sd.require && !referral) {
+    const force = !!(opts && opts.force);
+    if (sd.require && !referral && !force) {
       const { evalCond } = require('./modapi');
-      if (!evalCond(sd.require, { player: this, world: this.world })) return { ok: false, msg: `${sd.name}不收你这样的弟子。` };
+      /* ⚠️ 性别的两种写法在数据里混用：门派的 `require` 写 `'male'`，而 createPlayer
+         存的是玩家在创建界面选的 `'男'`。直接比的结果是 **男的入不了只要男弟子的门派**
+         ——本来是静的错（不报错，只是永远进不去），一直没被发现是因为新手线那封引荐信
+         永远破例；自己上门、或者走收徒大典，就露馅了。
+         这里造一个「性别已归一化」的影子玩家去判，**不动玩家身上的值**。 */
+      const myG = normGender(this.gender);
+      const probe = myG === this.gender ? this : Object.assign(Object.create(this), { gender: myG });
+      const req = sd.require.gender
+        ? Object.assign({}, sd.require, { gender: normGender(sd.require.gender) })
+        : sd.require;
+      if (!evalCond(req, { player: probe, world: this.world })) return { ok: false, msg: this.sectRefusal(sd) };
     }
     this.sect = sectId; this.rank = 0;
     if (sd.entryItems) for (const it of sd.entryItems) this.world.giveItem(this, it, 1);
-    if (sd.entrySkills) for (const s of sd.entrySkills) this.learnSkill(s);
+    if (sd.entrySkills) for (const s of sd.entrySkills) this.learnSkill(s, { force: true });
     if (referral && this.vars) { this.vars.tutPass = null; this.vars.tutJoined = sectId; }
     this.world.emit('joinsect', { sect: sectId });
     return {
@@ -578,6 +753,49 @@ class Character {
         + (referral ? '（凭那封引荐信，山门为你破了例。）' : ''),
     };
   }
+  /**
+   * 被山门拒了，得说清楚**卡在哪一条** ——
+   * 主人原话：「如果不成功会告诉你哪里不成功…比如是否需要学某个功法，以及告诉你该功法在哪获取」。
+   * 一句「不收你这样的弟子」等于什么都没说，玩家只能挨个试。
+   */
+  sectRefusal(sd) {
+    const req = (sd && sd.require) || {};
+    const miss = [];
+    for (const k of Object.keys(req)) {
+      const v = req[k];
+      if (k === 'gender') {
+        if (normGender(this.gender || 'male') !== normGender(v)) miss.push(`本门只收${v === 'female' ? '女' : '男'}儿身`);
+      } else if (k === 'karma') {
+        const mine = Math.round(this.karma || 0);
+        if (mine < v) miss.push(`要侠名 ${v}（你 ${mine}）——多行善事、少结仇，名声是攒出来的`);
+      } else if (k === 'wis' || k === '悟性') {
+        const mine = this.attrTotal('悟性');
+        if (mine < v) miss.push(`要悟性 ${v}（你 ${mine}）——读书、访名师、住得好些都能养`);
+      } else if (k === 'skill' || k === 'skills' || k === 'learned') {
+        const lack = [].concat(v).filter(s => !this.learned[s]);
+        if (lack.length) {
+          const names = lack.map(s => (this.world.getSkill(s) || {}).name || s);
+          miss.push(`须先学会${names.join('、')}（${names.map(n => this.skillSource(n)).join('；')}）`);
+        }
+      } else if (typeof v === 'number' && (this[k] || 0) < v) {
+        miss.push(`${k} 需 ${v}（你 ${this[k] || 0}）`);
+      }
+    }
+    if (!miss.length) return `${sd.name}不收你这样的弟子。`;
+    return `${sd.name}不收你：${miss.join('；')}。`;
+  }
+
+  /** 这门功夫去哪儿学（哪个山门入门就授 / 哪家有） */
+  skillSource(nameOrId) {
+    const hits = [];
+    for (const sd of Object.values(this.world.data.sects || {})) {
+      const all = [].concat(sd.entrySkills || [], sd.skills || [], sd.rankSkills ? Object.values(sd.rankSkills).flat() : []);
+      if (all.includes(nameOrId)) hits.push(sd.name);
+    }
+    if (hits.length) return `入${hits.slice(0, 3).join(' / ')}可得`;
+    return '藏经阁里兴许有抄本';
+  }
+
   leaveSect() {
     const old = this.sect;
     this.sect = null; this.rank = 0; this.sectContribution = 0;
@@ -592,7 +810,7 @@ class Character {
     if (this.sectContribution < need) return { ok: false, msg: `你的门派贡献不足（需 ${need}，你有 ${this.sectContribution}）。` };
     this.sectContribution -= need;
     this.rank++;
-    if (sd.rankSkills && sd.rankSkills[this.rank]) for (const s of sd.rankSkills[this.rank]) this.learnSkill(s);
+    if (sd.rankSkills && sd.rankSkills[this.rank]) for (const s of sd.rankSkills[this.rank]) this.learnSkill(s, { force: true });
     return { ok: true, msg: `你被擢升为${sd.ranks[this.rank]}！` };
   }
 
@@ -654,7 +872,9 @@ class Character {
 }
 
 module.exports = {
-  Character, BASE_ATTRS,
+  Character, BASE_ATTRS, SLOT_ROOT, STANDALONE_MAX,
   PROF_TIERS, profTierIndex, profTierOf, profTierMult, profTierAcc, profTierName,
   MERIDIAN_NAMES, MERIDIAN_MAX, emptyMeridians,
+  /* 功法刻度（界面与测试都要读）*/
+  needMpOf, mpRateFor, GRADE_MP_RATE, NEED_MP_BY_GRADE,
 };

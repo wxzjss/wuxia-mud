@@ -1,5 +1,6 @@
 {
   "id": "demo_npc",
+  "_wxTrace": "wxt-official-demo_npc",
   "name": "白发渔翁（NPC 示例）",
   "version": "1.0.0",
   "author": "武侠行官方",
@@ -14,6 +15,8 @@
   "npcs": [
     {
       "id": "fisher_old",
+      "tag": "boatman",
+      "personality": "lengmo",
       "name": "白发渔翁",
       "title": "江上闲人",
       "gender": "male",

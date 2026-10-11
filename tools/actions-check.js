@@ -68,6 +68,11 @@ for (const rid of roomIds) {
     const dispName = a.label || cmd || (a.keywords || [])[0] || r.name;
     if (!dispName) missingLabel.push(r.name + '（cmd=' + cmd + '）');
     if (!cmd) { dead.push({ room: r.name, label: a.label, cmd, why: '没有 cmd（点了不会有任何事）' }); continue; }
+    /* ⚠️ 卖身是**不可逆的身份改变**，而本脚本是**同一个角色**把全图 action 走一遍：
+       走过青楼执行一次 sellbody，这个人从此「已是青楼之人」，
+       后面铁匠铺/碾房/灶台的打工全被拦（不是那些 action 坏了，是角色被前面的改动带偏了）。
+       跳过它，并把它交给 smoke-survival 那类「专测卖身」的用例去验。 */
+    if (/^sellbody|^卖身/.test(cmd)) continue;
     let lines = [];
     try { lines = (e.exec(cmd).lines || []); } catch (err) { lines = [{ text: 'EXC:' + err.message }]; }
     const bad = lines.map(l => String(l.text || '')).find(t => FAIL_RE.test(t));

@@ -59,6 +59,69 @@ const CATEGORY_ALIAS = {
   demon: '魔功', evil: '魔功', devil: '魔功', mogong: '魔功',
 };
 
+/* ==========================================================================
+ * 装备槽位（item.slot）—— 和武学 type 一模一样的病，只是没人治过
+ *
+ * 实测（2026-10-10）：`items[].slot` 的取值分布是
+ *   { 身体:7, 武器:16, 披风:1, 头部:2, 脚部:2, 颈部:1, 戒指:1, 饰品:4, 兵刃:2,
+ *     weapon:1, body:1, feet:1 }   ← 最后三个英文的来自**官方示例 mod**（demo_item）
+ * ⇒ 小白照抄示例写出来的装备会落进 `weapon`/`body`/`feet` 三个**幽灵槽位**：
+ *   穿得上（因为槽位是自由字符串），但**和本体装备互不冲突**，
+ *   等于凭空多出三个装位 —— 而且**不报错**。
+ * 归一化放在这里（而不是去改示例）：示例只是其中一份，第三方 mod 与教程都抄过英文写法。
+ * ========================================================================== */
+const ITEM_SLOT_ALIAS = {
+  weapon: '武器', arms: '武器', sword: '武器', blade: '兵刃', weapon_skill: '武器',
+  body: '身体', armor: '身体', armour: '身体', robe: '身体', torso: '身体',
+  head: '头部', helmet: '头部', hat: '头部',
+  feet: '脚部', boots: '脚部', shoes: '脚部', foot: '脚部',
+  neck: '颈部', necklace: '颈部', amulet: '颈部',
+  ring: '戒指', finger: '戒指',
+  cloak: '披风', cape: '披风', back: '披风',
+  accessory: '饰品', trinket: '饰品', charm: '饰品',
+  hand: '手部', gloves: '手部',
+  waist: '腰部', belt: '腰部',
+};
+/** 归一化一个装备槽位（认不出就原样返回 —— 自定义槽位是允许的） */
+function normItemSlot(s) {
+  const raw = String(s == null ? '' : s).trim();
+  if (!raw) return raw;
+  if (ITEM_SLOT_ALIAS[raw]) return ITEM_SLOT_ALIAS[raw];
+  const low = raw.toLowerCase();
+  if (ITEM_SLOT_ALIAS[low]) return ITEM_SLOT_ALIAS[low];
+  return raw;
+}
+
+/* ==========================================================================
+ * 武学 `bonus` 的键名别名
+ *
+ * 实测：官方示例 mod（demo_skill）写 `bonus: {hp:6, mp:10}`，而引擎
+ * （`character.js` 的「武学加成」段）只认 `maxHp / maxMp / atk / def / critRate`
+ * —— 写 `hp`/`mp` 的结果是**这条加成完全不生效，且不报错**（经典的「只定义不消费」）。
+ * 这里把常见别名折成引擎真认的键，省得每个 mod 作者都踩一次。
+ * ========================================================================== */
+const BONUS_ALIAS = {
+  hp: 'maxHp', health: 'maxHp', maxhp: 'maxHp', life: 'maxHp',
+  mp: 'maxMp', mana: 'maxMp', maxmp: 'maxMp', qi: 'maxMp',
+  damage: 'atk', attack: 'atk', ap: 'atk',
+  defense: 'def', defence: 'def', armor: 'def', armour: 'def',
+  evade: 'dodge', evasion: 'dodge', dodgeRate: 'dodge',
+  block: 'parry', parryRate: 'parry',
+  speed: 'speed', agi: 'speed',
+  crit: 'critRate', critrate: 'critRate',
+  critdmg: 'critDmg',
+  armorpen: 'armorPen',
+};
+/** 归一化一个 bonus 键（认不出就原样返回） */
+function normBonusKey(k) {
+  const raw = String(k == null ? '' : k).trim();
+  if (!raw) return raw;
+  if (BONUS_ALIAS[raw]) return BONUS_ALIAS[raw];
+  const low = raw.toLowerCase();
+  if (BONUS_ALIAS[low]) return BONUS_ALIAS[low];
+  return raw;
+}
+
 /** 归一化一个 type（认不出就原样返回） */
 function normSkillType(t) {
   const raw = String(t == null ? '' : t).trim();
@@ -117,6 +180,33 @@ function normalizeWorldData(data) {
     if (s.mpCost == null) s.mpCost = 0;
     if (s.accuracy == null) s.accuracy = 0;
     if (s.damageMult == null) s.damageMult = 1;
+
+    /* bonus 的键名（hp → maxHp 之类）——写错就是「加成不生效且不报错」 */
+    if (s.bonus && typeof s.bonus === 'object' && !Array.isArray(s.bonus)) {
+      const bo = {};
+      let hit = false;
+      for (const bk of Object.keys(s.bonus)) {
+        const bk1 = normBonusKey(bk);
+        bo[bk1] = s.bonus[bk];
+        if (bk1 !== bk) { hit = true; if (notes.length < 40) notes.push(`skills.${id}.bonus 键 ${bk} → ${bk1}`); }
+      }
+      if (hit) { s.bonus = bo; changed++; }
+    }
+  }
+
+  /* ---- 物品：装备槽位（英文 weapon/body/feet → 武器/身体/脚部） ---- */
+  const items = data.items || {};
+  for (const id of Object.keys(items)) {
+    const it = items[id];
+    if (!it || typeof it !== 'object') continue;
+    if (!it.id) it.id = id;
+    const s0 = it.slot;
+    const s1 = normItemSlot(s0);
+    if (s1 !== s0) {
+      it.slot = s1;
+      changed++;
+      if (notes.length < 40) notes.push(`items.${id}.slot ${JSON.stringify(s0)} → ${s1}`);
+    }
   }
 
   /* ---- 门派：`skills` 槽位表里的 type 也要认（mod 常在这里配门派功法） ---- */
@@ -156,4 +246,7 @@ function normalizeWorldData(data) {
   return { changed, notes };
 }
 
-module.exports = { normalizeWorldData, normSkillType, normCategory, TYPE_ALIAS, CATEGORIES };
+module.exports = {
+  normalizeWorldData, normSkillType, normCategory, TYPE_ALIAS, CATEGORIES,
+  normItemSlot, normBonusKey, ITEM_SLOT_ALIAS, BONUS_ALIAS,
+};

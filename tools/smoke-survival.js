@@ -100,15 +100,19 @@ section('4. 青楼卖身/接客/赎身');
   ok('赎身后自由', p.prostitution.redeemed === true);
 }
 
-section('5. 男玩家不能卖身');
+section('5. 男玩家也能卖身（主人 2026-10-10 改的规矩：男身在楼里另有去处）');
 {
   const e = new GameEngine({ seed: 20261010 });
   e.boot();
   e.newGame({ name: '试剑', gender: 'male', birth: 'wuxue' });
   const p = e.world.player;
   p.room = 'jiangnan_brothel';
+  /* 主人 2026-10-11：男身要先过青楼那条支线才卖得身 */
+  const r0 = e.exec('卖身');
+  ok('男玩家默认卖不了身', !/画了押/.test((r0.lines || []).map(l => l.text).join('')), (r0.lines || []).map(l => l.text).join('').slice(0, 50));
+  p.setFlag('brothel_permit', true);
   const r = e.exec('卖身');
-  ok('男玩家卖身拒绝', !(p.prostitution && p.prostitution.sold), (r.lines || []).map(l => l.text).join(''));
+  ok('过了那条支线就卖得成', !!(p.prostitution && p.prostitution.sold), (r.lines || []).map(l => l.text).join('').slice(0, 60));
 }
 
 section('6. 卖身后活动范围限制');

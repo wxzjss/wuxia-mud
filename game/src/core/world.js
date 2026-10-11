@@ -523,6 +523,125 @@ class World extends EventEmitter {
   getSect(id) { return this.data.sects[id]; }
   getNpc(id) { return this.data.npcs[id]; }
   getTrait(id) { return this.data.traits[id] || this.data.attrs[id]; }
+
+  /* ================================================================
+   * 二·一、天赋效果查询（B3：每条天赋都必须有人真消费）
+   *
+   * 设计：天赋的 effects 是**数据**（见 data/68_talents.json），但「怎么生效」
+   * 是引擎的事。这里把解释权集中在一处——战斗 / 好感 / 商店 / 时间 / 奇遇各处
+   * 只调下面的函数，不许在业务代码里散读 `e.type === 'xxx'`。
+   * 好处：加一条天赋只改一处；删一条天赋（_delete）不会留下悬空的消费点。
+   *
+   * `char` 一律传角色实例；不传就默认玩家（大部分玩法只有玩家吃天赋）。
+   * traits 与 perks 合并扫描——两者在 character.recalc 里本来就是同一口径。
+   * ================================================================ */
+
+  /** 取某角色身上某类（或不限类）的天赋效果列表 */
+  traitEffects(char, type) {
+    const out = [];
+    const c = char || this.player;
+    if (!c) return out;
+    const ids = [].concat(c.traits || [], c.perks || []);
+    for (const id of ids) {
+      const td = this.getTrait(id);
+      if (!td || !td.effects) continue;
+      for (const e of [].concat(td.effects)) {
+        if (!e) continue;
+        if (!type || e.type === type) out.push(e);
+      }
+    }
+    return out;
+  }
+
+  /** 正向好感增量倍率（「口才便给」+50%）。只作用于**正向**增量。 */
+  favorGainMult(char) {
+    let m = 1;
+    for (const e of this.traitEffects(char, 'favorGain')) {
+      if (typeof e.value === 'number') m += e.value;
+    }
+    return m;
+  }
+
+  /**
+   * 收敛的好感改动入口：正向增量过天赋倍率，再统一钳制上下限。
+   * 各条「npc.favor = (npc.favor||0) + d」的直接赋值都改走这里，
+   * 好处是天赋一加，所有入口同时生效，不会再出现「有的路走天赋、有的路不过」。
+   * @returns 实际应用的增量（可能已被倍率放大）
+   */
+  gainFavor(npc, delta) {
+    if (!npc || !delta) return 0;
+    const d = delta > 0 ? delta * this.favorGainMult(this.player) : delta;
+    npc.favor = clamp((npc.favor || 0) + d, -200, 200);
+    return d;
+  }
+
+  /** 是否「逃跑必成」（脚底抹油） */
+  hasFleeAlways(char) { return this.traitEffects(char, 'fleeAlways').length > 0; }
+
+  /**
+   * 武学类别加成倍率（剑心通明按 slot、蛊道天赋按 category）。
+   * @returns 伤害/效果倍率（1 = 无加成）
+   */
+  skillBonusMult(char, skill) {
+    if (!skill) return 1;
+    let m = 1;
+    for (const e of this.traitEffects(char, 'skillBonus')) {
+      if (typeof e.value !== 'number') continue;
+      if ((e.slot && skill.type === e.slot) || (e.category && skill.category === e.category)) m += e.value;
+    }
+    return m;
+  }
+
+  /**
+   * 给一个「武技效果」打语义标签，供免疫判定用。
+   * ⚠️ 引擎里没有专门的毒字段：毒的语义靠效果本身的类型与名字推出来
+   *    （dot 且名字含「毒」）。数据里「阴毒/剧毒/蛊毒/掌毒」这类 DOT 都算毒。
+   */
+  effectTags(eff) {
+    if (!eff) return [];
+    const tags = [];
+    if (eff.type === 'stun') tags.push('stun');
+    if (eff.type === 'confuse') tags.push('confuse');
+    if (eff.type === 'dot' && /毒/.test(eff.name || '')) tags.push('poison');
+    if (Array.isArray(eff.tags)) for (const t of eff.tags) tags.push(t);
+    return tags;
+  }
+
+  /** 该角色是否免疫某类效果（百毒不侵 / 心如铁石） */
+  isImmune(char, tag) {
+    for (const e of this.traitEffects(char, 'immune')) {
+      if (Array.isArray(e.tags) && e.tags.indexOf(tag) >= 0) return true;
+    }
+    return false;
+  }
+
+  /** 买卖折扣（经商奇才 0.15 → 买价 ×0.85 / 卖价 ×1.15） */
+  shopDiscount(char) {
+    let d = 0;
+    for (const e of this.traitEffects(char, 'shopDiscount')) {
+      if (typeof e.value === 'number') d += e.value;
+    }
+    return clamp(d, 0, 0.5);
+  }
+
+  /** 行走消耗倍率（浪子情怀 -0.5 → 0.5） */
+  consumptionMult(char) {
+    let m = 1;
+    for (const e of this.traitEffects(char, 'consumption')) {
+      if (typeof e.value === 'number') m += e.value;
+    }
+    return Math.max(0.1, m);
+  }
+
+  /** 奇遇 / 随机遭遇触发概率倍率（福星高照 +50%） */
+  encounterMult(char) {
+    let m = 1;
+    for (const e of this.traitEffects(char, 'encounterBonus')) {
+      if (typeof e.value === 'number') m += e.value;
+    }
+    return Math.max(0.1, m);
+  }
+
   /** 家园地块效果汇总（练武场/书房/丹房… 给修炼、淬体、炼制、采药用） */
   estateEffects() {
     const est = this.player && this.player.estate;
@@ -785,6 +904,56 @@ class World extends EventEmitter {
     }
     return out;
   }
+  /** 修复「同一常驻 NPC 有多个活实例」的旧档（**幂等**；干净的档是 no-op）。
+   *
+   * 背景：`ambience.ensureNearbyNpcs` 曾经**每个 worldTick 都无脑 spawn**，
+   *   而 `spawnNpc` 对非名人**每次都新建实例** → 副本越滚越多，
+   *   而且**副本会写进存档** ⇒ 玩家看到「这里有：张掌柜（商人） x7」，
+   *   退出重进也修不掉（主人 2026-10-10 亲报）。
+   *   引擎侧已修（加「已活着就不再 spawn」），但**已经坏掉的档得救回来**。
+   *
+   * 规则：`_npcsByRoom` 收录的是「常驻本房、不游走」的人，每个 defId 全局只保留
+   *   **1 个**活实例。保留哪一个：① 优先留在其本房的那个（可能被 wander/拜访挪走过）
+   *   ② 再看 `favor + trust` 最高的那个（玩家真正打过交道的是这个）
+   *   ③ 再按实例 id 稳定排序取第一个（保证可复现）。
+   * ⚠️ **只处理 `_npcsByRoom` 里的人**：会游走的 NPC、以及 `room.respawn` 刷出来的怪
+   *   （如「一场 3 只山贼」）本来就允许多实例，一刀切会把正常玩法删掉。
+   * @returns {{removed:number, defIds:string[]}}
+   */
+  dedupeNpcInstances() {
+    const res = { removed: 0, defIds: [] };
+    const home = {};
+    for (const rid of Object.keys(this._npcsByRoom || {})) {
+      for (const id of this._npcsByRoom[rid]) home[id] = rid;
+    }
+    const groups = {};
+    for (const uid of Object.keys(this.instances.npcs || {})) {
+      const n = this.instances.npcs[uid];
+      if (!n || n.dead) continue;
+      if (!(n.defId in home)) continue;
+      (groups[n.defId] = groups[n.defId] || []).push(uid);
+    }
+    for (const defId of Object.keys(groups)) {
+      const uids = groups[defId];
+      if (uids.length <= 1) continue;
+      const score = uid => {
+        const n = this.instances.npcs[uid];
+        const inHome = (n.room === home[defId]) ? 1 : 0;
+        const prog = (n.favor || 0) + ((n.pstate && n.pstate.trust) || 0);
+        return [inHome, prog];
+      };
+      uids.sort((a, b) => {
+        const sa = score(a), sb = score(b);
+        if (sa[0] !== sb[0]) return sb[0] - sa[0];
+        if (sa[1] !== sb[1]) return sb[1] - sa[1];
+        return a < b ? -1 : 1;
+      });
+      for (const uid of uids.slice(1)) { delete this.instances.npcs[uid]; res.removed++; }
+      res.defIds.push(defId);
+    }
+    return res;
+  }
+
   /** 全图「活着的」NPC 实例（按 defId 去重，取一个代表）。
    *  「拜访」要找不在场的人，所以不能用 npcsIn(房间)。
    *  ⚠️ 名人/常驻 NPC 同一 defId 可能有多实例（会走动、respawn），
@@ -892,7 +1061,7 @@ class World extends EventEmitter {
       /* ---- 性格 / 心情（第五批）----
          心情是会变的状态，必须 clone；性格按 def.personality，没有就按身份 tag 默认。 */
       const personalityMod = require('./personality');
-      npc.personality = def.personality || personalityMod.personalityForTag(def.tag);
+      npc.personality = personalityMod.personaIdOf(def);
       /* ---- 人物画像（第六批）----
          portrait 是模板静态数据，pstate 是随档走的运行期状态。
          两者都必须 clone / 新建：
@@ -920,6 +1089,11 @@ class World extends EventEmitter {
         const mRatio = (typeof def.spawnMpRatio === 'number') ? clamp(def.spawnMpRatio, 0.05, 1) : 1;
         npc.mp = Math.max(0, Math.round(npc.maxMp * mRatio));
       }
+      /* ---- 内力上限 = 实力上限（主人 2026-10-10）----
+         NPC 的内力上限天生就决定了他该有多深：内力一百的人本来就该会得比内力十的人深。
+         这里按 maxMp 把 `learned` 里的火候**垫高**（只抬不降，手填更高的保留）。
+         ⚠️ 必须在 hp/mp 同步**之后**做 —— 它读的是算完加成的 maxMp。 */
+      try { require('./neigong').syncNpcByMp(this, npc); } catch (e) { /* 不该拖垮生成 */ }
       this.instances.npcs[npc.id] = npc;
       if (!first) first = npc;
       if (!silent) this.emit('npcspawn', { npc });
@@ -936,6 +1110,30 @@ class World extends EventEmitter {
 
   getNpc(id) { return this.instances.npcs[id] || null; }
 
+  /** 按 **defId** 取场上活实例（跨房间）。
+   *
+   *  ⚠️ 为什么需要它：`getNpc()` 有两个同名定义，**后者覆盖前者** → 实际查的是
+   *     `instances.npcs`（键是 `npc_xxx` 实例 id）。传 defId 进去**永远取不到**，
+   *     而且**不报错、只是静默 no-op**（B29：`favor:<npcId>` 效果全打空，
+   *     连累 262 条 `sq_npcv_*` 支线的好感奖励）。
+   *
+   *  取用顺序（同记忆铁律「别在查找函数里无脑 spawnNpc」）：
+   *     ① 场上已有活实例（跨房间找，NPC 会走动）→ 就是玩家认识的那一个；
+   *     ② 没有才就地 spawn（且落到他的 `home`/`room`，不硬塞到玩家房里）。
+   *  @returns {Character|null}
+   */
+  findLiveNpc(defId) {
+    if (!defId) return null;
+    const inst = this.getNpc(defId);          // 兼容「本来就传实例 id」的调用方
+    if (inst && inst.defId && !inst.dead) return inst;
+    const living = Object.values(this.instances.npcs)
+      .filter(n => n && n.defId === defId && !n.dead);
+    if (living.length) return living[0];
+    const def = this.data.npcs && this.data.npcs[defId];
+    if (!def) return null;
+    return this.spawnNpc(defId, def.room || (this.player && this.player.room) || null, 1, true);
+  }
+
   /** 第五批生死规则：普通 NPC 被打倒 → 晕厥（不致死，留在原地，玩家补刀才真死） */
   onNpcDown(npc, battle) {
     npc.knockedOut = true;
@@ -949,7 +1147,19 @@ class World extends EventEmitter {
       p.setFlag('killed_' + npc.defId, true);
       p.kills = (p.kills || 0) + 1;
     }
+    /* 门派挑战结算（主人 2026-10-08：「长老互动面板上会有个挑战…贡献度足够可挑战」）：
+       打赢了当场进位。文案排进世界的台词队列 —— 战斗结算走的是 combatAction，
+       不经过 exec 的 drain，所以留到玩家下一条指令时带出来（打完总得动一下）。 */
+    if (p && npc._challengedBy === p.id) {
+      try {
+        const r = require('./sectlife').onChallengeResolved(this, p, npc);
+        if (r && r.lines) for (const l of r.lines) this._tickLines.push(l);
+      } catch (e) { /* 进位失败不该拖垮战斗结算 */ }
+    }
     this.emit('npcdown', { npc });
+    /* 江湖的回应（2026-10-11 自拟）：这一场如果打的是有名有姓的人，
+       记进玩家的账，并且**当场变成传闻往外飘**（有人替他出头是另一条线，见 revenge）。 */
+    if (p) { try { require('./revenge').noteDown(this, p, npc); } catch (e) { /* 记录失败不拦结算 */ } }
     this.witnessReaction(npc);
     // 犯人类 NPC 晕倒 → 官府抓进牢（若有官差在场）
     const tag = npc.tag || (npc.def || {}).tag || '';
@@ -1515,6 +1725,38 @@ class World extends EventEmitter {
       }
     }
     if (dead.length) this.rumors = this.rumors.filter(r => dead.indexOf(r.uid) < 0);
+    /* ---- 把「风声有多大」写进玩家变量，供世界事件读（design/27 §5.5.3）----
+       ⚠️ 为什么非写不可：W5 事件库里好几条是「江湖上关于你的话传开了」——
+       `w5_foe_bribe`（有人托话：heat_bad ≥ 10）、`w5_foe_slander`（造谣：heat ≥ 30）、
+       `w5_sect_hunt`（联手追杀：heat_bad ≥ 70）。这些条件读的是 `p.vars.rumor_heat_*`，
+       而**全仓没有任何地方写过这两个变量** —— 恒为 0，那三条事件**永远不可能触发**，
+       且不会报错。这正是总纲说的「写了不生效」那一族。
+       口径：`_max` = 全部活跃传闻里最高的一份热度；`_bad_max` = 其中**对你不利的**
+       （`seed.polarity < 0`）那一批的最高热度 —— 行善传得越广不该让你被追杀，
+       所以「联手追杀」只认坏话（与 §5.5.4「heat_max / bad_max 分工」一致）。 */
+    if (this.player) {
+      let hmax = 0, bmax = 0;
+      for (const r of this.rumors) {
+        const seed = this.data.rumorSeeds && this.data.rumorSeeds[r.seedId];
+        const h = r.heat || 0;
+        if (h > hmax) hmax = h;
+        if (seed && (seed.polarity || 0) < 0 && h > bmax) bmax = h;
+      }
+      const pl = this.player;
+      pl.setVar('rumor_heat_max', Math.round(hmax));
+      pl.setVar('rumor_heat_bad_max', Math.round(bmax));
+      /* 顺带把三个「事件要读、但没人写过」的玩家状态同步过去 ——
+         同一个坑：`w5_wanted_amnesty` 早就写了 `var: wanted >= 1`，
+         而恶名的真身是 `p.kidnap.wanted`（kidnap.js），两个名字对不上，
+         所以「大赦」这条**从来没触发过**。这里做一次归一（每跨日一次，开销可忽略）：
+           · wanted      ← p.kidnap.wanted（略卖、逼良为娼攒下的律罪档 0~100）
+           · has_debt    ← p.kidnap.debt（欠着人钱）
+           · family_count← 正妻 + 妾 + 结义（「仇家拿你的家眷做筏」要读它） */
+      pl.setVar('wanted', Math.round((pl.kidnap && pl.kidnap.wanted) || 0));
+      pl.setVar('has_debt', (pl.kidnap && pl.kidnap.debt) ? 1 : 0);
+      const mg = pl.marriage || {};
+      pl.setVar('family_count', (mg.spouse ? 1 : 0) + ((mg.concubines || []).length) + ((mg.bonds || []).length));
+    }
   }
 
   /** 按 truth 档位渲染传闻文本（实时，不固化——truth 跨档才换说法，这正是「走样」）。 */
@@ -1594,7 +1836,32 @@ class World extends EventEmitter {
     for (let i = 0; i < ids.length; i++) {
       for (let j = i + 1; j < ids.length; j++) rel[pair(ids[i], ids[j])] = base(ids[i], ids[j]);
     }
+    /* 手设关系覆盖（design/40 §5.5-⑦）：
+       默认矩阵只按 align 推 —— 正道↔正道一律 +40，可「五岳并派之争」这种
+       **同阵营的世仇**推不出来（泰山不服华山居首）。覆盖表就是干这个的。
+       ⚠️ 值必须是数字：`data.relationsOverride` 是 byId 合并，对象值会被揉成 {id:...}。 */
+    const ov = this.data.relationsOverride || {};
+    for (const k of Object.keys(ov)) {
+      if (typeof ov[k] === 'number') rel[k] = ov[k];
+    }
     this.factionState = { factions: fs, relations: rel, lastMonth: null };
+  }
+
+  /** 两派之间的梁子（纯文本，来自 data.factionFeud）——没有就返回 null */
+  factionFeudOf(a, b) {
+    if (!a || !b || a === b) return null;
+    const k = a < b ? a + '|' + b : b + '|' + a;
+    const m = this.data.factionFeud || {};
+    return m[k] || null;
+  }
+
+  /** 关系值 → 中文分档（邦交面板/摩擦文案共用一份口径） */
+  factionRelWord(v) {
+    if (v >= 60) return '亲如一家';
+    if (v >= 25) return '交好';
+    if (v > -25) return '泛泛';
+    if (v > -60) return '不睦';
+    return '死仇';
   }
 
   /** 该 region 是否属于某势力地盘；返回势力 id（先看 territories，再看 homeRegion）。 */
@@ -1741,6 +2008,24 @@ class World extends EventEmitter {
     p.vars.faction_rel_all = relMin;   // 「最低的一段关系」（恶名事件读它）
   }
 
+  /**
+   * 把某个 NPC 的信任度同步进 `p.vars.trust_<defId>`。
+   *
+   * ⚠️ 为什么非有这个方法不可（「写了不生效」的又一例）：
+   *   画像的 `hooks[].trigger` 一律写成 `{ var:'trust_<npcId>', op:'>=', value:N }`
+   *   （51 个人都是这么写的），而 `trust` 真身是 `npc.pstate.trust` ——
+   *   两个名字对不上，`p.vars` 里那个键**全仓没有任何地方写过**，
+   *   于是条件恒不成立、钩子一个也触发不了，还一声不吭。
+   *   和 W5 事件库那批 `faction_power_*` 是同一个坑，处理方式也一样：
+   *   **在读写交界处做一次归一**，而不是让每处引用各写一份。
+   */
+  syncTrustVar(npc) {
+    if (!npc || !this.player) return;
+    const id = npc.defId || npc.id;
+    if (!id) return;
+    this.player.setVar('trust_' + id, Math.round((npc.pstate && npc.pstate.trust) || 0));
+  }
+
   inPlayerParty(npc, battle) {
     if (!battle) return true;
     return [].concat(battle.attackers).some(c => c === this.player || c.isSquad && c.members.includes(this.player));
@@ -1881,10 +2166,15 @@ class World extends EventEmitter {
         const { evalCond } = require('./modapi');
         if (!evalCond(def.require, { player: ch, world: this })) return { ok: false, msg: `以你目前的修为还读不懂这本${def.name}。`, lines: [] };
       }
-      // 消耗潜能/时间
-      const cost = def.cost || 100;
-      if (ch.potential < cost) return { ok: false, msg: `研读此书需耗费 ${cost} 点潜能，你尚不足。`, lines: [] };
-      ch.potential -= cost;
+      /* ⚠️ 这里原来收「潜能」（`def.cost || 100`）—— 潜能已废除（2026-10-11）。
+         顺带说明它当初为什么从来没生效：这条分支要求书声明 `teach`，
+         而全库 9 本 `type: book` 一本都没写 `teach` ⇒ 这条路根本没通过一次。
+         现在书该不该收代价改看 `def.cost` 有没有写：写了就按**内力**收，没写就白读。 */
+      const cost = Number(def.cost) || 0;
+      if (cost > 0) {
+        if (ch.mp < cost) return { ok: false, msg: `研读此书要耗 ${cost} 点内力，你先养足了再来。`, lines: [] };
+        ch.mp -= cost;
+      }
       const r = ch.learnSkill(def.teach);
       ch.advanceTime(def.timeCost || 60);
       const lines = [{ kind: 'story', text: `你翻开《${def.name}》，逐字参研…` }, { kind: 'sys', text: r.msg }];
@@ -1972,6 +2262,20 @@ class World extends EventEmitter {
    * 五、移动
    * ================================================================ */
   movePlayerTo(ch, roomId) {
+    /* 吐纳中不能走动（主人定的规矩：吐纳过程人得坐着）。
+       放在这个**唯一移动收敛点**上，方向键 / go / 传送都拦得住。
+       ⚠️ 玩家走方向键的那种「想走了」由 `engine.exec` 先一步接下 ——
+         它认出这不是「继续吐纳」，会把坐忘收掉再执行移动（主人 2026-10-11：
+         「点页面任意其他按钮自动退出吐纳状态」）。所以这里拦下的，是**不经过 exec
+         的移动**（剧情摆位 / 传送），那些场景本来就不该把人从坐忘里拽走。 */
+    if (ch.isPlayer && require('./neigong').blocksMove(ch)) {
+      return { ok: false, msg: '你正坐着吐纳，气行到一半，身子还沉。（点屏幕上任何别的按钮，就能醒过来。）' };
+    }
+    /* 双修 / 采补当中同样不能走（主人 2026-10-11：「不能随意移动」）。
+       收敛在同一个点上，方向键 / go / 传送都拦得住；玩家主动走的那条路见上。 */
+    if (ch.isPlayer && require('./dualcultivate').blocksMove(ch)) {
+      return { ok: false, msg: '这会儿脱不开身。（点屏幕上任何别的按钮，就能脱身。）' };
+    }
     const room = this.data.rooms[roomId];
     if (!room) return { ok: false, msg: `（不存在房间：${roomId}）` };
     const old = this.data.rooms[ch.room];
@@ -1984,8 +2288,47 @@ class World extends EventEmitter {
     ch.room = roomId;
     this.emit('roomchange', { ch, from: old ? old.id : null, to: roomId });
     this.fireEvent('onEnter', { roomId, ch });
-    this.onRoomEnter(ch, room);
-    return { ok: true, msg: '' };
+    /* NPC 是懒实例化的：不先把这一带「活化」出来，刚踏进空屋子时
+       「初见相性」一个人都抓不到（`npcsIn` 只会返回已存在的实例）。
+       ⚠️ 这一步（以及初见相性）必须放在 movePlayerTo、**不能放进 onRoomEnter**：
+          onRoomEnter 也被「遭遇战 / 目击者」等路径直接调用，
+          那些场景要求房间**保持原样**（BLK-1 的反证组正是靠「房里没人」
+          来证明目击者台词确实来自目击者）——在里面补人会当场毁掉那条差分。 */
+    const meetLines = [];
+    if (ch.isPlayer && !this.battle) {
+      const personaMod = require('./personality');
+      try { require('./ambience').ensureNearbyNpcs(this, 1); } catch (e) { /* 活化失败不该挡路 */ }
+      /* ---- 初见相性（主人 2026-10-08：「什么性格的人见面天然增/减好感」）----
+         玩家与这里的人**第一次照面**时，按两人性格给第一印象：好感 ±，并出一句神态。
+         ⚠️ 一次最多说 3 个人：市集里挤着二十号人，全念一遍比不念还吵；
+            剩下的人下次进屋再遇上（`meetAffinity` 按人记「已见过」）。 */
+      let shown = 0;
+      for (const n of this.npcsIn(ch.room)) {
+        if (shown >= 3) break;
+        if (!n.isNpc || n.dead || n.knockedOut) continue;
+        const meet = personaMod.meetAffinity(this, ch, n);
+        if (meet) { meetLines.push(...meet.lines); shown++; }
+      }
+      /* ---- 触发式支线（主人 2026-10-08）----
+         路过某处，故事自己撞上来：失足坠崖 / 撞见有人被追 / 墙角偷跑的姑娘 /
+         衙门外来回踱步的人 / 密谋劫狱 / 逃荒的一家人……
+         先说故事，再说人 —— 故事是这一趟的「事」，人是屋子里的「景」，事在前头才立得住。 */
+      const enc = require('./encounter');
+      const fired = enc.maybeFire(this, ch, room);
+      if (fired) meetLines.push(...fired.lines);
+      /* 「身上有故事的人」给一句钩子（一次最多一个，同一人只说一次）。 */
+      meetLines.push(...enc.hintsIn(this, ch, room, 1));
+      /* ⚠️ 匪类的事**不在这儿** —— 它会真的动手（startCombat / 改 NPC 状态 / 换房间），
+         而 movePlayerTo 是所有位移的收敛点：传送、剧情推人、测试摆位都走它。
+         搁在这儿的话，侧线任务里「走过去找她」那一步会莫名其妙打起来
+         （真事：`smoke-sidequest` 的非战斗解法当场变成 battle=true）。
+         所以匪类事件挂在 `commands.doMove` 上 —— **只有玩家自己一步步走**才闹。 */
+    }
+    /* ⚠️ onRoomEnter 的返回值必须**带出去**：它产出的是「进屋那一刻才有的见闻」
+       （门派摩擦的那句话）。原来这里直接丢弃返回值，于是那处文案**一句都没露过面**
+       ——典型铁律「只定义不消费」。`extra` 是新增字段，旧调用方只读 ok/msg，不受影响。 */
+    const extra = this.onRoomEnter(ch, room);
+    return { ok: true, msg: '', extra: meetLines.concat(extra || []) };
   }
 
   /** 进入房间后果：见闻、事件、遭遇 */
@@ -1997,7 +2340,34 @@ class World extends EventEmitter {
       effs.forEach(e => lines.push(e));
     }
     // 随机遭遇
-    if (room.encounter && this.rng.next() < (room.encounter.chance || 0.2)) {
+    /* ---- 门派摩擦（design/40 §5.7，主人要求「敌对门派弟子见面也要有摩擦」）----
+       ⚠️ 只做**口头**摩擦。引擎里没有 NPC-NPC 战斗（battle 永远是「玩家 vs 对手」），
+          为了一句台词去改战斗模型，风险远大于收益。
+       ⚠️ 主人原话的例外：**两人有一定正面交情就不发作** —— 这里判 NPC 对玩家的好感。 */
+    if (ch.isPlayer && !this.battle && ch.sect) {
+      if (!this.factionState) this.initWorldDynamics();   // 关系矩阵懒建：没这一步摩擦永远不触发
+      const mine = this.getSect(ch.sect);
+      for (const n of this.npcsIn(ch.room)) {
+        if (!n.sect || n.sect === ch.sect || n.dead || n.knockedOut) continue;
+        if ((n.favor || 0) >= 20) continue;                  // 有交情 → 相安无事
+        /* 同一时辰内别念第二遍（`clockMinutes` 差 < 60）。
+           ⚠️ 别用「一辈子只说一次」的布尔标记：那样玩家走开一步再回来，
+              对方就跟没看见你一样 —— 摩擦变成了只在第一次进屋才有的演出。 */
+        if (n._feudAt && (this.clockMinutes - n._feudAt) < 60) continue;
+        const rel = this.factionRel(ch.sect, n.sect);
+        if (rel > -25) continue;                             // 「不睦」以上就当没看见（−25 约等于泛泛之交的下沿）
+        n._feudAt = this.clockMinutes;
+        const theirs = this.getSect(n.sect);
+        const feud = this.factionFeudOf(ch.sect, n.sect);
+        lines.push({ kind: 'say', text: `${n.name}（${theirs ? theirs.name : n.sect}）见了你，脸色一沉：「${mine ? mine.name : ''}的弟子？」` });
+        if (feud) lines.push({ kind: 'plain', text: `（江湖上都知道：${feud}）` });
+        else lines.push({ kind: 'plain', text: `（两家积怨已久，见了面都说不上好话。）` });
+      }
+    }
+    // 随机遭遇
+    /* 天赋「福星高照」：奇遇/随机遭遇触发概率 ×1.5 —— 进屋掷骰的阈值放宽。
+       ⚠️ 倍率只在**这次掷骰的阈值**上生效，池子与后续逻辑不变。 */
+    if (room.encounter && this.rng.next() < (room.encounter.chance || 0.2) * this.encounterMult(ch)) {
       const pool = room.encounter.npcs || [];
       if (pool.length) {
         const nid = this.rng.pick(pool);
@@ -2044,20 +2414,22 @@ class World extends EventEmitter {
    *   - 不会结仇，不触发通缉
    */
   startDuel(ch, npc) {
-    if (!npc) return { lines: [{ kind: 'warn', text: '找不到切磋的对手。' }] };
-    if (this.battle) return { lines: [{ kind: 'warn', text: '你正与人交手，先了结眼前这桩。' }] };
-    const def = npc.def || {};
-    /* 对方愿不愿意？好感太低 / 讨厌你 → 拒绝 */
-    if ((npc.favor || 0) < -40) {
-      return { lines: [{ kind: 'say', text: `${npc.name}冷冷道：「我不与你这等人动手。」` }] };
-    }
-    if (/\b狼|虎|熊|蛇|豹|兽/.test(npc.name)) {
-      return { lines: [{ kind: 'warn', text: `${npc.name}可不是能讲道理的。` }] };
+    const duel = require('./duel');
+    /* 三道闸（好感 / 战斗中 / 今日次数）统一在 duel.canDuel 里判 ——
+       原来这段逻辑散在这里，加「一天三次」就得再改一遍世界文件。 */
+    const gate = duel.canDuel(this, npc);
+    if (!gate.ok) {
+      /* 按性格拒人（主人：「要么说你太菜下次再来，要么说你很强我不如你，
+         根据性格来说对应拒绝的话」）——只有这两类才走 say，
+         其余（战斗中/找不到人/对方躺着）是系统提示，走 warn。 */
+      const kind = gate.why ? 'say' : 'warn';
+      return { lines: [{ kind, text: gate.line }] };
     }
     npc.duel = true;
     npc.hostile = false;
     ch.inCombat = true;
     npc.inCombat = true;
+    duel.noteDuel(this, npc.id);
     this.battle = {
       attackers: [ch],
       defenders: [npc],
@@ -2065,13 +2437,17 @@ class World extends EventEmitter {
       startedAt: this.clockMinutes,
       target: npc,
       duel: true,
+      /* 应战台词（按性格） + 看客名单在开打时就定下来，
+         免得中途有人走开导致结算时点评的人已经不在场 */
+      watchers: this.npcsIn(ch.room).map(n => n.id),
     };
     this.emit('combatstart', { battle: this.battle });
+    const left = gate.left;
     return {
       battle: this.battle,
       lines: [
-        { kind: 'story', text: `${npc.name}退开半步，抱拳道：「请。」` },
-        { kind: 'hint', text: '（切磋点到为止，不会伤及性命。用「flee」可随时收手。）' },
+        { kind: 'story', text: `${npc.name}${duel.acceptLine(npc)}` },
+        { kind: 'hint', text: `（切磋点到为止，不会伤及性命。用「逃跑」可随时收手。今日还可比 ${left} 场。）` },
       ],
     };
   }
@@ -2139,7 +2515,8 @@ class World extends EventEmitter {
       const p = this.player;
       const t = this.battle.defenders[0];
       const chance = clamp(0.3 + (p.speed - (t ? t.speed : 10)) * 0.02, 0.05, 0.9);
-      if (this.rng.next() < chance) {
+      /* 天赋「脚底抹油」：逃跑必成（不看速度、不掷骰） */
+      if (this.hasFleeAlways(p) || this.rng.next() < chance) {
         this.battle.over = true; this.battle.winner = 'flee';
         p.inCombat = false;
         (this.battle.defenders || []).forEach(d => d.inCombat = false);
@@ -2154,9 +2531,76 @@ class World extends EventEmitter {
       const sd = this.data.skills[userAction.skill];
       if (!sd) return null;
       if (!p.learned[sd.id]) { return { lines: [{ kind: 'combat', text: '你尚未学会这门武学。' }] }; }
+      /* ---- 武技（skill.moves[]，武学重制 §4.2） ----
+         一门武学下挂若干式，各有内力/体力消耗、冷却与解锁门槛。
+         冷却挂在 **battle** 上（仿 guardTurns）：这一局用完就散，不会跟着存档漏到下一场。 */
+      let mv = null;
+      if (userAction.moveId) {
+        mv = [].concat(sd.moves || []).find(m => m && m.id === userAction.moveId) || null;
+        if (!mv) return { lines: [{ kind: 'warn', text: '没有这一式。' }] };
+        if (mv.require) {
+          const { evalCond } = require('./modapi');
+          if (!evalCond(mv.require, { player: p, world: this })) {
+            return { lines: [{ kind: 'warn', text: `你的${sd.name}火候未到，还用不出「${mv.name}」。` }] };
+          }
+        }
+        const cds = this.battle.cooldowns || (this.battle.cooldowns = {});
+        if ((cds[mv.id] || 0) > 0) {
+          return { lines: [{ kind: 'warn', text: `「${mv.name}」尚未缓过气来（还需 ${cds[mv.id]} 回合）。` }] };
+        }
+        /* +1 的由来：本回合结束时统一递减一次，若只写 cooldown 会白少算一回合 */
+        cds[mv.id] = (mv.cooldown || 0) + 1;
+      }
+      /* ---- 辅助武技（`mv.support`）：不打人，帮自己 ----
+         内功 / 轻功 / 招架 里那些「保命招」（`95_support_moves.json`）。
+         它们没有伤害，走 oneAttack 只会白送对方一下；这里单开一条通路：
+         加状态（def/dodge/parry）· 硬守一回合 · 回气 · 回血 · 抽身脱战。
+         ⚠️ 必须排在 oneAttack 之前 —— 否则会被当成普通招式再打一遍。 */
+      if (mv && mv.support) {
+        const sp = mv.support;
+        const mpNeed = (sd.mpCost || 0) + (mv.mpCost || 0);
+        if (mpNeed > p.mp) {
+          return { lines: [{ kind: 'combat', text: `${mv.name}要 ${mpNeed} 点内力，你还差些。` }] };
+        }
+        if (mpNeed) p.mp -= mpNeed;
+        const sLines = [{ kind: 'combat', text: sp.text || `你使出「${mv.name}」。` }];
+        /* 抽身：不掷骰、必定脱战 —— 这就是这门功夫练来干什么用的。
+           与「逃」走同一条收尾（finishCombat），别自己拼。 */
+        if (sp.kind === 'escape') {
+          const b = this.battle;
+          b.over = true; b.winner = 'flee';
+          p.inCombat = false;
+          (b.defenders || []).forEach(d => { d.inCombat = false; });
+          sLines.push({ kind: 'combat', text: '你借这一招错了开去，人已在几丈之外。' });
+          return this.finishCombat(sLines);
+        }
+        const turns = Math.max(1, sp.turns || 2);
+        switch (sp.kind) {
+          case 'def': case 'dodge': case 'parry':
+            p.addBuff({ name: mv.name, turns, mods: { [sp.kind]: (sp.value || 0) }, tag: 'sup:' + mv.id });
+            break;
+          case 'guard':
+            this.battle.guardTurns = Math.max(this.battle.guardTurns || 0, turns);
+            break;
+          case 'heal': {
+            const before = p.hp;
+            p.hp = Math.min(p.maxHp, p.hp + (sp.value || 0));
+            sLines.push({ kind: 'sys', text: `你缓回一口气（气血 +${Math.round(p.hp - before)}）。` });
+            break;
+          }
+          case 'mp': {
+            const before = p.mp;
+            p.mp = Math.min(p.maxMp, p.mp + (sp.value || 0));
+            sLines.push({ kind: 'sys', text: `散掉的那口元气拢回来些（内力 +${Math.round(p.mp - before)}）。` });
+            break;
+          }
+          default: break;
+        }
+        return { lines: this.stepEnemyOnly(sLines) };
+      }
       const lv = p.skillLevel(sd.id);
       if (item_mp_check(p, sd)) {
-        const r = this.combat.oneAttack(p, t, sd, this.battle, 0);
+        const r = this.combat.oneAttack(p, t, sd, this.battle, 0, mv);
         const lines = [];
         if (r) lines.push(r);
         if (t.hp <= 0) { this.combat.onDeath(t, this.battle, lines, true); this.battle.over = true; this.battle.winner = 'attackers'; }
@@ -2204,13 +2648,22 @@ class World extends EventEmitter {
       /* Boss 三阶段：敌人侧走 stepEnemyOnly，不经过 combat.step()，
          所以这里必须单独挂一次，否则 Boss 永远停在第一阶段（SPRINT-C）。 */
       this.combat.tickBossPhase(e, lines, battle);
-      const sk = this.combat.pickSkill(e, p);
-      const n = this.combat.pickSkill(e, p) && sk && sk.hits ? sk.hits : this.combat.baseAttackCount(e, p);
+      /* 迷幻（P1-1）：中了迷魂香的敌人调头打同伴。
+         同伴全都倒了就照常打玩家 —— 否则会「愣在原地」，比不中招还怪。 */
+      let tgt = p;
+      if (this.combat.isConfused && this.combat.isConfused(e)) {
+        const mate = enemies.find(x => x !== e && !x.dead && x.hp > 0);
+        if (mate) { tgt = mate; lines.push({ kind: 'combat', text: `${e.name}双目赤红，竟朝${mate.name}递招！` }); }
+      }
+      const sk = this.combat.pickSkill(e, tgt);
+      const n = sk && sk.hits ? sk.hits : this.combat.baseAttackCount(e, tgt);
       for (let i = 0; i < n; i++) {
-        if (p.hp <= 0) break;
-        const rr = this.combat.oneAttack(e, p, i === 0 ? sk : null, battle, i);
+        if (tgt.hp <= 0) break;
+        const rr = this.combat.oneAttack(e, tgt, i === 0 ? sk : null, battle, i);
         if (rr) lines.push(rr);
       }
+      /* 同伴被自己人打倒 —— 走 onDeath，别留个 0 血的人杵在场上 */
+      if (tgt !== p && tgt.hp <= 0 && !tgt.dead) this.combat.onDeath(tgt, battle, lines, false);
       if (p.hp <= 0) {
         lines.push({ kind: 'faint', text: '你眼前一黑，什么都不知道了……' });
         break;
@@ -2221,6 +2674,23 @@ class World extends EventEmitter {
        放在 stepEnemyOnly 末尾，是因为三条玩家分支
        （绝招/防御/use 物品）全都经由它落地，挂在任何一处都会漏。 */
     if (battle.guardTurns > 0) battle.guardTurns--;
+    /* 武技冷却同步递减（与 guardTurns 同一处收尾，三条分支都经过） */
+    if (battle.cooldowns) {
+      for (const k of Object.keys(battle.cooldowns)) if (battle.cooldowns[k] > 0) battle.cooldowns[k]--;
+    }
+    /* 玩家侧状态结算：走「武技 / 防御 / use 物品」三条分支时不经过 combat.step()，
+       玩家身上的 buff 回合数没人减。这里**只递减辅助武技自己打的标记（`sup_`）**，
+       不碰别人挂的状态 —— 一刀切 tickBuffs 会把 dot / 蓄势的语义一起改掉，
+       而「玩家 buff 该不该按回合扣」是另一个口径，别在这轮顺手改。 */
+    if (!skipPlayer && Array.isArray(p.buffs) && p.buffs.some(b => /^sup:/.test(b.tag || ''))) {
+      const kept = [];
+      for (const b of p.buffs) {
+        if (/^sup:/.test(b.tag || '')) { b.turns--; if (b.turns > 0) kept.push(b); }
+        else kept.push(b);
+      }
+      p.buffs = kept;
+      p.recalc();
+    }
     return lines;
   }
 
@@ -2241,6 +2711,13 @@ class World extends EventEmitter {
           u.buffs = (u.buffs || []).filter(x => x.tag !== 'bossphase');
           u.recalc && u.recalc();
         }
+        /* 辅助武技的状态（`sup_`）只在**这一局**里算数：打完就散。
+           留着的话玩家出了战斗还挂着「护体真气 +26 防」，等于白拿一份属性，
+           下回再开打还先手带着 —— 那就不是「战时辅助」了。 */
+        if (Array.isArray(u.buffs) && u.buffs.some(x => /^sup:/.test(x.tag || ''))) {
+          u.buffs = u.buffs.filter(x => !/^sup:/.test(x.tag || ''));
+          u.recalc && u.recalc();
+        }
       }
     }
     if (b.winner === 'attackers') {
@@ -2253,28 +2730,46 @@ class World extends EventEmitter {
 
     /* ---- 切磋结算：点到为止，不结仇，反而交个朋友 ---- */
     if (b.duel) {
+      const duelMod = require('./duel');
       const foe = (b.defenders || [])[0];
       if (foe) {
         foe.duel = false;
+        foe.inCombat = false;
+        this.player.inCombat = false;
         const win = b.winner === 'attackers';
         const social = require('./social');
-        if (win) {
+        if (b.winner === 'flee') {
+          lines.push({ kind: 'say', text: `${foe.name}收手退开：「承让，改日再讨教。」` });
+          lines.push(...social.addFavor(this, foe, 2, '切磋收手').lines);
+        } else if (win) {
           lines.push({ kind: 'story', text: `${foe.name}收势立定，拱手道：「好身手。」` });
-          const r1 = social.addFavor(this, foe, 6, '切磋获胜');
-          lines.push(...r1.lines);
+          lines.push(...social.addFavor(this, foe, 6, '切磋获胜').lines);
+          duelMod.noteWin(this, foe.id);        /* 记战绩：拒绝词要按它选 */
           const gain = 20 + (foe.level || 1) * 2;
           this.player.gainExp(gain);
-          this.player.potential += 8 + (foe.level || 1);
-          lines.push({ kind: 'sys', text: `切磋一场，你颇有所得（经验 +${gain}，潜能 +${8 + (foe.level || 1)}）。` });
-        } else if (b.winner === 'flee') {
-          lines.push({ kind: 'say', text: `${foe.name}笑道：「承让，改日再讨教。」` });
-          const r2 = social.addFavor(this, foe, 2, '切磋收手');
-          lines.push(...r2.lines);
+          lines.push({ kind: 'sys', text: `切磋一场，你颇有所得（经验 +${gain}）。` });
         } else {
           lines.push({ kind: 'story', text: `${foe.name}扶住踉跄的你：「今日是我占了上风，你的路数却很是有趣。」` });
-          const r3 = social.addFavor(this, foe, 3, '切磋败北');
-          lines.push(...r3.lines);
+          lines.push(...social.addFavor(this, foe, 3, '切磋败北').lines);
         }
+
+        /* 「晕倒过去，醒来还是在原地」（主人 2026-10-11）。
+           战斗引擎已经把双方血量按在 1、谁也没被抬走（见 combat.onDeath 的 duel 分支），
+           这里补上「那一会儿」的叙述与时间，别让人以为打完就没事了。
+           ⚠️ 用 advanceTime 而不是新造一个「倒地」状态：
+              新状态要处理「倒地期间不许行动/不许被偷袭/存档怎么恢复」，
+              为一个转场叙述不值当，而且多一个状态就多一处能卡死玩家的地方。 */
+        this.player.advanceTime(20);
+        if (win) {
+          lines.push({ kind: 'story', text: `${foe.name}在地上坐了一会儿，才撑着膝盖站起来，拍了拍衣摆上的土。` });
+        } else {
+          lines.push({ kind: 'plain', text: '你眼前发花，靠着墙坐了一刻，才慢慢缓过来 —— 人还在原处。' });
+        }
+
+        /* 看客点评（主人：「如果有旁人会凑热闹看并对招式进行点评，却不会帮任何一方」）。
+           只出话，绝不动手 —— bystanderLines 里不碰 battle、不改 favor。 */
+        const watch = duelMod.bystanderLines(this, foe, win, 2);
+        if (watch.length) lines.push(...watch);
       }
     }
 
@@ -2341,8 +2836,10 @@ class World extends EventEmitter {
           速率：饱食约 12 分钟掉 1 点、口渴约 8 分钟掉 1 点 → 满值 100 大约撑一天，
           与 old 的 12/8 保持同一量级，只是把它从「一次性门槛」改成「连续结算」。 */
     if (minutes > 0) {
-      p.food = clamp(p.food - (minutes / 12), 0, p.maxFood);
-      p.water = clamp(p.water - (minutes / 8), 0, p.maxWater);
+      /* 天赋「浪子情怀」等：行走消耗倍率（默认 1；-0.5 → 饱食/饮水掉得只有一半） */
+      const cons = this.consumptionMult(p);
+      p.food = clamp(p.food - (minutes / 12) * cons, 0, p.maxFood);
+      p.water = clamp(p.water - (minutes / 8) * cons, 0, p.maxWater);
       /* 扣到小数就记账（不然每走一步都四舍五入回原值，白扣）。
          ⚠️ 保留 4 位而不是 2 位 —— 2 位时每步舍入误差会累积：
          12 次 advanceTime(1) 只扣掉 0.96 而不是 1.00（测试实测）。
@@ -2388,6 +2885,51 @@ class World extends EventEmitter {
             所以这里只**收集**，交给 ambience.wanderLines 筛「看得见的那些」并限量。 */
     const amb = require('./ambience');
     try { amb.ensureNearbyNpcs(this, 1); } catch (e) { /* 活化失败不该拖垮时间系统 */ }
+    /* ---- 致幻（arts.js「致幻」）：中了的人认不得路，只在附近打转 ----
+       与「游走」分开处理：游走是这人的习性，迷路是**被人做了手脚**。
+       表现上前者走得干脆，后者走两步又绕回来 —— 玩家一眼能看出不对。 */
+    for (const id of Object.keys(this.instances.npcs)) {
+      const n = this.instances.npcs[id];
+      /* 引路（lure）：被人做了手脚的人会跟着那一位走 */
+      const lu = n.vars && n.vars.lure;
+      if (lu && lu.left > 0) {
+        lu.left--;
+        const host = this.player;
+        if (host && host.id === lu.host && n.room !== host.room && !n.dead) {
+          const cur = this.data.rooms[n.room] || {};
+          const dir = Object.keys(cur.exits || {}).find(d => {
+            const to = cur.exits[d]; const tid = typeof to === 'string' ? to : (to && to.to);
+            return tid === host.room;
+          });
+          if (dir) {
+            n.room = host.room;
+            this.emit('storyline', { line: { kind: 'plain', text: `${n.name}不知什么时候跟了过来，站在你身后。` } });
+          }
+        }
+        if (lu.left <= 0) delete n.vars.lure;
+      }
+      const st = n.vars && n.vars.stray;
+      if (!st || st.left <= 0) continue;
+      st.left--;
+      if (st.left <= 0) { delete n.vars.stray; if (n.room !== st.home) n.room = st.home; continue; }
+      if (!this.rng.chance(0.5)) continue;
+      const room = this.data.rooms[n.room];
+      if (!room || !room.exits) continue;
+      const dirs = Object.keys(room.exits).filter(d => HORIZ_DIRS.indexOf(d) >= 0);
+      if (!dirs.length) continue;
+      const d = dirs[Math.floor(this.rng.next() * dirs.length)];
+      const to = room.exits[d];
+      const tid = typeof to === 'string' ? to : (to && to.to);
+      if (!tid || !this.data.rooms[tid]) continue;
+      /* 只在家门口两格内绕：太远了就「走丢」在别的城，反而说不通 */
+      const target = this.data.rooms[tid];
+      const homeRoom = this.data.rooms[st.home];
+      if (homeRoom && target.region !== homeRoom.region) continue;
+      n.room = tid;
+      if (this.player && (n.room === this.player.room || (room.exits && Object.values(room.exits).indexOf(this.player.room) >= 0))) {
+        this.emit('storyline', { line: { kind: 'plain', text: `${n.name}从街这头走到那头，又转回原地，一脸茫然。` } });
+      }
+    }
     const moved = [];
     for (const id of Object.keys(this.instances.npcs)) {
       const n = this.instances.npcs[id];
@@ -2410,6 +2952,14 @@ class World extends EventEmitter {
     if (moved.length) {
       for (const l of amb.wanderLines(this, moved)) this.emit('storyline', { line: l });
     }
+    /* ---- NPC 的日常（主人 2026-10-08）----
+       缺钱去打工、挣了钱买吃的、自己练功、内力空了打坐；同屋的人聊两句或拌嘴。
+       走 emit('storyline') → _tickLines → 玩家下一条指令时带出来（与 W5/W7 同一条通道）。
+       ⚠️ 抽样跑（`CFG.samplePerTick`），不遍历 —— 四百多号人每个 tick 全跑，服务器先烧掉。 */
+    try {
+      const life = require('./npclife').onTick(this, 30);
+      for (const l of life) this.emit('storyline', { line: l });
+    } catch (e) { /* NPC 的日常挂了不该拖垮时间系统 */ }
     // 时间作息：昼夜轮换时，把 NPC 从工作地（day）挪回家（night），反之亦然。
     // 玩家眼前的 NPC 不动，避免交互到一半人突然消失。
     const night = this.isNight();
@@ -2569,7 +3119,22 @@ class World extends EventEmitter {
       handlers = Object.values(handlers).filter(x => x && typeof x === 'object' && (x.cond || x.effects));
     }
     const day = Math.floor(this.clockMinutes / 1440);
-    for (const h of [].concat(handlers)) {
+    /* 「一天最多两件事」——W5 事件库落地（68 条）后，跨日要过一遍全部条件。
+       68 条里有三四十条带 `chance`，不加限流的话，运气不好一天能连报四五件
+       （玩家刚睁开眼：仇家堵路 + 河里决口 + 隔壁出殡 + 说书的开讲），
+       世界会变得像跑马灯。所以**打乱顺序后一天最多报两件** ——
+       打乱是为了公平：不按数组顺序让前几条永远优先。
+       只对 onDayTick 限流，onKill/onLevelUp 那些是动作触发的，不受影响。 */
+    let handlersList = [].concat(handlers);
+    if (name === 'onDayTick' && handlersList.length > 1) {
+      handlersList = handlersList.slice();
+      for (let i = handlersList.length - 1; i > 0; i--) {
+        const j = this.rng.int(0, i);
+        const t = handlersList[i]; handlersList[i] = handlersList[j]; handlersList[j] = t;
+      }
+    }
+    let dayFired = 0;
+    for (const h of handlersList) {
       if (!h || typeof h !== 'object') continue;
       /* E7 · 冷却 / 一次性（引擎原本不认这两个字段）：
          事件可按 id 声明 `cooldownDays`（同事件 N 天内不重复）或 `once`（一辈子一次）。
@@ -2586,6 +3151,11 @@ class World extends EventEmitter {
       if (h.id && fired.length) {
         this._evCooldown[h.id] = day;
         if (h.once) this._evFired[h.id] = day;
+      }
+      /* fired 为空 = 条件看着满足、效果却什么都没产出（不该算「报了一件事」） */
+      if (fired.length && name === 'onDayTick') {
+        dayFired++;
+        if (dayFired >= 2) { fired.forEach(l => this.emit('storyline', { line: l })); break; }
       }
       fired.forEach(l => this.emit('storyline', { line: l }));
     }
@@ -2605,6 +3175,19 @@ class World extends EventEmitter {
   createPlayer(cfg) {
     cfg = cfg || {};
     const meta = this.data.meta;
+    /* ⚠️ 身份 × 性别硬校验（**后端**，前端把不合法的身份藏起来只是第一道）：
+       与性别强绑定的身份（庵堂孤儿→峨眉 · 山门弃婴→少林 · 守墓人之后→古墓）
+       在数据里带 `gender`（见 data/68_talents.json 的 meta.births）。
+       为什么非挡不可：剧情只写了这一条性别线（没有「男身庵堂孤儿」的后续），
+       若放行，tutorial.targetSectFor 会顺着备选链把引路改口到另一家门派，
+       玩家选的出身与旁白/引导对不上——这是静默的错位，比直接拒绝更难查。
+       前端会按性别过滤身份列表，但**手搓 /api/new 请求绕得过去**，所以这里再挡一次。
+       不合法就明确拒绝（给人话错误），不做「偷偷换成别的身份」——那等于骗玩家。 */
+    const _bdef = (meta.births || {})[cfg.birth];
+    if (_bdef && _bdef.gender && _bdef.gender !== (cfg.gender || 'male')) {
+      const want = _bdef.gender === 'female' ? '女' : '男';
+      throw new Error(`「${_bdef.name || cfg.birth}」只收${want}儿身，与所选性别不符。`);
+    }
     const p = new Character(this, {
       name: cfg.name || '无名侠客',
       gender: cfg.gender || 'male',
@@ -2613,15 +3196,27 @@ class World extends EventEmitter {
       attr: cfg.attr || meta.startAttr,
       hp: meta.startHp, mp: meta.startMp,
       money: cfg.money !== undefined ? cfg.money : (meta.startMoney || 100),
-      potential: cfg.potential !== undefined ? cfg.potential : (meta.startPotential || 200),
+      // 潜能已废除（2026-10-11）：开局不再发这个数。
       perks: cfg.perks || [],
       traits: (cfg.traits || []).concat(meta.startTraits || []),
       timeMinutes: meta.startTime || 540,
     });
     p.isPlayer = true;
     p.isNpc = false;
-    p.personality = cfg.personality || 'haoshuang';
+    p.personality = cfg.personality || require('./personality').PLAYER_DEFAULT;
     p.room = meta.startRoom || 'road_1';
+    /* 「楼里新来的」（主人 2026-10-11）：开局人就在醉春楼，牌子还没挂 ——
+       身份 = **已卖身、正在学规矩**。所以这里直接落两样东西：
+         ① 起始房间改到楼里（不能还站在江南大路上）；
+         ② `prostitution.sold = true`（她本来就已经画了押，不是刚去卖的）。
+       ⚠️ 卖身银不发：契是别人替她按的，钱从来没到过她手上。 */
+    if (cfg && cfg.birth === 'brothel_sold') {
+      const house = 'jn_brothel_hall';
+      if (this.data.rooms[house]) p.room = house;
+      p.prostitution = {
+        sold: true, brothelRoom: p.room, debt: 1600, since: 0, served: 0, earnings: 0,
+      };
+    }
     p.inventory = [];
     p.equipmentUid = {};
     p.log = [];
@@ -2708,6 +3303,11 @@ class World extends EventEmitter {
         inventory: p.inventory, equipment: p.equipment, equipmentUid: p.equipmentUid,
         equipped: p.equipped, perks: p.perks, traits: p.traits, titles: p.titles,
         insect: p.insect, quests: p.quests, flags: p.flags, vars: p.vars, tutorialFlags: p.tutorialFlags || [],
+        /* 房间动作的限次记账（`once` / `oncePerDay`）。**必须随档走** ——
+           不存的话读一次档就能把「一辈子一次」的参悟重新刷一遍。 */
+        actionUsed: p.actionUsed || {}, actionLast: p.actionLast || {},
+        /* 切磋：今日次数与胜负战绩（拒绝词要按战绩选，所以两样都得存） */
+        duelLog: p.duelLog || {}, duelWin: p.duelWin || {},
         sect: p.sect, rank: p.rank, sectContribution: p.sectContribution,
         room: p.room, timeMinutes: p.timeMinutes, age: p.age,
         log: (p.log || []).slice(-200), deathCount: p.deathCount || 0,
@@ -2939,6 +3539,8 @@ class World extends EventEmitter {
       equipmentUid: sd.equipmentUid || {}, equipped: sd.equipped || {},
       perks: sd.perks || [], traits: sd.traits || [], titles: sd.titles || [],
       insect: sd.insect || null, quests: sd.quests || {}, flags: sd.flags || {}, tutorialFlags: sd.tutorialFlags || [],
+      actionUsed: sd.actionUsed || {}, actionLast: sd.actionLast || {},
+      duelLog: sd.duelLog || {}, duelWin: sd.duelWin || {},
       vars: sd.vars || {}, sect: sd.sect || null, rank: sd.rank || 0,
       sectContribution: sd.sectContribution || 0, room: sd.room,
       timeMinutes: sd.timeMinutes, age: sd.age || 16,
@@ -2999,10 +3601,19 @@ class World extends EventEmitter {
     /* 重建玩家买的宅子房间（运行期动态建、不在 data 里） */
     this.restorePlayerHomes(save.playerHomes);
     this.reviveInstances(save.instances);
+    /* 旧档自愈：把历史 bug 造出的「常驻 NPC 副本」清掉（幂等；干净档是 no-op）。
+       ⚠️ 放在 reviveInstances 之后（要先有实例才能去重）、hydrateCharacter 之前都行，
+          但**不能因为修复失败就拦住读档** —— 兜住异常，最坏也就是副本留着。 */
+    try { this.dedupeNpcInstances(); } catch (e) { /* 自愈失败不拦读档 */ }
     /* 玩家走的是 `new Character()` 重建（不经过 cleanInstance），本来就是真 Character。
        这里只做一次核实 + 兜底，不假设 —— 万一将来有人把玩家也塞进 instances，
        这一行会救场；正常情况下它是 no-op。 */
     hydrateCharacter(this.player, this);
+    /* 自创武学**必须重新注入** `data.skills`（2026-10-11）：
+       新功夫只活在运行时那张表里，存档存的是它的「身份」（id/名字/来源）。
+       不重注的话，读档回来它就成了「不存在的武学」—— 面板上看不见、练不了、
+       战斗里 pickSkill 也取不到，**而且全程不报错**。 */
+    try { require('./customskill').rehydrate(this, this.player); } catch (e) { /* 恢复失败不拦读档 */ }
     this.rng = new RNG(save.seed || Date.now());
     this.deadNpcs = Object.assign({}, save.deadNpcs || {});
     this.jail = Object.assign({}, save.jail || {});
