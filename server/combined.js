@@ -90,7 +90,14 @@ function proxyTo(targetPort, stripPrefix, req, res) {
   const target = url.parse(req.url);
   const headers = Object.assign({}, req.headers);
   headers.host = '127.0.0.1:' + targetPort;
-  delete headers['accept-encoding'];   /* 避免内部压缩导致内容长度不一致 */
+  /* 🔴 这里**不要**删 `accept-encoding`（2026-10-11）。
+     原来那行 `delete headers['accept-encoding']` 的本意是「避免内部压缩导致
+     内容长度不一致」，代价却是**把整条链路的压缩能力废掉** ——
+     内部服务就算实现了 gzip，也永远收不到客户端说「我支持 gzip」，
+     于是线上（合并部署）照样发未压缩的 310 KB，「加了 gzip」白加。
+     现在上游会把 `Content-Encoding` 与压缩后的 `Content-Length` 一起写回，
+     下面 `res.writeHead(upRes.statusCode, upRes.headers)` 是**原样转发**，
+     两个头天然配套，不会再出现长度不一致。 */
 
   const upstream = http.request({
     hostname: '127.0.0.1',
