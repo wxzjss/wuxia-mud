@@ -54,7 +54,9 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
   ok('走出去了', p.room !== elderRoom, '现在在 ' + w.data.rooms[p.room].name);
   ok('★ 章节照讲（旁白哪儿读都通）', kinds(rMove, 'subtitle').length > 0,
     kinds(rMove, 'subtitle').join(','));
-  ok('★ 老汉的话**不上屏**（他人不在这儿）', elderSays(rMove).length === 0,
+  /* 口径变更（主人 2026-10-11）：在场闸门已撤 → 他的话**照旧上屏**。
+     改的是主人的决定，不是把新功能判成 bug。 */
+  ok('★ 老汉的话**照旧上屏**（在场闸门已撤）', elderSays(rMove).length > 0,
     elderSays(rMove).join(' | ') || '(没提老汉)');
   /* 并且得证明「这一章本来是有他一句话的」—— 不然闸门在不在都看不出区别 */
   ok('★ 这一章本身是带老汉台词的（闸门确实在干活）',
@@ -116,12 +118,13 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
       && (w3.npcsIn(id) || []).length === 0);
     w3.movePlayerTo(p3, far);
     await e3.exec('score');                       // 让剧情对账先跑一遍
-    ok('已经离委托人很远了', !sb.present(w3, p3, qd3.giver), far);
+    /* 口径变更（主人 2026-10-11）：离得再远，闸门也已撤 —— 照放行。
+       这里改成正面验证「撤闸门」这件事本身，而不是反过来断言「不上屏」。 */
+    ok('已经离委托人很远了（但闸门已撤，仍放行）', sb.present(w3, p3, qd3.giver) === true, far);
     const ra3 = await e3.exec('接任务 ' + qd3.name);
     const ta3 = allText(ra3);
-    ok('★ 人不在 → 委托人的来历不上屏', !ta3.includes((qd3.desc || '').slice(0, 12)),
-      ta3.slice(0, 70));
-    ok('★ 但目标还是给了（玩家知道该干什么）', /目标：/.test(ta3));
+    ok('★ 人不在也照讲（不再静默吞掉）', ta3.length > 0, ta3.slice(0, 70));
+    ok('★ 但是目标还是给了（玩家知道该干什么）', /目标：/.test(ta3));
   }
 
   /* ================= 五、读档不刷屏 ================= */
@@ -152,11 +155,14 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
 
   /* ================= 六、闸门本身 ================= */
   section('6 present() 的判据');
-  ok('不指定人 → 一律放行', sb.present(w, p, null) === true);
+  /* 🔴 口径变更（主人 2026-10-11）：「把剧情 npc 不在玩家身边就不说话效果取消掉
+     （实测影响游戏体验）」。原先这一节断言的是「人不在 → 整条拦下」，
+     现在语义反过来了：**恒放行**。改的是主人的决定，不是把新功能判成 bug。 */
+  ok('不指定人 → 放行', sb.present(w, p, null) === true);
   ok('在场的人 → 放行', sb.present(w, p, 'guide_teaman') === true);
-  ok('★ 不在场的人 → 拦下', sb.present(w, p, 'master_yue') === false);
-  ok('beats 会整条丢掉（不是只换个说法）',
-    sb.beats(w, p, [{ kind: 'say', text: 'x', by: 'master_yue' }]).length === 0);
+  ok('★ 不在场的人也放行（在场闸门已撤）', sb.present(w, p, 'master_yue') === true);
+  ok('★ beats 不再按在场丢条目（人不在也照讲）',
+    sb.beats(w, p, [{ kind: 'say', text: 'x', by: 'master_yue' }]).length === 1);
   ok('没有归属的条目照常过',
     sb.beats(w, p, [{ kind: 'story', text: 'y' }]).length === 1);
 

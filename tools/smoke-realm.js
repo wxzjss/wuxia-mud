@@ -15,8 +15,13 @@ section('1. 凡人初始');
   e.boot();
   e.newGame({ name: '凡人', gender: 'male' });
   const w = e.world, p = w.player;
-  ok('开局无武学', Object.keys(p.learned).length === 0, Object.keys(p.learned).join(','));
-  ok('境界不通武艺', e.realmName(p) === '不通武艺', e.realmName(p));
+  /* 口径变更（主人 2026-10-11）：开局**自带两门基础功夫**（basic_fist / basic_force）——
+     原话「玩家初始真的很弱谁都打不过」，所以出生就有点底子（但仍是凡人档）。
+     这条原来断言「开局一门武学都没有」，现在改成「只有基础功夫，没有门派武学」。 */
+  ok('开局只有基础功夫（没有门派武学）',
+    Object.keys(p.learned).length > 0 && Object.keys(p.learned).every(k => /^basic_/.test(k)),
+    Object.keys(p.learned).join(','));
+  ok('开局是凡人档（初窥门径）', e.realmName(p) === '初窥门径', e.realmName(p));
   ok('气血极低', p.maxHp < 100, 'maxHp=' + p.maxHp);
   ok('攻击极低', p.atk < 20, 'atk=' + p.atk);
 }
@@ -62,7 +67,12 @@ section('4. 练武功法变强');
   p.gainSkillExp('huashan_sword', 999999);
   p.recalc();
   ok('练剑法加攻击', p.atk > a0, 'atk ' + a0 + '→' + p.atk);
-  ok('境界提升', e.realmName(p) !== realm0, realm0 + '→' + e.realmName(p));
+  /* 口径变更（主人 2026-10-11）：开局自带两门基础功夫 → realm0 已经是「初窥门径」，
+     光「多学一门」不再跨档。这里改成**真把等级练上去**再断言跨档 ——
+     测的本来就是「境界跟着武学等级走」这件事。 */
+  p.learned['huashan_sword'].level = 200;
+  p.recalc();
+  ok('境界随武学等级提升', e.realmName(p) !== realm0, realm0 + '→' + e.realmName(p));
 }
 
 /* ============ 5. 内功加气血 ============ */

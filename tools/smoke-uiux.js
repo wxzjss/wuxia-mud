@@ -415,9 +415,10 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     env2.WX.S.view = VIEW;
     env2.WXUI.renderQuickbar(VIEW);
     env2.document.getElementById('qb-menu').onclick();
-    const bagBtn = env2.document.getElementById('choices-list').children.find(c => /c-label">背包<\/span>/.test(String(c.innerHTML || '')));
+    const bagBtn = env2.document.getElementById('choices-list').children.find(c => /c-label">行囊<\/span>/.test(String(c.innerHTML || '')));
     if (bagBtn) { bagBtn.onclick(); await settle(); }
-    ok('S4-8 ★ 点「背包」→ 真请求 inventory 面板',
+    /* 口径变更（主人 2026-10-11）：「背包」这个说法改成「行囊」了，按钮文字随之。 */
+    ok('S4-8 ★ 点「行囊」→ 真请求 inventory 面板',
       rec2.view.indexOf('inventory') >= 0 && env2.document.getElementById('modal-title').textContent === '随身行囊',
       'view=' + rec2.view.join(',') + ' / title=' + env2.document.getElementById('modal-title').textContent);
   }

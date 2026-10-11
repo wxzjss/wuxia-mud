@@ -46,8 +46,10 @@ sec('① 弱智面板步已删除 + 新步骤结构正确');
   const ids = tutorial.STEPS.map(s => s.id);
   ok('已无 bag（认清家当）步', !ids.includes('bag'));
   ok('已无 status（认清自己）步', !ids.includes('status'));
-  ok('步骤顺序为 look→move→skill→talk→quest→fight→sect→save→free',
-    JSON.stringify(ids) === JSON.stringify(['look', 'move', 'skill', 'talk', 'quest', 'fight', 'sect', 'save', 'free']),
+  /* 口径变更（主人 2026-10-11）：「不要一进来就要求玩家打怪，至少得在拜入宗门后
+     学点武艺才行」—— 拜师（sect）与打架（fight）的顺序对调了。 */
+  ok('步骤顺序为 look→move→skill→talk→quest→sect→fight→save→free',
+    JSON.stringify(ids) === JSON.stringify(['look', 'move', 'skill', 'talk', 'quest', 'sect', 'fight', 'save', 'free']),
     ids.join(','));
   /* requires 链：每个真实步的前置是上一步 id */
   const real = tutorial.STEPS.filter(s => s.id !== 'free');
@@ -83,13 +85,16 @@ sec('② 端到端点亮（无 bag/status，纯操作引导）');
   ({ map } = steps(e));
   ok('talk/quest 完成', map.talk.done && map.quest.done, line(map));
 
+  /* 口径变更（主人 2026-10-11）：fight 现在**要求先拜师** ——
+     没拜师时「赢一场」这一步锁着（这是主人要的效果：先学武艺再动手）。 */
   e.world.player.kills = 1;
   ({ map } = steps(e));
-  ok('kills=1 点亮 fight 步', map.fight.done, line(map));
+  ok('★ 未拜师时 kills=1 也不点亮 fight（先学本事再打架）', !map.fight.done, line(map));
 
   e.world.player.sect = 'huashan';
   ({ map } = steps(e));
   ok('sect 已定点亮 sect 步', map.sect.done, line(map));
+  ok('拜师之后 kills=1 才点亮 fight 步', map.fight.done, line(map));
 
   e.markTutorialFlag('did_save');
   ({ g, map } = steps(e));

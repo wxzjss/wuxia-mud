@@ -407,6 +407,28 @@ class GameEngine {
       tagName: tagNameCN((n.def && n.def.tag) || null),
       gender: n.gender,
       canQingjiao: !!(n.def && n.def.teach && n.def.teach.length),
+      /* 「请教」面板要的清单（主人 2026-10-11）：
+         「点击请教 npc 会弹出一个界面，里面是一些可请教的武学名称按钮，
+           不可请教的武学上面会写『不可请教』」。
+         数据与 `请教 <人>` 指令**同一来源**（social.teachList），
+         只是这里多算一栏「这一门此刻能不能请教 / 不能是因为什么」——
+         前端照它渲染按钮或灰字，不在前端另判一套（否则又是两边口径漂移）。 */
+      teachList: (function () {
+        try {
+          const isMaster = !!(p.masters && p.masters[n.defId || n.id]);
+          return social.teachList(w, n).map(s => {
+            let can = true, why = '';
+            if (s.known) { can = false; why = '已学会'; }
+            else if (!isMaster && !((n.favor || 0) >= s.favorNeed) && !s.money) {
+              can = false; why = `好感需 ${s.favorNeed}`;
+            }
+            return {
+              id: s.id, name: s.name, type: s.type || '', quality: s.quality || '',
+              favorNeed: s.favorNeed, money: s.money, known: !!s.known, can, why,
+            };
+          });
+        } catch (e) { return []; }
+      })(),
       canQiecuo: !n.dead && !/\b狼|虎|熊|蛇|豹|兽/.test(n.name),
       canSteal: !!(n.carry && ((n.carry.items || []).length || n.carry.money)),
       likes: ((n.def && n.def.likes) || []).map(x => {
@@ -494,6 +516,16 @@ class GameEngine {
       groundItems,
       corpses,
       player: this.playerBrief(),
+      /* 🔴 主人 2026-10-11：「输入『物品』能看到行囊界面，屏幕下方快捷键『背包』却看不到」。
+         根因：前端三个面板读的是**顶层** `v.inventory` / `v.equipment` / `v.affects`，
+         而这些数据原先只挂在 `v.player` 下面（playerBrief）—— 顶层根本没有这几个键，
+         于是 `invHtml` 拿到 `undefined`、`|| []` 兜成空数组，
+         面板永远显示「行囊空空如也」（**不报错、不崩，就是空的**）。
+         同一个坑还连累「装备」与「状态效果」两个面板（它们读的也是顶层）。
+         顶层补上一份：数据来源与 playerBrief 里那几项**同一函数**，不各算一套。 */
+      inventory: this.inventoryList(),
+      equipment: this.equipmentList(),
+      affects: this.affectList(),
       combat: w.battle ? this.combatView() : null,
       quests,
       /* 地图是回包里最大的一项（247 KB）。指令回包不带它，见 view(opts) 的注释。
@@ -842,13 +874,26 @@ class GameEngine {
     });
   }
 
-  equipmentList() {
-    const p = this.world.player, w = this.world;
+  equipmentList() {    const p = this.world.player, w = this.world;
     const slots = ['头部', '颈部', '身体', '披风', '手部', '脚部', '武器', '副手', '戒指', '饰品'];
     return slots.map(s => {
       const id = p.equipment[s];
       const d = id ? w.getItem(id) : null;
       return { slot: s, itemId: id, name: d ? d.name : null, stats: d ? d.stats : null };
+    });
+  }
+
+  /* 状态效果（面板读**顶层** v.affects）。
+     原先只有 player.buffs，顶层没有这个键 —— 于是「状态效果」面板也是永远空的，
+     与行囊 / 装备同一个坑（主人这次报的是行囊，顺手把三处一起修掉）。 */
+  affectList() {
+    const p = this.world.player;
+    const CN = { atk: '攻击', def: '防御', dodge: '身法', parry: '招架', speed: '速度', critRate: '暴击', maxHp: '气血上限', maxMp: '内力上限' };
+    return (p.buffs || []).map(b => {
+      const parts = [];
+      for (const k of Object.keys(b.mods || {})) parts.push(`${CN[k] || k} ${b.mods[k] > 0 ? '+' : ''}${b.mods[k]}`);
+      for (const k of Object.keys(b.dot || {})) parts.push(`${CN[k] || k} −${b.dot[k]}/回合`);
+      return { name: b.name || '状态', kind: b.tag || '状态', turns: b.turns, desc: parts.join('　') || '—' };
     });
   }
 
@@ -871,7 +916,12 @@ class GameEngine {
       out.push({ id: qid, name: qd.name, type: qd.type, level: qd.level, stage: st, desc: qd.desc, stageDesc: stage ? stage.desc : '', targets });
     }
     // 已完成
-    const done = Object.keys(p.quests).filter(k => p.quests[k] >= 99);
+    /* ⚠️ 这里原来只给一串 id，前端 `d.name` 取不到 → 「已完成」区列出来全是「✔ 」后面空白。
+       现在带上名字与类型（前端要显示，也方便「清掉已完成」按类型筛）。 */
+    const done = Object.keys(p.quests).filter(k => p.quests[k] >= 99).map(k => {
+      const qd = w.getQuest(k) || {};
+      return { id: k, name: qd.name || k, type: qd.type || '' };
+    });
     return { active: out, done, completedCount: done.length };
   }
 
@@ -1488,10 +1538,17 @@ class GameEngine {
       const qd = w.getQuest(qid);
       if (!qd || !qd.stages || !qd.stages[st]) continue;
       for (const t of (qd.stages[st].targets || [])) {
-        if (t.kind === 'room' && t.key === p.room) {
-          const vk = t.var || `q_${qid}_${t.id}`;
-          if (!p.getVar(vk)) { p.setVar(vk, 1); }
-        }
+        const vk = t.var || `q_${qid}_${t.id}`;
+        /* room：人站在目标房间就是达成。
+           flag：**标记已经设上**就是达成。
+           🔴 主人 2026-10-11 报：「小叫花的城西破庙搜查任务，我来到破庙点『搜查』，
+              为什么任务没完成？」—— 根因就是这里只认 `room`。
+              破庙那间房的「搜查」动作确实把 `temple_searched` 设上了（50_map 里写得好好的），
+              可这个循环里**没有 flag 这一支**，于是：
+                目标 var 永远是 0 → checkQuestAuto 判不出达成 → 面板停在「去城西破庙查看」。
+              全库带 `kind:'flag'` 的目标不止这一条（它是一整类），一起修掉。 */
+        if (t.kind === 'room' && t.key === p.room) { if (!p.getVar(vk)) p.setVar(vk, 1); }
+        else if (t.kind === 'flag' && p.hasFlag(t.key)) { if (!p.getVar(vk)) p.setVar(vk, t.count || 1); }
       }
     }
     // 饥渴昏倒：advanceTime 掉血到 0，但没走战斗的 playerDeath
@@ -1521,6 +1578,21 @@ class GameEngine {
     this.checkAchievements(merged);
   }
 
+  /** 单个任务目标是否达成。判据**按 kind 分开**，不能一律读 `var`：
+   *    · item —— 数身上的物件（`countItem` 按 count 累加，数「堆数」会判错）
+   *    · flag —— 看标记设没设（flag 住在 `p.flags`，而 `p.getVar` 读的是 `p.vars`，
+   *              两者不是一个地方 —— 这正是破庙那条任务判不出来的原因）
+   *    · 其余（room / kill / 自定义）—— 读计数 var
+   *  🔴 原判定写成 `t.kind === 'item' ? countItem : getVar`，把 flag 也塞进 getVar 分支，
+   *     于是 flag 类目标读的是 `p.vars.temple_searched`（从来不存在），恒为 0。 */
+  targetDone(p, qid, t) {
+    if (!t) return true;
+    const vk = t.var || `q_${qid}_${t.id}`;
+    if (t.kind === 'item') return p.countItem(t.key) >= (t.count || 1);
+    if (t.kind === 'flag') return !!p.hasFlag(t.key);
+    return (p.getVar(vk) || 0) >= (t.count || 1);
+  }
+
   /** 自动推进「条件型」任务阶段 */
   checkQuestAuto(lines) {
     const w = this.world, p = w.player;
@@ -1535,9 +1607,7 @@ class GameEngine {
       if (stage.targets && stage.targets.length) {
         let all = true;
         for (const t of stage.targets) {
-          const vk = t.var || `q_${qid}_${t.id}`;
-          let cur = t.kind === 'item' ? p.countItem(t.key) : (p.getVar(vk) || 0);
-          if (cur < (t.count || 1)) { all = false; break; }
+          if (!this.targetDone(p, qid, t)) { all = false; break; }
         }
         if (all && !p.hasFlag('questready_' + qid + '_' + st)) {
           p.setFlag('questready_' + qid + '_' + st, true);

@@ -217,6 +217,9 @@ section('运功疗伤要耗内力（主人报 bug）');
   const nei = Object.values(w.data.skills).find(s => s.type === '内功');
   if (nei) { p.learned[nei.id] = { level: 30, exp: 0 }; p.equippedSkills['内功'] = nei.id; p.recalc(); }
 
+  /* ⚠️ 口径变更（2026-10-11）：开局现在是**满血**（修了 ENG-04 的玩家版 ——
+     maxHp 涨了 hp 不跟，开局 20/68）。所以得先弄出伤来，才测得到「疗伤耗内力」。 */
+  p.hp = Math.max(1, Math.floor(p.maxHp / 2));
   ok('heal 指令已注册（快捷键不再「未知指令」）',
     typeof e.exec === 'function' && /内力/.test(e.exec('heal').lines.map(l => l.text).join('')),
     '疗伤文案里应提到内力');

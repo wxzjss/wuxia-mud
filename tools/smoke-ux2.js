@@ -35,8 +35,11 @@ const txt = (r) => ((r && r.lines) || []).map(l => l.text || '').join(' ');
   const L = s.lines || [];
   const i = L.findIndex(l => /装备（\d+ 件）/.test(String(l.text)));
   ok('★ 状态面板里有装备那一段', i >= 0, i >= 0 ? String(L[i].text) : '(没有)');
-  ok('★ 写出了部位与加成', i >= 0 && /武器：.+攻 \+/.test(String(L[i + 1].text)),
-    i >= 0 ? String(L[i + 1].text) : '-');
+  /* ⚠️ 口径变更（2026-10-11）：开局现在**自动穿上「身体」那件粗布衣裳**了
+     （修「玩家初始真的很弱」时加的），所以装备段的第一行是「身体：…」而不是武器。
+     断言改成看**整个装备段**里有没有武器那一行，而不是死盯 i+1。 */
+  const eqBlock = L.slice(i, i + 8).map(x => String(x.text)).join('\n');
+  ok('★ 写出了部位与加成', i >= 0 && /武器：.+攻 \+/.test(eqBlock), eqBlock.slice(0, 140));
 
   /* ================= 二、绑架成功率 ================= */
   section('2 绑架：成功率 + 两条分支');

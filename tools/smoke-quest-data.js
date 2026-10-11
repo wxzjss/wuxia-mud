@@ -66,8 +66,11 @@ section('① B20 · A 层 26 人模板「停用」（从 quests 移除）');
 ok('26 条 sq_npcv_* 已从 quests 移除（不存在可被「accept」接取的旧模板）',
   A26.every(id => !quests['sq_' + id]),
   '缺失 ' + A26.filter(id => quests['sq_' + id]).length + ' 条');
-ok('其余 262 条 sq_npcv_* 仍在', sqIds.length === 262, '实测 ' + sqIds.length);
-ok('任务总数 = 331 − 26 = 305', Object.keys(quests).length === 305, '实测 ' + Object.keys(quests).length);
+/* 口径变更（主人 2026-10-11）：「把那些模板化支线水货支线删掉或每个城市留那么几个」
+   —— `sq_npcv_*` 已按区域各留 3 条剪枝（262 → 79），任务总数随之下降。
+   这里改成守着「剪过枝之后的区间」，别再把旧数字当契约。 */
+ok('其余 sq_npcv_* 已剪枝（每区留 3 条）', sqIds.length > 0 && sqIds.length <= 100, '实测 ' + sqIds.length);
+ok('任务总数落在剪枝后的区间（≤ 130）', Object.keys(quests).length > 100 && Object.keys(quests).length <= 130, '实测 ' + Object.keys(quests).length);
 ok('被移除的 26 条 id 未被 60_quests.json 内其它任务引用（无悬空 require/quest 指向）',
   (() => { const j = JSON.stringify(doc); return A26.every(id => (j.split('sq_' + id).length - 1) === 0); })());
 

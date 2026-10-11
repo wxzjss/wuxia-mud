@@ -148,6 +148,12 @@ class Character {
     // ---- 生命/内力/精力 ----
     this.maxHpBase = def.hp || 100;
     this.maxMpBase = def.mp || 50;
+    /* ⚠️ recalc 之前就要给 this.maxHp / this.maxMp 一个值 ——
+       recalc 里的「满血自动抬满」正是拿它跟 hp 比（见那里的注释）。
+       原先只设了 *Base，this.maxHp 直到 recalc 里才第一次被赋值，
+       于是那条判断永远读不到「满」的状态。 */
+    this.maxHp = this.maxHpBase;
+    this.maxMp = this.maxMpBase;
     this.hp = this.maxHpBase;
     this.mp = this.maxMpBase;
     this.maxFood = 100; this.food = 100;
@@ -236,13 +242,30 @@ class Character {
     const a = Object.assign({}, this.baseAttr);
     for (const k of Object.keys(this.attrBonus)) a[k] = (a[k] || 0) + this.attrBonus[k];
 
-    // 装备加成
+    /* 装备加成。
+       🔴 2026-10-11 主人报「玩家初始真的很弱谁都打不过」，查下来这里是主因之一 ——
+       原来这段是**两重死代码**：
+         ① 判据写的是 `this.world && this.world.items`，可 world 上**根本没有 `items` 这个属性**
+            （物品表在 `world.data.items`，取用走 `world.getItem()`）——
+            条件恒为假，整个循环一次都不执行；
+         ② 就算执行了，加出来的 `this.attrBonusEquip` 也**没有任何地方读它**
+            （`attrTotal()` 只看 `this.attr`）。
+       结果：**全库所有兵器护具的 `stats:{atk/def/...}` 一律不生效** ——
+       玩家穿上木剑还是 11 点攻击、披上衣裳还是 6 点防御，而且不报错。
+       现在：`attr` 那一路照旧并进属性总表；`stats`（atk/def/dodge/… 这些**派生量**）
+       单收在 `eqStat` 里，下面派生公式逐项加上去。
+       ⚠️ 不能像 `it.attr` 那样把 `stats` 并进 `a` —— 键不一样：
+          `a` 的键是「力量/根骨/身法」这类**属性**，而 stats 的键是 `atk/def/dodge`
+          （由属性算出来的**结果**）。并错了就是「加了但没人用」的第二遍。 */
     this.attrBonusEquip = {};
-    for (const slot of Object.keys(this.equipment)) {
-      const it = this.world && this.world.items ? this.world.getItem(this.equipment[slot]) : null;
+    const eqStat = {};
+    for (const slot of Object.keys(this.equipment || {})) {
+      const id = this.equipment[slot];
+      const it = (id && this.world && this.world.getItem) ? this.world.getItem(id) : null;
       if (it && it.stats) {
         for (const k of Object.keys(it.stats)) {
           this.attrBonusEquip[k] = (this.attrBonusEquip[k] || 0) + it.stats[k];
+          eqStat[k] = (eqStat[k] || 0) + it.stats[k];
         }
       }
       if (it && it.attr) {
@@ -256,14 +279,14 @@ class Character {
     // 基础值派生
     const st = this.attrTotal('根骨'), str = this.attrTotal('力量'), agi = this.attrTotal('身法'), wis = this.attrTotal('悟性');
 
-    let maxHp = this.maxHpBase + st * 12;
-    let maxMp = this.maxMpBase + wis * 6;
-    let atk = this.atkBase + Math.floor(str * 1.5);
-    let def = this.defBase + Math.floor(st * 1.2);
-    let dodge = this.dodgeBase + Math.floor(agi * 1.2);
-    let parry = this.parryBase + Math.floor((agi + st) * 0.6);
-    let speed = this.speedBase + Math.floor(agi * 0.8);
-    let critRate = this.critRate, critDmg = this.critDmg, armorPen = 0, lifesteal = 0, reflect = 0;
+    let maxHp = this.maxHpBase + st * 12 + (eqStat.maxHp || 0);
+    let maxMp = this.maxMpBase + wis * 6 + (eqStat.maxMp || 0);
+    let atk = this.atkBase + Math.floor(str * 1.5) + (eqStat.atk || 0);
+    let def = this.defBase + Math.floor(st * 1.2) + (eqStat.def || 0);
+    let dodge = this.dodgeBase + Math.floor(agi * 1.2) + (eqStat.dodge || 0);
+    let parry = this.parryBase + Math.floor((agi + st) * 0.6) + (eqStat.parry || 0);
+    let speed = this.speedBase + Math.floor(agi * 0.8) + (eqStat.speed || 0);
+    let critRate = this.critRate + (eqStat.critRate || 0), critDmg = this.critDmg, armorPen = 0, lifesteal = 0, reflect = 0;
 
     // 内功 / 轻功 / 招架 加成
     const neigong = this.equippedSkills['内功'];
@@ -379,6 +402,17 @@ class Character {
     }
 
     this.attrBonusFinal = {};
+    /* 🔴 主人 2026-10-11 亲报两条，其实是同一个病根：
+         「刚创建角色进游戏，初始气血是 20/68、内力是 10/70」
+         「不知道为什么我的血量变成了 68/148、内力变成了 70/110」
+       —— recalc 把 maxHp 抬上去了，hp 只在旧值上被 clamp（`clamp(20,0,68)` 还是 20）。
+       于是**任何一次 recalc**（换装备 / 学武 / 过脉 / 加点 / 升级）都会让人从
+       「满血」悄悄变成「差一截」，而且不报错、数字看着也正常。
+       这是 ENG-04（NPC 出生带残血）的**玩家版**，只是更隐蔽。
+       修法：先记「原本是不是满的」，满的照旧抬满；**带伤的不许白回血**
+       （否则换一件装备就顺带回满血，等于白送一个回血包）。 */
+    const wasFullHp = this.maxHp > 0 && this.hp >= this.maxHp;
+    const wasFullMp = this.maxMp > 0 && this.mp >= this.maxMp;
     this.maxHp = Math.floor(maxHp);
     this.maxMp = Math.floor(maxMp);
     this.atk = Math.floor(atk);
@@ -393,8 +427,8 @@ class Character {
     this.lifesteal = lifesteal;
     this.reflect = reflect;
 
-    this.hp = clamp(this.hp, 0, this.maxHp);
-    this.mp = clamp(this.mp, 0, this.maxMp);
+    this.hp = wasFullHp ? this.maxHp : clamp(this.hp, 0, this.maxHp);
+    this.mp = wasFullMp ? this.maxMp : clamp(this.mp, 0, this.maxMp);
 
     // 进阶属性（高自由度：任何 mod 都能提供 combat 计算）
     this.combatStats = this.world.computeCombatStats ? this.world.computeCombatStats(this) : {};

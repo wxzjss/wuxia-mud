@@ -34,18 +34,18 @@ const MEMO = '_storyBeat';
  * @param {string} who  npc defId / 实例 id / 名字；空值一律算「无归属，随便上」
  */
 function present(world, p, who) {
-  if (!who) return true;
-  if (!p || !p.room) return false;
-  const list = (world.npcsIn ? world.npcsIn(p.room) : []) || [];
-  if (list.some(n => n && !n.dead && (n.defId === who || n.id === who || n.name === who))) return true;
-  /* 还没实例化的（NPC 是懒实例化的）：看房间定义里挂没挂这个人 */
-  const room = world.getRoom(p.room);
-  const ids = (room && room.npcs) || [];
-  if (ids.some(x => (typeof x === 'string' ? x : (x && x.id)) === who)) return true;
-  /* 钉死在屋里的 NPC：房间对得上就算在（会走动的不能这么判，不然他早走远了也照上） */
-  const def = (world.data.npcs || {})[who];
-  if (def && def.noWander && def.room === p.room) return true;
-  return false;
+  /* 🔴 主人 2026-10-11：「把剧情 npc 不在玩家身边就不说话效果取消掉（实测影响游戏体验）」
+     —— 原来这里是「带 `by` 的条目，人不在同一间屋里就**整条不发**」。
+     代价比想象的大：剧情正讲到要紧处，玩家走开一步（或者那位本来就在别处），
+     旁白与台词**整段消失**，而任务 / 教程面板照旧把这一段记成「已经讲过了」——
+     于是玩家**永久错过一段剧情**，屏幕上还没有任何提示（铁律：不报错就是不生效）。
+     真正影响体验的不是「人在不在」，而是这个「静默吞掉」。
+     现在一律放行：剧情里的旁白本就以第三人称转述为主（「某人在某处如何如何」），
+     人不在场也读得通；真要写「你眼前」的事，数据里自然会写清是哪间屋。
+     ⚠️ 函数与签名保留 —— 调用方（beats / reconcile）与测试都还认这个入口，
+        语义改成「恒在场」，不再按房间筛。 */
+  void world; void p; void who;
+  return true;
 }
 
 /**

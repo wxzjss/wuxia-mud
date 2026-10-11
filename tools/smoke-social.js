@@ -129,8 +129,14 @@ ok('每个社交 NPC 都能请教（守卫/东厂提督/影卫首领除外）',
    ⚠ 这三条是防退化的关键（已做变异测试验证，见下）：
    若有人把 isExempt 某条规则改成恒真 `() => true`，或把 needXxx 过滤写空，
    上面的画像断言会全部变成空转、测试照样全绿。下面三条会当场报警。 */
+/* 口径变更（主人 2026-10-11）：「把那些模板化支线水货支线删掉或每个城市留那么几个」
+   —— 183 个 NPC 的模板支线（`sq_npcv_*`）被剪掉，他们于是**合理地**缺 sidequest
+   （豁免规则 3 命中的就是这种「键不存在」）。豁免比例从 <5% 涨到 ~60%，
+   所以阈值放宽到 75%。
+   ⚠️ 但**不能取消这条**：它守的是「豁免规则本身没退化成恒真」
+   （下面的变异自证仍在跑，把规则改成 () => true 会当场报警）。 */
 const allExempt = socialNpc.filter(i => exemptBy(i).length > 0);
-ok('被豁免的 NPC 是少数（< 5%）', allExempt.length / socialNpc.length < 0.05,
+ok('被豁免的 NPC 占比（剪枝后放宽到 < 75%）', allExempt.length / socialNpc.length < 0.75,
   allExempt.length + '/' + socialNpc.length + ' = ' + (allExempt.length / socialNpc.length * 100).toFixed(1) + '%');
 
 /* 自检①：豁免名单里的人**至少缺一项**才是正当豁免。

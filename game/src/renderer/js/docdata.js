@@ -236,7 +236,7 @@
   <tr><th>类别</th><th>指令</th></tr>
   <tr><td>行走</td><td><code>n s e w u d</code> / <code>go 方向</code> / <code>look</code>（看四周）</td></tr>
   <tr><td>交流</td><td><code>say 内容</code> / <code>me 动作</code> / <code>shout 内容</code> / <code>tell 人 内容</code></td></tr>
-  <tr><td>物品</td><td><code>i</code>（背包） / <code>get 物</code> / <code>drop 物</code> / <code>use 物</code> / <code>wear 装备</code> / <code>wield 武器</code></td></tr>
+  <tr><td>物品</td><td><code>i</code>（行囊） / <code>get 物</code> / <code>drop 物</code> / <code>use 物</code> / <code>wear 装备</code> / <code>wield 武器</code></td></tr>
   <tr><td>武学</td><td><code>skills</code> / <code>learn 人 武学</code> / <code>lian 武学</code> / <code>enable 武学</code> / <code>perform 招式</code></td></tr>
   <tr><td>门派</td><td><code>sect</code> / <code>join 门派</code> / <code>promote</code> / <code>contribute</code></td></tr>
   <tr><td>战斗</td><td><code>kill 人</code> / <code>flee</code> / <code>auto</code></td></tr>
@@ -253,7 +253,7 @@
     <li><b>数字键 1-9</b>：点选对应的出口按钮</li>
     <li><b>W A S D</b>：北 西 南 东（游戏常用键位）</li>
     <li><b>Q E Z C</b>：西北 东北 西南 东南</li>
-    <li><b>L</b>：查看四周 &nbsp; <b>I</b>：打开背包</li>
+    <li><b>L</b>：查看四周 &nbsp; <b>I</b>：打开行囊</li>
     <li><b>Esc</b>：关闭弹窗 / 清空输入</li>
   </ul>
 </div>

@@ -460,6 +460,11 @@ function buildCommands(world) {
       const pc = require('./patrol').maybeCheck(w, p, w.getRoom(p.room), w.npcsIncludingTemplates(p.room));
       if (pc) lines.push(pc);
     } catch (e) { /* 盘查失败不该挡路 */ }
+    /* ---- 押镖路上可能被劫（design/67 §4）----
+       同一层（玩家自己走一格才掷），不与 patrol 共用冷却。 */
+    try {
+      lines.push(...require('./escort').onMove(w, p, p.room));
+    } catch (e) { /* 劫镖判定失败不该挡路 */ }
     const view = lookRoom(ctx);
     lines.push(...view.lines);
     return { lines, moved: true };
@@ -4007,6 +4012,82 @@ function buildCommands(world) {
     };
   });
 
+  /* ---------------- 镖局 · 送镖（design/67 §4）----------------
+     主人 2026-10-11：「游戏好像也没有镖局以及送镖（送往其他城市有概率会被劫镖）任务」。
+     两家镖局本来就在地图上（飞虎在长安、镇远在洛阳），这里只把柜台「点着」。 */
+  reg(['镖单', '镖局', '看镖', '押镖'], (ctx) => {
+    const w = ctx.world, p = ctx.player;
+    const E = require('./escort');
+    const st = E.statusOf(p);
+    if (st) {
+      return { lines: [
+        { kind: 'title', text: `【在押】${st.grade} · ${st.from} → ${st.to}` },
+        { kind: 'plain', text: `　镖物 ${st.pot - (st.lost || 0)}/${st.pot}　已走 ${st.steps || 0} 步` },
+        { kind: 'hint', text: `　押到${st.to}的山门柜台，「交镖」结账。押镖路上不许「飞往」。` },
+      ] };
+    }
+    const list = E.listFor(w, p);
+    if (!list.length) {
+      return { lines: [{ kind: 'warn', text: '镖局的柜台在山门里 —— 飞虎镖局在长安，镇远镖局在洛阳。' }] };
+    }
+    const out = [{ kind: 'title', text: `【${list[0].from} · 镖单】` }];
+    list.forEach((b, i) => {
+      out.push({ kind: 'plain', text: `　${i + 1}. ${b.grade}（${b.fromCity} → ${b.toCity}）　镖银 ${b.pay} 文　路引 ${b.req}` });
+      out.push({ kind: 'hint', text: `　　　${b.desc}` });
+    });
+    out.push({ kind: 'hint', text: '（「接镖 1 / 2 / 3」接一趟。押镖路上**不许飞往** —— 走一趟才算数，路上有被劫的风险。）' });
+    return { lines: out };
+  });
+
+  reg(['接镖', '领镖'], (ctx, args) => {
+    const w = ctx.world, p = ctx.player;
+    const E = require('./escort');
+    const n = parseInt(String((args && args[0]) || '1'), 10) || 1;
+    const r = E.accept(w, p, n);
+    if (!r.ok) return { lines: [{ kind: 'warn', text: r.msg }] };
+    const b = r.board;
+    return { lines: [
+      { kind: 'good', text: `你接下了「${b.grade}」：${b.fromCity} → ${b.toCity}，镖银 ${b.pay} 文。` },
+      { kind: 'plain', text: `镖车出了${b.from}的山门。路上自己保重 —— 少一包货，就少一份钱。` },
+    ] };
+  });
+
+  reg(['交镖', '交镖单', '结镖'], (ctx) => {
+    const w = ctx.world, p = ctx.player;
+    const E = require('./escort');
+    const r = E.deliver(w, p);
+    if (!r.ok) return { lines: [{ kind: 'warn', text: r.msg }] };
+    const d = r.done;
+    p.money = (p.money || 0) + d.pay;
+    return { lines: [
+      { kind: 'good', text: `镖交了。柜上点了数，把 ${d.pay} 文推过来。` },
+      { kind: 'plain', text: `（${d.grade} · 镖物 ${d.intact}/${d.pot} · 走了 ${d.steps} 步 · 镖银 ${d.pay} 文。）` },
+    ] };
+  });
+
+  /* ---------------- 清掉已完成的任务（主人 2026-10-11）----------------
+     「已完成的支线任务能否在『任务』界面清掉？」—— 任务面板底部「已完成（N）」那一栏
+     越积越长，翻起来碍事。这里给一个出口。
+     ⚠️ **只清支线 / 委托，绝不动主线与新手**：主线记录是幕次推进的依据，
+        后续幕次靠 `require.questDone` 认它 —— 删掉之后那段剧情永远接不上，
+        而且**不报错**（就是「点了没反应」）。新手同理（教程进度读它）。 */
+  reg(['清理已完成', '清掉已完成', '清空已完成', '清任务'], (ctx) => {
+    const w = ctx.world, p = ctx.player;
+    const gone = [];
+    for (const qid of Object.keys(p.quests || {})) {
+      if (p.quests[qid] < 99) continue;
+      const qd = w.getQuest(qid) || {};
+      if (qd.type === '主线' || qd.type === '新手') continue;
+      gone.push(qd.name || qid);
+      delete p.quests[qid];
+    }
+    return {
+      lines: gone.length
+        ? [{ kind: 'plain', text: `你把这几桩了结过的事从心里放下了（${gone.length} 桩）：${gone.join('、')}。` }]
+        : [{ kind: 'plain', text: '没有可清的旧事。' }],
+    };
+  });
+
   /* ---------------- 官府盘查（design/67 §3）----------------
      被官差拦住时的两个出口。第三个「拒捕」不在这里 —— 那就是普通的「打」，
      复用既有战斗指令，不另造一条分支（同 B10 的思路：入口可以多，路径只能一条）。 */
@@ -4377,6 +4458,13 @@ function buildCommands(world) {
     const p = ctx.player, w = ctx.world;
     const lines = [];
     if (w.battle) return { lines: [{ kind: 'warn', text: COMBAT_MOVE_HINT }] };
+    /* 押镖路上不许飞（design/67 §4）—— 能飞就等于没有路，劫镖也就无从谈起。 */
+    if (require('./escort').flyingBlocked(p)) {
+      return { lines: [
+        { kind: 'warn', text: '你手上押着镖，飞不得 —— 镖车得一步步走，路引也得一城一城验。' },
+        { kind: 'hint', text: '（押到讫城的镖局柜台「交镖」之后，再飞不迟。）' },
+      ] };
+    }
     const kw = (args || []).join('').trim();
     if (!kw) return { lines: [{ kind: 'warn', text: '要飞往哪里？说个地名，或者在地图面板点地名。' }] };
     const regs = Object.values(w.data.regions || {});

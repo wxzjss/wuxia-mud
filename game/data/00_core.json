@@ -7,8 +7,8 @@
     "startTime": 480,
     "startMoney": 200,
     "startPotential": 0,
-    "startHp": 20,
-    "startMp": 10,
+    "startHp": 40,
+    "startMp": 18,
     "startAttr": {
       "力量": 4,
       "根骨": 4,
@@ -25,7 +25,7 @@
       "map_rough",
       "sack_coarse"
     ],
-    "startSkills": [],
+    "startSkills": ["basic_fist", "basic_force"],
     "startTraits": [],
     "titles": [
       "初入江湖",

@@ -149,10 +149,14 @@ sec('① sidequest 指针 ⇒ quest 一一对上（**先红后绿**的对象）'
   });
   ok('★ 每条 hk_* 的委托人都真有画像（画像支线必须长在画像上）',
     noPortrait.length === 0, noPortrait.slice(0, 5).join(', '));
-  /* 桩：确认别的集合没被 61 改坏（60_quests 的 sq_npcv_* 仍在，未受影响） */
-  ok('原 60_quests 的 sq_npcv_* 未被 61 覆盖（仍 ≥ 260 条）',
-    Object.keys(w.data.quests).filter(k => /^sq_npcv_/.test(k)).length >= 260,
-    Object.keys(w.data.quests).filter(k => /^sq_npcv_/.test(k)).length);
+  /* 口径变更（主人 2026-10-11）：「把那些模板化支线水货支线删掉或每个城市留那么几个」
+     —— `sq_npcv_*` 已按区域各留 3 条剪过枝（262 → 79）。
+     这条断言原来守着「仍 ≥ 260 条」，现在反过来：**必须是剪过的**。 */
+  {
+    const n = Object.keys(w.data.quests).filter(k => /^sq_npcv_/.test(k)).length;
+    ok('原 60_quests 的 sq_npcv_* 已按主人要求剪枝（每区留 ≤ 3 条）',
+      n > 0 && n <= 100, n + ' 条');
+  }
 }
 
 /* ============================================================ */

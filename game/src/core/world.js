@@ -3234,6 +3234,15 @@ class World extends EventEmitter {
     p.followers = [];   // 跟随玩家的 NPC 实例 id（好感>60 才能邀）
     // 起始物品
     for (const it of (meta.startItems || [])) this.giveItem(p, it, 1);
+    /* 衣裳与木剑**出门就该穿在身上** ——
+       主人 2026-10-11：「玩家初始真的很弱谁都打不过」。
+       原先进了行囊却没上身（玩家并不知道要手动 wear），白白少了 2 点防御与 3 点攻击。
+       只自动穿这两件「出生装」，别的照旧躺在行囊里由玩家自己决定。 */
+    for (const want of ['cloth_robe', 'wood_sword']) {
+      if ((p.inventory || []).some(x => x && x.id === want)) {
+        try { this.equipItem(p, want); } catch (e) { /* 穿不上不影响开局 */ }
+      }
+    }
     this.player = p;
     this.clockMinutes = p.timeMinutes;
     this.buildIndexes();

@@ -736,7 +736,7 @@
       else if (it.action === 'favor') doCmd('favor ' + n.name, BTN);
       else if (it.action === 'give') giveNpc(n);
       else if (it.action === 'givemoney') giveMoneyNpc(n);
-      else if (it.action === 'qingjiao') doCmd('qingjiao ' + n.name, BTN);
+      else if (it.action === 'qingjiao') openQingjiao(n);
       else if (it.action === 'qiecuo') doCmd('qiecuo ' + n.name, BTN);
       else if (it.action === 'propose') proposeNpc(n);
       else if (it.action === 'bond') doCmd('结缘 ' + n.name, BTN);
@@ -747,6 +747,45 @@
       else if (it.action === 'ambush') doCmd('偷袭 ' + n.name, BTN);
       else if (it.action === 'kill') doCmd('kill ' + n.name, BTN);
     }, head);
+  }
+
+  /* ============================================================
+   *  请教面板（主人 2026-10-11）
+   *  「点击请教 npc 会弹出一个界面，里面是一些可请教的武学名称按钮，
+   *    不可请教的武学上面会写『不可请教』」。
+   *  数据来自后端 `view.npcs[].teachList`（与 `请教 <人>` 指令**同源**）——
+   *  能不能请教由后端算好（学会了 / 好感不够 / 要花钱），前端只负责渲染，
+   *  绝不在前端另判一套（那正是「两边口径漂移」的老病根）。
+   *  ⚠️ `modal()` 里的 `data-cmd` 不会自动绑定（bindModal 只管关窗按钮），
+   *     所以这里手动接一次 onclick —— 与面板那边 bindPanelActions 的做法一致。
+   * ============================================================ */
+  function openQingjiao(n) {
+    const list = (n && n.teachList) || [];
+    let h = '';
+    if (!list.length) {
+      h = '<div class="modal-text">' + esc(n.name) + '摇摇头：「我这点本事，教不了人。」</div>';
+    } else {
+      h = '<div class="modal-text">点一门功夫，向' + esc(n.name) + '请教。' +
+        '（拜过师，师父教徒弟是天经地义；没拜师的，就看交情或使钱。）</div>';
+      h += '<div class="qj-list">';
+      list.forEach(s => {
+        h += '<div class="qj-row' + (s.can ? '' : ' off') + '">' +
+          '<div class="qj-main"><span class="qj-name">' + esc(s.name) + '</span>' +
+          '<span class="qj-meta">' + esc(s.type || '') + (s.quality ? ' · ' + esc(s.quality) : '') + '</span></div>';
+        if (s.can) {
+          h += '<button class="op-btn" data-cmd="请教 ' + esc(n.name) + ' ' + esc(s.name) + '">请教</button>';
+        } else {
+          h += '<span class="qj-off">不可请教（' + esc(s.why || '') + '）</span>';
+        }
+        h += '</div>';
+      });
+      h += '</div>';
+    }
+    modal('向 ' + n.name + ' 请教', h, '<button class="btn-ink" onclick="WXUI.closeModal()">关 闭</button>');
+    const box = document.querySelector('#modal-body');
+    if (box) box.querySelectorAll('[data-cmd]').forEach(b => {
+      b.onclick = () => { closeModal(); doCmd(b.getAttribute('data-cmd'), { fromButton: true }); };
+    });
   }
 
   /* ============================================================
@@ -2300,7 +2339,8 @@
       }
     }
     if (done.length) {
-      h += '<div class="q-done-title">已完成（' + done.length + '）</div><div class="q-done-list">';
+      h += '<div class="q-done-title">已完成（' + done.length + '）' +
+        '<button class="op-btn" data-cmd="清理已完成">清掉已完成</button></div><div class="q-done-list">';
       done.forEach(d => {
         const name = (d && d.name) ? d.name : (typeof d === 'string' ? d : '');
         h += '<div class="q-done-item">✔ ' + esc(name) + '</div>';
@@ -2333,35 +2373,60 @@
     return h;
   }
 
+  /* 物品的「有什么用」——主人要求行囊里能直接看见描述与效果。
+     ⚠️ 后端 inventoryList 给的字段是 **`equippable`**（双 p），
+        旧代码写的是 `it.equipable`（单 p）—— 于是「穿戴 / 持械」两个按钮**从来不显示**。
+        （这就是铁律 29：字段名对不上，不报错、只是没有。） */
+  const ITEM_STAT_CN = { atk: '攻击', def: '防御', dodge: '身法', parry: '招架', speed: '速度', critRate: '暴击', maxHp: '气血上限', maxMp: '内力上限', hp: '气血', mp: '内力' };
+  const ITEM_TYPE_CN = { weapon: '兵器', armor: '护具', food: '吃食', consumable: '丹药', herb: '草药', book: '书册', material: '材料', tool: '家什', misc: '杂物' };
+  function itemEffectText(it) {
+    const out = [];
+    if (it.stats) for (const k of Object.keys(it.stats)) out.push((ITEM_STAT_CN[k] || k) + ' ' + (it.stats[k] > 0 ? '+' : '') + it.stats[k]);
+    if (it.healHp) out.push('果腹 +' + it.healHp);
+    if (it.healMp) out.push('回复内力 +' + it.healMp);
+    if (it.teachName) out.push('可学：「' + it.teachName + '」');
+    return out;
+  }
+
   function invHtml(v) {
     const list = v.inventory || [];
     if (!list.length) return '<div class="modal-text">行囊空空如也。</div>';
-    let h = '<table class="data-table"><thead><tr><th>物品</th><th>类型</th><th>数量</th><th>操作</th></tr></thead><tbody>';
+    let h = '<div class="inv-list">';
     list.forEach(it => {
-      h += '<tr><td class="td-name">' + esc(it.name) + '</td>' +
-        '<td>' + esc(it.typeName || '') + '</td>' +
-        '<td>' + it.count + '</td>' +
-        '<td class="td-ops">' +
-        (it.usable ? '<button class="op-btn" data-cmd="use ' + esc(it.name) + '">使用</button>' : '') +
-        (it.equipable ? '<button class="op-btn" data-cmd="wear ' + esc(it.name) + '">穿戴</button>' : '') +
-        (it.equipable ? '<button class="op-btn" data-cmd="wield ' + esc(it.name) + '">持械</button>' : '') +
-        '<button class="op-btn" data-cmd="look ' + esc(it.name) + '">查看</button>' +
-        '<button class="op-btn" data-cmd="drop ' + esc(it.name) + '">丢弃</button>' +
-        '</td></tr>';
+      const eff = itemEffectText(it);
+      const kind = it.slot || ITEM_TYPE_CN[it.type] || '';
+      h += '<div class="inv-item">'
+        + '<div class="inv-head"><span class="inv-name">' + esc(it.name) + '</span>'
+        + (it.count > 1 ? '<span class="inv-count">×' + it.count + '</span>' : '')
+        + (kind ? '<span class="inv-type">' + esc(kind) + '</span>' : '') + '</div>'
+        + (it.desc ? '<div class="inv-desc">' + esc(it.desc) + '</div>' : '')
+        + (eff.length ? '<div class="inv-eff">' + esc(eff.join('　')) + '</div>' : '')
+        + '<div class="inv-ops">'
+        + (it.usable ? '<button class="op-btn" data-cmd="use ' + esc(it.name) + '">使用</button>' : '')
+        + (it.equippable ? '<button class="op-btn" data-cmd="wear ' + esc(it.name) + '">穿戴</button>' : '')
+        + (it.equippable ? '<button class="op-btn" data-cmd="wield ' + esc(it.name) + '">持械</button>' : '')
+        + '<button class="op-btn" data-cmd="look ' + esc(it.name) + '">细看</button>'
+        + '<button class="op-btn" data-cmd="drop ' + esc(it.name) + '">丢弃</button>'
+        + '</div></div>';
     });
-    h += '</tbody></table>';
+    h += '</div>';
     return h;
   }
 
   function eqHtml(v) {
-    const e = v.equipment || {};
+    /* ⚠️ 槽位表**不能在前端另写一份**：这里原来是
+       `['武器','副手','头部','身体','手部','足部','腰饰','饰品']`，
+       而后端 `equipmentList()` 给的是
+       `['头部','颈部','身体','披风','手部','脚部','武器','副手','戒指','饰品']` ——
+       两边对不上的结果是「颈部 / 披风 / 戒指」三格永远显示空、
+       「足部 / 腰饰」两格永远查不到（后端根本没这两个键）。
+       现在直接迭代后端给的数组，只有一份真相。 */
+    const list = v.equipment || [];
     let h = '<table class="data-table"><thead><tr><th>部位</th><th>装备</th><th>操作</th></tr></thead><tbody>';
-    const slots = ['武器', '副手', '头部', '身体', '手部', '足部', '腰饰', '饰品'];
-    slots.forEach(slot => {
-      const it = e[slot];
-      h += '<tr><td>' + esc(slot) + '</td>' +
-        '<td class="td-name">' + (it ? esc(it.name) : '<span class="dim">—空—</span>') + '</td>' +
-        '<td class="td-ops">' + (it ? '<button class="op-btn" data-cmd="remove ' + esc(it.name) + '">卸下</button>' : '') + '</td></tr>';
+    list.forEach(s => {
+      h += '<tr><td>' + esc(s.slot) + '</td>' +
+        '<td class="td-name">' + (s.name ? esc(s.name) : '<span class="dim">—空—</span>') + '</td>' +
+        '<td class="td-ops">' + (s.name ? '<button class="op-btn" data-cmd="remove ' + esc(s.name) + '">卸下</button>' : '') + '</td></tr>';
     });
     h += '</tbody></table>';
     return h;
@@ -2775,7 +2840,7 @@
         '称号 <称号>　换个称号',
       ]],
       ['物品', [
-        '背包　看身上有什么（中文：物品）',
+        '行囊　看身上有什么（中文：物品）',
         '捡 <物品>　拾起来（中文：拿 / 拾取）',
         '丢 <物品>　扔下（中文：丢弃 / 放下）',
         '用 <物品>　使用（中文：吃 / 喝 / 服用）',
@@ -3040,6 +3105,7 @@
   const PANEL_CMDS = {
     map: 'map', 地图: 'map', 舆图: 'map', 江湖舆图: 'map', 查看地图: 'map', 打开地图: 'map',
     i: 'inventory', inventory: 'inventory', 背包: 'inventory', 查看背包: 'inventory', 行囊: 'inventory',
+    物品: 'inventory', 查看物品: 'inventory', 身上物品: 'inventory', 我的物品: 'inventory',
     score: 'score', sc: 'score', 状态: 'score', 查看状态: 'score', 状态一览: 'score',
     attr: 'attr', 属性: 'attr', 属性详情: 'attr',
     skills: 'skills', skill: 'skills', 武学: 'skills', 武功: 'skills', 查看武学: 'skills',
@@ -3738,7 +3804,7 @@
       { label: '门派', panel: 'sect' },
       { label: '武学修为', panel: 'martial' },
       { label: '宗门 · 师承', panel: 'found' },
-      { label: '背包', panel: 'inventory' },
+      { label: '行囊', panel: 'inventory' },
       { label: '装备', panel: 'equipment' },
       { label: '状态效果', panel: 'affects' },
       { label: '人情往来', panel: 'social' },

@@ -786,6 +786,28 @@ body::before {
 .data-table th { text-align: left; padding: 8px 10px; font-size: 12px; letter-spacing: .08em; color: var(--ink-4); border-bottom: 1px solid var(--line); font-weight: 600; }
 .data-table td { padding: 8px 10px; border-bottom: 1px dashed var(--line-2); color: var(--ink-2); }
 .data-table tr:hover td { background: var(--card); }
+
+/* ---- 行囊（主人 2026-10-11）：每个物品一张小卡，
+        描述与效果**直接看得见**，不用点开才知道带的是什么 ---- */
+.inv-list { display: flex; flex-direction: column; gap: 8px; }
+.inv-item { background: var(--paper-2); border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; }
+.inv-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.inv-name { font-weight: 600; color: var(--ink-1); }
+.inv-count { font-size: 12px; color: var(--ink-3); }
+.inv-type { margin-left: auto; font-size: 12px; color: var(--ink-4); white-space: nowrap; }
+.inv-desc { font-size: 13px; color: var(--ink-2); margin-top: 4px; line-height: 1.55; }
+.inv-eff { font-size: 12.5px; color: var(--gold); margin-top: 4px; }
+.inv-ops { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+
+/* ---- 请教面板（主人 2026-10-11）：可请教的给按钮，不可请教的写明原因 ---- */
+.qj-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.qj-row { display: flex; align-items: center; gap: 10px; padding: 7px 10px; background: var(--paper-2); border: 1px solid var(--line); border-radius: 8px; }
+.qj-row.off { opacity: .62; }
+.qj-main { display: flex; flex-direction: column; min-width: 0; }
+.qj-name { color: var(--ink-1); font-weight: 600; white-space: nowrap; }
+.qj-meta { font-size: 12px; color: var(--ink-4); }
+.qj-row .op-btn { margin-left: auto; flex: none; }
+.qj-off { margin-left: auto; flex: none; font-size: 12px; color: var(--ink-3); text-align: right; }
 .td-name { font-family: var(--font); color: var(--ink); font-weight: 600; }
 .td-ops { white-space: nowrap; }
 .tag-on { font-style: normal; font-size: 10px; color: #fff; background: var(--jade); border-radius: 3px; padding: 1px 5px; margin-left: 4px; }

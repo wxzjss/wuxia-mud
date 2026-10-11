@@ -16,8 +16,10 @@ console.log('① realm 条件（删等级后衡量进度）');
   e.boot(); e.newGame({ name: '试剑', gender: 'male' });
   const w = e.world, p = w.player;
   ok('凡人 realm>=0 通过', evalCond('realm>=0', { player: p, world: w }));
-  ok('凡人 realm>=1 不通过', !evalCond('realm>=1', { player: p, world: w }));
-  ok('凡人 realm<=1 通过', evalCond('realm<=1', { player: p, world: w }));
+  /* 口径变更（主人 2026-10-11）：开局自带基础功夫 → realm 档位已经是 1（初窥门径），
+     所以「realm>=1 不通过」不再成立。改判 2（小有所成）—— 那才是「真的练出样子」。 */
+  ok('刚开局 realm>=2 不通过', !evalCond('realm>=2', { player: p, world: w }));
+  ok('凡人 realm<=2 通过', evalCond('realm<=2', { player: p, world: w }));
   // 练武到小有所成
   p.learnSkill('basic_sword', { force: true }); p.learnSkill('basic_force', { force: true });
   p.learnSkill('huashan_sword', { force: true }); p.learnSkill('yijinjing', { force: true });

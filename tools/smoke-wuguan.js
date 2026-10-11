@@ -106,22 +106,22 @@ const CITIES = [
 
   /* 钱不够 → 学不成，且一分不扣 */
   p.money = 50;
-  const poor = await e.exec('请教 ' + teacher.name + ' 基本拳脚');
+  const poor = await e.exec('请教 ' + teacher.name + ' 基本剑法');
   const ptxt = (poor.lines || []).map(l => l.text).join(' ');
-  ok('★ 钱不够 → 教头不教', !p.learned.basic_fist, '学会了？' + !!p.learned.basic_fist);
+  ok('★ 钱不够 → 教头不教', !p.learned.basic_sword, '学会了？' + !!p.learned.basic_sword);
   ok('★ 并且明说差多少钱', /100|束脩|钱/.test(ptxt), ptxt.slice(0, 90));
   ok('钱没被扣', p.money === 50, p.money + ' 文');
 
   /* 钱够 → 学成，扣整整 100 文 */
   p.money = 500;
-  const rich = await e.exec('请教 ' + teacher.name + ' 基本拳脚');
-  ok('★ 钱够 → 学会了', !!p.learned.basic_fist, (rich.lines || []).map(l => l.text).join(' ').slice(0, 80));
+  const rich = await e.exec('请教 ' + teacher.name + ' 基本剑法');
+  ok('★ 钱够 → 学会了', !!p.learned.basic_sword, (rich.lines || []).map(l => l.text).join(' ').slice(0, 80));
   ok('★ 扣了 100 文（不是白学）', p.money === 400, '500 → ' + p.money);
   ok('给了一句「花了钱」的明示',
     /100|文/.test((rich.lines || []).map(l => l.text).join(' ')));
 
   /* 已会的不能重复学 */
-  const again = await e.exec('请教 ' + teacher.name + ' 基本拳脚');
+  const again = await e.exec('请教 ' + teacher.name + ' 基本剑法');
   ok('★ 已学会的不能再花钱学一遍', /不必再请教/.test((again.lines || []).map(l => l.text).join(' ')));
   ok('钱没再被扣', p.money === 400, p.money + ' 文');
 
