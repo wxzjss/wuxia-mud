@@ -208,10 +208,14 @@ sec('⑤ 真·跑一遍：点 action → 交任务，一路推到 99');
     return { before, after: p.questStage(Q), out: txt(out) };
   };
 
-  /* 逐段：凑条件 → 交任务 */
+  /* 逐段：凑条件 → 交任务。
+     ⚠️ 第二幕 stage1 挂了一道**前置支线锁**（design/67 §5.3 P2，`lock.flag=pre_a2_menfang`）：
+     本测试验的是「这一幕的剧情能不能走完」，所以先把 lock flag 置上
+     （等价于「门房那桩事已经办过了」）。锁本身的守卫见 `check-data-load.js` ⑦。 */
   const steps = [
     ['① 交铜牌给冲虚（know_east_depot）', () => p.setFlag('know_east_depot', true)],
     ['② 查铜牌来路（翻名录 → clerk_met）', () => {
+      p.setFlag('pre_a2_menfang', true);
       p.room = 'jn_yamen_office';
       e.exec('翻名录');
     }],
@@ -371,6 +375,9 @@ sec('⑨ 存读档不丢第二幕进度（真往返）');
   p.setQuestStage(Q, 0);
   p.setFlag('know_east_depot', true);
   p.setFlag('clerk_met', true);
+  /* 第二幕 stage1 的前置支线锁（design/67 §5.3 P2）：本段验存读档往返，
+     不验锁，所以把钥匙直接置上。 */
+  p.setFlag('pre_a2_menfang', true);
   /* 冲虚复命（第 1→2 段） */
   p.room = w.data.npcs.wudang_chongxu.room;
   w.spawnNpc('wudang_chongxu', p.room, 1, true);

@@ -224,6 +224,7 @@
           "next": 1
         },
         {
+          "lock": { "flag": "pre_a4_dukou", "quest": "sq_pre_a4_dukou" },
           "desc": "绣阁：听东方教主把话说完",
           "cond": {
             "flag": "dongfang_talks"
@@ -329,6 +330,7 @@
           "next": 1
         },
         {
+          "lock": { "flag": "pre_a5_kou", "quest": "sq_pre_a5_kou" },
           "desc": "渡海：去桃花岛找黄药师",
           "cond": {
             "flag": "taohua_road"

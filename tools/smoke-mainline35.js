@@ -121,7 +121,10 @@ sec('⑤ 房间 actions：新增到位 + 既有没被清掉');
   const ROOTD = path.resolve(__dirname, '..');
   const SRC = path.join(ROOTD, 'game', 'data');
   const TMP = path.join(ROOTD, '.tmp-act35-base');
-  fs.rmSync(TMP, { recursive: true, force: true });
+  /* ⚠️ 用 execSync('rm -rf') 而不是 fs.rmSync：Node 的 fs 层有「一轮删 >50 个文件」的
+     安全删除保护，跑全量回归时前面的测试已经把配额吃光 ⇒ 这里会被拦成 exit 1，
+     表现为「单跑绿、全量红」的偶发假红（smoke-storybeat / smoke-mod-trace 同因已改）。 */
+  require('child_process').execSync('rm -rf "' + TMP + '"', { stdio: 'ignore' });
   fs.mkdirSync(TMP, { recursive: true });
   for (const f of fs.readdirSync(SRC)) {
     if (/^(65|66)_/.test(f)) continue;          // 只看「本轮之前」
@@ -130,7 +133,7 @@ sec('⑤ 房间 actions：新增到位 + 既有没被清掉');
   const base = new World({ dataDirs: [TMP], modDirs: [], seed: 1 });
   base.loadBaseData();
   const orig = base.data.rooms;
-  fs.rmSync(TMP, { recursive: true, force: true });
+  require('child_process').execSync('rm -rf "' + TMP + '"', { stdio: 'ignore' });
   console.log('  · 基线（不含 65/66）房间数 ' + Object.keys(orig).length);
 
   let touch = 0, lost = [];

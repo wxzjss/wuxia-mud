@@ -90,14 +90,22 @@ const ok = (name, cond, extra) => { if (cond) pass++; else { fail++; console.log
     const bad = [];
     for (const id of baseIds) {
       for (const s of (quests[id].stages || [])) {
-        for (const t of (s.targets || [])) {
+        /* ⚠️ 目标的**四种写法都要扫**：`targets` 之外还有按性别/按线分叉的
+           `targetsByGender` / `targetsByLine`（P4 性别双解用）。
+           只扫 `targets` 的话，双解那一套里的错字房间号**永远不会被发现** ——
+           而它照样是「判定永远 false」的静默瘫掉。 */
+        const groups = [s.targets];
+        for (const g of ['targetsByGender', 'targetsByLine']) {
+          if (s[g]) for (const k of Object.keys(s[g])) groups.push(s[g][k]);
+        }
+        for (const tg of groups) for (const t of (tg || [])) {
           if (!t) continue;
           if (t.kind === 'room' && t.key && !rooms[t.key]) bad.push(id + ' → 房 ' + t.key);
           if (t.kind === 'item' && t.key && !items[t.key]) bad.push(id + ' → 物 ' + t.key);
         }
       }
     }
-    ok('★ 目标房间/物品全存在', bad.length === 0, bad.length + ' 处：' + bad.slice(0, 8).join(' / '));
+    ok('★ 目标房间/物品全存在（含按性别/按线分叉的那几套）', bad.length === 0, bad.length + ' 处：' + bad.slice(0, 8).join(' / '));
   }
 
   console.log('===== ⑤ 名字与阶段描述不许空 =====');
@@ -123,6 +131,32 @@ const ok = (name, cond, extra) => { if (cond) pass++; else { fail++; console.log
       ok('★ ' + id + ' 在库里', !!q, q ? '' : '取不到（多半是文件解析失败被吞）');
       if (q) ok('　它挂在委托人身上', !!(npcs[q.giver] && Array.isArray(npcs[q.giver].quests) && npcs[q.giver].quests.includes(id)), q.giver);
     }
+  }
+
+  console.log('===== ⑦ 前置锁的 flag 真有人设（design/67 §5.3 P2） =====');
+  {
+    /* `stage.lock.flag` 是**新的**一类「读 flag」。它有个极难查的失败模式：
+       锁写上了、flag 却从来没人设 ⇒ 那一幕**永远卡住**，而游戏不崩、也不报错。
+       判据：把这个 flag 在所有数据文件里搜一遍，但**先把 lock 声明本身抠掉** ——
+       否则「只在自己身上出现」也会算命中。 */
+    let blob = '';
+    for (const f of fs.readdirSync(DATA).filter(x => x.endsWith('.json'))) {
+      blob += fs.readFileSync(path.join(DATA, f), 'utf8') + '\n';
+    }
+    const stripped = blob.replace(/"lock"\s*:\s*\{[^}]*\}/g, '""');
+    const locks = [];
+    for (const id of baseIds) {
+      for (const s of (quests[id].stages || [])) {
+        if (s && s.lock && s.lock.flag) locks.push({ id, flag: s.lock.flag, quest: s.lock.quest || '' });
+      }
+    }
+    ok('装上了前置锁（本批至少 5 处）', locks.length >= 5, locks.length + ' 处');
+    const dead = locks.filter(l => !stripped.includes(l.flag));
+    ok('★ 没有被锁死的：每个 lock.flag 都真有地方置位', dead.length === 0,
+      dead.map(l => l.id + '→' + l.flag).slice(0, 6).join(' / '));
+    const badQuest = locks.filter(l => l.quest && !quests[l.quest]);
+    ok('★ 每个 lock.quest 指向的任务真实存在', badQuest.length === 0,
+      badQuest.map(l => l.id + '→' + l.quest).join(' / '));
   }
 
   console.log('');

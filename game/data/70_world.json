@@ -154,9 +154,9 @@
       "ttlDays": 12,
       "loud": false,
       "texts": {
-        "true": "{who}在{where}赊了账赖着不还，掌柜的直跺脚。",
-        "half": "说是{who}在{where}欠了钱没影了。",
-        "false": "{who}在{where}骗了整条街的赊账，卷款潜逃！"
+        "true": "{who}在{where}应下的事，转头就撂下不管了。",
+        "half": "说是{who}在{where}答应了什么，后来没了下文。",
+        "false": "{who}在{where}把话说得满满当当，事却一件没办！"
       },
       "marks": ["失信"]
     },

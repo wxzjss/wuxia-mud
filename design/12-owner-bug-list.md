@@ -12,8 +12,8 @@
 > **台账总计 B1–B44**（四轮反馈 + 修复批次 1~8）。
 >
 > **仍挂着的只有 2 条 + 1 项人工验收**：
-> - **B22** 🟡 传闻种子 **9/16** 已接线（余 7 条无调用点）
-> - **B23** ⬜ 声望量级未调（`drep = polarity × weight × (heat0/100)`，实测单次 −0.4~−4.0，门槛却是 **−40**）
+> - ~~B22~~ ✅ 传闻种子全部接线（2026-10-11 晚补完最后 6 条钩子）
+> - ~~B23~~ ✅ 声望量级已调（加 `REP_SCALE = 8`，单次恶行 −20 前后）
 > - **B5 触屏实机验** 🔴 只能主人做（`design/16` 清单），**批次 1/2 完全放行的唯一前提**
 >
 > **已修（本轮回填/新修）**：**B15**（`ui.js` 已有 `genderNoun`）、**B21**（`mergeData` 已加数组/原语分支）、
@@ -43,8 +43,8 @@
 | B20 | 288 条模板支线 sq_npcv_* 有串号 bug（目标名张冠李戴 + 目的地方位离谱），是「AI 感」的真源头 | **高** | ✅ 已修（批次 6） | 数据（60_quests.json） |
 | E4 | 第一幕主线自带 `ending: jianghu_end`，**第一幕就弹「故事终章」**，三结局（交卷/半交/拒交）根本没机会出场 | **高(P0)** | ✅ 已修（批次 6） | 数据（60_quests.json） |
 | B21 | **基础事件系统全体静默失效**：mergeData 把 events 的 handler 数组揉成对象（无 effects）→ onKill/onLevelUp/onEnter/onTick 全不执行 | **高** | ✅ **已修（磁盘核实回填，2026-10-10）**：`world.js` `mergeData` 已有 **`Array.isArray(entry)` 分支**（按 `arrayMode` 整段合并、恒保持数组）+ **原语值分支**（`calendar.yearDays` 同族坑一并修），注释即「B21 根因修复（通用，不是给某个键打补丁）」 | 核心引擎 mergeData（world.js） |
-| B22 | **16 条传闻种子只有 2 条被调用**：其余 14 条（偷窃/救人/越狱…）是死数据 → 善恶名→rep 的链是断的，现状 rep 只对「杀人」生效 | **高** | 🟡 **部分修复（批次 7）**：14 条中已接线 **7 条**（偷窃被抓/抗官/施舍/拜师/叛门/挥金/越狱）→ 真触发真出传闻；余 7 条未落（见下） | 代码（world.js/commands.js 补 addRumor 调用点） |
-| B23 | 声望（reputation）量级偏低（单次 −0.4~−4.0），而势力事件门槛是 −40 → 需 10~100 次恶行才触发 | 中 | ⬜ 待改（批次 6） | 数值口径（改读 rumor_heat_max 或调量级） |
+| B22 | **16 条传闻种子只有 2 条被调用**：其余 14 条（偷窃/救人/越狱…）是死数据 → 善恶名→rep 的链是断的，现状 rep 只对「杀人」生效 | **高** | ✅ **全修（2026-10-11 晚）**：实测真正没人调的**只剩 6 条**（`rs_save_life` / `rs_deadbeat` / `rs_break_marriage` / `rs_dungeon_clear` / `rs_drunkard` / `rs_take_disciple`），逐条接了真钩子 —— 医治救人 / 放弃任务 / 新增「退亲·悔婚」指令 / 首次踏进 `secret_*` 秘境 / 喝下含「酒」的物件 / 收徒 | 代码（commands.js 补 addRumor 调用点） |
+| B23 | 声望（reputation）量级偏低（单次 −0.4~−4.0），而势力事件门槛是 −40 → 需 10~100 次恶行才触发 | 中 | ✅ **已修（2026-10-11 晚）**：`applyRumorReputation` 加显式刻度 `REP_SCALE = 8`（单列常量，让「量级」有一个地方可调）。实测杀成名人物 −20.4、杀良 −30.4 —— 一次恶行就是人能感知的数，两次就够触发官府事件 | 数值口径（world.js） |
 | B24 | 26 位 A 层 NPC 的 sidequest 曾指向**已被移除**的 sq_npcv_XXX（悬空指针）→ B20「替换」链条的最后一环 | **高** | ✅ **已修（主理人亲做）** | 数据（40_npcs.json） |
 | B25 | sidequest 是**死字段**（全仓无代码读它）→ 那 288 条模板支线**本来就没有挂载入口**，只能 accept 直呼其名接 | 中 | ✅ **已修（批次 7）**：`def.sidequest` 接进 `lookRoom` 的「接他的事」+ `quests` 面板；真指令可达 | 引擎（def.sidequest 挂钩） |
 | B26 | achievements.jianghu_end 读 flag ending_jianghu_end，E4 摘掉 ending 后**成死成就** | 低 | ✅ **已修（2026-10-10 深夜，随 E16 一起）**：改判 `flagsAny: [ending_jiaojuan, ending_jujiao, ending_banjiao]`（三结局任一即得）；`smoke-mainline35` §⑫ 守住 | 数据（成就判定） |

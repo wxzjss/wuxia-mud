@@ -197,7 +197,11 @@ sec('§D 「任务」面板：新手教程没做完就置顶，且只给当前�
   ok('D-1 ★ 首条就是新手教程', !!(first && first.isTutorial), first ? first.name : '(空)');
   ok('D-2 ★ 类型是「新手」（面板里排在最前）', first && first.type === '新手', first && first.type);
   ok('D-3 ★ 只给**当前**这一章（不是把八章全铺开）',
-    !!(first && first.chapter === 1 && first.stageDesc && /茶摊的老汉/.test(first.stageDesc)),
+    /* ⚠️ 这里原来钉的是第一章台词里的「茶摊的老汉」四个字。
+       主人 2026-10-11 让重写新手剧情，那句话被改写 ⇒ 代理判据跟着假红。
+       钉**台词原文**（从 tutorial.STEPS 取，与实现同源），别再钉某个句子里的词。 */
+    !!(first && first.chapter === 1 && first.stageDesc
+      && first.stageDesc.indexOf(((T.STEPS.find(s => s.id === 'look') || {}).say || '')) >= 0),
     first ? ('第' + first.chapter + '章 ' + first.chapterTitle) : '-');
   ok('D-4 带进度（cur/count）', !!(first && typeof first.cur === 'number' && first.count >= 8),
     first ? first.cur + '/' + first.count : '-');

@@ -24,6 +24,10 @@ const { evalCond, evalEffects, evalTemplate } = require('./modapi');
 
 const SEASONS = ['spring', 'summer', 'autumn', 'winter'];
 
+/* B23：传闻算出来的声望要不要乘一个刻度（见 applyRumorReputation 的注释）。
+   8 是把「一次恶行」抬到人类尺度的那一档：杀成名人物 ≈ −20，杀良 ≈ −30。 */
+const REP_SCALE = 8;
+
 /* 单间客栈饭点最多容纳多少人，超出的 NPC 留在原处（饭点只是一部分人去吃饭） */
 const EATERY_CAP = 24;
 /** 名人（A 层 / 有 unique 标记）全图只应存在一个实例，且不去别处吃饭 */
@@ -1656,7 +1660,7 @@ class World extends EventEmitter {
   }
 
   /** 传闻实例 → 声誉结算（一次性，不持续结算避免重复计分）。
-   *  Δrep = polarity × weight × (heat0/100)；key：涉及门派弟子→该门派名；
+   *  Δrep = polarity × weight × (heat0/100) × REP_SCALE；key：涉及门派弟子→该门派名；
    *  发生地对应某门派地盘(sect.region/homeRegion)→该门派名；否则 '*'（全江湖声望）。 */
   applyRumorReputation(seed, room, about, subject) {
     const p = this.player;
@@ -1665,7 +1669,12 @@ class World extends EventEmitter {
        绝不能把 Δrep 记到玩家头上。这里加 subject 守卫（缺省 subject='player' 不变）。 */
     if ((subject || 'player') !== 'player') return;
     if (!p.reputation) p.reputation = {};
-    const drep = seed.polarity * seed.weight * (seed.heat0 / 100);
+    /* B23（design/12）：原来的 `polarity × weight × (heat0/100)` 落在 **0.4 ~ 4.0** 一格，
+       而江湖上认得的声望刻度是十位数起（势力/官府事件按 ±40 那种量级设的门槛）。
+       结果是「杀一个成名人物只掉 2.55 点」，得犯十几次恶才有人拿你当回事 —— 数字上对，
+       手感上错。这里乘一个**显式刻度**把它抬到人类能感知的量级（一次恶行 −10~−35）。
+       刻度单列成常量而不是把公式里的数改掉，是为了让「量级」这件事**有一个地方可调**。 */
+    const drep = seed.polarity * seed.weight * (seed.heat0 / 100) * REP_SCALE;
     let key = '*';
     const aboutDef = about && this.data.npcs[about];
     if (aboutDef && aboutDef.sect) key = aboutDef.sect;

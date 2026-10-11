@@ -87,6 +87,7 @@
           "next": 1
         },
         {
+          "lock": { "flag": "pre_a3_dangpu", "quest": "sq_pre_a3_dangpu" },
           "desc": "雪谷·山口，破第一道哨卡",
           "cond": {
             "flag": "pass_shankou"

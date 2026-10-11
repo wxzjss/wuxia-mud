@@ -1185,10 +1185,20 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
    * ================================================================ */
   section('⑮ 第四轮 · 「询问」列出他认识的人，点了真问');
   {
-    /* 挑一个真有关系数据的 NPC（286 个都有），拉一份**新的** view */
-    const defId = Object.keys(w.data.npcs || {}).find(x => (w.data.npcs[x].rel || []).length > 0);
-    const inst = defId ? w.spawnNpc(defId, p.room, 1, true) : null;
-    ok('⑮-0 前提：真引擎里找得到一个有关系的 NPC', !!inst, String(defId));
+    /* 挑一个真有关系数据的 NPC（286 个都有），拉一份**新的** view。
+       ⚠️ 两处刻意的写法，都是踩过的坑：
+        ① **按 id 排序**再挑 —— 原来吃 `Object.keys` 的加载顺序，新加一批 NPC 就换样本
+           （铁律：测试样本别用「第一个满足条件的」）；
+        ② **必须确认他真的站在玩家这间房里**再断言卡片。名人（`w.legendIds`）走
+           `findLiveNpc` 复用已有实例，spawn 到别的房间是可能的 —— 那样卡片当然没有，
+           而红的是测试不是游戏。 */
+    const cands = Object.keys(w.data.npcs || {}).filter(x => (w.data.npcs[x].rel || []).length > 0).sort();
+    let defId = null, inst = null;
+    for (const x of cands) {
+      const it = w.spawnNpc(x, p.room, 1, true);
+      if (it && it.room === p.room) { defId = x; inst = it; break; }
+    }
+    ok('⑮-0 前提：真引擎里找得到一个有关系的 NPC 且他真在场上', !!inst, String(defId));
     if (inst) {
       const v15 = engine.view();
       const env = loadUi(makeEnv({ innerWidth: 390 }));

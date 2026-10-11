@@ -261,17 +261,23 @@ sec('⑥ 真·交任务：找委托人一步步推到完成（99）');
     const npc = w.spawnNpc(giverId, home, 1, true);
     ok('委托人能在该房间生成', !!npc, npc && npc.name);
 
-    /* 逐步推。每轮先凑条件，再交任务，直到 stage 变成 99 */
+    /* 逐步推。每轮先凑条件，再交任务，直到 stage 变成 99。
+       ⚠️ design/67 §5.3 P2 之后，主线每个节点还挂了一道**前置支线锁**
+       （`stage.lock.flag`）：前置没做完，交任务会被挡下并提示。
+       本测试验的是「主线本身能不能走完」，不是「锁灵不灵」——
+       所以每一轮先把该轮的 lock flag 置上，等价于「前置那桩事已经办过了」。
+       锁本身的守卫在 `check-data-load.js` ⑦ 与 `smoke-mainline-expansion.js`。 */
     const round = [
       ['stage0 入派', () => { p.sect = '少林'; p.setVar('hasSect', 1); }],
       ['stage1 武学百级', () => { p.learnSkill('basic_sword', { force: true }); p.learnSkill('huashan_sword', { force: true }); p.gainSkillExp('basic_sword', 1e12); p.gainSkillExp('huashan_sword', 1e12); }],
-      ['stage2 五桩支线', () => { for (const s of Object.keys(w.data.quests).filter(i => /^sq_/.test(i)).slice(0, 5)) p.quests[s] = 99; }],
+      ['stage2 五桩支线', () => { p.setFlag('pre_a1_chuan', true); for (const s of Object.keys(w.data.quests).filter(i => /^sq_/.test(i)).slice(0, 5)) p.quests[s] = 99; }],
       ['stage3 击败名宿', () => {
         /* C3：这一段要求在第四幕之后结算（cond 里有 `act4_done`），先置上 */
+        p.setFlag('pre_a1_shi', true);
         p.setFlag('act4_done', true);
         w.onNpcDown(w.spawnNpc((w.legendIds || [])[0] || 'blood_saber', p.room, 1, true));
       }],
-      ['stage4 绝顶内功', () => { p.learnSkill('jiuyin_zhenjing', { force: true }); }],
+      ['stage4 绝顶内功', () => { p.setFlag('pre_a1_yao', true); p.learnSkill('jiuyin_zhenjing', { force: true }); }],
     ];
     for (const [label, prep] of round) {
       const before = p.questStage(Q);

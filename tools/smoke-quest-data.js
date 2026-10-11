@@ -164,6 +164,14 @@ function walkAct1(seed) {
      不置这一位，第一幕就走不完（这正是本测试要防的「门槛」本意，别当成故障去掉）。 */
   p.setFlag('act4_done', true);
   p.setFlag('learned_yijinjing', true);
+  /* ⚠️ design/67 §5.3 P2：第一幕 stage2/3/4 各挂了一道**前置支线锁**
+     （lock.flag = pre_a1_chuan / pre_a1_shi / pre_a1_yao）。
+     本测试验的是「第一幕能不能走完」，不是「锁灵不灵」，所以先把三把锁的钥匙置上，
+     等价于「前置那三桩事都办过了」。锁本身的守卫见 `check-data-load.js` ⑦
+     与 `smoke-mainline-expansion.js`。 */
+  p.setFlag('pre_a1_chuan', true);
+  p.setFlag('pre_a1_shi', true);
+  p.setFlag('pre_a1_yao', true);
   w.movePlayerTo(p, w.data.npcs[giverId].room);
   const texts = [];
   for (let i = 0; i < 12 && p.questStage('q_main_jianghu') < 99; i++) {

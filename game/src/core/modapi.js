@@ -258,6 +258,30 @@ function evalCond(cond, ctx) {
 
   // 身份
   if (cond.gender !== undefined && p.gender !== cond.gender) return false;
+  /* 主线线别（design/67 §5 P1 的配套）：
+     `{line:'orthodox'}` / `{lineNot:'outlaw'}` / `{fromMod:true}` / `{birth:'noble'}` / `{act:">=3"}`。
+     为什么要有这一段：主线分化是「同一件事三种走法」，数据侧只能靠条件分流；
+     没有这几个键，`require.line` 会被 evalCond **当普通 var 读** → 永远 0 → 永远不成立
+     （又一个「不报错就是不生效」）。老档没有 `p.mainline` 时按出身现补一次，绝不抛。 */
+  if (cond.line !== undefined || cond.lineNot !== undefined || cond.fromMod !== undefined
+      || cond.birth !== undefined || cond.act !== undefined) {
+    let ml = p.mainline;
+    if (!ml || !ml.line) {
+      try { ml = require('./mainline').stateOf(p); }
+      catch (e) { ml = { line: 'neutral', birth: p.birth || null, act: 1 }; }
+    }
+    if (cond.line !== undefined) {
+      const want = [].concat(cond.line);
+      if (!want.includes(ml.line)) return false;
+    }
+    if (cond.lineNot !== undefined && [].concat(cond.lineNot).includes(ml.line)) return false;
+    if (cond.fromMod !== undefined && !!ml.fromMod !== !!cond.fromMod) return false;
+    if (cond.birth !== undefined && [].concat(cond.birth).includes(p.birth) === false) return false;
+    if (cond.act !== undefined) {
+      const c = parseCmp(cond.act);
+      if (!cmp(ml.act || 1, c.op, c.num)) return false;
+    }
+  }
   if (cond.race !== undefined && p.race !== cond.race) return false;
   if (cond.sect !== undefined && p.sect !== cond.sect) return false;
   if (cond.sectNot !== undefined && p.sect === cond.sectNot) return false;

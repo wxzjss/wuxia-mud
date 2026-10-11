@@ -31,6 +31,8 @@ const treasuryMod = require('./treasury');
 const artsMod = require('./arts');
 const neigongMod = require('./neigong');
 const tutorialMod = require('./tutorial');
+/* 阶段解析 / 目标判定的**唯一**实现（面板、自动检查、交任务三处共用一份） */
+const queststage = require('./queststage');
 
 /* 中文数字 → 阿拉伯 */
 const CN_NUM = { 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10, 壹: 1, 贰: 2, 叁: 3, 肆: 4, 伍: 5, 陆: 6, 柒: 7, 捌: 8, 玖: 9, 拾: 10 };
@@ -43,6 +45,32 @@ function cnNum(s) {
   if (m) return (m[1] ? CN_NUM[m[1]] : 1) * 10 + (m[2] ? CN_NUM[m[2]] : 0);
   return NaN;
 }
+
+/* ============================================================
+ * 物品类型 / 装备属性的**中文名**（唯一一份）
+ *
+ * 🔴 为什么单拎出来：`describeItem`（「细看 <物品>」「看 <物品>」）里一直在调
+ *    `typeCN(d.type)` / `statCN(k)` —— 而这两个函数**全仓从来没定义过**。
+ *    于是「任何带 `type` 的物品，一点细看就 ReferenceError」，
+ *    被引擎的 catch 兜住、只在控制台留一行「指令异常」：
+ *    玩家那边看到的是「点了没反应」。全库带 type 的物品有 190 件。
+ *    （engine.js 里另有一份同样的字面量表，是给 mod 制作器下拉框用的 ——
+ *      两份就是漂移的开始，现在 engine 那份改成引用这里。）
+ * ============================================================ */
+const ITEM_TYPE_CN = {
+  weapon: '武器', armor: '防具', helmet: '头饰', boots: '鞋履', gloves: '手套',
+  necklace: '颈饰', ring: '戒指', cloak: '披风', shield: '副手', accessory: '饰品',
+  consumable: '丹药', food: '食物', herb: '药材', material: '材料', book: '书籍',
+  quest: '任务物品', tool: '工具', container: '容器', treasure: '珍宝', misc: '杂物',
+};
+const EQUIP_STAT_CN = {
+  atk: '攻击', def: '防御', dodge: '闪避', parry: '招架', speed: '速度',
+  maxHp: '气血', maxMp: '内力', critRate: '暴击率', lifesteal: '吸血',
+  reflect: '反伤', armorPen: '破防',
+};
+/** 英文类型 → 中文；认不出来就原样返回（**绝不返回 undefined**，否则面板上会出现「（undefined）」） */
+function typeCN(t) { return ITEM_TYPE_CN[t] || String(t == null ? '' : t); }
+function statCN(k) { return EQUIP_STAT_CN[k] || String(k == null ? '' : k); }
 
 const DIRECTIONS = {
   n: 'n', s: 's', e: 'e', w: 'w', u: 'u', d: 'd', ne: 'ne', nw: 'nw', se: 'se', sw: 'sw',
@@ -465,6 +493,24 @@ function buildCommands(world) {
     try {
       lines.push(...require('./escort').onMove(w, p, p.room));
     } catch (e) { /* 劫镖判定失败不该挡路 */ }
+    /* ---- B22：踏进秘境/凶地要出「奇遇」的传闻 ----
+       `rs_dungeon_clear` 此前是死种子（全仓没人调）。判据用**房间 id 前缀 `secret_`**
+       —— 那是既有的「秘境」命名，不新造一套标记。
+       只在**头一回**进去时报一次（`p.vars.seenSecret` 记账，随档走），
+       免得进进出出把全城传成一个天天撞奇遇的人。 */
+    try {
+      const rid = String(p.room || '');
+      if (rid.indexOf('secret_') === 0 && typeof w.addRumor === 'function') {
+        p.vars = p.vars || {};
+        const seen = p.vars.seenSecret || (p.vars.seenSecret = {});
+        if (!seen[rid]) {
+          seen[rid] = 1;
+          p.setVar('seenSecret', seen);
+          const room = w.getRoom(rid) || {};
+          w.addRumor('rs_dungeon_clear', { room: rid, vars: { who: p.name || '有人', where: room.name || '那处' } });
+        }
+      }
+    } catch (e) { /* 奇遇传闻失败不该挡路 */ }
     const view = lookRoom(ctx);
     lines.push(...view.lines);
     return { lines, moved: true };
@@ -693,6 +739,14 @@ function buildCommands(world) {
         if (def.tag === 'doctor') actions.push({ label: '求医', cmd: '求医 ' + k });
         /* ⑤ 识路的人（镖师/车夫/船夫）才给「问路」 */
         if (['escort', 'groom', 'boatman'].indexOf(def.tag) >= 0) actions.push({ label: '问路', cmd: '问路 ' + k });
+        /* ⑤b 官差才给「报信 / 领差事」（design/67 §3 正邪分野）。
+           ⚠️ 这两个**不做前端线别过滤**：反派点下去会被后端回一句
+           「官府的差事不发给来历不明的人」—— 那是**有反应**。
+           分野要让玩家看得见（藏起来 = 玩家永远不知道官府这条门路跟他没关系）。 */
+        if (def.tag === 'constable' || def.tag === 'official') {
+          actions.push({ label: '报信', cmd: '报信', hint: '递一条线报，换赏钱' });
+          actions.push({ label: '领差事', cmd: '领差事', hint: '讨一桩官府的缉捕' });
+        }
         /* ⑥ 偷袭（主人第四轮点名要的入口）。
            跟「伺机偷窃」一样属「风险」类，放在风险区；
            **绝不能顶到「攻击」后面去**（B10：「攻击」要保持最后一项，防手指滑）。 */
@@ -1383,6 +1437,17 @@ function buildCommands(world) {
     const hit = fuzzyFind(p.inventory || [], kw, i => { const id = (typeof i === 'object' && i) ? i.id : i; const d = w.getItem(id); return (d && d.name) || id; });
     if (!hit) return { lines: [{ kind: 'warn', text: `你身上没有「${kw}」。` }] };
     const r = w.useItem(p, hit.uid);
+    /* B22：喝酒要出市井传闻（rs_drunkard 此前是死种子）。
+       判据用**物品 id / 名字含「酒」**，不新造 tag —— 免得又开一个平行口径。
+       只在真的喝下去之后才传，且带点概率：喝一口就传遍全城不合情理。 */
+    const _iid = (typeof hit === 'object' && hit) ? hit.id : hit;
+    const _idef = w.getItem(_iid) || {};
+    if (r && r.ok && typeof w.addRumor === 'function'
+        && (/酒/.test(_iid || '') || /酒/.test(_idef.name || ''))
+        && (w.rng.next ? w.rng.next() : Math.random()) < 0.5) {
+      const room = w.getRoom(p.room) || {};
+      w.addRumor('rs_drunkard', { room: p.room, vars: { who: p.name || '有人', where: room.name || '此地' } });
+    }
     return { lines: (r.lines || []).concat([{ kind: r.ok ? 'sys' : 'warn', text: r.msg }]) };
   });
 
@@ -2001,6 +2066,32 @@ function buildCommands(world) {
     }
     const r = marriage.propose(w, npc, venueKw || 'home');
     return { lines: r.lines };
+  });
+
+  /** 退亲 / 悔婚：把已经下过聘的亲事退掉。
+   *  ⚠️ 只退**还没过门**的（`p.marriage.plan`）。已经成过亲的是另一码事，
+   *     这里不碰 —— 免得一句指令把存档里的婚姻关系抹掉。
+   *  B22：退亲要出「风评」的传闻（`rs_break_marriage` 此前是死种子）——
+   *  当众退亲本来就是最招人议论的那一类事。 */
+  reg(['退亲', '悔婚', '退婚'], (ctx) => {
+    const w = ctx.world, p = ctx.player;
+    const m = p.marriage;
+    if (!m || !m.plan) {
+      return { lines: [{ kind: 'warn', text: '你身上没有还没过门的亲事。' }] };
+    }
+    const plan = m.plan;
+    const npc = marriage.defById(w, plan.npc) || {};
+    const name = npc.name || '对方';
+    m.plan = null;
+    m.stage = marriage.STAGES.NONE;
+    if (typeof w.addRumor === 'function') {
+      const room = w.getRoom(p.room) || {};
+      w.addRumor('rs_break_marriage', { room: p.room, about: plan.npc, vars: { who: p.name || '有人', where: room.name || '此地' } });
+    }
+    return { lines: [
+      { kind: 'sys', text: `你把话带到${name}家，把聘礼一样一样收了回来。这门亲事，退了。` },
+      { kind: 'hint', text: '（街面上该有闲话了。若还想提亲，得先「表白」再重新下聘。）' },
+    ] };
   });
 
   /** 请客：请客 <人名> */
@@ -3024,7 +3115,15 @@ function buildCommands(world) {
     }
     const t = medicineTarget(w, p, kw);
     if (!t) return { lines: [{ kind: 'warn', text: `这里没有「${kw}」。` }] };
-    return { lines: medicineMod.heal(w, p, t).lines };
+    const r = medicineMod.heal(w, p, t);
+    /* B22：救了人才算「救人」的传闻（此前 rs_save_life 是死种子，全仓没人调）。
+       ⚠️ 只在**真的把对方从伤里拉回来**时才报传言 —— 空手扎一下也算的话，
+       集市上就天天有人传你救人了。 */
+    if (r && r.ok && t && t.name && typeof w.addRumor === 'function') {
+      const room = w.getRoom(p.room) || {};
+      w.addRumor('rs_save_life', { room: p.room, about: (t.def && t.def.id) || t.defId || null, vars: { who: p.name || '有人', where: room.name || '城里', whom: t.name } });
+    }
+    return { lines: r.lines };
   });
 
   reg(['解毒', '拔毒', '驱毒'], (ctx, args) => {
@@ -4101,6 +4200,21 @@ function buildCommands(world) {
     return { lines: require('./patrol').bribe(w, p) };
   });
 
+  /* ---------------- 正邪分野（design/67 §3）----------------
+     官府路线的两头：**报信**（把听来的线报递给官差，得赏与朝廷声望）与
+     **领差事**（官差派一桩缉捕的公事）。
+     分野写在判据里：`outlaw` 那条线**官府不接他的话** —— 这不是惩罚，是这条线的定义。
+     与巡逻同纪律：判据用显式 tag，恶名读 `p.kidnap.wanted`。 */
+  reg(['报信', '递话', '线报'], (ctx) => {
+    const w = ctx.world, p = ctx.player;
+    return { lines: require('./patrol').reportTip(w, p) };
+  });
+
+  reg(['领差事', '接差事', '领公事', '讨差事'], (ctx) => {
+    const w = ctx.world, p = ctx.player;
+    return { lines: require('./patrol').assignTask(w, p) };
+  });
+
   /* ---------------- 武学自创（2026-10-11 自拟）----------------
      把两门同槽、都下过苦功的功夫揉成一门新的。规矩写在 customskill.js 顶上。 */
 
@@ -4326,6 +4440,13 @@ function buildCommands(world) {
     if (qd.abandonable === false) return { lines: [{ kind: 'warn', text: '这个任务无法放弃。' }] };
     delete p.quests[qd.id];
     p.setQuestStage(qd.id, -1);
+    /* B22：应下的事撂下，就是「失信」的传闻（rs_deadbeat 此前是死种子）。
+       ⚠️ 主线与新手教程不在此列 —— 它们放弃不掉（上面 abandonable 已挡），
+       而且「主线撂下」该走的是结局，不是街头闲话。 */
+    if (qd.type !== '主线' && qd.type !== '新手' && typeof w.addRumor === 'function') {
+      const room = w.getRoom(p.room) || {};
+      w.addRumor('rs_deadbeat', { room: p.room, vars: { who: p.name || '有人', where: room.name || '此地' } });
+    }
     return { lines: [{ kind: 'sys', text: `你放弃了任务「${qd.name}」。` }] };
   });
 
@@ -4850,6 +4971,12 @@ function buildCommands(world) {
     npc.master = p.id;
     const { addFavor } = require('./social');
     addFavor(w, npc, 30 * w.favorGainMult(p), '拜师');
+    /* B22：收徒要出传闻（rs_take_disciple 此前是死种子）。
+       收徒是「能传出去的事」—— 摆几桌、有人看见，才有人在茶桌上说。 */
+    if (typeof w.addRumor === 'function') {
+      const room = w.getRoom(p.room) || {};
+      w.addRumor('rs_take_disciple', { room: p.room, about: (npc.def && npc.def.id) || npc.defId || null, vars: { who: p.name || '有人', where: room.name || '此地', whom: npc.name } });
+    }
     return { lines: [{ kind: 'sys', text: `${npc.name}向你磕头行礼，正式拜入你门下！` }] };
   });
 
@@ -5284,13 +5411,17 @@ function questKeyword(ctx, cmd, args, rawFull) {
       if (st < 0 || st >= 99) continue;
       const qd = w.getQuest(q);
       if (!qd) continue;
-      const stage = qd.stages && qd.stages[st];
-      // 判定阶段目标
+      /* ⚠️ 两处与面板**必须同源**，不然就是「面板说能交、点下去说不行」：
+         ① 阶段走 stageResolve（按线/性别分叉 + 前置锁）
+         ② 目标判定走 engine.targetDone（item 数物件 / flag 看标记 / 其余读 var）
+         原先这里直接 `p.getVar(...)`，于是 **flag 与 item 类目标永远交不了**
+         —— 与主人报的「破庙搜查完成不了」是同一族，只是长在另一个入口上。 */
+      const stage = queststage.stageResolve(p, qd.stages && qd.stages[st], w);
+      if (stage && stage.locked) continue;   // 前置没做完 → 交不了（也不静默：checkQuestAuto 已提示）
       if (stage && stage.targets) {
         let ok = true;
         for (const t of stage.targets) {
-          const cur = p.getVar(t.var || `q_${q}_${t.id}`) || 0;
-          if (cur < (t.count || 1)) { ok = false; break; }
+          if (!queststage.targetDone(p, q, t)) { ok = false; break; }
         }
         if (!ok) continue;
       }
@@ -5793,6 +5924,8 @@ function findPath(world, from, to, ctx) {
 
 module.exports = {
   buildCommands, findPath, cnNum, DIRECTIONS, DIR_CN,
+  /* 物品类型/装备属性的中文名（唯一一份）—— engine 的 modmaker 数据面也读它 */
+  ITEM_TYPE_CN, EQUIP_STAT_CN, typeCN, statCN,
   /* 「询问」配套：话题写法归一化 + 他认识的人 + 问起那人他怎么说。
      前端人名清单与后端回答**共用这一份**，别在 UI 里再写一份名单。 */
   normalizeAskList, npcKnownPeople, npcAboutPerson,

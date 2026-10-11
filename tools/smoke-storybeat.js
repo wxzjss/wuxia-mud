@@ -30,7 +30,11 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
   section('1 剧情自己走到屏幕上（不用翻面板）');
   const r0 = await e.exec('look');
   const t0 = allText(r0);
-  ok('★ 第 1 章的旁白上屏了', /茶摊的灶火还温着/.test(t0), kinds(r0, 'story').join(' | ').slice(0, 70));
+  /* ⚠️ 别再钉「茶摊的灶火还温着」这四个字 —— 那是第一章台词的原文，
+     主人 2026-10-11 让重写新手剧情，台词一改这条就假红。
+     改成**与实现同源**：从 tutorial.STEPS 取第一章的 story 原文来比。 */
+  const CH1 = require(path.join(ROOT, 'game/src/core/tutorial.js')).STEPS.find(s => s.id === 'look') || {};
+  ok('★ 第 1 章的旁白上屏了', !!(CH1.story && t0.indexOf(CH1.story) >= 0), kinds(r0, 'story').join(' | ').slice(0, 70));
   ok('★ 有「第 1 章」的章节抬头', kinds(r0, 'subtitle').some(x => /第 1 章/.test(x)), kinds(r0, 'subtitle').join(','));
   /* 文本在润色里改过（原「没抬头，只把柴拨了拨」是一处 AI 味的'不X只Y'），
          断言只认「老汉 + 动作」这件事，别钉死具体措辞。 */

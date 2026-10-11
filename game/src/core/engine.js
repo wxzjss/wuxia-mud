@@ -10,13 +10,15 @@ const path = require('path');
 const fs = require('fs');
 const { World } = require('./world');
 const { ModLoader } = require('./modloader');
-const { buildCommands, cnNum, normalizeAskList, npcKnownPeople } = require('./commands');
+const commandsModule = require('./commands');
+const { buildCommands, cnNum, normalizeAskList, npcKnownPeople } = commandsModule;
 const { evalCond, evalEffects, evalTemplate } = require('./modapi');
 const { fmtTime, shichen, stars, clamp, fuzzyFind, normalizeCmd } = require('./utils');
 const mapLayout = require('./maplayout');
 const tutorial = require('./tutorial');
 const social = require('./social');
 const storybeat = require('./storybeat');
+const queststage = require('./queststage');
 
 /* 「可与名宿一战」的名单 —— `defeatLegend` 条件就认它。
  *
@@ -899,26 +901,47 @@ class GameEngine {
     });
   }
 
+  /* ============================================================
+   * 阶段解析 / 目标判定 —— 实现抽在 `queststage.js`（唯一一份），
+   * 这里只做「带上 world」的转发。三处入口（面板 / 自动检查 / 交任务）
+   * 必须调同一份代码，否则就是「面板说能交、点下去说不行」。
+   * ============================================================ */
+  stageResolve(p, stage) {
+    return queststage.stageResolve(p, stage, this.world);
+  }
+
+  targetDone(p, qid, t) {
+    return queststage.targetDone(p, qid, t);
+  }
+
   questList() {
     const p = this.world.player, w = this.world;
-    /* 主线分化（design/67 §5）：阶段描述可以按**线**换说法（`descByLine`）——
-       同一件事，正派/反派/中立读到的字不一样。没写就照旧用 desc。 */
-    const line = (function () { try { return require('./mainline').stateOf(p).line; } catch (e) { return 'neutral'; } })();
     const out = [];
     for (const qid of Object.keys(p.quests)) {
       const st = p.quests[qid];
       if (st < 0 || st >= 99) continue;
       const qd = w.getQuest(qid);
       if (!qd) continue;
-      const stage = qd.stages && qd.stages[st];
+      const stage = this.stageResolve(p, qd.stages && qd.stages[st]);
       const targets = (stage && stage.targets || []).map(t => {
         const vk = t.var || `q_${qid}_${t.id}`;
         let cur = 0;
+        /* ⚠️ 目标判据必须与 `targetDone()` 同一套，否则面板上的「0/1」跟判定不同步 ——
+           `flag` 类目标**不读 var**（flag 住在 p.flags），这里原来也漏了这一支。 */
         if (t.kind === 'item') cur = p.countItem(t.key);
+        else if (t.kind === 'flag') cur = p.hasFlag(t.key) ? (t.count || 1) : 0;
         else cur = p.getVar(vk) || 0;
         return { desc: t.desc || t.id, cur: Math.min(cur, t.count || 1), count: t.count || 1 };
       });
-      out.push({ id: qid, name: qd.name, type: qd.type, level: qd.level, stage: st, desc: qd.desc, stageDesc: (stage && ((stage.descByLine || {})[line] || stage.desc)) || '', targets });
+      out.push({
+        id: qid, name: qd.name, type: qd.type, level: qd.level, stage: st, desc: qd.desc,
+        stageDesc: stage ? stage.desc || '' : '',
+        targets,
+        /* 前置没做完 → 明说，不静默（P2 的验收条款） */
+        locked: !!(stage && stage.locked),
+        lockName: (stage && stage.lockName) || '',
+        lockMsg: (stage && stage.lockMsg) || '',
+      });
     }
     // 已完成
     /* ⚠️ 这里原来只给一串 id，前端 `d.name` 取不到 → 「已完成」区列出来全是「✔ 」后面空白。
@@ -948,7 +971,9 @@ class GameEngine {
     if (!p) return null;
     const qd = qid && w.getQuest(qid);
     if (!qd) return null;
-    const st = (qd.stages && qd.stages[0]) || {};
+    /* 用 stageResolve 而不是裸取 stages[0]：性别双解（P4）的两套解法要在
+       「接取任务」的详情页里就显示**你这一性别**的那一套，别拿另一套糊弄玩家。 */
+    const st = this.stageResolve(p, (qd.stages && qd.stages[0]) || {}) || {};
     const targets = (st.targets || []).map(t => ({
       desc: t.desc || t.id, kind: t.kind || '', count: t.count || 1, cur: 0,
     }));
@@ -1542,7 +1567,11 @@ class GameEngine {
       if (st < 0 || st >= 99) continue;
       const qd = w.getQuest(qid);
       if (!qd || !qd.stages || !qd.stages[st]) continue;
-      for (const t of (qd.stages[st].targets || [])) {
+      /* ⚠️ 走 stageResolve 而不是直接取 qd.stages[st]：
+         按性别换一套目标（P4）时，站错房间就永远攒不上 var ——
+         这正是「不报错就是不生效」那一族。 */
+      const _st = this.stageResolve(p, qd.stages[st]) || qd.stages[st];
+      for (const t of (_st.targets || [])) {
         const vk = t.var || `q_${qid}_${t.id}`;
         /* room：人站在目标房间就是达成。
            flag：**标记已经设上**就是达成。
@@ -1583,21 +1612,6 @@ class GameEngine {
     this.checkAchievements(merged);
   }
 
-  /** 单个任务目标是否达成。判据**按 kind 分开**，不能一律读 `var`：
-   *    · item —— 数身上的物件（`countItem` 按 count 累加，数「堆数」会判错）
-   *    · flag —— 看标记设没设（flag 住在 `p.flags`，而 `p.getVar` 读的是 `p.vars`，
-   *              两者不是一个地方 —— 这正是破庙那条任务判不出来的原因）
-   *    · 其余（room / kill / 自定义）—— 读计数 var
-   *  🔴 原判定写成 `t.kind === 'item' ? countItem : getVar`，把 flag 也塞进 getVar 分支，
-   *     于是 flag 类目标读的是 `p.vars.temple_searched`（从来不存在），恒为 0。 */
-  targetDone(p, qid, t) {
-    if (!t) return true;
-    const vk = t.var || `q_${qid}_${t.id}`;
-    if (t.kind === 'item') return p.countItem(t.key) >= (t.count || 1);
-    if (t.kind === 'flag') return !!p.hasFlag(t.key);
-    return (p.getVar(vk) || 0) >= (t.count || 1);
-  }
-
   /** 自动推进「条件型」任务阶段 */
   checkQuestAuto(lines) {
     const w = this.world, p = w.player;
@@ -1606,8 +1620,19 @@ class GameEngine {
       if (st < 0 || st >= 99) continue;
       const qd = w.getQuest(qid);
       if (!qd || !qd.stages) continue;
-      const stage = qd.stages[st];
+      const stage = this.stageResolve(p, qd.stages[st]);
       if (!stage) continue;
+      /* 前置没做完：**明说不解锁**（design/67 §5.3 P2 的验收条款），
+         否则玩家会陷在「目标都办完了却推不动，也不告诉我为什么」里 —— 这就是静默。
+         只在状态第一次出现时提示一次，别每走一步刷屏。 */
+      if (stage.locked) {
+        const lk = 'lockhint_' + qid + '_' + st;
+        if (!p.hasFlag(lk)) {
+          p.setFlag(lk, true);
+          lines.push({ kind: 'warn', text: stage.lockMsg });
+        }
+        continue;
+      }
       // 条件齐备 → 提示可复命（不自动完成，需要去找 NPC 交任务）
       if (stage.targets && stage.targets.length) {
         let all = true;
@@ -2107,7 +2132,7 @@ class GameEngine {
         'combat', 'die', 'menu', 'dialog', 'ending', 'sound', 'sleep',
         'joinSect', 'leaveSect', 'promote', 'fn'
       ],
-      condKeys: ['flag', 'notFlag', 'var', 'level', 'money', 'exp', 'pot', 'hp', 'mp', 'karma', 'kills', 'age', 'attr', 'skill', 'skills', 'item', 'noItem', 'count', 'gender', 'race', 'sect', 'sectNot', 'noSect', 'hasSect', 'rank', 'title', 'hasPerk', 'hasTrait', 'room', 'region', 'time', 'season', 'weather', 'quest', 'stage', 'questDone', 'chance', 'rep', 'and', 'or', 'not', 'always', 'fn'],
+      condKeys: ['flag', 'notFlag', 'var', 'level', 'money', 'exp', 'pot', 'hp', 'mp', 'karma', 'kills', 'age', 'attr', 'skill', 'skills', 'item', 'noItem', 'count', 'gender', 'line', 'lineNot', 'fromMod', 'birth', 'act', 'race', 'sect', 'sectNot', 'noSect', 'hasSect', 'rank', 'title', 'hasPerk', 'hasTrait', 'room', 'region', 'time', 'season', 'weather', 'quest', 'stage', 'questDone', 'chance', 'rep', 'and', 'or', 'not', 'always', 'fn'],
       categories: ['剧情', '地图', '功能', '功法', '物品', '门派', '任务', '综合', '美化'],
       regions: idName(w.data.regions),
       rooms: Object.keys(w.data.rooms).map(k => ({ id: k, name: w.data.rooms[k].name, region: w.data.rooms[k].region })),
@@ -2121,8 +2146,11 @@ class GameEngine {
         return { id: k, name: t.name || k, desc: t.desc || '', attr: t.attr || null, effects: t.effects || [] };
       }),
       effects: Object.keys(w.data.events || {}),
-      statCN: { atk: '攻击', def: '防御', dodge: '闪避', parry: '招架', speed: '速度', maxHp: '气血', maxMp: '内力', critRate: '暴击率', lifesteal: '吸血', reflect: '反伤', armorPen: '破防' },
-      itemTypeCN: { weapon: '武器', armor: '防具', helmet: '头饰', boots: '鞋履', gloves: '手套', necklace: '颈饰', ring: '戒指', cloak: '披风', shield: '副手', accessory: '饰品', consumable: '丹药', food: '食物', herb: '药材', material: '材料', book: '书籍', quest: '任务物品', misc: '杂物' },
+      /* 物品类型 / 装备属性的中文名：**引用 commands 那一份**。
+      （原来这里抄了一份字面量，而 commands 的 describeItem 却在调一个不存在的 typeCN()
+        ⇒ 任何带 type 的物品一「细看」就 ReferenceError。两份表就是漂移的开始。） */
+      statCN: commandsModule.EQUIP_STAT_CN,
+      itemTypeCN: commandsModule.ITEM_TYPE_CN,
     };
   }
 

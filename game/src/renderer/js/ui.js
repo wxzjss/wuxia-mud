@@ -2317,7 +2317,13 @@
       let s = '<div class="quest-card"><div class="q-name">' + esc(q.name) + '</div>';
       s += '<div class="q-desc">' + esc(q.desc || '') + '</div>';
       s += '<div class="q-stage">当前阶段：' + esc(q.stageDesc || '—') + '</div>';
-      if (q.targets && q.targets.length) {
+      /* 前置没做完（design/67 §5.2 P2）：**明说不解锁**。
+         不写这一行，玩家就会陷在「明明到了地方却推不动、也不告诉我为什么」里 —— 那就是静默。 */
+      if (q.locked) {
+        s += '<div class="q-lock">🔒 还没到时候</div>';
+        if (q.lockMsg) s += '<div class="q-lock-msg">' + esc(q.lockMsg) + '</div>';
+      }
+      if (q.targets && q.targets.length && !q.locked) {
         s += '<div class="q-targets">';
         q.targets.forEach(t => {
           s += '<div class="q-target' + (t.done ? ' done' : '') + '">' +

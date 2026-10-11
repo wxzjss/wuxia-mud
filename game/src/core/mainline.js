@@ -77,6 +77,30 @@ function init(birthId, gender, opts) {
   };
 }
 
+/* 每一幕的**幕主任务**（按顺序）。
+   ⚠️ 这张表就是「第几幕」的唯一判据 —— 见 derivedAct()。改主线结构时同步它。 */
+const ACT_QUESTS = ['', 'q_main_jianghu', 'q_main_sect', 'q_main_snow', 'q_main_moye', 'q_main_end'];
+
+/**
+ * 由「幕主任务的进度」**推**出当前第几幕。
+ *
+ * 为什么是推而不是记：`nextAct()` 写好了却**全仓没有调用点**（P1 的地基漏接了一根线），
+ * 于是 `p.mainline.act` 永远是 1 —— 而 `require:{act:">=3"}` 这类条件就会
+ * 永远不成立（又一个「不报错就是不生效」）。
+ * 与其到处补调用点（漏一个就错一幕），不如让「第几幕」**只有一个来源**：
+ * 幕主任务没接 = 第 1 幕；第 N 幕的幕主在做 = 第 N 幕；做完了 = 第 N+1 幕。
+ */
+function derivedAct(p) {
+  let n = 1;
+  const q = (p && p.quests) || {};
+  for (let i = 1; i <= 5; i++) {
+    const st = q[ACT_QUESTS[i]];
+    if (st === undefined || st < 0) continue;
+    n = Math.max(n, st >= 99 ? i + 1 : i);
+  }
+  return Math.max(1, Math.min(5, n));
+}
+
 /** 取（必要时补建）玩家身上的主线状态 */
 function stateOf(p) {
   if (!p) return null;
@@ -87,6 +111,8 @@ function stateOf(p) {
   if (typeof p.mainline.act !== 'number') p.mainline.act = 1;
   if (typeof p.mainline.node !== 'number') p.mainline.node = 0;
   if (!LINES[p.mainline.line]) p.mainline.line = 'neutral';
+  /* 幕次以推出来的为准（只增不减），手写的 act 不让它倒退 */
+  p.mainline.act = Math.max(p.mainline.act, derivedAct(p));
   return p.mainline;
 }
 
@@ -120,4 +146,4 @@ function briefOf(p) {
   };
 }
 
-module.exports = { LINES, LINE_OF_BIRTH, lineOfBirth, init, stateOf, lineInfo, advance, nextAct, setFlag, hasFlag, briefOf };
+module.exports = { LINES, LINE_OF_BIRTH, ACT_QUESTS, lineOfBirth, derivedAct, init, stateOf, lineInfo, advance, nextAct, setFlag, hasFlag, briefOf };

@@ -151,4 +151,93 @@ function bribe(world, p) {
   ];
 }
 
-module.exports = { maybeCheck, report, bribe, wantedOf, COOLDOWN };
+/* ============================================================
+ * 正邪分野（design/67 §3）—— 官府路线的两头：报信 / 领差事
+ *
+ * 与 §5 的 P1「线别字段」是同一件事的两面：`p.mainline.line` 一出，
+ * 「谁跟官府说得上话」就不再是猜的。
+ *   · orthodox（庙堂 + 门派）—— 官差认你，能报信领赏，也能领官差事
+ *   · neutral（无根的人）—— 公事公办：差事给，报信要看你名声
+ *   · outlaw（仇与债）—— **官府不接你的话**。这不是惩罚，是这条路线的定义
+ *
+ * 两条纪律（与巡逻同源）：
+ *   · 判据用显式 `tag`，不猜名字
+ *   · 恶名读 `p.kidnap.wanted`
+ * ============================================================ */
+
+/** 玩家房间里当值的那位官差（没有就返回 null） */
+function watchIn(world, p) {
+  if (!world || !p) return null;
+  let list = [];
+  try {
+    list = (world.npcsIn ? world.npcsIn(p.room) : []) || [];
+  } catch (e) { list = []; }
+  for (const n of list) {
+    if (!n || !n.name || n.isPlayer || n.dead || n.knockedOut) continue;
+    const tag = (n.def && n.def.tag) || n.tag;
+    if (WATCH_TAGS[tag]) return n;
+  }
+  return null;
+}
+
+function lineOf(p) {
+  try { return require('./mainline').stateOf(p).line; } catch (e) { return 'neutral'; }
+}
+
+/** ---------- ① 报信：把听来的一条线报交给官差 ---------- */
+function reportTip(world, p) {
+  const n = watchIn(world, p);
+  if (!n) return [{ kind: 'plain', text: '这附近没有当值的官差。' }];
+  const line = lineOf(p);
+  const wanted = wantedOf(p);
+  /* 反派：官府不接你的话（分野的核心一条） */
+  if (line === 'outlaw') {
+    return [{ kind: 'warn', text: `你把话递过去，${n.name}的手停在册子上，没接。「你这样的人来报信？」他把册子合上，转身走了。` }];
+  }
+  /* 自己身上挂着案子 —— 先管好自己 */
+  if (wanted > 0) {
+    return [{ kind: 'warn', text: `你才开口，${n.name}就打断你：「你自己身上那桩还没了，来报什么信？」` }];
+  }
+  const day = Math.floor((p.timeMinutes || 0) / 1440) + 1;
+  if (p.vars && p.vars.tipDay === day) {
+    return [{ kind: 'plain', text: `${n.name}摆摆手：「今日的已经记下了。明日再说。」` }];
+  }
+  p.vars = p.vars || {};
+  p.vars.tipDay = day;
+  p.reputation = p.reputation || {};
+  const gain = line === 'orthodox' ? 15 : 8;
+  p.reputation['朝廷'] = (p.reputation['朝廷'] || 0) + gain;
+  const pay = line === 'orthodox' ? 180 : 120;
+  p.money = (p.money || 0) + pay;
+  return [
+    { kind: 'plain', text: `你把路上听来的那条线报告诉了${n.name}。他一边听一边往册子上记，记完了把册子合上，看你一眼。` },
+    { kind: 'say', text: `「这条线报有用。」他从袖里数出${pay}文，「拿着。往后还有话，还来找我。」` },
+    { kind: 'good', text: `（银钱 +${pay}，朝廷声望 +${gain}。${line === 'orthodox' ? '你有名有姓，这条门路替你开得比别人宽。' : '你没有门派，这钱拿得也不亏。'}）` },
+  ];
+}
+
+/** ---------- ② 领差事：官差派一桩缉捕的公事 ---------- */
+const COURT_BOUNTY = 'q_bounty_bandit';
+
+function assignTask(world, p) {
+  const n = watchIn(world, p);
+  if (!n) return [{ kind: 'plain', text: '这附近没有当值的官差。' }];
+  const line = lineOf(p);
+  if (line === 'outlaw') {
+    return [{ kind: 'warn', text: `${n.name}上下打量你，把手按在铁尺上：「官府的差事，不发给来历不明的人。」` }];
+  }
+  const qd = world.getQuest && world.getQuest(COURT_BOUNTY);
+  if (!qd) return [{ kind: 'plain', text: `${n.name}想了想，说眼下没有要派出去的差事。` }];
+  const st = p.questStage ? p.questStage(COURT_BOUNTY) : -1;
+  if (st >= 99) return [{ kind: 'plain', text: `${n.name}翻了翻册子：「这桩你办过了。」` }];
+  if (st >= 0) return [{ kind: 'plain', text: `${n.name}说：「你不是已经领了？去办就是。」` }];
+  if (p.setQuestStage) p.setQuestStage(COURT_BOUNTY, 0);
+  return [
+    { kind: 'plain', text: `${n.name}从墙上揭下一张悬赏的告示，拍在桌上。「城南山贼，这批人抢了三家商队。」` },
+    { kind: 'say', text: `「你把这事办了，赏钱一文不少你的。」他把告示往你面前推了推。` },
+    { kind: 'quest', text: `【接取任务】${qd.name}` },
+    { kind: 'plain', text: `　${qd.desc}` },
+  ];
+}
+
+module.exports = { maybeCheck, report, bribe, wantedOf, COOLDOWN, reportTip, assignTask, watchIn };
