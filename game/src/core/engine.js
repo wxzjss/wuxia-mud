@@ -2119,7 +2119,7 @@ class GameEngine {
          （sword/force/dodge），照着做出来的 mod 武学**装不进任何槽位**。 */
       skillTypes: ['拳', '剑', '刀', '棍', '鞭', '暗器', '内功', '轻功', '招架', '身法'],
       skillCategories: ['外功', '内功', '奇门', '旁门', '魔功'],
-      itemTypes: ['weapon', 'armor', 'helmet', 'boots', 'gloves', 'necklace', 'ring', 'cloak', 'shield', 'accessory', 'consumable', 'food', 'herb', 'material', 'book', 'quest', 'misc'],
+      itemTypes: ['weapon', 'armor', 'helmet', 'boots', 'gloves', 'necklace', 'ring', 'cloak', 'shield', 'accessory', 'consumable', 'food', 'herb', 'material', 'book', 'tool', 'container', 'treasure', 'quest', 'misc'],
       slots: ['头部', '颈部', '身体', '披风', '手部', '脚部', '武器', '副手', '戒指', '饰品'],
       stats: ['atk', 'def', 'dodge', 'parry', 'speed', 'maxHp', 'maxMp', 'critRate', 'lifesteal', 'reflect', 'armorPen'],
       effectTypes: [
@@ -2127,6 +2127,9 @@ class GameEngine {
         '+money', '-money', '+exp', '-exp', '+pot', '-pot', '+hp', '-hp', '+mp', '-mp', 'heal', 'fullheal', '+karma',
         '+item', '-item', 'randomitem', '+rep', '-rep',
         '+skill', 'learnskill', 'learn', 'forgetskill', '+attr', '-attr', '+perk', '+trait', '+title',
+        /* `favor` 是「给指定 NPC 加好感」——引擎早就支持（modapi 的 case 'favor'），
+           但没列进这张库 ⇒ 作者根本不知道有它（本批的支线全靠它发好感）。 */
+        'favor',
         'goto', 'teleport', 'spawn', 'despawn',
         'quest', 'questdone', 'flag', 'unflag', 'var', 'incvar', 'decvar',
         'combat', 'die', 'menu', 'dialog', 'ending', 'sound', 'sleep',
@@ -2146,7 +2149,7 @@ class GameEngine {
         return { id: k, name: t.name || k, desc: t.desc || '', attr: t.attr || null, effects: t.effects || [] };
       }),
       effects: Object.keys(w.data.events || {}),
-      /* 物品类型 / 装备属性的中文名：**引用 commands 那一份**。
+      /* 物品类型 / 装备属性的中文名：**引用 commands 那一份**。
       （原来这里抄了一份字面量，而 commands 的 describeItem 却在调一个不存在的 typeCN()
         ⇒ 任何带 type 的物品一「细看」就 ReferenceError。两份表就是漂移的开始。） */
       statCN: commandsModule.EQUIP_STAT_CN,
@@ -2257,26 +2260,155 @@ class GameEngine {
       return o;
     });
 
-    /* 任务：rewardsItems / 阶段 kind+key -> targets */
-    out.quests = out.quests.map(q => {
-      const o = Object.assign({}, q);
-      if (o.rewardsItems && !(o.rewards && o.rewards.items)) {
-        o.rewards = o.rewards || {};
-        o.rewards.items = typeof o.rewardsItems === 'string'
-          ? o.rewardsItems.split(/[,，\s]+/).map(x => x.trim()).filter(Boolean)
-          : o.rewardsItems;
-      }
-      delete o.rewardsItems;
-      /* 前端 stages 用 {desc, kind, key, count}，引擎 targets 用 [{kind,key,count}] */
-      o.stages = (o.stages || []).map(st => {
-        const s2 = Object.assign({}, st);
-        if (!s2.targets && s2.kind && s2.key) {
-          s2.targets = [{ kind: s2.kind, key: s2.key, count: s2.count != null ? s2.count : 1, desc: s2.desc }];
+    /* ============================================================
+     * 剧情 / 对话归一化 —— 「制作器填的字段」到「引擎读的字段」之间那道桥
+     *
+     * 为什么必须有一段专门的归一化（2026-10-11 实测，三处**静默失效**）：
+     *   ① 制作器把「完成时效果」写在 `stage.onDone`，而引擎读的是 `stage.effects`
+     *      ⇒ 那句效果**永远不触发**，而且不报错。
+     *   ② 制作器的奖励是**对象** `{exp, pot, money, items}`，引擎的 rewards 是
+     *      **效果数组** `[{type:'+exp',args:[n]}]` ⇒ `evalEffects({exp:100})`
+     *      得到一个 `type` 为 undefined 的壳 → 奖励一点不发。
+     *   ③ 对话节点的选项在制作器里是**文本**（`我愿闻其详 -> n2`），引擎却直接
+     *      `nd.options.filter(...)` ⇒ **TypeError**（玩家一进那个节点就崩）。
+     * 这三条合起来的意思是：**制作器做出来的剧情是「填了等于没填」**。
+     * ============================================================ */
+    const toArr = (v) => (Array.isArray(v) ? v : (v == null || v === '' ? [] : [v]));
+
+    /* ============================================================
+     * 条件文本 → 条件对象
+     *
+     * 制作器的「学习条件 / 加入条件 / 接取门槛」都是**自由文本**输入框，
+     * 而 `evalCond` 只认对象（或它的两种简写）。原来的后果：
+     *   · 作者写 `line=orthodox` → evalCond 走字符串兜底 →
+     *     **当成 flag 名去查**（`{flag:'line=orthodox'}`）→ 永远不成立；
+     *   · 作者写 `悟性>=20`（提示里就是这么写的！）→ 走 `{'悟性>=':20}` 分支 →
+     *     最后落到 `fieldValue` 的 default → `p.getVar('悟性')` = 0 → 也永远不成立。
+     *   ⇒ 「填了等于没填」。
+     * 这里把它翻成引擎真正认的对象：
+     *   `line=orthodox`      → {line:'orthodox'}
+     *   `act>=3`             → {act:'>=3'}
+     *   `flag:know_depot`    → {flag:'know_depot'}
+     *   `悟性>=20`            → {attr:'悟性','>=':20}     ← 属性必须走 attr 分支
+     *   多个用 `&&` / `,` 连 → {and:[…]}
+     * ============================================================ */
+    const ATTR_NAMES = ['力量', '根骨', '身法', '悟性', '定力', '福缘', '资质'];
+    const parseRequireText = (str) => {
+      const txt = String(str).trim();
+      if (!txt) return undefined;
+      const parts = txt.split(/\s*(?:&&|,|，|;|；)\s*/).filter(Boolean);
+      const conds = [];
+      for (const part of parts) {
+        /* flag:xxx / notFlag:xxx */
+        let m = part.match(/^(notFlag|flag)\s*[:：]\s*(\S+)$/i);
+        if (m) { conds.push(m[1].toLowerCase() === 'notflag' ? { notFlag: m[2] } : { flag: m[2] }); continue; }
+        /* a>=n / a<n / a==v … */
+        m = part.match(/^([^\s<>=!]+)\s*(>=|<=|==|!=|>|<)\s*(.+)$/);
+        if (m) {
+          const k = m[1].trim(), op = m[2], v = m[3].trim();
+          if (ATTR_NAMES.indexOf(k) >= 0) conds.push({ attr: k, [op]: /^-?\d+(\.\d+)?$/.test(v) ? parseFloat(v) : v });
+          else conds.push({ [k]: op + v });
+          continue;
         }
+        /* a=v（等值，如 line=orthodox / gender=female） */
+        m = part.match(/^([^\s=]+)\s*=\s*(.+)$/);
+        if (m) { conds.push({ [m[1].trim()]: m[2].trim() }); continue; }
+        /* 裸词 → 当成 flag */
+        conds.push({ flag: part });
+      }
+      if (!conds.length) return undefined;
+      return conds.length === 1 ? conds[0] : { and: conds };
+    };
+    /** 把任意形态的 require 归一成条件对象（对象原样带走，文本解析成对象） */
+    const normRequire = (v) => {
+      if (v == null || v === '') return undefined;
+      if (typeof v === 'object') return Object.keys(v).length ? v : undefined;
+      return parseRequireText(v);
+    };
+
+    /* 奖励：对象 → 效果数组（已经是数组的原样带走） */
+    const normRewards = (q) => {
+      if (Array.isArray(q.rewards)) return q.rewards;
+      const r = q.rewards || {};
+      const outR = [];
+      const num = (v) => (v === '' || v == null ? 0 : Number(v) || 0);
+      if (num(r.exp)) outR.push({ type: '+exp', args: [num(r.exp)] });
+      if (num(r.pot)) outR.push({ type: '+pot', args: [num(r.pot)] });
+      if (num(r.money)) outR.push({ type: '+money', args: [num(r.money)] });
+      if (num(r.karma)) outR.push({ type: '+karma', args: [num(r.karma)] });
+      for (const it of toArr(r.items)) if (it) outR.push({ type: '+item', args: [String(it), 1] });
+      return outR;
+    };
+
+    /* 单个任务：阶段 kind/key → targets；onDone → effects；奖励对象 → 效果数组 */
+    const normQuest = (q) => {
+      const o = Object.assign({}, q);
+      o.rewards = normRewards(o);
+      o.require = normRequire(o.require);
+      delete o.rewardsItems;
+      o.stages = toArr(o.stages).map((st, si) => {
+        const s2 = Object.assign({}, st);
+        /* ① 前端 stages 用 {desc, kind, key, count}，引擎 targets 用 [{id,kind,key,count,desc}]。
+             补 `id` 是为了让计数变量名可读 —— 不补的话是 `q_<qid>_undefined`。 */
+        if (!s2.targets && s2.kind && s2.key) {
+          s2.targets = [{
+            id: 't' + si, kind: s2.kind, key: s2.key,
+            count: s2.count != null && s2.count !== '' ? Number(s2.count) || 1 : 1,
+            desc: s2.desc || '',
+          }];
+        }
+        /* 目标数组也要补 id（同上） */
+        if (Array.isArray(s2.targets)) {
+          s2.targets = s2.targets.map((t, ti) => Object.assign({ id: 't' + ti }, t));
+        }
+        /* ② 「完成时效果」的历史字段名迁移：onDone → effects（老存档/老 spec 照样能跑） */
+        if (!s2.effects && s2.onDone) s2.effects = s2.onDone;
+        delete s2.onDone;
+        /* effects 允许写成字符串（`say:xxx`）—— evalEffects 认字符串，原样带走即可 */
         return s2;
       });
       return o;
+    };
+    out.quests = toArr(out.quests).map(normQuest);
+    /* ⚠️ `stories` 是历史别名（buildModFiles 原来只认它）。两条路都归一，
+       合并放在 buildModFiles 里做，免得这里改了那边漏。 */
+    out.stories = toArr(out.stories).map(normQuest);
+    /* 武学 / 门派 / 人物 / 物品的 `require` 在制作器里同样都是**文本输入框** ⇒ 一并归一 */
+    for (const k of ['skills', 'sects', 'npcs', 'items']) {
+      out[k] = toArr(out[k]).map((x) => {
+        const o = Object.assign({}, x);
+        o.require = normRequire(o.require);
+        return o;
+      });
+    }
+
+    /* 对话：节点选项「文本 → 结构化」
+       文本格式：`选项文字 -> 下一节点ID 或 效果`
+       判据：右值**在同对话的节点 id 集合里**才算 next，否则当效果（`-> kill` 是开战效果）。
+       ⚠️ 必须先把整份对话的节点 id 收全再解析 —— 顺序反过来就会把 `n2` 当效果。 */
+    const normDialogues = (arr) => toArr(arr).map((d) => {
+      const o = Object.assign({}, d);
+      const nodes = toArr(o.nodes);
+      const ids = {};
+      for (const n of nodes) if (n && n.id) ids[String(n.id)] = 1;
+      o.nodes = nodes.map((n) => {
+        const n2 = Object.assign({}, n);
+        if (typeof n2.options === 'string') {
+          n2.options = n2.options.split(/\n+/).map(x => x.trim()).filter(Boolean).map((line) => {
+            const m = line.match(/^(.*?)\s*(?:->|→|=>)\s*(\S+)\s*$/);
+            if (!m) return { label: line, next: '' };
+            const label = m[1].trim() || line;
+            const rhs = m[2].trim();
+            return ids[rhs] ? { label, next: rhs } : { label, effect: rhs };
+          });
+        } else if (Array.isArray(n2.options)) {
+          n2.options = n2.options.map(o2 => (typeof o2 === 'string' ? { label: o2, next: '' } : o2));
+        }
+        return n2;
+      });
+      return o;
     });
+    out.dialogues = normDialogues(out.dialogues);
 
     return out;
   }
@@ -2297,23 +2429,74 @@ class GameEngine {
       if (!manifest[key]) manifest[key] = {};
       return manifest[key];
     };
-    // 剧情
-    for (const s of (spec.stories || [])) {
+    /* 剧情
+       ⚠️ 必须**同时**认 `spec.quests` 与 `spec.stories`：
+       制作器的剧情页遍历/新建的是 `spec.quests`（modmaker.js 的 tabStories），
+       而这里原来只写 `spec.stories` ⇒ **用制作器做的任务与对话一个都没进 mod.json**
+       （导出的包里连 `quests` 键都没有）。这是「填了等于没填」里最彻底的一种。 */
+    const questSrc = [].concat(spec.quests || [], spec.stories || []);
+    const seenQ = {};
+    const questBind = [];     // {npcId, qid} —— 等 NPC 块写完再挂（同对话的理由）
+    for (const s of questSrc) {
       const id = s.id || slug(s.name);
+      if (!id || seenQ[id]) continue;      // 同 id 只写一次（quests 在前，优先）
+      seenQ[id] = 1;
+      /* ⚠️ 写了 `giver` 就必须同时把这条任务挂进那个 NPC 的 `quests` 数组。
+         不挂的话：接任务接得到（accept 走全局 fuzzyFind），
+         但**交任务时 NPC 身上没有这条 → 「这里没有人等待你的复命」**，
+         任务永远完不成（实测踩到）。这类「一半接得上、一半接不上」最容易被忽略。 */
+      const giverId = s.giver || s.npc;
+      if (giverId) questBind.push({ npcId: giverId, qid: id });
       bucket('quests')[id] = {
-        id, name: s.name, type: s.type || '剧情', level: s.level || 1,
-        desc: s.desc || '', require: s.require || undefined,
-        stages: (s.stages || []).map(st => ({
-          desc: st.desc || '',
-          cond: st.cond && Object.keys(st.cond).length ? st.cond : undefined,
-          targets: (st.targets || []).length ? st.targets : undefined,
-          effects: (st.effects || []).length ? st.effects : undefined,
-          next: st.next,
-        })),
-        rewards: (s.rewards || []).length ? s.rewards : undefined,
+        id, name: s.name, type: s.type || '支线', level: s.level || 1,
+        desc: s.desc || '',
+        giver: s.giver || s.npc || undefined,
+        require: s.require && Object.keys(s.require).length ? s.require : undefined,
+        requireMsg: s.requireMsg || undefined,
+        stages: [].concat(s.stages || []).map(st => {
+          const o = {
+            desc: st.desc || '',
+            cond: st.cond && Object.keys(st.cond).length ? st.cond : undefined,
+            targets: (st.targets || []).length ? st.targets : undefined,
+            effects: st.effects || undefined,
+            next: st.next,
+            /* 主线分化（design/67 §5）的三件套 —— 不透传等于制作器做不出分化剧情 */
+            lock: st.lock || undefined,
+            descByLine: st.descByLine || undefined,
+            descByGender: st.descByGender || undefined,
+            targetsByGender: st.targetsByGender || undefined,
+            targetsByLine: st.targetsByLine || undefined,
+            effectsByGender: st.effectsByGender || undefined,
+          };
+          /* 只留真正有值的键（其余 delete，免得包里全是 undefined） */
+          for (const k of Object.keys(o)) if (o[k] === undefined) delete o[k];
+          return o;
+        }),
+        rewards: s.rewards && s.rewards.length ? s.rewards : undefined,
       };
-      // 对话
+      /* 挂在任务上的对话（历史写法） */
       if (s.dialogue && s.dialogue.nodes) bucket('dialogues')[id + '_dlg'] = Object.assign({ id: id + '_dlg' }, s.dialogue);
+    }
+    /* 独立对话树（制作器有单独的「对话树」页，绑定 `spec.dialogues`）
+       ⚠️ 这里原来**根本没有对 spec.dialogues 的循环** ⇒ 整页对话被丢掉。
+       另外：对话要能触发，必须**挂到某个 NPC 的 `dialog` 字段**上
+       （引擎读 `w.data.dialogues[def.dialog]`，见 commands.js 的 talk）。
+       制作器里填了「绑定人物」，这里就得把那根线接上 —— 不接，对话就是一堆死数据。 */
+    const dlgList = [].concat(spec.dialogues || []);
+    const dlgBind = [];      // {npcId, dlgId} —— 等 NPC 块写完再挂（见下面的注释）
+    for (const d of dlgList) {
+      const id = d.id || slug(d.name);
+      if (!id) continue;
+      bucket('dialogues')[id] = {
+        id, name: d.name || id, start: d.start || 'n1',
+        nodes: [].concat(d.nodes || []).map(n2 => {
+          const o = Object.assign({}, n2);
+          for (const k of Object.keys(o)) if (o[k] === undefined || o[k] === '') delete o[k];
+          return o;
+        }),
+      };
+      const npcId = d.npc || d.giver;
+      if (npcId) dlgBind.push({ npcId, dlgId: id });
     }
     // 地图
     for (const r of (spec.rooms || [])) {
@@ -2390,6 +2573,21 @@ class GameEngine {
         actions: (n.actions || []).length ? n.actions : undefined,
         dialogTree: n.dialogTree || undefined,
       };
+    }
+    /* ⚠️ 对话挂 NPC 必须在**这一块之后**做：
+       上面是 `bucket('npcs')[id] = {...}`（整条赋值，不是合并），
+       先挂会被这里覆盖掉 —— 于是「对话建好了、也绑了人物，进游戏却触发不了」。 */
+    for (const b of dlgBind) {
+      if (!manifest.npcs) manifest.npcs = {};
+      if (!manifest.npcs[b.npcId]) manifest.npcs[b.npcId] = { id: b.npcId };
+      manifest.npcs[b.npcId].dialog = b.dlgId;
+    }
+    /* ⚠️ 同理：把任务挂进委托人的 `quests`（不挂 ⇒ 交任务时「这里没有人等待你的复命」） */
+    for (const b of questBind) {
+      if (!manifest.npcs) manifest.npcs = {};
+      if (!manifest.npcs[b.npcId]) manifest.npcs[b.npcId] = { id: b.npcId };
+      const arr = manifest.npcs[b.npcId].quests || (manifest.npcs[b.npcId].quests = []);
+      if (arr.indexOf(b.qid) < 0) arr.push(b.qid);
     }
     // 门派
     for (const s of (spec.sects || [])) {

@@ -932,16 +932,18 @@ body::before {
 .mini-tag.who sup { font-size: 9.5px; opacity: .75; margin-left: 4px; letter-spacing: 0; }
 
 /* ============ 江湖舆图 ============ */
-.map-head { margin-bottom: 10px; }
-.map-now { font-size: 14px; color: var(--ink-2); margin-bottom: 7px; }
+/* 地图抬头（重设计）：原来「你在哪 / 出口」「视野切换」「进度」「图例」各占一整行，
+   四行把画布挤到下面去 —— 画布才是主角。现在收紧成两行。 */
+.map-head { margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; }
+.map-now { font-size: 14px; color: var(--ink-2); margin-bottom: 0; }
 .map-now b { color: var(--red); font-size: 15px; }
 /* 跨区域出口的额外标注：「东→华山派」——出了这片地界了（主人 2026-10-11） */
 .map-out { color: var(--jade); font-size: 12.5px; margin-left: 1px; }
-.map-progress { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--ink-3); }
-.mp-bar { flex: 0 0 140px; height: 6px; background: var(--line-2); border-radius: 3px; overflow: hidden; }
+.map-progress { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--ink-3); flex: 1 1 auto; min-width: 0; }
+.mp-bar { flex: 0 0 110px; height: 6px; background: var(--line-2); border-radius: 3px; overflow: hidden; }
 .mp-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--jade), var(--gold)); border-radius: 3px; transition: width .35s ease; }
 
-.map-legend { display: flex; gap: 15px; margin-bottom: 11px; font-size: 12.5px; color: var(--ink-3); flex-wrap: wrap; align-items: center; }
+.map-legend { display: flex; gap: 15px; margin-bottom: 9px; font-size: 12.5px; color: var(--ink-3); flex-wrap: wrap; align-items: center; }
 .map-legend .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
 .map-legend .ml-tip { margin-left: auto; color: var(--ink-4); font-size: 12px; }
 .dot-here { background: var(--red); }
@@ -965,7 +967,7 @@ body::before {
             外层 .map-wrap 也没法靠原生滚动横向走。
    补上 max-width:100% 后，画布被压到容器宽（手机约 343px），892px 的内容溢出
    **在画布内部**，scrollLeft 才有可动范围 —— 上下、左右、斜向于是都通。 */
-.map-canvas { position: relative; background: var(--card-2); border: 1px solid var(--line); border-radius: 7px; overflow: auto; max-width: 100%; max-height: 54vh; margin-bottom: 12px;
+.map-canvas { position: relative; background: var(--card-2); border: 1px solid var(--line); border-radius: 7px; overflow: auto; max-width: 100%; max-height: 58vh; margin-bottom: 0;
   /* 斜向平移：自己处理手势，禁掉浏览器一次只走一个轴的原生滚动 */
   touch-action: none; cursor: grab; -webkit-overflow-scrolling: auto; }
 .map-canvas.panning { cursor: grabbing; user-select: none; -webkit-user-select: none; }
@@ -1023,17 +1025,38 @@ body::before {
 .map-node.reach .mn-name { color: var(--ink-3); }
 .map-node.known { background: var(--tint-jade); border-color: var(--line-jade); }
 .map-node.known .mn-name { color: var(--jade); }
-.map-node.unknown { background: var(--surface-2); border-color: #e5ded0; }
+.map-node.unknown { background: var(--surface-2); border-color: #e5ded0;
+  /* 重设计：未探索的地块给一道**斜纹**质感（不是迷雾 —— 名字照显示）。
+     有质感的「没去过」一眼就分得出，也能撑住「这张图还没走完」的感觉。 */
+  background-image: repeating-linear-gradient(45deg, transparent 0 4px, rgba(0,0,0,.045) 4px 8px); }
 /* ★ 不再有「战争迷雾」（主人 2026-10-10 再次强调「地图不要战争迷雾」）。
    这里原来是 `color: transparent` —— 未探索地块的名字被涂成透明 = 视觉上仍是迷雾，
    与「所有地块都显示名字，只用深浅区分去过 / 没去过」相矛盾（见 ui.js mapHtml 的注释）。
    改成一个**看得清**的浅灰：没去过也认得出是哪，只是比去过的淡一点。 */
 .map-node.unknown .mn-name { color: var(--ink-3); opacity: .72; }
 
-.map-quick { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 12px; }
+.map-quick { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 12;
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+  padding: 7px 10px; border-radius: 8px;
+  background: var(--solid, var(--card-2)); border: 1px solid var(--line-gold);
+  box-shadow: 0 3px 12px rgba(0,0,0,.10); }
 .mq-title { font-size: 12.5px; color: var(--ink-3); }
 .mq-btn { padding: 4px 11px; font-size: 12.5px; border-radius: 4px; border: 1px solid var(--line-2); background: var(--tint-gold); color: var(--gold); cursor: pointer; }
 .mq-btn:hover { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+/* ---- 地图画布区（重设计）：画布 + 悬浮工具条 + 贴底的一步可达 ---- */
+.map-stage { position: relative; margin-bottom: 12px; }
+.map-tools { position: absolute; right: 10px; top: 10px; z-index: 12;
+  display: flex; align-items: center; gap: 2px;
+  padding: 3px 5px; border-radius: 8px;
+  background: var(--solid, var(--card-2)); border: 1px solid var(--line);
+  box-shadow: 0 3px 12px rgba(0,0,0,.10); }
+.mt-btn { padding: 3px 9px; font-size: 12.5px; font-family: var(--font); cursor: pointer;
+  border: 0; background: transparent; color: var(--ink-2); border-radius: 5px; }
+.mt-btn:hover { background: var(--surface-3); color: var(--ink); }
+.mt-btn:disabled { opacity: .35; cursor: default; }
+.mt-btn.mt-z { font-size: 15px; line-height: 1; padding: 2px 8px; font-weight: 700; }
+.mt-zoom { font-size: 11px; color: var(--ink-4); min-width: 34px; text-align: center; }
 
 .map-regions-overview { display: flex; flex-wrap: wrap; gap: 6px 14px; padding-top: 10px; border-top: 1px dashed var(--line-2); }
 .mro-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink-3);
@@ -1051,24 +1074,37 @@ body::before {
 .mro-dot { width: 8px; height: 8px; border-radius: 2px; }
 .mro-num { color: var(--ink-4); font-size: 11px; }
 
-/* 区域名按钮栏：一排「飞往 XX」，点一下视角飞到该区域。
-   手机上区域多、一排放不下 → 允许横向滚动（不换行、不把面板撑宽）。 */
-.map-region-nav { display: flex; align-items: center; gap: 6px; margin-bottom: 10px;
-  overflow-x: auto; white-space: nowrap; padding-bottom: 3px; -webkit-overflow-scrolling: touch; }
-.mrn-title { flex: 0 0 auto; font-size: 12.5px; color: var(--ink-4); margin-right: 1px; }
-.mrn-btn { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 5px;
-  padding: 4px 11px; border-radius: 14px; border: 1px solid var(--line-2);
-  background: var(--card-2); color: var(--ink-3); font-size: 12.5px; font-family: var(--font); cursor: pointer; }
+/* 地名索引（重设计：把原「飞往」横滚栏 + 「区域总览」两层并成一层）
+   去过的排在前面、直接铺成网格；没去过的收进 <details>。
+   手机上不再需要横向滚动找地名 —— 换行铺开，一屏看得全。 */
+.map-region-nav { display: block; margin-bottom: 4px;
+  padding-top: 10px; border-top: 1px dashed var(--line-2); }
+.mrn-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 7px; }
+.mrn-title { font-size: 12.5px; color: var(--ink-3); font-weight: 600; }
+.mrn-sub { font-size: 11.5px; color: var(--ink-4); }
+.mrn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 6px; }
+.mrn-empty { font-size: 12.5px; color: var(--ink-4); padding: 2px 0 4px; }
+.mrn-btn { display: flex; align-items: center; gap: 5px; min-width: 0;
+  padding: 5px 11px; border-radius: 14px; border: 1px solid var(--line-2);
+  background: var(--card-2); color: var(--ink-3); font-size: 12.5px;
+  font-family: var(--font); cursor: pointer; text-align: left; }
 .mrn-btn:hover { background: var(--card-2); border-color: var(--line); }
 .mrn-btn.cur { color: var(--red); font-weight: 600; border-color: rgba(156,43,37,.4); }
-.mrn-dot { width: 8px; height: 8px; border-radius: 2px; }
+.mrn-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 2px; }
+/* ⚠️ 名字要 nowrap：中文在 flex 窄容器里会被压成一列一个字（踩过的老坑）。
+   只给短串加，不给段落加 —— 给段落加会横着冲出去把卡片顶宽。 */
+.mrn-name { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mrn-num { flex: 0 0 auto; font-size: 11px; color: var(--ink-4); }
 /* 「飞往」的两种状态（主人 2026-10-11）：去过 = 能真赶路，没去过 = 只能看地图。
    必须一眼分得开 —— 否则玩家点了以为能过去，结果只挪了下视角，是「没反应」那一类。 */
 .mrn-btn.canfly { color: var(--ink); border-color: var(--line-gold); background: var(--tint-gold); }
 .mrn-btn.canfly:hover { border-color: var(--gold); background: var(--surface-hi); }
 .mrn-btn.nofly { opacity: .5; }
 .mrn-btn.nofly:hover { opacity: .75; }
-.mrn-fly { font-style: normal; font-size: 10px; color: var(--gold); margin-left: 1px; }
+.mrn-fly { flex: 0 0 auto; font-style: normal; font-size: 10px; color: var(--gold); margin-left: 1px; }
+.mrn-more { margin-top: 7px; }
+.mrn-more > summary { font-size: 12px; color: var(--ink-4); cursor: pointer; padding: 3px 0; user-select: none; }
+.mrn-more[open] > summary { margin-bottom: 6px; }
 
 /* 旧版地图样式（保留兼容） */
 .map-wrap { max-height: 60vh; overflow: auto; }

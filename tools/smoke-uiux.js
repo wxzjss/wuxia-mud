@@ -752,7 +752,9 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     const css2 = fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'css', 'main.css'), 'utf8');
     const cvRule = (css2.match(/\.map-canvas\s*\{[^}]*\}/) || [''])[0];
     ok('⑩-2 ★ .map-canvas 同时有 max-width 与 max-height（缺 max-width = 横向永远划不动）',
-      /max-width:\s*100%/.test(cvRule) && /max-height:\s*54vh/.test(cvRule), cvRule.slice(0, 200));
+      /* ⚠️ 别把高度写死成 54vh —— 本条的**意图**是「两条成对声明」，
+         具体数值是会跟着版式调整的（地图重设计时抬头收窄、画布放宽到 58vh 就假红过一次）。 */
+      /max-width:\s*100%/.test(cvRule) && /max-height:\s*\d+(?:\.\d+)?(?:vh|px|%)/.test(cvRule), cvRule.slice(0, 200));
     ok('⑩-2b .map-canvas 仍是 overflow:auto + touch-action:none（自带平移的前提）',
       /overflow:\s*auto/.test(cvRule) && /touch-action:\s*none/.test(cvRule));
     /* ---- ⑩-2c 出口行的方向名（**真渲染**，不许 grep 源码当断言）----

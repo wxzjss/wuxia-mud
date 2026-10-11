@@ -337,3 +337,61 @@ P2 是"归属感"的主要来源，优先级高于 P3/P4/P5 的花样。
   `smoke-quest-data` 先置前置钥匙；`smoke-newbie` D-3 原来钉的是第一章台词里的
   「茶摊的老汉」四个字，台词一重写就假红 ⇒ 改成与 `tutorial.STEPS` **同源**比较。
 - 全量回归 **115 套全绿**。
+
+---
+
+## 九、第五轮（2026-10-11 深夜 · Mod 制作器跟进 + 地图 UI 重设计）
+
+主人：「看看 Mod 制作器是否也需要跟进，然后发布」＋「把地图 UI 按照你的想法重新设计一下」。
+
+### 9.1 Mod 制作器：按「制作器真实产出的字段形状」走一遍，抓到**四处填了等于没填**
+
+做法：照 `modmaker.js` 的字段路径造一份 spec → `normalizeSpec` → `buildModFiles` → 真加载进引擎跑。
+守卫 `tools/modmaker-roundtrip-check.js`（29 项，含端到端「接任务→到房→交任务→看效果触发」）。
+
+| # | 病 | 后果 |
+|---|---|---|
+| ① | 剧情页遍历/新建的是 `spec.quests`，而 `buildModFiles` **只写 `spec.stories`** | **整个剧情页被丢掉**（导出的 mod.json 里连 `quests` 键都没有） |
+| ② | 独立「对话树」页绑定 `spec.dialogues`，`buildModFiles` 里**没有这个循环** | 整页对话被丢；而且对话要挂到 NPC 的 `dialog` 字段才触发得了 |
+| ③ | 阶段「完成时效果」写 `stage.onDone`，引擎读 `stage.effects` | 那句效果**永远不触发** |
+| ④ | 对话节点的选项在制作器里是**文本**，引擎直接 `nd.options.filter` | **TypeError** —— 玩家一进那个节点就崩 |
+
+外加三处（同一族）：
+- 奖励是对象 `{exp,pot,money}` 而引擎要**效果数组** `[{type:'+exp',args:[n]}]` → 一点不发；
+- 任务写了 `giver` 但没人把它挂进 `npc.quests` → **交任务时「这里没有人等待你的复命」**，任务永远完不成；
+- 条件框写 `line=orthodox` / `悟性>=20`（提示里就是这么写的！）会被 `evalCond` **当 flag 名读** → 永远不成立。
+
+修法：
+- `normalizeSpec` 加一段「剧情/对话归一化」：`kind/key→targets`（补可读 `id`）、`onDone→effects`（兼容老 spec）、
+  奖励对象→效果数组、选项文本→`[{label, next|effect}]`（**先把整份对话的节点 id 收全再解析**，
+  否则 `-> n2` 会被当成效果）、条件文本→条件对象（**属性走 `{attr:'悟性','>=':20}` 分支**，
+  不能落进 `getVar('悟性')` 那个恒 0 的兜底）。
+- `buildModFiles` 认 `spec.quests` **和** `spec.stories`；透传 `lock` / `descByLine` / `descByGender` / `targetsBy*`；
+  写出独立 `spec.dialogues`；**在 NPC 块写完之后**把 `dialog` 与 `quests` 挂上（NPC 块是整条赋值，先挂会被覆盖）。
+- 制作器 UI：字段名 `onDone→effects`；新增「接取门槛 / 门槛提示 / 前置锁 / 按线换说法 / 按性别换说法」入口；
+  `effectTypes` 补 `favor`，`itemTypes` 补 `tool/container/treasure`。
+
+**顺手修掉一个真 bug**：`modapi` 的 line/act 分支原来写的是
+「只有 `p.mainline` 不存在时才 `stateOf`」—— 而 `act` 是 `derivedAct()` **推**出来的、不是存下来的，
+于是读 `{act:">=2"}` 拿到的是**开局的旧值 1**（第一幕都做完了判定还是 false）。现在无条件刷新。
+
+### 9.2 地图 UI 重设计（主人授权自定）
+
+三个判断，每条都对应一个原来做不到的事：
+
+1. **画布是主角** —— 原来「你在哪 / 视野切换 / 进度 / 图例 / 飞往 34 键（横滚）/ 区域总览 34 行」
+   六块摞在画布上下，手机上一屏看不到地图。现在抬头收成两行，
+   区域清单合并成**一块「地名索引」**（去过的直接铺网格、没去过的收进 `<details>`，
+   每格带颜色点 + 名字 + 已探索数 + ↗ 能否飞），放在画布**下面**。
+2. **画布能缩放、能回到我** —— 原来格子只有两档（窄屏 52 / 桌面 30），全图铺开后名字只剩 4 个字；
+   拖远了也找不回自己。现在右上角悬浮工具条：`回到我` / `－` / 缩放百分比 / `＋`
+   （三档 0.7~1.4，名字字数与字号跟着缩放走），画布还可聚焦、方向键平移、`Home` 回到我。
+3. **出口贴着地图** —— 「一步可达」原来在画布**下一屏**，看图和点走要来回滑；
+   现在浮在画布底边（`.map-quick` 成了 `.map-stage` 内的 overlay）。
+
+另外：未探索地块加**斜纹质感**（不是迷雾 —— 名字照显示，这是前几轮定下的口径）。
+
+⚠️ **保留了全部既有 DOM 契约**（`map-canvas` / `map-node` / `map-legend` / `data-go` / `data-room` /
+`data-scope` / `data-pan-region` / `data-fly-region` / `map-edge-hint` / `map-region-box`），
+只有 `map-regions-overview` / `mro-item` 那两块**确认无测试引用**后被合并掉。
+守卫 `tools/map-redesign-check.js`（24 项）。

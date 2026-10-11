@@ -312,7 +312,11 @@ engine.newGame({ name: '试侠', gender: 'male', birth: 'wuxue' });
     ok('A-7 窄屏「>4 字」房间名显示到 6 字（不再一律砍成 4 字）',
       LONG_NAME.length > 4 && nodes.some(n => n.label === expect6), `期望有「${expect6}」`);
 
-    const W = parseFloat((html.match(/class="map-canvas[^"]*" style="width:(\d+)px/) || [])[1] || '0');
+    /* ⚠️ 别假设「style 紧跟在 class 后面」——属性顺序是我这边可以随时调整的自由
+       （重设计时在中间插了个 tabindex，这条就假红了一次）。
+       只在**整个 map-canvas 开标签**里找 width。 */
+    const canvasTag = (html.match(/<div class="map-canvas[\s\S]{0,400}?>/) || [''])[0];
+    const W = parseFloat((canvasTag.match(/style="[^"]*width:(\d+)px/) || [])[1] || '0');
     ok('A-8 窄屏画布内容宽 > 360px（比手机屏宽 → 才需要/能够平移）', W > 360, 'W=' + W);
   }
 

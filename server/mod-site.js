@@ -774,6 +774,9 @@ const PACK_EXCLUDE_DIRS = new Set([
   '_local',
   /* 本地临时验证目录（跑测试时生成，不能发出去） */
   '.livetest', '.packtest', '.maptest',
+  /* 截图/评审产物（无头浏览器跑出来的 png）—— 1 MB 级的死重量，
+     既不该进下载包，也不该跟着发布上传。 */
+  '.review', '.shots',
 ]);
 const PACK_EXCLUDE_FILES = new Set([
   'package-lock.json', '.DS_Store', 'Thumbs.db',

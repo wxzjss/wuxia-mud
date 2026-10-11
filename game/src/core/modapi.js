@@ -265,11 +265,14 @@ function evalCond(cond, ctx) {
      （又一个「不报错就是不生效」）。老档没有 `p.mainline` 时按出身现补一次，绝不抛。 */
   if (cond.line !== undefined || cond.lineNot !== undefined || cond.fromMod !== undefined
       || cond.birth !== undefined || cond.act !== undefined) {
-    let ml = p.mainline;
-    if (!ml || !ml.line) {
-      try { ml = require('./mainline').stateOf(p); }
-      catch (e) { ml = { line: 'neutral', birth: p.birth || null, act: 1 }; }
-    }
+    /* ⚠️ **必须无条件走一次 `stateOf`**：`act` 不是存下来的字段，是 `derivedAct()` 从
+       「幕主任务进度」**推**出来的，而推力就写在 `stateOf` 里。
+       原来这里写的是「只有 `p.mainline` 不存在时才 stateOf」——
+       于是读 `{act:">=2"}` 时拿到的是**开局的旧值 1**（实测：第一幕都做完了，判定还是 false）。
+       这类「读派生字段却读了缓存」的坑跟 `act` 本身一样隐蔽。 */
+    let ml = null;
+    try { ml = require('./mainline').stateOf(p); } catch (e) { ml = p.mainline || null; }
+    if (!ml) ml = { line: 'neutral', act: 1, fromMod: false };
     if (cond.line !== undefined) {
       const want = [].concat(cond.line);
       if (!want.includes(ml.line)) return false;

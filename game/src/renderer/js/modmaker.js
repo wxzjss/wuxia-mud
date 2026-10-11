@@ -566,6 +566,11 @@
         field('等级要求', input('quests.' + i + '.level', q.level != null ? q.level : 0, '', 'number')) +
         field('任务类型', select('quests.' + i + '.type', q.type || '支线', ['主线', '支线', '日常', '奇遇'])) +
         '</div>' +
+        /* ⚠️ 接取门槛原来**没有入口**（而 buildModFiles 会写 require）——
+           作者想给任务加门槛只能去手改 JSON。这里补上，并列出可用的分流键。 */
+        field('接取门槛（可选）', input('quests.' + i + '.require', typeof q.require === 'string' ? q.require : '', '例如：line=orthodox 或 act>=3 或 flag:know_east_depot'),
+          '可用键：flag / item / level / gender / line(orthodox|outlaw|neutral) / act(第几幕) / fromMod / rep') +
+        field('门槛不满足时的提示', input('quests.' + i + '.requireMsg', q.requireMsg, '例如：先把抄本那桩了了，再来')) +
         field('任务描述', area('quests.' + i + '.desc', q.desc, '讲讲这个任务的来龙去脉…', 3)) +
         '<div class="mm-sub-title">奖励</div><div class="mm-form-grid">' +
         field('经验', input('quests.' + i + '.rewards.exp', (q.rewards && q.rewards.exp) || 0, '', 'number')) +
@@ -600,7 +605,26 @@
       field('目标关键词', input('quests.' + qIdx + '.stages.' + sIdx + '.key', st.key, 'flag:标记名 / item:物品ID / kill:NPC ID / room:房间ID')) +
       field('需要数量', input('quests.' + qIdx + '.stages.' + sIdx + '.count', st.count != null ? st.count : 1, '', 'number')) +
       '</div>' +
-      field('完成时效果', input('quests.' + qIdx + '.stages.' + sIdx + '.onDone', st.onDone, '例如：say:小二告诉你镖师往东边去了'), '可为空') +
+      field('完成时效果', input('quests.' + qIdx + '.stages.' + sIdx + '.effects', st.effects, '例如：say:小二告诉你镖师往东边去了'),
+        '可为空。⚠️ 字段名必须是 effects（引擎读它）；多条效果用数组，这里填一条即可') +
+      /* ---- 主线分化（design/67 §5）：不给入口，作者就做不出「同一件事三种走法」 ---- */
+      '<div class="mm-sub-title">前置锁（可选）</div>' +
+      '<div class="mm-form-grid">' +
+      field('前置标记 flag', input('quests.' + qIdx + '.stages.' + sIdx + '.lock.flag', st.lock && st.lock.flag, '例如：pre_a1_chuan'),
+        '没置上这条标记时，本阶段**明确提示还没解锁**，交任务会被挡下') +
+      field('前置任务 ID', input('quests.' + qIdx + '.stages.' + sIdx + '.lock.quest', st.lock && st.lock.quest, '例如：sq_pre_a1_chuan')) +
+      '</div>' +
+      '<div class="mm-sub-title">按主线换说法（可选）</div>' +
+      '<div class="mm-form-grid">' +
+      field('正派', input('quests.' + qIdx + '.stages.' + sIdx + '.descByLine.orthodox', st.descByLine && st.descByLine.orthodox, '这一阶段在正派线上怎么描述')) +
+      field('反派', input('quests.' + qIdx + '.stages.' + sIdx + '.descByLine.outlaw', st.descByLine && st.descByLine.outlaw)) +
+      field('中立', input('quests.' + qIdx + '.stages.' + sIdx + '.descByLine.neutral', st.descByLine && st.descByLine.neutral)) +
+      '</div>' +
+      '<div class="mm-sub-title">按性别换说法（可选）</div>' +
+      '<div class="mm-form-grid">' +
+      field('男', input('quests.' + qIdx + '.stages.' + sIdx + '.descByGender.male', st.descByGender && st.descByGender.male, '同一节点的两种处境')) +
+      field('女', input('quests.' + qIdx + '.stages.' + sIdx + '.descByGender.female', st.descByGender && st.descByGender.female)) +
+      '</div>' +
       '</div>';
   }
 

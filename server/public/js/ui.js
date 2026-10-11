@@ -2491,6 +2491,11 @@
      主人明确要求：打开地图默认显示**当前区域**，另有开关看全部区域。
      用模块级变量记住选择，重开面板时保持。 */
   let mapScope = 'region';   // 'region' | 'world'
+  /* 地图缩放档位（2026-10-11 重设计新增）。
+     为什么需要它：原来格子只有两档尺寸（窄屏 52 / 桌面 30），全图 34 个区域铺开后
+     每格 30px、名字只剩 4 个字 —— 想看清某个区域只能靠「飞往」跳过去。
+     现在给三档（0.7 远观 / 1 常规 / 1.4 细看），配合画布上的悬浮工具条。 */
+  let mapZoom = 1;
   /* 点了「区域名按钮」后要飞过去的目标区域 id。
      因为切到世界地图要重开面板（重渲染），跨渲染记住目标，渲染完再平移。 */
   let pendingPanRegion = null;
@@ -2505,12 +2510,18 @@
       if (typeof global !== 'undefined' && global && typeof global.innerWidth === 'number') vw = global.innerWidth;
     } catch (e) { vw = 0; }
     const NARROW = vw > 0 && vw < 640;
-    const MAP_CELL = NARROW ? 52 : 30;    // 每格边长（含走廊）
-    const MAP_NODE = NARROW ? 46 : 26;    // 格子方块边长
+    /* 缩放档位（画布右上角工具条切换）。抽取环境里没有 mapZoom → 退回 1。 */
+    let z = (typeof mapZoom === 'undefined') ? 1 : Number(mapZoom);
+    if (!(z > 0)) z = 1;
+    const ZMIN = 0.7, ZMAX = 1.4;
+    z = Math.min(ZMAX, Math.max(ZMIN, z));
+    const MAP_CELL = Math.round((NARROW ? 52 : 30) * z);   // 每格边长（含走廊）
+    const MAP_NODE = Math.round((NARROW ? 46 : 26) * z);   // 格子方块边长
     const MAP_PAD = NARROW ? 30 : 34;     // 画布留白
     const M_LINE = NARROW ? 1.15 : 1;     // 名字行距
-    const M_NAME_MAX = NARROW ? 6 : 4;    // 名字最多显示几个字
-    const mFont = r => NARROW ? (r.current ? 14 : 13) : (r.current ? 9 : 8);
+    /* 名字最多显示几个字：跟着缩放走（放大就能多塞两个字，缩小就砍短些） */
+    const M_NAME_MAX = Math.max(3, Math.round((NARROW ? 6 : 4) * z));
+    const mFont = r => Math.max(7, Math.round((NARROW ? (r.current ? 14 : 13) : (r.current ? 9 : 8)) * z));
 
     const m = v.map || {};
     const allRooms = m.rooms || [];
@@ -2571,7 +2582,8 @@
       }).join(' / ');
     }
     h += '</div>';
-    /* --- 视野切换：当前区域 / 天下全图 --- */
+    /* --- 第二行：视野切换 + 进度 + 图例（原来这三块各占一整行，把画布挤到下面；
+       重设计后并成紧凑的两行 —— 画布才是主角） --- */
     h += '<div class="map-scope">';
     h += '<button class="ms-btn' + (sc === 'region' ? ' on' : '') + '" data-scope="region">当前区域</button>';
     h += '<button class="ms-btn' + (sc === 'world' ? ' on' : '') + '" data-scope="world">天下全图</button>';
@@ -2589,14 +2601,14 @@
       '　全江湖 ' + ex.visited + '/' + ex.total + '</span></div>';
     h += '</div>';
 
-    /* --- 图例 --- */
+    /* --- 图例（收成一行小字） --- */
     h += '<div class="map-legend">' +
       '<span><i class="dot dot-here"></i>你在这里</span>' +
       '<span><i class="dot dot-near"></i>一步可达</span>' +
       '<span><i class="dot dot-known"></i>去过</span>' +
       '<span><i class="dot dot-unknown"></i>未探索</span>' +
       '<span><i class="dot dot-edge"></i>出界方向</span>' +
-      '<span class="ml-tip">点「一步可达」的格子直接走过去</span></div>';
+      '<span class="ml-tip">点「一步可达」的格子直接走过去；拖动可平移，右上角可缩放</span></div>';
 
     /* --- 区域名按钮：点一下就飞过去（主人 2026-10-10 要求）---
        世界地图铺得很大，手机屏翻着累；给一排「区域名」按钮，点谁看谁。
@@ -2609,25 +2621,23 @@
        没去过的保持原样（只把视角平移过去看看）。两者长得不一样，免得误点：
        能飞的带一个 ↗ 与金边，不能飞的压暗。判定（canFly）由后端算好下发，
        前端不自己猜 —— 它拿不到 visited 旗标。 */
-    h += '<div class="map-region-nav" title="去过的地方点一下就飞过去；没去过的只能先看看地图">';
-    h += '<span class="mrn-title">飞往</span>';
-    (m.regions || []).forEach(r => {
-      const can = !!r.canFly;
-      const tip = can
-        ? ('飞往' + r.name + (r.entryName ? '（落在' + r.entryName + '）' : ''))
-        : ('没去过' + r.name + '，点了只是把视角移过去');
-      h += '<button class="mrn-btn' + (r.id === curRegion ? ' cur' : '') + (can ? ' canfly' : ' nofly') + '"' +
-        (can ? ' data-fly-region="' + esc(r.name) + '"' : ' data-pan-region="' + esc(r.id) + '"') +
-        ' title="' + esc(tip) + '">' +
-        '<i class="mrn-dot" style="background:' + esc(r.color || '#999') + '"></i>' +
-        esc(r.name) + (can ? '<i class="mrn-fly">↗</i>' : '') + '</button>';
-    });
-    h += '</div>';
+    /* 「飞往」这块**已并入底部的「地名索引」**（见返回前一节）——
+       原来它在画布上方占一大条横滚按钮，把画布顶到下面去，信息还和「区域总览」重复。
+       这里保留原注释只为交代去向，不再渲染。 */
 
-    /* --- 画布 --- */
+    /* --- 画布（外加一个定位包裹层，好让工具条与「一步可达」浮在画布上） --- */
     const W = b.w * MAP_CELL + MAP_PAD * 2;
     const H = b.h * MAP_CELL + MAP_PAD * 2;
-    h += '<div class="map-canvas' + (NARROW ? ' map-narrow' : '') + '" style="width:' + W + 'px;height:' + H + 'px">';
+    h += '<div class="map-stage">';
+    /* 画布悬浮工具条（重设计新增）：全图铺得很开时，拖远了会找不到自己 ——
+       给一个「回到我」；格子太密/太疏时给 ± 缩放。原来这两件事都没办法做。 */
+    h += '<div class="map-tools">' +
+      '<button class="mt-btn" data-map-tool="here" title="把视角拉回你所在的地块">回到我</button>' +
+      '<button class="mt-btn mt-z" data-map-tool="zout" title="缩小，看得更远"' + (z <= ZMIN + 1e-6 ? ' disabled' : '') + '>－</button>' +
+      '<span class="mt-zoom" title="当前缩放">' + Math.round(z * 100) + '%</span>' +
+      '<button class="mt-btn mt-z" data-map-tool="zin" title="放大，看得更清"' + (z >= ZMAX - 1e-6 ? ' disabled' : '') + '>＋</button>' +
+      '</div>';
+    h += '<div class="map-canvas' + (NARROW ? ' map-narrow' : '') + '" style="width:' + W + 'px;height:' + H + 'px" tabindex="0">';
 
     /* 1) 底：整张网格纸（让它看起来是一张连续地图） */
     h += '<div class="map-grid-bg" style="width:' + (b.w * MAP_CELL) + 'px;height:' + (b.h * MAP_CELL) + 'px;' +
@@ -2795,7 +2805,10 @@
 
     h += '</div>';
 
-    /* --- 快速移动：一步可达 --- */
+    /* --- 快速移动：一步可达（★ 重设计：从画布**下方**挪到画布**里面**贴着底边）
+       为什么挪：玩家看地图时眼睛在画布上，出口按钮却在画布外的下一屏 ——
+       手机上一屏塞不下，得滑下去找，找完再滑回来看地图。
+       贴底之后，看图和点走是同一眼。 */
     const nears = rooms.filter(r => r.near);
     if (nears.length) {
       h += '<div class="map-quick"><span class="mq-title">一步可达</span>';
@@ -2804,15 +2817,43 @@
       });
       h += '</div>';
     }
+    h += '</div>';   /* 关 .map-stage */
 
-    /* --- 区域总览 --- */
-    h += '<div class="map-regions-overview">';
-    (m.regions || []).slice().sort((a, bb) => (bb.visitedCount || 0) - (a.visitedCount || 0)).forEach(r => {
-      h += '<div class="mro-item' + (r.hasCurrent ? ' cur' : '') + '" data-region="' + esc(r.id) + '">' +
-        '<i class="mro-dot" style="background:' + esc(r.color || '#999') + '"></i>' +
-        '<span class="mro-name">' + esc(r.name) + '</span>' +
-        '<span class="mro-num">' + (r.visitedCount || 0) + '/' + (r.count || 0) + '</span></div>';
-    });
+    /* --- 地名索引（★ 重设计：把原来**三块**重复的区域清单合成一块）---
+       原来这里有：①「飞往」34 个按钮横排、②「区域总览」34 行、③图例里的颜色说明，
+       三块都在讲「有哪些区域、去过多少」。现在合成一块「地名索引」：
+         · 一行一个区域：颜色点 + 名字 + 已探索数 + ↗（能飞的才带）
+         · **去过的排在前面**（能飞的是当下有用的），未去过的收进一个可折叠的「其余 N 处」
+       这样默认只占两三行，画布就能占满剩下的高度。 */
+    const regs = (m.regions || []).slice();
+    const canFly = regs.filter(r => r.canFly);
+    const rest = regs.filter(r => !r.canFly);
+    const regBtn = (r) => {
+      const can = !!r.canFly;
+      const tip = can
+        ? ('飞往' + r.name + (r.entryName ? '（落在' + r.entryName + '）' : ''))
+        : ('没去过' + r.name + '，点了只是把视角移过去');
+      return '<button class="mrn-btn' + (r.id === curRegion ? ' cur' : '') + (can ? ' canfly' : ' nofly') + '"' +
+        (can ? ' data-fly-region="' + esc(r.name) + '"' : ' data-pan-region="' + esc(r.id) + '"') +
+        ' title="' + esc(tip) + '">' +
+        '<i class="mrn-dot" style="background:' + esc(r.color || '#999') + '"></i>' +
+        '<span class="mrn-name">' + esc(r.name) + '</span>' +
+        '<span class="mrn-num">' + (r.visitedCount || 0) + '/' + (r.count || 0) + '</span>' +
+        (can ? '<i class="mrn-fly">↗</i>' : '') + '</button>';
+    };
+    h += '<div class="map-region-nav" title="去过的地方点一下就飞过去；没去过的只能先看看地图">';
+    h += '<div class="mrn-head"><span class="mrn-title">地名索引</span>' +
+      '<span class="mrn-sub">去过 ' + regs.filter(r => (r.visitedCount || 0) > 0).length + '/' + regs.length +
+      ' 处　带 ↗ 的点一下就能飞过去</span></div>';
+    if (canFly.length) h += '<div class="mrn-grid">' + canFly.map(regBtn).join('') + '</div>';
+    else h += '<div class="mrn-empty">还没去过别处。先把脚下这一片走熟。</div>';
+    if (rest.length) {
+      h += '<details class="mrn-more"' + (canFly.length ? '' : ' open') + '>' +
+        '<summary>其余 ' + rest.length + ' 处（没去过，点了只移视角）</summary>' +
+        '<div class="mrn-grid">' + rest.map(regBtn).join('') + '</div></details>';
+    }
+    /* 服务端「区域总览」那份数据仍在（m.regions 的 visitedCount / hasCurrent 都用上了），
+       只是不再单独铺一层重复列表 —— 上面每个按钮里已经带了同一组数字。 */
     h += '</div>';
 
     h += '</div>';
@@ -3006,14 +3047,25 @@
         };
       });
 
-      /* 区域总览：点某个区域 -> 切到世界地图看全图 */
-      document.querySelectorAll('#modal-body .mro-item[data-region]').forEach(b => {
+      /* 画布工具条（重设计新增）：回到我 / 缩放。
+         ⚠️ 缩放要**重渲染**才能生效（格子尺寸是渲染时算的），
+         而「回到我」只是滚动位置，不重渲染（重渲染会把拖动位置也重置，反而更差）。 */
+      document.querySelectorAll('#modal-body [data-map-tool]').forEach(b => {
         b.onclick = () => {
-          mapScope = 'world';
+          const t = b.getAttribute('data-map-tool');
+          if (t === 'here') { centerMapOnHere(); return; }
+          const step = 0.2;
+          const next = t === 'zin' ? mapZoom + step : mapZoom - step;
+          mapZoom = Math.min(1.4, Math.max(0.7, Math.round(next * 100) / 100));
           closeModal();
           panel('map');
         };
       });
+
+      /* 区域总览：点某个区域 -> 切到世界地图看全图 */
+      /* ⚠️ 原来这里绑的是「区域总览」的 `.mro-item` —— 重设计把那块并进了「地名索引」，
+         同一个点击目标现在由 `[data-pan-region]` / `[data-fly-region]` 承担（见下方）。
+         这里的旧选择器留着无害（匹配不到就是空转），但**不要再往里加逻辑**。 */
 
       /* ★ 区域名按钮：点一下视角直接飞到该区域（居中显示）（主人 2026-10-10）。
          区域模式只画本区，飞不过去 → 先切世界地图再飞；已在世界地图则当场平移。 */
@@ -3232,6 +3284,20 @@
         if (e.cancelable) e.preventDefault();
       }
     }, { passive: false });
+
+    /* 键盘：方向键平移、Home 回到我（重设计新增）。
+       画布带 tabindex=0，点一下就能聚焦 —— 桌面端不必非按住鼠标拖。 */
+    el.addEventListener('keydown', e => {
+      const step = 60;
+      const k = e.key;
+      if (k === 'ArrowLeft') { el.scrollLeft -= step; }
+      else if (k === 'ArrowRight') { el.scrollLeft += step; }
+      else if (k === 'ArrowUp') { el.scrollTop -= step; }
+      else if (k === 'ArrowDown') { el.scrollTop += step; }
+      else if (k === 'Home') { centerMapOnHere(); }
+      else return;
+      if (e.preventDefault) e.preventDefault();
+    });
   }
 
   /* 把地图画布滚到「你在这里」那一格的正中。
