@@ -352,11 +352,16 @@ function packRegions(rooms, regions, byRegion, currentRoomId, terrain) {
 
   /* 目标总宽：让地图接近正方形。
    * 装箱宽度 W 满足 W ≈ sqrt(总面积)（加上 gap 的损耗放宽一点），
-   * 这样 bounds 宽高比接近 1，不会变成长条。 */
+   * 这样 bounds 宽高比接近 1，不会变成长条。
+   * ⚠️ 上限原来写死 72 —— 那是按「box 最多 15 格」的老尺寸定的。
+   *    主人 2026-10-11 要求把山与野外放大（sect 17、wild 21）之后，
+   *    idealW 早就超过 72，被这个上限一刀截断 → 行宽不够、全往下堆，
+   *    地图成了 71×178 的长条（map-check 的「地图未接近方形」当场判红）。
+   *    上限跟着尺寸一起放宽，别让常量偷偷决定地图形状。 */
   const totalArea = Object.values(boxOf).reduce((a, b) => a + b.w * b.h, 0);
   const nReg = regIds.length || 1;
   const idealW = Math.round(Math.sqrt(totalArea * (1 + GAP * 0.35)));
-  const MAX_ROW_W = Math.max(20, Math.min(72, idealW));
+  const MAX_ROW_W = Math.max(20, Math.min(200, idealW));
 
   /* 排序：当前区域第一，其余按**高度**降序（同层里高的先放，层高才不会被撑爆） */
   const ordered = regIds.slice().sort((a, b) => {

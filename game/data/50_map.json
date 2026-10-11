@@ -6400,8 +6400,8 @@
       "province": "京畿道",
       "desc": "明镜高悬，律法无情。堂上打板子，堂下有人叫好。",
       "entry": "jn_yamen_court",
-      "minW": 12,
-      "minH": 12
+      "minW": 14,
+      "minH": 14
     },
     "cunzhen": {
       "id": "cunzhen",
@@ -6411,8 +6411,8 @@
       "province": "江南西道",
       "desc": "三四十户人家，一口老井。谁家昨夜炒菜，全村都知道。",
       "entry": "cunzhen_gate",
-      "minW": 10,
-      "minH": 10
+      "minW": 12,
+      "minH": 12
     },
     "shuyuan": {
       "id": "shuyuan",
@@ -6422,8 +6422,8 @@
       "province": "江南西道",
       "desc": "弦歌不辍，笔砚生尘。读书人的清高与穷酸，只隔一层窗纸。",
       "entry": "jn_study_1",
-      "minW": 11,
-      "minH": 11
+      "minW": 13,
+      "minH": 13
     },
     "qinglou": {
       "id": "qinglou",
@@ -6433,8 +6433,8 @@
       "province": "江南东道",
       "desc": "丝竹盈耳，酒色满楼。听得见笑，看不见人心。",
       "entry": "jiangnan_brothel",
-      "minW": 7,
-      "minH": 7
+      "minW": 9,
+      "minH": 9
     },
     "palace": {
       "id": "palace",
@@ -6444,8 +6444,8 @@
       "province": "京畿道",
       "desc": "朱墙黄瓦，九重深处。这里的一举一动，都有人记在册上。",
       "entry": "palace_gate",
-      "minW": 12,
-      "minH": 12
+      "minW": 15,
+      "minH": 15
     },
     "market": {
       "id": "market",
@@ -6466,8 +6466,8 @@
       "province": "江南西道",
       "desc": "阡陌纵横，日出而作。田埂上走一遭，能听一整天的事。",
       "entry": "jn_farm_road",
-      "minW": 10,
-      "minH": 10
+      "minW": 12,
+      "minH": 12
     },
     "harbor": {
       "id": "harbor",
@@ -6477,8 +6477,8 @@
       "province": "京畿道",
       "desc": "千帆竞发，货通四海。船夫的消息比驿马快三天。",
       "entry": "jn_harbor",
-      "minW": 11,
-      "minH": 11
+      "minW": 13,
+      "minH": 13
     },
     "luoyang": {
       "id": "luoyang",
@@ -6488,8 +6488,8 @@
       "province": "河南道",
       "desc": "九朝古都，牡丹倾城。城中多的是旧人、旧事、旧刀。",
       "entry": "luoyang_gate",
-      "minW": 11,
-      "minH": 11
+      "minW": 13,
+      "minH": 13
     },
     "changan": {
       "id": "changan",
@@ -6499,8 +6499,8 @@
       "province": "关中道",
       "desc": "天子脚下，规矩最大。街巷规整，连吵架都要低声。",
       "entry": "changan_gate",
-      "minW": 12,
-      "minH": 12
+      "minW": 15,
+      "minH": 15
     },
     "chengdu": {
       "id": "chengdu",
@@ -6510,8 +6510,8 @@
       "province": "蜀道",
       "desc": "锦官城，市井慢。茶馆里摆龙门阵，一摆就是半天。",
       "entry": "chengdu_gate",
-      "minW": 11,
-      "minH": 11
+      "minW": 13,
+      "minH": 13
     },
     "xiangyang": {
       "id": "xiangyang",
@@ -6521,8 +6521,8 @@
       "province": "荆襄道",
       "desc": "铁骑十万，甲兵天下。此地不产侠客，只产将才。",
       "entry": "xiangyang_gate",
-      "minW": 11,
-      "minH": 11
+      "minW": 13,
+      "minH": 13
     },
     "jiangnan": {
       "id": "jiangnan",
@@ -6543,8 +6543,8 @@
       "province": "江南西道",
       "desc": "园林深处，剑气藏锋。听得见曲子，未必听得见刀。",
       "entry": "gusu_town",
-      "minW": 11,
-      "minH": 11
+      "minW": 13,
+      "minH": 13
     },
     "wild": {
       "id": "wild",
@@ -6554,8 +6554,8 @@
       "province": "边塞道",
       "desc": "草长鹰飞，狼嗥四起。风里除了土腥，什么都没有。",
       "entry": "road_nan_1",
-      "minW": 15,
-      "minH": 15
+      "minW": 21,
+      "minH": 21
     },
     "beijiang": {
       "id": "beijiang",
@@ -6565,8 +6565,8 @@
       "province": "边塞道",
       "desc": "终年不化。雪底下埋着人，也埋着刀。",
       "entry": "beijiang_xuedao",
-      "minW": 15,
-      "minH": 15
+      "minW": 21,
+      "minH": 21
     },
     "xixia": {
       "id": "xixia",
@@ -6576,8 +6576,8 @@
       "province": "边塞道",
       "desc": "盐池如镜，咸得刺喉。煮盐的人比打仗的人多。",
       "entry": "xixia_ice",
-      "minW": 15,
-      "minH": 15
+      "minW": 21,
+      "minH": 21
     },
     "huashan": {
       "id": "huashan",
@@ -6587,8 +6587,8 @@
       "province": "江湖",
       "desc": "西岳峥嵘，高处不胜寒。玉女峰上的雪，从来没人扫。",
       "entry": "huashan_shanxia",
-      "minW": 11,
-      "minH": 11
+      "minW": 17,
+      "minH": 17
     },
     "shaolin": {
       "id": "shaolin",
@@ -6598,8 +6598,8 @@
       "province": "江湖",
       "desc": "古刹钟声，扫尽天下尘。藏经阁里那一层，锁着最要紧的东西。",
       "entry": "shaolin_shanmen",
-      "minW": 11,
-      "minH": 11
+      "minW": 17,
+      "minH": 17
     },
     "wudang": {
       "id": "wudang",
@@ -6609,8 +6609,8 @@
       "province": "江湖",
       "desc": "玄天毓秀，太极生两仪。清修为主，却也管着山下的人间。",
       "entry": "wudang_shanmen",
-      "minW": 11,
-      "minH": 11
+      "minW": 17,
+      "minH": 17
     },
     "emei": {
       "id": "emei",
@@ -6620,8 +6620,8 @@
       "province": "江湖",
       "desc": "白水秋风，缁衣如云。佛号压得住刀，压不住人心。",
       "entry": "emei_shanmen",
-      "minW": 11,
-      "minH": 11
+      "minW": 17,
+      "minH": 17
     },
     "taohuadao": {
       "id": "taohuadao",
@@ -6631,8 +6631,8 @@
       "province": "江湖",
       "desc": "桃花流水，岛上无人。琴棋书画样样精，落花也伤人。",
       "entry": "taohuadao_dock",
-      "minW": 11,
-      "minH": 11
+      "minW": 17,
+      "minH": 17
     },
     "dali": {
       "id": "dali",
@@ -6642,8 +6642,8 @@
       "province": "江湖",
       "desc": "王府朱门，段氏六脉。指法点穴不靠刀，杀人于谈笑。",
       "entry": "dali_wangfu",
-      "minW": 11,
-      "minH": 11
+      "minW": 17,
+      "minH": 17
     },
     "miaojiang": {
       "id": "miaojiang",
@@ -6653,8 +6653,8 @@
       "province": "江湖",
       "desc": "万山红雾，蛊虫满寨。客人来了，先喝三碗。",
       "entry": "miaojiang_sheng",
-      "minW": 11,
-      "minH": 11
+      "minW": 17,
+      "minH": 17
     },
     "tangmen": {
       "id": "tangmen",
@@ -6664,8 +6664,8 @@
       "province": "江湖",
       "desc": "毒雾暗器，见血封喉。门上那张笑脸，是给死人的。",
       "entry": "tangmen_gate",
-      "minW": 11,
-      "minH": 11
+      "minW": 17,
+      "minH": 17
     },
     "gaibang": {
       "id": "gaibang",
@@ -6675,8 +6675,8 @@
       "province": "江湖",
       "desc": "天下第一大帮，规矩却最破。破庙里睡着的都是兄弟。",
       "entry": "gaibang_po_miao",
-      "minW": 11,
-      "minH": 11
+      "minW": 17,
+      "minH": 17
     },
     "mojiao": {
       "id": "mojiao",
@@ -6686,8 +6686,8 @@
       "province": "江湖",
       "desc": "日头照不到的地方。练的武功不分正邪，人命也不分贵贱。",
       "entry": "mojiao_shanmen",
-      "minW": 10,
-      "minH": 10
+      "minW": 15,
+      "minH": 15
     },
     "gumu": {
       "id": "gumu",
@@ -6697,8 +6697,8 @@
       "province": "江湖",
       "desc": "终南山横在道上，一条山道通着两处山门：东边重阳宫，青烟终年不断；西边活死人墓，墓门终年不开。",
       "entry": "gumu_mu",
-      "minW": 10,
-      "minH": 10
+      "minW": 17,
+      "minH": 17
     },
     "xiyu": {
       "id": "xiyu",
@@ -6708,8 +6708,8 @@
       "province": "西域",
       "desc": "大漠孤烟，佛国在西。商队带来香料，也带来刀。",
       "entry": "xiyu_oasis",
-      "minW": 15,
-      "minH": 15
+      "minW": 21,
+      "minH": 21
     },
     "haitan": {
       "id": "haitan",
@@ -6719,8 +6719,8 @@
       "province": "海外",
       "desc": "潮起潮落，滩上全是贝。退潮时能走很远，别走太远。",
       "entry": "haitan_dock",
-      "minW": 15,
-      "minH": 15
+      "minW": 21,
+      "minH": 21
     },
     "xiake": {
       "id": "xiake",
@@ -6730,8 +6730,8 @@
       "province": "海外",
       "desc": "岛上有山，山上有洞，洞里有的是前辈留下的东西。",
       "entry": "xiake_neike",
-      "minW": 13,
-      "minH": 13
+      "minW": 16,
+      "minH": 16
     },
     "jinguo": {
       "id": "jinguo",
@@ -6741,8 +6741,8 @@
       "province": "北疆",
       "desc": "前朝皇陵，机关未破。进去的人多，出来的人少。",
       "entry": "jinguo_ruin_d",
-      "minW": 13,
-      "minH": 13
+      "minW": 16,
+      "minH": 16
     },
     "many": {
       "id": "many",
@@ -6752,8 +6752,8 @@
       "province": "南疆",
       "desc": "连地图都没画全的地方。传说是真的，只是没人回来。",
       "entry": "road_many_1",
-      "minW": 13,
-      "minH": 13
+      "minW": 16,
+      "minH": 16
     },
     "secret": {
       "id": "secret",
@@ -6763,8 +6763,8 @@
       "province": "江湖",
       "desc": "不见天日的地方。什么都能买，什么都能卖，包括人。",
       "entry": "secret_black_market",
-      "minW": 8,
-      "minH": 8
+      "minW": 10,
+      "minH": 10
     }
   },
   "meta": {

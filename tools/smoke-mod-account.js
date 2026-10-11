@@ -16,7 +16,7 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const TMP = path.join(__dirname, '_acctest');
 
-fs.rmSync(TMP, { recursive: true, force: true });
+require("child_process").execSync('rm -rf "' + TMP + '"', { stdio: "ignore" });
 fs.mkdirSync(TMP, { recursive: true });
 /* 必须在 require 之前设 —— mod-site.js 在加载时就读 DATA_DIR */
 process.env.WX_SITE_DATA = TMP;
@@ -194,11 +194,11 @@ const MODMAKER = fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'js'
       /还没登录/.test(MODMAKER) && /mm-mine-login/.test(MODMAKER));
   })();
 })().then(() => {
-  fs.rmSync(TMP, { recursive: true, force: true });
+  require("child_process").execSync('rm -rf "' + TMP + '"', { stdio: "ignore" });
   console.log(`\n结果：${pass} 通过 / ${fail} 失败`);
   process.exit(fail ? 1 : 0);
 }).catch(e => {
-  fs.rmSync(TMP, { recursive: true, force: true });
+  require("child_process").execSync('rm -rf "' + TMP + '"', { stdio: "ignore" });
   console.error('异常：', e && e.stack || e);
   process.exit(1);
 });

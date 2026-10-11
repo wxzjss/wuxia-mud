@@ -1,0 +1,1671 @@
+{
+  "_note": "名山的上山路与山脚村（gen-mountain-paths.js 生成，重跑一致）。只补房间与出口，不改既有字段。",
+  "rooms": {
+    "huashan_path1": {
+      "id": "huashan_path1",
+      "name": "华山·石阶",
+      "region": "huashan",
+      "desc": "石阶一级级往上，凿在岩壁上。走了不知多少级，回头一看，山门已经小成拇指大。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "huashan_path2",
+        "s": "huashan_shanxia"
+      }
+    },
+    "huashan_path2": {
+      "id": "huashan_path2",
+      "name": "华山·松林",
+      "region": "huashan",
+      "desc": "一片老松，枝子横着长，把路遮得半明半暗。风过时满山响，像有人在远处说话。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "huashan_path3",
+        "s": "huashan_path1"
+      }
+    },
+    "huashan_path3": {
+      "id": "huashan_path3",
+      "name": "华山·半山亭",
+      "region": "huashan",
+      "desc": "半山一处歇脚的旧亭，柱子被摸得发亮。亭里有人留下的水囊，还有一堆没人收的柴。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "huashan_path4",
+        "s": "huashan_path2"
+      }
+    },
+    "huashan_path4": {
+      "id": "huashan_path4",
+      "name": "华山·林间道",
+      "region": "huashan",
+      "desc": "道从林子中间穿过去。树密得看不见天，脚下的落叶一脚踩下去，能陷半寸。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "huashan_path5",
+        "s": "huashan_path3"
+      }
+    },
+    "huashan_path5": {
+      "id": "huashan_path5",
+      "name": "华山·山泉",
+      "region": "huashan",
+      "desc": "一眼泉水从石缝里渗出来，接在石槽里，槽沿磨得圆了。上上下下的人都在这里歇一歇，喝一口。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "huashan_path6",
+        "s": "huashan_path4"
+      }
+    },
+    "huashan_path6": {
+      "id": "huashan_path6",
+      "name": "华山·崖边路",
+      "region": "huashan",
+      "desc": "路贴着崖壁走，只容一人。风从下头往上灌，衣角一直响。（再往上，华山·青柯坪就在前头。）",
+      "exits": {
+        "n": "huashan_qingke",
+        "s": "huashan_path5"
+      }
+    },
+    "huashan_shanxia": {
+      "id": "huashan_shanxia",
+      "exits": {
+        "n": {
+          "to": "huashan_path1",
+          "cond": {
+            "item": "huashan_pass",
+            "count": 1
+          },
+          "msg": "那看山弟子横剑拦住你：「上山先登记。没有竹牌，山道不能上。」",
+          "travel": "你递上竹牌。他翻过来看了看，插回你手里：「往上走，别乱闯客舍。」"
+        }
+      }
+    },
+    "huashan_qingke": {
+      "id": "huashan_qingke",
+      "exits": {
+        "s": "huashan_path6"
+      }
+    },
+    "shaolin_path1": {
+      "id": "shaolin_path1",
+      "name": "少林·石阶",
+      "region": "shaolin",
+      "desc": "石阶一级级往上，凿在岩壁上。走了不知多少级，回头一看，山门已经小成拇指大。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "shaolin_path2",
+        "s": "shaolin_shanmen"
+      }
+    },
+    "shaolin_path2": {
+      "id": "shaolin_path2",
+      "name": "少林·松林",
+      "region": "shaolin",
+      "desc": "一片老松，枝子横着长，把路遮得半明半暗。风过时满山响，像有人在远处说话。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "shaolin_path3",
+        "s": "shaolin_path1"
+      }
+    },
+    "shaolin_path3": {
+      "id": "shaolin_path3",
+      "name": "少林·半山亭",
+      "region": "shaolin",
+      "desc": "半山一处歇脚的旧亭，柱子被摸得发亮。亭里有人留下的水囊，还有一堆没人收的柴。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "shaolin_path4",
+        "s": "shaolin_path2"
+      }
+    },
+    "shaolin_path4": {
+      "id": "shaolin_path4",
+      "name": "少林·林间道",
+      "region": "shaolin",
+      "desc": "道从林子中间穿过去。树密得看不见天，脚下的落叶一脚踩下去，能陷半寸。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "shaolin_path5",
+        "s": "shaolin_path3"
+      }
+    },
+    "shaolin_path5": {
+      "id": "shaolin_path5",
+      "name": "少林·山泉",
+      "region": "shaolin",
+      "desc": "一眼泉水从石缝里渗出来，接在石槽里，槽沿磨得圆了。上上下下的人都在这里歇一歇，喝一口。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "shaolin_path6",
+        "s": "shaolin_path4"
+      }
+    },
+    "shaolin_path6": {
+      "id": "shaolin_path6",
+      "name": "少林·崖边路",
+      "region": "shaolin",
+      "desc": "路贴着崖壁走，只容一人。风从下头往上灌，衣角一直响。（再往上，少林·天王殿就在前头。）",
+      "exits": {
+        "n": "shaolin_tianwang",
+        "s": "shaolin_path5"
+      }
+    },
+    "shaolin_shanmen": {
+      "id": "shaolin_shanmen",
+      "exits": {
+        "n": "shaolin_path1"
+      }
+    },
+    "shaolin_tianwang": {
+      "id": "shaolin_tianwang",
+      "exits": {
+        "s": "shaolin_path6"
+      }
+    },
+    "wudang_path1": {
+      "id": "wudang_path1",
+      "name": "武当·石阶",
+      "region": "wudang",
+      "desc": "石阶一级级往上，凿在岩壁上。走了不知多少级，回头一看，山门已经小成拇指大。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "wudang_path2",
+        "s": "wudang_shanmen"
+      }
+    },
+    "wudang_path2": {
+      "id": "wudang_path2",
+      "name": "武当·松林",
+      "region": "wudang",
+      "desc": "一片老松，枝子横着长，把路遮得半明半暗。风过时满山响，像有人在远处说话。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "wudang_path3",
+        "s": "wudang_path1"
+      }
+    },
+    "wudang_path3": {
+      "id": "wudang_path3",
+      "name": "武当·半山亭",
+      "region": "wudang",
+      "desc": "半山一处歇脚的旧亭，柱子被摸得发亮。亭里有人留下的水囊，还有一堆没人收的柴。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "wudang_path4",
+        "s": "wudang_path2"
+      }
+    },
+    "wudang_path4": {
+      "id": "wudang_path4",
+      "name": "武当·林间道",
+      "region": "wudang",
+      "desc": "道从林子中间穿过去。树密得看不见天，脚下的落叶一脚踩下去，能陷半寸。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "wudang_path5",
+        "s": "wudang_path3"
+      }
+    },
+    "wudang_path5": {
+      "id": "wudang_path5",
+      "name": "武当·山泉",
+      "region": "wudang",
+      "desc": "一眼泉水从石缝里渗出来，接在石槽里，槽沿磨得圆了。上上下下的人都在这里歇一歇，喝一口。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "wudang_path6",
+        "s": "wudang_path4"
+      }
+    },
+    "wudang_path6": {
+      "id": "wudang_path6",
+      "name": "武当·崖边路",
+      "region": "wudang",
+      "desc": "路贴着崖壁走，只容一人。风从下头往上灌，衣角一直响。（再往上，武当·太和宫就在前头。）",
+      "exits": {
+        "n": "wudang_taihe",
+        "s": "wudang_path5"
+      }
+    },
+    "wudang_shanmen": {
+      "id": "wudang_shanmen",
+      "exits": {
+        "n": "wudang_path1"
+      }
+    },
+    "wudang_taihe": {
+      "id": "wudang_taihe",
+      "exits": {
+        "s": "wudang_path6"
+      }
+    },
+    "emei_path1": {
+      "id": "emei_path1",
+      "name": "峨眉·石阶",
+      "region": "emei",
+      "desc": "石阶一级级往上，凿在岩壁上。走了不知多少级，回头一看，山门已经小成拇指大。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "emei_path2",
+        "s": "emei_shanmen"
+      }
+    },
+    "emei_path2": {
+      "id": "emei_path2",
+      "name": "峨眉·松林",
+      "region": "emei",
+      "desc": "一片老松，枝子横着长，把路遮得半明半暗。风过时满山响，像有人在远处说话。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "emei_path3",
+        "s": "emei_path1"
+      }
+    },
+    "emei_path3": {
+      "id": "emei_path3",
+      "name": "峨眉·半山亭",
+      "region": "emei",
+      "desc": "半山一处歇脚的旧亭，柱子被摸得发亮。亭里有人留下的水囊，还有一堆没人收的柴。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "emei_path4",
+        "s": "emei_path2"
+      }
+    },
+    "emei_path4": {
+      "id": "emei_path4",
+      "name": "峨眉·林间道",
+      "region": "emei",
+      "desc": "道从林子中间穿过去。树密得看不见天，脚下的落叶一脚踩下去，能陷半寸。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "emei_path5",
+        "s": "emei_path3"
+      }
+    },
+    "emei_path5": {
+      "id": "emei_path5",
+      "name": "峨眉·山泉",
+      "region": "emei",
+      "desc": "一眼泉水从石缝里渗出来，接在石槽里，槽沿磨得圆了。上上下下的人都在这里歇一歇，喝一口。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "emei_path6",
+        "s": "emei_path4"
+      }
+    },
+    "emei_path6": {
+      "id": "emei_path6",
+      "name": "峨眉·崖边路",
+      "region": "emei",
+      "desc": "路贴着崖壁走，只容一人。风从下头往上灌，衣角一直响。（再往上，峨眉·清音阁就在前头。）",
+      "exits": {
+        "n": "emei_qingyin",
+        "s": "emei_path5"
+      }
+    },
+    "emei_shanmen": {
+      "id": "emei_shanmen",
+      "exits": {
+        "n": "emei_path1"
+      }
+    },
+    "emei_qingyin": {
+      "id": "emei_qingyin",
+      "exits": {
+        "s": "emei_path6"
+      }
+    },
+    "dali_path1": {
+      "id": "dali_path1",
+      "name": "大理·石阶",
+      "region": "dali",
+      "desc": "石阶一级级往上，凿在岩壁上。走了不知多少级，回头一看，山门已经小成拇指大。（再往上，山门就在前头。）",
+      "exits": {
+        "u": "dali_path2",
+        "d": "diancang_gate"
+      }
+    },
+    "dali_path2": {
+      "id": "dali_path2",
+      "name": "大理·松林",
+      "region": "dali",
+      "desc": "一片老松，枝子横着长，把路遮得半明半暗。风过时满山响，像有人在远处说话。（再往上，山门就在前头。）",
+      "exits": {
+        "u": "dali_path3",
+        "d": "dali_path1"
+      }
+    },
+    "dali_path3": {
+      "id": "dali_path3",
+      "name": "大理·半山亭",
+      "region": "dali",
+      "desc": "半山一处歇脚的旧亭，柱子被摸得发亮。亭里有人留下的水囊，还有一堆没人收的柴。（再往上，山门就在前头。）",
+      "exits": {
+        "u": "dali_path4",
+        "d": "dali_path2"
+      }
+    },
+    "dali_path4": {
+      "id": "dali_path4",
+      "name": "大理·林间道",
+      "region": "dali",
+      "desc": "道从林子中间穿过去。树密得看不见天，脚下的落叶一脚踩下去，能陷半寸。（再往上，山门就在前头。）",
+      "exits": {
+        "u": "dali_path5",
+        "d": "dali_path3"
+      }
+    },
+    "dali_path5": {
+      "id": "dali_path5",
+      "name": "大理·山泉",
+      "region": "dali",
+      "desc": "一眼泉水从石缝里渗出来，接在石槽里，槽沿磨得圆了。上上下下的人都在这里歇一歇，喝一口。（再往上，山门就在前头。）",
+      "exits": {
+        "u": "dali_path6",
+        "d": "dali_path4"
+      }
+    },
+    "dali_path6": {
+      "id": "dali_path6",
+      "name": "大理·崖边路",
+      "region": "dali",
+      "desc": "路贴着崖壁走，只容一人。风从下头往上灌，衣角一直响。（再往上，点苍派·演武场就在前头。）",
+      "exits": {
+        "u": "diancang_hall",
+        "d": "dali_path5"
+      }
+    },
+    "diancang_gate": {
+      "id": "diancang_gate",
+      "exits": {
+        "u": "dali_path1"
+      }
+    },
+    "diancang_hall": {
+      "id": "diancang_hall",
+      "exits": {
+        "d": "dali_path6"
+      }
+    },
+    "tangmen_path1": {
+      "id": "tangmen_path1",
+      "name": "唐门·石阶",
+      "region": "tangmen",
+      "desc": "石阶一级级往上，凿在岩壁上。走了不知多少级，回头一看，山门已经小成拇指大。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "tangmen_path2",
+        "n": "road_tangmen_1"
+      }
+    },
+    "tangmen_path2": {
+      "id": "tangmen_path2",
+      "name": "唐门·松林",
+      "region": "tangmen",
+      "desc": "一片老松，枝子横着长，把路遮得半明半暗。风过时满山响，像有人在远处说话。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "tangmen_path3",
+        "n": "tangmen_path1"
+      }
+    },
+    "tangmen_path3": {
+      "id": "tangmen_path3",
+      "name": "唐门·半山亭",
+      "region": "tangmen",
+      "desc": "半山一处歇脚的旧亭，柱子被摸得发亮。亭里有人留下的水囊，还有一堆没人收的柴。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "tangmen_path4",
+        "n": "tangmen_path2"
+      }
+    },
+    "tangmen_path4": {
+      "id": "tangmen_path4",
+      "name": "唐门·林间道",
+      "region": "tangmen",
+      "desc": "道从林子中间穿过去。树密得看不见天，脚下的落叶一脚踩下去，能陷半寸。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "tangmen_path5",
+        "n": "tangmen_path3"
+      }
+    },
+    "tangmen_path5": {
+      "id": "tangmen_path5",
+      "name": "唐门·山泉",
+      "region": "tangmen",
+      "desc": "一眼泉水从石缝里渗出来，接在石槽里，槽沿磨得圆了。上上下下的人都在这里歇一歇，喝一口。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "tangmen_path6",
+        "n": "tangmen_path4"
+      }
+    },
+    "tangmen_path6": {
+      "id": "tangmen_path6",
+      "name": "唐门·崖边路",
+      "region": "tangmen",
+      "desc": "路贴着崖壁走，只容一人。风从下头往上灌，衣角一直响。（再往上，唐门·堡门就在前头。）",
+      "exits": {
+        "s": "tangmen_gate",
+        "n": "tangmen_path5"
+      }
+    },
+    "road_tangmen_1": {
+      "id": "road_tangmen_1",
+      "exits": {
+        "s": "tangmen_path1"
+      }
+    },
+    "tangmen_gate": {
+      "id": "tangmen_gate",
+      "exits": {
+        "n": "tangmen_path6"
+      }
+    },
+    "miaojiang_path1": {
+      "id": "miaojiang_path1",
+      "name": "苗疆·石阶",
+      "region": "miaojiang",
+      "desc": "石阶一级级往上，凿在岩壁上。走了不知多少级，回头一看，山门已经小成拇指大。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "miaojiang_path2",
+        "n": "road_miao_1"
+      }
+    },
+    "miaojiang_path2": {
+      "id": "miaojiang_path2",
+      "name": "苗疆·松林",
+      "region": "miaojiang",
+      "desc": "一片老松，枝子横着长，把路遮得半明半暗。风过时满山响，像有人在远处说话。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "miaojiang_path3",
+        "n": "miaojiang_path1"
+      }
+    },
+    "miaojiang_path3": {
+      "id": "miaojiang_path3",
+      "name": "苗疆·半山亭",
+      "region": "miaojiang",
+      "desc": "半山一处歇脚的旧亭，柱子被摸得发亮。亭里有人留下的水囊，还有一堆没人收的柴。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "miaojiang_path4",
+        "n": "miaojiang_path2"
+      }
+    },
+    "miaojiang_path4": {
+      "id": "miaojiang_path4",
+      "name": "苗疆·林间道",
+      "region": "miaojiang",
+      "desc": "道从林子中间穿过去。树密得看不见天，脚下的落叶一脚踩下去，能陷半寸。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "miaojiang_path5",
+        "n": "miaojiang_path3"
+      }
+    },
+    "miaojiang_path5": {
+      "id": "miaojiang_path5",
+      "name": "苗疆·山泉",
+      "region": "miaojiang",
+      "desc": "一眼泉水从石缝里渗出来，接在石槽里，槽沿磨得圆了。上上下下的人都在这里歇一歇，喝一口。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "miaojiang_path6",
+        "n": "miaojiang_path4"
+      }
+    },
+    "miaojiang_path6": {
+      "id": "miaojiang_path6",
+      "name": "苗疆·崖边路",
+      "region": "miaojiang",
+      "desc": "路贴着崖壁走，只容一人。风从下头往上灌，衣角一直响。（再往上，苗疆·五毒圣堂就在前头。）",
+      "exits": {
+        "s": "miaojiang_sheng",
+        "n": "miaojiang_path5"
+      }
+    },
+    "road_miao_1": {
+      "id": "road_miao_1",
+      "exits": {
+        "s": "miaojiang_path1"
+      }
+    },
+    "miaojiang_sheng": {
+      "id": "miaojiang_sheng",
+      "exits": {
+        "n": "miaojiang_path6"
+      }
+    },
+    "gaibang_path1": {
+      "id": "gaibang_path1",
+      "name": "丐帮·石阶",
+      "region": "gaibang",
+      "desc": "石阶一级级往上，凿在岩壁上。走了不知多少级，回头一看，山门已经小成拇指大。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "gaibang_path2",
+        "n": "road_gaibang_1"
+      }
+    },
+    "gaibang_path2": {
+      "id": "gaibang_path2",
+      "name": "丐帮·松林",
+      "region": "gaibang",
+      "desc": "一片老松，枝子横着长，把路遮得半明半暗。风过时满山响，像有人在远处说话。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "gaibang_path3",
+        "n": "gaibang_path1"
+      }
+    },
+    "gaibang_path3": {
+      "id": "gaibang_path3",
+      "name": "丐帮·半山亭",
+      "region": "gaibang",
+      "desc": "半山一处歇脚的旧亭，柱子被摸得发亮。亭里有人留下的水囊，还有一堆没人收的柴。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "gaibang_path4",
+        "n": "gaibang_path2"
+      }
+    },
+    "gaibang_path4": {
+      "id": "gaibang_path4",
+      "name": "丐帮·林间道",
+      "region": "gaibang",
+      "desc": "道从林子中间穿过去。树密得看不见天，脚下的落叶一脚踩下去，能陷半寸。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "gaibang_path5",
+        "n": "gaibang_path3"
+      }
+    },
+    "gaibang_path5": {
+      "id": "gaibang_path5",
+      "name": "丐帮·山泉",
+      "region": "gaibang",
+      "desc": "一眼泉水从石缝里渗出来，接在石槽里，槽沿磨得圆了。上上下下的人都在这里歇一歇，喝一口。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "gaibang_path6",
+        "n": "gaibang_path4"
+      }
+    },
+    "gaibang_path6": {
+      "id": "gaibang_path6",
+      "name": "丐帮·崖边路",
+      "region": "gaibang",
+      "desc": "路贴着崖壁走，只容一人。风从下头往上灌，衣角一直响。（再往上，丐帮·破庙就在前头。）",
+      "exits": {
+        "s": "gaibang_po_miao",
+        "n": "gaibang_path5"
+      }
+    },
+    "road_gaibang_1": {
+      "id": "road_gaibang_1",
+      "exits": {
+        "s": "gaibang_path1"
+      }
+    },
+    "gaibang_po_miao": {
+      "id": "gaibang_po_miao",
+      "exits": {
+        "n": "gaibang_path6"
+      }
+    },
+    "gumu_path1": {
+      "id": "gumu_path1",
+      "name": "终南山·石阶",
+      "region": "gumu",
+      "desc": "石阶一级级往上，凿在岩壁上。走了不知多少级，回头一看，山门已经小成拇指大。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "gumu_path2",
+        "n": "gumu_shan"
+      }
+    },
+    "gumu_path2": {
+      "id": "gumu_path2",
+      "name": "终南山·松林",
+      "region": "gumu",
+      "desc": "一片老松，枝子横着长，把路遮得半明半暗。风过时满山响，像有人在远处说话。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "gumu_path3",
+        "n": "gumu_path1"
+      }
+    },
+    "gumu_path3": {
+      "id": "gumu_path3",
+      "name": "终南山·半山亭",
+      "region": "gumu",
+      "desc": "半山一处歇脚的旧亭，柱子被摸得发亮。亭里有人留下的水囊，还有一堆没人收的柴。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "gumu_path4",
+        "n": "gumu_path2"
+      }
+    },
+    "gumu_path4": {
+      "id": "gumu_path4",
+      "name": "终南山·林间道",
+      "region": "gumu",
+      "desc": "道从林子中间穿过去。树密得看不见天，脚下的落叶一脚踩下去，能陷半寸。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "gumu_path5",
+        "n": "gumu_path3"
+      }
+    },
+    "gumu_path5": {
+      "id": "gumu_path5",
+      "name": "终南山·山泉",
+      "region": "gumu",
+      "desc": "一眼泉水从石缝里渗出来，接在石槽里，槽沿磨得圆了。上上下下的人都在这里歇一歇，喝一口。（再往上，山门就在前头。）",
+      "exits": {
+        "s": "gumu_path6",
+        "n": "gumu_path4"
+      }
+    },
+    "gumu_path6": {
+      "id": "gumu_path6",
+      "name": "终南山·崖边路",
+      "region": "gumu",
+      "desc": "路贴着崖壁走，只容一人。风从下头往上灌，衣角一直响。（再往上，活死人墓就在前头。）",
+      "exits": {
+        "s": "gumu_mu",
+        "n": "gumu_path5"
+      }
+    },
+    "gumu_shan": {
+      "id": "gumu_shan",
+      "exits": {
+        "s": "gumu_path1"
+      }
+    },
+    "gumu_mu": {
+      "id": "gumu_mu",
+      "exits": {
+        "n": "gumu_path6"
+      }
+    },
+    "mojiao_path1": {
+      "id": "mojiao_path1",
+      "name": "黑木崖·石阶",
+      "region": "mojiao",
+      "desc": "石阶一级级往上，凿在岩壁上。走了不知多少级，回头一看，山门已经小成拇指大。（再往上，山门就在前头。）",
+      "exits": {
+        "u": "mojiao_path2",
+        "d": "mojiao_shanmen"
+      }
+    },
+    "mojiao_path2": {
+      "id": "mojiao_path2",
+      "name": "黑木崖·松林",
+      "region": "mojiao",
+      "desc": "一片老松，枝子横着长，把路遮得半明半暗。风过时满山响，像有人在远处说话。（再往上，山门就在前头。）",
+      "exits": {
+        "u": "mojiao_path3",
+        "d": "mojiao_path1"
+      }
+    },
+    "mojiao_path3": {
+      "id": "mojiao_path3",
+      "name": "黑木崖·半山亭",
+      "region": "mojiao",
+      "desc": "半山一处歇脚的旧亭，柱子被摸得发亮。亭里有人留下的水囊，还有一堆没人收的柴。（再往上，山门就在前头。）",
+      "exits": {
+        "u": "mojiao_path4",
+        "d": "mojiao_path2"
+      }
+    },
+    "mojiao_path4": {
+      "id": "mojiao_path4",
+      "name": "黑木崖·林间道",
+      "region": "mojiao",
+      "desc": "道从林子中间穿过去。树密得看不见天，脚下的落叶一脚踩下去，能陷半寸。（再往上，山门就在前头。）",
+      "exits": {
+        "u": "mojiao_path5",
+        "d": "mojiao_path3"
+      }
+    },
+    "mojiao_path5": {
+      "id": "mojiao_path5",
+      "name": "黑木崖·山泉",
+      "region": "mojiao",
+      "desc": "一眼泉水从石缝里渗出来，接在石槽里，槽沿磨得圆了。上上下下的人都在这里歇一歇，喝一口。（再往上，山门就在前头。）",
+      "exits": {
+        "u": "mojiao_path6",
+        "d": "mojiao_path4"
+      }
+    },
+    "mojiao_path6": {
+      "id": "mojiao_path6",
+      "name": "黑木崖·崖边路",
+      "region": "mojiao",
+      "desc": "路贴着崖壁走，只容一人。风从下头往上灌，衣角一直响。（再往上，黑木崖·大殿就在前头。）",
+      "exits": {
+        "u": "mojiao_hall",
+        "d": "mojiao_path5"
+      }
+    },
+    "mojiao_shanmen": {
+      "id": "mojiao_shanmen",
+      "exits": {
+        "u": "mojiao_path1"
+      }
+    },
+    "mojiao_hall": {
+      "id": "mojiao_hall",
+      "exits": {
+        "d": "mojiao_path6"
+      }
+    },
+    "taohuadao_path1": {
+      "id": "taohuadao_path1",
+      "name": "桃花岛·石阶",
+      "region": "taohuadao",
+      "desc": "石阶一级级往上，凿在岩壁上。走了不知多少级，回头一看，山门已经小成拇指大。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "taohuadao_path2",
+        "s": "taohuadao_dock"
+      }
+    },
+    "taohuadao_path2": {
+      "id": "taohuadao_path2",
+      "name": "桃花岛·松林",
+      "region": "taohuadao",
+      "desc": "一片老松，枝子横着长，把路遮得半明半暗。风过时满山响，像有人在远处说话。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "taohuadao_path3",
+        "s": "taohuadao_path1"
+      }
+    },
+    "taohuadao_path3": {
+      "id": "taohuadao_path3",
+      "name": "桃花岛·半山亭",
+      "region": "taohuadao",
+      "desc": "半山一处歇脚的旧亭，柱子被摸得发亮。亭里有人留下的水囊，还有一堆没人收的柴。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "taohuadao_path4",
+        "s": "taohuadao_path2"
+      }
+    },
+    "taohuadao_path4": {
+      "id": "taohuadao_path4",
+      "name": "桃花岛·林间道",
+      "region": "taohuadao",
+      "desc": "道从林子中间穿过去。树密得看不见天，脚下的落叶一脚踩下去，能陷半寸。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "taohuadao_path5",
+        "s": "taohuadao_path3"
+      }
+    },
+    "taohuadao_path5": {
+      "id": "taohuadao_path5",
+      "name": "桃花岛·山泉",
+      "region": "taohuadao",
+      "desc": "一眼泉水从石缝里渗出来，接在石槽里，槽沿磨得圆了。上上下下的人都在这里歇一歇，喝一口。（再往上，山门就在前头。）",
+      "exits": {
+        "n": "taohuadao_path6",
+        "s": "taohuadao_path4"
+      }
+    },
+    "taohuadao_path6": {
+      "id": "taohuadao_path6",
+      "name": "桃花岛·崖边路",
+      "region": "taohuadao",
+      "desc": "路贴着崖壁走，只容一人。风从下头往上灌，衣角一直响。（再往上，桃花岛·桃林就在前头。）",
+      "exits": {
+        "n": "taohuadao_forest",
+        "s": "taohuadao_path5"
+      }
+    },
+    "taohuadao_dock": {
+      "id": "taohuadao_dock",
+      "exits": {
+        "n": "taohuadao_path1"
+      }
+    },
+    "taohuadao_forest": {
+      "id": "taohuadao_forest",
+      "exits": {
+        "s": "taohuadao_path6"
+      }
+    },
+    "hs_village_kou": {
+      "id": "hs_village_kou",
+      "name": "玉泉村·村口",
+      "region": "huashan",
+      "desc": "华山脚下的村子，几十户人家，家家门口堆着柴。往山上去的香客、挑夫、赶考的，都在这儿歇脚。村口一棵老槐树下坐着几个人。",
+      "exits": {
+        "n": "hs_village_yard",
+        "sw": "road_huashan_1"
+      }
+    },
+    "hs_village_yard": {
+      "id": "hs_village_yard",
+      "name": "玉泉村·打谷场",
+      "region": "huashan",
+      "desc": "一块平整的土场，摊着刚收的谷子。场边堆着几副挑山的竹杠。",
+      "exits": {
+        "s": "hs_village_kou",
+        "e": "hs_village_tea",
+        "w": "hs_village_shrine"
+      }
+    },
+    "hs_village_tea": {
+      "id": "hs_village_tea",
+      "name": "玉泉村·茶棚",
+      "region": "huashan",
+      "desc": "半敞的茶棚，长条凳磨得发亮。上山的人在这儿喝一碗再走。",
+      "exits": {
+        "w": "hs_village_yard"
+      }
+    },
+    "hs_village_shrine": {
+      "id": "hs_village_shrine",
+      "name": "玉泉村·山神庙",
+      "region": "huashan",
+      "desc": "一间小小的山神庙，供着山神与土地。庙前的香炉里插着半截没烧完的香。",
+      "exits": {
+        "e": "hs_village_yard"
+      }
+    },
+    "road_huashan_1": {
+      "id": "road_huashan_1",
+      "exits": {
+        "ne": "hs_village_kou"
+      }
+    },
+    "sl_village_kou": {
+      "id": "sl_village_kou",
+      "name": "柏谷村·村口",
+      "region": "shaolin",
+      "desc": "少室山下的村子。村里多半姓王，世代替寺里种菜、挑水。村口一棵老槐树下坐着几个人。",
+      "exits": {
+        "n": "sl_village_yard",
+        "se": "road_shaolin_1"
+      }
+    },
+    "sl_village_yard": {
+      "id": "sl_village_yard",
+      "name": "柏谷村·打谷场",
+      "region": "shaolin",
+      "desc": "一块平整的土场，摊着刚收的谷子。场边堆着几副挑山的竹杠。",
+      "exits": {
+        "s": "sl_village_kou",
+        "e": "sl_village_tea",
+        "w": "sl_village_shrine"
+      }
+    },
+    "sl_village_tea": {
+      "id": "sl_village_tea",
+      "name": "柏谷村·茶棚",
+      "region": "shaolin",
+      "desc": "半敞的茶棚，长条凳磨得发亮。上山的人在这儿喝一碗再走。",
+      "exits": {
+        "w": "sl_village_yard"
+      }
+    },
+    "sl_village_shrine": {
+      "id": "sl_village_shrine",
+      "name": "柏谷村·山神庙",
+      "region": "shaolin",
+      "desc": "一间小小的山神庙，供着山神与土地。庙前的香炉里插着半截没烧完的香。",
+      "exits": {
+        "e": "sl_village_yard"
+      }
+    },
+    "road_shaolin_1": {
+      "id": "road_shaolin_1",
+      "exits": {
+        "nw": "sl_village_kou"
+      }
+    },
+    "wd_village_kou": {
+      "id": "wd_village_kou",
+      "name": "遇真村·村口",
+      "region": "wudang",
+      "desc": "武当山脚的村子，屋舍依着溪水排。村里的老人多半会两手粗浅的导引术，说是跟山上的道人学的。村口一棵老槐树下坐着几个人。",
+      "exits": {
+        "n": "wd_village_yard",
+        "sw": "road_wudang_1"
+      }
+    },
+    "wd_village_yard": {
+      "id": "wd_village_yard",
+      "name": "遇真村·打谷场",
+      "region": "wudang",
+      "desc": "一块平整的土场，摊着刚收的谷子。场边堆着几副挑山的竹杠。",
+      "exits": {
+        "s": "wd_village_kou",
+        "e": "wd_village_tea",
+        "w": "wd_village_shrine"
+      }
+    },
+    "wd_village_tea": {
+      "id": "wd_village_tea",
+      "name": "遇真村·茶棚",
+      "region": "wudang",
+      "desc": "半敞的茶棚，长条凳磨得发亮。上山的人在这儿喝一碗再走。",
+      "exits": {
+        "w": "wd_village_yard"
+      }
+    },
+    "wd_village_shrine": {
+      "id": "wd_village_shrine",
+      "name": "遇真村·山神庙",
+      "region": "wudang",
+      "desc": "一间小小的山神庙，供着山神与土地。庙前的香炉里插着半截没烧完的香。",
+      "exits": {
+        "e": "wd_village_yard"
+      }
+    },
+    "road_wudang_1": {
+      "id": "road_wudang_1",
+      "exits": {
+        "ne": "wd_village_kou"
+      }
+    },
+    "em_village_kou": {
+      "id": "em_village_kou",
+      "name": "伏虎村·村口",
+      "region": "emei",
+      "desc": "峨眉山脚的村子，村口的石头真被打磨成一只伏着的老虎。往上走三天才到金顶。村口一棵老槐树下坐着几个人。",
+      "exits": {
+        "n": "em_village_yard",
+        "se": "road_emei_1"
+      }
+    },
+    "em_village_yard": {
+      "id": "em_village_yard",
+      "name": "伏虎村·打谷场",
+      "region": "emei",
+      "desc": "一块平整的土场，摊着刚收的谷子。场边堆着几副挑山的竹杠。",
+      "exits": {
+        "s": "em_village_kou",
+        "e": "em_village_tea",
+        "w": "em_village_shrine"
+      }
+    },
+    "em_village_tea": {
+      "id": "em_village_tea",
+      "name": "伏虎村·茶棚",
+      "region": "emei",
+      "desc": "半敞的茶棚，长条凳磨得发亮。上山的人在这儿喝一碗再走。",
+      "exits": {
+        "w": "em_village_yard"
+      }
+    },
+    "em_village_shrine": {
+      "id": "em_village_shrine",
+      "name": "伏虎村·山神庙",
+      "region": "emei",
+      "desc": "一间小小的山神庙，供着山神与土地。庙前的香炉里插着半截没烧完的香。",
+      "exits": {
+        "e": "em_village_yard"
+      }
+    },
+    "road_emei_1": {
+      "id": "road_emei_1",
+      "exits": {
+        "nw": "em_village_kou"
+      }
+    }
+  },
+  "npcs": {
+    "hs_village_old": {
+      "id": "hs_village_old",
+      "name": "村口老丈",
+      "gender": "male",
+      "tag": "farmer",
+      "title": "玉泉村村口老丈",
+      "room": "hs_village_kou",
+      "home": "house:hs_village_old",
+      "personality": "mune",
+      "desc": "蹲在槐树底下，手里捏着根旱烟杆，烟早就灭了。",
+      "talk": [
+        "上山的路，天亮前走，天黑前下。",
+        "每年都有不听劝的。"
+      ],
+      "age": 68,
+      "likes": [
+        "tea"
+      ],
+      "level": 3,
+      "hp": 60,
+      "atk": 6,
+      "def": 4,
+      "dodge": 3,
+      "speed": 8,
+      "money": 20,
+      "hostile": false,
+      "tier": "C",
+      "district": "huashan",
+      "homeless": true,
+      "schedule": {
+        "day": "hs_village_kou",
+        "night": "hs_village_kou"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "C",
+        "lock": false,
+        "role": "在村口坐了一辈子的老丈，上山的路他闭着眼也走得下来",
+        "origin": "年轻时也上过山，替寺里（观里）挑过三年水，后来腿不行了，就在村口坐着。",
+        "now": "近来上山的生面孔多，他看着，也不多问。",
+        "want": "把这条路的规矩，说给还愿意听的人",
+        "fear": "怕哪一年雪大，封了山，村里断了进项",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "慢慢走，别急。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "蹲在槐树底下，看上山下山的人"
+          }
+        ],
+        "marks": [
+          "乡"
+        ]
+      }
+    },
+    "hs_village_porter": {
+      "id": "hs_village_porter",
+      "name": "挑山汉子",
+      "gender": "male",
+      "tag": "porter",
+      "title": "玉泉村挑夫",
+      "room": "hs_village_yard",
+      "home": "house:hs_village_porter",
+      "personality": "haoshuang",
+      "desc": "肩上搭着一条汗巾，脚下踩着一双草鞋，小腿上的青筋盘着。",
+      "talk": [
+        "一趟三十文，包上下。",
+        "价钱是死的，人是活的。"
+      ],
+      "age": 34,
+      "likes": [
+        "wine"
+      ],
+      "level": 8,
+      "hp": 130,
+      "atk": 18,
+      "def": 10,
+      "dodge": 8,
+      "speed": 12,
+      "money": 60,
+      "hostile": false,
+      "tier": "C",
+      "district": "huashan",
+      "homeless": true,
+      "schedule": {
+        "day": "hs_village_yard",
+        "night": "hs_village_tea"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "C",
+        "lock": false,
+        "role": "村里替人挑货上山的汉子，一趟三十文",
+        "origin": "从小跟着爹挑山，肩膀上的茧是他爹看着长出来的。",
+        "now": "近来香客少，他一天只跑得了一趟。",
+        "want": "攒够钱，换一副好竹杠",
+        "fear": "怕哪一天自己挑不动了",
+        "voice": {
+          "tone": "豪爽，笑声先到",
+          "catchphrase": "东西给我，你只管走。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "把竹杠往肩上一搭，脚尖一点就起了"
+          }
+        ],
+        "marks": [
+          "工"
+        ]
+      }
+    },
+    "hs_village_tea": {
+      "id": "hs_village_tea",
+      "name": "茶棚婆子",
+      "gender": "female",
+      "tag": "vendor",
+      "title": "玉泉村茶棚主",
+      "room": "hs_village_tea",
+      "home": "house:hs_village_tea",
+      "personality": "wenwan",
+      "desc": "围裙上落着一层茶渍，手上的铜壶擦得发亮。",
+      "talk": [
+        "一碗三文，续水不要钱。",
+        "上山前多喝一口，山上的水贵。"
+      ],
+      "age": 51,
+      "likes": [
+        "tea"
+      ],
+      "level": 4,
+      "hp": 70,
+      "atk": 7,
+      "def": 5,
+      "dodge": 4,
+      "speed": 9,
+      "money": 80,
+      "hostile": false,
+      "tier": "C",
+      "district": "huashan",
+      "homeless": true,
+      "schedule": {
+        "day": "hs_village_tea",
+        "night": "hs_village_yard"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "C",
+        "lock": false,
+        "role": "山脚村茶棚的婆子，一碗三文，续水不要钱",
+        "origin": "这茶棚是她男人留下的，男人走后她一个人撑了十二年。",
+        "now": "棚子的柱子该换了，她一直没舍得动。",
+        "want": "把棚子再撑十二年",
+        "fear": "怕哪一年村里修路，把棚子挪走",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "坐，水刚开的。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "提着铜壶在长条凳之间转，见碗空了就续"
+          }
+        ],
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "sl_village_old": {
+      "id": "sl_village_old",
+      "name": "村口老丈",
+      "gender": "male",
+      "tag": "farmer",
+      "title": "柏谷村村口老丈",
+      "room": "sl_village_kou",
+      "home": "house:sl_village_old",
+      "personality": "mune",
+      "desc": "蹲在槐树底下，手里捏着根旱烟杆，烟早就灭了。",
+      "talk": [
+        "上山的路，天亮前走，天黑前下。",
+        "每年都有不听劝的。"
+      ],
+      "age": 68,
+      "likes": [
+        "tea"
+      ],
+      "level": 3,
+      "hp": 60,
+      "atk": 6,
+      "def": 4,
+      "dodge": 3,
+      "speed": 8,
+      "money": 20,
+      "hostile": false,
+      "tier": "C",
+      "district": "shaolin",
+      "homeless": true,
+      "schedule": {
+        "day": "sl_village_kou",
+        "night": "sl_village_kou"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "C",
+        "lock": false,
+        "role": "在村口坐了一辈子的老丈，上山的路他闭着眼也走得下来",
+        "origin": "年轻时也上过山，替寺里（观里）挑过三年水，后来腿不行了，就在村口坐着。",
+        "now": "近来上山的生面孔多，他看着，也不多问。",
+        "want": "把这条路的规矩，说给还愿意听的人",
+        "fear": "怕哪一年雪大，封了山，村里断了进项",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "慢慢走，别急。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "蹲在槐树底下，看上山下山的人"
+          }
+        ],
+        "marks": [
+          "乡"
+        ]
+      }
+    },
+    "sl_village_porter": {
+      "id": "sl_village_porter",
+      "name": "挑山汉子",
+      "gender": "male",
+      "tag": "porter",
+      "title": "柏谷村挑夫",
+      "room": "sl_village_yard",
+      "home": "house:sl_village_porter",
+      "personality": "haoshuang",
+      "desc": "肩上搭着一条汗巾，脚下踩着一双草鞋，小腿上的青筋盘着。",
+      "talk": [
+        "一趟三十文，包上下。",
+        "价钱是死的，人是活的。"
+      ],
+      "age": 34,
+      "likes": [
+        "wine"
+      ],
+      "level": 8,
+      "hp": 130,
+      "atk": 18,
+      "def": 10,
+      "dodge": 8,
+      "speed": 12,
+      "money": 60,
+      "hostile": false,
+      "tier": "C",
+      "district": "shaolin",
+      "homeless": true,
+      "schedule": {
+        "day": "sl_village_yard",
+        "night": "sl_village_tea"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "C",
+        "lock": false,
+        "role": "村里替人挑货上山的汉子，一趟三十文",
+        "origin": "从小跟着爹挑山，肩膀上的茧是他爹看着长出来的。",
+        "now": "近来香客少，他一天只跑得了一趟。",
+        "want": "攒够钱，换一副好竹杠",
+        "fear": "怕哪一天自己挑不动了",
+        "voice": {
+          "tone": "豪爽，笑声先到",
+          "catchphrase": "东西给我，你只管走。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "把竹杠往肩上一搭，脚尖一点就起了"
+          }
+        ],
+        "marks": [
+          "工"
+        ]
+      }
+    },
+    "sl_village_tea": {
+      "id": "sl_village_tea",
+      "name": "茶棚婆子",
+      "gender": "female",
+      "tag": "vendor",
+      "title": "柏谷村茶棚主",
+      "room": "sl_village_tea",
+      "home": "house:sl_village_tea",
+      "personality": "wenwan",
+      "desc": "围裙上落着一层茶渍，手上的铜壶擦得发亮。",
+      "talk": [
+        "一碗三文，续水不要钱。",
+        "上山前多喝一口，山上的水贵。"
+      ],
+      "age": 51,
+      "likes": [
+        "tea"
+      ],
+      "level": 4,
+      "hp": 70,
+      "atk": 7,
+      "def": 5,
+      "dodge": 4,
+      "speed": 9,
+      "money": 80,
+      "hostile": false,
+      "tier": "C",
+      "district": "shaolin",
+      "homeless": true,
+      "schedule": {
+        "day": "sl_village_tea",
+        "night": "sl_village_yard"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "C",
+        "lock": false,
+        "role": "山脚村茶棚的婆子，一碗三文，续水不要钱",
+        "origin": "这茶棚是她男人留下的，男人走后她一个人撑了十二年。",
+        "now": "棚子的柱子该换了，她一直没舍得动。",
+        "want": "把棚子再撑十二年",
+        "fear": "怕哪一年村里修路，把棚子挪走",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "坐，水刚开的。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "提着铜壶在长条凳之间转，见碗空了就续"
+          }
+        ],
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "wd_village_old": {
+      "id": "wd_village_old",
+      "name": "村口老丈",
+      "gender": "male",
+      "tag": "farmer",
+      "title": "遇真村村口老丈",
+      "room": "wd_village_kou",
+      "home": "house:wd_village_old",
+      "personality": "mune",
+      "desc": "蹲在槐树底下，手里捏着根旱烟杆，烟早就灭了。",
+      "talk": [
+        "上山的路，天亮前走，天黑前下。",
+        "每年都有不听劝的。"
+      ],
+      "age": 68,
+      "likes": [
+        "tea"
+      ],
+      "level": 3,
+      "hp": 60,
+      "atk": 6,
+      "def": 4,
+      "dodge": 3,
+      "speed": 8,
+      "money": 20,
+      "hostile": false,
+      "tier": "C",
+      "district": "wudang",
+      "homeless": true,
+      "schedule": {
+        "day": "wd_village_kou",
+        "night": "wd_village_kou"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "C",
+        "lock": false,
+        "role": "在村口坐了一辈子的老丈，上山的路他闭着眼也走得下来",
+        "origin": "年轻时也上过山，替寺里（观里）挑过三年水，后来腿不行了，就在村口坐着。",
+        "now": "近来上山的生面孔多，他看着，也不多问。",
+        "want": "把这条路的规矩，说给还愿意听的人",
+        "fear": "怕哪一年雪大，封了山，村里断了进项",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "慢慢走，别急。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "蹲在槐树底下，看上山下山的人"
+          }
+        ],
+        "marks": [
+          "乡"
+        ]
+      }
+    },
+    "wd_village_porter": {
+      "id": "wd_village_porter",
+      "name": "挑山汉子",
+      "gender": "male",
+      "tag": "porter",
+      "title": "遇真村挑夫",
+      "room": "wd_village_yard",
+      "home": "house:wd_village_porter",
+      "personality": "haoshuang",
+      "desc": "肩上搭着一条汗巾，脚下踩着一双草鞋，小腿上的青筋盘着。",
+      "talk": [
+        "一趟三十文，包上下。",
+        "价钱是死的，人是活的。"
+      ],
+      "age": 34,
+      "likes": [
+        "wine"
+      ],
+      "level": 8,
+      "hp": 130,
+      "atk": 18,
+      "def": 10,
+      "dodge": 8,
+      "speed": 12,
+      "money": 60,
+      "hostile": false,
+      "tier": "C",
+      "district": "wudang",
+      "homeless": true,
+      "schedule": {
+        "day": "wd_village_yard",
+        "night": "wd_village_tea"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "C",
+        "lock": false,
+        "role": "村里替人挑货上山的汉子，一趟三十文",
+        "origin": "从小跟着爹挑山，肩膀上的茧是他爹看着长出来的。",
+        "now": "近来香客少，他一天只跑得了一趟。",
+        "want": "攒够钱，换一副好竹杠",
+        "fear": "怕哪一天自己挑不动了",
+        "voice": {
+          "tone": "豪爽，笑声先到",
+          "catchphrase": "东西给我，你只管走。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "把竹杠往肩上一搭，脚尖一点就起了"
+          }
+        ],
+        "marks": [
+          "工"
+        ]
+      }
+    },
+    "wd_village_tea": {
+      "id": "wd_village_tea",
+      "name": "茶棚婆子",
+      "gender": "female",
+      "tag": "vendor",
+      "title": "遇真村茶棚主",
+      "room": "wd_village_tea",
+      "home": "house:wd_village_tea",
+      "personality": "wenwan",
+      "desc": "围裙上落着一层茶渍，手上的铜壶擦得发亮。",
+      "talk": [
+        "一碗三文，续水不要钱。",
+        "上山前多喝一口，山上的水贵。"
+      ],
+      "age": 51,
+      "likes": [
+        "tea"
+      ],
+      "level": 4,
+      "hp": 70,
+      "atk": 7,
+      "def": 5,
+      "dodge": 4,
+      "speed": 9,
+      "money": 80,
+      "hostile": false,
+      "tier": "C",
+      "district": "wudang",
+      "homeless": true,
+      "schedule": {
+        "day": "wd_village_tea",
+        "night": "wd_village_yard"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "C",
+        "lock": false,
+        "role": "山脚村茶棚的婆子，一碗三文，续水不要钱",
+        "origin": "这茶棚是她男人留下的，男人走后她一个人撑了十二年。",
+        "now": "棚子的柱子该换了，她一直没舍得动。",
+        "want": "把棚子再撑十二年",
+        "fear": "怕哪一年村里修路，把棚子挪走",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "坐，水刚开的。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "提着铜壶在长条凳之间转，见碗空了就续"
+          }
+        ],
+        "marks": [
+          "商"
+        ]
+      }
+    },
+    "em_village_old": {
+      "id": "em_village_old",
+      "name": "村口老丈",
+      "gender": "male",
+      "tag": "farmer",
+      "title": "伏虎村村口老丈",
+      "room": "em_village_kou",
+      "home": "house:em_village_old",
+      "personality": "mune",
+      "desc": "蹲在槐树底下，手里捏着根旱烟杆，烟早就灭了。",
+      "talk": [
+        "上山的路，天亮前走，天黑前下。",
+        "每年都有不听劝的。"
+      ],
+      "age": 68,
+      "likes": [
+        "tea"
+      ],
+      "level": 3,
+      "hp": 60,
+      "atk": 6,
+      "def": 4,
+      "dodge": 3,
+      "speed": 8,
+      "money": 20,
+      "hostile": false,
+      "tier": "C",
+      "district": "emei",
+      "homeless": true,
+      "schedule": {
+        "day": "em_village_kou",
+        "night": "em_village_kou"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "C",
+        "lock": false,
+        "role": "在村口坐了一辈子的老丈，上山的路他闭着眼也走得下来",
+        "origin": "年轻时也上过山，替寺里（观里）挑过三年水，后来腿不行了，就在村口坐着。",
+        "now": "近来上山的生面孔多，他看着，也不多问。",
+        "want": "把这条路的规矩，说给还愿意听的人",
+        "fear": "怕哪一年雪大，封了山，村里断了进项",
+        "voice": {
+          "tone": "木讷，半天挤一句",
+          "catchphrase": "慢慢走，别急。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "蹲在槐树底下，看上山下山的人"
+          }
+        ],
+        "marks": [
+          "乡"
+        ]
+      }
+    },
+    "em_village_porter": {
+      "id": "em_village_porter",
+      "name": "挑山汉子",
+      "gender": "male",
+      "tag": "porter",
+      "title": "伏虎村挑夫",
+      "room": "em_village_yard",
+      "home": "house:em_village_porter",
+      "personality": "haoshuang",
+      "desc": "肩上搭着一条汗巾，脚下踩着一双草鞋，小腿上的青筋盘着。",
+      "talk": [
+        "一趟三十文，包上下。",
+        "价钱是死的，人是活的。"
+      ],
+      "age": 34,
+      "likes": [
+        "wine"
+      ],
+      "level": 8,
+      "hp": 130,
+      "atk": 18,
+      "def": 10,
+      "dodge": 8,
+      "speed": 12,
+      "money": 60,
+      "hostile": false,
+      "tier": "C",
+      "district": "emei",
+      "homeless": true,
+      "schedule": {
+        "day": "em_village_yard",
+        "night": "em_village_tea"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "C",
+        "lock": false,
+        "role": "村里替人挑货上山的汉子，一趟三十文",
+        "origin": "从小跟着爹挑山，肩膀上的茧是他爹看着长出来的。",
+        "now": "近来香客少，他一天只跑得了一趟。",
+        "want": "攒够钱，换一副好竹杠",
+        "fear": "怕哪一天自己挑不动了",
+        "voice": {
+          "tone": "豪爽，笑声先到",
+          "catchphrase": "东西给我，你只管走。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "把竹杠往肩上一搭，脚尖一点就起了"
+          }
+        ],
+        "marks": [
+          "工"
+        ]
+      }
+    },
+    "em_village_tea": {
+      "id": "em_village_tea",
+      "name": "茶棚婆子",
+      "gender": "female",
+      "tag": "vendor",
+      "title": "伏虎村茶棚主",
+      "room": "em_village_tea",
+      "home": "house:em_village_tea",
+      "personality": "wenwan",
+      "desc": "围裙上落着一层茶渍，手上的铜壶擦得发亮。",
+      "talk": [
+        "一碗三文，续水不要钱。",
+        "上山前多喝一口，山上的水贵。"
+      ],
+      "age": 51,
+      "likes": [
+        "tea"
+      ],
+      "level": 4,
+      "hp": 70,
+      "atk": 7,
+      "def": 5,
+      "dodge": 4,
+      "speed": 9,
+      "money": 80,
+      "hostile": false,
+      "tier": "C",
+      "district": "emei",
+      "homeless": true,
+      "schedule": {
+        "day": "em_village_tea",
+        "night": "em_village_yard"
+      },
+      "portrait": {
+        "v": 1,
+        "tier": "C",
+        "lock": false,
+        "role": "山脚村茶棚的婆子，一碗三文，续水不要钱",
+        "origin": "这茶棚是她男人留下的，男人走后她一个人撑了十二年。",
+        "now": "棚子的柱子该换了，她一直没舍得动。",
+        "want": "把棚子再撑十二年",
+        "fear": "怕哪一年村里修路，把棚子挪走",
+        "voice": {
+          "tone": "温和，先把人让过",
+          "catchphrase": "坐，水刚开的。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "提着铜壶在长条凳之间转，见碗空了就续"
+          }
+        ],
+        "marks": [
+          "商"
+        ]
+      }
+    }
+  }
+}

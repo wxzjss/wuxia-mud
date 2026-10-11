@@ -34,7 +34,7 @@ const NPCS = npcs.npcs || npcs;
 /* ⚠️ 增量数据里的房间必须并进来，否则这张检查表只看得见 50_map.json ——
    新加的 56 间门派房会完全逃过「出口双向 / 区域有效 / 名字唯一」这些断言（假绿）。
    exits 是对象、按键合并；其余字段后者覆盖前者。 */
-for (const f of ['73_sects_place.json', '80_culture_place.json', '82_treasury_place.json', '99_city_npcs.json']) {
+for (const f of ['73_sects_place.json', '80_culture_place.json', '82_treasury_place.json', '99_city_npcs.json', '88_mountain_paths.json']) {
   try {
     const j = JSON.parse(fs.readFileSync(path.join(ROOT, 'game', 'data', f), 'utf8'));
     for (const [id, r] of Object.entries(j.rooms || {})) {
@@ -82,9 +82,14 @@ section('1 房间 id 唯一且字段完整', () => {
  * ⚠️ 经验（B13 验收）：`via/hint` 交互出口（如峨眉舍身崖「跳崖 ↔ 爬上去」）**同样受本条约束**——
  *    它们必须有**真反向边**；不许拿 `oneWay:true` 给真单向门「开后门」。 */
 const OPP = { n: 's', s: 'n', e: 'w', w: 'e', ne: 'sw', sw: 'ne', nw: 'se', se: 'nw', u: 'd', d: 'u' };
+/* 填充率区间（房间 + terrain 占 box 的比例）。
+ * ⚠️ 2026-10-11 主人要求「山与野外要**大**」（走两步就出山不合常理）之后，
+ *    把 sect 撑到 17×17、wild 撑到 21×21 —— 而房间数不会跟着等比翻倍
+ *    （那叫堆砌，不叫山）。填充率必然下滑，区间跟着下移，但**保留上限**：
+ *    上限才是有用的那一半（防有人把 box 撑到离谱大）。 */
 const FILLED = {
-  capital: [0.25, 0.75], town: [0.25, 0.75], court: [0.25, 0.75], fun: [0.25, 0.70], village: [0.25, 0.70],
-  sect: [0.20, 0.70], mad: [0.20, 0.65], wild: [0.10, 0.45], realm: [0.10, 0.45], secret: [0.15, 0.60],
+  capital: [0.20, 0.80], town: [0.20, 0.80], court: [0.20, 0.80], fun: [0.25, 0.70], village: [0.25, 0.70],
+  sect: [0.12, 0.70], mad: [0.14, 0.65], wild: [0.08, 0.45], realm: [0.10, 0.45], secret: [0.15, 0.60],
 };
 function targetOf(v) { return typeof v === 'string' ? v : (v && v.to); }
 const oneWayEdges = [];
@@ -294,7 +299,8 @@ section('9 区块均衡度（无空壳 / 无独占）', () => {
      ⚠️ 2026-10-10 武学/门派重制：主人要求江湖上补 8 家二流 + 20 家三流门派，
         每家有自家山门与演武场（共 56 房），这批是**有内容的门派地盘**，不是填充房。
         上限相应放到 420 —— 守的仍是「别失控膨胀」，不是禁止新增内容。 */
-  ok(total >= 305 && total <= 470, '房间总数异常：' + total + '（B13 目标 312 + 门派地盘 + 文化场所 + 重地，容差 305–470）');
+  /* 容差随「名山山路 + 山脚村」上调（2026-10-11：66 间山道 + 4 座山脚村 16 间）。 */
+  ok(total >= 305 && total <= 640, '房间总数异常：' + total + '（B13 目标 312 + 门派地盘 + 文化场所 + 重地 + 山道村舍，容差 305–640）');
   const top = Object.entries(rc).sort((a, b) => b[1] - a[1]);
   console.log('     总数 ' + total + '，最大区 ' + top[0][0] + '=' + top[0][1] +
     '，最小区 ' + top[top.length - 1][0] + '=' + top[top.length - 1][1]);
