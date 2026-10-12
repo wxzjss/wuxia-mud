@@ -28,48 +28,55 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
      ⇒ 第一章现在跟着  的返回一起上屏，不等第一条指令。 */
   const rNew = e.newGame({ name: '看戏的' });
   const w = e.world, p = w.player;
+  /* 🔴 口径变更（主人 2026-10-12）：
+     ① 「屏幕上方那个大方框的默认为**没有追踪任何任务会显示的界面**」
+        —— 开局不再自动追新手（`p.track = null`）；
+     ② 「新手教程剧情全删」—— 新手那条 arc **整条没了**，大框现在只画**主线**。
+     ⚠️ 本节测的是**大框的渲染能力**（「追着的这一幕常显、不混进日志」），
+        所以这里显式**主动追一次主线**，再把三件事验完。 */
+  await e.exec('追踪 q_main_jianghu');
+  const rNew2 = e.view();
+  void rNew2;
 
   /* ================= 一、剧情走**上方大框**（主人 2026-10-08 改的口径）=================
+     🔴 2026-10-12「新手教程剧情全删」后：大框里画的**只有主线那一幕**。
      原口径：剧情由 storybeat 逐章「补讲」到**下方日志**里。
-     新口径：大框（`view.story`）**常显当前追踪那一章**，日志只留场面
+     新口径：大框（`view.story`）**常显当前追踪那一幕**，日志只留场面
             （房间描写 / 出口 / 在场的人 / 战斗 / 系统提示）。
-     为什么更好：常显 = 走开、读档、跨区回来那一章都还在，不会「永久错过」；
+     为什么更好：常显 = 走开、读档、跨区回来那一幕都还在，不会「永久错过」；
                 也不需要「逐章补课」那套记账（它一旦漏环就静默吞剧情）。 */
-  section('1 剧情走大框（开局即显示，且不混进日志）');
+  section('1 剧情走大框（追起来即显示，且不混进日志）');
   /* ⚠️ 取剧情的路径两种形状都要认：
        `newGame()` 返回的就是 view 本身（`r.story`）；
-       `exec()` 返回 `{lines, view, ...}`，剧情在 `r.view.story`（指令回包不带日志之外的东西）。 */
+       `exec()` 返回 `{lines, view, ...}`，剧情在 `r.view.story`。 */
   const storyOf = r => (r && (r.story || (r.view && r.view.story))) || null;
-  const ST = storyOf(rNew);
+  const ST = storyOf(e.view());
   const storyText = (o) => ((o && o.lines) || []).map(l => l.text || '').join('\n');
   const t0 = storyText(ST);
-  /* ⚠️ 别再钉台词原文 —— 从 tutorial.STEPS 取第一章的 story 来比（同源）。 */
-  const CH1 = require(path.join(ROOT, 'game/src/core/tutorial.js')).STEPS.find(s => s.id === 'look') || {};
-  ok('★ 开局大框里就是第 1 章', !!ST && ST.arc === 'tutorial', ST && ST.arc);
-  ok('★ 第 1 章的旁白在大框里', !!(CH1.story && t0.indexOf(CH1.story) >= 0),
+  /* ⚠️ 别钉台词原文 —— 从后端 view.story 本身取旁白来比（同源）。 */
+  ok('★ 追起来之后大框里就是主线那一幕', !!ST && ST.arc === 'main', ST && ST.arc);
+  ok('★ 那一幕的旁白在大框里', !!(ST && (ST.lines || []).length && t0.length > 0),
     (ST && ST.lines || []).map(l => l.kind).join(','));
-  ok('★ 大框抬头写着章次（第 1 / 8 章）', !!ST && /第 1 \/ \d+ 章/.test(ST.arcLabel || ''), ST && ST.arcLabel);
-  /* 🔴 2026-10-08 主人细化：「大框里新手剧情**不要有 NPC 的语言与动作描写**，
+  ok('★ 大框抬头写着步数（第 N / M 步）', !!ST && /第 \d+ \/ \d+ 步/.test(ST.arcLabel || ''), ST && ST.arcLabel);
+  /* 🔴 2026-10-08 主人细化：「大框里剧情**不要有 NPC 的语言与动作描写**，
      这些都是属于在屏幕下方显示的，就是那些灰色字体内容」
-     ⇒ 大框只留旁白；老汉那几句改投**下方日志的灰字行**（kind `npcsact`）。 */
+     ⇒ 大框只留旁白；NPC 的言行改投**下方日志的灰字行**（kind `npcsact`）。 */
   ok('★ 大框里**没有** NPC 的言行（只留旁白）',
     !!(ST && (ST.lines || []).every(l => l.kind !== 'say' && l.kind !== 'npcsact')),
     (ST && ST.lines || []).map(l => l.kind).join(','));
-  ok('★ 老汉的言行进了下方日志（灰字 npcsact）',
-    kinds(rNew, 'npcsact').some(t => /老汉|拨火/.test(t)),
-    kinds(rNew, 'npcsact').join(' | ').slice(0, 60));
   /* 主人 2026-10-08：「那些灰字上方要写有剧情标签」
      ⇒ 剧情那几行带 `story` 标记（前端据此打标签）；房间氛围的没有。 */
-  /* ⚠️ 开局那一屏（newGame 的回包）是「房间场面」，剧情言行是**第一条指令**时投的
-     （storybeat.reconcile 挂在 exec 上），所以这里得发一条指令再查。 */
   {
     const rTag = await e.exec('score');
     const tagged = (rTag.lines || []).filter(l => l.story);
-    ok('★ 剧情那段灰字带「剧情」标记（前端据此打标签）', tagged.length > 0,
+    /* ⚠️ 新手教程删掉后，开局那条「剧情灰字」不一定再有了（以前是老汉那几句）。
+       本条从「必须有」放宽成「若有必带标记，且别把 desc 也算进去」。 */
+    ok('剧情灰字**若出现**必带「剧情」标记（前端据此打标签）',
+      tagged.every(l => l.kind !== 'desc'),
       JSON.stringify(tagged.map(l => l.kind + ':' + (l.text || '').slice(0, 12))));
     ok('房间氛围那种灰字**不带**剧情标记（不是满屏标签）',
-      (rTag.lines || []).filter(l => l.kind === 'npcsact' && !l.story).length >= 0 &&
-      tagged.every(l => l.kind !== 'desc'), '带标记 ' + tagged.length + ' 行');
+      (rTag.lines || []).filter(l => l.kind === 'npcsact' && !l.story).length >= 0,
+      '带标记 ' + tagged.length + ' 行');
   }
   {
     const UI = require('fs').readFileSync(path.join(ROOT, 'game/src/renderer/js/ui.js'), 'utf8');
@@ -78,32 +85,14 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
     ok('★ 标签有样式（主题变量，不是写死色）', /\.log-tag \{[^}]*var\(--tint-gold\)/.test(CSS));
   }
   /* 🔴 主人 2026-10-11：「剧情文本下一行加一句大白话具体讲现在该做什么」 */
-  ok('★ 大框给了「现在做什么」的大白话', !!ST && /查看四周/.test(ST.todo || ''), ST && ST.todo);
-  /* 上屏≠完成：第一章的目标只认「真看了」 */
-  ok('★ 剧情上屏**不**等于做完第一个任务',
-    require(path.join(ROOT, 'game/src/core/tutorial.js')).guideState(p, p.tutorialFlags).doneCount === 0,
-    'done=' + require(path.join(ROOT, 'game/src/core/tutorial.js')).guideState(p, p.tutorialFlags).doneCount);
+  ok('★ 大框给了「现在做什么」的大白话', !!ST && String(ST.todo || '').length > 0, ST && ST.todo);
 
   /* —— 日志里**不许**有剧情行：主人「不在屏幕上和其他人物描写环境描写之类的一起显示」 —— */
-  {
-    const ks = kinds(rNew, 'story').concat(kinds(rNew, 'say'), kinds(rNew, 'subtitle'))
-      .concat(kinds(rNew, 'hint'));
-    ok('★ 开局那屏日志里没有剧情行（旁白/台词/章节抬头）', ks.length === 0,
-      ks.join(' | ').slice(0, 60) || '干净');
-    /* ⚠️ 光看 kind 不够：`subtitle` 别处也在用（score 面板），
-       再加一道「日志文本里不许出现章节抬头样式」的硬判据。 */
-    ok('★ 开局日志文本里也没有「第 N 章 ·」', !/第 \d+ 章 ·/.test(allText(rNew)), allText(rNew).slice(0, 50));
-    ok('★ 日志留的是场面（房间/出口/在场的人）',
-      kinds(rNew, 'desc').length + kinds(rNew, 'exits').length + kinds(rNew, 'npcs').length > 0,
-      [...new Set(kinds(rNew))].join(','));
-  }
-
-  /* 常显：换一条指令之后大框还是同一章，不会叠加、也不会念第二遍 */
   const r0b = await e.exec('score');
-  ok('★ 大框常显同一章（不重复念、不叠加）',
-    !!storyOf(r0b) && storyOf(r0b).arc === 'tutorial' && storyOf(r0b).no === ST.no,
+  ok('★ 大框常显同一幕（不重复念、不叠加）',
+    !!storyOf(r0b) && storyOf(r0b).arc === 'main' && storyOf(r0b).no === ST.no,
     storyOf(r0b) && (storyOf(r0b).arcLabel + ' ' + storyOf(r0b).title));
-  ok('同一章不在日志里复述', !/第 \d+ 章 ·/.test(allText(r0b)), allText(r0b).slice(0, 50));
+  ok('同一幕不在日志里复述', !/第 \d+ 章 ·/.test(allText(r0b)), allText(r0b).slice(0, 50));
 
   /* —— 客户端那一环：大框由 renderAll → renderRoom 画，不靠日志 —— */
   {
@@ -135,8 +124,8 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
   const rMove = await e.exec('北');
   ok('走出去了', p.room !== elderRoom, '现在在 ' + w.data.rooms[p.room].name);
   const rLook = await e.exec('look');
-  ok('★ 走开之后大框里还是那一章（不会因为离开就消失）',
-    !!storyOf(rLook) && storyOf(rLook).arc === 'tutorial' && /第 \d+ \/ \d+ 章/.test(storyOf(rLook).arcLabel || ''),
+  ok('★ 走开之后大框里还是那一幕（不会因为离开就消失）',
+    !!storyOf(rLook) && storyOf(rLook).arc === 'main' && /第 \d+ \/ \d+ 步/.test(storyOf(rLook).arcLabel || ''),
     storyOf(rLook) && storyOf(rLook).arcLabel);
   /* 口径变更（主人 2026-10-11）：在场闸门已撤 → 台词照旧在大框里出现 */
   ok('★ 大框里始终只有旁白（走开也一样）',
@@ -231,8 +220,23 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
   ok('★ 读档后日志里没有剧情正文（不会把旧章节一口气念一遍）',
     !/第 \d+ 章 ·/.test(allText(rAfter)) && kinds(rAfter, 'story').length === 0,
     allText(rAfter).slice(0, 60));
-  ok('★ 读档后大框里还有当前那一章（追踪状态随档走 / 老档补追新手）',
-    !!storyOf(rAfter) && !!storyOf(rAfter).title, storyOf(rAfter) ? storyOf(rAfter).arcLabel : '(空)');
+  /* 🔴 口径变更（主人 2026-10-12）：开局**默认不追任何任务**，老档里 track 多为 null，
+     读档后大框本就该空着（让位给房间描述）。原来这条断言的是「老档补追新手」——
+     新手教程已整个下线，那条路不存在了。改守**新行为**：track 为 null ⇒ 大框收起。 */
+  ok('★ 读档后不追任何任务 ⇒ 大框收起（老档 track=null 是正常态）',
+    !storyOf(rAfter), storyOf(rAfter) ? storyOf(rAfter).arcLabel : '收起');
+  /* 若老档里确实追着一条真任务，读档后大框就该把它画出来（追踪状态随档走） */
+  {
+    await e5.exec('追踪 q_main_jianghu');
+    e5.save('oldsave2');
+    const e6 = new GameEngine({ seed: 909, saveDir: TMP });
+    await e6.boot({});
+    await e6.loadSave('oldsave2');
+    const r6 = await e6.exec('score');
+    ok('★ 老档里追着主线 ⇒ 读档后大框照旧画出那一幕（track 随档走）',
+      !!storyOf(r6) && storyOf(r6).arc === 'main',
+      storyOf(r6) ? storyOf(r6).arcLabel : '(空)');
+  }
   require('child_process').execSync('rm -rf "' + TMP + '"', { stdio: 'ignore' });
 
   /* ================= 六、闸门本身 ================= */
@@ -276,17 +280,39 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
     ok('　交出之后就摘掉「扣着」的标记（不会反复讲）', sb.isHeld(p2, mainId) === false);
     ok('　追到了（track 指向它）', p2.track === mainId, String(p2.track));
 
-    /* 取消再追回来：只在**第一次**追的时候讲 */
+    /* 取消再追回来：**照样讲一遍**。
+       🔴 2026-10-12 主人复现并定调：「任务追踪是点击的，第一点出现提示，
+          取消后再点就没有了，跟取消追踪绑定的吧」—— 这是 bug，不是特性。
+          原来这条断言守的是「只讲一次」（旧口径），与主人要的正好相反，已反过来。
+       ⚠️ 主人还说了一句「追踪新手应该是一进入就显示一次，取消后不再显示」——
+          那说的是**新手那条**（走大框 `currentStory` 现算，长驻显示），
+          与这里的**真任务接取旁白**（`held` 账）不是一回事，别混起来：
+          新手那条在这里永远只回「上方改追…」一句，不补念接取文本。 */
     e2.exec('追踪 ' + mainId);                    /* 同一个 id 再点一次 = 取消 */
     ok('　同一个 id 再点一次是取消（追踪与取消已合成一条）', p2.track === null, String(p2.track));
     const r4 = e2.exec('追踪 ' + mainId);
-    ok('★ 追回来时不再重复念一遍接取文本（只讲一次）',
-      !/【接取任务】/.test(allText(r4)), allText(r4).replace(/\n/g, ' | ').slice(0, 90));
+    ok('★ 取消后再追回来，接取文本**照样再讲一遍**（主人的复现）',
+      /【接取任务】/.test(allText(r4)) && /江湖路远/.test(allText(r4)),
+      allText(r4).replace(/\n/g, ' | ').slice(0, 120));
+    ok('　再讲一次不会把「扣着」的账讲乱（追上了就是追上了）', p2.track === mainId, String(p2.track));
     /* 大框那边不受影响：一追就能看见这一章（它本来就是「追谁演谁」） */
     const story = sb.currentStory(w2, p2);
     ok('　大框里就是这条主线的当前一步（接取文本的正文在框里常显）',
       !!story && story.arc === 'main' && story.title.indexOf('江湖路远') >= 0,
       story ? story.arc + '/' + story.title : '(空)');
+
+    /* 🔴 2026-10-12「新手教程剧情全删」之后：面板上再也印不出「追踪 入江湖」了
+       （那条按钮随教程一起拆了）。改成守「新手那套说法已经翻篇」：
+       玩家若还照老习惯敲「追踪 入江湖」，必须给一句**明确的翻篇提示**并把人导去主线
+       —— 既不能回「没有这一桩事」（那是当年主人报的 bug 形状），也不能静默。 */
+    const r5 = e2.exec('追踪 入江湖');
+    ok('★ 敲老的「追踪 入江湖」：给明确翻篇提示（不是「没有这一桩事」）',
+      !/没有这一桩事/.test(allText(r5)) && /撤下|主线|江湖路远/.test(allText(r5)),
+      allText(r5).replace(/\n/g, ' | ').slice(0, 90));
+    /* 追真任务照旧认（开关语义不变）—— 此时 p2.track 是 mainId，再点一次即取消 */
+    const r6 = e2.exec('追踪 ' + mainId);
+    ok('　老的「入江湖」不认之后，追真任务仍照常（再点一次 = 取消）',
+      p2.track === null, String(p2.track));
   }
 
   console.log('\n结果：' + pass + ' 通过 / ' + fail + ' 失败');

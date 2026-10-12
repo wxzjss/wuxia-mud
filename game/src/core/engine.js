@@ -262,8 +262,21 @@ class GameEngine {
        现在改由 `storybeat.handoff()` 在**新手走完那一刻**交接，
        并且直接站到第 1 步（拜师那一步新手已经办过，不重复要一次）。 */
     p.setFlag('visited_' + p.room, true);
-    /* 主人 2026-10-08：「**初始默认追踪新手剧情任务**」 */
-    p.track = require('./storybeat').NEWBIE;
+    /* 🔴 开局**不追任何任务**（主人 2026-10-12 最终口径，改自 10-08 那句
+       「初始默认追踪新手剧情任务」）。
+       主人原话（最新一次）：「删除新手教程，屏幕上方那个大方框的默认为
+       **没有追踪任何任务会显示的界面**」「初始主线任务回滚到第一个任务是
+       加入一个门派（**默认不追踪**）」。
+       ⇒ `p.track = null`：大框收起、让位给**房间描述**（那就是「没有追踪时
+          默认显示的那个界面」）；玩家想看哪一桩，自己从「任务」面板点追踪。
+       ⚠️ 主线**照旧开局就接**（`world.createPlayer` 里自动接起手式那条），
+          只是「接上」≠「追着显示」——这两件事本来就是分开的
+          （见 storybeat 顶部「剧情屏」注释）。
+       ⚠️ 「新手走完 → 自动换主线」那条自动机制**保留**（`syncTrack` ①），
+          但它只在**玩家自己追过新手**（`p.track === NEWBIE`）时才触发；
+          开局 null 走的是 `syncTrack` 的③「玩家亲手取消过 → 不擅自追回来」，
+          不会把大框又给他填上 —— 这正是主人要的「默认不追」。 */
+    p.track = null;
     /* 开工第一屏：剧情走**上方大框**（`view.story`），日志里不再塞剧情。
        见 storybeat 顶部那段「剧情屏」注释。 */
     const v = this.view();
@@ -498,14 +511,9 @@ class GameEngine {
 
     // 任务进度条
     const quests = this.questList();
-    /* 新手教程没做完 → 作为一条**任务**置顶塞进任务列表。
-       主人原话：「在新手教程完成前把新手教程任务添加进『任务』里面置顶
-       （直接点『新手教程』快捷键进入新手教程页面能看完整的新手教程任务流程不同，
-        『任务』里面只会显示当前新手教程进度）」
-       ⇒ 所以这里给的是**精简版**（当前章 + 目标 + 进度），
-         完整流程在 `guide`（新手教程面板）里。两者都由 tutorial.js 算出，不各写一份。 */
-    const newbie = tutorial.tutorialQuestOf(p, p.tutorialFlags || []);
-    if (newbie) quests.active = [newbie].concat(quests.active || []);
+    /* 🔴 2026-10-12 主人：「新手教程剧情全删」。
+       原先把新手教程当成一条置顶任务塞进任务列表（`tutorialQuestOf`）——
+       现在整块下线，任务列表里只有**真任务**（主线 / 支线）。 */
 
     return {
       ok: true,
@@ -547,8 +555,21 @@ class GameEngine {
          代价：地图面板点格子时若 S.view.map 已被清掉会取不到房间 ——
          前端 afterAction 里做了「新 view 没有 map 就沿用旧 map」的兜底。 */
       map: withMap ? this.mapView() : undefined,
-      guide: tutorial.guideState(p, p.tutorialFlags || []),
-      intro: tutorial.introFor(p, p.tutorialFlags || []),
+      /* 🔴 2026-10-12 主人：「新手教程剧情全删」。
+         原先这里回 `guide: tutorial.guideState(...)`（右侧栏进度块 / 教程面板的数据源）——
+         整块已下线。**保留 `guide` 键但恒 null**：老前端、老测试还在读它，
+         给一个明确空值比「键没了」好排查（`v.guide` 是 undefined 会到处静默出错）。
+         同样地 `tutorialFlags` 仍是存档字段（老档里有），只是不再由教程系统消费。 */
+      guide: null,
+      newbie: null,
+      /* 开场角色扮演（主人 2026-10-12）——**取代**老的「一张楔子卡片」。
+         老字段 `intro` 保留但只回 `{show:false}`，是给老守卫/老前端留的接口
+         （它们在它身上查 `seen_intro` 的收尾语义，那个标记现在由 intro.js 点亮）。 */
+      intro: { show: false },
+      opening: (function () {
+        try { return require('./intro').screenFor(this.world, p); }
+        catch (e) { return { show: false, error: String(e && e.message || e) }; }
+      }).call(this),
       /* 剧情屏（上方大框）：新手当前章 / 新手走完就换成主线当前幕。
          ⚠️ 每次 view 现算（纯函数、幂等）而不是「攒几行发下去」——
             玩家走开、读档、跨区回来，大框里照样是当前这一章，不会漏。

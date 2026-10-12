@@ -16,10 +16,14 @@
  */
 'use strict';
 const path = require('path');
+const fs = require('fs');
 const ROOT = path.join(__dirname, '..');
 const SAVE_DIR = require('./_test-save-dir');
 const { GameEngine } = require(path.join(ROOT, 'game', 'src', 'core', 'engine.js'));
 const T = require(path.join(ROOT, 'game', 'src', 'core', 'tutorial.js'));
+/* 🔴 2026-10-12「新手教程剧情全删」守卫用：读前端源码与页面，确认那块 UI 真的没了 */
+const UISRC = fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'js', 'ui.js'), 'utf8');
+const HTMLSRC = fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'index.html'), 'utf8');
 const amb = require(path.join(ROOT, 'game', 'src', 'core', 'ambience.js'));
 const pools = require(path.join(ROOT, 'game', 'src', 'core', 'ambient-pools.js'));
 
@@ -186,79 +190,59 @@ sec('§C 引荐信：同一个入口、幂等、能破例');
 }
 
 /* ================================================================
- * §D「任务」面板置顶
- * ================================================================ */
-sec('§D 「任务」面板：新手教程没做完就置顶，且只给当前进度');
+ * §D「任务」面板：新手教程已下线 → 不再置顶任何新手卡
+ * ================================================================
+ * 🔴 2026-10-12 主人钦定「新手教程剧情全删」。原 §D 守的是「新手教程没做完就置顶，
+ *   且只给当前进度」——功能已删，整段作废。改守**下线干净**：
+ *   · 任务列表里**不存在** isTutorial 的条目；
+ *   · 首条就是主线（江湖路远），且停在 stage0「拜师」；
+ *   · 走完流程（拜师）后主线**照旧**留在列表里（主线不是教程，不因拜师消失）。
+ *   §E「新手教程面板」同理随之下线（那块面板整块拆了）。
+ */
+sec('§D 「任务」面板：无新手卡置顶，首条是主线');
 {
   const e = boot(109, 'orphan');
-  const w = e.world, p = w.player;
   const v = e.view();
-  const first = (v.quests.active || [])[0];
-  ok('D-1 ★ 首条就是新手教程', !!(first && first.isTutorial), first ? first.name : '(空)');
-  ok('D-2 ★ 类型是「新手」（面板里排在最前）', first && first.type === '新手', first && first.type);
-  ok('D-3 ★ 只给**当前**这一章（不是把八章全铺开）',
-    /* ⚠️ 这里原来钉的是第一章台词里的「茶摊的老汉」四个字。
-       主人 2026-10-11 让重写新手剧情，那句话被改写 ⇒ 代理判据跟着假红。
-       钉**台词原文**（从 tutorial.STEPS 取，与实现同源），别再钉某个句子里的词。 */
-    !!(first && first.chapter === 1 && first.stageDesc
-      && first.stageDesc.indexOf(((T.STEPS.find(s => s.id === 'look') || {}).say || '')) >= 0),
-    first ? ('第' + first.chapter + '章 ' + first.chapterTitle) : '-');
-  ok('D-4 带进度（cur/count）', !!(first && typeof first.cur === 'number' && first.count >= 8),
-    first ? first.cur + '/' + first.count : '-');
-  ok('D-5 带去处（由身份定的那家势力）', !!(first && first.targetSect), first && first.targetSect);
-  ok('D-6 章次随进度走（走完第一步 → 第 2 章）',
-    (() => {
-      e.exec('look');
-      const f2 = (e.view().quests.active || [])[0];
-      return f2 && f2.chapter === 2;
-    })(), 'look 之后应为第2章');
+  const active = v.quests.active || [];
+  const tutCards = active.filter(q => q.isTutorial);
+  ok('D-1 ★ 任务列表里没有任何新手教程卡（教程已下线）', tutCards.length === 0,
+    tutCards.map(q => q.name).join(',') || '0 条');
+  const first = active[0];
+  ok('D-2 ★ 首条就是主线（江湖路远）',
+    !!(first && first.id === 'q_main_jianghu'), first ? first.id + '/' + first.name : '(空)');
+  ok('D-3 ★ 主线停在 stage0「拜入一个门派」',
+    !!(first && first.stage === 0
+      && /拜|投|山门|门派|入门|名分/.test(String(first.stageDesc || ''))),
+    first ? ('stage=' + first.stage + ' ' + first.stageDesc) : '-');
+  ok('D-4 view.guide 恒 null（面板数据源已下线）', v.guide === null, String(v.guide));
 
-  /* 做完就不再置顶 */
+  /* 拜师之后主线照旧在（主线不是教程，不因拜师消失）。
+     ⚠️ 阶段推进是靠「交任务」推进的（queststage 的机制：阶段在委托人手上一段段交），
+        不是拜师那一刻自动跳 —— 所以这里只断言「主线还在、还在 stage0 等你去交」，
+        不断言它自动跳。真推进链由 smoke-mainline ⑥ 守。 */
   const e3 = boot(110, 'orphan');
   const p3 = e3.world.player;
-  ['did_look', 'did_move', 'did_train', 'did_talk', 'did_accept', 'did_save'].forEach(f => e3.markTutorialFlag(f));
-  p3.kills = 1;
   e3.exec('talk 卖茶的老汉');
   e3.exec('拜师 ' + T.targetSectFor(p3).name);
-  const f3 = (e3.view().quests.active || []).filter(q => q.isTutorial);
-  ok('D-7 ★ 走完（拜师+存档）后不再置顶', p3.sect && f3.length === 0,
-    'sect=' + p3.sect + ' 新手条数=' + f3.length);
+  const after = (e3.view().quests.active || []).find(q => q.id === 'q_main_jianghu');
+  ok('D-5 ★ 拜师之后主线照旧在列表里（不随教程一起消失）',
+    !!after && p3.sect, after ? ('sect=' + p3.sect + ' stage=' + after.stage) : '(没了)');
 }
 
 /* ================================================================
- * §E「新手教程」面板看完整流程
+ * §E「新手教程」面板 —— 已整块下线（保留本段做「确实没了」的守卫）
  * ================================================================ */
-sec('§E 「新手教程」面板：完整流程 + 当前章的剧情');
+sec('§E 「新手教程」面板已下线（前端函数 / 页面块 / 数据源全无）');
 {
   const e = boot(111, 'deserter_child');
-  const g = e.view().guide;
-  ok('E-1 ★ 面板拿得到「去哪个势力」', !!(g.story && g.story.target && g.story.target.name),
-    g.story && g.story.target && g.story.target.name);
-  ok('E-2 ★ 八章**全都列出来**（这是「完整流程」和「任务」面板的区别）',
-    (g.steps || []).filter(s => s.id !== 'free').length === 8,
-    (g.steps || []).length + ' 项');
-  ok('E-3 每章都带标题与目标（后面的章节也知道要干嘛）',
-    (g.steps || []).filter(s => s.id !== 'free').every(s => s.title && s.goal));
-  const withStory = (g.steps || []).filter(s => s.story);
-  ok('E-4 ★ 剧情旁白只给「已走 / 在走」的章节（后面几章不剧透）',
-    withStory.length >= 1 && withStory.every(s => s.done || (g.current && g.current.id === s.id)),
-    withStory.map(s => s.id).join(',') || '(无)');
-  ok('E-5 当前章带 hint（告诉玩家敲什么）', !!(g.current && g.current.hint), g.current && g.current.hint);
-  ok('E-6 章次编号连续 1..8', (() => {
-    const nos = (g.steps || []).filter(s => s.id !== 'free').map(s => s.no);
-    return nos.join(',') === '1,2,3,4,5,6,7,8';
-  })(), (g.steps || []).filter(s => s.id !== 'free').map(s => s.no).join(','));
-  ok('E-7 面板数据与「任务」面板同源（同一份 guide 算出来）',
-    (() => {
-      const f = (e.view().quests.active || [])[0];
-      return f && f.chapter === g.current.no && f.chapterTitle === g.current.title;
-    })());
-  /* ★ 模板位必须**全被填掉**：章节里的 {sect}/{gate}/{art} 是运行时替换的，
-     漏一个玩家就会看到「往{gate}去」。smoke-quest-sanity 查的是源码（会放行这几个
-     已知模板位），这里查**成品** —— 两道一起才守得住。 */
-  ok('E-8 ★ 送到前端的文案里一个花括号都不剩（模板位全填上了）',
-    !/\{[^}\n]{1,20}\}/.test(JSON.stringify({ steps: g.steps, cur: g.current, target: g.story.target })),
-    (JSON.stringify({ steps: g.steps, cur: g.current }).match(/\{[^}\n]{1,20}\}/) || ['(无)'])[0]);
+  ok('E-1 ★ view.guide 恒 null（面板数据源已下线）', e.view().guide === null, String(e.view().guide));
+  ok('E-2 ★ 前端已无 guideHtml 函数', UISRC.indexOf('function guideHtml') < 0);
+  ok('E-3 ★ 页面已无 id="guide-block" 真节点', HTMLSRC.indexOf('id="guide-block"') < 0);
+  /* 但「去哪个势力」这件事本身还在（拜师要靠它），只是不再从面板读 */
+  const p = e.world.player;
+  const tgt = T.targetSectFor(p);
+  ok('E-4 出身→势力链仍在（拜师要用，不随面板一起删）',
+    !!(tgt && tgt.name), tgt && tgt.name);
 }
 
 /* ================================================================

@@ -129,6 +129,28 @@ async function renderMap(view) {
   ok('　每个地名带着「去过数 / 总数」', html.indexOf('mrn-num') >= 0);
   ok('★ 渲染里没有 undefined 漏出', html.indexOf('undefined') < 0);
 
+  /* ★ 2026-10-13 主人：「给『唐门』『白鹿书院』这种区域名字加高亮显示」。
+     区域名（大地名）现在只出现在这排索引按钮上 —— 地块上的区域名 2026-10-12 已下线。
+     高亮的落地方式：按钮内联注入 `--mr-c`（该区域自己的 color），
+     CSS 用它给名字画一条**同色虚线下划线** + 加粗 + 抬字号。
+     两层都要守：渲染层（变量注进去了）+ CSS 层（真规则用它，不是只写在注释里）。 */
+  const mrnBtns = html.match(/<button class="mrn-btn[^>]*>/g) || [];
+  ok('★ 区域名按钮注入了高亮变量 --mr-c（每个区域自己的颜色）',
+    mrnBtns.length > 0 && mrnBtns.every(b => /--mr-c:\s*#[0-9a-fA-F]{3,6}/.test(b)),
+    mrnBtns.length + ' 个按钮，例：' + (mrnBtns[0] || '(无)').slice(0, 110));
+  {
+    const css = fs.readFileSync(path.join(ROOT, 'game/src/renderer/css/main.css'), 'utf8');
+    /* 只取真规则（`{...}`），别匹配到注释里的说明文字 —— 本项目踩过「注释里有字样被误判」 */
+    const rule = (css.match(/\.mrn-btn \.mrn-name\s*\{[^}]*\}/) || [''])[0];
+    ok('★ CSS 真规则里区域名用了 --mr-c 做下划线（不是只写在注释里）',
+      /var\(--mr-c/.test(rule), rule.replace(/\s+/g, ' ').slice(0, 110) || 'NOT FOUND');
+    ok('　区域名加粗 + 抬字号（从一片小胶囊里一眼挑得出来）',
+      /font-weight:\s*(600|700|bold)/.test(rule) && /font-size:\s*13/.test(rule),
+      rule.replace(/\s+/g, ' ').slice(0, 110));
+    ok('　高亮用下划线而非给整颗按钮上色（底色已用于区分去过/没去过）',
+      /text-decoration/.test(rule) && !/background:/.test(rule));
+  }
+
   console.log('===== ② 画布能缩放（回到我已在 2026-10-12 按主人要求删掉） =====');
   ok('★ 画布工具条在（只剩缩放，「回到我」已删）',
     html.indexOf('map-tools') >= 0

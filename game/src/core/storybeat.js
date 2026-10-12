@@ -132,10 +132,8 @@ function isHeld(p, qid) {
 function markSeen(world, p) {
   if (!p) return;
   const m = memOf(p);
-  try {
-    const g = require('./tutorial').guideState(p, p.tutorialFlags);
-    if (g && g.current) m.tut = g.current.no;
-  } catch (e) { /* 教程算不出来就不记，不影响别的 */ }
+  /* 🔴 新手教程已下线（2026-10-12）——原先这里还记一笔 `m.tut`（教程章次），
+     现在没有章次可记。`m.tut` 字段本身留着（老存档里有）。 */
   for (const qid of Object.keys(p.quests || {})) m.quests[qid] = p.quests[qid];
 }
 
@@ -149,30 +147,11 @@ function reconcile(world, p, opts) {
   const m = memOf(p);
   const out = [];
 
-  /* ① 新手教程的章节 —— 正文走上大框（`currentStory`），但**NPC 的言行走这里**。
-   *
-   * 2026-10-08 主人两句话把它们分开的：
-   *   ·「新手剧情都在那个大框里面显示」→ 旁白（正文）进大框；
-   *   ·「大框里新手剧情不要有 NPC 的语言与动作描写，这些都是属于在屏幕下方显示的，
-   *      就是那些灰色字体内容」→ 台词/动作留下来，打进日志的**灰字**行（`npcsact`）。
-   *
-   * ⚠️ 每章**只投一次**（记在 `_storyBeat.sayNo`）：大框是常显的，
-   *    要是每帧都投，日志会被同一句话刷屏。
-   * ⚠️ kind 用 `npcsact` 而不是 `say`：`say` 在日志里是蓝字（对白），
-   *    而这句常常是「他抬头看了你一眼，又低下去拨火」这类**动作描写**，
-   *    归到灰字那一档才对得上主人说的「灰色字体内容」。
-   */
-  try {
-    const g = require('./tutorial').guideState(p, p.tutorialFlags);
-    const cur = g && g.current;
-    if (cur && cur.say && m.sayNo !== cur.no) {
-      m.sayNo = cur.no;
-      /* `story:true` = 「这是剧情里的言行」——前端据此在这段灰字**上方**打一个
-         「剧情」标签（主人 2026-10-08：「那些灰字上方要写有剧情标签」）。
-         房间氛围里那些路人的小动作没有这个标记，不加标签 —— 免得满屏都是标签。 */
-      out.push({ kind: 'npcsact', text: cur.say, story: true });
-    }
-  } catch (e) { /* 教程算不出来就不投 */ }
+  /* ① （已下线）新手教程章节的 NPC 言行 —— 2026-10-12 主人「新手教程剧情全删」。
+     原先这里每章投一次 `guideState().current.say` 到日志灰字（kind `npcsact`），
+     现在「入江湖」八章没了，这一路自然没有东西可投。
+     ⚠️ `_storyBeat.sayNo` 这个记账字段**留着不动**：老存档里有它，
+        删字段会让老档读进来时多一笔无主数据（无害，但没必要的动静）。 */
   /* ② 任务：接取 / 阶段推进时讲剧情（委托人的话要看他在不在） */
   for (const qid of Object.keys(p.quests || {})) {
     const st = p.quests[qid];
@@ -239,25 +218,19 @@ function reconcile(world, p, opts) {
 
 const NEWBIE = '__newbie__';
 
-/** 新手剧情任务那一「章」 */
+/** 新手剧情任务那一「章」—— 🔴 2026-10-12 主人「新手教程剧情全删」后**恒 null**。
+ *
+ *  原先它把「入江湖」八章的当前一章算给大框（arc `tutorial`）。
+ *  现在整块下线：大框里从今往后只有**真任务**（主线 / 支线），
+ *  开局不追任何东西 → 大框收起、让位给房间描述。
+ *
+ *  ⚠️ 函数与 `NEWBIE` 哨兵**保留**（不是死代码）：
+ *     ① 老存档里 `p.track === '__newbie__'` 的还有，读档时得能识别出来并翻篇；
+ *     ② 前端 / 老测试还在按这个哨兵发指令（见 commands.js 的认词表）。
+ *     返回 null 就是「这一章不存在了」，调用方自然落到主线 / 收起。 */
 function newbieChapter(p) {
-  const g = require('./tutorial').guideState(p, p.tutorialFlags);
-  if (!g || g.finished || !g.current) return null;
-  const s = g.current;
-  /* ⚠️ 大框里**只放旁白**（主人 2026-10-08：「大框里新手剧情不要有 NPC 的语言
-     与动作描写，这些都是属于在屏幕下方显示的，就是那些灰色字体内容」）。
-     NPC 说了什么做了什么，交给**下方日志**的灰字行（kind `npcsact`）——
-     由 reconcile() 每章投一次，见那边的注释。 */
-  const lines = [];
-  if (s.narr) lines.push({ kind: 'story', text: s.narr });
-  if (s.goal) lines.push({ kind: 'plain', text: '　这一程：' + s.goal });
-  return {
-    arc: 'tutorial', arcName: '入江湖',
-    arcLabel: '新手 · 第 ' + s.no + ' / ' + (g.total || 8) + ' 章',
-    no: s.no, total: g.total || 8,
-    title: s.title,
-    lines, todo: s.todo || '', goal: s.goal || '',
-  };
+  void p;
+  return null;
 }
 
 /** 一条真任务的「当前一步」（主线 / 支线都走这里） */
@@ -315,12 +288,14 @@ function syncTrack(world, p) {
   if (!p) return;
   const t = p.track;
   if (t === NEWBIE) {
-    let g = null;
-    try { g = require('./tutorial').guideState(p, p.tutorialFlags); } catch (e) { return; }
-    if (g && g.finished) p.track = pickAuto(world, p);
+    /* 🔴 2026-10-12「新手教程剧情全删」：`__newbie__` 已经没有对应的章了。
+       老存档里还追着它的（读档进来的），一律翻篇换成主线那一幕 ——
+       否则大框会一直挂着一个讲不出来的空哨兵（`currentStory` 会返回 null，
+       看着像「任务丢了」）。 */
+    p.track = pickAuto(world, p);
     return;
   }
-  if (!t) return;                       /* 玩家取消过 —— 不擅自给他追回来 */
+  if (!t) return;                       /* 玩家没在追（含开局默认不追）—— 不擅自给他追回来 */
   const st = p.questStage ? p.questStage(t) : (p.quests || {})[t];
   if (st === undefined || st < 0 || st >= 99 || !(world && world.getQuest && world.getQuest(t))) {
     p.track = pickAuto(world, p);

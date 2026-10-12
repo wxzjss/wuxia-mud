@@ -18,7 +18,7 @@ const MAP_CELL = 30, MAP_NODE = 26, MAP_PAD = 34;
 const DIR_CN = { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下' };
 const DIR_OFF = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0], u: [0, -1], d: [0, 1] };
 const built = new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF', 'mapScope',
-  grab('mapHtml') + '\n' + grab('shortName') + '\n' + grab('guideHtml') + '\nreturn { mapHtml, guideHtml, shortName };')(
+  grab('mapHtml') + '\n' + grab('shortName') + '\nreturn { mapHtml, shortName };')(
     esc, MAP_CELL, MAP_NODE, MAP_PAD, DIR_CN, DIR_OFF, 'region');
 
 let pass = 0, fail = 0;
@@ -111,7 +111,7 @@ function ok(name, cond, extra) {
        桥真没了，而走廊线（不论同区还是跨区）都是虚线。 */
     /* 世界模式渲染（把 mapHtml 抽出来、喂一个 world 视野真跑一遍） */
     const worldBuilt = new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF', 'mapScope',
-      grab('mapHtml') + '\n' + grab('shortName') + '\n' + grab('guideHtml') + '\nreturn { mapHtml };')(
+      grab('mapHtml') + '\n' + grab('shortName') + '\nreturn { mapHtml };')(
         esc, MAP_CELL, MAP_NODE, MAP_PAD, DIR_CN, DIR_OFF, 'world');
     const wh = worldBuilt.mapHtml(v);
     ok('★ 跨区兜底长折线已下线（主人 10-12：删掉所有虚线）', wh.indexOf('edge-bridge') < 0);
@@ -204,39 +204,22 @@ function ok(name, cond, extra) {
   ok('★ 地块底色框/斜纹那套仍然没有（老契约不变）',
     nodeRule.indexOf('background: transparent') >= 0);
 
-  console.log('\n── 新手引导 ──');
+  console.log('\n── 新手引导（🔴 2026-10-12 已全删）──');
+  /* 主人 2026-10-12：「新手教程剧情全删」。
+     这块原先验的是 `guideHtml`（「新手教程 · 入江湖」面板）+ 引导进度推进。
+     现在面板与八章剧情整块下线，本节的断言反转为**「它真的没了」** ——
+     留着旧断言会天天报红，而删掉不留守卫又会让「谁悄悄接回来」无人发现。 */
   const p = e.world.player;
-  const g0 = v.guide;
+  ok('★ 服务端不再下发 guide（恒 null）', v.guide === null, JSON.stringify(v.guide));
+  ok('★ ui.js 里已经没有 guideHtml（面板函数真删了）', !/function guideHtml/.test(UISRC));
+  ok('★ ui.js 里已经没有 renderGuide 的实际渲染体', /function renderGuide\(\)\s*\{\s*\/\* 已下线/.test(UISRC));
+  /* ⚠️ 查的是**真节点**（`id="guide-block"`），不是注释里的字样 ——
+     注释里提这个名字是**故意留的**（说明这里原先有什么、为什么删）。 */
+  ok('★ 右侧那个常驻块也没了（index.html 无 id="guide-block" 节点）',
+    !/id="guide-block"/.test(fs.readFileSync(path.join(ROOT, 'game/src/renderer/index.html'), 'utf8')));
+  ok('★ 开局不追任何任务（大框收起 → 让位给房间描述）', p.track === null, String(p.track));
 
-  console.log('  引导状态：' + g0.doneCount + '/' + g0.total);
-  const gh = built.guideHtml(v);
-  ok('guideHtml 不抛异常', gh.length > 100, 'len=' + gh.length);
-  ok('含步骤总数', gh.includes(String(g0.total)));
-  /* ⚠️ 抬头改成了「新手教程 · 入江湖」：玩家的入口按钮就叫「新手教程」，
-     面板抬头必须跟入口对得上（第五轮把这张清单升级成了剧情任务线）。 */
-  ok('含「新手教程」', gh.includes('新手教程'));
-
-  // 逐步推进
-  /* ⚠️ 第二章改成「走出去再回来」才算完成（2026-10-11），
-     所以序列里  之后必须补一个  走回来，否则后面的步全被锁住。 */
-  const seq = ['look', 'n', 's', 'i', 'score', 'lian', 'talk 小二'];
-  let last = g0.doneCount;
-  let increased = 0;
-  for (const cmd of seq) {
-    const r = e.exec(cmd);
-    if (r.view && r.view.guide) {
-      const d = r.view.guide.doneCount;
-      if (d > last) increased++;
-      last = d;
-    }
-  }
-  ok('指令推进引导进度', increased >= 3, '推进了 ' + increased + ' 步，当前 ' + last + '/' + g0.total);
-
-  // 每个步骤都必须有完整字段
-  const badStep = (g0.steps || []).find(s => !s.id || !s.title || !s.goal || !s.hint || typeof s.done !== 'boolean');
-  ok('步骤字段完整', !badStep, badStep ? JSON.stringify(badStep) : 'all ok');
-
-  // 空/畸形数据不能炸
+  // 空/畸形数据不能炸（只测 mapHtml —— guideHtml 已随新手教程下线）
   console.log('\n── 健壮性 ──');
   const shapes = [
     ['无 map', {}],
@@ -248,7 +231,7 @@ function ok(name, cond, extra) {
   ];
   let crashed = [];
   for (const [label, input] of shapes) {
-    try { built.mapHtml(input); built.guideHtml(input); }
+    try { built.mapHtml(input); }
     catch (err) { crashed.push(label + ':' + err.message); }
   }
   ok('畸形数据不崩', crashed.length === 0, crashed.join(' | ') || '6 种输入全部安全');

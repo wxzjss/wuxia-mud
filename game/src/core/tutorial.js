@@ -707,7 +707,10 @@ function handOutLetter(world, npc) {
   ];
   if (tgt.pitch) lines.push({ kind: 'say', text: `${npc.name}道：「${tgt.pitch}」` });
   lines.push({ kind: 'sys', text: '　（获得：引荐信。凭这封信，山门会破例收你。）' });
-  lines.push({ kind: 'hint', text: `　（整条路的走法在左边「新手教程」里。这条路走完，信也就没用了。）` });
+  /* 🔴 2026-10-12「新手教程剧情全删」：原先这里还有一句
+     「（整条路的走法在左边『新手教程』里）」—— 教程已经撤下，
+     那句话会把玩家指向一个不存在的入口。改成指**任务面板里的主线**。 */
+  lines.push({ kind: 'hint', text: '　（拿这封信上山门拜师，就是主线第一桩事。左栏「任务」里点开「江湖路远」看得到。）' });
   return lines;
 }
 

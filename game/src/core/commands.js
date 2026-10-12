@@ -4515,9 +4515,28 @@ function buildCommands(world) {
     const p = ctx.player, w = ctx.world;
     const sb = require('./storybeat');
     const nameOf = id => (id === sb.NEWBIE ? '新手剧情' : ((w.getQuest(id) || {}).name || id));
-    /* 大框里那几行「接取时该讲的话」要到**玩家真去追它**时才讲（见 storybeat.hold）。 */
+    /* 大框里那几行「接取时该讲的话」要到**玩家真去追它**时才讲（见 storybeat.hold）。
+       🔴 2026-10-12 主人复现：「任务追踪是点击的，第一点出现提示，取消后再点就没有了，
+          跟取消追踪绑定的吧」—— 根因：`takeHeld()` 是**一次性消费**（讲完就 `delete`
+          那笔账），于是「追 → 取消 → 再追」时第二次什么也没有。
+        ⇒ 改成「讲过一次就记成已讲」，**取消再追回来时重新讲一遍**：
+          这本来就是玩家要的语义（他主动去看这条任务，就该看到它讲什么），
+          而且与首次追踪的表现一致 —— 不该因为「取消过一次」就永久静音。
+       ⚠️ 只对**接取旁白**（held）这么做；阶段推进那类「有了下文」由 reconcile 管，
+          那边有自己的账（`_storyBeat.quests`），不受这里影响。 */
     const takeHeld = qid => {
       try { return sb.takeHeld(w, p, qid) || []; } catch (e) { return []; }
+    };
+    /* 这一条是「手动追上去」的通路（不是首次接取）—— 若那笔账已经讲掉了，补回来。
+       判据只看 held 账，不碰 reconcile 的账。 */
+    const reHeld = qid => {
+      if (!qid) return [];
+      try {
+        if (sb.isHeld(p, qid)) return [];           /* 还扣着，交给 takeHeld 讲 */
+        /* 已经讲过了 → 让它重新扣上，再走正常通路讲一遍 */
+        sb.hold(p, qid);
+        return sb.takeHeld(w, p, qid) || [];
+      } catch (e) { return []; }
     };
     /* ① 强制关：`取消追踪` 走这条 */
     if (force) {
@@ -4543,14 +4562,23 @@ function buildCommands(world) {
        ⚠️ 这个坑以前就存在（老代码同样只认那三个词），只是当时没人从按钮点过新手那条。
           守卫也没抓住它 —— 因为测试只断言「按钮发出去了什么」，
           没断言「后端真的照做了」。这次**两边都补上**（见 smoke-quest-track / smoke-uiux）。
-       ⇒ 认两种写法：手敲的中文，与前端下发的那两个 id 形式。 */
-    if (key === '新手' || key === '新手教程' || key === '新手剧情' || key === sb.NEWBIE) {
-      if (p.track === sb.NEWBIE) {
-        p.track = null;
-        return { lines: [{ kind: 'sys', text: '不追「新手剧情」了。' }] };
-      }
-      p.track = sb.NEWBIE;
-      return { lines: [{ kind: 'sys', text: '上方改追「新手剧情」了。' }] };
+
+       🔴 2026-10-12 再一次（主人复现「取消后再点就没提示了」）暴露第二个洞：
+          **面板上印的是「入江湖」，玩家照着敲「追踪 入江湖」却查不到** ——
+          因为新手那条的展示名（`storybeat.newbieChapter().arcName` = 「入江湖」）
+          根本没进这张认词表。玩家看得到什么、就该能敲什么。
+       ⇒ 认三路：手敲的中文（含面板上真印出来的「入江湖」）+ 前端下发的两个 id 形式。 */
+    /* 🔴 2026-10-12 主人「新手教程剧情全删」。
+       原先这里有一路 `__newbie__`（新手剧情任务的哨兵）：面板上那条置顶卡发它，
+       玩家手敲「新手 / 新手教程 / 新手剧情 / 入江湖」也认。
+       现在那条任务、那张卡、那个章次都没了 —— **整路摘掉**。
+       ⚠️ 保留一句「翻篇」的提示：老存档里 `p.track === '__newbie__'` 的
+          读档进来（`syncTrack` 会把它换成主线），万一有老前端还在发这个值，
+          玩家该看到一句人话，而不是「没有这一桩事」那种错愕。 */
+    if (key === '新手' || key === '新手教程' || key === '新手剧情'
+      || key === '入江湖' || key === sb.NEWBIE) {
+      if (p.track === sb.NEWBIE) p.track = null;
+      return { lines: [{ kind: 'sys', text: '新手教程已经撤下了。要看主线，去「任务」里点「江湖路远」。' }] };
     }
     /* 面板按钮发的是**任务 id**（名字里有【主线】前缀、还可能重名），
        手敲的才是名字 —— 两条都认。 */
@@ -4563,12 +4591,19 @@ function buildCommands(world) {
       return { lines: [{ kind: 'sys', text: `不追「${qd.name}」了。再点一次就追回来。` }] };
     }
     p.track = qd.id;
+    /* ⚠️ `takeHeld` 是**消费型**（讲完就 delete 那笔账），所以只能调一次 ——
+       写成 `takeHeld().length ? takeHeld() : reHeld()` 会把第一次的结果丢掉，
+       剩下一句空话。先接住再判。 */
+    let held = takeHeld(qd.id);
+    if (!held.length) held = reHeld(qd.id);
     return {
       lines: [
         { kind: 'sys', text: `上方改追「${qd.name}」了。` },
         /* 开局由脚本直接塞进任务簿的那条（主线起手式），接取旁白一直扣着 ——
-           玩家第一次追它，就在这时候讲出来。 */
-        ...takeHeld(qd.id),
+           玩家第一次追它，就在这时候讲出来。
+           取消之后再追回来，**照样讲一遍**（`reHeld` 负责把已讲过的账补回来）——
+           见函数开头那段注释。 */
+        ...held,
       ],
     };
   };
@@ -4685,6 +4720,23 @@ function buildCommands(world) {
   /* 飞行面板（主人 2026-10-12）。有了这一条，走 `/api/panel`（而不是 `/api/view`）
      那条路进来也不会得到一句「我不懂这个指令」。 */
   reg(['__panel__fly'], (ctx) => ({ lines: [], openPanel: 'fly' }));
+  /* 开场角色扮演（主人 2026-10-12）：前端每一轮点一个按钮 → 发这一条。
+     ⚠️ 与面板指令同族（`__panel__` 前缀），但**不发 `openPanel`** ——
+        结果走 `view.opening` 现算，前端按新的那屏重画对话框。
+     ⚠️ 玩家手敲 `开场 <key>` 也认（`开场` 是规范名）——不用记，但要能用：
+        万一前端挂了，玩家还能把开场走完，而不是卡在第一步出不来。 */
+  reg(['__opening__', '开场', '睁眼'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    let key = String((args || []).join(' ')).trim();
+    if (!key) return { lines: [], opening: true };
+    /* 中文标签也认（玩家手敲「开场 我读过书」） */
+    const byLabel = Object.keys(require('./intro').BIRTH_VOICE)
+      .find(id => require('./intro').BIRTH_VOICE[id].title === key);
+    if (byLabel) key = byLabel;
+    const r = require('./intro').step(w, p, key);
+    if (!r.ok) return { lines: [{ kind: 'warn', text: r.error || '这一步走不通。' }] };
+    return { lines: [], opening: true, openingDone: !!r.done };
+  });
   reg(['__panel__save', '__panel__load'], (ctx, args) => ({ lines: [], openPanel: 'save', action: 'save' }));
   reg(['rebirth', '重开', '重新开始'], () => ({ lines: [], action: 'rebirth' }));
   reg(['sleep', '睡', '休息'], (ctx) => {

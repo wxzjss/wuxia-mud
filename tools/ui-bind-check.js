@@ -103,15 +103,22 @@ function ok(name, cond, extra) {
     ['背包', 'inventory'], ['i', 'inventory'], ['行囊', 'inventory'],
     ['状态', 'score'], ['sc', 'score'], ['score', 'score'],
     ['武学', 'skills'], ['任务', 'quests'], ['属性', 'attr'],
-    ['门派', 'sect'], ['装备', 'equipment'], ['帮助', 'help'], ['指引', 'guide'],
+    ['门派', 'sect'], ['装备', 'equipment'], ['帮助', 'help'],
+    /* 🔴 2026-10-12 主人「新手教程剧情全删」：面板别名表里
+       「指引 / 新手教程 / 引导 → guide」整路摘掉，不再进 PANEL_CMDS。
+       所以这一条从「期望 guide」改成「**不该**被前端拦成面板」（交给服务端当普通指令）。 */
+    ['指引', null],
   ];
   const bad = [];
   for (const [cmd, exp] of cases) {
     panelCalls = [];
     await U.doCmd(cmd);
-    if (panelCalls[0] !== exp) bad.push(cmd + '→' + panelCalls[0] + '(期望 ' + exp + ')');
+    /* exp === null ⇒ 期望「前端不拦」：panelCalls 应为空（或首项不等于任何面板名） */
+    if (exp === null) {
+      if (panelCalls.length) bad.push(cmd + '→' + panelCalls[0] + '(期望不拦)');
+    } else if (panelCalls[0] !== exp) bad.push(cmd + '→' + panelCalls[0] + '(期望 ' + exp + ')');
   }
-  ok('全部面板指令正确打开对应面板', bad.length === 0, bad.length ? bad.join(', ') : cases.length + '/' + cases.length);
+  ok('全部面板指令正确打开对应面板（含「指引」已不再被拦）', bad.length === 0, bad.length ? bad.join(', ') : cases.length + '/' + cases.length);
 
   panelCalls = [];
   await U.doCmd('look');

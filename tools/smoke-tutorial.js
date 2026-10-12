@@ -1,10 +1,21 @@
-/* 新手教程专项回归（2026-10-10 沉浸式重构版）
+/* 新手教程「下线」专项回归（2026-10-12 主人钦定：新手教程剧情全删）
  *
- * 锁死：
- *   1. 「认清家当 / 认清自己」两个弱智面板步已删除（主人钦定：弱智引导没必要）。
- *   2. 顺序游标：前一步没完成，后面的步一律锁住（locked），杜绝跳步假完成。
- *   3. 零兜底：状态满足但没做对应动作不算完成。
- *   4. 沉浸式开场（楔子）：新玩家首次进入弹叙事剧情，看过（seen_intro）后不再弹。
+ * 🔴 背景：主人原话「不是说删除新手教程吗」——上一批只删了底部快捷按钮，
+ *   教程本体（右侧常驻指引块 / 「新手教程 · 入江湖」面板 / 任务面板里的
+ *   新手卡 / 新手章节）全都还在。这一批**整体下线**。
+ *
+ * 本回归锁死「下线」这件事做得干净：
+ *   ① 教程的**数据面**（view.guide）恒为 null —— 前端再也拿不到引导状态；
+ *   ② 教程的**后端面**（newbieChapter 恒 null / syncTrack 不再由新手驱动）；
+ *   ③ 教程的**前端面**（guideHtml / renderGuide / 面板分支 / 面板别名全删）；
+ *   ④ 沉淀下来的**引荐信机制**照旧能用（手写信是拜师的道具，不是教程）；
+ *   ⑤ 开场角色扮演（楔子）**不受影响**，照旧三轮走完进第一章。
+ *
+ * ⚠️ 与老版 smoke-tutorial 的区别：老版是「教程功能专项」（端到端点亮、顺序游标、
+ *   零兜底…）——那些测的是**功能本身**，功能都删了，测点自然全部作废。
+ *   所以本文件是**重写的「下线守卫」**，不是老版改几个数字。
+ *   tutorial.js 里保留的 STEPS / CMD_FLAGS / 白名单，是给**老存档的 tutorialFlags
+ *   字段**与「引荐信」用的，仍然可跑（下面 ④ 段守着）。
  */
 'use strict';
 const path = require('path');
@@ -12,8 +23,10 @@ const fs = require('fs');
 const ROOT = path.join(__dirname, '..');
 const { GameEngine } = require(path.join(ROOT, 'game', 'src', 'core', 'engine.js'));
 const tutorial = require(path.join(ROOT, 'game', 'src', 'core', 'tutorial.js'));
+const storybeat = require(path.join(ROOT, 'game', 'src', 'core', 'storybeat.js'));
 const UISRC = fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'js', 'ui.js'), 'utf8');
 const ENGSRC = fs.readFileSync(path.join(ROOT, 'game', 'src', 'core', 'engine.js'), 'utf8');
+const HTML = fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'index.html'), 'utf8');
 
 let pass = 0, fail = 0;
 function ok(name, cond, extra) {
@@ -28,185 +41,176 @@ function mk() {
   e.newGame({ name: '试剑', gender: 'male', birth: 'wuxue' });
   return e;
 }
-function steps(e) {
-  const g = e.view().guide;
-  const map = {};
-  g.steps.forEach(s => { map[s.id] = s; });
-  return { g, map };
-}
-function line(map) {
-  return Object.keys(map).filter(k => k !== 'free')
-    .map(k => k + ':' + (map[k].done ? '✓' : (map[k].locked ? '🔒' : '·')))
-    .join(' ');
-}
 
 /* ─────────────────────────────────────────── */
-sec('① 弱智面板步已删除 + 新步骤结构正确');
-{
-  const ids = tutorial.STEPS.map(s => s.id);
-  ok('已无 bag（认清家当）步', !ids.includes('bag'));
-  ok('已无 status（认清自己）步', !ids.includes('status'));
-  /* 口径变更（主人 2026-10-11）：「不要一进来就要求玩家打怪，至少得在拜入宗门后
-     学点武艺才行」—— 拜师（sect）与打架（fight）的顺序对调了。 */
-  ok('步骤顺序为 look→move→skill→talk→quest→sect→fight→save→free',
-    JSON.stringify(ids) === JSON.stringify(['look', 'move', 'skill', 'talk', 'quest', 'sect', 'fight', 'save', 'free']),
-    ids.join(','));
-  /* requires 链：每个真实步的前置是上一步 id */
-  const real = tutorial.STEPS.filter(s => s.id !== 'free');
-  let chainOk = true;
-  for (let i = 0; i < real.length; i++) {
-    const req = real[i].requires || [];
-    if (i === 0) { if (req.length) chainOk = false; }
-    else if (JSON.stringify(req) !== JSON.stringify([real[i - 1].id])) chainOk = false;
-  }
-  ok('requires 顺序链连续（无跳步漏洞）', chainOk);
-  ok('CMD_FLAGS 已无 did_bag / did_score',
-    !Object.values(tutorial.CMD_FLAGS).includes('did_bag') &&
-    !Object.values(tutorial.CMD_FLAGS).includes('did_score'));
-}
-
-/* ─────────────────────────────────────────── */
-sec('② 端到端点亮（无 bag/status，纯操作引导）');
+sec('① 数据面：view.guide 恒为 null（前端再也拿不到引导状态）');
 {
   const e = mk();
-  e.exec('look');
-  /* 🔴 2026-10-11 主人改口径：第二章「把这地方走一遍」= 走出去**再回到那处位置**
-     才算完成（原来走一步就弹第三章，玩家很懵）。 */
-  e.exec('n');
-  let { g, map } = steps(e);
-  ok('只走出去一步时 move **未**完成', !map.move.done, line(map));
-  e.exec('s');
-  ({ map } = steps(e));
-  ok('走回来之后 look/move 已完成', map.look.done && map.move.done, line(map));
-  ok('第3步（skill）此刻未完成', !map.skill.done, line(map));
+  const v = e.view();
+  ok('新玩家 view.guide === null', v.guide === null, String(v.guide));
+  /* 保留键名而不删键：老前端 / 老测试还在读 v.guide，
+     给一个明确空值比「键没了」好排查（undefined 会到处静默出错）。 */
+  ok('键「guide」仍然存在（值恒 null，不是 undefined）',
+    Object.prototype.hasOwnProperty.call(v, 'guide') && v.guide === null);
+  ok('view.newbie 一并恒 null', v.newbie === null);
 
-  ok('markTutorialFlag(did_train) 返回 true', e.markTutorialFlag('did_train') === true);
-  ({ map } = steps(e));
-  ok('上报后第3步完成', map.skill.done, line(map));
-  ok('第4步（talk）随之解锁', !map.talk.locked, line(map));
-
-  e.markTutorialFlag('did_talk');
-  e.markTutorialFlag('did_accept');
-  ({ map } = steps(e));
-  ok('talk/quest 完成', map.talk.done && map.quest.done, line(map));
-
-  /* 口径变更（主人 2026-10-11）：fight 现在**要求先拜师** ——
-     没拜师时「赢一场」这一步锁着（这是主人要的效果：先学武艺再动手）。 */
-  e.world.player.kills = 1;
-  ({ map } = steps(e));
-  ok('★ 未拜师时 kills=1 也不点亮 fight（先学本事再打架）', !map.fight.done, line(map));
-
-  e.world.player.sect = 'huashan';
-  ({ map } = steps(e));
-  ok('sect 已定点亮 sect 步', map.sect.done, line(map));
-  ok('拜师之后 kills=1 才点亮 fight 步', map.fight.done, line(map));
-
-  e.markTutorialFlag('did_save');
-  ({ g, map } = steps(e));
-  ok('save 完成 → finished=true', g.finished === true, 'done=' + g.doneCount + '/' + g.total);
+  /* 走几步、追个任务，guide 也不该被「点亮」回来 */
+  e.exec('look'); e.exec('n'); e.exec('s');
+  e.exec('追踪 江湖路远');
+  const v2 = e.view();
+  ok('走过路、追过任务之后 view.guide 仍是 null', v2.guide === null, String(v2.guide));
 }
 
 /* ─────────────────────────────────────────── */
-sec('③ 白名单：拒绝脏 flag，接受 seen_intro 与指令 flag');
+sec('② 后端面：新手章节恒 null + syncTrack 不再由新手驱动');
 {
   const e = mk();
+  const p = e.world.player;
+  /* newbieChapter 没导出（模块私有），直接读源码确认它恒 null */
+  const SBSRC = fs.readFileSync(path.join(ROOT, 'game', 'src', 'core', 'storybeat.js'), 'utf8');
+  const nbc = SBSRC.match(/function newbieChapter\([\s\S]*?\n\}/);
+  ok('newbieChapter 恒返回 null（函数保留、体内 return null）',
+    !!nbc && /return null/.test(nbc[0]) && !/tutorial/.test(nbc[0]),
+    nbc ? nbc[0].replace(/\s+/g, ' ').slice(0, 90) : 'NOT FOUND');
+  ok('storybeat.js 不再 require tutorial（不再由新手驱动）',
+    SBSRC.indexOf("require('./tutorial')") < 0);
+
+  /* 开局口径（主人 2026-10-12）：「创建完角色后进游戏，默认不追踪任何任务」。
+     ⇒ newGame 之后 p.track 必须是 null，而不是 NEWBIE 哨兵。 */
+  ok('★ 开局 p.track === null（不追任何任务）', p.track === null, String(p.track));
+  const v = e.view();
+  ok('★ 开局大框 story === null（下方还给房间描述）',
+    !v.story || !v.story.show || v.story === null, JSON.stringify(v.story && v.story.title));
+
+  /* 就算老存档把 p.track 写成 NEWBIE，syncTrack 也得把它导流到「自动选一条」，
+     绝不能又摸回教程。 */
+  p.track = storybeat.NEWBIE;
+  storybeat.syncTrack(e.world, p);
+  ok('老存档 p.track=NEWBIE 被导流（不再回教程）', p.track !== storybeat.NEWBIE,
+    String(p.track));
+}
+
+/* ─────────────────────────────────────────── */
+sec('③ 前端面：教程的界面全部删干净（函数 / 面板 / 别名 / HTML 块）');
+{
+  /* 整函数删除，不是留空壳 —— 本项目最吃「留着迟早有人接回去」这个亏 */
+  ok('前端已无 guideHtml 函数', UISRC.indexOf('function guideHtml') < 0);
+  ok('前端已无 bindGuide 函数', UISRC.indexOf('function bindGuide') < 0);
+  ok('前端已无 panelGuideFlag 函数', UISRC.indexOf('function panelGuideFlag') < 0);
+
+  /* renderGuide 是**保留的空函数**（renderScene 还在调它，留个名字做锚点）——
+     但必须真的是空的：函数体里不能再出现渲染逻辑。 */
+  const rg = UISRC.match(/function renderGuide\([^)]*\)\s*\{([\s\S]*?)\}/);
+  ok('renderGuide 已退化为空函数（只留一行注释）',
+    !!rg && rg[1].trim().length < 80 && rg[1].indexOf('innerHTML') < 0,
+    rg ? rg[1].trim() : 'NOT FOUND');
+
+  /* 面板别名表里不能再认「指引 / 新手教程 / 引导」这几种叫法 */
+  ok('面板别名表已无 guide 别名',
+    !/guide\s*:\s*'guide'/.test(UISRC) && !/新手教程\s*:\s*'guide'/.test(UISRC));
+
+  /* 页面里那块右侧常驻「新手指引」也得拆了（查真节点 id，不查注释里残留的字样） */
+  ok('index.html 已无 id="guide-block" 真节点',
+    HTML.indexOf('id="guide-block"') < 0);
+
+  /* 侧边菜单里「江湖指引」那条入口也该没了 */
+  ok('侧边菜单已无「江湖指引」入口', UISRC.indexOf('江湖指引') < 0);
+}
+
+/* ─────────────────────────────────────────── */
+sec('④ 保留面：引荐信机制 + 老存档字段照旧可用');
+{
+  const e = mk();
+  /* tutorialFlags 仍是存档字段（老档里有），markTutorialFlag 白名单照跑 */
   ok('拒绝不在白名单的 flag', e.markTutorialFlag('evil_hack') === false);
-  ok('拒绝 null', e.markTutorialFlag(null) === false);
-  ok('拒绝空串', e.markTutorialFlag('') === false);
-  ok('拒绝非字符串', e.markTutorialFlag(123) === false);
   ok('接受 EXTRA_FLAGS 的 seen_intro', e.markTutorialFlag('seen_intro') === true);
   ok('接受 CMD_FLAGS 的 did_look', e.markTutorialFlag('did_look') === true);
   const fl = e.world.player.tutorialFlags;
   ok('脏 flag 没被写进存档', !fl.includes('evil_hack'), JSON.stringify(fl));
+
+  /* 引荐信机制（拜师道具）：老汉 talk / ask 两条路都要能给出信 */
+  ok('tutorial.handOutLetter 仍在（引荐信是拜师道具，不是教程）',
+    typeof tutorial.handOutLetter === 'function');
+  ok('BIRTH_SECT 出身→门派链仍在（拜师靠它）',
+    tutorial.BIRTH_SECT && Object.keys(tutorial.BIRTH_SECT).length >= 10);
 }
 
 /* ─────────────────────────────────────────── */
-sec('④ 顺序游标：不许跳步');
+sec('⑤ 开场角色扮演（楔子）不受影响：三轮照走，走完进第一章');
 {
   const e = mk();
-  e.world.player.kills = 9;
-  e.world.player.sect = 'huashan';
-  let { g, map } = steps(e);
-  ok('前序未做时 kills=9 也不点亮 fight', !map.fight.done, line(map));
-  ok('前序未做时 sect 已定也不点亮 sect', !map.sect.done, line(map));
-  ok('fight 标记为 locked', map.fight.locked === true, line(map));
-  ok('current 仍是第1步 look', g.current.id === 'look');
-  ok('doneCount 为 0', g.doneCount === 0, 'done=' + g.doneCount);
+  /* 注意 mk() 已经 newGame（含出生出身），开场第一屏应仍是「我是谁」或已过。
+     这里单开一个干净局，按真行为走三轮。 */
+  const e3 = new GameEngine({ seed: 20261009 });
+  e3.boot();
+  e3.newGame({ name: '试剑', gender: 'male' });
+  /* newGame 不带 birth 时，第一屏是 birth（等玩家选） */
+  const v0 = e3.view();
+  ok('新玩家 view.opening.show 为真（开场第一屏）',
+    v0.opening && v0.opening.show === true);
+  ok('第一屏是「我是谁」且真带选项',
+    v0.opening.step === 'birth' && (v0.opening.options || []).length >= 8,
+    'step=' + v0.opening.step + ' opts=' + (v0.opening.options || []).length);
 
-  e.exec('look'); e.exec('n'); e.exec('s'); e.markTutorialFlag('did_train');
-  ({ g, map } = steps(e));
-  ok('走完3步后 current 指向第4步 talk', g.current.id === 'talk', 'current=' + g.current.id);
-  ok('doneCount=3', g.doneCount === 3, 'done=' + g.doneCount);
-}
+  e3.exec('开场 hunter');
+  ok('★ 走完出身 → p.birth 跟着改', e3.world.player.birth === 'hunter',
+    String(e3.world.player.birth));
+  const vg = e3.view();
+  ok('★ 走完出身 → 第二屏是性别', vg.opening && vg.opening.step === 'gender');
+  e3.exec('开场 female');
+  ok('★ 走完性别 → p.gender 跟着改', e3.world.player.gender === 'female');
+  const vc = e3.view();
+  ok('★ 第三屏是收尾（那扇门）', vc.opening && vc.opening.step === 'close');
+  /* 第三屏正文要提一嘴茶摊老汉（主人 2026-10-12：引荐信与老汉谈话获取） */
+  ok('★ 收尾那屏提了茶摊老汉（引荐信的来路）',
+    (vc.opening.body || '').indexOf('老汉') >= 0 || (vc.opening.body || '').indexOf('茶摊') >= 0);
+  e3.exec('开场 go');
+  ok('★ 收尾之后不再出屏（直接进第一章）',
+    e3.view().opening && e3.view().opening.show === false);
 
-/* ─────────────────────────────────────────── */
-sec('⑤ 零兜底：状态满足但没做动作不算完成');
-{
-  const e = mk();
-  const p = e.world.player;
-  p.inventory = [{ id: 'a' }, { id: 'b' }, { id: 'c' }];
-  p.kills = 3;
-  const { g, map } = steps(e);
-  ok('背包塞物也不点亮任何步骤', g.doneCount === 0, line(map));
-  ok('kills=3 也不点亮战斗步', !map.fight.done);
-  ok('current 仍是第1步 look', g.current.id === 'look');
-  const getStep = tutorial.STEPS.find(s => s.id === 'getitem');
-  ok('已无 getitem 步（旧恒真兜底已删）', !getStep);
-}
-
-/* ─────────────────────────────────────────── */
-sec('⑥ 全流程可完成（8 个真实步最终全部点亮）');
-{
-  const e = mk();
-  const p = e.world.player;
-  const order = ['did_look', 'did_move', 'did_train', 'did_talk', 'did_accept', null, null, 'did_save'];
-  let okAll = true, stuckAt = null, prev = 0;
-  order.forEach((flag, i) => {
-    if (flag) e.markTutorialFlag(flag);
-    else if (i === 5) p.kills = 1;
-    else if (i === 6) p.sect = 'huashan';
-    const after = e.view().guide;
-    /* 只校验单调不减（quest 步因新游戏自动接第二幕可能提前完成，属预期，非倒退） */
-    if (after.doneCount < prev) { okAll = false; stuckAt = i + ':' + after.doneCount + '(倒退)'; }
-    prev = after.doneCount;
-  });
-  const fin = e.view().guide;
-  ok('八步最终全部点亮（finished）', okAll && fin.finished === true, stuckAt || '');
-  ok('doneCount 等于 total(8)', fin.doneCount === fin.total, fin.doneCount + '/' + fin.total);
-  ok('毕业提示 free 步存在且永不完成', fin.steps.some(s => s.id === 'free' && !s.done));
-}
-
-/* ─────────────────────────────────────────── */
-sec('⑦ UI 渲染 locked 态 + 沉浸式开场接线');
-{
-  const e = mk();
-  e.world.player.kills = 3;
-  const v = e.view();
-  const html = (function () {
-    const built = new Function('esc',
-      UISRC.match(/function guideHtml[\s\S]*?\n  \}/)[0] + '\nreturn guideHtml;')(
-        s => String(s == null ? '' : s).replace(/[&<>"]/g,
-          c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])));
-    return built(v);
-  })();
-  ok('locked 步渲染为 locked 类', html.includes('gp-step locked'));
-  ok('locked 步显示 🔒', html.includes('🔒'));
-  ok('CSS 有 locked 样式',
-    fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'css', 'main.css'), 'utf8').indexOf('.gp-step.locked') > 0);
-
-  /* 开场剧情接线 */
-  const v0 = mk().view();
-  ok('新玩家 view.intro.show 为真', v0.intro && v0.intro.show === true);
-  ok('intro 带标题与正文', !!v0.intro.title && (v0.intro.body || '').includes('老槐树'));
-  ok('前端 maybeShowIntro 已接线', UISRC.indexOf('maybeShowIntro') > 0);
-  ok('前端按钮 id intro-go 已接线', UISRC.indexOf('intro-go') > 0);
-  ok('后端 introFor 已实现并接线', ENGSRC.indexOf('introFor') > 0 && ENGSRC.indexOf('EXTRA_FLAGS') > 0);
+  /* seen_intro 之后不再弹 */
   const e2 = mk();
   e2.markTutorialFlag('seen_intro');
-  ok('看过开场后 intro.show 为假', e2.view().intro.show === false);
+  ok('看过开场后 opening.show 为假', e2.view().opening.show === false);
+  ok('old view.intro 恒留 show:false 给老代码兜底',
+    e2.view().intro && e2.view().intro.show === false);
+  ok('前端 maybeShowIntro 仍接线（开场不随教程一起删）',
+    UISRC.indexOf('maybeShowIntro') > 0);
+  ok('后端 intro 模块仍在并接线',
+    ENGSRC.indexOf("require('./intro')") > 0
+    && fs.existsSync(path.join(ROOT, 'game', 'src', 'core', 'intro.js')));
+}
+
+/* ─────────────────────────────────────────── */
+sec('⑥ 主线第一章 = 拜入门派（删教程后主线的起点）');
+{
+  const e = mk();
+  const v = e.view();
+  const q = (v.quests && v.quests.active || []).find(x => x.id === 'q_main_jianghu')
+    || (v.quests && v.quests.active || [])[0];
+  ok('新玩家主线已接（开局就接，不靠教程交接）', !!q, JSON.stringify((v.quests||{}).active));
+  if (q) {
+    ok('★ 主线停在 stage 0（拜师）', q.stage === 0, 'stage=' + q.stage);
+    ok('★ 第一步文案讲的是「去拜师」这件事',
+      /拜|投|山门|门派|入门|名分/.test(String(q.stageDesc || '')),
+      q.stageDesc);
+    /* ⚠️ 别写成「收下了」这类**完成后追述**：面板那句是**当前目标**。
+       2026-10-12 实测踩到过：descByLine 原来写成「名门把你收下了」，
+       开局还没拜师就说收下了。 */
+    ok('★ 第一步文案不是「已完成」口吻',
+      !/收下|已经|成了|落脚处了/.test(String(q.stageDesc || '')),
+      q.stageDesc);
+  }
+  /* 数据面：主线不该再从 stage 1 起步 */
+  const quests = JSON.parse(fs.readFileSync(path.join(ROOT, 'game', 'data', '60_quests.json'), 'utf8'));
+  const mq = (quests.quests || quests).q_main_jianghu
+    || ((quests.quests || quests)['q_main_jianghu']);
+  ok('数据面：q_main_jianghu 不再写 startStage:1',
+    !mq || mq.startStage === undefined || mq.startStage === 0,
+    'startStage=' + (mq && mq.startStage));
 }
 
 console.log('\n' + '='.repeat(46));
-console.log('  新手教程专项: ' + pass + ' 通过 / ' + fail + ' 失败');
+console.log('  新手教程下线专项: ' + pass + ' 通过 / ' + fail + ' 失败');
 console.log('='.repeat(46));
 if (fail) process.exit(1);

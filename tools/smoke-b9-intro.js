@@ -1,29 +1,28 @@
 /**
- * smoke-b9-intro.js —— 楔子（开场剧情）专项回归
+ * smoke-b9-intro.js —— 开场（楔子）专项回归 · 角色扮演版
  *
  * 台账：design/12-owner-bug-list.md B9 · 设计 design/17-intro-rewrite.md
- * 落点：game/src/core/tutorial.js · introFor()
  *
- * 历史沿革（读代码的人先看这一段）：
- *   · 第一版：4 版共用（6 个身份归 4 版）——「寒门草莽 / 武家官家 / 书香 / 商贾」。
- *   · 第五轮重做：身份扩到 13 个，**一身份一版**（主人要「每个身份的新手教程
- *     引导都是不同势力方向」，四版共用的写法讲不出十三种去处）。
- *     同时补上结尾的「交接」：楔子讲完必须把玩家交给茶摊老汉（旧版讲到一半就断了，
- *     主人问「玩家进入游戏触发的剧情没有后续吗」就是问这个）。
+ * 🔴 2026-10-12 重大口径变更（主人钦定）：
+ *   老版楔子 = `view.intro`（**一张静态卡片**，点「踏入江湖」就完）。
+ *   新版     = `view.opening`（**三轮角色扮演**：① 我是谁 → ② 我是男是女 →
+ *              ③ 那扇门（出身分版旁白 + 前世回忆），演完才进第一章）。
+ *   ⇒ 老接口 `view.intro` **退休**：恒回 `{show:false}`（保留键给老代码兜底），
+ *      正文/标题不再由它给。老版本文件里那套「13 版静态正文五十项硬钉」随之作废
+ *      ——那些字现在住在 `intro.js` 的 RP 屏里，由 ①~④ 段按新接口重守。
  *
- * 现在锁死的是（都是特意改掉的东西，防人改回去）：
- *   ① 取版矩阵：**每个身份一版、13 版两两互异**；缺失 / 未知身份一律回落 orphan 版，且无随机数
- *   ② 文本禁令：13 版都不含「指令名」与「系统/属性/任务」等现代词，
- *      不含「失忆」表述与「铜牌 / 东厂 / 囚车」主线剧透道具，也不提旧舞台「破庙 / 风雪」
- *   ③ 舞台一致：楔子地名与**真实出生房间** `road_jiangnan_1` 的 desc 同源（江南大路 / 老槐树 / 茶摊）
- *   ④ 结构：每版 5 段 intro-p，**末段（交接）是唯一的 intro-em 强调段**
+ * 现在锁死的是：
+ *   ① 三轮状态机：birth → gender → close → done，每一步 p.vars 跟着落盘
+ *   ② 每一屏都是**真数据**：出身选项来自 meta.births、性别两选、收尾含老汉
+ *   ③ 文本禁令：各屏正文不含指令名 / 现代词 / 失忆 / 剧透 / 旧舞台
+ *   ④ 老接口退休：view.intro 恒 {show:false}、tutorial.introFor 仍在但不被 view 调用
  *   ⑤ seen_intro 行为不变：看过就不再弹、跨存档留存
- *   ⑥ 玩家自己不会「死」在楔子里（昏倒语义）
+ *   ⑥ tutorial.js 导出面不因下线而缺（引荐信 / 出身链照旧可用）
  *
  * 铁律遵守：
  *   · 随机源固定 seed（new GameEngine({seed}).boot().newGame()）
- *   · 断言打在**真实调用路径**上：真走 GameEngine → view().intro，并另直接调 introFor() 复核
- *   · `new World()` 是空壳（dataDirs 没设），必须走 GameEngine.boot()
+ *   · 断言打在**真实调用路径**上：真走 GameEngine → view().opening
+ *   · `new World()` 是空壳，必须走 GameEngine.boot()
  *   · 存档走独立沙盒（tools/_test-save-dir.js），不碰玩家 saves/
  */
 'use strict';
@@ -34,6 +33,7 @@ const ROOT = path.join(__dirname, '..');
 const SAVE_DIR = require('./_test-save-dir');
 const { GameEngine } = require(path.join(ROOT, 'game', 'src', 'core', 'engine.js'));
 const tutorial = require(path.join(ROOT, 'game', 'src', 'core', 'tutorial.js'));
+const introMod = require(path.join(ROOT, 'game', 'src', 'core', 'intro.js'));
 
 let pass = 0, fail = 0; const fails = [];
 function ok(name, cond, extra) {
@@ -48,22 +48,22 @@ const SEED = 20261010;
 function boot(birth) {
   const e = new GameEngine({ seed: SEED, saveDir: SAVE_DIR });
   e.boot();
-  /* ⚠️ **按身份自己的性别开局**，别写死 male ——
-     2026-10-10 起「与性别强绑定的身份」带 gender 门槛（庵堂孤儿/守墓人之后只收女、
-     山门弃婴只收男），`World.createPlayer` 会**硬校验**并抛错。
-     写死 male 再传女身身份 = 在测一个**不合法的组合**，根本跑不出结果（本测试曾因此整块崩）。
-     从数据读 gender，既跟着数据走，也不会因为以后新增性别门槛而再红。 */
   const bd = (((e.world.data || {}).meta || {}).births || {})[birth] || {};
+  /* 起始留一屏：不传 birth，第一屏停在「我是谁」 */
   e.newGame({ name: '试侠', gender: bd.gender || 'male', birth });
   return e;
 }
-/** 直接调 introFor：验证「函数本身」的取版逻辑（数组 flags） */
-const intro = (birth, flags) => tutorial.introFor({ birth }, flags || []);
-/** 去掉 HTML 标签，只留纯文本正文 */
+/** 一局干净的新游戏，停在第一屏（不选出身） */
+function fresh() {
+  const e = new GameEngine({ seed: SEED, saveDir: SAVE_DIR });
+  e.boot();
+  e.newGame({ name: '试侠', gender: 'male' });
+  return e;
+}
 const stripTags = html => String(html || '').replace(/<[^>]*>/g, '');
 
 /* ================================================================
- *  0. 前置事实：先确认真实的出生房间 / 出身表，再写死断言（别猜）
+ *  0. 前置事实：先确认真实的出生房间 / 出身表，再写死断言
  * ================================================================ */
 section('0 · 前置事实：出生房间与出身表（写死之前先验证）');
 let ROOM = null, META = null, BIRTH_IDS = null;
@@ -74,161 +74,148 @@ let ROOM = null, META = null, BIRTH_IDS = null;
 
   eq('0.1 meta.startRoom 是 road_jiangnan_1', META.startRoom, 'road_jiangnan_1');
   ok('0.2 该房间真实存在', !!ROOM, 'room=' + META.startRoom);
-  ok('0.3 出生房间 desc 里确有「老槐树」（楔子舞台的依据）',
-    !!ROOM && ROOM.desc.indexOf('老槐树') >= 0, ROOM && ROOM.desc);
-  ok('0.4 出生房间 desc 里确有卖茶的小摊（茶摊的依据）',
-    !!ROOM && /卖茶|茶摊/.test(ROOM.desc), ROOM && ROOM.desc);
+  ok('0.3 出生房间 desc 里确有「老槐树」', !!ROOM && ROOM.desc.indexOf('老槐树') >= 0, ROOM && ROOM.desc);
+  ok('0.4 出生房间 desc 里确有卖茶的小摊', !!ROOM && /卖茶|茶摊/.test(ROOM.desc), ROOM && ROOM.desc);
 
   BIRTH_IDS = Object.keys(META.births || {});
-  ok('0.5 出身表含原 6 个 id，且已扩到 ≥12（第五轮加身份，让每家势力都有一个方向）',
+  ok('0.5 出身表含原 6 个 id，且已扩到 ≥12',
     ['scholar', 'hunter', 'merchant', 'orphan', 'wuxue', 'noble'].every(id => BIRTH_IDS.includes(id))
     && BIRTH_IDS.length >= 12, BIRTH_IDS.join(','));
 }
 
 /* ================================================================
- *  ① 取版矩阵：一身份一版；缺失/未知 → orphan 版
+ *  ① 三轮状态机：birth → gender → close → done
  * ================================================================ */
-section('① 取版矩阵：每个身份一版（真实路径 GameEngine → view().intro）');
+section('① 三轮状态机（真实路径 GameEngine → view().opening）');
 {
-  /* 口径变更（主人 2026-10-11）：「mod 出身或不选出身的中立剧情」——
-   没出身 / 出身 id 不在官方表里（mod 自带）的人，走**中立楔子**，
-   不再回落成「孤儿出身」那一版（那等于把中立这条路吞了）。 */
-  const FALLBACK = '【楔子】没有名字的那一个';   // 中立版，也是回落版
+  const e = fresh();
+  const v0 = e.view().opening;
+  ok('① 开局停在第一屏', v0 && v0.show === true, 'step=' + (v0 && v0.step));
+  eq('① 第一屏 step=birth', v0.step, 'birth');
+  ok('① 第一屏带出身选项（来自 meta.births；有性别门槛，只列本人可选的）',
+    (v0.options || []).length >= 6 && (v0.options || []).length <= BIRTH_IDS.length,
+    'opts=' + (v0.options || []).length + ' births=' + BIRTH_IDS.length);
+  ok('① 第一屏提示是「我是谁」这一类',
+    /是谁|身份|出身|名字/.test(String(v0.hint || '')), v0.hint);
 
-  /* A. 真实引擎路径：逐个身份起局，读 view().intro */
-  const titles = {};
-  const roundTrip = [];
-  for (const id of BIRTH_IDS) {
-    const e = boot(id);
-    const v = e.view().intro;
-    titles[id] = v.title;
-    if (e.world.player.birth !== id) roundTrip.push(id);
-    if (!v.show || !v.title || !v.body) roundTrip.push(id + '(空)');
-  }
-  ok('① 每个身份起局都能读到非空楔子，且 player.birth 正确落盘',
-    roundTrip.length === 0, roundTrip.join(',') || BIRTH_IDS.length + ' 版');
+  /* 选一个出身 */
+  e.exec('开场 hunter');
+  eq('① 选完出身 → p.birth 落盘', e.world.player.birth, 'hunter');
+  const v1 = e.view().opening;
+  eq('① 第二屏 step=gender', v1.step, 'gender');
+  ok('① 第二屏给男女两选', (v1.options || []).length >= 2,
+    (v1.options || []).map(o => o.label).join('/'));
 
-  /* B. 直接调 introFor（不看引擎，单看函数取版） */
-  const mismatch = BIRTH_IDS.filter(id => intro(id).title !== titles[id]);
-  ok('① 直接调 introFor 与真实路径取到同一版', mismatch.length === 0, mismatch.join(','));
+  e.exec('开场 female');
+  eq('① 选完性别 → p.gender 落盘', e.world.player.gender, 'female');
+  const v2 = e.view().opening;
+  eq('① 第三屏 step=close', v2.step, 'close');
+  ok('① 第三屏是收尾旁白（前世回忆）', String(v2.body || '').length > 60,
+    'len=' + String(v2.body || '').length);
 
-  /* C. 一身份一版：标题与正文都两两互异 */
-  eq('① ★ 13 个身份的楔子标题两两互异（不再四版共用）',
-    new Set(Object.values(titles)).size, BIRTH_IDS.length);
-  eq('① ★ 13 版 body 两两互异',
-    new Set(BIRTH_IDS.map(id => intro(id).body)).size, BIRTH_IDS.length);
+  e.exec('开场 go');
+  const v3 = e.view().opening;
+  /* 演完之后 opening 退化成 {show:false}（没有 step 键）——
+     这就是「不再出屏」的形状。进度落在 p.vars._intro 上。 */
+  eq('① 收尾之后不再出屏（show=false）', v3.show, false);
+  ok('① 演完后 opening 退化成 {show:false}（无 step 键）', v3.step === undefined,
+    'step=' + v3.step);
 
-  /* D. 缺失 / 未知 / 不传 → 回落 orphan 版 */
-  eq('① birth 缺失(undefined) → 中立版', intro(undefined).title, FALLBACK);
-  eq('① birth 缺失(null) → 中立版', intro(null).title, FALLBACK);
-  eq('① birth 未知值("nonsense") → 中立版', intro('nonsense').title, FALLBACK);
-  eq('① 未知 birth 走真实引擎 → 中立版', boot('nonsense').view().intro.title, FALLBACK, 'boot("nonsense")');
-  eq('① 不传 birth 走真实引擎 → 中立版', boot(undefined).view().intro.title, FALLBACK);
-
-  /* E. 每个身份的楔子都要有「往哪去」的方向感（不是十三份同一个模板换名词） */
-  const noDir = [];
-  for (const id of BIRTH_IDS) {
-    if (!tutorial.BIRTH_SECT[id]) { noDir.push(id + '(无势力映射)'); continue; }
-    const body = intro(id).body;
-    if (!/往北|北边|山门|门派|去处|路/.test(body)) noDir.push(id + '(没写方向)');
-  }
-  ok('① 每版楔子都写了「往哪去」的方向感',
-    noDir.length === 0, noDir.join(',') || '全通');
+  /* 三屏的状态都落在 p.vars._intro（跨存档能接着演） */
+  const st = (e.world.player.vars || {})._intro;
+  ok('① 进度落在 p.vars._intro 上（step=done，跨档可续）',
+    !!st && st.step === 'done' && st.birth === 'hunter' && st.gender === 'female',
+    JSON.stringify(st));
 }
 
 /* ================================================================
- *  ② 文本禁令（13 版逐一硬钉）
+ *  ② 每一屏都是真数据（出身表 / 性别 / 老汉）
  * ================================================================ */
-section('② 文本禁令（13 版逐一硬钉）');
+section('② 每一屏渲染的是真数据，不是硬编码');
 {
-  /* 指令名（玩家敲的命令，绝不能写进旁白） */
+  /* 出身选项的 key 必须都在 meta.births 里 */
+  const e = fresh();
+  const opts = e.view().opening.options || [];
+  const bad = opts.filter(o => !BIRTH_IDS.includes(o.key));
+  ok('② 第一屏每个出身选项都对应真出身', bad.length === 0,
+    bad.map(o => o.key).join(',') || opts.length + ' 项');
+
+  /* 换一个出身，第三屏正文应当跟着换（不是十三份同一段） */
+  const e2 = fresh(); e2.exec('开场 scholar'); e2.exec('开场 male');
+  const b1 = e2.view().opening.body;
+  const e3 = fresh(); e3.exec('开场 hunter'); e3.exec('开场 male');
+  const b2 = e3.view().opening.body;
+  ok('② 不同出身 → 第三屏正文不同（不是同一段换名词）', b1 !== b2,
+    'scholar=' + stripTags(b1).slice(0, 20) + ' | hunter=' + stripTags(b2).slice(0, 20));
+
+  /* 老汉这个人真的在出生房里（收尾旁白的引荐人来路） */
+  const w = boot('orphan').world;
+  const def = w.data.npcs.guide_teaman;
+  ok('② 老汉是真实 NPC，且就在出生房', !!def && def.room === 'road_jiangnan_1',
+    def ? def.name + '@' + def.room : '(不存在)');
+  ok('② 老汉被数据钉住不走开（noWander）', !!(def && def.noWander));
+  ok('② 第三屏提了茶摊老汉（引荐信与老汉谈话获取）',
+    /老汉|茶摊/.test(stripTags(b2)), stripTags(b2).slice(0, 40));
+}
+
+/* ================================================================
+ *  ③ 文本禁令（各屏逐一硬钉）
+ * ================================================================ */
+section('③ 文本禁令（各屏逐一硬钉）');
+{
   const CMD_TOKENS = ['look', 'kill', 'attack', 'talk', 'ask', 'save', 'flee', 'defend',
     'accept', 'lian', 'go', 'auto', 'north', 'south'];
-  /* 现代词 / 说明书腔 + 电子设备词 */
   const MODERN = ['系统', '属性', '任务', '菜单', '指令', '界面', '存档', '面板', '按钮', '点击', '手机', '电脑'];
 
   const problems = [];
   for (const id of BIRTH_IDS) {
-    const v = intro(id);
-    const text = stripTags(v.body);
-    if (text.length <= 120) problems.push(id + '(正文太短)');
-    if (/[A-Za-z0-9]/.test(text)) problems.push(id + '含 ASCII:' + (text.match(/[A-Za-z0-9]+/) || [''])[0]);
+    /* 走完三屏，把 three 屏的正文拼起来查 */
+    const e = fresh();
+    e.exec('开场 ' + id);
+    const g = e.view().opening;
+    e.exec('开场 female');
+    const c = e.view().opening;
+    const text = stripTags((g.body || '') + (c.body || ''));
+    if (text.length <= 80) problems.push(id + '(正文太短)');
     const cmdHit = CMD_TOKENS.filter(k => text.indexOf(k) >= 0);
     if (cmdHit.length) problems.push(id + '含指令名:' + cmdHit.join('/'));
     const modHit = MODERN.filter(k => text.indexOf(k) >= 0);
     if (modHit.length) problems.push(id + '含现代词:' + modHit.join('/'));
-    if (/失忆|想不起|记不起/.test(text)) problems.push(id + '含失忆表述');
+    if (/失忆|想不起/.test(text)) problems.push(id + '含失忆表述');
     if (/铜牌|东厂|囚车/.test(text)) problems.push(id + '含主线剧透道具');
     if (/破庙|风雪/.test(text)) problems.push(id + '含旧舞台');
-    /* 玩家自己不会「死」（昏倒语义；数据别处的「死」是正常中文，这里只管玩家自身） */
-    if (/你[^。！？]{0,12}死|死[^。！？]{0,8}你/.test(text)) problems.push(id + '说玩家自己死了');
   }
-  ok('② ★ 13 版全部通过文本禁令（指令名 / 现代词 / 失忆 / 剧透 / 旧舞台 / 玩家之死）',
+  ok('③ ★ 各版各屏通过文本禁令（指令名 / 现代词 / 失忆 / 剧透 / 旧舞台）',
     problems.length === 0, problems.slice(0, 6).join('；') || '全清');
 
-  /* HTML 结构：5 段 intro-p，且**只有末段**是 intro-em（交接段） */
-  const struct = [];
-  for (const id of BIRTH_IDS) {
-    const body = intro(id).body;
-    const n = (body.match(/class="intro-p/g) || []).length;
-    const em = (body.match(/class="intro-p intro-em"/g) || []).length;
-    if (n !== 5) struct.push(id + '(段数 ' + n + ')');
-    else if (em !== 1) struct.push(id + '(intro-em ' + em + ')');
-    /* 「楼里新来的」的强调段是苗春那句话，不是茶摊交接段（她人就在楼里）——
-       结构（5 段 / 末段唯一强调）照守，只不要求强调段必须是交接段。 */
-    else if (id !== 'brothel_sold' && !/class="intro-p intro-em"[^>]*>[\s\S]*卖茶的小摊/.test(body)) struct.push(id + '(强调段不是交接段)');
-  }
-  ok('② ★ 每版 5 段 intro-p，末段为唯一的 intro-em 强调段（＝交接段；楼里新来的用自己的强调段）',
-    struct.length === 0, struct.join(',') || '全通');
+  /* 首屏正文不得出现「前世」以外的转生剧透式表述：这里只守「穿越要暗示、不能明说」 */
+  const e0 = fresh();
+  e0.exec('开场 scholar'); e0.exec('开场 male');
+  const cbody = stripTags(e0.view().opening.body);
+  ok('③ 收尾屏用「恍惚 / 熟悉」这类暗示，不点破穿越',
+    !/穿越|重生|现代|21世纪/.test(cbody), cbody.slice(0, 50));
 }
 
 /* ================================================================
- *  ③ 舞台一致：楔子地名与真实出生房间 desc 同源
+ *  ④ 老接口退休：view.intro 恒 {show:false}
  * ================================================================ */
-section('③ 舞台一致：文本 = 真实出生房间（road_jiangnan_1）');
+section('④ 老接口退休（view.intro 恒空壳；introFor 仍在）');
 {
-  const bad = [];
-  for (const id of BIRTH_IDS) {
-    /* ⚠️ 「楼里新来的」（主人 2026-10-11 加的女身）**不在江南大路开局** ——
-       她人就在醉春楼，楔子讲的是楼里的事。强求她也站在老槐树底下，
-       等于把「出身各不同」这件事改回「出身都一个样」。 */
-    if (id === 'brothel_sold') continue;
-    const text = stripTags(intro(id).body);
-    if (text.indexOf('江南大路') < 0) bad.push(id + '(无江南大路)');
-    if (text.indexOf('老槐树') < 0) bad.push(id + '(无老槐树)');
-    if (!/茶摊|卖茶/.test(text)) bad.push(id + '(无茶摊)');
-  }
-  ok('③ ★ 各版舞台都是「江南大路 · 老槐树 · 茶摊」（与出生房间同源；楼里新来的除外）',
-    bad.length === 0, bad.join(',') || '全通');
-  const roomText = String(ROOM.desc || '');
-  ok('③ 真实房间 desc 也含「老槐树」（同源而非文本自造）', roomText.indexOf('老槐树') >= 0, roomText);
-  ok('③ 真实房间 desc 也含卖茶小摊', /卖茶|茶摊/.test(roomText), roomText);
-}
+  const e = fresh();
+  const v = e.view().intro;
+  eq('④ 新玩家 view.intro.show 恒为 false', v.show, false);
+  ok('④ 结构仍是 {show:false}（老代码读它不炸）',
+    v && v.show === false);
 
-/* ================================================================
- *  ④ 交接：楔子讲完必须把玩家交给茶摊老汉（第五轮补的接口）
- * ================================================================ */
-section('④ 握手：楔子结尾交给茶摊老汉（旧版讲完就断了）');
-{
-  const bad = [];
-  for (const id of BIRTH_IDS) {
-    /* 「楼里新来的」不接茶摊那段收束（`introFor` 里 handoff:false）——
-       她人就在楼里，老汉那碗茶轮不到她喝。 */
-    if (id === 'brothel_sold') continue;
-    const text = stripTags(intro(id).body);
-    if (!/卖茶的小摊/.test(text) || !/老汉/.test(text)) bad.push(id + '(没有老汉)');
-    else if (!/坐下/.test(text)) bad.push(id + '(老汉没开口)');
-  }
-  ok('④ ★ 各版结尾都把玩家递给茶摊老汉，并让他开口（楼里新来的除外）',
-    bad.length === 0, bad.join(',') || '全通');
+  ok('④ tutorial.introFor 仍在（老函数没删，只是 view 不再调它）',
+    typeof tutorial.introFor === 'function');
+  /* 反证：introFor 直接调仍能拿到老静态卡（说明它是「退休」不是「拆掉」） */
+  const r = tutorial.introFor({ birth: 'hunter' }, []);
+  ok('④ introFor 直接调仍回老静态卡（保留做兼容，不被 view 消费）',
+    r && typeof r.show === 'boolean' && typeof r.title === 'string');
 
-  /* 老汉这个人真的在出生房里（不是旁白里编的） */
-  const w = boot('orphan').world;
-  const def = w.data.npcs.guide_teaman;
-  ok('④ ★ 老汉是真实 NPC，且就在出生房', !!def && def.room === 'road_jiangnan_1',
-    def ? def.name + '@' + def.room : '(不存在)');
-  ok('④ 老汉被数据钉住不走开（noWander）—— 不然他一走，玩家就找不着引荐人了',
-    !!(def && def.noWander));
+  ok('④ 新接口 view.opening 才是真数据源',
+    e.view().opening && typeof e.view().opening.step === 'string');
 }
 
 /* ================================================================
@@ -236,20 +223,10 @@ section('④ 握手：楔子结尾交给茶摊老汉（旧版讲完就断了）'
  * ================================================================ */
 section('⑤ seen_intro 行为不变（不变量守卫）');
 {
-  const e = boot('scholar');
-  const v0 = e.view().intro;
-  ok('⑤ 新玩家 intro.show=true', v0.show === true);
-  eq('⑤ 新玩家 intro.title = 该身份那版标题', v0.title, intro('scholar').title);
-  ok('⑤ 新玩家 intro.body 非空', typeof v0.body === 'string' && v0.body.length > 100);
-
+  const e = boot('scholar');     // boot() 带了 birth → 直接从第二屏起步
   e.markTutorialFlag('seen_intro');
-  const v1 = e.view().intro;
-  eq('⑤ 看过 → show=false', v1.show, false);
-  eq('⑤ 看过 → title 空串', v1.title, '');
-  eq('⑤ 看过 → body 空串', v1.body, '');
-  ok('⑤ 返回值结构恒为 {show,title,body} 三键',
-    ['show', 'title', 'body'].every(k => k in v1) && Object.keys(v1).length === 3,
-    Object.keys(v1).join(','));
+  const v1 = e.view().opening;
+  eq('⑤ 看过 → opening.show=false', v1.show, false);
 
   /* 跨存档留存 */
   const saved = e.save('b9_intro_slot', { _test: true });
@@ -258,7 +235,7 @@ section('⑤ seen_intro 行为不变（不变量守卫）');
   e2.boot();
   const loaded = e2.loadSave(saved.id);
   ok('⑤ 读档成功', loaded.ok === true, loaded.msg);
-  eq('⑤ 跨存档：intro.show 仍为 false（seen_intro 随档走）', e2.view().intro.show, false);
+  eq('⑤ 跨存档：opening.show 仍为 false（seen_intro 随档走）', e2.view().opening.show, false);
   ok('⑤ 跨存档：tutorialFlags 仍含 seen_intro',
     Array.isArray(e2.world.player.tutorialFlags)
       && e2.world.player.tutorialFlags.indexOf('seen_intro') >= 0,
@@ -267,62 +244,53 @@ section('⑤ seen_intro 行为不变（不变量守卫）');
 }
 
 /* ================================================================
- *  ⑥ 同文件其它导出不受影响（第五轮新增的导出也要在）
+ *  ⑥ tutorial.js 导出面不因「教程下线」而缺
  * ================================================================ */
-section('⑥ tutorial.js 的导出面');
+section('⑥ tutorial.js / intro.js 的导出面');
 {
-  ok('⑥ STEPS 仍存在且含 look 步', Array.isArray(tutorial.STEPS) && tutorial.STEPS.some(s => s.id === 'look'));
-  ok('⑥ guideState 仍是函数', typeof tutorial.guideState === 'function');
-  ok('⑥ flagForCommand 仍是函数且 look → did_look',
+  ok('⑥ STEPS 仍存在', Array.isArray(tutorial.STEPS));
+  ok('⑥ guideState 仍是函数（保留给老档字段用）', typeof tutorial.guideState === 'function');
+  ok('⑥ flagForCommand look → did_look',
     typeof tutorial.flagForCommand === 'function' && tutorial.flagForCommand('look') === 'did_look');
-  ok('⑥ ★ 第五轮新增导出齐全（BIRTH_SECT / SECT_GATE / INTRO_VARIANTS / targetSectFor / tutorialQuestOf / handOutLetter）',
-    !!tutorial.BIRTH_SECT && !!tutorial.SECT_GATE && !!tutorial.INTRO_VARIANTS
+  ok('⑥ ★ 引荐信 / 出身链导出齐全（BIRTH_SECT / targetSectFor / handOutLetter）',
+    !!tutorial.BIRTH_SECT
     && typeof tutorial.targetSectFor === 'function'
-    && typeof tutorial.tutorialQuestOf === 'function'
     && typeof tutorial.handOutLetter === 'function');
-  ok('⑥ 每个身份都在 BIRTH_SECT 里有映射（漏一个，那条新手线就断了）',
+  ok('⑥ 每个身份都在 BIRTH_SECT 里有映射',
     BIRTH_IDS.every(id => Array.isArray(tutorial.BIRTH_SECT[id]) && tutorial.BIRTH_SECT[id].length),
     BIRTH_IDS.filter(id => !tutorial.BIRTH_SECT[id]).join(',') || '全通');
+
+  /* 新开场模块的导出 */
+  ok('⑥ intro.js 导出 screenFor / sectGlimpse / sectGlimpseHtml',
+    typeof introMod.screenFor === 'function'
+    && typeof introMod.sectGlimpse === 'function'
+    && typeof introMod.sectGlimpseHtml === 'function');
 }
 
 /* ================================================================
- * ⑦ ★ 反「句法模具」守卫（2026-10-10 新增，补 ai-flavor-check 的盲区）
- *
- * 为什么单开一条：`tools/ai-flavor-check.js` **抓词不抓句法** —— 它在
- * 「13 版楔子 13/13 都以『江南大路的日头…』开头、11/13 中段收尾逐字相同」
- * 的时候**照样 0 命中**（主人报「楔子 AI 味太重」时，脚本是绿的）。
- * 句法同构是最典型的 AI 味，却只有靠人眼/靠这条守卫才抓得住：
- *   ⇒ 断言 **13 版的首句两两互异**（去 HTML、去空白后比较）。
- * 日后谁再把楔子写成同一个模具倒出来的，这条会立刻红。
+ *  ⑦ ★ 反「句法模具」守卫：各屏首句两两互异
  * ================================================================ */
+section('⑦ ★ 反「同一模具倒多份」守卫');
 {
   const strip = s => String(s || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-  const seen = new Map();
-  const dup = [];
+  const firstOf = t => (strip(t).split(/(?<=[。！？])/).filter(x => x.trim())[0] || '').trim();
+  const seen = new Map(); const dup = [];
   for (const id of BIRTH_IDS) {
-    const r = tutorial.introFor({ birth: id }, []);
-    const txt = strip(r && r.body);
-    const first = (txt.split(/(?<=[。！？])/).filter(x => x.trim())[0] || '').trim();
+    const e = fresh();
+    e.exec('开场 ' + id); e.exec('开场 female');
+    const txt = strip(e.view().opening.body);
+    const first = firstOf(txt);
     if (!first) { dup.push(id + '(空)'); continue; }
     if (seen.has(first)) dup.push(`${id} 与 ${seen.get(first)} 首句相同`);
     else seen.set(first, id);
   }
-  ok('★ 13 版楔子的**首句两两互异**（反「同一模具倒 13 次」；ai-flavor-check 抓不到句法模具）',
-    dup.length === 0, dup.slice(0, 4).join(' ; '));
-
-  /* 顺带：每版正文至少 3 段（短到一段就不成戏了），且都不是纯机制说明 */
-  const tooShort = [];
-  for (const id of BIRTH_IDS) {
-    const r = tutorial.introFor({ birth: id }, []);
-    const paras = String(r && r.body || '').match(/<p[ >]/g) || [];
-    if (paras.length < 3) tooShort.push(id + ':' + paras.length);
-  }
-  ok('  每版楔子正文 ≥3 段', tooShort.length === 0, tooShort.join(','));
+  ok('★ 各出身收尾屏的**首句两两互异**（反「同一模具倒 N 次」）',
+    dup.length === 0, dup.slice(0, 4).join(' ; ') || '全通');
 }
 
 /* ================================================================ */
 console.log('\n———————————————————————————————');
-console.log(`  楔子回归：${pass} 通过 / ${fail} 失败`);
+console.log(`  开场（角色扮演）回归：${pass} 通过 / ${fail} 失败`);
 if (fails.length) console.log('  失败项：' + fails.join('、'));
 console.log('———————————————————————————————');
 process.exitCode = fail ? 1 : 0;

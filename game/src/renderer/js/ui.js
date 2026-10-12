@@ -65,7 +65,12 @@
        表现就是「点了按钮什么都没发生」（本项目最经典的症状）。 */
     $('modal-mask').classList.remove('hidden');
   }
-  function closeModal() { $('modal-mask').classList.add('hidden'); }
+  function closeModal() {
+    const mk = $('modal-mask');
+    mk.classList.add('hidden');
+    /* 收场时连带摘掉开场专属的压暗类（`.intro-mask`），别让它粘在后面的面板上 */
+    mk.classList.remove('intro-mask');
+  }
 
   /* 弹窗的关闭按钮 / 点遮罩空白处关闭 —— 之前 ✕ 没人绑，点了当然没反应 */
   function bindModal() {
@@ -604,12 +609,40 @@
    *  这里负责：右侧常驻「当前该做什么」+ 点击「详情」看全部步骤。
    * ============================================================ */
 
-  /* 沉浸式开场（楔子）：玩家首次进入江湖时弹叙事剧情，看过（seen_intro）后不再弹。
-   * 与后端 tutorial.introFor 配合；点击「踏入江湖」上报标记并关闭。 */
+  /* 沉浸式开场（楔子）：主人 2026-10-12 改成**三轮角色扮演**——
+       ① 我是谁（出身）→ ② 我是男是女 → ③ 那扇门（出身分版旁白 + 前世回忆）
+     演完才进第一章。数据全由后端 `view.opening` 现算（`intro.js`），
+     前端只负责把这一屏画出来、把选择发回去。
+     ⚠️ 与老版 `view.intro` 的区别：老版是**一张静态卡片**（点「踏入江湖」就完），
+        现在是**有来有回的对话框**，所以不能再拿 `S.introShown` 一锁了事 ——
+        得跟着后端给的 `step` 走。 */
   function maybeShowIntro(v) {
+    const op = v && v.opening;
     const it = v && v.intro;
-    if (!it || !it.show) return;
-    if (S.introShown) return;             // 本次会话已弹过，防重复弹
+    /* 兜底：后端还是老接口（没有 opening）时，按老样子弹静态楔子 */
+    if (!op && it && it.show) return showLegacyIntro(it);
+    if (!op || !op.show) {
+      /* 演完了（或本来就不该演）→ 把开场那张卡收掉。
+         ⚠️ 只在**确实演过**的时候收（`S.introStep` 有值），
+            否则会把玩家自己打开的面板给关掉。 */
+      if (S.introStep) { S.introStep = null; closeModal(); }
+      return;
+    }
+    /* 同一屏只重画一次（视图刷新很频繁，别把玩家的选择洗掉） */
+    const sig = op.step + '|' + (op.hint || '');
+    if (S.introStep === sig) return;
+    S.introStep = sig;
+    renderOpening(op);
+    /* 🔴 2026-10-12 主人：「进游戏屏幕界面默认不显示周围环境人物等描写」。
+       开场演着的时候把背后的场景栏（此地人物 / 地上物品 / 当前任务）整个压暗盖住——
+       玩家头一眼看到的就是这一屏角色扮演，不是一屋子 NPC 名字。
+       ⚠️ 用**遮罩加类**而不是给元素加 hidden：关掉时只要去掉类，布局栈原地复原。 */
+    const mk = $('modal-mask');
+    if (mk) mk.classList.add('intro-mask');
+  }
+
+  function showLegacyIntro(it) {
+    if (S.introShown) return;
     S.introShown = true;
     modal(it.title || '楔子', it.body || '',
       '<button id="intro-go" class="btn-primary">踏入江湖</button>');
@@ -620,84 +653,56 @@
     };
   }
 
-  function renderGuide(v) {
-    const g = v && v.guide;
-    const block = $('guide-block');
-    if (!block) return;
-
-    /* 没有引导数据（老存档/异常）就把整块收起来，别占地方 */
-    if (!g || !g.steps) { block.style.display = 'none'; return; }
-
-    /* 全部完成 -> 收起常驻块（新手已经不需要了） */
-    if (g.finished) {
-      block.classList.add('guide-done');
-      const goalEl = $('guide-goal');
-      const hintEl = $('guide-hint');
-      const cntEl = $('guide-count');
-      const barEl = $('guide-bar');
-      if (cntEl) cntEl.textContent = g.doneCount + ' / ' + g.total;
-      if (barEl) barEl.style.width = '100%';
-      if (goalEl) goalEl.textContent = '引导已完成，江湖任你行！';
-      if (hintEl) hintEl.textContent = '点「详情」回看，或点左侧「地图」探索九十九处地点';
-      return;
+  /** 画一屏开场（顶部轮次标签 + 正文 + 一排选项按钮） */
+  function renderOpening(op) {
+    const opts = op.options || [];
+    let h = '<div class="intro-rp">';
+    if (op.hint) h += '<div class="intro-rp-step">' + esc(op.hint) + '</div>';
+    h += '<div class="intro-rp-body">' + (op.body || '') + '</div>';
+    if (opts.length) {
+      h += '<div class="intro-rp-opts">';
+      opts.forEach((o, i) => {
+        h += '<button class="intro-rp-opt" data-intro-key="' + esc(o.key) + '">' +
+          '<span class="iro-label">' + esc(o.label) + '</span>' +
+          (o.desc ? '<span class="iro-desc">' + esc(o.desc) + '</span>' : '') +
+          '</button>';
+      });
+      h += '</div>';
     }
+    h += '</div>';
 
-    block.classList.remove('guide-done');
-    const cntEl = $('guide-count');
-    const barEl = $('guide-bar');
-    const goalEl = $('guide-goal');
-    const hintEl = $('guide-hint');
+    const foot = op.step === 'birth'
+      ? '<button class="btn-ink" id="intro-later">先放一放，我随便走走</button>'
+      : '';
+    modal(op.title || '开场', h, foot || '<span class="dim">选一个，接着往下走。</span>');
 
-    if (cntEl) cntEl.textContent = g.doneCount + ' / ' + g.total;
-    if (barEl) barEl.style.width = Math.round(g.doneCount / (g.total || 1) * 100) + '%';
-    if (goalEl) goalEl.textContent = g.current ? g.current.goal : '';
-    if (hintEl) hintEl.textContent = g.current ? g.current.hint : '';
-  }
-
-  /* 引导详情面板：全部步骤清单 */
-  function guideHtml(v) {
-    const g = v && v.guide;
-    if (!g || !g.steps) return '<div class="modal-text">引导数据不可用。</div>';
-    const story = g.story || {};
-    const tgt = story.target || null;
-    let h = '<div class="guide-panel">';
-
-    /* 头：这是「完整流程」页（与「任务」面板里那条只有当前进度不同）。
-       标题带「新手教程」四个字 —— 玩家的入口就叫「新手教程」，
-       面板抬头跟入口对不上，玩家会怀疑自己点错了地方。 */
-    h += '<div class="gp-head">新手教程 · 入江湖　' +
-      '<b>' + g.doneCount + ' / ' + g.total + '</b> 章' +
-      (g.finished ? '<span class="gp-finish">　✓ 已走完</span>' : '') + '</div>';
-    h += '<div class="gp-note">这条路走完，你就算在江湖上站住了。'
-      + '左边「任务」里只显示你眼下这一章，这里是全的。</div>';
-    if (tgt && tgt.name) {
-      h += '<div class="gp-target">这一程的去处：<b>' + esc(tgt.name) + '</b>'
-        + (tgt.joined ? '<span class="gp-tag">已入门</span>' : '')
-        + (tgt.pitch ? '<div class="gp-pitch">' + esc(tgt.pitch) + '</div>' : '')
-        + '</div>';
-    }
-
-    /* 全流程：**每一章都列出来**（这是「完整流程」页的意义），
-       但剧情旁白只给「已经走到 / 正在走」的那些 —— 后面几章的正文留给玩家自己撞上。 */
-    h += '<div class="gp-steps">';
-    g.steps.forEach((s, i) => {
-      if (s.id === 'free') return;
-      const cls = s.done ? 'done'
-        : (s.locked ? 'locked' : (g.current && g.current.id === s.id ? 'cur' : 'todo'));
-      h += '<div class="gp-step ' + cls + '">' +
-        '<span class="gps-idx">' + (s.done ? '✓' : (s.locked ? '🔒' : (s.no || i + 1))) + '</span>' +
-        '<div class="gps-body">' +
-        '<div class="gps-title">' + esc(s.title) + '</div>' +
-        '<div class="gps-goal">' + esc(s.goal) + '</div>' +
-        (s.story ? '<div class="gps-story">' + esc(s.story).replace(/\n/g, '<br>') + '</div>' : '') +
-        (!s.done && !s.locked ? '<div class="gps-hint">' + esc(s.hint) + '</div>' : '') +
-        '</div></div>';
+    /* 选身份 / 选性别 / 走过去坐下 —— 三类按钮同一套派发 */
+    document.querySelectorAll('[data-intro-key]').forEach(b => {
+      b.onclick = () => {
+        const k = b.getAttribute('data-intro-key');
+        b.disabled = true;
+        /* ⚠️ 走**真指令**（`开场 <key>`）而不是直接改前端状态：
+           出身要同步到 `p.birth` 与主线那条线（后端 `intro.step` 干的事），
+           前端自己改一份迟早跟存档对不上。
+           `fromButton:true` = 按钮来源（收尾不抢焦点，见铁律 31）。 */
+        doCmd('开场 ' + k, { fromButton: true });
+      };
     });
-    h += '</div>';
-    h += '<div class="gp-foot">引导不捆人。想干什么干什么，回头点这里看就是。</div>';
-    h += '</div>';
-    return h;
+    /* 「先放一放」只在第一轮给：允许玩家先随便走走，回来还能接着选。
+       ⚠️ 但**不点亮** `seen_intro` —— 放一放不等于演完了。 */
+    const later = $('intro-later');
+    if (later) later.onclick = () => {
+      S.introStep = null;
+      closeModal();
+    };
   }
+
+  /* 🔴 2026-10-12 主人「新手教程剧情全删」：
+     这里原先躺着 renderGuide（右侧常驻指引块）与 guideHtml（「新手教程 · 入江湖」
+     完整流程面板）两个函数 —— 整块下线，**函数一并删掉**，
+     而不是留着「反正没人调」。留着迟早有人接回去（本项目最吃这个亏）。 */
+
+  function renderGuide() { /* 已下线：新手教程剧情全删（2026-10-12） */ }
 
   /* 任务数据归一化：服务端返回 {active, done, completedCount}，
      也兼容旧格式 / Mod 直接给数组的情况 —— 一律转成「进行中的任务数组」 */
@@ -1644,14 +1649,13 @@
     if (!v) return;
     const p = v.player || {};
 
-    /* 新手教程：面板类指令不进后端，打开面板等于「玩家做了这一步」。
-       集中在这里上报，任何入口（命令/侧栏按钮/快捷键）都不会漏。
-       后端 markTutorialFlag 幂等，重复上报无副作用。 */
-    const gf = panelGuideFlag(name);
-    if (gf && api.markGuide) {
-      await api.markGuide(gf);
-      v = S.view || v;
-    }
+    /* 🔴 2026-10-12 主人「新手教程剧情全删」：
+       原先这里有一句「打开面板 = 玩家做了这一步」的教程上报
+       （`panelGuideFlag` → `api.markGuide('did_bag')` 之类）——
+       教程已经没了，没人在读这些标记，整段摘掉。
+       ⚠️ 后端 `guide/mark` 路由与 `markTutorialFlag` 都留着：
+          存档里 `tutorialFlags` 是老字段，老前端（手机上没更新的那一版）
+          还在发它 —— 后端收下不报错就行，不必跟着一起拆。 */
 
     let title = '', html = '';
 
@@ -1714,9 +1718,6 @@
     } else if (name === 'slaves') {
       title = '奴册 · 护院 · 麻袋';
       html = slavesHtml(v);
-    } else if (name === 'guide') {
-      title = '江湖指引';
-      html = guideHtml(v);
     } else if (name === 'help') {
       title = '指令帮助';
       html = helpHtml();
@@ -2570,11 +2571,10 @@
       return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
     });
 
-    /* ---- 新手教程那条特别渲染（主人第四轮）----
-       「『任务』里面只会显示当前新手教程进度」—— 所以这里**只给当前这一章**
-       （章次 + 剧情 + 目标 + 进度条），不铺开全部章节；
-       要看完整流程，点卡片底部那个按钮去「新手教程」面板（那边才是全的）。
-       两份内容都来自后端同一份 guide 数据，不在这里另算。 */
+    /* ---- 🔴 2026-10-12 主人「新手教程剧情全删」：
+       原先这里有一条「新手教程」置顶卡（`newbieCard`）+ 一段 `trackBtn` 的
+       `__newbie__` 分支。整块下线 —— 任务面板里只剩**真任务**（主线 / 支线）。
+       `trackBtn` 仍在（真任务要能追踪），只是不再有哨兵值那条分支。 */
     /* 追踪按钮（主人 2026-10-08，2026-10-12 合并）：
          ★ 主人：「把追踪与取消追踪合到一起吧」。
          ⇒ 后端合成**一条** `追踪 <任务>`，点两次就是「追 → 不追」；
@@ -2585,7 +2585,7 @@
          ⚠️ `data-on` 仍要留着：它现在是**给玩家看的标签依据**，
            不再是「决定发哪条指令」的依据。判定读 `v.track`（后端 `p.track` 原样下发）。 */
     const trackBtn = q => {
-      const id = q.isTutorial ? '__newbie__' : (q.id || '');
+      const id = q.id || '';
       if (!id) return '';
       const on = String((v && v.track) || '') === id;
       return '<button class="q-track' + (on ? ' on' : '') + '"' +
@@ -2593,25 +2593,7 @@
         (on ? '取消追踪' : '追踪') + '</button>';
     };
 
-    const newbieCard = q => {
-      const cur = q.cur || 0, tot = q.count || 1;
-      const pct = Math.max(4, Math.round(cur / Math.max(1, tot) * 100));
-      let s = '<div class="quest-card newbie">';
-      s += '<div class="q-name">' + esc(q.name) + '<span class="qn-badge">进行中</span></div>';
-      s += '<div class="q-desc">' + esc(q.desc || '') + '</div>';
-      s += '<div class="qnb-bar"><i style="width:' + pct + '%"></i></div>';
-      s += '<div class="qnb-count">第 ' + (q.chapter || 1) + ' / ' + tot + ' 章　' + esc(q.chapterTitle || '') + '</div>';
-      if (q.stageDesc) s += '<div class="q-stage">' + esc(q.stageDesc) + '</div>';
-      if (q.goal) s += '<div class="qnb-goal">当前目标：' + esc(q.goal) + '</div>';
-      if (q.hint) s += '<div class="qnb-hint">' + esc(q.hint) + '</div>';
-      if (q.targetSect) s += '<div class="qnb-sect">这一程的去处：' + esc(q.targetSect) + '</div>';
-      s += '<div class="qnb-foot">' + trackBtn(q) +
-        '<button class="op-btn" data-cmd="guide">看完整流程（新手教程）</button></div>';
-      return s + '</div>';
-    };
-
     const card = q => {
-      if (q && q.isTutorial) return newbieCard(q);
       let s = '<div class="quest-card"><div class="q-name">' + esc(q.name) + '</div>';
       s += '<div class="q-desc">' + esc(q.desc || '') + '</div>';
       s += '<div class="q-stage">当前阶段：' + esc(q.stageDesc || '—') + '</div>';
@@ -2823,9 +2805,17 @@
     let MAP_CELL = Math.round((NARROW ? 52 : 30) * z);   // 每格边长（含走廊）
     const MAP_PAD = NARROW ? 30 : 34;     // 画布留白
     const M_LINE = NARROW ? 1.15 : 1;     // 名字行距
-    /* （名字上限 `M_NAME_MAX` 已随「纯地名」一起退休：现在一律显示全名，
-        长名靠 fontOf() 缩字号塞进格子，不再按字数砍。） */
-    const mFont = r => Math.max(7, Math.round((NARROW ? (r.current ? 14 : 13) : (r.current ? 9 : 8)) * z));
+    /* （名字上限 `M_NAME_MAX` 已随「纯地名」一起退休：格子里摆的是**短名**
+        （`mapLabel()`，≤4 字），字号保持基准，不再靠缩字号塞长名。） */
+    /* ★ 2026-10-13 主人报「唐门遮挡旁边地块名」后的标定：
+       格子里最多 4 个字（`MAP_NAME_MAX`），所以基准字号必须满足
+       `4 × 字号 ≤ 格宽`，否则又是溢出压字：
+         · 桌面格 30px ⇒ 4×7=28px ✓（原 8px 会到 32px，超 2px）
+         · 窄屏格 52px ⇒ 4×13=52px ✓（正好一格，收一点字距就稳）
+       ⇒ 桌面档从 8/9 调到 **7/8**。为什么不是继续缩到 6px：7px 在
+         4 字名上仍是「一行摆得下」的最小可读档；再小就只能靠 CSS 的
+         `overflow:hidden` 硬裁，裁字比小一档更难看。 */
+    const mFont = r => Math.max(7, Math.round((NARROW ? (r.current ? 14 : 13) : (r.current ? 8 : 7)) * z));
 
     const m = v.map || {};
     const allRooms = m.rooms || [];
@@ -3074,13 +3064,66 @@
           · 没去过   → 淡墨（.dim）
        名字**不再截断**：原来 desktop 只留 4 字、窄屏 6 字（`shortName`），
        于是满图「华山派·玉」「长安城·朱」这种半截名。现在按格宽自动换算字号，
-       两到三行放下全名；实在长的（>9 字）才降字号压到三行内。 */
+       两到三行放下全名；实在长的（>9 字）才降字号压到三行内。
+
+       ★ 2026-10-13 主人：「世界地图上一些区域名字（唐门）会遮挡某个地块名字，
+       而另一些（白鹿书院）就刚刚好不会遮挡」。
+       查下来这不是区域名 —— 区域名早在 2026-10-12 就整体下线了（见上「区域/城市名
+       已下线」那段）。主人看到的，是**房间名自己横向溢出到邻格**：
+
+       旧算法只按「行数」收字号（`ceil(len*f/perLine) > 3` 才降），**完全没管
+       「一行塞不塞得下」**。`perLine = 格宽*0.95` 是给**换行后的单行**用的上限，
+       而 `ceil()` 又把「一行刚好放 4.5 个字」也算成 1 行 —— 于是 4 字名在 30px
+       的格子里按 8px 排，宽 32px，**溢 2px**；7 字的「白鹿书院·讲堂」宽 56px，**溢 26px**。
+       溢出那半截就压到左右邻格的字上，看着就是「这个名字遮挡了旁边地块的名字」。
+       为什么主人眼里是「唐门 / 白鹿书院」这两个例子：这两个**名字长**
+       （唐门·堡门 5 字溢 10px、白鹿书院·讲堂 7 字溢 26px），而它俩的邻居恰好也
+       是**长名的房间**（入蜀官道 / 江南城·翰墨斋），两头都长 → 一眼看见撞在一起；
+       邻格是「江湖」「铁匠铺」这种 2~3 字短名的（溢 -14px ~ -6px，压根不溢），
+       就算贴在一起也看不出压字。**根因是长名溢出，不是区域名。**
+
+       ★ 修法（下面是**失败两次**才定下来的，别照「直觉」改回去）：
+       失败①「缩字号塞进格子」—— 桌面端 30px 格子里 311 个名字有 300 个被压到
+         6px 下限，全图糊成蚂蚁，比原来还糟。字越小越看不清，等于把「压字」
+         换成「看不清」，没赚。
+       失败②「取『·』**前面**那一半」—— 「白鹿书院·讲堂」→「白鹿书院」读着是通顺，
+         可数据里 80% 的房间都是「地点·房间」两层命名，全市/全村一起塌成同一个词：
+         实测「东市」16 个、「江南城」15 个、「皇城」15 个、「青溪村」13 个、
+         「城东」11 个…… 满图重复地名，比压字还难认。
+
+       正解 = **只砍字、不缩字号，而且砍的是「前缀」留的是「尾段」**：
+         · 地图格子里摆**短名**（≤4 字）—— 图是「认路」用的，要在意全名，
+           点开房间看抬头（`.room-head` 一直显示全名），鼠标悬停有 `title`。
+         · 字号**一律保持基准**（桌面 8px / 窄屏 13px）：4 字 × 8px = 32px，
+           落在 30px 格上只多出 2px，靠 `letter-spacing` 收紧与格子的 0.95 边距
+           完全能吃下，绝不会压到邻格 —— 这才是主人要的「不遮挡」。
+         · 短名怎么取：有「·」就取**「·」后面那一段**（「白鹿书院·讲堂」→「讲堂」，
+           「江南城·铁匠铺」→「铁匠铺」，「唐门·堡门」→「堡门」）——
+           这后半段正是每间房**独一无二**的部分，重名率最低；
+           「·」后那段超过 4 字或压根没「·」的，退回取前 4 字。
+       这样主人举的「唐门」「白鹿书院」两处，格子里分别是「堡门」「讲堂」，
+       一格一词、互不压字 —— 而区域的大地名（唐门 / 白鹿书院）本来就不画在地块上，
+       改由「地名索引」那排按钮承担（见下面 `.map-region-nav` 那段）。 */
+    /* 地图格子里的短名（≤4 字）。⚠️ `shortName()`（旧的「砍刀」）在地图里没用，
+       它按**字数上限**砍（4/6），但不管「砍哪一头」「会不会撞名」；
+       这里要的是「取哪一段才唯一」，规则比它细，所以单独一份。 */
+    const MAP_NAME_MAX = 4;
+    const mapLabel = name => {
+      const s = String(name || '');
+      if ([...s].length <= MAP_NAME_MAX) return s;
+      const dot = s.indexOf('·');
+      /* 「·」后面那段是「哪一间房」，最不容易撞名 —— 优先用它 */
+      if (dot > 0) {
+        const tail = [...s.slice(dot + 1)];
+        if (tail.length && tail.length <= MAP_NAME_MAX) return tail.join('');
+      }
+      /* 没「·」（「黑松林深处」）或尾段太长的，退回前 4 字 */
+      return [...s].slice(0, MAP_NAME_MAX).join('');
+    };
     const fontOf = r => {
-      const len = String(r.name || '').length;
-      let f = mFont(r);
-      const perLine = MAP_CELL * 0.95;
-      while (f > 6 && Math.ceil(len * f / perLine) > 3) f--;
-      return f;
+      /* 字号只跟「短名的字数」有关：4 字以内一律基准字号，不缩。
+         （`mFont` 给的是基准，`current` 那格再大一点点，保持「我在哪」好认。） */
+      return mFont(r);
     };
     rooms.forEach(r => {
       const left = (r.x - b.minX) * MAP_CELL + MAP_PAD;
@@ -3099,8 +3142,11 @@
       /* ★ 去掉「战争迷雾」（主人第四轮要求：「地图不要搞那些战争迷雾」）。
          原来是「去过/一步可达才显示名字，没去过的只留一个淡点」——
          世界地图上看过去一片空白小方块，不知道哪儿是哪儿，也没法规划路线。
-         现在**所有地块都显示名字**，只用颜色区分「去过 / 没去过」。 */
+         现在**所有地块都显示名字**，只用颜色区分「去过 / 没去过」。
+         ⚠️ 格子里摆的是 `mapLabel(r.name)`（短名），**全名在 title 里**
+            （鼠标悬停能看全，点开面板抬头也是全名）。 */
       const label = r.name || '？';
+      const short = label === '？' ? label : mapLabel(label);
       h += '<button class="' + cls + (r.visited || r.current ? '' : ' dim') +
         '" style="left:' + left + 'px;top:' + top + 'px;' +
         'width:' + MAP_CELL + 'px;height:' + MAP_CELL + 'px"' +
@@ -3108,7 +3154,7 @@
         (r.dist >= 0 ? '　' + r.dist + ' 步' : '　很远') + '"' +
         ' data-room="' + esc(r.id) + '">' +
         '<span class="mn-name" style="font-size:' + fontOf(r) + 'px;line-height:' + M_LINE + '">' +
-        esc(label) + '</span></button>';
+        esc(short) + '</span></button>';
     });
 
     /* （区域/城市名已按主人 2026-10-12 要求整体下线，见上方 map-region-box 那段注释。） */
@@ -3183,6 +3229,9 @@
         : ('没去过' + r.name + '，点了只是把视角移过去');
       return '<button class="mrn-btn' + (r.id === curRegion ? ' cur' : '') + (can ? ' canfly' : ' nofly') + '"' +
         (can ? ' data-fly-region="' + esc(r.name) + '"' : ' data-pan-region="' + esc(r.id) + '"') +
+        /* `--mr-c` = 该区域自己的颜色（`regions[].color`），给名字底下那条虚线下划线用。
+           色值来自数据、不是用户输入，但仍走一遍 esc 免得混进引号把样式顶开。 */
+        ' style="--mr-c:' + esc(r.color || '#999') + '"' +
         ' title="' + esc(tip) + '">' +
         '<i class="mrn-dot" style="background:' + esc(r.color || '#999') + '"></i>' +
         '<span class="mrn-name">' + esc(r.name) + '</span>' +
@@ -3597,7 +3646,9 @@
     sect: 'sect', 门派: 'sect',
     equipment: 'equipment', eq: 'equipment', 装备: 'equipment', 穿戴: 'equipment',
     affects: 'affects', 效果: 'affects', 状态效果: 'affects',
-    guide: 'guide', 指引: 'guide', 新手教程: 'guide', 引导: 'guide',
+    /* 🔴 「guide / 指引 / 新手教程 / 引导」这四个面板别名已删 ——
+       2026-10-12 主人「新手教程剧情全删」，面板本身都没了。
+       留着别名会把玩家送进一个「暂无内容」的空面板。 */
     social: 'social', 社交: 'social', 人脉: 'social', 好感: 'social', 人际关系: 'social',
     love: 'love', 姻缘: 'love', 姻缘簿: 'love', 婚配: 'love', 义亲: 'love', 亲人: 'love',
     home: 'home', 家宅: 'home', 房产: 'home', 我的家: 'home', 我的家宅: 'home', 家园: 'home',
@@ -3649,12 +3700,9 @@
     return QUIT_CMDS.indexOf(String(cmd || '').trim().toLowerCase()) >= 0;
   }
 
-  /* 面板 → 新手教程标记。用函数声明而非 const，避免 panel() 在 719 行
-     提前访问它时的 TDZ 报错（panel 早于 const 声明但调用发生在加载后，
-     仍然用函数更稳妥）。 */
-  function panelGuideFlag(name) {
-    return { inventory: 'did_bag', score: 'did_score', attr: 'did_score' }[name] || null;
-  }
+  /* 🔴 panelGuideFlag 已删（2026-10-12「新手教程剧情全删」）：
+     它把「打开某个面板」映射成教程标记（inventory→did_bag / score→did_score…）。
+     教程下线后没有消费者了。 */
 
   /* 地图画布双轴（斜向）拖拽平移 */
   function bindMapPan() {
@@ -3908,7 +3956,7 @@
     if (S.busy) { toast('上一道指令还在执行…', 'warn', 1200); return; }
 
     /* 面板类指令：本地开面板，不打扰后端。
-       新手教程标记由 panel() 内部统一上报，这里不再重复上报。
+       （「打开面板 = 教程做了这一步」那套上报已随新手教程一起下线，2026-10-12。）
        ⚠️ 吐纳 / 双修 / 采补 当中点面板键，要先把这个状态收掉（见 busyState 注释）。 */
     const pn = panelForCmd(cmd);
     if (pn) {
@@ -4186,8 +4234,17 @@
     { label: '飞行', cmd: 'fly' },
     { label: '任务', cmd: 'quests' },
     { label: '帮助', cmd: 'help' },
-    { label: '新手教程', cmd: 'guide' },
+    /* 🔴 2026-10-12 主人「新手教程剧情全删」——
+       这里本来挂过一条「新手教程」快捷键，早先已从默认表摘掉；
+       现在连**面板与指令**（guide）也一并下线了，这条注释与下面
+       `loadQuickbar` 里那段「摘掉老玩家残留」的逻辑仍要留着：
+       老玩家的 localStorage 里还可能存着那条已退休的按钮，
+       不清掉就是一颗点了报错的死按钮（见 `RETIRED_QUICKBAR`）。 */
   ];
+
+  /* 已经下线的快捷键：老玩家 localStorage 里还存着，读出来要摘掉
+     （否则「删了按钮」这件事只对新号生效）。加新条目时同步这里。 */
+  const RETIRED_QUICKBAR = { guide: true };
 
   function loadQuickbar() {
     try {
@@ -4195,7 +4252,7 @@
       if (s) {
         const arr = JSON.parse(s);
         if (Array.isArray(arr) && arr.length) {
-          const mine = arr.filter(x => x && x.cmd);
+          const mine = arr.filter(x => x && x.cmd && !RETIRED_QUICKBAR[x.cmd]);
           /* 老玩家的快捷键存在 localStorage 里，**默认表加了新按钮他们也看不到**。
              这里把「默认有、他这份没有」的补到末尾（不覆盖他自己改过的顺序与文字）——
              不然每次加按钮都只有新号玩家见过。 */
@@ -4282,7 +4339,7 @@
      ⚠️ 不变式（`tools/smoke-uiux.js` §7 会钉住）：**本清单必须覆盖 `index.html`
         `#sidebar` 里每一个 `data-panel` / `data-act`** —— 否则窄屏（侧栏 display:none）
         那个面板在手机上就又没有入口了，而且不会有人发现。
-     ⚠️ 本清单比侧栏多出两项（`slaves` 奴册·护院 / `guide` 江湖指引）：它们**根本不在
+     ⚠️ 本清单比侧栏多出两项（`slaves` 奴册·护院）：它们**根本不在
         侧栏里**，桌面端只能靠指令或快捷条进；留在 ☰ 里是有意的，§7 把它们记为「已知多余项」，
         别的多余项仍会报红。 */
   function openSideMenu() {
@@ -4303,7 +4360,6 @@
       { label: '奴册 · 护院', panel: 'slaves' },
       { label: '地图', panel: 'map' },
       { label: '指令帮助', panel: 'help' },
-      { label: '江湖指引', panel: 'guide' },
       { label: '保存进度', act: 'save', hint: '存到本机' },
       { label: '读取存档', act: 'loadlist' },
       { label: 'MOD 管理', act: 'modcenter' },
@@ -4338,7 +4394,7 @@
     }
 
     modal('编辑快捷键',
-      '<div class="modal-text">按钮文字随便起，指令填<b>英文或中文</b>都行（如 look、背包、help、guide）。改完点保存。</div>' +
+      '<div class="modal-text">按钮文字随便起，指令填<b>英文或中文</b>都行（如 look、背包、help、地图）。改完点保存。</div>' +
       '<div class="qb-edit-list" id="qb-edit-list"></div>' +
       '<button class="btn-mini" id="qb-add">＋ 加一行</button>',
       '<button class="btn-ink" id="qb-reset">恢复默认</button>' +
@@ -4604,16 +4660,9 @@
   /* ============================================================
    *  侧栏按钮绑定
    * ============================================================ */
-  function bindGuide() {
-    const btn = $('guide-detail');
-    if (btn) btn.onclick = () => panel('guide');
-    const blk = $('guide-block');
-    /* 点引导卡片主体也能打开详情 */
-    if (blk) {
-      const body = blk.querySelector('.guide-body');
-      if (body) body.onclick = () => panel('guide');
-    }
-  }
+  /* 🔴 bindGuide 已删（2026-10-12「新手教程剧情全删」）：
+     它绑的 `#guide-detail` / `#guide-block` 两个节点已经从 index.html 摘掉，
+     留着只会是两行永远取不到元素的死绑定。 */
 
   /* 侧栏「动作」按钮的统一处理（左侧栏与手机 ☰ 菜单共用一处，别写两份） */
   function doSidebarAct(a) {
@@ -4705,7 +4754,7 @@
     runInteractAct,
     /* 「接取任务」的任务详情弹窗（主人第四轮）—— 挂出来便于测试真派发 */
     openQuestPreview,
-    bindInput, bindHotkeys, bindSidebar, bindGuide,
+    bindInput, bindHotkeys, bindSidebar,
     showModCenter, showModMaker, showMarket,
     afterAction, autoSave, autosaveId,
     /* 测试出口：把纯渲染函数挂出来。

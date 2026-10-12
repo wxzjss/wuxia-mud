@@ -34,41 +34,48 @@ function boot(seed) {
   e.newGame({ name: '追事的', gender: 'male', birth: 'wuxue' });
   return e;
 }
-/** 把新手教程整条标记做完（模拟走完新手那一程） */
-function finishTutorial(p) {
-  /* ⚠️ 运行期 `p.tutorialFlags` 是**数组**（引擎 markTutorial 用 indexOf 判重）；
-     `guideState` 内部自己会 `new Set(...)`，两种形态都吃。测试别给 Set ——
-     给 Set 会让引擎那条 indexOf 当场抛错（真踩过）。 */
-  p.tutorialFlags = ['did_look', 'did_step', 'did_leave', 'did_move', 'did_train',
-    'did_talk', 'did_accept', 'sect', 'did_fight', 'did_save'];
-  p.sect = 'huashan';
-  p.kills = 2;
-}
+/* （原 `finishTutorial` 随新手教程下线一并删除：教程整条没了，
+   再没有「把新手那一程走完」这回事。老存档字段 tutorialFlags 仍归引擎管。） */
 
 (async () => {
   console.log('==============================================');
   console.log('  任务追踪（大框显示哪一桩事）');
   console.log('==============================================');
 
-  /* ---------- ① 开局 ---------- */
-  sec('① 初始默认追踪新手剧情任务');
+  /* ---------- ① 开局：默认不追任何任务 ---------- */
+  sec('① 开局默认不追踪（主人 2026-10-12 最终口径）');
   {
     const e = boot();
     const v = e.view();
     const p = e.world.player;
-    ok('初始 p.track = 新手剧情任务', p.track === sb.NEWBIE, JSON.stringify(p.track));
-    ok('大框里就是新手第一章', !!storyOf(v) && storyOf(v).arc === 'tutorial',
-      storyOf(v) && storyOf(v).arcLabel);
-    ok('★ 主线**照旧开局就接**（主人明确要求不变）', p.questStage('q_main_jianghu') !== undefined,
-      'stage=' + p.questStage('q_main_jianghu'));
-    ok('★ 但第一幕不重复要拜师（拜师归新手第 6 章）',
-      p.questStage('q_main_jianghu') === 1, 'stage=' + p.questStage('q_main_jianghu'));
+    /* 🔴 口径变更（主人 2026-10-12）：「屏幕上方那个大方框的默认为
+       **没有追踪任何任务会显示的界面**」「初始主线任务回滚到第一个任务是
+       加入一个门派（**默认不追踪**）」。
+       —— 推翻 2026-10-08 那句「初始默认追踪新手剧情任务」。 */
+    ok('★ 开局 p.track 为空（不追任何任务）', p.track === null, JSON.stringify(p.track));
+    ok('★ 开局大框收起（view.story 为 null → 让位给房间描述）',
+      storyOf(v) === null, JSON.stringify(storyOf(v)));
+    ok('★ 面板据此画「没在追」的样子（view.track 为 null）', v.track === null, JSON.stringify(v.track));
+    ok('★ 但新手剧情**照样在**（只是没显示）：随时能追起来',
+      !!p && p.questStage('q_main_jianghu') !== undefined);
     /* 主人：「主线剧情依旧是开局就接这个不变，但**不会在屏幕下方显示**」 */
     const v0 = e.newGame({ name: '重开' });
     const storyLines = (v0.lines || []).filter(l => ['story', 'say', 'subtitle'].indexOf(l.kind) >= 0);
     ok('★ 主线不占屏幕下方（开局日志里没有剧情行）', storyLines.length === 0,
       storyLines.map(l => l.kind).join(',') || '干净');
-    ok('★ 大框也不显示主线（此刻追的是新手）', storyOf(v0).arc === 'tutorial', storyOf(v0).arcLabel);
+    ok('★ 主线**照旧开局就接**（主人明确要求不变）', p.questStage('q_main_jianghu') !== undefined,
+      'stage=' + p.questStage('q_main_jianghu'));
+    /* 🔴 2026-10-12 口径再改（新手教程剧情全删）：主线**从第 0 步「拜入一个门派」起步**。
+       不再有新手第 6 章替它办，所以第一幕就是拜师。 */
+    ok('★ 第一幕就是拜入一个门派（stage 0）',
+      p.questStage('q_main_jianghu') === 0, 'stage=' + p.questStage('q_main_jianghu'));
+    /* 玩家主动追 → 大框才显示；这是「默认不追」的必要配套（否则永远看不见）。
+       ⚠️ 原来这里追的是「新手」（`追踪 新手`）—— 教程下线后那个 id 不认了。
+       改追**主线**，验的是同一件事：玩家主动追才显示。 */
+    const r0 = await e.exec('追踪 q_main_jianghu');
+    ok('★ 玩家主动追主线 → 大框才显示出来',
+      e.world.player.track === 'q_main_jianghu' && !!storyOf(r0) && storyOf(r0).arc === 'main',
+      storyOf(r0) && storyOf(r0).arcLabel);
   }
 
   /* ---------- ② 追踪 / 取消追踪 ---------- */
@@ -99,17 +106,19 @@ function finishTutorial(p) {
     ok('★ 再追能追回来', p.track === 'q_main_jianghu' && !!storyOf(r4), storyOf(r4) && storyOf(r4).arcLabel);
   }
 
-  /* ---------- ③ 新手走完 → 自动换（优先主线） ---------- */
-  sec('③ 新手剧情任务结束后自动切（优先主线）');
+  /* ---------- ③ 老存档 p.track=NEWBIE → 导流到主线（教程已下线） ---------- */
+  sec('③ 老存档把 p.track 写成新手哨兵 → 自动导流到主线（不再回教程）');
   {
     const e = boot(8);
     const p = e.world.player;
-    ok('此刻追的是新手', p.track === sb.NEWBIE, p.track);
-    finishTutorial(p);
+    /* 🔴 2026-10-12 教程下线后：老存档里可能还留着 `p.track = NEWBIE`。
+       新口径是 syncTrack ① 见到哨兵就**导流到 pickAuto（优先主线）**，
+       绝不能又摸回已经被删掉的教程。 */
+    p.track = sb.NEWBIE;
     const r = await e.exec('look');
     const s = storyOf(r);
-    ok('★ 新手走完 → 自动换追主线', p.track === 'q_main_jianghu', JSON.stringify(p.track));
-    ok('★ 大框无缝变成主线那一幕（同一个渲染位置，没有重新开始的动作）',
+    ok('★ 老存档的新手哨兵被导流到主线', p.track === 'q_main_jianghu', JSON.stringify(p.track));
+    ok('★ 大框顺势变成主线那一幕（不是教程那一幕）',
       !!s && s.arc === 'main', s && s.arcLabel);
   }
 
@@ -184,26 +193,24 @@ function finishTutorial(p) {
     ok('★ 「追踪」不在前端 PANEL_CMDS 里（否则会被吃成开面板）',
       !/追踪: '/.test(UI.split('PANEL_CMDS')[1] || ''));
 
-    /* 🔴 2026-10-12 主人亲报：「在『任务』里点追踪新手任务，却说『没有这一桩事』」。
-       根因是**按钮发的是 id、后端只认中文说法**。这条断言必须打在后端真行为上 ——
-       只断「按钮发了什么」是抓不到它的（老守卫就是这么漏过去的）。
-       ⚠️ 场景要先摆对：**开局默认就追着新手**，那时按钮显示的是「取消追踪」；
-          主人会去点「追踪」，说明他先前已经把追踪取消掉了 —— 先复现那一步。 */
+    /* 🔴 2026-10-12 教程下线后：`__newbie__` 这个 id 已经**不认**了，
+       后端会回一句「新手教程已经撤下了…」把人导去主线。
+       这条改守**新行为**：发新手 id 不再当成一桩任务，而是给一句明确的翻篇提示
+       （不能静默、不能又说「没有这一桩事」——那才是当年主人报的 bug 形状）。 */
     const e2 = new GameEngine({ seed: 4242, saveDir: SAVE_DIR });
     e2.boot(); e2.newGame({ name: '试剑', gender: 'male', identity: 'zhuangyuan' });
     const p2 = e2.world.player;
-    ok('前提：开局默认追的是新手（所以新手卡上那颗按钮是「取消追踪」）',
-      p2.track === '__newbie__', String(p2.track));
-    e2.exec('取消追踪');                          /* 玩家把它取消掉，按钮这才变回「追踪」 */
-    const r2 = e2.exec('追踪 __newbie__');       /* 前端按钮真实下发的那个 id */
-    ok('★ 点追踪新手任务：后端认这个 id（不再说「没有这一桩事」）',
-      p2.track === '__newbie__'
+    ok('前提：开局不追任何任务', p2.track === null, String(p2.track));
+    const r2 = e2.exec('追踪 __newbie__');
+    ok('★ 发新手 id：给一句明确的「教程已撤下」提示（不是「没有这一桩事」）',
+      (r2.lines || []).some(l => /撤下|主线|江湖路远/.test(l.text || ''))
       && !(r2.lines || []).some(l => /没有这一桩事/.test(l.text || '')),
-      'track=' + p2.track + ' / ' + (r2.lines || []).map(l => l.text).join('|').slice(0, 60));
-    const r3 = e2.exec('追踪 __newbie__');       /* 同一个 id 再点一次 = 取消（合并后的开关） */
-    ok('★ 同一个 id 再点一次就是取消（追踪与取消已合成一条）',
-      p2.track === null && !(r3.lines || []).some(l => /没有这一桩事/.test(l.text || '')),
-      'track=' + p2.track);
+      (r2.lines || []).map(l => l.text).join('|').slice(0, 80));
+    /* 追真任务照旧能用（开关语义不变） */
+    const r3 = e2.exec('追踪 q_main_jianghu');
+    ok('★ 追真任务仍认（追踪 q_main_jianghu）', p2.track === 'q_main_jianghu', String(p2.track));
+    const r4 = e2.exec('追踪 q_main_jianghu');
+    ok('★ 同一个 id 再点一次就是取消（开关语义不变）', p2.track === null, String(p2.track));
   }
 
   /* ---------- ⑧ 大框渲染（真函数） ---------- */

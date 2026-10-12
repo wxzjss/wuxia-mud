@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>武侠行 · 江湖再启</title>
-  <link rel="stylesheet" href="css/main.css?v=20261012e">
+  <link rel="stylesheet" href="css/main.css?v=20261012h">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
 </head>
 
@@ -210,23 +210,8 @@
 
       <!-- 右侧：场景 -->
       <aside id="scene">
-        <!-- 新手引导（完成后自动收起） -->
-        <div class="scene-block guide-block" id="guide-block">
-          <div class="scene-title">
-            <span>新手指引</span>
-            <button class="guide-toggle" id="guide-detail" title="查看全部步骤">详情</button>
-          </div>
-          <div class="guide-body">
-            <div class="guide-progress">
-              <span id="guide-count" class="gp-count">0 / 11</span>
-              <span class="gp-bar"><i id="guide-bar"></i></span>
-            </div>
-            <div class="guide-now">
-              <div class="gn-goal" id="guide-goal">正在加载…</div>
-              <div class="gn-hint" id="guide-hint"></div>
-            </div>
-          </div>
-        </div>
+        <!-- 🔴 2026-10-12 主人「新手教程剧情全删」：原先这里有一块
+             「新手指引」常驻块（#guide-block）—— 整块已下线，删掉不留空壳。 -->
 
         <div class="scene-block">
           <div class="scene-title">此地人物</div>
@@ -361,12 +346,12 @@
 
   <!-- ?v= 用于缓存穿透：改了这里就等于强制所有浏览器重新拉脚本。
        配合服务端的 no-store，确保发版后不会有人继续跑旧代码。 -->
-  <script src="js/localmods.js?v=20261012e"></script>
-  <script src="js/app.js?v=20261012e"></script>
-  <script src="js/ui.js?v=20261012e"></script>
-  <script src="js/modmaker.js?v=20261012e"></script>
-  <script src="js/docdata.js?v=20261012e"></script>
-  <script src="js/start.js?v=20261012e"></script>
+  <script src="js/localmods.js?v=20261012h"></script>
+  <script src="js/app.js?v=20261012h"></script>
+  <script src="js/ui.js?v=20261012h"></script>
+  <script src="js/modmaker.js?v=20261012h"></script>
+  <script src="js/docdata.js?v=20261012h"></script>
+  <script src="js/start.js?v=20261012h"></script>
 </body>
 
 </html>

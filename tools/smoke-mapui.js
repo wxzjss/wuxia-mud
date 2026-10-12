@@ -312,19 +312,65 @@ engine.newGame({ name: '试侠', gender: 'male', birth: 'wuxue' });
     ok('A-5 窄屏几何随格距自适应（无错位）', badGeo.length === 0,
       badGeo.length ? JSON.stringify(badGeo[0]) : '格距 ' + cell + 'px');
 
-    /* 名字：不再截断 —— 断「画上去的地名与后端真实房间名逐字一致」
-       （截过名的必然对不上，比断「≤N 字」更贴新口径）。 */
+    /* 名字：★ 2026-10-13 主人报「唐门遮挡了旁边地块的名字」后改口径 ——
+       格子里现在摆的是**短名**（`mapLabel()`，≤4 字，优先取「·」后那段），
+       不再显示全名（全名一直在 `title` 与房间抬头里）。
+       所以断法跟着换：**短名必须是全名的「合法切片」**（前缀或尾段），
+       而不是随便糊一个。截断后对不上原名 = 有人把规则改坏了。 */
     const named = nodes.filter(n => n.label);
     const nameOf = {};
     (view.map.rooms || []).forEach(r => { nameOf[r.id] = r.name; });
-    const mism = nodes.filter(n => n.room && nameOf[n.room] && n.label !== nameOf[n.room]);
-    ok('A-6 地名与真实房间名逐字一致（不再截断）', named.length > 0 && mism.length === 0,
-      mism.length ? (mism[0].room + ' 显示「' + mism[0].label + '」应为「' + nameOf[mism[0].room] + '」')
+    /* 短名合法切片：全名（≤4 字） / 「·」后那段 / 前 4 字。
+       ⚠️ 三种都要按**码点**切（`[...s]`），不能用 `slice()` 的下标 ——
+          「长安城·明德门」按 UTF-16 下标切前 4 位会砍出「长安城·」这种半截串。 */
+    const legalShort = (full, label) => {
+      const f = String(full || ''), l = String(label || '');
+      if (!l) return false;
+      if (l === f) return true;
+      const dot = f.indexOf('·');
+      if (dot > 0 && l === f.slice(dot + 1)) return true;         /* 「·」后那段 */
+      if (l === [...f].slice(0, 4).join('')) return true;         /* 前 4 **码点** */
+      return false;
+    };
+    const illegal = [];
+    named.forEach(n => {
+      if (!n.room) return;
+      const full = nameOf[n.room];
+      if (full === undefined) return;        /* 视野外的房间：没有可比对的来源，跳过 */
+      if (!legalShort(full, n.label)) {
+        illegal.push({ room: n.room, full: full, label: n.label });
+      }
+    });
+    ok('A-6 格子里是房间名的合法短名（全名 / 「·」尾段 / 前 4 字，不糊名）',
+      named.length > 0 && illegal.length === 0,
+      illegal.length ? (illegal[0].room + ' 显示「' + illegal[0].label + '」，而全名是「' + illegal[0].full + '」')
         : '共 ' + named.length + ' 格，例：' + named.slice(0, 3).map(n => n.label).join('、'));
 
-    ok('A-7 ★ 长名房间窄屏也显示全名（原来砍到 6 字）',
-      LONG_NAME.length > 4 && nodes.some(n => n.label === LONG_NAME),
-      '期望有「' + LONG_NAME + '」，实际最长 ' + named.reduce((a, n) => Math.max(a, String(n.label).length), 0) + ' 字');
+    /* ★ 主人的核心诉求：**格子里的短名不许压到邻格**。
+       短名 ≤4 字、字号保持基准（窄屏 13px）⇒ 4×13=52px ≈ 一格（52px），
+       不越界。这条断言直接量「最宽的名字有没有超出一格」。 */
+    const cw = nodes.length ? nodes[0].width : 0;
+    const overflow = named.filter(n => {
+      const len = [...String(n.label)].length;
+      return len * (n.fontSize || 0) > cw + 0.5;
+    });
+    ok('A-6b ★ 窄屏没有名字横向溢出格子（主人报的「压住旁边地块名」）',
+      cw > 0 && overflow.length === 0,
+      overflow.length ? (overflow[0].label + ' 宽 ' + ([...overflow[0].label].length * overflow[0].fontSize) + 'px > 格 ' + cw + 'px')
+        : '格宽 ' + cw + 'px，最宽名字 ' + named.reduce((a, n) => Math.max(a, [...String(n.label)].length * (n.fontSize || 0)), 0) + 'px');
+
+    /* ★ 2026-10-13：长名房间的**短名**要出现（原来断「全名出现」，
+       现在格子里是短名 —— 按 mapLabel 规则算一遍期望值，对不上就是规则被改坏）。 */
+    const expShort = (() => {
+      const s = String(LONG_NAME);
+      if ([...s].length <= 4) return s;
+      const d = s.indexOf('·');
+      if (d > 0) { const t = [...s.slice(d + 1)]; if (t.length && t.length <= 4) return t.join(''); }
+      return [...s].slice(0, 4).join('');
+    })();
+    ok('A-7 ★ 长名房间在格子里显示短名「' + expShort + '」（原「' + LONG_NAME + '」）',
+      LONG_NAME.length > 4 && nodes.some(n => n.label === expShort),
+      '期望「' + expShort + '」，实际有：' + named.slice(0, 8).map(n => n.label).join('、'));
 
     /* ⚠️ 别假设「style 紧跟在 class 后面」——属性顺序是我这边可以随时调整的自由
        （重设计时在中间插了个 tabindex，这条就假红了一次）。
@@ -332,6 +378,26 @@ engine.newGame({ name: '试侠', gender: 'male', birth: 'wuxue' });
     const canvasTag = (html.match(/<div class="map-canvas[\s\S]{0,400}?>/) || [''])[0];
     const W = parseFloat((canvasTag.match(/style="[^"]*width:(\d+)px/) || [])[1] || '0');
     ok('A-8 窄屏画布内容宽 > 360px（比手机屏宽 → 才需要/能够平移）', W > 360, 'W=' + W);
+
+    /* 🔴 主人 2026-10-12 亲报「世界地图地块显示不全」的正式守卫。
+       根因：SVG 连线层用**内联 width/height = 内容真实像素**（如 892），
+       而画布被 `max-width:100%` 压到手机宽（约 343）⇒ SVG 作为替换元素被
+       **按视口等比缩小**，绝对定位的地块 div 却不缩 ⇒ 线与格子错位。
+       修法：CSS 里 `.map-edges { width:100%; height:100% }`，让 SVG 铺满画布
+       内容盒、不按自身尺寸缩。这条断言两层都守：
+         · HTML 层 —— 画布宽度能反查到 SVG 存在（生成侧没变）；
+         · CSS 层 —— `.map-edges` 必须声明 width/height:100%（否则又会缩）。
+       ⚠️ CSS 必须查真规则，别查注释里的字（本项目踩过「注释里有字样被误判」）。 */
+    const cssSrc = fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'css', 'main.css'), 'utf8');
+    const edRule = (cssSrc.match(/\.map-edges\s*\{[^}]*\}/) || [''])[0];
+    ok('A-9 ★ .map-edges 声明了 width/height:100%（不然窄屏 SVG 会等比缩小、与地块错位）',
+      /width:\s*100%/.test(edRule) && /height:\s*100%/.test(edRule),
+      edRule.replace(/\s+/g, ' ').slice(0, 90) || 'NOT FOUND');
+    /* 反证：SVG 的内联尺寸仍等于画布内容尺寸（生成侧没被顺手改坏） */
+    const svgTag = (html.match(/<svg class="map-edges"[^>]*>/) || [''])[0];
+    const svgW = parseFloat((svgTag.match(/width="(\d+)"/) || [])[1] || '0');
+    ok('A-10 SVG 内联宽 = 画布内容宽（两套坐标同源，缩了才错位）',
+      svgW > 0 && Math.abs(svgW - W) < 1.5, 'svg=' + svgW + ' canvas=' + W);
   }
 
   /* ================================================================
@@ -352,13 +418,31 @@ engine.newGame({ name: '试侠', gender: 'male', birth: 'wuxue' });
     const named = nodes.filter(n => n.label);
     const nameOf2 = {};
     (view.map.rooms || []).forEach(r => { nameOf2[r.id] = r.name; });
-    const mism2 = nodes.filter(n => n.room && nameOf2[n.room] && n.label !== nameOf2[n.room]);
-    ok('A-11 宽屏地名同样是全名（原来只留 4 字）', named.length > 0 && mism2.length === 0,
-      mism2.length ? (mism2[0].label + ' → ' + nameOf2[mism2[0].room]) : '共 ' + named.length + ' 格');
+    const legalShort2 = (full, label) => {
+      const f = String(full || ''), l = String(label || '');
+      if (!l) return false;
+      if (l === f) return true;
+      const dot = f.indexOf('·');
+      if (dot > 0 && l === f.slice(dot + 1)) return true;
+      if (l === [...f].slice(0, 4).join('')) return true;
+      return false;
+    };
+    const illegal2 = [];
+    named.forEach(n => {
+      if (!n.room) return;
+      const full = nameOf2[n.room];
+      if (full === undefined) return;
+      if (!legalShort2(full, n.label)) illegal2.push({ room: n.room, full: full, label: n.label });
+    });
+    ok('A-11 宽屏短名同样是合法切片（不再显示全名）', named.length > 0 && illegal2.length === 0,
+      illegal2.length ? (illegal2[0].label + ' ← ' + illegal2[0].full) : '共 ' + named.length + ' 格');
+    /* ★ 2026-10-13 改口径：字号**不再随名字长度缩**（缩字号那版实测 300/311 个名字
+       被压到 6px，糊成蚂蚁，被推翻）。现在一律基准字号：**短名 ≤4 字、7px 基准**
+       （7px 是「4 字 × 7px = 28px ≤ 30px 格」的最大档，见 ui.js 的 mFont 注释）。
+       这条断「只在基准这两档上，不许再出现 6px 缩过头」。 */
     const fonts = [...new Set(named.map(n => n.fontSize))];
-    /* 字号现在跟着名字长度收缩（长名降字号挤进格子），只要落在可读区间即可 */
-    ok('A-12 宽屏字号在 6~13px 之间（长名自动缩字号）',
-      fonts.length > 0 && fonts.every(f => f >= 6 && f <= 13), '字号=' + JSON.stringify(fonts));
+    ok('A-12 宽屏字号只有基准档（7px 常规 / 8px「你在这里」）',
+      fonts.length > 0 && fonts.every(f => f >= 7 && f <= 13), '字号=' + JSON.stringify(fonts));
 
     /* 几何：格距从节点宽度反推（区域模式会按弹窗放大，不再恒 30px） */
     const pad = 34;
@@ -366,8 +450,20 @@ engine.newGame({ name: '试侠', gender: 'male', birth: 'wuxue' });
     ok('A-13 宽屏几何随格距自适应（格距 ≥ 30px）', badGeo.length === 0 && cell >= 30,
       badGeo.length ? JSON.stringify(badGeo[0]) : '格距 ' + cell + 'px');
 
-    ok('A-14 ★ 同一长名房间：宽窄屏都显示全名（原来宽屏砍到 4 字）',
-      nodes.some(n => n.label === LONG_NAME), `「${LONG_NAME}」`);
+    /* ★ 主人报的「压字」在宽屏同样要守住（桌面 30px 格、4 字 8px = 32px，
+       靠 CSS 的 letter-spacing -.2px 与 max-width:100%;overflow:hidden 吃下）。 */
+    const over2 = named.filter(n => [...String(n.label)].length * (n.fontSize || 0) > cell + 0.5);
+    ok('A-14 ★ 宽屏也没有名字横向溢出格子（4 字 8px 略宽于 30px 格，由 CSS 收住）',
+      cell > 0 && over2.length === 0,
+      over2.length ? (over2[0].label + ' 宽 ' + ([...over2[0].label].length * over2[0].fontSize) + 'px > 格 ' + cell)
+        : '格 ' + cell + 'px，最宽 ' + named.reduce((a, n) => Math.max(a, [...String(n.label)].length * (n.fontSize || 0)), 0) + 'px');
+    const cssSrc2 = fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'css', 'main.css'), 'utf8');
+    const mnRule = (cssSrc2.match(/\.map-node \.mn-name\s*\{[^}]*\}/) || [''])[0];
+    ok('A-15 ★ .mn-name 声明了 overflow:hidden + max-width:100%（兜住任何漏网的长名）',
+      /overflow:\s*hidden/.test(mnRule) && /max-width:\s*100%/.test(mnRule),
+      mnRule.replace(/\s+/g, ' ').slice(0, 100) || 'NOT FOUND');
+    ok('A-16 ★ .mn-name 用了 nowrap（短名不再折行撑高格子）',
+      /white-space:\s*nowrap/.test(mnRule), mnRule.replace(/\s+/g, ' ').slice(0, 100));
   }
 
   /* ================================================================

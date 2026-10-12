@@ -742,8 +742,10 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     }
     ok('⑩-1 ★ 默认快捷键逐条真点：面板类本地开面板、指令类真过后端（无一条点了没反应）',
       bad.length === 0, bad.length ? bad.join(' | ') : QUICK.length + ' 项全部有真实效果');
-    ok('⑩-1b 「guide」属于面板类（前端拦截，不打后端）',
-      panelFor('guide'), 'panelForCmd(guide)=' + panelFor('guide'));
+    /* 🔴 2026-10-12 教程下线后：「指引 / guide」不再是面板指令（别名表摘掉了）。
+       所以这里从「必须是面板类」翻成「**不该**再被当成 guide 面板」。 */
+    ok('⑩-1b 「guide」已不是面板指令（教程下线，别名表摘掉）',
+      !panelFor('guide'), 'panelForCmd(guide)=' + panelFor('guide'));
 
     /* ---- ⑩-2 地图画布 CSS 契约：max-width 与 max-height 成对 ----
        为什么只能查 CSS 字符串：真实横向溢出要有**排版引擎**（getComputedStyle /
@@ -1247,18 +1249,16 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
   }
 
   /* ================================================================
-   *  ⑯ 第四轮 · 「任务」面板置顶新手教程（只给当前进度）
-   *     —— 主人原话：「在新手教程完成前把新手教程任务添加进『任务』里面置顶
-   *        （直接点『新手教程』快捷键进入新手教程页面能看完整的新手教程任务流程
-   *        不同，『任务』里面只会显示当前新手教程进度）」
+   *  ⑯ 第五轮 · 新手教程已整体下线（2026-10-12 主人钦定「剧情全删」）
+   *     —— 原来的⑯/⑰守的是「任务面板置顶新手教程 + 新手教程面板看全流程」，
+   *       那两样 UI 全拆了 ⇒ 本节改守**下线干净**：
+   *       · 任务面板里没有「新手教程」卡与它的专属样式 / 角标 / 进度条；
+   *       · 面板别名表里不再认「指引 / 新手教程 / 引导」；
+   *       · 顺手验一件真事：任务面板本身**照常能开、能画出主线卡**（别误伤）。
    * ================================================================ */
-  section('⑯ 第四轮 · 「任务」面板置顶新手教程（只给当前进度）');
+  section('⑯ 第五轮 · 新手教程 UI 已整体下线（任务面板不再置顶新手卡）');
   {
     const v = engine.view();
-    ok('⑯-0 前提：真引擎的任务列表首条就是新手教程',
-      !!((v.quests.active || [])[0] || {}).isTutorial,
-      ((v.quests.active || [])[0] || {}).name);
-
     const env = loadUi(makeEnv({ innerWidth: 390 }));
     stubApi(env, v);
     closeMasks(env);
@@ -1267,61 +1267,36 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     await settle();
     const mb = String(env.document.getElementById('modal-body').innerHTML || '');
 
-    ok('⑯-1 ★ 面板里出现「<名>（新手教程）」', /入江湖（新手教程）/.test(mb), mb.slice(0, 80));
-    ok('⑯-2 ★ 新手那条有自己的卡片样式（quest-card newbie）', /quest-card newbie/.test(mb));
-    ok('⑯-3 ★ 带「进行中」角标与进度条', /qn-badge/.test(mb) && /qnb-bar/.test(mb));
-    ok('⑯-4 ★ 只显示**当前这一章**（不是把八章全铺开）',
-      /第 \d+ \/ 8 章/.test(mb) && (mb.match(/qnb-count/g) || []).length === 1,
-      (mb.match(/第 \d+ \/ \d+ 章[^<]*/) || [''])[0]);
-    ok('⑯-5 ★ 它是列表里**第一条**（在其它任务卡之前）',
-      (() => {
-        const iNew = mb.indexOf('quest-card newbie');
-        const iOther = mb.indexOf('quest-card', iNew + 5);
-        return iNew >= 0 && (iOther < 0 || iNew < iOther);
-      })(), 'newbie@' + mb.indexOf('quest-card newbie') + ' 其它@' + mb.indexOf('quest-card', mb.indexOf('quest-card newbie') + 5));
-    ok('⑯-6 附一个去「新手教程」面板看全流程的按钮',
-      /data-cmd="guide"/.test(mb), (mb.match(/data-cmd="guide"[^>]*>[^<]*/) || [''])[0]);
-
-    /* 点那个按钮 → 真开「新手教程」面板 */
-    const btn = env.document.querySelectorAll('#modal-body .op-btn')
-      .find(b => b.getAttribute('data-cmd') === 'guide');
-    ok('⑯-7 抠得到「看完整流程」按钮', !!btn);
-    if (btn) {
-      btn.click();
-      await settle(); await settle();
-      const gb = String(env.document.getElementById('modal-body').innerHTML || '');
-      ok('⑯-8 ★ 点它真的换成了「新手教程」面板（完整流程）',
-        /新手教程 · 入江湖/.test(gb), gb.slice(0, 80));
-    }
+    ok('⑯-1 ★ 面板里没有「（新手教程）」这张卡', !/（新手教程）/.test(mb), mb.slice(0, 80));
+    ok('⑯-2 ★ 没有新手卡专属样式（quest-card newbie）', !/quest-card newbie/.test(mb));
+    ok('⑯-3 ★ 没有新手进度条（qnb-bar）', !/qnb-bar/.test(mb));
+    ok('⑯-4 ★ 没有「去新手教程面板」的按钮（data-cmd="guide"）', !/data-cmd="guide"/.test(mb));
+    /* 别误伤：任务面板本身照常工作，能画出主线卡 */
+    ok('⑯-5 任务面板照常画出主线卡', /quest-card/.test(mb) && /江湖路远/.test(mb),
+      (mb.match(/quest-card[^"]*/) || [''])[0]);
   }
 
   /* ================================================================
-   *  ⑰ 第四轮 · 「新手教程」面板 = 完整流程（与「任务」面板不同）
+   *  ⑰ 第五轮 · 前端已无「新手教程」面板（函数 / 别名 / 页面块三处皆无）
    * ================================================================ */
-  section('⑰ 第四轮 · 「新手教程」面板列出完整流程');
+  section('⑰ 第五轮 · 「新手教程」面板已拆除（函数 / 别名 / 页面块）');
   {
-    const v = engine.view();
+    const UISRC = fs.readFileSync(path.join(ROOT, 'game/src/renderer/js/ui.js'), 'utf8');
+    const HTML = fs.readFileSync(path.join(ROOT, 'game/src/renderer/index.html'), 'utf8');
+    ok('⑰-1 ★ 已无 guideHtml 函数', UISRC.indexOf('function guideHtml') < 0);
+    ok('⑰-2 ★ 面板别名表已无 guide 别名',
+      !/guide\s*:\s*'guide'/.test(UISRC) && !/新手教程\s*:\s*'guide'/.test(UISRC));
+    ok('⑰-3 ★ 页面已无 id="guide-block" 真节点', HTML.indexOf('id="guide-block"') < 0);
+    /* 拾级而上：就算真去开这个面板，也不该拿到「新手教程」内容（别名没了 ⇒ 当普通指令） */
     const env = loadUi(makeEnv({ innerWidth: 390 }));
-    stubApi(env, v);
+    stubApi(env, engine.view());
     closeMasks(env);
-    env.WX.S.view = v;
     await env.WXUI.panel('guide');
     await settle();
     const gb = String(env.document.getElementById('modal-body').innerHTML || '');
-
-    ok('⑰-1 ★ 抬头是「新手教程 · 入江湖」（与入口按钮对得上）', /新手教程 · 入江湖/.test(gb));
-    /* ⚠️ 必须带个尾随空格：'class="gp-step' 会把容器 'class="gp-steps' 也算上
-       （数出来 9，假红）。章节 div 的 className 恒为 'gp-step <状态>'。 */
-    const steps = (gb.match(/class="gp-step /g) || []).length;
-    ok('⑰-2 ★ 八章全都列出来（这是与「任务」面板的区别）', steps === 8, steps + ' 章');
-    ok('⑰-3 ★ 标出这一程的去处（由身份定的那家势力）', /这一程的去处/.test(gb),
-      (gb.match(/这一程的去处：<b>[^<]*/) || [''])[0]);
-    ok('⑰-4 ★ 当前章带剧情旁白（gps-story）', /gps-story/.test(gb),
-      (gb.match(/<div class="gps-story">[^<]{0,40}/) || [''])[0]);
-    ok('⑰-5 后面没走到的章节是锁住的（🔒）', /🔒/.test(gb));
-    ok('⑰-6 没有 undefined / NaN 漏进 HTML', !/undefined|NaN/.test(gb),
-      (gb.match(/.{0,30}(undefined|NaN).{0,30}/) || [''])[0]);
-    ok('⑰-7 ★ 整页没有漏填的模板位（花括号）', !/\{[^}\n]{1,20}\}/.test(gb),
+    ok('⑰-4 ★ 打开 guide 面板拿不到「新手教程 · 入江湖」内容',
+      !/新手教程 · 入江湖/.test(gb), gb.slice(0, 80));
+    ok('⑰-5 也没有漏填的模板位（花括号）', !/\{[^}\n]{1,20}\}/.test(gb),
       (gb.match(/\{[^}\n]{1,20}\}/) || ['(无)'])[0]);
   }
 
@@ -1382,9 +1357,12 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     const mb = String(env.document.getElementById('modal-body').innerHTML || '');
     const idList = (mb.match(/data-track="[^"]*"/g) || []).map(x => x.slice(12, -1));
     ok('⑲-1 任务卡上有追踪按钮', idList.length > 0, idList.join(' '));
-    ok('⑲-2 新手剧情那条默认被追着（按钮画成「取消追踪」）',
-      /data-track="__newbie__" data-on="1"/.test(mb), (mb.match(/data-track="__newbie"[^>]*/) || [''])[0]);
-    ok('⑲-3 主线的按钮此刻是「追踪」', /data-track="q_main_jianghu" data-on="0"/.test(mb),
+    /* 🔴 2026-10-12 教程下线 + 开局不追任何任务：
+       任务面板上再没有 __newbie__ 那条卡，开局所有真任务按钮都是「追踪」（data-on=0）。 */
+    ok('⑲-2 面板上已无 __newbie__ 追踪按钮（教程卡已拆）',
+      !/data-track="__newbie__"/.test(mb), (mb.match(/data-track="__newbie"[^>]*/) || ['(无)'])[0]);
+    ok('⑲-2b ★ 开局不追任何任务 ⇒ 所有按钮都是「追踪」态（data-on=0）',
+      !/data-on="1"/.test(mb) && /data-track="q_main_jianghu" data-on="0"/.test(mb),
       (mb.match(/data-track="q_main_jianghu"[^>]*/) || [''])[0]);
 
     const btn = env.document.querySelectorAll('#modal-body [data-track]')
@@ -1394,25 +1372,29 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     ok('⑲-5 ★ 点了真发出「追踪 q_main_jianghu」',
       rec.exec.some(x => x.cmd === '追踪 q_main_jianghu'),
       JSON.stringify(rec.exec.map(x => x.cmd).slice(-3)));
-    /* ★ 2026-10-12 合并后：两态的按钮发的是**同一条**指令「追踪 <id>」，
-       由后端当开关（追着的再点一次就是取消）。所以这里断的是「两态同指令」，
-       而不是「正追着时发『取消追踪』」——那条契约已经随合并作废了。
-       ⚠️ 合并前的守卫只断「按钮发了什么」，抓不到主人报的那个真 bug
-          （点追踪新手任务 → 后端说「没有这一桩事」）。
-          真行为那半边由 smoke-quest-track 打在后端上，这里只管接线。 */
-    rec.exec.length = 0;
-    const mb2 = String(env.document.getElementById('modal-body').innerHTML || '');
+
+    /* ★ 「正追着那枚画成取消追踪」这半边：stubApi 回的是**静态 view**，
+       点完不会自动变状态。为了验「追踪态渲染 + 两态发同一条指令」，这里
+       手动把 view.track 置成 q_main_jianghu（模拟后端已记住），再重开面板。 */
+    const vTracked = JSON.parse(JSON.stringify(vv));
+    vTracked.track = 'q_main_jianghu';
+    const rec2 = stubApi(env, vTracked);   /* ⚠️ stubApi 会**新建** rec，要接住新那个 */
+    env.WX.S.view = vTracked;
+    await env.WXUI.panel('quests');
+    await settle();
+    rec2.exec.length = 0;
     const off = env.document.querySelectorAll('#modal-body [data-track]')
-      .find(b => b.getAttribute('data-on') === '1');
+      .find(b => b.getAttribute('data-track') === 'q_main_jianghu'
+        && b.getAttribute('data-on') === '1');
     ok('⑲-6 找得到正追着那枚（按钮已写成「取消追踪」）', !!off,
       /取消追踪/.test(off ? String(off.innerHTML || '') : ''));
     if (off) { off.click(); await settle(); await settle(); }
     ok('⑲-7 ★ 点它发的是同一条「追踪 <id>」（后端当开关用 = 主人要的合并）',
-      rec.exec.some(x => /^追踪 /.test(x.cmd)),
-      JSON.stringify(rec.exec.map(x => x.cmd).slice(-3)));
+      rec2.exec.some(x => /^追踪 /.test(x.cmd)),
+      JSON.stringify(rec2.exec.map(x => x.cmd).slice(-3)));
     ok('⑲-8 合并后不再有「取消追踪」这条前端指令（旧契约已废）',
-      !rec.exec.some(x => x.cmd === '取消追踪'),
-      JSON.stringify(rec.exec.map(x => x.cmd).slice(-3)));
+      !rec2.exec.some(x => x.cmd === '取消追踪'),
+      JSON.stringify(rec2.exec.map(x => x.cmd).slice(-3)));
   }
 
   /* ================================================================
@@ -1529,6 +1511,149 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     } else {
       ok('㉑-5 ★ 真开一次 NPC 面板：「关闭」在第二排、不在第一排', false, '视野里没人可测');
     }
+  }
+
+  /* ================================================================
+   *  ㉒ 开场角色扮演（主人 2026-10-12）
+   *    「开场先让玩家以第一视角的角色扮演形式进入游戏，要有 2~3 轮角色扮演」
+   *    「第一轮是我现在的身份，第二轮是我性别」
+   *    「这 2~3 轮角色扮演的内容是前世回忆，需要暗示玩家不是这个时代的人」
+   *    「完成 2~3 轮角色扮演后再进入现在的第一章」
+   *
+   *  ⚠️ 真渲染 + 真点击：走 `renderScene(view)` → `maybeShowIntro` → 真读
+   *     `#modal-body` 与 `[data-intro-key]` 按钮，点下去要看到真的把指令发出去了。
+   *  ⚠️ 断言喂的是**真引擎的 view**（`e2.view()`），不是手搓 fixture。
+   * ================================================================ */
+  section('㉒ 开场角色扮演（三轮 · 出身 → 性别 → 那扇门）');
+  {
+    const e2 = new GameEngine({ seed: 9091, saveDir: SAVE_DIR });
+    e2.boot();
+    let v2 = e2.newGame({ name: '试演的', birth: 'scholar', gender: 'male' });
+    const p2 = e2.world.player;
+    const env = loadUi(makeEnv({ innerWidth: 1280 }));
+    const rec = stubApi(env, v2);
+    env.WX.S.view = v2;
+    env.WXUI.renderScene(v2);
+
+    /* ⚠️ 标题走 `textContent`（modal() 里是 `$('modal-title').textContent = title`），
+       正文走 `innerHTML` —— 两处取法不同，都取上才拼得出完整一屏。 */
+    const mb = () => String(env.document.getElementById('modal-title').textContent || '') +
+      '\u0001' + String(env.document.getElementById('modal-body').innerHTML || '');
+    const keys = () => env.document.querySelectorAll('[data-intro-key]').map(b => b.getAttribute('data-intro-key'));
+    const introModOf = () => require(path.join(ROOT, 'game', 'src', 'core', 'intro.js'));
+
+    ok('㉒-0 前提：开局就给出开场第一屏（我是谁）', /我是谁/.test(mb()), mb().slice(0, 60));
+    ok('㉒-1 ★ 第一屏问的是「我是谁」，且选项是自白口吻（「我……」）',
+      /我是谁/.test(mb()) && /我读过书/.test(mb()) && /我是山里猎户|山里猎户/.test(mb()), mb().slice(0, 100));
+    ok('㉒-2 第一屏的选项按钮真渲染出来了（不是空框）', keys().length >= 8, 'keys=' + keys().length);
+    /* ⚠️ 只查**露给玩家看的部分**（按钮上的文字），不查 `data-intro-key`
+       —— 那个属性本来就该是后台 id（点了要发回去的），把它一起禁掉是假红。
+       中文别称（「守墓人之后」这类）在 desc 里是正常叙事用语，也不禁。 */
+    const visible = (String(env.document.getElementById('modal-body').innerHTML || '')
+      .replace(/data-intro-key="[^"]*"/g, ''));
+    ok('㉒-3 ★ 出身选项**露给玩家的文字**里不许出现后台 id',
+      !/(scholar|wuxue|monastic|taoist_ward|tomb_keep|deserter_child|grudge_orphan|border_drift|nun_ward|brothel_sold)/.test(visible),
+      visible.slice(0, 80));
+    /* 轮次标签要像「第 N 轮」，别写成说明书 */
+    ok('㉒-4 顶部有「第 1 轮」轮次标签', /第\s*1\s*轮/.test(mb()));
+
+    /* 真点一个身份 → 真的发指令出去了 */
+    const wantBtn = env.document.querySelectorAll('[data-intro-key]').find(b => b.getAttribute('data-intro-key') === 'hunter');
+    ok('㉒-5 前提：能定位到「我是山里猎户」那个按钮', !!wantBtn);
+    if (wantBtn) {
+      wantBtn.click();
+      ok('㉒-6 ★ 点身份按钮 → 真把「开场 hunter」发出去了',
+        rec.exec.some(x => x.cmd === '开场 hunter'), rec.exec.map(x => x.cmd).join(' / ').slice(0, 80));
+    } else {
+      ok('㉒-6 ★ 点身份按钮 → 真把「开场 hunter」发出去了', false, '没定位到按钮');
+    }
+
+    /* 后端真走一轮（直接驱动引擎，绕开前端渲染），再看第二屏 */
+    let r = e2.exec('开场 hunter');
+    ok('㉒-7 ★ 选完身份，`p.birth` 真跟着改了（面板不许还写书香门第）', p2.birth === 'hunter', String(p2.birth));
+    ok('㉒-8 ★ 选完身份，主线那条线也跟着重算（书香→正派 改成 猎户→中立）',
+      require(path.join(ROOT, 'game', 'src', 'core', 'mainline.js')).stateOf(p2).line === 'neutral',
+      require(path.join(ROOT, 'game', 'src', 'core', 'mainline.js')).stateOf(p2).line);
+
+    v2 = r.view; env.WX.S.view = v2; env.WX.S.introStep = null;
+    env.WXUI.renderScene(v2);
+    ok('㉒-9 ★ 第二屏问的是「我是男是女」', /我是男是女/.test(mb()), mb().slice(0, 60));
+    ok('㉒-10 第二屏真渲染出「是男子 / 是女子」两个按钮',
+      /是男子/.test(mb()) && /是女子/.test(mb()));
+    ok('㉒-11 ★ 第二屏是「第 2 轮」（不是又从头问一遍）', /第\s*2\s*轮/.test(mb()));
+
+    /* 选性别 → 第三屏 */
+    r = e2.exec('开场 female');
+    ok('㉒-12 ★ 选完性别，`p.gender` 真改了', p2.gender === 'female', String(p2.gender));
+    v2 = r.view; env.WX.S.view = v2; env.WX.S.introStep = null;
+    env.WXUI.renderScene(v2);
+    const m3 = mb();
+    ok('㉒-13 ★ 第三屏是「那扇门」（楔子收尾）', /那扇门/.test(m3), m3.slice(0, 60));
+    ok('㉒-14 ★ 第三轮有出身分版自白（选了猎户就念猎户那句）',
+      /山里长大的猎户/.test(m3), m3.slice(0, 120));
+
+    /* ---- 前世回忆：主人要「暗示玩家不是这个时代的人」 ---- */
+    ok('㉒-15 ★ 第三轮含「前世回忆」：出现「什么不对劲」的那几样（过匀的响声 / 手比脑子先动）',
+      /匀/.test(m3) && /手却比脑子先动|比脑子先动/.test(m3), m3.slice(0, 200));
+    ok('㉒-16 ★ 前世回忆**只暗示、不点破**：不许出现「穿越 / 现代 / 前世 / 时代 / 未来」这类直说的词',
+      !/穿越|现代人|现代社会|前世|未来世界|另一个世界/.test(m3));
+    ok('㉒-17 第三轮收束到茶摊老汉（接上第一章的舞台）', /老汉/.test(m3));
+    ok('㉒-18 第三轮只有一个动作按钮（走过去坐下），不是又给一堆选项',
+      keys().length === 1 && keys()[0] === 'go', keys().join(','));
+    ok('㉒-19 第三轮是「第 3 轮」且轮数落在主人要的 2~3 轮里', /第\s*3\s*轮/.test(m3));
+
+    /* ---- 楔子收尾的门派掠影（主人 2026-10-12：「楔子之后可附宗门背景介绍」）----
+       ⚠️ 这一段的定位是「路人闲话」，不是任务派发：
+          不许出现指令名、不许点名任务、不许把门派名写成「去加入 XX」。
+       ⚠️ 断言**跟着真实门派链算**（主角这轮是猎户 → 苗疆五毒教），
+          不许写死「武当派」—— 写死就变成「测我自己的期望」而不是「测代码」。 */
+    const gMine = introModOf().sectGlimpse(e2.world, p2);
+    ok('㉒-25 ★ 第三轮里带出**这一世会走去的门派**（出身 → 门派链）',
+      !!gMine && !!gMine.name && m3.indexOf(gMine.name) >= 0,
+      gMine ? (gMine.name + ' | 正文里有=' + (m3.indexOf(gMine.name) >= 0)) : '(取不到)');
+    ok('㉒-26 ★ 门派掠影里点了**当家人的名字**（不是「掌门」两个字当人名）',
+      /当家的叫[^\s，。]{2,6}[，,]/.test(m3) && !/当家的叫掌门/.test(m3),
+      (m3.match(/当家的叫[^，。]*/) || ['(没有)'])[0]);
+    ok('㉒-27 ★ 门派掠影是「闲话」口吻，不是任务派发：不许出现指令名 / 任务名',
+      !/追踪|接取|新手教程|拜入|加入.{0,2}门派/.test(m3), m3.slice(-260));
+    ok('㉒-28 掠影取的是**真数据**（门派 desc 原句要出现，不是自己另写一段）',
+      !!gMine && !!gMine.desc && m3.indexOf(gMine.desc) >= 0,
+      gMine ? String(gMine.desc).slice(0, 40) : '(取不到)');
+    /* 反向：不同出身必须看到不同门派（别把门派名写死成常量） */
+    const eG = new GameEngine({ seed: 9093, saveDir: SAVE_DIR });
+    eG.boot(); eG.newGame({ name: '书香的', birth: 'scholar', gender: 'male' });
+    const gS = introModOf().sectGlimpse(eG.world, eG.world.player);
+    ok('㉒-29 ★ ★ 换一个出身 → 门派跟着换（不是写死的常量）',
+      !!gS && !!gS.id && !!gMine && gS.id !== gMine.id,
+      '猎户→' + (gMine ? gMine.name : '?') + ' / 书香→' + (gS ? gS.name : '?'));
+
+    /* 收尾 → 演完 */
+    r = e2.exec('开场 go');
+    const introMod = require(path.join(ROOT, 'game', 'src', 'core', 'intro.js'));
+    ok('㉒-20 ★ 收尾之后 `seen_intro` 点亮（老接口的语义不变）',
+      Array.isArray(p2.tutorialFlags) && p2.tutorialFlags.indexOf('seen_intro') >= 0,
+      JSON.stringify(p2.tutorialFlags));
+    ok('㉒-21 ★ 演完之后不再出开场屏（`opening.show=false`）',
+      !(r.view && r.view.opening && r.view.opening.show));
+    ok('㉒-22 ★ 演完之后直接进第一章：新手教程仍停在第一章',
+      (function () {
+        const g = require(path.join(ROOT, 'game', 'src', 'core', 'tutorial.js'))
+          .guideState(p2, p2.tutorialFlags);
+        return !!g && !!g.current && g.current.no === 1;
+      })(), 'current=' + (require(path.join(ROOT, 'game', 'src', 'core', 'tutorial.js')).guideState(p2, p2.tutorialFlags).current || {}).no);
+
+    /* 轮数不许超（主人要 2~3 轮） */
+    const rounds = ['我是谁', '我是男是女', '那扇门'];
+    ok('㉒-23 轮数正好 3（主人要的 2~3 轮，没超）', rounds.length === 3);
+
+    /* 不许因为「回档 / 再看一次」而重演 */
+    const e3 = new GameEngine({ seed: 9092, saveDir: SAVE_DIR });
+    e3.boot(); e3.newGame({ name: '存档的', birth: 'orphan' });
+    const p3 = e3.world.player;
+    e3.exec('开场 orphan'); e3.exec('开场 male'); e3.exec('开场 go');
+    const blob = JSON.stringify(p3.serialize ? p3.serialize() : p3);
+    ok('㉒-24 ★ 开场进度写进存档（`_intro.step=done` 随档走，回档不会重演）',
+      /_intro/.test(blob) && /done/.test(blob));
   }
 
   console.log('\n———————————————————————————————');
