@@ -136,49 +136,33 @@ sec('④ 保留面：引荐信机制 + 老存档字段照旧可用');
 }
 
 /* ─────────────────────────────────────────── */
-sec('⑤ 开场角色扮演（楔子）不受影响：三轮照走，走完进第一章');
+sec('⑤ 开场楔子（静态卡）不受影响：一张卡、点一下进第一章，不再重复问');
 {
   const e = mk();
-  /* 注意 mk() 已经 newGame（含出生出身），开场第一屏应仍是「我是谁」或已过。
-     这里单开一个干净局，按真行为走三轮。 */
+  /* mk() 已经 newGame（含出生出身）。🔴 2026-10-12 主人「现在的楔子还不如原来的，
+     还不如回滚回去」+「进游戏还要再选一次出身与性别」：
+     楔子退回**一张静态卡**（view.intro 按出身挑版），**不再问第二遍**。 */
   const e3 = new GameEngine({ seed: 20261009 });
   e3.boot();
-  e3.newGame({ name: '试剑', gender: 'male' });
-  /* newGame 不带 birth 时，第一屏是 birth（等玩家选） */
+  e3.newGame({ name: '试剑', gender: 'male', birth: 'scholar' });
   const v0 = e3.view();
-  ok('新玩家 view.opening.show 为真（开场第一屏）',
-    v0.opening && v0.opening.show === true);
-  ok('第一屏是「我是谁」且真带选项',
-    v0.opening.step === 'birth' && (v0.opening.options || []).length >= 8,
-    'step=' + v0.opening.step + ' opts=' + (v0.opening.options || []).length);
+  ok('新玩家 view.intro.show 为真（楔子该弹）',
+    v0.intro && v0.intro.show === true);
+  ok('★ 楔子按建号选的出身挑版（scholar → 书箱那版）',
+    String(v0.intro.body || '').indexOf('书箱') >= 0, String(v0.intro.title || ''));
+  ok('★ 楔子**不再问出身/性别**（opening 退休、恒 show:false）',
+    !v0.opening || v0.opening.show === false);
 
-  e3.exec('开场 hunter');
-  ok('★ 走完出身 → p.birth 跟着改', e3.world.player.birth === 'hunter',
-    String(e3.world.player.birth));
-  const vg = e3.view();
-  ok('★ 走完出身 → 第二屏是性别', vg.opening && vg.opening.step === 'gender');
-  e3.exec('开场 female');
-  ok('★ 走完性别 → p.gender 跟着改', e3.world.player.gender === 'female');
-  const vc = e3.view();
-  ok('★ 第三屏是收尾（那扇门）', vc.opening && vc.opening.step === 'close');
-  /* 第三屏正文要提一嘴茶摊老汉（主人 2026-10-12：引荐信与老汉谈话获取） */
-  ok('★ 收尾那屏提了茶摊老汉（引荐信的来路）',
-    (vc.opening.body || '').indexOf('老汉') >= 0 || (vc.opening.body || '').indexOf('茶摊') >= 0);
-  e3.exec('开场 go');
-  ok('★ 收尾之后不再出屏（直接进第一章）',
-    e3.view().opening && e3.view().opening.show === false);
+  /* 点「踏入江湖」= 点亮 seen_intro → 不再弹 */
+  e3.markTutorialFlag('seen_intro');
+  ok('看过开场后 view.intro.show 为假', e3.view().intro.show === false);
 
-  /* seen_intro 之后不再弹 */
-  const e2 = mk();
-  e2.markTutorialFlag('seen_intro');
-  ok('看过开场后 opening.show 为假', e2.view().opening.show === false);
-  ok('old view.intro 恒留 show:false 给老代码兜底',
-    e2.view().intro && e2.view().intro.show === false);
   ok('前端 maybeShowIntro 仍接线（开场不随教程一起删）',
     UISRC.indexOf('maybeShowIntro') > 0);
-  ok('后端 intro 模块仍在并接线',
-    ENGSRC.indexOf("require('./intro')") > 0
-    && fs.existsSync(path.join(ROOT, 'game', 'src', 'core', 'intro.js')));
+  ok('★ 后端 view.intro 接线到 tutorial.introFor（静态卡数据源）',
+    ENGSRC.indexOf('introFor') > 0);
+  ok('★ 三轮模块 intro.js 已删（回滚到底）',
+    !fs.existsSync(path.join(ROOT, 'game', 'src', 'core', 'intro.js')));
 }
 
 /* ─────────────────────────────────────────── */

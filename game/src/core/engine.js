@@ -562,14 +562,17 @@ class GameEngine {
          同样地 `tutorialFlags` 仍是存档字段（老档里有），只是不再由教程系统消费。 */
       guide: null,
       newbie: null,
-      /* 开场角色扮演（主人 2026-10-12）——**取代**老的「一张楔子卡片」。
-         老字段 `intro` 保留但只回 `{show:false}`，是给老守卫/老前端留的接口
-         （它们在它身上查 `seen_intro` 的收尾语义，那个标记现在由 intro.js 点亮）。 */
-      intro: { show: false },
-      opening: (function () {
-        try { return require('./intro').screenFor(this.world, p); }
-        catch (e) { return { show: false, error: String(e && e.message || e) }; }
-      }).call(this),
+      /* 🔴 2026-10-12 主人：「现在的楔子还不如原来的，还不如回滚回去」。
+         三轮角色扮演（`view.opening`）**退回**老版「一张静态楔子卡片」：
+         `view.intro` 按 `p.birth` 挑版（`tutorial.introFor`），点一下「踏入江湖」
+         直接进第一章 —— **不再重复问出身与性别**（那两个建号时已经选过，
+         进游戏再问一遍是主人亲报的毛病）。
+         `opening` 键**保留但恒** `{show:false}`（老前端/老守卫还在读它）。 */
+      intro: (function () {
+        try { return require('./tutorial').introFor(p, p.tutorialFlags); }
+        catch (e) { return { show: false, title: '', body: '' }; }
+      })(),
+      opening: { show: false },
       /* 剧情屏（上方大框）：新手当前章 / 新手走完就换成主线当前幕。
          ⚠️ 每次 view 现算（纯函数、幂等）而不是「攒几行发下去」——
             玩家走开、读档、跨区回来，大框里照样是当前这一章，不会漏。

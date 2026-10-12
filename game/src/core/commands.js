@@ -4720,23 +4720,14 @@ function buildCommands(world) {
   /* 飞行面板（主人 2026-10-12）。有了这一条，走 `/api/panel`（而不是 `/api/view`）
      那条路进来也不会得到一句「我不懂这个指令」。 */
   reg(['__panel__fly'], (ctx) => ({ lines: [], openPanel: 'fly' }));
-  /* 开场角色扮演（主人 2026-10-12）：前端每一轮点一个按钮 → 发这一条。
-     ⚠️ 与面板指令同族（`__panel__` 前缀），但**不发 `openPanel`** ——
-        结果走 `view.opening` 现算，前端按新的那屏重画对话框。
-     ⚠️ 玩家手敲 `开场 <key>` 也认（`开场` 是规范名）——不用记，但要能用：
-        万一前端挂了，玩家还能把开场走完，而不是卡在第一步出不来。 */
-  reg(['__opening__', '开场', '睁眼'], (ctx, args) => {
-    const p = ctx.player, w = ctx.world;
-    let key = String((args || []).join(' ')).trim();
-    if (!key) return { lines: [], opening: true };
-    /* 中文标签也认（玩家手敲「开场 我读过书」） */
-    const byLabel = Object.keys(require('./intro').BIRTH_VOICE)
-      .find(id => require('./intro').BIRTH_VOICE[id].title === key);
-    if (byLabel) key = byLabel;
-    const r = require('./intro').step(w, p, key);
-    if (!r.ok) return { lines: [{ kind: 'warn', text: r.error || '这一步走不通。' }] };
-    return { lines: [], opening: true, openingDone: !!r.done };
-  });
+  /* 🔴 2026-10-12 主人「现在的楔子还不如原来的，还不如回滚回去」：
+     楔子退回**一张静态卡片**（`view.intro`，按出身挑版，点一下进第一章），
+     三轮角色扮演整套下线 —— 所以这条「开场 <key>」也不再驱动任何东西。
+     ⚠️ **保留这条指令**（不删）只是为了让老前端/老存档手敲 `开场 xxx` 时
+        得到一句人话，而不是「我不懂这个指令」。它已是个空壳，回一句就好。 */
+  reg(['__opening__', '开场', '睁眼'], () => ({
+    lines: [{ kind: 'sys', text: '开场已过。你的出身与性别在建号时便定了，往后走就是。' }],
+  }));
   reg(['__panel__save', '__panel__load'], (ctx, args) => ({ lines: [], openPanel: 'save', action: 'save' }));
   reg(['rebirth', '重开', '重新开始'], () => ({ lines: [], action: 'rebirth' }));
   reg(['sleep', '睡', '休息'], (ctx) => {

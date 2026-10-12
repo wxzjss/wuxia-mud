@@ -131,9 +131,9 @@ const xy = (x, y) => x + ',' + y;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const DIR_CN = { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下' };
   const DIR_OFF = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0], u: [0, -1], d: [0, 1] };
-  const build = new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF', 'mapScope',
+  const build = new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF',
     grab('mapHtml') + '\n' + grab('shortName') + '\nreturn { mapHtml };')(
-    esc, 30, 26, 34, DIR_CN, DIR_OFF, 'world');
+    esc, 30, 26, 34, DIR_CN, DIR_OFF);
   const html = build.mapHtml(v);
 
   {
@@ -164,38 +164,59 @@ const xy = (x, y) => x + ',' + y;
        做法：把 bridges 每条边的两端像素坐标算出来，检查 SVG 的 d 串里
        确实含这两个点（近档走折线，起点仍是 cx/cy）。 */
     const MAP_CELL = 30, MAP_PAD = 34;
-    const b = m.bounds;
-    const px = r => (r.x - b.minX) * MAP_CELL + MAP_PAD + MAP_CELL / 2;
-    const py = r => (r.y - b.minY) * MAP_CELL + MAP_PAD + MAP_CELL / 2;
+    /* ⚠️ `b` 必须是**渲染时的那个取景框**，不是 `m.bounds`。
+       `mapHtml` 开头会把视野裁到「本区房间的紧包围盒」（`b = {minX,minY,w,h}`），
+       而 `m.bounds` 是**全图** bounds —— 两者差着区域装箱留下的空当，
+       混用会让算出来的像素坐标整体偏移（实测偏 210px），
+       于是「本该找到的点一个都找不到」，12 条全判漏画（假红）。 */
+    const hereR = (m.rooms || []).find(r => r.current);
+    const curRegion = hereR ? hereR.region : null;
+    const mine = (m.rooms || []).filter(r => r.region === curRegion);
+    const b = mine.length
+      ? {
+        minX: Math.min.apply(null, mine.map(r => r.x)),
+        minY: Math.min.apply(null, mine.map(r => r.y)),
+      }
+      : { minX: m.bounds.minX, minY: m.bounds.minY };
+    const cellOf = id => (m.cells || {})[id];
     const roomOf = {};
     (m.rooms || []).forEach(r => { roomOf[r.id] = r; });
+    /* 「本次真渲染出来的房间」—— 从 HTML 里的 `data-room="X"` 反读。
+       ⚠️ 判据必须与 ui.js 里 `shown[br.a]` 那一份**同源**（都是「本区、已画」）：
+         自己按 region 重算一遍迟早和后端/前端的过滤条件分叉（老坑）。 */
+    const rendered = new Set([...html.matchAll(/data-room="([^"]+)"/g)].map(x => x[1]));
     const allD = (html.match(/<path d="([^"]*)"/g) || []).join(' ');
-    /* ★ 2026-10-13 加分层之后，C-1 的口径必须跟着改：
-       地图一次只画**一层**（`rooms` 已按 `r.z === 当前层` 过滤），
-       于是「一端在楼上、一端在楼下」的边（u/d 那种）在平面上被过滤掉了 ——
-       它们由 ▲/▼ 角标 + 分层切换器表达，不再拖一条横穿的线。
-       ⇒ 所以这里断言的是「**两端都渲染在当前视图里**的 bridges 边必须画出来」，
-         而不是「bridges 里所有边都必须画」（后者在分层视图下必然假红）。
-       `roomOf` 是从 `m.rooms`（后端下发的、**未按层过滤**的全量）建的，
-       所以要另建一份「本视图渲染集合」来判。 */
-    const shownIds = {};
-    (m.rooms || []).forEach(r => { if ((Number(r.z) || 0) === 0) shownIds[r.id] = true; });
+    /* ◀◀ 这一节原来的坐标算式（`px`/`py` 用 `m.bounds`）**是错的**，别照抄。
+       它算出来的 (1039,169) 这种大数，在渲染出的 SVG 里**根本不可能出现** ——
+       因为 `mapHtml` 前面还有一道「裁到本区紧包围盒」：
+         `b = 本区房间的 minX/minY/maxX/maxY`（`m.bounds` 是**全图** bounds）。
+       叠上区域装箱的空当，全图 bounds 的 minX 会到 -3 这种值，
+       于是 `(37-(-3))*30+34+15 = 1249`，而真渲染的格心是 `1039`。
+       ⇒ 判据必须**与 ui.js 同源**：从渲染出的 SVG 里反读「每条 link 的起点」，
+         再拿它跟「后端说该连的那对房间」核对，而不是自己重算一遍坐标。
+       （老铁律：守卫要核对后端真下发的数据，不要复现一遍算法。） */
+    const linkD = (html.match(/<path d="([^"]*)" class="edge edge-(?:dim|known) edge-link"\/>/g) || [])
+      .map(s => (s.match(/d="([^"]*)"/) || [])[1] || '').join(' ');
+    const linkStarts = new Set((linkD.match(/M(\d+) (\d+)/g) || []).map(s => s.slice(1)));
+    /* 每条 bridge 的**两端都在图上**（= 都渲染成格子了），
+       它的某个端点就必须是某条 link 线的起点或终点。
+       判据：A 的格心 / B 的格心，至少有一个出现在 link 线的点集里。 */
+    const allLinkPts = new Set((linkD.match(/\d+ \d+/g) || []));
     const missing = (m.bridges || []).filter(br => {
-      const A = roomOf[br.a], B = roomOf[br.b];
+      if (!rendered.has(br.a) || !rendered.has(br.b)) return false;
+      const A = cellOf(br.a), B = cellOf(br.b);
       if (!A || !B) return false;
-      const aShown = !!shownIds[br.a] || !!roomOf[br.a] && !!roomOf[br.a].current;
-      const bShown = !!shownIds[br.b] || !!roomOf[br.b] && !!roomOf[br.b].current;
-      if (!aShown || !bShown) return false;         /* 跨层边：本就不在平面上画 */
-      /* 起点（A 的格心）必须出现在某条 path 里 */
-      const key = 'M' + px(A) + ' ' + py(A) + ' ';
-      return allD.indexOf(key) < 0;
+      const pa = (A.x - b.minX) * MAP_CELL + MAP_PAD + MAP_CELL / 2;
+      const qa = (A.y - b.minY) * MAP_CELL + MAP_PAD + MAP_CELL / 2;
+      const pb = (B.x - b.minX) * MAP_CELL + MAP_PAD + MAP_CELL / 2;
+      const qb = (B.y - b.minY) * MAP_CELL + MAP_PAD + MAP_CELL / 2;
+      return !allLinkPts.has(pa + ' ' + qa) && !allLinkPts.has(pb + ' ' + qb);
     });
-    const onLevel = (m.bridges || []).filter(br =>
-      shownIds[br.a] || shownIds[br.b] ||
-      (roomOf[br.a] && roomOf[br.a].current) || (roomOf[br.b] && roomOf[br.b].current));
-    ok('C-1 ★ 同一层里的 bridges 每条边都画出来了（一条不漏）', missing.length === 0,
+    ok('C-1 ★ 画面里的 bridges 每条边都画出来了（一条不漏）', missing.length === 0,
       missing.length ? ('漏画 ' + missing.length + ' 条，例：' + missing[0].a + '→' + missing[0].b)
-        : ('同层 ' + onLevel.length + ' 条全在，跨层 ' + ((m.bridges || []).length - onLevel.length) + ' 条交给分层视图'));
+        : ('图上 ' + (m.bridges || []).length + ' 条里，两端可见的 ' +
+           (m.bridges || []).filter(br => rendered.has(br.a) && rendered.has(br.b)).length +
+           ' 条全在，其余跨区边交给出界提示'));
 
     /* C-2 反向：渲染里的每条 bridges 线两端都得真有出口（不许凭空连线） */
     const fake = (m.bridges || []).filter(br => {
@@ -209,27 +230,28 @@ const xy = (x, y) => x + ',' + y;
       fake.length ? JSON.stringify(fake[0]) : '全部有据可依');
   }
 
-  /* ---------- D. 路牌不遮地块名 ---------- */
-  section('D · 区域边界路牌不遮挡地块名（2026-10-13 主人亲报）');
+  /* ---------- D. 路牌不遮地块名 —— 🔴 已整体下线 ---------- */
+  section('D · 区域边界路牌（2026-10-11 要的，2026-10-12 随全图一起删）');
   {
+    /* 🔴 2026-10-12 主人「只保留当前区域界面，把天下全图整个界面删了」。
+       路牌是**全图专属**的：它贴在「本区」与「邻居区」之间那道缝里，
+       而地图只剩本区一块 —— 邻居不在图上，缝不存在，牌子无处可贴。
+       ⇒ 所以这一节从「牌子不遮挡地块名」**反转成「牌子真的没了」**。
+       2026-10-13 主人亲报的「『锦国旧陵』『黑木崖』遮挡了地块名」也随之彻底消失。
+       ⚠️ 别只删生成侧：CSS 两条规则（.map-edge-hint / .meh-arrow）也要一起走，
+          否则以后有人看见规则还在，会以为这功能只是被临时关掉了。 */
     const css = fs.readFileSync(CSS, 'utf8');
-    const hintRule = (css.match(/\.map-edge-hint\s*\{[^}]*\}/) || [''])[0];
-    const nodeRule = (css.match(/\.map-node\s*\{[^}]*\}/) || [''])[0];
-    const zi = s => { const mm = s.match(/z-index:\s*(\d+)/); return mm ? Number(mm[1]) : 0; };
-    ok('D-1 ★ 路牌层级不高于地块（否则压住地块名）',
-      zi(hintRule) <= zi(nodeRule),
-      '路牌 z=' + zi(hintRule) + ' 地块 z=' + zi(nodeRule));
-    ok('D-2 ★ 路牌没有实心底色（不透明浮层是「遮挡」的根）',
-      !/background:\s*(var\(|#|[a-z])/.test(hintRule.replace(/background:\s*none/gi, '')),
-      hintRule.replace(/\s+/g, ' ').slice(0, 110) || 'NOT FOUND');
-    ok('D-3 路牌没有边框（有边框＝仍是个「牌子」，边界上会切掉邻格的视野）',
-      /border:\s*0/.test(hintRule), hintRule.replace(/\s+/g, ' ').slice(0, 110));
-    ok('D-4 路牌用描边字（text-shadow），压在走廊上仍可读',
-      /text-shadow/.test(hintRule), hintRule.replace(/\s+/g, ' ').slice(0, 110));
-
-    /* 渲染层：路牌确实渲染出来了（没被顺手删） */
-    const hints = html.match(/class="map-edge-hint"/g) || [];
-    ok('D-5 路牌仍照常渲染（这条修的是「不遮挡」，不是「删掉」）', hints.length > 0, hints.length + ' 块');
+    ok('D-1 ★ 渲染里不再有路牌（.map-edge-hint 0 块）',
+      (html.match(/class="map-edge-hint"/g) || []).length === 0,
+      (html.match(/class="map-edge-hint"/g) || []).length + ' 块');
+    ok('D-2 ★ 源码里也没有 edgeHintHtml（不是「恰好没渲染」）',
+      !/const edgeHintHtml/.test(fs.readFileSync(path.join(RJS, 'ui.js'), 'utf8')));
+    ok('D-3 ★ CSS 里 .map-edge-hint 规则已删', !/\.map-edge-hint\s*\{/.test(css));
+    ok('D-4 CSS 里 .meh-arrow 规则已删', !/\.meh-arrow\s*\{/.test(css));
+    /* 「遮挡」这条 bug 的另一半根因（长名溢出）不随路牌消失 —— 它仍在
+       smoke-map-name 之类脚本里守着，这里只确认路牌这半边清干净了。 */
+    ok('D-5 源码里也不再拼 meh-arrow（箭头元素彻底没了）',
+      !/meh-arrow/.test(fs.readFileSync(path.join(RJS, 'ui.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, ' ')));
   }
 
   console.log('');

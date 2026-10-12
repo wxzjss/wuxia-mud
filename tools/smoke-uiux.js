@@ -188,10 +188,10 @@ function closeMasks(env) {
 }
 /** 桩好 api，返回记录器 */
 function stubApi(env, view) {
-  const rec = { exec: [], view: [], combat: [], npc: [], quest: [] };
+  const rec = { exec: [], view: [], combat: [], npc: [], quest: [], markGuide: [] };
   env.WX.api.exec = async (cmd, opt) => { rec.exec.push({ cmd, opt: opt || null }); return { ok: true, lines: [] }; };
   env.WX.api.view = async (p) => { rec.view.push(p); return { ok: true, view: view || env.WX.S.view }; };
-  env.WX.api.markGuide = async () => ({ ok: true });
+  env.WX.api.markGuide = async (f) => { rec.markGuide.push(f); return { ok: true }; };
   /* 任务详情：「接取任务」点下去要拉的那一页。**喂真数据**（真 engine.questPreviewOf），
      不是手搓 fixture —— 手搓的只能证明「渲染函数能渲染我编的东西」。 */
   env.WX.api.questPreview = async (qid) => {
@@ -1514,21 +1514,24 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
   }
 
   /* ================================================================
-   *  ㉒ 开场角色扮演（主人 2026-10-12）
-   *    「开场先让玩家以第一视角的角色扮演形式进入游戏，要有 2~3 轮角色扮演」
-   *    「第一轮是我现在的身份，第二轮是我性别」
-   *    「这 2~3 轮角色扮演的内容是前世回忆，需要暗示玩家不是这个时代的人」
-   *    「完成 2~3 轮角色扮演后再进入现在的第一章」
+   *  ㉒ 开场楔子（静态卡）· 🔴 2026-10-12 主人回滚
+   *    「现在的楔子还不如原来的，还不如回滚回去」
+   *    「创建角色时有选择出身，怎么进入游戏还要再选一次出身与性别？」
+   *
+   *  ⇒ 三轮角色扮演（我是谁 → 我是男是女 → 那扇门）**整套回滚**，
+   *     回到老版**一张静态楔子卡片**（view.intro 按出身挑版，
+   *     点一下「踏入江湖」直接进第一章），**不再重复问出身与性别**。
    *
    *  ⚠️ 真渲染 + 真点击：走 `renderScene(view)` → `maybeShowIntro` → 真读
-   *     `#modal-body` 与 `[data-intro-key]` 按钮，点下去要看到真的把指令发出去了。
+   *     `#modal-body`，点「踏入江湖」要看到真把 `seen_intro` 标记发出去、
+   *     并看到弹窗真的收掉。
    *  ⚠️ 断言喂的是**真引擎的 view**（`e2.view()`），不是手搓 fixture。
    * ================================================================ */
-  section('㉒ 开场角色扮演（三轮 · 出身 → 性别 → 那扇门）');
+  section('㉒ 开场楔子（静态卡 · 一张卡点一下进第一章 · 不再重复问）');
   {
     const e2 = new GameEngine({ seed: 9091, saveDir: SAVE_DIR });
     e2.boot();
-    let v2 = e2.newGame({ name: '试演的', birth: 'scholar', gender: 'male' });
+    const v2 = e2.newGame({ name: '试演的', birth: 'scholar', gender: 'male' });
     const p2 = e2.world.player;
     const env = loadUi(makeEnv({ innerWidth: 1280 }));
     const rec = stubApi(env, v2);
@@ -1536,124 +1539,60 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     env.WXUI.renderScene(v2);
 
     /* ⚠️ 标题走 `textContent`（modal() 里是 `$('modal-title').textContent = title`），
-       正文走 `innerHTML` —— 两处取法不同，都取上才拼得出完整一屏。 */
+       正文走 `innerHTML`；「踏入江湖」那颗按钮在**页脚**（modal-foot），不在正文里
+       —— 三处取法不同，都取上才拼得出完整一屏。 */
     const mb = () => String(env.document.getElementById('modal-title').textContent || '') +
-      '\u0001' + String(env.document.getElementById('modal-body').innerHTML || '');
-    const keys = () => env.document.querySelectorAll('[data-intro-key]').map(b => b.getAttribute('data-intro-key'));
-    const introModOf = () => require(path.join(ROOT, 'game', 'src', 'core', 'intro.js'));
+      '\u0001' + String(env.document.getElementById('modal-body').innerHTML || '') +
+      '\u0001' + String((env.document.getElementById('modal-foot') || {}).innerHTML || '');
 
-    ok('㉒-0 前提：开局就给出开场第一屏（我是谁）', /我是谁/.test(mb()), mb().slice(0, 60));
-    ok('㉒-1 ★ 第一屏问的是「我是谁」，且选项是自白口吻（「我……」）',
-      /我是谁/.test(mb()) && /我读过书/.test(mb()) && /我是山里猎户|山里猎户/.test(mb()), mb().slice(0, 100));
-    ok('㉒-2 第一屏的选项按钮真渲染出来了（不是空框）', keys().length >= 8, 'keys=' + keys().length);
-    /* ⚠️ 只查**露给玩家看的部分**（按钮上的文字），不查 `data-intro-key`
-       —— 那个属性本来就该是后台 id（点了要发回去的），把它一起禁掉是假红。
-       中文别称（「守墓人之后」这类）在 desc 里是正常叙事用语，也不禁。 */
-    const visible = (String(env.document.getElementById('modal-body').innerHTML || '')
-      .replace(/data-intro-key="[^"]*"/g, ''));
-    ok('㉒-3 ★ 出身选项**露给玩家的文字**里不许出现后台 id',
-      !/(scholar|wuxue|monastic|taoist_ward|tomb_keep|deserter_child|grudge_orphan|border_drift|nun_ward|brothel_sold)/.test(visible),
-      visible.slice(0, 80));
-    /* 轮次标签要像「第 N 轮」，别写成说明书 */
-    ok('㉒-4 顶部有「第 1 轮」轮次标签', /第\s*1\s*轮/.test(mb()));
+    ok('㉒-0 前提：开局弹出楔子（标题带「楔子」）', /楔子/.test(mb()), mb().slice(0, 60));
+    ok('㉒-1 ★ 楔子按建号选的出身挑版（书香门第 → 书箱那版）',
+      /书箱/.test(mb()), mb().slice(0, 100));
+    ok('㉒-2 ★ 楔子**不再问出身/性别**（没有「我是谁 / 我是男是女」这类轮次）',
+      !/我是谁|我是男是女|第\s*[123]\s*轮/.test(mb()), mb().slice(0, 120));
+    ok('㉒-3 ★ 楔子**没有任何选项按钮**（不再让人选第二遍）',
+      env.document.querySelectorAll('[data-intro-key]').length === 0,
+      'keys=' + env.document.querySelectorAll('[data-intro-key]').length);
+    ok('㉒-4 ★ 楔子只给一个推进动作「踏入江湖」',
+      /踏入江湖/.test(mb()), (mb().match(/踏入江湖/) || ['(无)'])[0]);
 
-    /* 真点一个身份 → 真的发指令出去了 */
-    const wantBtn = env.document.querySelectorAll('[data-intro-key]').find(b => b.getAttribute('data-intro-key') === 'hunter');
-    ok('㉒-5 前提：能定位到「我是山里猎户」那个按钮', !!wantBtn);
-    if (wantBtn) {
-      wantBtn.click();
-      ok('㉒-6 ★ 点身份按钮 → 真把「开场 hunter」发出去了',
-        rec.exec.some(x => x.cmd === '开场 hunter'), rec.exec.map(x => x.cmd).join(' / ').slice(0, 80));
+    /* 真点「踏入江湖」→ 真的把 seen_intro 标记发出去了 + 弹窗收掉 */
+    const go = env.document.getElementById('intro-go');
+    ok('㉒-5 前提：定位到「踏入江湖」按钮', !!go);
+    if (go) {
+      go.click();
+      ok('㉒-6 ★ 点「踏入江湖」→ 真把 `seen_intro` 标记发出去了',
+        rec.markGuide.some(x => x === 'seen_intro') || rec.exec.some(x => /seen_intro/.test(x.cmd || '')),
+        JSON.stringify(rec.markGuide.slice(0, 3)));
     } else {
-      ok('㉒-6 ★ 点身份按钮 → 真把「开场 hunter」发出去了', false, '没定位到按钮');
+      ok('㉒-6 ★ 点「踏入江湖」→ 真把 `seen_intro` 标记发出去了', false, '没定位到按钮');
     }
 
-    /* 后端真走一轮（直接驱动引擎，绕开前端渲染），再看第二屏 */
-    let r = e2.exec('开场 hunter');
-    ok('㉒-7 ★ 选完身份，`p.birth` 真跟着改了（面板不许还写书香门第）', p2.birth === 'hunter', String(p2.birth));
-    ok('㉒-8 ★ 选完身份，主线那条线也跟着重算（书香→正派 改成 猎户→中立）',
-      require(path.join(ROOT, 'game', 'src', 'core', 'mainline.js')).stateOf(p2).line === 'neutral',
-      require(path.join(ROOT, 'game', 'src', 'core', 'mainline.js')).stateOf(p2).line);
+    /* 后端真判一次：seen_intro 之后 view.intro 该消失 */
+    e2.markTutorialFlag('seen_intro');
+    env.WX.S.view = e2.view(); env.WXUI.renderScene(e2.view());
+    ok('㉒-7 ★ 收尾之后楔子不再出屏（view.intro.show=false）',
+      e2.view().intro && e2.view().intro.show === false);
 
-    v2 = r.view; env.WX.S.view = v2; env.WX.S.introStep = null;
-    env.WXUI.renderScene(v2);
-    ok('㉒-9 ★ 第二屏问的是「我是男是女」', /我是男是女/.test(mb()), mb().slice(0, 60));
-    ok('㉒-10 第二屏真渲染出「是男子 / 是女子」两个按钮',
-      /是男子/.test(mb()) && /是女子/.test(mb()));
-    ok('㉒-11 ★ 第二屏是「第 2 轮」（不是又从头问一遍）', /第\s*2\s*轮/.test(mb()));
+    /* 建号选的性别/出身就是最终值，楔子不再覆盖 */
+    ok('㉒-8 ★ 楔子不改建号选的性别（还是 male）', p2.gender === 'male', String(p2.gender));
+    ok('㉒-9 ★ 楔子不改建号选的出身（还是 scholar）', p2.birth === 'scholar', String(p2.birth));
 
-    /* 选性别 → 第三屏 */
-    r = e2.exec('开场 female');
-    ok('㉒-12 ★ 选完性别，`p.gender` 真改了', p2.gender === 'female', String(p2.gender));
-    v2 = r.view; env.WX.S.view = v2; env.WX.S.introStep = null;
-    env.WXUI.renderScene(v2);
-    const m3 = mb();
-    ok('㉒-13 ★ 第三屏是「那扇门」（楔子收尾）', /那扇门/.test(m3), m3.slice(0, 60));
-    ok('㉒-14 ★ 第三轮有出身分版自白（选了猎户就念猎户那句）',
-      /山里长大的猎户/.test(m3), m3.slice(0, 120));
-
-    /* ---- 前世回忆：主人要「暗示玩家不是这个时代的人」 ---- */
-    ok('㉒-15 ★ 第三轮含「前世回忆」：出现「什么不对劲」的那几样（过匀的响声 / 手比脑子先动）',
-      /匀/.test(m3) && /手却比脑子先动|比脑子先动/.test(m3), m3.slice(0, 200));
-    ok('㉒-16 ★ 前世回忆**只暗示、不点破**：不许出现「穿越 / 现代 / 前世 / 时代 / 未来」这类直说的词',
-      !/穿越|现代人|现代社会|前世|未来世界|另一个世界/.test(m3));
-    ok('㉒-17 第三轮收束到茶摊老汉（接上第一章的舞台）', /老汉/.test(m3));
-    ok('㉒-18 第三轮只有一个动作按钮（走过去坐下），不是又给一堆选项',
-      keys().length === 1 && keys()[0] === 'go', keys().join(','));
-    ok('㉒-19 第三轮是「第 3 轮」且轮数落在主人要的 2~3 轮里', /第\s*3\s*轮/.test(m3));
-
-    /* ---- 楔子收尾的门派掠影（主人 2026-10-12：「楔子之后可附宗门背景介绍」）----
-       ⚠️ 这一段的定位是「路人闲话」，不是任务派发：
-          不许出现指令名、不许点名任务、不许把门派名写成「去加入 XX」。
-       ⚠️ 断言**跟着真实门派链算**（主角这轮是猎户 → 苗疆五毒教），
-          不许写死「武当派」—— 写死就变成「测我自己的期望」而不是「测代码」。 */
-    const gMine = introModOf().sectGlimpse(e2.world, p2);
-    ok('㉒-25 ★ 第三轮里带出**这一世会走去的门派**（出身 → 门派链）',
-      !!gMine && !!gMine.name && m3.indexOf(gMine.name) >= 0,
-      gMine ? (gMine.name + ' | 正文里有=' + (m3.indexOf(gMine.name) >= 0)) : '(取不到)');
-    ok('㉒-26 ★ 门派掠影里点了**当家人的名字**（不是「掌门」两个字当人名）',
-      /当家的叫[^\s，。]{2,6}[，,]/.test(m3) && !/当家的叫掌门/.test(m3),
-      (m3.match(/当家的叫[^，。]*/) || ['(没有)'])[0]);
-    ok('㉒-27 ★ 门派掠影是「闲话」口吻，不是任务派发：不许出现指令名 / 任务名',
-      !/追踪|接取|新手教程|拜入|加入.{0,2}门派/.test(m3), m3.slice(-260));
-    ok('㉒-28 掠影取的是**真数据**（门派 desc 原句要出现，不是自己另写一段）',
-      !!gMine && !!gMine.desc && m3.indexOf(gMine.desc) >= 0,
-      gMine ? String(gMine.desc).slice(0, 40) : '(取不到)');
-    /* 反向：不同出身必须看到不同门派（别把门派名写死成常量） */
-    const eG = new GameEngine({ seed: 9093, saveDir: SAVE_DIR });
-    eG.boot(); eG.newGame({ name: '书香的', birth: 'scholar', gender: 'male' });
-    const gS = introModOf().sectGlimpse(eG.world, eG.world.player);
-    ok('㉒-29 ★ ★ 换一个出身 → 门派跟着换（不是写死的常量）',
-      !!gS && !!gS.id && !!gMine && gS.id !== gMine.id,
-      '猎户→' + (gMine ? gMine.name : '?') + ' / 书香→' + (gS ? gS.name : '?'));
-
-    /* 收尾 → 演完 */
-    r = e2.exec('开场 go');
-    const introMod = require(path.join(ROOT, 'game', 'src', 'core', 'intro.js'));
-    ok('㉒-20 ★ 收尾之后 `seen_intro` 点亮（老接口的语义不变）',
-      Array.isArray(p2.tutorialFlags) && p2.tutorialFlags.indexOf('seen_intro') >= 0,
-      JSON.stringify(p2.tutorialFlags));
-    ok('㉒-21 ★ 演完之后不再出开场屏（`opening.show=false`）',
-      !(r.view && r.view.opening && r.view.opening.show));
-    ok('㉒-22 ★ 演完之后直接进第一章：新手教程仍停在第一章',
-      (function () {
-        const g = require(path.join(ROOT, 'game', 'src', 'core', 'tutorial.js'))
-          .guideState(p2, p2.tutorialFlags);
-        return !!g && !!g.current && g.current.no === 1;
-      })(), 'current=' + (require(path.join(ROOT, 'game', 'src', 'core', 'tutorial.js')).guideState(p2, p2.tutorialFlags).current || {}).no);
-
-    /* 轮数不许超（主人要 2~3 轮） */
-    const rounds = ['我是谁', '我是男是女', '那扇门'];
-    ok('㉒-23 轮数正好 3（主人要的 2~3 轮，没超）', rounds.length === 3);
+    /* 老的三轮接口彻底退休 */
+    ok('㉒-10 ★ 老接口 opening 恒 {show:false}（三轮已回滚）',
+      !v2.opening || v2.opening.show === false,
+      JSON.stringify(v2.opening));
+    ok('㉒-11 ★ 三轮模块 intro.js 已删（回滚到底，不留死代码）',
+      !fs.existsSync(path.join(ROOT, 'game', 'src', 'core', 'intro.js')));
 
     /* 不许因为「回档 / 再看一次」而重演 */
     const e3 = new GameEngine({ seed: 9092, saveDir: SAVE_DIR });
     e3.boot(); e3.newGame({ name: '存档的', birth: 'orphan' });
     const p3 = e3.world.player;
-    e3.exec('开场 orphan'); e3.exec('开场 male'); e3.exec('开场 go');
+    e3.markTutorialFlag('seen_intro');
     const blob = JSON.stringify(p3.serialize ? p3.serialize() : p3);
-    ok('㉒-24 ★ 开场进度写进存档（`_intro.step=done` 随档走，回档不会重演）',
-      /_intro/.test(blob) && /done/.test(blob));
+    ok('㉒-12 ★ seen_intro 写进存档（随档走，回档不会重演）',
+      /seen_intro/.test(blob));
   }
 
   console.log('\n———————————————————————————————');

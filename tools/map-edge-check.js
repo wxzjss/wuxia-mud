@@ -1,8 +1,14 @@
 /* 区域边界路牌 + 弹窗底部按钮排可滑动（主人 2026-10-11 点单两件）
  *
  * 一、地图：区域块之间要贴「往这边继续走 → XX」的牌子
+ *     🔴 2026-10-12 主人「只保留当前区域界面，把天下全图整个界面删了」——
+ *        牌子是**全图专属**的（贴在本区与邻居区那道缝里），地图只剩本区之后
+ *        邻居不在图上、缝不存在，整段随全图一起下线。
+ *        ⇒ 本脚本第 1 / 3 / 4 节从「牌子对不对」**反转成「牌子真的没了」**；
+ *           第 2 节（后端 neighbors 数据）保留 —— 数据留着，将来要用随时能开回来。
+ *        另外「出界方向」图例那条 2026-10-12 就删了，这次牌子本体也走。
  * 二、「细看此人」底部那排按钮：手机上排不下要能左右划（原来 flex-end + 不换行
- *     → 左侧按钮溢出屏幕**且滚不到**，等于凭空消失）
+ *     → 左侧按钮溢出屏幕**且滚不到**，等于凭空消失）—— 与地图无关，原样保留。
  *
  * 跑法：node tools/map-edge-check.js
  */
@@ -26,10 +32,10 @@ function esc(s) {
 const MAP_CELL = 30, MAP_NODE = 26, MAP_PAD = 34;
 const DIR_CN = { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下' };
 const DIR_OFF = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0] };
-function buildMap(scope) {
-  return new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF', 'mapScope',
+function buildMap() {
+  return new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF',
     grab('mapHtml') + '\n' + grab('shortName') + '\nreturn { mapHtml };')(
-      esc, MAP_CELL, MAP_NODE, MAP_PAD, DIR_CN, DIR_OFF, scope).mapHtml;
+      esc, MAP_CELL, MAP_NODE, MAP_PAD, DIR_CN, DIR_OFF).mapHtml;
 }
 
 const CSS = fs.readFileSync(path.join(ROOT, 'game/src/renderer/css/main.css'), 'utf8');
@@ -114,57 +120,40 @@ function section(t) { console.log('\n── ' + t + ' ──'); }
     Object.values(engineBoxes).every(b => b.neighbors && typeof b.neighbors === 'object'),
     '缺 ' + Object.values(engineBoxes).filter(b => !b.neighbors).length + ' 块');
 
-  /* ================= 三、前端世界地图渲染 ================= */
-  section('3 前端：世界地图上贴边界路牌');
-  const mapWorld = buildMap('world');
-  const mhW = mapWorld(v);
-  const hints = mhW.match(/class="map-edge-hint"/g) || [];
-  ok('世界地图上有路牌', hints.length > 0, hints.length + ' 块');
-  ok('路牌数量与邻居关系量级一致', hints.length >= 20, hints.length + ' 块');
-
-  /* 只画「东 / 南」两个方向（反向是同一道缝上的同一件事，画两遍会叠字） */
-  const arrows = [...mhW.matchAll(/class="meh-arrow" style="color:[^"]*">([^<]*)</g)].map(x => x[1]);
-  ok('★ 只出现 → 与 ↓ 两种箭头（不叠字）',
-    arrows.length > 0 && arrows.every(a => a === '→' || a === '↓'),
-    '箭头集合：' + JSON.stringify([...new Set(arrows)]));
-  ok('两种箭头都有', new Set(arrows).size === 2, JSON.stringify([...new Set(arrows)]));
-
-  /* 牌子上的名字必须是真区域名（写错一个字母就是「牌子指着不存在的地方」） */
-  const regionNames = new Set((m.regions || []).map(r => r.name));
-  const hintNames = [...mhW.matchAll(/class="map-edge-hint"[^>]*title="往这个方向继续走，就是([^"]+)"/g)]
-    .map(x => x[1]);
-  ok('每块牌子都有提示语（title）', hintNames.length === hints.length,
-    hintNames.length + '/' + hints.length);
-  ok('牌子上的地名都是真实区域名', hintNames.every(n => regionNames.has(n)),
-    '野生名：' + JSON.stringify([...new Set(hintNames.filter(n => !regionNames.has(n)))]));
-
-  /* 牌子必须落在画布内 —— 越界就是「挂在墙上看不见」 */
-  const b0 = m.bounds;
-  const W = b0.w * MAP_CELL + MAP_PAD * 2, H = b0.h * MAP_CELL + MAP_PAD * 2;
-  const pts = [...mhW.matchAll(/class="map-edge-hint" style="left:(-?[\d.]+)px;top:(-?[\d.]+)px/g)]
-    .map(x => [parseFloat(x[1]), parseFloat(x[2])]);
-  ok('能解析出所有牌子坐标', pts.length === hints.length, pts.length + '/' + hints.length);
-  const out = pts.filter(p => !(p[0] >= 0 && p[0] <= W && p[1] >= 0 && p[1] <= H));
-  ok('★ 牌子全在画布内（不会被裁掉）', out.length === 0,
-    '越界 ' + out.length + (out.length ? ' 如 ' + JSON.stringify(out[0]) + ' 画布 ' + W + 'x' + H : ''));
-  ok('坐标无 NaN', !/left:NaN|top:NaN/.test(mhW));
-
-  /* 🔴 2026-10-12 口径改动：主人「把『出界方向』删了」——
-     图例里那一项连同小圆点一起下线，所以这里反过来断「它真的不在了」。
-     ⚠️ 地图上**区域边界那排牌子本身（.map-edge-hint）没删**：
-        那是主人 2026-10-11 亲自要的「走到边界提示通往哪个区域」，
-        这一批只说删图例，没说删牌子，别顺手一起删了。 */
-  ok('图例里的「出界方向」已按主人要求删掉',
+  /* ================= 三、边界路牌已整体下线 ================= */
+  section('3 前端：边界路牌已随「天下全图」整体下线');
+  /* 🔴 2026-10-12 主人「只保留当前区域界面，把天下全图整个界面删了」。
+     路牌贴的是「本区 ↔ 邻居区」之间那道缝，地图只剩本区之后缝不存在，
+     所以整段（生成 + CSS）都撤了。
+     ⇒ 这一节从「牌子渲染得对不对」**反转成「牌子真的没了」**：
+       留着旧断言（世界地图上有 ≥20 块牌）会天天报红，
+       而删掉不留守卫又会让「谁悄悄把它接回来」无人发现。 */
+  const mhW = buildMap()(v);
+  const UI_SRC = fs.readFileSync(path.join(ROOT, 'game/src/renderer/js/ui.js'), 'utf8');
+  const UI_CL = UI_SRC.replace(/\/\*[\s\S]*?\*\//g, ' ');   /* 抠掉块注释：只查活代码 */
+  ok('★ 渲染里不再有路牌（.map-edge-hint 0 块）',
+    (mhW.match(/class="map-edge-hint"/g) || []).length === 0,
+    (mhW.match(/class="map-edge-hint"/g) || []).length + ' 块');
+  ok('★ 渲染里也不再有箭头（.meh-arrow 0 个）',
+    (mhW.match(/class="meh-arrow"/g) || []).length === 0);
+  ok('★ 源码里 edgeHintHtml 已删（不是「恰好没渲染」）', !/const edgeHintHtml/.test(UI_CL));
+  ok('★ 源码里也不再拼 meh-arrow', !/meh-arrow/.test(UI_CL));
+  ok('★ CSS 里 .map-edge-hint 规则已删',
+    !/\.map-edge-hint\s*\{/.test(CSS));
+  ok('★ CSS 里 .meh-arrow 规则已删', !/\.meh-arrow\s*\{/.test(CSS));
+  /* 图例里的「出界方向」2026-10-12 就更早删了，一起守着 */
+  ok('图例里的「出界方向」仍在删除状态',
     !mhW.includes('出界方向') && !mhW.includes('dot-edge'));
-  ok('区域边界那排牌子仍在（主人 10-11 要的，别误删）', mhW.includes('map-edge-hint'));
+  /* 画布本身没被删坏 */
+  ok('地图仍能正常渲染（没被改坏）', mhW.includes('map-canvas') && mhW.includes('map-node'));
 
-  /* region 模式：只画本区一块，邻居不在图上 → 不能画（牌子会挂在画布外） */
-  section('4 前端：区域模式不画边界路牌');
-  const mapRegion = buildMap('region');
-  const mhR = mapRegion(v);
-  ok('★ 区域模式下 0 块路牌', (mhR.match(/class="map-edge-hint"/g) || []).length === 0,
-    (mhR.match(/class="map-edge-hint"/g) || []).length + ' 块');
-  ok('区域模式仍能正常渲染（没被改坏）', mhR.includes('map-canvas') && mhR.includes('map-node'));
+  /* ================= 四、跨区域出口改用抬头标注 ================= */
+  section('4 前端：跨区域出口改由抬头「→区域名」标注承担');
+  /* 路牌删了，「走到边界要知道前面是哪个区域」这件事不能没人管 ——
+     它现在由抬头那行出口列表里的 `.map-out` 承担：
+     只有你**真站在跨界那间房**时才出，比满图铺牌子更准。 */
+  ok('★ 源码里 .map-out 的渲染还在（路牌删了，这条通道要留着）',
+    /class="map-out"/.test(UI_CL));
 
   /* ================= 五、跨区域出口在抬头标出来 ================= */
   section('5 前端：抬头处标「跨区域出口」');
@@ -190,7 +179,8 @@ function section(t) { console.log('\n── ' + t + ' ──'); }
     ok('★ mapView 下发 crossExits', here2 && here2.crossExits &&
       Object.keys(here2.crossExits).length > 0,
       JSON.stringify(here2 ? here2.crossExits : null));
-    const mh2 = mapWorld(v2);
+    const mh2 = buildMap()(v2);
+    const regionNames = new Set((m.regions || []).map(r => r.name));
     /* ⚠️ 必须 matchAll：`String.match` 带 g 标志时**返回整体匹配、丢掉分组**，
        取 x[1] 会拿到 "class" 的第 2 个字母 'l'（这个坑本脚本自己踩过一次）。 */
     const annotated = [...mh2.matchAll(/class="map-out">→([^<]*)</g)].map(x => x[1]);

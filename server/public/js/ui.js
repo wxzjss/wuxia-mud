@@ -609,36 +609,22 @@
    *  这里负责：右侧常驻「当前该做什么」+ 点击「详情」看全部步骤。
    * ============================================================ */
 
-  /* 沉浸式开场（楔子）：主人 2026-10-12 改成**三轮角色扮演**——
-       ① 我是谁（出身）→ ② 我是男是女 → ③ 那扇门（出身分版旁白 + 前世回忆）
-     演完才进第一章。数据全由后端 `view.opening` 现算（`intro.js`），
-     前端只负责把这一屏画出来、把选择发回去。
-     ⚠️ 与老版 `view.intro` 的区别：老版是**一张静态卡片**（点「踏入江湖」就完），
-        现在是**有来有回的对话框**，所以不能再拿 `S.introShown` 一锁了事 ——
-        得跟着后端给的 `step` 走。 */
+  /* 沉浸式开场（楔子）：🔴 2026-10-12 主人「现在的楔子还不如原来的，还不如回滚回去」。
+     三轮角色扮演（我是谁 → 我是男是女 → 那扇门）**整块退回**老版「一张静态楔子卡片」：
+     按 `p.birth` 挑版（后端 `tutorial.introFor` 现算，走 `view.intro`），
+     点一下「踏入江湖」直接进第一章。
+     ⚠️ 为什么退回：① 建号界面**已经**选过出身与性别，进游戏再问一遍是把人问烦；
+        ② 主人觉得不如原来的。⇒ 出身/性别的**唯一入口就是建号那一步**，
+        楔子只负责把「你是谁、在哪、手里有什么」讲清楚。
+     ⚠️ 老版 `view.opening` 键仍在，但后端恒回 `{show:false}` —— 这里只认 `view.intro`。 */
   function maybeShowIntro(v) {
-    const op = v && v.opening;
     const it = v && v.intro;
-    /* 兜底：后端还是老接口（没有 opening）时，按老样子弹静态楔子 */
-    if (!op && it && it.show) return showLegacyIntro(it);
-    if (!op || !op.show) {
-      /* 演完了（或本来就不该演）→ 把开场那张卡收掉。
-         ⚠️ 只在**确实演过**的时候收（`S.introStep` 有值），
-            否则会把玩家自己打开的面板给关掉。 */
-      if (S.introStep) { S.introStep = null; closeModal(); }
+    if (!it || !it.show) {
+      /* 演完了（或本来就不该演）→ 把开场那张卡收掉 */
+      if (S.introShown) { S.introShown = false; closeModal(); }
       return;
     }
-    /* 同一屏只重画一次（视图刷新很频繁，别把玩家的选择洗掉） */
-    const sig = op.step + '|' + (op.hint || '');
-    if (S.introStep === sig) return;
-    S.introStep = sig;
-    renderOpening(op);
-    /* 🔴 2026-10-12 主人：「进游戏屏幕界面默认不显示周围环境人物等描写」。
-       开场演着的时候把背后的场景栏（此地人物 / 地上物品 / 当前任务）整个压暗盖住——
-       玩家头一眼看到的就是这一屏角色扮演，不是一屋子 NPC 名字。
-       ⚠️ 用**遮罩加类**而不是给元素加 hidden：关掉时只要去掉类，布局栈原地复原。 */
-    const mk = $('modal-mask');
-    if (mk) mk.classList.add('intro-mask');
+    showLegacyIntro(it);
   }
 
   function showLegacyIntro(it) {
@@ -646,53 +632,15 @@
     S.introShown = true;
     modal(it.title || '楔子', it.body || '',
       '<button id="intro-go" class="btn-primary">踏入江湖</button>');
+    /* 🔴 2026-10-12 主人：「进游戏屏幕界面默认不显示周围环境人物等描写」。
+       楔子还在时把背后的场景栏整个压暗盖住 —— 玩家头一眼看到的是这段开场，
+       不是一屋子 NPC 名字。⚠️ 用**遮罩加类**而不是 hidden：关掉时去类，布局原地复原。 */
+    const mk = $('modal-mask');
+    if (mk) mk.classList.add('intro-mask');
     const b = $('intro-go');
     if (b) b.onclick = () => {
       if (api && api.markGuide) api.markGuide('seen_intro');
-      closeModal();
-    };
-  }
-
-  /** 画一屏开场（顶部轮次标签 + 正文 + 一排选项按钮） */
-  function renderOpening(op) {
-    const opts = op.options || [];
-    let h = '<div class="intro-rp">';
-    if (op.hint) h += '<div class="intro-rp-step">' + esc(op.hint) + '</div>';
-    h += '<div class="intro-rp-body">' + (op.body || '') + '</div>';
-    if (opts.length) {
-      h += '<div class="intro-rp-opts">';
-      opts.forEach((o, i) => {
-        h += '<button class="intro-rp-opt" data-intro-key="' + esc(o.key) + '">' +
-          '<span class="iro-label">' + esc(o.label) + '</span>' +
-          (o.desc ? '<span class="iro-desc">' + esc(o.desc) + '</span>' : '') +
-          '</button>';
-      });
-      h += '</div>';
-    }
-    h += '</div>';
-
-    const foot = op.step === 'birth'
-      ? '<button class="btn-ink" id="intro-later">先放一放，我随便走走</button>'
-      : '';
-    modal(op.title || '开场', h, foot || '<span class="dim">选一个，接着往下走。</span>');
-
-    /* 选身份 / 选性别 / 走过去坐下 —— 三类按钮同一套派发 */
-    document.querySelectorAll('[data-intro-key]').forEach(b => {
-      b.onclick = () => {
-        const k = b.getAttribute('data-intro-key');
-        b.disabled = true;
-        /* ⚠️ 走**真指令**（`开场 <key>`）而不是直接改前端状态：
-           出身要同步到 `p.birth` 与主线那条线（后端 `intro.step` 干的事），
-           前端自己改一份迟早跟存档对不上。
-           `fromButton:true` = 按钮来源（收尾不抢焦点，见铁律 31）。 */
-        doCmd('开场 ' + k, { fromButton: true });
-      };
-    });
-    /* 「先放一放」只在第一轮给：允许玩家先随便走走，回来还能接着选。
-       ⚠️ 但**不点亮** `seen_intro` —— 放一放不等于演完了。 */
-    const later = $('intro-later');
-    if (later) later.onclick = () => {
-      S.introStep = null;
+      S.introShown = false;
       closeModal();
     };
   }
@@ -2768,29 +2716,17 @@
     ne: [1, -1], nw: [-1, -1], se: [1, 1], sw: [-1, 1],
   };
 
-  /* ---- 地图视野范围（两级）：默认只看当前区域，可切世界地图 ----
-     主人明确要求：打开地图默认显示**当前区域**，另有开关看全部区域。
-     用模块级变量记住选择，重开面板时保持。 */
-  let mapScope = 'region';   // 'region' | 'world'
+  /* ---- 地图视野：🔴 2026-10-12 主人「只保留当前区域界面，把天下全图整个界面删了」。
+     ⇒ 地图面板**只剩「当前区域」一个视野**，「天下全图」整套（连同它的分层切换器、
+     区域名平移、跨区取景）一起删掉。原来 `mapScope` 那个「本区 / 全图」开关已成历史。 */
   /* 地图缩放档位（2026-10-11 重设计新增）。
      为什么需要它：原来格子只有两档尺寸（窄屏 52 / 桌面 30），全图 34 个区域铺开后
      每格 30px、名字只剩 4 个字 —— 想看清某个区域只能靠「飞往」跳过去。
      现在给三档（0.7 远观 / 1 常规 / 1.4 细看），配合画布上的悬浮工具条。 */
   let mapZoom = 1;
-  /* 地图分层档（★ 主人 2026-10-13 新增）。
-     为什么单独一个状态：层是「看哪一层」的视角，跟缩放一样属于**用户偏好**，
-     重开面板、切区域/全图都该记住（不然每次都要重新点一遍）。
-     ★ 取值 = **原始 z 值（数字）**，不是「一层/二层」的枚举。
-       主人亲口纠正过：「不是固定一层二层的」—— 层数由数据决定：
-       数据里 z 从 -1 排到 8，就该有 10 个档位；Mod 加个 z=9 就自动多一档。
-       前端**只负责把存在的层列出来**，不预设「只有楼上楼下」。
-     ⚠️ 与 `mapScope` 的区别：scope 决定「看多大范围」（本区 / 全图），
-        level 决定「看哪一层」。两者正交。但**区域模式下不分层**
-        （见 mapHtml 里那段注释），所以 level 只在全图模式下生效。 */
-  let mapLevel = 0;
-  /* 点了「区域名按钮」后要飞过去的目标区域 id。
-     因为切到世界地图要重开面板（重渲染），跨渲染记住目标，渲染完再平移。 */
-  let pendingPanRegion = null;
+  /* ⚠️ 原来的 `let mapScope` 与 `let mapLevel`（分层档）**已删** ——
+     全图没了，分层是全图专属，一并撤掉。下面的 `pendingPanRegion`（跨渲染平移目标）
+     也随之删：区域模式只画本区，没有「换区平移」这件事了。 */
 
   function mapHtml(v) {
     /* ---- 尺寸自适应（主人报的 bug：手机上地块名看不清 / 看不全）----
@@ -2832,72 +2768,20 @@
     const allRooms = m.rooms || [];
     if (!allRooms.length) return '<div class="modal-text">地图数据不可用。</div>';
 
-    /* 当前区域 = 有 current 标记的房间所属区域 */
+    /* 当前区域 = 有 current 标记的房间所属区域
+       🔴 2026-10-12 主人「只保留当前区域界面，把天下全图整个界面删了」：
+       地图**只有本区**这一个视野 —— 没有 sc 开关、没有 scopeBox 分支、
+       没有分层筛选（分层是全图专属，一并撤掉）。 */
     const here = allRooms.find(r => r.current);
     const curRegion = here ? here.region : null;
-    /* mapScope 是模块级状态（记住「当前区域 / 天下全图」的选择）。
-       ⚠️ 多个测试脚本会把本函数单独抽出来跑，抽取环境里没有 mapScope；
-       故读取一律走本地 sc，只在确实存在时才回写模块状态 —— 抽出环境也能跑。 */
-    let sc = (typeof mapScope === 'undefined') ? 'world' : mapScope;
-    if (sc === 'region' && !curRegion) sc = 'world';
-    if (typeof mapScope !== 'undefined') mapScope = sc;
 
-    const boxes = m.regionBoxes || {};
-    /* region 模式：只留当前区域这块 box；world 模式：全图 */
-    const scopeBox = (sc === 'region' && boxes[curRegion]) ? boxes[curRegion] : null;
+    /* 本区房间。curRegion 取不到（数据异常）时退回全部，至少不白屏。 */
+    const rooms = curRegion ? allRooms.filter(r => r.region === curRegion) : allRooms;
 
-    /* ---- 分层（★ 主人 2026-10-13：「能不能加一层二层的这种，因为有的地块
-       可以往下走」，随后当场纠正：「**不是固定一层二层的**」）----
-       背景：数据里上下楼是 `u`/`d` 出口，平面图上画不了，`layoutRooms` 只好把
-       「楼上那间」挤到旁边一格摆着 —— 于是 101 间「演武场 / 藏经阁 / 二楼雅间 /
-       黑木崖大殿」全摊在地面图上，看着就是平地上凭空多出一堆屋子（z 从 -1 排到 8）。
-
-       ★ 层数**由数据决定**，前端不预设档位：
-         把所有房间的 z 去重、排序，有几层画几层。数据里 z=-1..8 就是 10 个档；
-         Mod 加个 z=9，地图上立刻多一颗按钮，一行前端代码都不用改。
-       为什么不按「一层/二层/地下」硬编码：主人原话就是不要固定层数；
-       而且 z 是**按楼梯级数**算出来的（`layoutRooms` 每上一层 +1），
-       黑木崖从山门爬 7 段石阶到绣阁就是 z=7 —— 硬套「二层」既不准也说不通。
-       层名怎么读：0 = 一层（地面）/ 正数 = 楼层（z=1 就是二层）/ 负数 = 地下层。
-       这个读法交给下面的 `lvName()`，改一处就够。 */
+    /* 层名读法（🔴 分层切换器已随「天下全图」一起删掉，但**房间 tooltip 仍用**它
+       说明某个带 ▲/▼ 出口的地块在几层 —— 0 = 一层（地面）/ 正数 = 楼层 / 负数 = 地下层）。 */
     const lvName = z => (z === 0 ? '一层' : (z > 0 ? (z + 1) + '层' : '地下' + (-z) + '层'));
-    const lvTip = z => (z === 0 ? '地面' : (z > 0 ? '楼上 / 建筑内部（第 ' + (z + 1) + ' 层）' : '地下（往下 ' + (-z) + ' 层）'));
 
-    /* 只在**全图**下分层。区域模式不分层：一个区域内部房间本来就没几间，
-       分层反而让玩家「咦我这区怎么空了一半」——而且区域模式的取景框是按
-       本区全部房间算的，筛掉楼上那批会让框一起缩，切来切去地图乱跳。 */
-    let lv = (typeof mapLevel === 'undefined') ? 0 : Number(mapLevel);
-    if (!isFinite(lv)) lv = 0;
-
-    let rooms = (sc === 'region' && curRegion)
-      ? allRooms.filter(r => r.region === curRegion)
-      : allRooms;
-
-    /* 层清单：把本集合里出现过的 z 去重、升序 —— 只列**真有房间**的层。
-       ⚠️ 区域模式下也算（用本区房间），但下面不拿去过滤、也不画切换按钮；
-       这么写是为了让 `lvZ` / `lvCount` 在两种模式下都拿得到（测试要读）。 */
-    const lvZset = {};
-    rooms.forEach(r => { const z = Number(r.z) || 0; lvZset[z] = (lvZset[z] || 0) + 1; });
-    const lvZ = Object.keys(lvZset).map(Number).sort((a, b) => a - b);
-    const lvCount = lvZset;
-
-    /* 全图模式才真筛。⚠️ 当前层若不存在（比如玩家原本在 z=7、切到 z=0），
-       自动落到**最接近的那一层**，而不是画一张空图。 */
-    let hereHidden = false;
-    if (!scopeBox) {
-      if (lvZ.indexOf(lv) < 0) {
-        lv = lvZ.reduce((best, z) => (Math.abs(z - lv) < Math.abs(best - lv) ? z : best), lvZ[0]);
-        if (typeof mapLevel !== 'undefined') mapLevel = lv;
-      }
-      rooms = rooms.filter(r => (Number(r.z) || 0) === lv);
-      /* 玩家自己不在这一层时，把他那一格**留下来**并标出来 ——
-         否则抬头写着「你在这里」、图上却找不着自己，比不给分层还糟。 */
-      if (here && (Number(here.z) || 0) !== lv) {
-        hereHidden = true;
-        const keep = allRooms.filter(r => r.current);
-        if (keep.length) rooms = rooms.concat(keep);
-      }
-    }
     if (!rooms.length) return '<div class="modal-text">此区域暂无地图数据。</div>';
 
     /* 视野裁到本区域 box（多留 1 格余量，房间别贴边） */
@@ -2910,7 +2794,7 @@
        改法：区域模式**按本区域房间的实际范围**取景（真实占地的紧包围盒），
        一格多余的都不留；后端那个 box 只留着取颜色和名字。 */
     let b = b0;
-    if (sc === 'region' && curRegion) {
+    if (curRegion) {
       let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
       for (const r of rooms) {
         if (r.x < minX) minX = r.x;
@@ -2921,7 +2805,8 @@
       if (isFinite(minX) && isFinite(minY)) {
         b = { minX, minY, w: (maxX - minX + 1), h: (maxY - minY + 1) };
       } else {
-        b = scopeBox ? { minX: scopeBox.x, minY: scopeBox.y, w: scopeBox.w, h: scopeBox.h } : b0;
+        const sb = (m.regionBoxes || {})[curRegion];
+        b = sb ? { minX: sb.x, minY: sb.y, w: sb.w, h: sb.h } : b0;
       }
     }
     /* 🔴 主人 2026-10-08：「为什么电脑端看当前区域的地图是**放在左侧**、而且**很小看不清**。」
@@ -2965,44 +2850,13 @@
       }).join(' / ');
     }
     h += '</div>';
-    /* --- 第二行：视野切换 + 进度 + 图例（原来这三块各占一整行，把画布挤到下面；
-       重设计后并成紧凑的两行 —— 画布才是主角） --- */
+    /* --- 第二行：进度（原来这行还有「当前区域 / 天下全图」视野切换与分层切换，
+       🔴 2026-10-12 主人「只保留当前区域界面，把天下全图整个界面删了」——
+       两个切换器都撤了，只剩一句「你在哪一片」+ 进度。 --- */
     h += '<div class="map-scope">';
-    h += '<button class="ms-btn' + (sc === 'region' ? ' on' : '') + '" data-scope="region">当前区域</button>';
-    h += '<button class="ms-btn' + (sc === 'world' ? ' on' : '') + '" data-scope="world">天下全图</button>';
     h += '<span class="ms-where">' +
-      (sc === 'region'
-        ? '只显示你脚下这一片：' + esc(((m.regions || []).find(x => x.id === curRegion) || {}).name || '—')
-        : '天下三十四州，尽收眼底') +
+      '只显示你脚下这一片：' + esc(((m.regions || []).find(x => x.id === curRegion) || {}).name || '—') +
       '</span></div>';
-
-    /* --- 分层切换（★ 主人 2026-10-13：「能不能加一层二层的这种」，
-       随即纠正「**不是固定一层二层的**」）---
-       只在**全图**模式下出现：区域模式不分层（理由见上面层筛选那段注释）。
-       ★ 按钮**按数据里真有的 z 值一个个生成**（`lvZ` 已排序去重）：
-         数据有 -1~8 就画 10 颗，Mod 加 z=9 就自动多一颗。
-         不写死「一层/二层/地下」三个 —— 那正是主人纠正过的做法。
-       ⚠️ 只有一层时不画这排（画一颗孤零零的「一层」，玩家会以为
-          「上面几层要解锁」，其实这局数据里就这一层）。 */
-    if (!scopeBox && lvZ.length > 1) {
-      h += '<div class="map-level">';
-      h += '<span class="ml-title">分层</span>';
-      lvZ.forEach(z => {
-        h += '<button class="ml-btn' + (z === lv ? ' on' : '') + '"' +
-          ' data-level="' + z + '" title="' + esc(lvTip(z)) + '：' + lvCount[z] + ' 处">' +
-          esc(lvName(z)) + '<span class="ml-num">' + lvCount[z] + '</span></button>';
-      });
-      /* 玩家自己不在这一层时明说一句 —— 不然抬头「你在这里」、
-         图上却没有那一格，看着像 bug。
-         ★ 用 `lvName(here.z)` 而不是写死「一层」：你在九层或地下 1 层时
-           也得说对层名（`here.z` 为 0 时 `Number(...)||0` 仍是 0，不影响地面）。 */
-      if (hereHidden) {
-        const hz = Number(here && here.z) || 0;
-        h += '<span class="ml-warn">你在此图的「' + esc(lvName(hz)) +
-          '」，已单独标出</span>';
-      }
-      h += '</div>';
-    }
 
     const pct = scopeCount ? Math.round(scopeVisited / scopeCount * 100) : 0;
     h += '<div class="map-progress" title="本范围已探索 ' + scopeVisited + '/' + scopeCount +
@@ -3056,38 +2910,29 @@
 
     /* 2) 区域底色块 —— ★ 只画**真实房间占的那块**（主人第四轮：
        「没有真实地块的那些地图上的背景方块在地图上删了」）。
-       后端给的 `w/h` 是被 terrain/minW 撑过的框（面积不够时用旷野山林填出来的），
-       比真实房间那一团大得多，所以世界地图上到处是一块块**空底色方块**，像没铺完的砖。
-       `roomW/roomH` 才是房间实际占的尺寸（且房间就贴着框的左上角铺），
-       换过来底色块就只框住有地块的地方。 */
-    const boxes2 = scopeBox ? { [curRegion]: scopeBox } : boxes;
-    Object.keys(boxes2).forEach(k => {
-      const box = boxes[k];
-      /* 区域模式下这块底色跟着上面的**紧包围盒**走（不再用后端那个撑大的框），
+       🔴 2026-10-12 主人「把天下全图整个界面删了」⇒ 地图只有本区一块，
+       所以这里只画**当前区域那一个框**，别的区域不画。 */
+    const boxes = m.regionBoxes || {};
+    const box = curRegion && boxes[curRegion] ? boxes[curRegion] : null;
+    if (box) {
+      /* 底色跟着上面的**紧包围盒**走（不再用后端那个撑大的框），
          否则底色块会从画布左上角伸出去，看着比地图还大一圈。 */
-      const tight = (sc === 'region' && k === curRegion);
-      const x0 = tight ? b.minX : box.x;
-      const y0 = tight ? b.minY : box.y;
-      const bw0 = tight ? b.w : (box.roomW || box.w);
-      const bh0 = tight ? b.h : (box.roomH || box.h);
-      const left = (x0 - b.minX) * MAP_CELL + MAP_PAD;
-      const top = (y0 - b.minY) * MAP_CELL + MAP_PAD;
-      const bw = bw0 * MAP_CELL;
-      const bh = bh0 * MAP_CELL;
-      /* data-cx/data-cy = 该框中心在画布内容坐标系里的像素位置（区域名按钮「飞过去」用）。
-         ★ 2026-10-12 主人：「把不同区域那些花花绿绿的背景框删了」。
-         所以这里**不再给底色与描边**。但元素本身必须留着 ——
-         它是「点区域名把视角平移过去」的坐标锚点，而平移是**从 DOM 反读**的
-         （见 centerMapOnRegion）；把元素整个删掉，那排按钮会静默失灵（点了没反应）。
-         换句话说：现在它是个**看不见的定位框**，不再是装饰。 */
+      const left = MAP_PAD;
+      const top = MAP_PAD;
+      const bw = b.w * MAP_CELL;
+      const bh = b.h * MAP_CELL;
+      /* ⚠️ 这个元素是**看不见的定位锚**（主人 2026-10-12：「把不同区域那些花花绿绿的
+         背景框删了」⇒ 已无底色无描边），保留它只为两件事：
+           ① 地图上「本区那一块」仍有个语义上的容器（将来想给它上底纹随时能加）；
+           ② 测试能按 `data-region-box` 数出「图上只有本区一块」。
+         它**不再**参与「点区域名平移视角」—— 那个功能随全图一起下线了。 */
       h += '<div class="map-region-box" style="left:' + left + 'px;top:' + top + 'px;' +
         'width:' + bw + 'px;height:' + bh + 'px"' +
-        ' data-region-box="' + esc(k) + '"' +
-        ' data-cx="' + (left + bw / 2) + '" data-cy="' + (top + bh / 2) + '"></div>';
+        ' data-region-box="' + esc(curRegion) + '"></div>';
       /* ★ 区域/城市名整体下线（2026-10-12 主人：「把世界地图的区域名称删了」）。
          原来这里会在每块区域框的上方外侧压一个彩色地名（江南 / 桃花岛…）。
          现在地图上只留**地块自己的名字**，区域名不再画。 */
-    });
+    };
 
     /* 3) 地形装饰（树石山水…）——★ 主人第四轮要求**删掉**：
        「把地图界面树木水流之类的图标删了」。
@@ -3312,61 +3157,14 @@
 
     /* （区域/城市名已按主人 2026-10-12 要求整体下线，见上方 map-region-box 那段注释。） */
 
-    /* 5) 区域边界处的「往这边走是哪儿」（★ 主人 2026-10-11：
-       「地图界面每个区域都有边界，能不能在地图上边界处提示该方向继续往前走通往哪个区域」）。
-       邻居关系由后端算好（`regionBoxes[x].neighbors`，见 maplayout.computeRegionNeighbors），
-       前端只管把牌子贴到两块之间那道缝里。
-
-       ⚠️ 只画东 / 南两个方向：A 在东边的邻居是 B，等价于 B 在西边的邻居是 A，
-       两个方向画出来是**同一道缝上的同一件事**，画两遍就是叠字。
-       同理区域模式下只画本区一块、邻居不在图上，不画（画了牌子会挂在画布外被裁掉）。 */
-    /* 一块牌子。定义在 mapHtml 内部：多个测试脚本会把 mapHtml 源码单独抽出来跑，
-       抽出去的环境里没有模块级函数 —— 挂在外面就是 ReferenceError。
-       🔴 2026-10-13 主人报「『锦国旧陵』『黑木崖』遮挡了地块名」—— 元凶就是这块牌子。
-          查证经过（试了三版才定，别改回去）：
-            ① 初版 z-index:7 + 实心底色 → 压在**所有地块名**上，
-               牌子宽 50~70px 而一格才 30px，一贴必遮两三个格子。
-            ② 试过「落点避让」（牌子落点若压到地块就沿缝挪开）——
-               **实测没用**：区域是咬合的（packRegions 之后两块常常只隔 0~1 格），
-               缝里本来就站着地块。30 块牌子里有 24 块**挪到哪儿都压字**。
-            ③ 正解 = **牌子本身不占地方**：去掉底色与边框，改成
-               「同色描边小字」（text-shadow，跟地块名同一招）+ z-index 降到 1。
-               于是它像写在纸上的批注：压在走廊上看得清，
-               压在地块名上也**不糊住人家的字**（只是叠着，两边都读得出）。
-          为什么不上底色：地图是密集的，**任何不透明浮层都会遮住底下的字**，
-          这是「遮挡」的根，不是位置能解决的。 */
-    const edgeHintHtml = (px, py, arrow, box) =>
-      '<span class="map-edge-hint" style="left:' + px + 'px;top:' + py + 'px;' +
-      'font-size:' + (NARROW ? 12 : 10) + 'px;' +     /* 手机上一格就小，牌子字号跟着放大 */
-      'color:' + esc(box.color) + '" title="往这个方向继续走，就是' + esc(box.name) + '">' +
-      '<i class="meh-arrow" style="color:' + esc(box.color) + '">' + arrow + '</i>' +
-      esc(box.name) + '</span>';
-
-    let edgeHints = '';
-    if (!scopeBox) {
-      const xPx = gx => (gx - b.minX) * MAP_CELL + MAP_PAD;
-      const yPx = gy => (gy - b.minY) * MAP_CELL + MAP_PAD;
-      Object.keys(boxes).forEach(k => {
-        const a = boxes[k];
-        const nb = a.neighbors || {};
-        /* 东：贴在两块之间那道竖缝里，纵向对齐两块的重叠段中点 */
-        if (nb.e && boxes[nb.e]) {
-          const bx = boxes[nb.e];
-          const midY = (Math.max(a.y, bx.y) + Math.min(a.y + a.h, bx.y + bx.h)) / 2;
-          edgeHints += edgeHintHtml(xPx((a.x + a.w + bx.x) / 2), yPx(midY), '→', bx);
-        }
-        /* 南：贴在两块之间那道横缝里，横向上对齐重叠段中点。
-           位置上**靠近上边那块**（34% 处）—— 下边那块自己的区域名就写在它框顶上方，
-           居中的话两块牌子会撞一起。 */
-        if (nb.s && boxes[nb.s]) {
-          const bx = boxes[nb.s];
-          const y0 = a.y + a.h, y1 = bx.y;
-          const midX = (Math.max(a.x, bx.x) + Math.min(a.x + a.w, bx.x + bx.w)) / 2;
-          edgeHints += edgeHintHtml(xPx(midX), yPx(y0 + (y1 - y0) * 0.34), '↓', bx);
-        }
-      });
-    }
-    h += edgeHints;
+    /* 5) 区域边界处的「往这边走是哪儿」—— 🔴 2026-10-12 主人「把天下全图整个
+       界面删了」⇒ 地图只画本区一块，邻居区域不在图上，边界牌（写在两块之间那道缝里）
+       自然无处可贴。整段**已删除**（连同 `edgeHintHtml` 一块牌子）。
+       为什么不是留个死分支：地图上只要**多了任何东西**，就得有人问「这是干嘛的」；
+       而它要提示的「隔壁是哪个区域」，现在由抬头那句「只显示你脚下这一片：
+       XXX」与**跨区域出口的 → 区域名 标注**（见上面 `.map-out` 那段）承担 ——
+       后者更准：只有你**真站在边界上**时才出，不用满图铺牌子。
+       ⚠️ CSS 里 `.map-edge-hint` / `.meh-arrow` 两条规则也一并删了（见 main.css）。 */
 
     h += '</div>';
 
@@ -3392,9 +3190,11 @@
       const can = !!r.canFly;
       const tip = can
         ? ('飞往' + r.name + (r.entryName ? '（落在' + r.entryName + '）' : ''))
-        : ('没去过' + r.name + '，点了只是把视角移过去');
+        /* 🔴 2026-10-12 全图下线后，没去过的区域**没法「移视角过去看」**了
+           （地图只画本区）—— 按钮压暗且不给 data 属性，点了什么都不会发生。 */
+        : ('没去过' + r.name);
       return '<button class="mrn-btn' + (r.id === curRegion ? ' cur' : '') + (can ? ' canfly' : ' nofly') + '"' +
-        (can ? ' data-fly-region="' + esc(r.name) + '"' : ' data-pan-region="' + esc(r.id) + '"') +
+        (can ? ' data-fly-region="' + esc(r.name) + '"' : ' disabled') +
         /* `--mr-c` = 该区域自己的颜色（`regions[].color`），给名字底下那条虚线下划线用。
            色值来自数据、不是用户输入，但仍走一遍 esc 免得混进引号把样式顶开。 */
         ' style="--mr-c:' + esc(r.color || '#999') + '"' +
@@ -3404,7 +3204,7 @@
         '<span class="mrn-num">' + (r.visitedCount || 0) + '/' + (r.count || 0) + '</span>' +
         (can ? '<i class="mrn-fly">↗</i>' : '') + '</button>';
     };
-    h += '<div class="map-region-nav" title="去过的地方，点一下人就直接过去；没去过的，只能挪挪视角看看">';
+    h += '<div class="map-region-nav" title="去过的地方，点一下人就直接过去">';
     h += '<div class="mrn-head"><span class="mrn-title">地名索引</span>' +
       '<span class="mrn-sub">去过 ' + regs.filter(r => (r.visitedCount || 0) > 0).length + '/' + regs.length +
       ' 处　带 ↗ 的能直接过去</span></div>';
@@ -3412,7 +3212,7 @@
     else h += '<div class="mrn-empty">还没去过别处。先把脚下这一片走熟。</div>';
     if (rest.length) {
       h += '<details class="mrn-more"' + (canFly.length ? '' : ' open') + '>' +
-        '<summary>其余 ' + rest.length + ' 处（没去过，点了只移视角）</summary>' +
+        '<summary>其余 ' + rest.length + ' 处（没去过）</summary>' +
         '<div class="mrn-grid">' + rest.map(regBtn).join('') + '</div></details>';
     }
     /* 服务端「区域总览」那份数据仍在（m.regions 的 visitedCount / hasCurrent 都用上了），
@@ -3659,29 +3459,9 @@
        格子不再是可点的目的地了，整段绑定撤掉（生成侧也已经不写 data-go）。
        地图现在只做两件事：看，和拖。 */
     if (name === 'map') {
-      /* 视野切换：当前区域 / 天下全图 */
-      document.querySelectorAll('#modal-body [data-scope]').forEach(b => {
-        b.onclick = () => {
-          mapScope = b.getAttribute('data-scope') || 'region';
-          closeModal();
-          panel('map');
-        };
-      });
-
-      /* 分层切换（★ 主人 2026-10-13）。
-         ★ 主人当场纠正：「不是固定一层二层的」—— 对，层数**由数据决定**。
-           现在按 z 值动态出按钮（z=-1、0、1、2… 有几层画几层），
-           Mod 加一个 z=9 的空中楼阁，地图上立刻多一颗「十层」按钮，
-           前端一行都不用改。`data-level` 存的就是**原始 z 值**（字符串），
-           读回来 Number() 一下再写进 mapLevel。 */
-      document.querySelectorAll('#modal-body [data-level]').forEach(b => {
-        b.onclick = () => {
-          const z = Number(b.getAttribute('data-level'));
-          mapLevel = isFinite(z) ? z : 0;
-          closeModal();
-          panel('map');
-        };
-      });
+      /* 🔴 2026-10-12 主人「只保留当前区域界面，把天下全图整个界面删了」：
+         `[data-scope]`（本区/全图切换）与 `[data-level]`（分层切换）两颗绑定**全删** ——
+         生成侧已不再画它们，绑定留着也是空转，索性一并撤掉免得有人接回去。 */
 
       /* 画布工具条：只剩缩放。
          ⚠️ 缩放要**重渲染**才能生效（格子尺寸是渲染时算的）。
@@ -3702,27 +3482,10 @@
         };
       });
 
-      /* 区域总览：点某个区域 -> 切到世界地图看全图 */
-      /* ⚠️ 原来这里绑的是「区域总览」的 `.mro-item` —— 重设计把那块并进了「地名索引」，
-         同一个点击目标现在由 `[data-pan-region]` / `[data-fly-region]` 承担（见下方）。
-         这里的旧选择器留着无害（匹配不到就是空转），但**不要再往里加逻辑**。 */
-
-      /* ★ 区域名按钮：点一下视角直接飞到该区域（居中显示）（主人 2026-10-10）。
-         区域模式只画本区，飞不过去 → 先切世界地图再飞；已在世界地图则当场平移。 */
-      document.querySelectorAll('#modal-body [data-pan-region]').forEach(b => {
-        b.onclick = () => {
-          const rid = b.getAttribute('data-pan-region');
-          if (!rid) return;
-          if (mapScope !== 'world') {
-            mapScope = 'world';
-            pendingPanRegion = rid;      /* 跨渲染记住：重开面板后按它平移 */
-            closeModal();
-            panel('map');
-            return;
-          }
-          centerMapOnRegion(rid);
-        };
-      });
+      /* ★ 区域名按钮的「平移视角」分支**已删**（🔴 2026-10-12 全图下线）。
+         区域模式只画本区，别的区域根本不在画布上，没有「平移过去看看」这回事。
+         地名索引里**没去过**的区域按钮（`data-pan-region`）现在是哑的 ——
+         生成侧也不该再给出这种按钮（见 mapHtml 里 `regBtn` 那段）。 */
 
       /* ★ 「飞往」按钮的绑定**不在这里** —— 见本函数末尾 `name === 'map' || name === 'fly'`
          那一块。「地图」的「地名索引」与「飞行」面板用的是同一批按钮
@@ -3757,16 +3520,11 @@
          眼前看到的全是「别处」，自然觉得地图和实际对不上 —— 再加当时横向还划不动
          （见 .map-canvas 的 max-width 注释），等于永远找不到自己。
          居中后「你在这里」的红点就在正中，「一步可达」的房间自然落在它四周。
-         ★ 视角**自动追随玩家**：本函数在每次地图重渲染时都会跑（开图 / 切视野 / 走一步再开），
+         ★ 视角**自动追随玩家**：本函数在每次地图重渲染时都会跑（开图 / 走一步再开），
          始终把玩家所在格摆在视野中央。
-         例外：点了「区域名按钮」要飞往某区域时（pendingPanRegion），本次改为居中到那个区域。 */
-      if (pendingPanRegion) {
-        const rid = pendingPanRegion;
-        pendingPanRegion = null;
-        centerMapOnRegion(rid);
-      } else {
-        centerMapOnHere();
-      }
+         ⚠️ 原来还有个「点了区域名要平移过去」的例外分支（pendingPanRegion）——
+            🔴 2026-10-12 全图下线后一起删了：区域模式只画本区，没有别区可平移。 */
+      centerMapOnHere();
     }
     /* ★「飞往」按钮：**地图**的「地名索引」与**飞行面板**共用同一批按钮
        （两边都带 `data-fly-region`），所以绑定放在这一层、两个面板一起管。
@@ -4001,29 +3759,9 @@
     return true;
   }
 
-  /* 把视角平移到「某个区域」的正中（区域名按钮「飞过去」）。
-     区域框中心在画布内容坐标系里的位置，由 mapHtml 写进 `data-cx / data-cy`
-     （见区域底色块那段），这里**从 DOM 反读**，不重算布局几何。
-     ⚠️ region 模式只画当前区域一个框 → 找不到目标框时返回 false（调用方已在切世界地图）。 */
-  function centerMapOnRegion(regionId) {
-    const canvas = document.querySelector('#modal-body .map-canvas');
-    if (!canvas) return false;
-    const boxes = document.querySelectorAll('#modal-body .map-region-box') || [];
-    let box = null;
-    for (let i = 0; i < boxes.length; i++) {
-      const b = boxes[i];
-      if (b && b.getAttribute && b.getAttribute('data-region-box') === regionId) { box = b; break; }
-    }
-    if (!box) return false;
-    const ccx = parseFloat(box.getAttribute('data-cx'));
-    const ccy = parseFloat(box.getAttribute('data-cy'));
-    if (!isFinite(ccx) || !isFinite(ccy)) return false;
-    const vw = canvas.clientWidth || (typeof innerWidth === 'number' ? innerWidth : 0);
-    const vh = canvas.clientHeight || 0;
-    if (vw > 0 && canvas.scrollWidth > vw) canvas.scrollLeft = Math.max(0, ccx - vw / 2);
-    if (vh > 0 && canvas.scrollHeight > vh) canvas.scrollTop = Math.max(0, ccy - vh / 2);
-    return true;
-  }
+  /* 把视角平移到「某个区域」的正中（区域名按钮「飞过去」）**已删** ——
+     🔴 2026-10-12 主人「把天下全图整个界面删了」：地图只画本区，
+     没有别区可平移过去，这个函数成了死代码，连同它的导出一并撤掉。 */
 
   let cmdHistory = [];
   let histIdx = -1;

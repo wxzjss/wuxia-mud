@@ -234,8 +234,17 @@ async function renderMap(view) {
   ok('★ 区域/城市名不再画（地图上只留地块自己的名字）', html.indexOf('mrb-label') < 0);
   ok('★ 区域底色框不再上色（元素在，但只是一块看不见的定位锚）',
     html.indexOf('map-region-box') >= 0 && !/class="map-region-box"[^>]*background:/.test(html));
-  ok('★ 定位锚的 data-cx/cy 还在（「点区域名平移视角」靠它，删了就静默失灵）',
-    /data-region-box="[^"]*"[^>]*data-cx="\d/.test(html));
+  /* 🔴 2026-10-12 主人「只保留当前区域界面，把天下全图整个界面删了」之后，
+     这条的口径变了（别照上一版抄）：
+       旧口径：「data-cx/cy 还在（点区域名平移视角靠它）」—— 那是**全图**时代的需要。
+       新口径：地图只剩本区一块，**没有别区可平移**，`data-cx/cy` 与
+       `centerMapOnRegion()` 一起删了；现在只剩一个 `data-region-box`，
+       作用是「让测试与调试能看出图上只有本区一块」，不再当坐标锚点。 */
+  ok('★ 图上只剩**一个**区域框（没有别的区域的锚点了）',
+    (html.match(/data-region-box="/g) || []).length === 1,
+    (html.match(/data-region-box="/g) || []).length + ' 块');
+  ok('★ 平移锚点 data-cx/cy 与 centerMapOnRegion 已随全图删掉（死代码不留）',
+    html.indexOf('data-cx') < 0 && !/function centerMapOnRegion/.test(uisrc));
   ok('★ CSS 里 .map-region-box 已无边框无底色',
     /\.map-region-box\s*\{[^}]*border:\s*0[^}]*background:\s*none/.test(css));
   ok('★ 所有走廊连线都是虚线（主人 10-12：连线换成虚线形式）',

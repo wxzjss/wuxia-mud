@@ -1,17 +1,21 @@
 /* ============================================================
- * smoke-map-level.js —— 世界地图「分层」守卫（2026-10-13）
+ * smoke-map-level.js —— 地图「只有本区一层」守卫（2026-10-13 重写）
  *
- * 主人原话（两句，第二句是当场补的纠正）：
- *   ①「给地图分层，有一层二层之类的区别，因为有的地块可以往"下"走」
- *   ②「但不要定死只有两层，也要考虑万一以后有什么 mod 能往下多走或往上多走」
+ * 来历（这一版为什么会变成这样，别改回去）：
+ *   ① 2026-10-13 主人先说：「给地图分层，有一层二层之类的区别，因为有的地块可以
+ *      往"下"走」，又当场补一句「但不要定死只有两层，也要考虑万一以后有什么 mod
+ *      能往下多走或往上多走」—— 于是有了 `.ml-btn` 那排「由数据实时生成」的层按钮，
+ *      本脚本原先守的就是它（层清单响应式、切层换内容、▲/▼ 角标、CSS 契约、事件绑定）。
+ *   ② 2026-10-12/13 主人又改主意：「把天下全图删了」→ 追问后明确
+ *      **「只保留当前区域界面，把天下全图整个界面删了」**。
+ *      分层是**全图专属**的（本区里带 z 的房间就那么几间，切层只会切出一屏空白），
+ *      于是 `.map-level` 整条撤掉。
  *
- * ②就是这脚本存在的全部理由 —— 分层必须**由数据决定**，不许硬编码。
- * 这个脚本钉死四件事：
- *   A. 层清单由数据的 z 值去重排序实时生成（数据有 -1~8 就有 10 颗按钮）；
- *   B. **响应式**：往数据里塞一间 z=9 / z=-3 的屋子，层清单自动多两颗
- *      （这才是「不定死两层」的可验证形态）；
- *   C. 切层真的换内容：切到某层，图上只剩那一层的地块 + 你所在的那一格；
- *   D. 角标：能上楼/能下楼的格子有 ▲/▼。
+ * ⇒ 所以本脚本**反转口径**：从「分层功能好不好用」改成「分层真的没了 + 没白丢信息」。
+ *   只删功能、不留守卫，下次谁把 `.map-level` 加回来都没人拦；
+ *   而「没白丢信息」这两条是这个删改里最容易被忽略的部分：
+ *   层信息必须还在（▲/▼ 角标 + tooltip 的「三层 / 地下2层」），
+ *   否则玩家会以为那些上楼下楼的房间凭空消失了。
  * ============================================================ */
 'use strict';
 const fs = require('fs');
@@ -31,8 +35,6 @@ const section = t => console.log('\n── ' + t + ' ──');
   e.newGame({ name: '观' });
   const v = e.view({ map: true });
   const m = v.map;
-  const XYS = require(path.join(ROOT, 'game/src/core/maplayout.js')).DIR_DELTA;
-  void XYS;
 
   /* ---- 从源码里抠 mapHtml + 依赖，真执行（照 smoke-map-link 的做法） ---- */
   const UISRC = fs.readFileSync(path.join(RJS, 'ui.js'), 'utf8');
@@ -46,122 +48,94 @@ const section = t => console.log('\n── ' + t + ' ──');
   const DIR_CN = { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下' };
   const DIR_OFF = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0], u: [0, -1], d: [0, 1] };
 
-  /* `mapLevel` 是模块级状态（切层按钮写它）。测试里没法直接碰模块变量，
-     所以用 `Function` 包的**同签名**，把 `mapLevel` 当形参传进去 —— 这样
-     「默认 0」与「切到某层」两种情形都能真渲染。 */
-  function build(mapLevel) {
+  /* ⚠️ `mapHtml` 的形参表里**已经没有 mapScope / mapLevel** 了（两者都删了）。
+     还留着那两个形参的话这里会「传了个寂寞」—— 环境里多了两个没用的名字，
+     将来有人误以为它们还活着。所以形参表与本脚本一起瘦身。 */
+  function build() {
     return new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF',
-      'mapScope', 'mapLevel',
       grab('mapHtml') + '\n' + grab('shortName') + '\nreturn { mapHtml };')(
-      esc, 30, 26, 34, DIR_CN, DIR_OFF, 'world', mapLevel);
+      esc, 30, 26, 34, DIR_CN, DIR_OFF);
+  }
+  const html = build().mapHtml(v);
+
+  /* ---------- A. 分层切换器真的没了 ---------- */
+  section('A · 分层切换器已整体下线（主人 2026-10-12）');
+  {
+    ok('A-1 ★ 渲染里不再有层按钮（.ml-btn 0 颗）',
+      (html.match(/class="ml-btn/g) || []).length === 0,
+      (html.match(/class="ml-btn/g) || []).length + ' 颗');
+    ok('A-2 ★ 渲染里不再有分层条（.map-level 不存在）', html.indexOf('map-level') < 0);
+    ok('A-3 源码里也没有 mapLevel 状态（不是「渲染时恰好没画」）',
+      !/let mapLevel\s*=/.test(UISRC) && !/mapLevel\s*=\s*isFinite/.test(UISRC));
+    ok('A-4 也没有绑 [data-level] 的 onclick（生成侧删了，绑定侧也要删干净）',
+      !/\[data-level\]/.test(UISRC.replace(/\/\*[\s\S]*?\*\//g, ' ')));
+    ok('A-5 CSS 里没有 .map-level / .ml-btn 规则了',
+      !/\.map-level\s*\{/.test(fs.readFileSync(CSS, 'utf8'))
+      && !/\.ml-btn\s*\{/.test(fs.readFileSync(CSS, 'utf8')));
   }
 
-  const rooms = e.world.data.rooms;
-
-  /* ---------- A. 层清单由数据决定 ---------- */
-  section('A · 层清单由数据决定（不是硬编码两层）');
-  const zCount = {};
-  (m.rooms || []).forEach(r => { const z = Number(r.z) || 0; zCount[z] = (zCount[z] || 0) + 1; });
-  const zList = Object.keys(zCount).map(Number).sort((a, b) => a - b);
+  /* ---------- B. 视野切换器也真的没了 ---------- */
+  section('B · 视野切换器已整体下线（同一批改动）');
   {
-    ok('A-1 数据里确实不止两层（否则这条功能没意义）', zList.length > 2,
-      zList.length + ' 层：' + zList.join(','));
-    ok('A-2 数据里同时有「往上」和「往下」（正 z 与负 z 都有）',
-      zList.some(z => z > 0) && zList.some(z => z < 0),
-      '负 ' + zList.filter(z => z < 0).join(',') + ' / 正 ' + zList.filter(z => z > 0).join(','));
+    ok('B-1 ★ 渲染里不再有 data-scope（本区/全图两颗按钮）', html.indexOf('data-scope') < 0);
+    ok('B-2 源码里也没有 mapScope 状态', !/let mapScope\s*=/.test(UISRC));
+    ok('B-3 「天下全图」四个字不再出现在前端（它已不是可选项）',
+      !/天下全图/.test(html.replace(/<!--[\s\S]*?-->/g, ' ')));
+    ok('B-4 CSS 里 .ms-btn（视野胶囊）已删', !/\.ms-btn\s*\{/.test(fs.readFileSync(CSS, 'utf8')));
+    /* 容器留着 —— 它现在装的是那句「只显示你脚下这一片：XX」 */
+    ok('B-5 .map-scope 容器**仍保留**（装着「只显示你脚下这一片」那句话）',
+      html.indexOf('map-scope') >= 0 && html.indexOf('只显示你脚下这一片') >= 0);
   }
 
-  /* ---------- B. 响应式：加 z=9 / z=-3 自动多两颗按钮 ---------- */
-  section('B · 响应式：Mod 加新层，按钮自动多出来（主人第②句的落点）');
-  const html0 = build(0).mapHtml(v);
-  const btns0 = (html0.match(/class="ml-btn/g) || []).length;
+  /* ---------- C. 只有本区：一层、且是本区 ---------- */
+  section('C · 地图只画本区（切不出别的区域，也不需要切）');
   {
-    ok('B-1 默认渲染出的层按钮数 == 数据里的层数', btns0 === zList.length,
-      btns0 + ' 颗 vs 数据 ' + zList.length + ' 层');
-    ok('B-2 层数 > 2（不是写死两层）', btns0 > 2, btns0 + ' 颗');
-  }
-  {
-    /* ⚠️ 关键：层清单来自 **`m.rooms`**（mapView 下发的、带 z 的那份），
-       不是 `e.world.data.rooms` —— 后者是**原始数据文件**，里面根本没有 z
-       （z 是布局阶段算/标上去的，数据文件里连字段都没有）。
-       第一版守卫往 `e.world.data.rooms` 里塞房 → 层清单纹丝不动 → 假红。
-       教训同记忆里那条：「必须核对后端真下发的数据」。 */
-    const base = (m.rooms || []).find(r => (Number(r.z) || 0) === 0);
-    const mk = (id, z) => Object.assign({}, base, { id, z, exits: [] });
-    m.rooms.push(mk('_lvtest_up9', 9));
-    m.rooms.push(mk('_lvtest_dn3', -3));
-    const html1 = build(0).mapHtml(v);
-    const btns1 = (html1.match(/class="ml-btn/g) || []).length;
-    ok('B-3 ★ 加一间 z=9 与一间 z=-3 → 层清单自动多两颗（没有硬编码上限）',
-      btns1 === btns0 + 2, btns1 + ' 颗 vs 预期 ' + (btns0 + 2) + ' 颗');
-    ok('B-4 ★ 新出现的层能被渲染出来（九层 / 地下3层）',
-      /data-level="9"/.test(html1) && /data-level="-3"/.test(html1), '');
-    /* 收拾干净，别污染后面几段 */
-    m.rooms = m.rooms.filter(r => String(r.id).indexOf('_lvtest_') !== 0);
+    const here = (m.rooms || []).find(r => r.current);
+    ok('C-1 数据里有「你在这里」', !!here, here ? here.name : '无');
+    const curRegion = here ? here.region : null;
+    const inReg = (m.rooms || []).filter(r => r.region === curRegion);
+    const nodes = (html.match(/class="map-node/g) || []).length;
+    ok('C-2 ★ 地块数 == 本区房间数（一个外区的都没混进来）',
+      nodes === inReg.length, '渲染 ' + nodes + ' / 本区 ' + inReg.length);
+    ok('C-3 本区房间数远小于全图（否则这条断言没意义）',
+      inReg.length < (m.rooms || []).length,
+      inReg.length + ' vs 全图 ' + (m.rooms || []).length);
+    ok('C-4 ★ 只画本区一个区域框（别的区域的锚点也没了）',
+      (html.match(/data-region-box="/g) || []).length === 1,
+      (html.match(/data-region-box="/g) || []).length + ' 块');
+    /* 本区房间可能跨层（有 u/d 出口的）。地图只画平面一层 ——
+       断言「画出来的房间都是本区的」，不要求「都是 z=0 的」：
+       z≠0 的本区房间照样属于本区，画出来不算错（它们的名字仍是识别该片土地的线索）。 */
+    const allMine = (m.rooms || []).filter(r => r.region === curRegion).length;
+    ok('C-5 渲染出的每一格都归属于本区（没有幽灵格子）', nodes <= allMine);
   }
 
-  /* ---------- C. 切层真的换内容 ---------- */
-  section('C · 切层真的换内容（切到某层只剩那层 + 你所在那格）');
+  /* ---------- D. ▲/▼ 角标：层信息没白丢 ---------- */
+  section('D · 层信息没白丢：▲/▼ 角标与 tooltip 的层名仍在');
   {
-    /* 先找一间 z≠0 的房，把人挪过去，看「切走之后你还在地图上」 */
-    const upR = (m.rooms || []).filter(r => (Number(r.z) || 0) === 1);
-    ok('C-1 数据里 z=1 那一层有房（不然下面没法测）', upR.length > 0, upR.length + ' 间');
-    const html1 = build(1).mapHtml(v);
-    const n1 = (html1.match(/class="map-node/g) || []).length;
-    const n0 = (html0.match(/class="map-node/g) || []).length;
-    ok('C-2 ★ 切到二层后地块数变了（不是把全图都画出来）', n1 !== n0,
-      '一层 ' + n0 + ' 间 → 二层 ' + n1 + ' 间');
-    ok('C-3 二层地块数 == 数据里 z=1 的房数（± 当前那格）',
-      Math.abs(n1 - (zCount[1] || 0)) <= 1, n1 + ' vs ' + zCount[1]);
-    ok('C-4 切层按钮渲染出来了（可切换）', /class="ml-btn/.test(html1), '有按钮');
-    ok('C-5 当前层按钮带 .on（看得出在哪一层）', /class="ml-btn on"/.test(html1), '有 .on');
-  }
-
-  /* ---------- D. 角标 ▲/▼ ---------- */
-  section('D · ▲/▼ 角标：说出哪一格有楼梯');
-  {
-    /* 数据里真有 u/d 出口的房（同样看 `m.rooms`，它带着 exits 数组） */
-    const withUD = (m.rooms || []).filter(r =>
-      (r.exits || []).indexOf('u') >= 0 || (r.exits || []).indexOf('d') >= 0);
-    ok('D-1 数据里有带上下楼出口的房', withUD.length > 0, withUD.length + ' 间');
-    const someHas = withUD.some(r => (Number(r.z) || 0) === 0);
-    ok('D-2 一层里就有带楼梯的房（切到一层也看得到 ▲/▼）', someHas, '');
-    const marks = html0.match(/class="mn-lv"/g) || [];
-    ok('D-3 ★ 渲染里真出了 ▲/▼ 角标', marks.length > 0, marks.length + ' 个');
-    ok('D-4 角标带 title 说明（可上楼/可下楼/两样都行）',
-      /class="mn-lv" title="[^"]*"/.test(html0), '');
-  }
-
-  /* ---------- E. CSS 契约 ---------- */
-  section('E · CSS 契约');
-  {
+    const withUD = (m.rooms || []).filter(r => {
+      const ex = r.exits || [];
+      return ex.indexOf('u') >= 0 || ex.indexOf('d') >= 0;
+    });
+    ok('D-1 数据里有带上下楼出口的房（真数据）', withUD.length > 0, withUD.length + ' 间');
+    const marks = html.match(/class="mn-lv"/g) || [];
+    ok('D-2 ★ 渲染里真出了 ▲/▼ 角标（分层删了，但「这屋有楼梯」必须还在）',
+      marks.length > 0, marks.length + ' 个');
+    ok('D-3 角标带 title 说明（可上楼 / 可下楼 / 两样都行）',
+      /class="mn-lv" title="[^"]*"/.test(html));
+    /* tooltip 里写「三层 / 地下2层」—— 这是另一条「层信息没丢」的通道 */
+    ok('D-4 ★ tooltip 里仍写着层名（lvName 没跟着分层一起删）',
+      /\d层|地下\d+层/.test(html), (html.match(/title="[^"]*(?:三层|地下|一层|\d层)[^"]*"/) || [''])[0].slice(0, 80));
+    ok('D-5 lvName 仍在源码里（房间 tooltip 的依赖）',
+      /const lvName\s*=/.test(UISRC));
     const css = fs.readFileSync(CSS, 'utf8');
-    const rule = s => (css.match(new RegExp('\\.' + s + '\\s*\\{[^}]*\\}')) || [''])[0];
-    ok('E-1 .map-level 存在（分层条）', !!rule('map-level'), '');
-    ok('E-2 .ml-btn 存在（层按钮）', !!rule('ml-btn'), '');
-    ok('E-3 .ml-btn.on 有实心底色（当前层一眼看出）',
-      /\.ml-btn\.on\s*\{[^}]*background/.test(css), '');
-    ok('E-4 .mn-lv 存在且小字号（角标不抢戏）',
-      /\.map-node \.mn-lv\s*\{[^}]*font-size/.test(css), '');
-    ok('E-5 .mn-lv 关掉指针事件（别把点击拦在地块外）',
-      /\.map-node \.mn-lv\s*\{[^}]*pointer-events:\s*none/.test(css), '');
-    /* F: 分层条与视野条视觉可区分（一个金色一个玉色） */
-    ok('E-6 分层按钮(.ml-btn.on)与视野按钮(.ms-btn.on)不同色（两排胶囊不混淆）',
-      /\.ml-btn\.on\s*\{[^}]*background:\s*var\(--gold\)/.test(css)
-      && /\.ms-btn\.on\s*\{[^}]*background:\s*var\(--jade\)/.test(css), '');
-  }
-
-  /* ---------- F. 事件绑定 ---------- */
-  section('F · 切层按钮绑了事件（点了真换层）');
-  {
-    ok('F-1 绑定了 [data-level] 的 onclick', /querySelectorAll\('#modal-body \[data-level\]'\)/.test(UISRC),
-      '');
-    ok('F-2 onclick 里把值写回 mapLevel', /mapLevel\s*=\s*isFinite\(z\)/.test(UISRC), '');
-    ok('F-3 mapLevel 是**数字**型状态（原始 z 值，不是 0/1/2 枚举）',
-      /let mapLevel = 0;/.test(UISRC), '');
+    ok('D-6 CSS 里 .mn-lv 仍在（角标样式没被顺手删）',
+      /\.map-node \.mn-lv\s*\{[^}]*font-size/.test(css));
+    ok('D-7 .mn-lv 仍关掉指针事件（别把点击拦在地块外）',
+      /\.map-node \.mn-lv\s*\{[^}]*pointer-events:\s*none/.test(css));
   }
 
   console.log('');
-  console.log('地图分层守卫：' + pass + ' 通过 / ' + fail + ' 失败');
+  console.log('地图视野守卫：' + pass + ' 通过 / ' + fail + ' 失败');
   process.exit(fail ? 1 : 0);
 })().catch(err => { console.error('异常:', err.stack); process.exit(1); });

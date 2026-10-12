@@ -17,9 +17,9 @@ function esc(s) {
 const MAP_CELL = 30, MAP_NODE = 26, MAP_PAD = 34;
 const DIR_CN = { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下' };
 const DIR_OFF = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0], u: [0, -1], d: [0, 1] };
-const built = new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF', 'mapScope',
+const built = new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF',
   grab('mapHtml') + '\n' + grab('shortName') + '\nreturn { mapHtml, shortName };')(
-    esc, MAP_CELL, MAP_NODE, MAP_PAD, DIR_CN, DIR_OFF, 'region');
+    esc, MAP_CELL, MAP_NODE, MAP_PAD, DIR_CN, DIR_OFF);
 
 let pass = 0, fail = 0;
 function ok(name, cond, extra) {
@@ -109,10 +109,13 @@ function ok(name, cond, extra) {
           样式从 `.edge-bridge` 挪到了 `.edge` 上。
        这一节原来守的是「桥存在 + 是折线 + 是虚线」，现在改守新契约：
        桥真没了，而走廊线（不论同区还是跨区）都是虚线。 */
-    /* 世界模式渲染（把 mapHtml 抽出来、喂一个 world 视野真跑一遍） */
-    const worldBuilt = new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF', 'mapScope',
+    /* 世界模式渲染 —— 🔴 2026-10-12 主人「把天下全图整个界面删了」：
+       没有「世界模式」了，`mapHtml` 恒为「本区」视野。形参表里的 `mapScope`
+       也随之一并撤掉（传了也是空转）。下面这一节改守**「跨区兜底折线真的没了」**
+       与「同区走廊仍成网」——「首尾相连」那件事现在由跨区域出口的抬头标注承担。 */
+    const worldBuilt = new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF',
       grab('mapHtml') + '\n' + grab('shortName') + '\nreturn { mapHtml };')(
-        esc, MAP_CELL, MAP_NODE, MAP_PAD, DIR_CN, DIR_OFF, 'world');
+        esc, MAP_CELL, MAP_NODE, MAP_PAD, DIR_CN, DIR_OFF);
     const wh = worldBuilt.mapHtml(v);
     ok('★ 跨区兜底长折线已下线（主人 10-12：删掉所有虚线）', wh.indexOf('edge-bridge') < 0);
     ok('★ 走廊连线全是虚线（主人 10-12：连线换成虚线形式）',
@@ -133,7 +136,12 @@ function ok(name, cond, extra) {
   const terrCells = (mh.match(/class="map-terrain /g) || []).length;
   ok('★ region 模式同样不画地形装饰（0 个）', terrCells === 0,
     '渲染 ' + terrCells + ' / 后端当前区域共 ' + curTerr + '（数据在、不画）');
-  ok('有视野切换栏', mh.includes('data-scope="region"') && mh.includes('data-scope="world"'));
+  /* 🔴 2026-10-12 主人「只保留当前区域界面，把天下全图整个界面删了」
+     ⇒ 视野切换栏（当前区域 / 天下全图）整条撤掉。
+     这一条从「有切换栏」**反转成「切换器真的没了 + 那句说明还在」**。 */
+  ok('★ 视野切换栏已删（没有 data-scope 了）', !mh.includes('data-scope'));
+  ok('★ 取而代之的是那句「只显示你脚下这一片：XX」',
+    mh.includes('map-scope') && mh.includes('只显示你脚下这一片'));
   /* 🔴 2026-10-11 主人：「区域地图只居中显示那一块区域，但你区域地块框框外面
      还有那么大一片空地块不删是留着做什么的。」
      ⇒ 取景框从「后端那个被 terrain/minW 撑大的 box」改成
