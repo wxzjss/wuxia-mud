@@ -214,6 +214,137 @@
   function check(path, on, label) {
     return '<label class="mm-check"><input type="checkbox" data-bind="' + esc(path) + '"' + (on ? ' checked' : '') + '><span>' + esc(label) + '</span></label>';
   }
+
+  /* ------------------------------------------------------------------
+   * `learned` / `ask` 的「多行文本 ⇄ 真结构」转换（2026-10-12）
+   *
+   * 为什么不让作者直接填 JSON：这两个字段的结构分别是
+   *   learned = { skillId: { level: 400 } }            （对象套对象）
+   *   ask     = [{ topic, keywords: [...], answer }]   （对象数组）
+   * 让一个刚学会「填表单」的人手写这个，只会写坏。所以做成两个「一行一条」的
+   * 文本区，进出都过一道转换 —— 作者看到的永远是平铺的行，引擎拿到的永远是
+   * 它认的结构。转换函数只有这一份，正反两个方向都在这，不会漂移。
+   *
+   * ⚠️ 解析要**容错**：分隔符半角全角都认（`|` 与 `｜`、`,` 与 `，`），
+   *    行尾空白吃掉，空行跳过。作者打错一个标点就整条丢失，是最伤的体验。
+   * ------------------------------------------------------------------ */
+  function learnedToLines(v) {
+    if (!v) return '';
+    if (typeof v === 'string') return v;                 // 已经在文本框里编辑过
+    if (Array.isArray(v)) v = Object.assign({}, ...v);   // 兼容有人写成数组
+    if (typeof v !== 'object') return '';
+    return Object.keys(v).map(k => {
+      const lv = (v[k] && typeof v[k] === 'object') ? v[k].level : v[k];
+      return lv != null && lv !== '' ? (k + ':' + lv) : String(k);
+    }).join('\n');
+  }
+  function linesToLearned(txt) {
+    const out = {};
+    String(txt || '').split('\n').forEach(line => {
+      /* 全角冒号也认 —— 中文输入法下打 `：` 太常见了 */
+      const s = line.replace(/[：]/g, ':').trim();
+      if (!s) return;
+      const i = s.indexOf(':');
+      if (i < 0) { out[s] = { level: 300 }; return; }     // 只给 id 就按标准满给
+      const id = s.slice(0, i).trim();
+      const lv = Number(s.slice(i + 1).trim());
+      if (!id) return;
+      out[id] = { level: isFinite(lv) && lv > 0 ? lv : 300 };
+    });
+    return out;
+  }
+  function askToLines(v) {
+    if (!v) return '';
+    if (typeof v === 'string') return v;
+    /* 三种历史写法都要能读出来（引擎侧 normalizeAskList 认这三种）：
+       单条对象 / 数组 / **映射对象** {"话题":"答案"}。 */
+    let arr = v;
+    if (!Array.isArray(v)) {
+      if (typeof v === 'object') {
+        arr = Object.keys(v).map(k => (
+          v[k] && typeof v[k] === 'object'
+            ? Object.assign({ topic: k }, v[k])
+            : { topic: k, answer: v[k] }
+        ));
+      } else arr = [];
+    }
+    return arr.map(a => {
+      if (typeof a === 'string') return a;
+      const topic = a.topic || a.label || a.title || '';
+      const kw = a.keywords || a.words || [];
+      const ans = a.answer || a.text || a.reply || '';
+      return topic + ' | ' + (Array.isArray(kw) ? kw.join(',') : String(kw || '')) + ' | ' + ans;
+    }).join('\n');
+  }
+  function linesToAsk(txt) {
+    const out = [];
+    String(txt || '').split('\n').forEach(line => {
+      let s = line.replace(/[｜]/g, '|').trim();
+      if (!s) return;
+      const parts = s.split('|').map(x => x.trim());
+      const topic = parts[0] || '';
+      if (!topic) return;
+      const kw = (parts[1] || '').replace(/[，]/g, ',').split(',').map(x => x.trim()).filter(Boolean);
+      const answer = parts.slice(2).join('|').trim();   // 回答里带 `|` 也不截断
+      const o = { topic, answer };
+      if (kw.length) o.keywords = kw;
+      out.push(o);
+    });
+    return out;
+  }
+
+  /* ------------------ 房间互动 actions ------------------
+     `actions` 的真结构：
+       [{ label:'打水', cmd:'drink', keywords:['井','打水'], desc:'…',
+          cond:{…}, failMsg:'…', effects:[{type:'say',raw:'…'}] }]
+     界面里简化成一行一条：「按钮名 | 指令 | 关键词 | 效果」。
+     效果段允许写多条（分号分隔），且**沿用 onEnter 的字符串语法**
+     （`say:xxx` / `+item:xxx:1`）—— 引擎的 evalEffects 认字符串，
+     所以这里把整段当**一个字符串**塞进 effects 数组，由引擎去拆。
+     为什么不在这里就拆成多个对象：拆一份就得在这里维护一张「效果类型白名单」，
+     引擎加一种效果这里就得跟着改一次（迟早漂移）。交给引擎解析，永远同步。 */
+  function actionsToLines(v) {
+    if (!v) return '';
+    if (typeof v === 'string') return v;
+    return [].concat(v).map(a => {
+      if (typeof a === 'string') return a;
+      const label = a.label || a.name || a.cmd || '';
+      const cmd = a.cmd || '';
+      const kw = Array.isArray(a.keywords) ? a.keywords.join(',') : String(a.keywords || '');
+      let eff = '';
+      if (typeof a.effects === 'string') eff = a.effects;
+      else if (Array.isArray(a.effects)) {
+        eff = a.effects.map(e => {
+          if (typeof e === 'string') return e;
+          const t = e.type || '';
+          if (e.raw != null) return t + ':' + e.raw;
+          const args = [].concat(e.args || []).join(':');
+          return args ? (t + ':' + args) : t;
+        }).join('; ');
+      }
+      return label + ' | ' + cmd + ' | ' + kw + ' | ' + eff;
+    }).join('\n');
+  }
+  function linesToActions(txt) {
+    const out = [];
+    String(txt || '').split('\n').forEach(line => {
+      const s = line.replace(/[｜]/g, '|').trim();
+      if (!s) return;
+      const parts = s.split('|').map(x => x.trim());
+      const label = parts[0] || '';
+      const cmd = parts[1] || '';
+      if (!label && !cmd) return;
+      const kw = (parts[2] || '').replace(/[，]/g, ',').split(',').map(x => x.trim()).filter(Boolean);
+      const effRaw = parts.slice(3).join('|').trim();
+      const o = { label: label || cmd, cmd: cmd || label };
+      if (kw.length) o.keywords = kw;
+      /* 效果整段留着，交给引擎拆（见上面注释）。空段就不写 effects，
+         免得导出个 `effects:['']` 让引擎去解析空串。 */
+      if (effRaw) o.effects = effRaw.split(';').map(x => x.trim()).filter(Boolean);
+      out.push(o);
+    });
+    return out;
+  }
   function row(title, sub, idx, arrName, bodyHtml, extra) {
     return '<div class="mm-row" data-row="' + esc(arrName) + '" data-idx="' + idx + '">' +
       '<div class="mm-row-head"><span class="mm-row-title">' + esc(title || ('条目 ' + (idx + 1))) + '</span>' +
@@ -288,7 +419,19 @@
         '<div class="mm-sub-title">出口（填「目标房间ID」）</div><div class="mm-exits">' + exHtml + '</div>' +
         '<div class="mm-sub-title">进入时触发（可选）</div>' +
         field('进入效果', input('rooms.' + i + '.onEnter', r.onEnter, '例如：say:你踏入门内，一股药香扑面而来'), '效果语法见「小白教程」') +
-        field('查看时追加', input('rooms.' + i + '.onLook', r.onLook, '例如：hint:墙上有幅字画'));
+        field('查看时追加', input('rooms.' + i + '.onLook', r.onLook, '例如：hint:墙上有幅字画')) +
+        /* ★ 2026-10-12 补：房间交互动作（`actions`，全库 301 处）。
+           这是武侠 MUD 最有味道的一类内容 —— 打水、打铁、住店、采药、搜查、钓鱼…
+           玩家在屋里敲「打水」/点按钮，房间就给出反应。
+           原先制作器**没有这个入口**，等于这一类玩法做不出来（只能去手改 JSON）。
+           写法：一行一个动作，「按钮名 | 指令 | 关键词(逗号) | 效果」。
+           效果段跟 onEnter 用**同一套语法**（say:xxx / +item:xxx:1 / flag:xxx …），
+           作者学一次能在两个地方用。 */
+        '<div class="mm-sub-title">房间互动（一行一个：按钮名 | 指令 | 关键词(逗号) | 效果）</div>' +
+        area('rooms.' + i + '.actions', actionsToLines(r.actions),
+          '例如：\n打水 | drink | 井,打水 | say:你摇着辘轳打上一桶井水，掬饮几口。; +water:100\n' +
+          '采药 | 采药 | 采,挖药 | say:你在石缝里翻出一株草药。; +item:herb_danggui:1\n' +
+          '（留空即这个房间没有可互动的东西。效果段用分号分隔多条。）', 4);
 
       return row(r.name || ('房间 ' + (i + 1)), r.id, i, 'rooms', body);
     }).join('') || empty('还没有房间，点下面的按钮加一个吧～');
@@ -368,6 +511,25 @@
         '</div>' +
         '<div class="mm-sub-title">可请教武学（逗号分隔 ID）</div>' +
         input('npcs.' + i + '.teach', (Array.isArray(n.teach) ? n.teach.join(',') : (n.teach || '')), '例如：basic_sword,basic_fist') +
+        /* ★ 2026-10-12 补：NPC **自己会**的功法（`learned`，全库 470 处，是数据主流写法）。
+           跟上面那行「可请教」是两码事，别混：
+             · `teach`   = 他能**教**你什么（玩家学会了就归玩家）
+             · `learned` = 他**自己使得出来**什么（打架时的招式、请教时的上限参考）
+           原先只有 `teach` 一个入口 → 照抄示例 mod 做不出「岳不群会紫霞神功」这种人物，
+           写出来的 NPC 一打就只会「基本拳脚」（正是主人报的 B3/B8 那族问题在 Mod 侧的翻版）。
+           写法用「功法ID:熟练度」逐行给，比 JSON 好填：一行一门。
+           ⚠️ 熟练度就是 `maxLevel` 那一套（300 = 标准满），不是「等级」。 */
+        '<div class="mm-sub-title">自己会的功法（一行一门：功法ID:熟练度）</div>' +
+        area('npcs.' + i + '.learned', learnedToLines(n.learned),
+          '例如：\nhuashan_sword:450\nzixia_gong:480\n\n留空即只会最基本的拳脚。熟练度 300 = 标准满。', 3) +
+        /* ★ 2026-10-12 补：打探消息（`ask`，全库 141 处）。
+           结构是 [{topic, keywords:[...], answer}] —— 玩家问到这个话题，他答这句。
+           用「话题 | 关键词1,关键词2 | 回答」一行一条，比让作者写 JSON 现实。 */
+        '<div class="mm-sub-title">可以打探的消息（一行一条：话题 | 关键词(逗号分隔) | 回答）</div>' +
+        area('npcs.' + i + '.ask', askToLines(n.ask),
+          '例如：\n紫霞神功 | 紫霞,内功 | 那是我华山镇派内功，非入门三年以上者不可传。\n一桩旧案 | 旧案,陈年 | （他压低声音）那事……你打听它做什么？', 3) +
+        '<div class="mm-sub-title">问不出别的时说什么（askDefault）</div>' +
+        input('npcs.' + i + '.askDefault', n.askDefault, '例如：我一个乡野之人，哪知道这些江湖事。') +
         '<div class="mm-sub-title">掉落 / 奖励</div><div class="mm-form-grid">' +
         field('掉落物品（逗号分隔）', input('npcs.' + i + '.loot', (n.loot || []).join ? (n.loot || []).join(',') : (n.loot || ''), '例如：jinchuang_yao,silver')) +
         field('经验奖励', input('npcs.' + i + '.expReward', n.expReward != null ? n.expReward : 0, '', 'number')) +
@@ -473,19 +635,30 @@
         field('类型', select('skills.' + i + '.type', sk.type, slotOpts), typeHint) +
         field('分类', select('skills.' + i + '.category', sk.category, catOpts)) +
         field('品级', select('skills.' + i + '.quality', sk.quality || 'common', QUALITY), '影响请教价码与强度评定，中文即所选') +
-        field('最高等级', input('skills.' + i + '.maxLevel', sk.maxLevel != null ? sk.maxLevel : 300, '', 'number')) +
+        field('熟练度上限', input('skills.' + i + '.maxLevel', sk.maxLevel != null ? sk.maxLevel : 300, '默认 300', 'number'),
+          '这门功法能练到多熟（分母）。300 = 标准；熟练度分六级：未入门→入门→小成→大成→融会→登峰造极') +
         field('难度', input('skills.' + i + '.difficulty', sk.difficulty != null ? sk.difficulty : 1, '1~5', 'number')) +
         field('威力倍率', input('skills.' + i + '.damageMult', sk.damageMult != null ? sk.damageMult : 1, '1.0 = 普通', 'number')) +
         field('命中加成', input('skills.' + i + '.accuracy', sk.accuracy != null ? sk.accuracy : 0, '留 0 用默认', 'number')) +
         field('内力消耗', input('skills.' + i + '.mpCost', sk.mpCost != null ? sk.mpCost : 0, '', 'number')) +
         '</div>' +
         field('武学描述', area('skills.' + i + '.desc', sk.desc, '这一招的来历、路数…', 2)) +
-        '<div class="mm-sub-title">被动加成（学会后随等级生效，内功常用）</div><div class="mm-form-grid">' +
-        field('气血上限', input('skills.' + i + '.bonus.maxHp', getPath(sk, 'bonus.maxHp'), '每 10 级 +N', 'number')) +
-        field('内力上限', input('skills.' + i + '.bonus.maxMp', getPath(sk, 'bonus.maxMp'), '每 10 级 +N', 'number')) +
-        field('攻击', input('skills.' + i + '.bonus.atk', getPath(sk, 'bonus.atk'), '每 20 级 +N', 'number')) +
-        field('防御', input('skills.' + i + '.bonus.def', getPath(sk, 'bonus.def'), '每 20 级 +N', 'number')) +
-        field('暴击', input('skills.' + i + '.bonus.critRate', getPath(sk, 'bonus.critRate'), '固定 +N', 'number')) +
+        /* ★ 2026-10-12 纠错：原写「学会后随等级生效」「每 10 级 +N」——**语义是错的**。
+           实际缩放见 character.js:354 的 `unit = sqrt(lv / 300)`：
+           熟练度 300 时拿满 1 份，往上收敛（900 时约 1.73 份）、从不归零。
+           照旧文案填的人会按线性脑补，量级差一个数量级（与前阵子 NUM-01 伤害爆炸同源）。
+           顺手补上 dodge/parry/speed/lifesteal 四项 —— 引擎早就在消费
+           （character.js:363-367），制作器却一直没入口。 */
+        '<div class="mm-sub-title">被动加成（学会后按熟练度缩放：300 熟练度拿满 1 份）</div><div class="mm-form-grid">' +
+        field('气血上限', input('skills.' + i + '.bonus.maxHp', getPath(sk, 'bonus.maxHp'), '300 熟练度时 +N', 'number')) +
+        field('内力上限', input('skills.' + i + '.bonus.maxMp', getPath(sk, 'bonus.maxMp'), '300 熟练度时 +N', 'number')) +
+        field('攻击', input('skills.' + i + '.bonus.atk', getPath(sk, 'bonus.atk'), '300 熟练度时 +N', 'number')) +
+        field('防御', input('skills.' + i + '.bonus.def', getPath(sk, 'bonus.def'), '300 熟练度时 +N', 'number')) +
+        field('闪避', input('skills.' + i + '.bonus.dodge', getPath(sk, 'bonus.dodge'), '300 熟练度时 +N', 'number')) +
+        field('招架', input('skills.' + i + '.bonus.parry', getPath(sk, 'bonus.parry'), '300 熟练度时 +N', 'number')) +
+        field('速度', input('skills.' + i + '.bonus.speed', getPath(sk, 'bonus.speed'), '300 熟练度时 +N', 'number')) +
+        field('暴击率', input('skills.' + i + '.bonus.critRate', getPath(sk, 'bonus.critRate'), '固定 +N（不缩放）', 'number')) +
+        field('吸血', input('skills.' + i + '.bonus.lifesteal', getPath(sk, 'bonus.lifesteal'), '固定 +N（不缩放）', 'number')) +
         '</div>' +
         field('学习条件', input('skills.' + i + '.require', sk.require, '例如：realm>=2 或 悟性>=20'), '不填则无门槛（realm=境界：0不通武艺~5登峰造极）') +
         '<div class="mm-sub-title">招式效果（战斗中触发）</div>' +
@@ -501,10 +674,19 @@
   }
 
   function effectRow(skIdx, eIdx, e) {
-    const types = ['dot', 'stun', 'slow', 'buff', 'debuff', 'drain', 'ignoreDef', 'heal', 'extraHit'];
+    /* ⚠️ 这张表必须跟 `combat.js` 里真实消费的 `effect.type` 对齐。
+       2026-10-12 体检发现只列了 9 种，引擎实查支持 15 种 —— 补上缺的 6 种
+       （aoe / confuse / silence / mp / custom / cond）。
+       少列一种的后果不是报错，是作者**根本不知道有这东西**，
+       于是「群体招式」「封招」「混乱」这类效果在 Mod 里永远出不来。 */
+    const types = ['dot', 'stun', 'slow', 'confuse', 'silence', 'buff', 'debuff',
+      'drain', 'mp', 'ignoreDef', 'heal', 'extraHit', 'aoe', 'custom', 'cond'];
     const typeCN = {
-      dot: '持续伤害(毒/灼)', stun: '定身(眩晕)', slow: '迟缓', buff: '增益自身',
-      debuff: '削弱敌人', drain: '吸血吸内', ignoreDef: '无视防御', heal: '治疗', extraHit: '连击'
+      dot: '持续伤害(毒/灼)', stun: '定身(眩晕)', slow: '迟缓',
+      confuse: '混乱(打错人)', silence: '封招(不能出招)',
+      buff: '增益自身', debuff: '削弱敌人',
+      drain: '吸血吸内', mp: '吸取内力', ignoreDef: '无视防御', heal: '治疗', extraHit: '连击',
+      aoe: '群攻(打所有人)', custom: '自定义(脚本处理)', cond: '条件分支',
     };
     return '<div class="mm-effect" data-eff="' + skIdx + '|' + eIdx + '">' +
       '<span class="mm-eff-t">' + esc(typeCN[e.type] || e.type || '效果') + '</span>' +
@@ -1104,6 +1286,16 @@
         if (el.type === 'number') v = v === '' ? 0 : Number(v);
         if (path === '__tags') {
           S.spec.tags = String(v).split(/\s+/).filter(Boolean);
+        } else if (/\.learned$/.test(path)) {
+          /* `learned` 在界面里是「一行一门」的文本，写回 spec 时要变成
+             `{id:{level}}` 的对象 —— 转换只此一处，别在渲染侧也兜一遍。 */
+          setPath(S.spec, path, linesToLearned(v));
+        } else if (/\.ask$/.test(path)) {
+          /* 同理：`ask` 界面里是「话题 | 关键词 | 回答」的行，写回要变成对象数组。 */
+          setPath(S.spec, path, linesToAsk(v));
+        } else if (/\.actions$/.test(path)) {
+          /* 房间互动：界面里是「按钮 | 指令 | 关键词 | 效果」的行，写回要变成对象数组。 */
+          setPath(S.spec, path, linesToActions(v));
         } else {
           setPath(S.spec, path, v);
         }
