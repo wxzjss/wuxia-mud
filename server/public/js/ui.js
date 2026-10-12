@@ -2777,6 +2777,17 @@
      每格 30px、名字只剩 4 个字 —— 想看清某个区域只能靠「飞往」跳过去。
      现在给三档（0.7 远观 / 1 常规 / 1.4 细看），配合画布上的悬浮工具条。 */
   let mapZoom = 1;
+  /* 地图分层档（★ 主人 2026-10-13 新增）。
+     为什么单独一个状态：层是「看哪一层」的视角，跟缩放一样属于**用户偏好**，
+     重开面板、切区域/全图都该记住（不然每次都要重新点一遍）。
+     ★ 取值 = **原始 z 值（数字）**，不是「一层/二层」的枚举。
+       主人亲口纠正过：「不是固定一层二层的」—— 层数由数据决定：
+       数据里 z 从 -1 排到 8，就该有 10 个档位；Mod 加个 z=9 就自动多一档。
+       前端**只负责把存在的层列出来**，不预设「只有楼上楼下」。
+     ⚠️ 与 `mapScope` 的区别：scope 决定「看多大范围」（本区 / 全图），
+        level 决定「看哪一层」。两者正交。但**区域模式下不分层**
+        （见 mapHtml 里那段注释），所以 level 只在全图模式下生效。 */
+  let mapLevel = 0;
   /* 点了「区域名按钮」后要飞过去的目标区域 id。
      因为切到世界地图要重开面板（重渲染），跨渲染记住目标，渲染完再平移。 */
   let pendingPanRegion = null;
@@ -2835,9 +2846,58 @@
     /* region 模式：只留当前区域这块 box；world 模式：全图 */
     const scopeBox = (sc === 'region' && boxes[curRegion]) ? boxes[curRegion] : null;
 
-    const rooms = (sc === 'region' && curRegion)
+    /* ---- 分层（★ 主人 2026-10-13：「能不能加一层二层的这种，因为有的地块
+       可以往下走」，随后当场纠正：「**不是固定一层二层的**」）----
+       背景：数据里上下楼是 `u`/`d` 出口，平面图上画不了，`layoutRooms` 只好把
+       「楼上那间」挤到旁边一格摆着 —— 于是 101 间「演武场 / 藏经阁 / 二楼雅间 /
+       黑木崖大殿」全摊在地面图上，看着就是平地上凭空多出一堆屋子（z 从 -1 排到 8）。
+
+       ★ 层数**由数据决定**，前端不预设档位：
+         把所有房间的 z 去重、排序，有几层画几层。数据里 z=-1..8 就是 10 个档；
+         Mod 加个 z=9，地图上立刻多一颗按钮，一行前端代码都不用改。
+       为什么不按「一层/二层/地下」硬编码：主人原话就是不要固定层数；
+       而且 z 是**按楼梯级数**算出来的（`layoutRooms` 每上一层 +1），
+       黑木崖从山门爬 7 段石阶到绣阁就是 z=7 —— 硬套「二层」既不准也说不通。
+       层名怎么读：0 = 一层（地面）/ 正数 = 楼层（z=1 就是二层）/ 负数 = 地下层。
+       这个读法交给下面的 `lvName()`，改一处就够。 */
+    const lvName = z => (z === 0 ? '一层' : (z > 0 ? (z + 1) + '层' : '地下' + (-z) + '层'));
+    const lvTip = z => (z === 0 ? '地面' : (z > 0 ? '楼上 / 建筑内部（第 ' + (z + 1) + ' 层）' : '地下（往下 ' + (-z) + ' 层）'));
+
+    /* 只在**全图**下分层。区域模式不分层：一个区域内部房间本来就没几间，
+       分层反而让玩家「咦我这区怎么空了一半」——而且区域模式的取景框是按
+       本区全部房间算的，筛掉楼上那批会让框一起缩，切来切去地图乱跳。 */
+    let lv = (typeof mapLevel === 'undefined') ? 0 : Number(mapLevel);
+    if (!isFinite(lv)) lv = 0;
+
+    let rooms = (sc === 'region' && curRegion)
       ? allRooms.filter(r => r.region === curRegion)
       : allRooms;
+
+    /* 层清单：把本集合里出现过的 z 去重、升序 —— 只列**真有房间**的层。
+       ⚠️ 区域模式下也算（用本区房间），但下面不拿去过滤、也不画切换按钮；
+       这么写是为了让 `lvZ` / `lvCount` 在两种模式下都拿得到（测试要读）。 */
+    const lvZset = {};
+    rooms.forEach(r => { const z = Number(r.z) || 0; lvZset[z] = (lvZset[z] || 0) + 1; });
+    const lvZ = Object.keys(lvZset).map(Number).sort((a, b) => a - b);
+    const lvCount = lvZset;
+
+    /* 全图模式才真筛。⚠️ 当前层若不存在（比如玩家原本在 z=7、切到 z=0），
+       自动落到**最接近的那一层**，而不是画一张空图。 */
+    let hereHidden = false;
+    if (!scopeBox) {
+      if (lvZ.indexOf(lv) < 0) {
+        lv = lvZ.reduce((best, z) => (Math.abs(z - lv) < Math.abs(best - lv) ? z : best), lvZ[0]);
+        if (typeof mapLevel !== 'undefined') mapLevel = lv;
+      }
+      rooms = rooms.filter(r => (Number(r.z) || 0) === lv);
+      /* 玩家自己不在这一层时，把他那一格**留下来**并标出来 ——
+         否则抬头写着「你在这里」、图上却找不着自己，比不给分层还糟。 */
+      if (here && (Number(here.z) || 0) !== lv) {
+        hereHidden = true;
+        const keep = allRooms.filter(r => r.current);
+        if (keep.length) rooms = rooms.concat(keep);
+      }
+    }
     if (!rooms.length) return '<div class="modal-text">此区域暂无地图数据。</div>';
 
     /* 视野裁到本区域 box（多留 1 格余量，房间别贴边） */
@@ -2915,6 +2975,34 @@
         ? '只显示你脚下这一片：' + esc(((m.regions || []).find(x => x.id === curRegion) || {}).name || '—')
         : '天下三十四州，尽收眼底') +
       '</span></div>';
+
+    /* --- 分层切换（★ 主人 2026-10-13：「能不能加一层二层的这种」，
+       随即纠正「**不是固定一层二层的**」）---
+       只在**全图**模式下出现：区域模式不分层（理由见上面层筛选那段注释）。
+       ★ 按钮**按数据里真有的 z 值一个个生成**（`lvZ` 已排序去重）：
+         数据有 -1~8 就画 10 颗，Mod 加 z=9 就自动多一颗。
+         不写死「一层/二层/地下」三个 —— 那正是主人纠正过的做法。
+       ⚠️ 只有一层时不画这排（画一颗孤零零的「一层」，玩家会以为
+          「上面几层要解锁」，其实这局数据里就这一层）。 */
+    if (!scopeBox && lvZ.length > 1) {
+      h += '<div class="map-level">';
+      h += '<span class="ml-title">分层</span>';
+      lvZ.forEach(z => {
+        h += '<button class="ml-btn' + (z === lv ? ' on' : '') + '"' +
+          ' data-level="' + z + '" title="' + esc(lvTip(z)) + '：' + lvCount[z] + ' 处">' +
+          esc(lvName(z)) + '<span class="ml-num">' + lvCount[z] + '</span></button>';
+      });
+      /* 玩家自己不在这一层时明说一句 —— 不然抬头「你在这里」、
+         图上却没有那一格，看着像 bug。
+         ★ 用 `lvName(here.z)` 而不是写死「一层」：你在九层或地下 1 层时
+           也得说对层名（`here.z` 为 0 时 `Number(...)||0` 仍是 0，不影响地面）。 */
+      if (hereHidden) {
+        const hz = Number(here && here.z) || 0;
+        h += '<span class="ml-warn">你在此图的「' + esc(lvName(hz)) +
+          '」，已单独标出</span>';
+      }
+      h += '</div>';
+    }
 
     const pct = scopeCount ? Math.round(scopeVisited / scopeCount * 100) : 0;
     h += '<div class="map-progress" title="本范围已探索 ' + scopeVisited + '/' + scopeCount +
@@ -3041,17 +3129,67 @@
         else paths += seg;
       });
     });
-    /* 4b) 跨区域「长连线」——★ 2026-10-12 主人：「把世界地图的所有虚线删了」。
-       说的就是这一段：它是当年为了「区域装箱后两块挨不上」而画的**兜底折线**
-       （虚线、横穿半屏，正是主人早先抱怨的「隔了那么远连线」）。
-       现在布局已按真出口咬合（maplayout.packRegions），绝大多数跨区边本来就**相邻**，
-       邻居之间那条线由上面的走廊段画掉了；剩下这一小撮摆不平的，
-       主人宁可它们空着，也不要那条大斜线。所以整段下线，`m.bridges` 数据保留在后端。
-       ★ 同时「两个地块之间的连线改成虚线形式」：样式落在 CSS 的 `.map-edges .edge`
-       上（stroke-dasharray），这里不用管。 */
+    /* 4b) 不相邻的出口边 —— 「补连线」。
+       🔴 2026-10-12 主人曾要求「把世界地图的所有虚线删了」（那是上一版：
+          区域装箱后两块挨不上，用一条横穿半屏的大斜线硬牵，丑）。
+       ★ 2026-10-13 主人改主意：「把世界地图做成和区域地图一样的『连线』形式」
+          ＋「检测一下相邻地块连线，地图上显示的已相连地块是否真的相邻」。
+          ⇒ 判定标准变了：**「有出口」就该有线**，不能因为布局摆不下就空着。
+          实测（tools/check-map-adjacency.js）：536 间房里 A 类（有出口但坐标不
+          相邻、走廊画不出）**154 条**，其中距离 2 的 29 条、距离 3 的 44 条。
+          这不是布局 bug 而是**图论限制**：MUD 的出口图带大量环、还有「官道」
+          这种一口气横跨好几个区域的长边，任何平面嵌入都不可能让所有边都相邻
+          （试过全局弹簧松弛 / 定向搬迁 / swap 换位三种算法，最好也只到 145 条，
+           且会把街区形状拽散 —— 见 tools/_exp-map-*.js 的实验台账）。
+          ⇒ 所以正解是**把剩下的边画出来**，但按距离分两档，远的绝不抢戏：
+            · 近距离（≤ LINK_NEAR 格）：走**折线**（先走横向、再走纵向），
+              看起来就是「绕过一格连过去」，跟走廊同款粗细，
+              78% 的断线（距离 ≤3）用这一档，视觉上几乎看不出是跨越；
+            · 远距离：**细、淡、点状**的直线（`.edge-far`），
+              它诚实地表示「这里有条通路」，但不横冲直撞地抢视线。
+          ⚠️ 别再把这一整段删掉：删了就等于回到「地块各连各的、一片散沙」。 */
+
+    /* 折线：从 a 到 b，先横后纵拐一次（拐点取 (bx, ay)）。
+       为什么不走对角线：地图是格子的，斜线在格纸上看着像「跨格飞过去」；
+       拐一次则贴着格线走，像人绕过一个地块。 */
+    const elbow = (x1, y1, x2, y2) =>
+      (x1 === x2 || y1 === y2)
+        ? ('M' + x1 + ' ' + y1 + ' L' + x2 + ' ' + y2 + ' ')
+        : ('M' + x1 + ' ' + y1 + ' L' + x2 + ' ' + y1 + ' L' + x2 + ' ' + y2 + ' ');
+
+    /* 只画两端都在本次渲染集合里的（区域模式裁掉别的区域时，另一半不在图上，
+       画出去也只会拖一条到画布外被裁掉 —— 与走廊段的取舍一致）。 */
+    let pathsNear = '', pathsNearKnown = '', pathsFar = '';
+    /* 距离阈值：≤ 这格数走「折线 + 常态粗细」，超过的走「细淡直线」。
+       3 是量出来的：距离 ≤3 的断线占 47%，把它们收进常态档，
+       地图上「相邻感」就回来了；再往上大多是跨区的官道，本来就该淡。 */
+    const LINK_NEAR = 3;
+    (m.bridges || []).forEach(br => {
+      const a = shown[br.a], b = shown[br.b];
+      if (!a || !b) return;
+      const x1 = cx(a), y1 = cy(a), x2 = cx(b), y2 = cy(b);
+      const d = Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+      if (d <= LINK_NEAR) {
+        const seg = elbow(x1, y1, x2, y2);
+        if (a.visited && b.visited) pathsNearKnown += seg;
+        else pathsNear += seg;
+      } else {
+        pathsFar += 'M' + x1 + ' ' + y1 + ' L' + x2 + ' ' + y2 + ' ';
+      }
+    });
+
     h += '<svg class="map-edges" width="' + W + '" height="' + H + '">' +
+      /* 远的先画（垫底，被近的压住） */
+      (pathsFar ? '<path d="' + pathsFar + '" class="edge edge-far"/>' : '') +
       '<path d="' + paths + '" class="edge edge-dim"/>' +
-      '<path d="' + pathsKnown + '" class="edge edge-known"/></svg>';
+      '<path d="' + pathsKnown + '" class="edge edge-known"/>' +
+      /* 近档补线单独给 `edge-link` 标记：它和走廊同粗细同色，
+         但**语义不同**（走廊 = 坐标真相邻；补线 = 有出口但摆不下）。
+         分开两个 class 有两处用：
+           ① 测试能只数「走廊段」而不把补线算进去（smoke-round2-map 就是数错的）；
+           ② 将来想给补线单独调色/虚线时，不用再动走廊那条 path。 */
+      '<path d="' + pathsNear + '" class="edge edge-dim edge-link"/>' +
+      '<path d="' + pathsNearKnown + '" class="edge edge-known edge-link"/></svg>';
 
     /* 4) 地块：★ 主人 2026-10-11：「把地块里的方块框删掉，地块用纯地名显示，
           做成屏幕上那九宫格地名一样的形式」。
@@ -3147,14 +3285,29 @@
             （鼠标悬停能看全，点开面板抬头也是全名）。 */
       const label = r.name || '？';
       const short = label === '？' ? label : mapLabel(label);
+      /* ★ 2026-10-13 分层配套：格子角上挂 **▲ / ▼ 角标**，
+         表示「这里能上楼 / 能下楼」。
+         为什么必须有：分层之后别的层的房间不画了，如果连「这屋有楼梯」都不标，
+         玩家会以为二层那 101 间房凭空消失（实测 z=1 有 83 间、z 最高到 8）。
+         角标只标**方向**不标「去哪」，因为「去哪」要在点开房间才知道 ——
+         地图上塞全名会挤爆格子。
+         ⚠️ `r.exits` 是方向名数组（不是对象，见 engine 的 mapView），
+            所以用 indexOf 判，别写成 `r.exits.u`。 */
+      const ex = r.exits || [];
+      const up = ex.indexOf('u') >= 0, dn = ex.indexOf('d') >= 0;
+      const lvMark = (up || dn)
+        ? '<i class="mn-lv" title="' + (up && dn ? '可上楼，也可下楼' : (up ? '可以上楼' : '可以下楼')) + '">' +
+          (up ? '▲' : '') + (dn ? '▼' : '') + '</i>'
+        : '';
       h += '<button class="' + cls + (r.visited || r.current ? '' : ' dim') +
         '" style="left:' + left + 'px;top:' + top + 'px;' +
         'width:' + MAP_CELL + 'px;height:' + MAP_CELL + 'px"' +
         ' title="' + esc(r.name) + (r.region ? '（' + esc((reg && reg.name) || r.region) + '）' : '') +
+        (r.z ? '　' + esc(lvName(Number(r.z))) : '') +
         (r.dist >= 0 ? '　' + r.dist + ' 步' : '　很远') + '"' +
         ' data-room="' + esc(r.id) + '">' +
         '<span class="mn-name" style="font-size:' + fontOf(r) + 'px;line-height:' + M_LINE + '">' +
-        esc(short) + '</span></button>';
+        esc(short) + '</span>' + lvMark + '</button>';
     });
 
     /* （区域/城市名已按主人 2026-10-12 要求整体下线，见上方 map-region-box 那段注释。） */
@@ -3168,11 +3321,24 @@
        两个方向画出来是**同一道缝上的同一件事**，画两遍就是叠字。
        同理区域模式下只画本区一块、邻居不在图上，不画（画了牌子会挂在画布外被裁掉）。 */
     /* 一块牌子。定义在 mapHtml 内部：多个测试脚本会把 mapHtml 源码单独抽出来跑，
-       抽出去的环境里没有模块级函数 —— 挂在外面就是 ReferenceError。 */
+       抽出去的环境里没有模块级函数 —— 挂在外面就是 ReferenceError。
+       🔴 2026-10-13 主人报「『锦国旧陵』『黑木崖』遮挡了地块名」—— 元凶就是这块牌子。
+          查证经过（试了三版才定，别改回去）：
+            ① 初版 z-index:7 + 实心底色 → 压在**所有地块名**上，
+               牌子宽 50~70px 而一格才 30px，一贴必遮两三个格子。
+            ② 试过「落点避让」（牌子落点若压到地块就沿缝挪开）——
+               **实测没用**：区域是咬合的（packRegions 之后两块常常只隔 0~1 格），
+               缝里本来就站着地块。30 块牌子里有 24 块**挪到哪儿都压字**。
+            ③ 正解 = **牌子本身不占地方**：去掉底色与边框，改成
+               「同色描边小字」（text-shadow，跟地块名同一招）+ z-index 降到 1。
+               于是它像写在纸上的批注：压在走廊上看得清，
+               压在地块名上也**不糊住人家的字**（只是叠着，两边都读得出）。
+          为什么不上底色：地图是密集的，**任何不透明浮层都会遮住底下的字**，
+          这是「遮挡」的根，不是位置能解决的。 */
     const edgeHintHtml = (px, py, arrow, box) =>
       '<span class="map-edge-hint" style="left:' + px + 'px;top:' + py + 'px;' +
-      'font-size:' + (NARROW ? 13 : 11) + 'px;' +     /* 手机上一格就小，牌子字号跟着放大 */
-      'border-color:' + esc(box.color) + '66" title="往这个方向继续走，就是' + esc(box.name) + '">' +
+      'font-size:' + (NARROW ? 12 : 10) + 'px;' +     /* 手机上一格就小，牌子字号跟着放大 */
+      'color:' + esc(box.color) + '" title="往这个方向继续走，就是' + esc(box.name) + '">' +
       '<i class="meh-arrow" style="color:' + esc(box.color) + '">' + arrow + '</i>' +
       esc(box.name) + '</span>';
 
@@ -3497,6 +3663,21 @@
       document.querySelectorAll('#modal-body [data-scope]').forEach(b => {
         b.onclick = () => {
           mapScope = b.getAttribute('data-scope') || 'region';
+          closeModal();
+          panel('map');
+        };
+      });
+
+      /* 分层切换（★ 主人 2026-10-13）。
+         ★ 主人当场纠正：「不是固定一层二层的」—— 对，层数**由数据决定**。
+           现在按 z 值动态出按钮（z=-1、0、1、2… 有几层画几层），
+           Mod 加一个 z=9 的空中楼阁，地图上立刻多一颗「十层」按钮，
+           前端一行都不用改。`data-level` 存的就是**原始 z 值**（字符串），
+           读回来 Number() 一下再写进 mapLevel。 */
+      document.querySelectorAll('#modal-body [data-level]').forEach(b => {
+        b.onclick = () => {
+          const z = Number(b.getAttribute('data-level'));
+          mapLevel = isFinite(z) ? z : 0;
           closeModal();
           panel('map');
         };

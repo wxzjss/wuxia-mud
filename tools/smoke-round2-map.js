@@ -133,9 +133,15 @@ const DIR_OFF = {
     await settle();
     const html = String(env.document.getElementById('modal-body').innerHTML || '');
 
-    /* 真渲染出来的段数：map-edges 两条 path（dim + known）合起来 = 全部邻接 */
-    const ds = [...html.matchAll(/<path d="([^"]*)"/g)].map(m => m[1]).join(' ');
-    const segs = (ds.match(/M/g) || []).length;
+    /* 真渲染出来的**走廊**段数：只数 `edge-dim` / `edge-known`（这两条是走廊），
+       排除 `edge-link`（有出口但坐标不相邻的**补线**，2026-10-13 恢复画之后
+       它们也进了 SVG）和 `edge-far`（远档细淡线）。
+       ⚠️ 口径必须只数走廊 —— 这条测的是「斜向相邻有没有画出连线」，
+          补线是另一回事（它们**本来就不相邻**，算进来必然对不上）。
+          第一版把 `ds` 收成「全部 path 的 M 段」→ 补线混进来 → 虚高 12 段假红。 */
+    const corridorD = [...html.matchAll(/<path d="([^"]*)" class="edge edge-(dim|known)"\/>/g)]
+      .map(m => m[1]).join(' ');
+    const segs = (corridorD.match(/M/g) || []).length;
     ok('R2-1-2 ★ 画出的走廊段数 = 正交 + 斜向（斜向少一条都不算过）',
       segs === ortho + diag, `渲染 ${segs} 段 / 应有 ${ortho + diag} 段（正交 ${ortho} + 斜向 ${diag}）`);
     ok('R2-1-3 ★ 画出的段数**大于**只算正交时的段数（这就是「斜向没连线」的直接判据）',

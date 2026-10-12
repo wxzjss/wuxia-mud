@@ -2488,16 +2488,9 @@
       "title": "血写的册子",
       "type": "task",
       "trigger": {
-       "and": [
-        {
-         "flag": "shanzhong_du_done"
-        },
-        {
-         "var": "trust_yaopopo",
-         "op": ">=",
-         "value": 75
-        }
-       ]
+       "var": "trust_yaopopo",
+       "op": ">=",
+       "value": 75
       },
       "seed": "她要把册子交给一个不姓唐的人。你若不姓唐，就够了。",
       "rewardHint": "获得物品「血书解毒册」；触发事件「唐门三访」；+karma 10"
@@ -4273,7 +4266,7 @@
          "value": 30
         },
         {
-         "flag": "know_shuoshu"
+         "flag": "hk_npcv_009_shuoshu_buy"
         }
        ]
       },
@@ -6102,16 +6095,9 @@
       "title": "册子上的第十一个字",
       "type": "reveal",
       "trigger": {
-       "and": [
-        {
-         "flag": "beat_jiangtingzhou"
-        },
-        {
-         "var": "trust_npcv_024",
-         "op": ">=",
-         "value": 70
-        }
-       ]
+       "var": "trust_npcv_024",
+       "op": ">=",
+       "value": 70
       },
       "seed": "你若赢他，他会请你喝酒；酒过三巡，他会把册子推过来。",
       "rewardHint": "解锁 secret；开启 sq_npcv_024 第二阶段；+rep * 10"
@@ -6505,16 +6491,9 @@
       "title": "没死的那个死人",
       "type": "reveal",
       "trigger": {
-       "and": [
-        {
-         "flag": "got_miaoqi"
-        },
-        {
-         "var": "trust_npcv_027",
-         "op": ">=",
-         "value": 70
-        }
-       ]
+       "var": "trust_npcv_027",
+       "op": ">=",
+       "value": 70
       },
       "seed": "他终于肯说了：那户施主要荐的亡人，如今还活着，就在城南。",
       "rewardHint": "解锁 secret；开启「诈死」事件链；+pot 80"
@@ -7536,7 +7515,7 @@
          "value": 65
         },
         {
-         "flag": "know_fanxiang"
+         "flag": "hk_npcv_036_kai_grey"
         }
        ]
       },
@@ -10672,16 +10651,9 @@
       "title": "怀里那张字据",
       "type": "reveal",
       "trigger": {
-       "and": [
-        {
-         "var": "trust_npcv_065",
-         "op": ">=",
-         "value": 65
-        },
-        {
-         "flag": "know_guanjin"
-        }
-       ]
+       "var": "trust_npcv_065",
+       "op": ">=",
+       "value": 65
       },
       "seed": "他说自己输光了官银。可当年那趟，是东家叫他去的，字据就在他怀里。",
       "rewardHint": "解锁 secret；开启「旧账房」事件链"
@@ -11801,7 +11773,7 @@
          "value": 60
         },
         {
-         "flag": "know_qiangqiu"
+         "flag": "hk_npcv_074_qian_clear"
         }
        ]
       },
@@ -12792,7 +12764,7 @@
          "value": 70
         },
         {
-         "flag": "know_huashan"
+         "flag": "hk_npcv_082_hua_clear"
         }
        ]
       },
@@ -13010,7 +12982,7 @@
          "value": 65
         },
         {
-         "flag": "know_gaizi"
+         "flag": "hk_npcv_083_gaizi_clear"
         }
        ]
       },
@@ -13844,7 +13816,7 @@
          "value": 70
         },
         {
-         "flag": "met_ruanting_mei"
+         "flag": "hk_npcv_090_meimei_tell"
         }
        ]
       },
@@ -14057,7 +14029,7 @@
          "value": 40
         },
         {
-         "flag": "know_xiaozai"
+         "flag": "hk_npcv_091_mianao_school"
         }
        ]
       },
@@ -14551,7 +14523,7 @@
       "trigger": {
        "and": [
         {
-         "flag": "qi_done"
+         "flag": "hk_npcv_095_shifu_end"
         },
         {
          "var": "trust_npcv_095",
@@ -15328,7 +15300,7 @@
          "value": 70
         },
         {
-         "flag": "met_xuezheng"
+         "flag": "hk_npcv_102_kaiti_report"
         }
        ]
       },
@@ -16069,7 +16041,7 @@
       "trigger": {
        "and": [
         {
-         "flag": "entered_huozhan"
+         "flag": "hk_npcv_109_jiuyi_done"
         },
         {
          "var": "trust_npcv_109",
@@ -16794,7 +16766,7 @@
          "value": 60
         },
         {
-         "flag": "know_huolang"
+         "flag": "hk_npcv_115_ce_grey"
         }
        ]
       },
@@ -18019,7 +17991,7 @@
          "value": 60
         },
         {
-         "flag": "know_tongxiang"
+         "flag": "hk_npcv_126_tongxiang_back"
         }
        ]
       },
@@ -20963,7 +20935,7 @@
       "trigger": {
        "and": [
         {
-         "flag": "maishen_done"
+         "flag": "hk_npcv_154_maishen_free"
         },
         {
          "var": "trust_npcv_154",
@@ -22072,7 +22044,7 @@
          "value": 65
         },
         {
-         "flag": "know_sirenzhang"
+         "flag": "hk_npcv_164_sirenzhang_expose"
         }
        ]
       },
@@ -23093,7 +23065,7 @@
       "trigger": {
        "and": [
         {
-         "flag": "tuntang_done"
+         "flag": "hk_npcv_174_tuntang_report"
         },
         {
          "var": "trust_npcv_174",
@@ -23593,7 +23565,7 @@
          "value": 60
         },
         {
-         "flag": "know_yaopopo"
+         "flag": "hk_npcv_178_jiao_grey"
         }
        ]
       },
@@ -23894,7 +23866,7 @@
          "value": 40
         },
         {
-         "flag": "know_jieqi"
+         "flag": "hk_npcv_180_qi_grey"
         }
        ]
       },
@@ -24062,7 +24034,7 @@
       "trigger": {
        "and": [
         {
-         "flag": "trust_npcv_181_ge_60"
+         "flag": "hk_npcv_181_guanliang_admit"
         },
         {
          "not": {
@@ -24695,7 +24667,7 @@
          "value": 70
         },
         {
-         "flag": "know_wangqiu"
+         "flag": "hk_npcv_186_yao_clear"
         }
        ]
       },
@@ -26945,7 +26917,7 @@
          "value": 30
         },
         {
-         "flag": "know_shaochuan"
+         "flag": "hk_npcv_208_shaochuan_report"
         }
        ]
       },
@@ -27771,7 +27743,7 @@
          "value": 65
         },
         {
-         "flag": "know_mengming"
+         "flag": "hk_npcv_215_mengming_tell"
         }
        ]
       },
@@ -28747,7 +28719,7 @@
          "value": 40
         },
         {
-         "flag": "know_laoxiapo"
+         "flag": "hk_npcv_223_laoxiapo_ack"
         }
        ]
       },
@@ -30184,7 +30156,7 @@
          "value": 40
         },
         {
-         "flag": "know_yizhuang"
+         "flag": "hk_npcv_237_cheng_grey"
         }
        ]
       },
@@ -30562,7 +30534,7 @@
          "value": 60
         },
         {
-         "flag": "know_shouyi"
+         "flag": "hk_npcv_240_shouyi_wear"
         }
        ]
       },
@@ -30779,7 +30751,7 @@
          "value": 30
         },
         {
-         "flag": "know_kangshou"
+         "flag": "hk_npcv_241_guancai_done"
         }
        ]
       },
@@ -31564,7 +31536,7 @@
       "trigger": {
        "and": [
         {
-         "flag": "met_changfu"
+         "flag": "hk_npcv_248_changfu_clear"
         },
         {
          "var": "trust_npcv_248",
@@ -32069,7 +32041,7 @@
          "value": 65
         },
         {
-         "flag": "know_meishi"
+         "flag": "hk_npcv_252_zi_tell"
         }
        ]
       },

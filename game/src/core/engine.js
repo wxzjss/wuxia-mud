@@ -1221,6 +1221,22 @@ class GameEngine {
       };
     });
 
+    /* ---- 地图分层（★ 主人 2026-10-13：「能不能加一层二层的这种，因为有的
+       地块可以往下走」）----
+       数据里 `exits` 有 `u`/`d`（上下楼），前端 `DIR_OFF` 画不出这类边，
+       于是 `layoutRooms` 把它们**挤到旁边一格**当作普通房间摆着 ——
+       结果 101 个「楼上/建筑内部」的房间（演武场 / 藏经阁 / 二楼雅间 / 黑木崖大殿）
+       全都摊在地面图上，既拥挤又误导（看着像平地上多出来一堆屋子）。
+       分层展示才对：一层 = 地面（z=0）/ 二层 = 楼上与建筑内部（z≥1）/ 地下（z≤-1）。
+       ⚠️ 层号直接沿用数据里的 `z`（`layoutRooms` 的上下楼增减而来）——
+          不要在这里重新按「1/2 层」硬编码，因为数据里有 z 到 8 的深楼
+          （黑木崖大殿 z=7、绣阁 z=7）。前端拿到 `levels` 后自行归并成三档。
+       `levels` 只列**真有房间**的层，并按 z 升序 —— 前端照着画切换按钮。 */
+    const levelSet = {};
+    rooms.forEach(r => { const z = r.z || 0; levelSet[z] = (levelSet[z] || 0) + 1; });
+    const levels = Object.keys(levelSet).map(Number).sort((a, b) => a - b)
+      .map(z => ({ z, count: levelSet[z] }));
+
     const regions = Object.values(w.data.regions).map(r => {
       const inRegion = rooms.filter(x => x.region === r.id);
       /* 「飞往」（主人 2026-10-11）：区域自带的 `entry` 就是它的门户房间，
@@ -1253,10 +1269,21 @@ class GameEngine {
        前端那条「按坐标找邻居」的走廊逻辑一条都命中不了（老注释里记过这个坑）。
        所以这类边只能由后端从**真出口**算出来下发给前端。
        ⚠️ 只收「真出口连着、但图上不相邻」的：坐标系上本来就挨着的，走廊已经画了，
-          再补一条直线是重复画。同一条边只发一次（按 id 排序去重）。 */
+          再补一条直线是重复画。同一条边只发一次（按 id 排序去重）。
+
+       🔴 2026-10-13 修了一个**双向漏发**的 bug（主人报「连线不全」时挖出来的）：
+          老写法是「先判图上相邻就 continue，再判 id > t.id 就 continue」，两条
+          continue 串在一起，于是这种情形会**一条都不发** ——
+          A→B 那一侧在图上恰好相邻（被第一条 continue 掉），
+          而 B→A 那一侧不相邻、却因为 `id > t.id` 被第二条 continue 掉。
+          结果：一条真出口**彻底从地图上消失**（实测漏了 79 条，占应发 233 条的 1/3）。
+          修法：**去重键换成「房间对」，并且只在『确实要发』时才判重** ——
+          即先确认这一侧不相邻，再看这对房间发过没有。
+          顺序一变，就不会再出现「两边互相把对方 continue 掉」。 */
     const bridges = [];
     {
       const DD = mapLayout.DIR_DELTA || {};
+      const emitted = new Set();
       const ids = Object.keys(allRooms);
       for (const id of ids) {
         const r = allRooms[id];
@@ -1268,8 +1295,12 @@ class GameEngine {
           const c2 = layout.cells[t.id];
           if (!c2) continue;
           const d = DD[String(dir).toLowerCase()];
-          if (d && c1.x + d[0] === c2.x && c1.y + d[1] === c2.y) continue;  // 图上本来就挨着
-          if (id > t.id) continue;                                        // 一条边只发一次
+          /* 图上本来就挨着（按这条边的方向算）⇒ 走廊已经画了，不用补 */
+          if (d && c1.x + d[0] === c2.x && c1.y + d[1] === c2.y) continue;
+          /* 不相邻才发；同一条边只发一次（键是房间对，与方向无关） */
+          const pair = (id < t.id) ? (id + '|' + t.id) : (t.id + '|' + id);
+          if (emitted.has(pair)) continue;
+          emitted.add(pair);
           bridges.push({ a: id, b: t.id, dir, crossRegion: r.region !== t.region });
         }
       }
@@ -1283,6 +1314,7 @@ class GameEngine {
       bounds: layout.bounds,
       terrain: layout.terrain || {},
       bridges,
+      levels,
       explore: { visited: visitedCount, total: Object.keys(allRooms).length },
     };
   }

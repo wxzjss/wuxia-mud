@@ -108,7 +108,7 @@
                 "value": 30
               },
               {
-                "flag": "know_kangshou"
+                "flag": "hk_npcv_241_guancai_done"
               }
             ]
           },
@@ -220,7 +220,7 @@
           "trigger": {
             "and": [
               {
-                "flag": "maishen_done"
+                "flag": "hk_npcv_154_maishen_free"
               },
               {
                 "var": "trust_npcv_154",
@@ -452,7 +452,7 @@
                 "value": 30
               },
               {
-                "flag": "know_shaochuan"
+                "flag": "hk_npcv_208_shaochuan_report"
               }
             ]
           },
@@ -569,7 +569,7 @@
                 "value": 40
               },
               {
-                "flag": "know_xiaozai"
+                "flag": "hk_npcv_091_mianao_school"
               }
             ]
           },
@@ -679,16 +679,9 @@
           "title": "怀里那张字据",
           "type": "reveal",
           "trigger": {
-            "and": [
-              {
-                "var": "trust_npcv_065",
-                "op": ">=",
-                "value": 65
-              },
-              {
-                "flag": "know_guanjin"
-              }
-            ]
+            "var": "trust_npcv_065",
+            "op": ">=",
+            "value": 65
           },
           "seed": "他说自己输光了官银。可当年那趟，是东家叫他去的，字据就在他怀里。",
           "rewardHint": "解锁 secret；开启「旧账房」事件链"
@@ -796,7 +789,7 @@
                 "value": 40
               },
               {
-                "flag": "know_laoxiapo"
+                "flag": "hk_npcv_223_laoxiapo_ack"
               }
             ]
           },
@@ -908,7 +901,7 @@
           "trigger": {
             "and": [
               {
-                "flag": "tuntang_done"
+                "flag": "hk_npcv_174_tuntang_report"
               },
               {
                 "var": "trust_npcv_174",
@@ -1025,7 +1018,7 @@
                 "value": 60
               },
               {
-                "flag": "know_shouyi"
+                "flag": "hk_npcv_240_shouyi_wear"
               }
             ]
           },
@@ -1142,7 +1135,7 @@
                 "value": 30
               },
               {
-                "flag": "know_shuoshu"
+                "flag": "hk_npcv_009_shuoshu_buy"
               }
             ]
           },
@@ -1253,7 +1246,7 @@
                 "value": 40
               },
               {
-                "flag": "know_yizhuang"
+                "flag": "hk_npcv_237_cheng_grey"
               }
             ]
           },
@@ -1359,7 +1352,7 @@
           "trigger": {
             "and": [
               {
-                "flag": "met_changfu"
+                "flag": "hk_npcv_248_changfu_clear"
               },
               {
                 "var": "trust_npcv_248",
@@ -1482,7 +1475,7 @@
                 "value": 65
               },
               {
-                "flag": "know_mengming"
+                "flag": "hk_npcv_215_mengming_tell"
               }
             ]
           },
@@ -1593,7 +1586,7 @@
                 "value": 40
               },
               {
-                "flag": "know_jieqi"
+                "flag": "hk_npcv_180_qi_grey"
               }
             ]
           },
@@ -1703,7 +1696,7 @@
                 "value": 60
               },
               {
-                "flag": "know_huolang"
+                "flag": "hk_npcv_115_ce_grey"
               }
             ]
           },
@@ -1821,7 +1814,7 @@
                 "value": 65
               },
               {
-                "flag": "know_gaizi"
+                "flag": "hk_npcv_083_gaizi_clear"
               }
             ]
           },
@@ -1945,7 +1938,7 @@
                 "value": 60
               },
               {
-                "flag": "know_tongxiang"
+                "flag": "hk_npcv_126_tongxiang_back"
               }
             ]
           },
@@ -2056,7 +2049,7 @@
                 "value": 65
               },
               {
-                "flag": "know_sirenzhang"
+                "flag": "hk_npcv_164_sirenzhang_expose"
               }
             ]
           },
@@ -2173,7 +2166,7 @@
                 "value": 70
               },
               {
-                "flag": "know_wangqiu"
+                "flag": "hk_npcv_186_yao_clear"
               }
             ]
           },
@@ -2290,7 +2283,7 @@
                 "value": 70
               },
               {
-                "flag": "met_ruanting_mei"
+                "flag": "hk_npcv_090_meimei_tell"
               }
             ]
           },
@@ -2414,7 +2407,7 @@
                 "value": 60
               },
               {
-                "flag": "know_qiangqiu"
+                "flag": "hk_npcv_074_qian_clear"
               }
             ]
           },
@@ -2531,7 +2524,7 @@
                 "value": 65
               },
               {
-                "flag": "know_meishi"
+                "flag": "hk_npcv_252_zi_tell"
               }
             ]
           },
@@ -2649,7 +2642,7 @@
                 "value": 60
               },
               {
-                "flag": "know_yaopopo"
+                "flag": "hk_npcv_178_jiao_grey"
               }
             ]
           },
@@ -2755,7 +2748,7 @@
           "trigger": {
             "and": [
               {
-                "flag": "qi_done"
+                "flag": "hk_npcv_095_shifu_end"
               },
               {
                 "var": "trust_npcv_095",
@@ -2883,7 +2876,7 @@
                 "value": 65
               },
               {
-                "flag": "know_fanxiang"
+                "flag": "hk_npcv_036_kai_grey"
               }
             ]
           },
@@ -2994,7 +2987,7 @@
                 "value": 70
               },
               {
-                "flag": "know_huashan"
+                "flag": "hk_npcv_082_hua_clear"
               }
             ]
           },

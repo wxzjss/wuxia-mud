@@ -1106,8 +1106,25 @@ body::before {
 .map-edges .edge { fill: none; stroke-linecap: round; stroke-dasharray: 7 6; }
 .map-edges .edge-dim { stroke: var(--edge-dim); stroke-width: 7; }
 .map-edges .edge-known { stroke: var(--edge-known); stroke-width: 6; }
-/* （`.edge-bridge` 的样式随「删掉所有虚线折线」一起下线：跨区那条长连线
-   已按主人要求整段不画，只剩相邻地块之间的走廊。详见 ui.js 的 4b 段注释。） */
+/* ★ 2026-10-13 主人：「世界地图做成和区域地图一样的『连线』形式」。
+   布局摆不下而画不成走廊的那些出口边（`bridges`，实测 154 条），
+   按距离分两档补线（见 ui.js 的 4b 段）：
+     · 距离 ≤3：走折线、用上面 `.edge` 那套常态样式（看不出是跨越）；
+     · 距离 >3：走这条 `.edge-far` —— **细、淡、点状**。
+   为什么远距离要单独一档：它们大多是「官道」这种一头连好几个区域的长边，
+   距离能到 40 多格。用常态粗细画，画面上就是几条横穿全图的粗线，
+   正是主人 2026-10-12 骂过的「隔了那么远连线」。
+   现在诚实地说「这里有条通路」，但不让它抢地块名的视线：
+   线宽砍到 2px、透明度压到 .28、dash 改成密集点状（1.5 5）。 */
+.map-edges .edge-far { stroke: var(--edge-dim); stroke-width: 2;
+  stroke-dasharray: 1.5 5; opacity: .28; }
+/* 近档补线（`edge-link`）：与走廊同粗细同色，语义不同 ——
+   走廊 = 坐标真相邻；补线 = 有出口但布局摆不下（详见 ui.js 的 4b 段）。
+   现在**故意不给它单独样式**（视觉上就该和走廊连成一片），
+   但留着一个 class 让「只数走廊段」的测试能把它们分开数。
+   ⚠️ 别删这个空规则：删了之后 `.edge-link` 仍然存在于 DOM，只是没样式 ——
+      无所谓；但请把这段注释连同 ui.js 的 class 一起删，别只删一半。 */
+.map-edges .edge-link { }
 
 /* 区域底色框 —— ★ 2026-10-12 主人：「把不同区域那些花花绿绿的背景框删了」。
    所以底色/描边全去掉（`border:0` + `background:none`）。
@@ -1118,15 +1135,27 @@ body::before {
 /* 区域/城市名（.mrb-label）已按主人 2026-10-12 要求整体下线，样式一并删除。 */
 
 /* 区域边界路牌：「往这边继续走 → XX」（主人 2026-10-11）。
-   贴在两块区域之间那道缝里，比区域名（z-index:6）再高一层，免得被邻块的区域名压住。
-   纯展示，不接手势 —— 画布是拖拽平移区，牌子吃事件会打断拖动。 */
-.map-edge-hint { position: absolute; z-index: 7; transform: translate(-50%, -50%);
-  display: inline-flex; align-items: baseline; gap: 3px; white-space: nowrap; pointer-events: none;
-  font-family: var(--font); font-size: 11px; line-height: 1.6; letter-spacing: .3px;
-  color: var(--ink-2); background: var(--surface-3);
-  border: 1px dashed var(--line); border-radius: 9px; padding: 0 6px;
-  box-shadow: 0 1px 2px rgba(60, 50, 30, .07); }
-.map-edge-hint .meh-arrow { font-style: normal; font-size: 12px; font-weight: 700; }
+   贴在两块区域之间那道缝里。
+   🔴 2026-10-13 主人报「『锦国旧陵』『黑木崖』遮挡了地块名」。
+      查证经过（三次才定，别改回去）：
+        ① 初版 z-index:7 + 实心底色（--surface-3）—— 牌子压在**所有地块名**上，
+           且宽 50~70px 而一格才 30px，一贴必遮两三个格子的字。
+        ② 试过「落点避让」（ui.js 的 placeHint：落点压到地块就沿缝挪）——
+           **实测没用**：区域是咬合的（packRegions 后两块常常只隔 0~1 格），
+           缝里本来就站着地块，实测 30 块牌子里 24 块挪到哪儿都压字。
+        ③ 正解 = **牌子本身不占地方**：去掉底色与边框，改成
+           「同色的描边小字」（`text-shadow` 跟地块名同一招），
+           再降到 z-index:1。于是它像写在纸上的批注 ——
+           压在走廊上看得清，压在地块名上也不糊住人家的字（只是叠着）。
+      为什么不上底色：地图是密集的，**任何不透明浮层都会遮住底下的字**，
+      这是「遮挡」的根，不是位置问题。 */
+.map-edge-hint { position: absolute; z-index: 1; transform: translate(-50%, -50%);
+  display: inline-flex; align-items: baseline; gap: 2px; white-space: nowrap; pointer-events: none;
+  font-family: var(--font); font-size: 10px; line-height: 1.4; letter-spacing: .2px;
+  color: var(--ink-3); background: none; border: 0; padding: 0;
+  opacity: .9;
+  text-shadow: 0 0 3px var(--card-2), 0 0 3px var(--card-2), 0 0 2px var(--card-2); }
+.map-edge-hint .meh-arrow { font-style: normal; font-size: 11px; font-weight: 700; }
 
 /* 地形装饰：树石山水。z-index 1 压在区域底色(0)之上、房间(2)之下 */
 .map-terrain-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
@@ -1220,6 +1249,39 @@ body::before {
 .ms-where { font-size: 12px; color: var(--ink-4); margin-left: 3px; }
 .mro-dot { width: 8px; height: 8px; border-radius: 2px; }
 .mro-num { color: var(--ink-4); font-size: 11px; }
+
+/* ---------- 地图分层切换条（主人 2026-10-13）----------
+   「给地图分层，有一层二层之类的区别，因为有的地块可以往"下"走」
+   又当场补一句：「但不要定死只有两层，也要考虑万一以后有什么 mod 能往下多走
+   或往上多走」。
+   ⇒ **这一条不是写死的二选一**：按钮由数据里的 z 值去重排序实时生成，
+     数据有 -1~8 就画 10 颗（本作现状：地下 1 层 ~ 九层），
+     mod 往数据里塞一间 z=9、z=-3 的屋子，这里自动多两颗，前端一行都不用改。
+   样式照抄 `.map-scope` 那套胶囊（同一屏里两排胶囊，视觉上本来就是一家人），
+   只在「当前层」用金色实心区分 —— 视野切换用玉色（.ms-btn.on），
+   分层用金色（.ml-btn.on），两排挨着也不会看混。 */
+.map-level { display: flex; align-items: center; gap: 6px; margin-bottom: 9px; flex-wrap: wrap; }
+.ml-title { font-size: 12.5px; color: var(--ink-3); margin-right: 1px; }
+.ml-btn { display: inline-flex; align-items: baseline; gap: 4px;
+  padding: 3px 11px; border-radius: 14px; border: 1px solid var(--line-2);
+  background: var(--card-2); color: var(--ink-3);
+  font-size: 12.5px; cursor: pointer; font-family: var(--font); }
+.ml-btn:hover { border-color: var(--line-gold); color: var(--ink-2); }
+.ml-btn.on { background: var(--gold); border-color: var(--gold); color: #fff; font-weight: 600; }
+.ml-btn.on .ml-num { color: rgba(255,255,255,.8); }
+/* 每层带一个「这一层有几处地块」的小数字：不点进去也知道那层值不值得看 */
+.ml-num { font-size: 10.5px; color: var(--ink-4); }
+/* 当前所在层被切走时的提醒（「你在一层 3 处，已单独标出」） */
+.ml-warn { font-size: 11.5px; color: var(--gold); opacity: .9; margin-left: 3px; }
+
+/* 地块右上角的 ▲/▼ 层标：说明「这一格能上楼 / 能下楼 / 两样都行」。
+   为什么要有它：切到某一层之后，图上只看得到同层的屋子，
+   可「哪一格里有楼梯」是走路时的关键信息（不然你根本不知道该往哪格走），
+   所以给它一个角标。指针事件关掉 —— 别把点击拦在地块外头。 */
+.map-node .mn-lv { position: absolute; top: -3px; right: -2px; z-index: 3;
+  font-style: normal; font-size: 8px; line-height: 1; letter-spacing: -1px;
+  color: var(--jade); opacity: .75; pointer-events: none;
+  text-shadow: 0 0 2px var(--card-2), 0 0 2px var(--card-2); }
 
 /* 地名索引（重设计：把原「飞往」横滚栏 + 「区域总览」两层并成一层）
    去过的排在前面、直接铺成网格；没去过的收进 <details>。
