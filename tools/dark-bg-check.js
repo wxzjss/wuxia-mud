@@ -129,6 +129,36 @@ function composite(v) {
 }
 const isLight = (c) => c && c.r >= 178 && c.g >= 172 && c.b >= 160;
 const colorsIn = (val) => String(val).match(/rgba?\([^)]*\)|#[0-9a-fA-F]{3,8}\b|\bwhite\b/gi) || [];
+
+/** §9 的判据本体（抽成纯函数，⓪ 自测的 F1–F4 要拿它反考自己）。
+ *  比对前先 `resolve()` 展开 `var()` —— **比的是最终计算值，不是字面写法**：
+ *  「游戏侧写 `var(--xxx)` 间接引用、站点侧仍写字面量」只要展开后同值就该绿，
+ *  否则会逼着人放弃「别两处各写一份」的变量纪律。
+ *
+ *  🔴 悬空洞（严过关 F4 复现的假绿）：`resolve()` 查不到变量时回退 'transparent'。
+ *     两边同名变量**都**悬空 ⇒ 'transparent' === 'transparent' ⇒ 假绿，
+ *     而真实浏览器里两边的这个变量都会落回继承/初始值——两页是不是同一套根本没验到。
+ *     ⇒ 判定：解析结果含 transparent 而**原值没写** transparent ⇒ 这条算不一致。 */
+function nightInkDiff(mainVars, siteVars) {
+  const keys = ['--paper', '--paper-2', '--ink', '--line', '--red', '--gold', '--surface-3', '--solid'];
+  const out = [];
+  for (const k of keys) {
+    const ra = mainVars[k] === undefined ? '(缺)' : mainVars[k];
+    const rb = siteVars[k] === undefined ? '(缺)' : siteVars[k];
+    if (ra === '(缺)' && rb === '(缺)') continue;    /* 两边都没有：不在比对范围 */
+    if (ra === '(缺)' || rb === '(缺)') { out.push(k + ': 一边没有定义 游戏=' + ra + ' / 站点=' + rb); continue; }
+    const ga = resolve(ra, mainVars);
+    const gb = resolve(rb, siteVars);
+    const holeA = /transparent/i.test(ga) && !/transparent/i.test(ra);
+    const holeB = /transparent/i.test(gb) && !/transparent/i.test(rb);
+    if (holeA || holeB) {
+      out.push(k + ': 🔴 悬空（resolve 后 transparent 而原值不是）游戏=' + ga + ' / 站点=' + gb);
+      continue;
+    }
+    if (ga !== gb) out.push(k + ': 游戏=' + ga + ' / 站点=' + gb);
+  }
+  return out;
+}
 /** 注释结束后紧跟的字符，合法的 CSS 续接集合 */
 const LEGAL_AFTER = /[}@.#*:\[a-zA-Z0-9_\-/;,)%!+~>|=]/;
 
@@ -183,6 +213,45 @@ section('⓪ 守卫自证（拿「已知必错」的样本反考自己，判不�
   }
   ok('★ ' + SELF_FIXTURES.length + ' 个必错样本全部能被判出来', det.length === 0,
     det.length ? det.map(x => x.name + ' 判成了 ' + x.got).join(' | ') : '（守卫还睁着眼）');
+}
+
+/* ⓪b §9 判据自证（严过关 F1–F4，样本语义照搬他的 .livetest/dbg-fixture-make.js）：
+   ⚠️ 不直接用他那份生成器——它靠替换现网 CSS 里的字面量（`--gold-night: #cfa64a;`）
+   来注入故障，而那个字面量已经不在 main.css 里了，F4 会「注入失败」。
+   ⇒ 这里用**合成对**复刻同样的四种形状，判据本体 nightInkDiff 是同一个，
+     判据改了、样本跟着走，永不脱钩。 */
+const NIGHT_FIXTURES = [
+  {
+    name: 'F1 对照：两边字面量相同 ⇒ 期望绿',
+    main: ':root { --gold: #cfa64a; }', site: ':root { --gold: #cfa64a; }', wantRed: false,
+  },
+  {
+    name: 'F2 必须命中：站点侧换了别的值 ⇒ 期望红',
+    main: ':root { --gold: #cfa64a; }', site: ':root { --gold: #000000; }', wantRed: true,
+  },
+  {
+    name: 'F3 反向：两边 var 间接引用、各自有定义、展开同值 ⇒ 期望绿（不许误伤间接引用）',
+    main: ':root { --gold-night: #cfa64a; --gold: var(--gold-night); }',
+    site: ':root { --gold-night: #cfa64a; --gold: var(--gold-night); }', wantRed: false,
+  },
+  {
+    name: 'F4 漏洞样本：两边引用同一个谁都没定义的变量 ⇒ 期望红（旧判据假绿的就是这个）',
+    main: ':root { --gold: var(--gold-night); }', site: ':root { --gold: var(--gold-night); }', wantRed: true,
+  },
+];
+{
+  const bad = [];
+  for (const t of NIGHT_FIXTURES) {
+    const d = nightInkDiff(varsIn(t.main), varsIn(t.site));
+    const gotRed = d.length > 0;
+    if (gotRed !== t.wantRed) bad.push(t.name + ' 判成了' + (gotRed ? '红' : '绿'));
+    if (process.argv.includes('--self-test')) {
+      console.log('    ' + (gotRed === t.wantRed ? '✔' : '✘') + ' ' + t.name
+        + (d.length ? ' → ' + d[0] : ''));
+    }
+  }
+  ok('★ §9 判据自证（严过关 F1–F4）：' + NIGHT_FIXTURES.length + ' 组样本全部判对', bad.length === 0,
+    bad.length ? bad.join(' | ') : 'F4 的假绿洞已堵上（两边悬空 ⇒ 红）');
 }
 
 /* ============================================================
@@ -269,12 +338,25 @@ for (const f of FILES) {
        少一个，切过去就是一块没定义的底色（多半是透明，露出夜墨）。
        Mod 站是单主题页面（没有切换开关），只要求 :root 里有，但要声明 color-scheme: dark。 */
     const hasLight = /html\.theme-light\s*\{/.test(D.src);
+    /* ⚠️ 豁免名单：`--tb-*` 顶栏那一簇**刻意不在浅色块里覆写**。
+       理由（design/78 §1.2 / §7.2）：顶栏是一条**不可换肤**的恒暗色带，
+       `html.theme-light` 里根本就没有 `#topbar` 的覆写 —— 玩家切成浅色，
+       顶栏底还是 #3a342c→#2b2721。所以顶栏内部只该有一套值；
+       给它补一套"浅色值"反而会让它压在暗底上降到 2.04（银两与称号直接看不见）。
+       这与 design/78 的 `78/T-V-6`（浅色块内 --tb-* 覆写数 === 0）是同一条规矩的两面。
+       ⇒ 这条断言守的是"换肤的变量别漏一套"，顶栏不换肤，不在它的管辖范围。 */
+    const NO_LIGHT_NEEDED = /^--tb-/;
     const miss = hasLight
-      ? [...used].filter(v => !rootVars[v] || !lightVars[v])
+      ? [...used].filter(v => (!rootVars[v] || !lightVars[v]) && !NO_LIGHT_NEEDED.test(v))
       : [...used].filter(v => !rootVars[v]);
+    const excused = hasLight
+      ? [...used].filter(v => NO_LIGHT_NEEDED.test(v) && !lightVars[v])
+      : [];
     ok(hasLight ? '★ 每个主题色变量在「暗」与「浅」两套里都有值' : '★ 单主题页面：变量在 :root 里齐备',
       miss.length === 0,
-      miss.length ? miss.join(', ') : [...used].length + ' 个变量齐备' + (hasLight ? '（两套）' : '（单套）'));
+      miss.length ? miss.join(', ')
+        : [...used].length + ' 个变量齐备' + (hasLight ? '（两套）' : '（单套）')
+          + (excused.length ? ' · 豁免 ' + excused.length + ' 个' : ''));
     if (!hasLight) {
       ok('★ 单主题页面必须声明 color-scheme: dark（不声明会被浏览器强制暗色再反相一次）',
         /color-scheme:\s*dark/.test(D.src), 'html { color-scheme: dark }');
@@ -520,9 +602,9 @@ section('⑨ 两个页面共用同一套夜墨（从 Mod 站点进游戏不许�
 {
   const a = fileData['game/src/renderer/css/main.css'].rootVars;
   const b = fileData['server/public/css/site.css'].rootVars;
-  const keys = ['--paper', '--paper-2', '--ink', '--line', '--red', '--gold', '--surface-3', '--solid'];
-  const diff = keys.filter(k => a[k] !== b[k]).map(k => k + ': 游戏=' + a[k] + ' / 站点=' + b[k]);
-  ok('★ 两处的夜色变量逐字相同', diff.length === 0, diff.length ? '\n      ' + diff.join('\n      ') : keys.length + ' 个变量一致');
+  const diff = nightInkDiff(a, b);
+  ok('★ 两处的夜色一致（展开 var() 后逐字相同，悬空引用算不一致）', diff.length === 0,
+    diff.length ? '\n      ' + diff.join('\n      ') : '8 个变量一致');
 }
 
 console.log(`\n===== dark-bg-check: ${pass} 通过 / ${fail} 失败 =====`);

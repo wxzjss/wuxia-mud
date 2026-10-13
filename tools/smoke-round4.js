@@ -542,8 +542,14 @@ section('§T 偷袭 / 交谈 / 告辞');
     e3.exec('talk ' + b.name); e3.exec('talk ' + b.name);
     const f3 = b.favor;
     const r4 = e3.exec('talk ' + b.name);
-    ok('T-11 ★ 一天三次封顶（第四次不再涨好感，且明说原因）',
-      b.favor === f3 && /话已说尽|聒噪/.test(txt(r4.lines)), 'favor=' + b.favor + ' ／ ' + txt(r4.lines).slice(0, 60));
+    /* ⚠️ 2026-10-13 主人：「再多说就显得聒噪……那两段黄字删了」。
+       所以这里钉的是「**静默封顶**」：第四次搭话好感不再涨，
+       且**不许**再冒出任何解释性的系统提示 —— 说删了就得真删。 */
+    ok('T-11 ★ 一天三次封顶（第四次不再涨好感，且不再聒噪）',
+      b.favor === f3
+      && !/话已说尽|聒噪/.test(txt(r4.lines))
+      && !txt(r4.lines).includes('熟络'),
+      'favor=' + b.favor + ' ／ 第四次输出：' + (txt(r4.lines).slice(0, 40) || '（无提示）'));
     /* 送礼面板/关系面板看到的也必须是同一个数（不漏） */
     ok('T-12 view 里的好感跟实例一致',
       ((e3.view().npcs || []).find(x => x.name === b.name) || {}).favor === b.favor);

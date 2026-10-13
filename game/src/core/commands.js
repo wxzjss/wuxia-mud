@@ -34,6 +34,8 @@ const tutorialMod = require('./tutorial');
 /* 阶段解析 / 目标判定的**唯一**实现（面板、自动检查、交任务三处共用一份） */
 const queststage = require('./queststage');
 const potential = require('./potential');
+/* 「飞往」的门槛与耗内力算法（2026-10-13 起不再要求「去过那个区域」）。 */
+const flight = require('./flight');
 
 /* 中文数字 → 阿拉伯 */
 const CN_NUM = { 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10, 壹: 1, 贰: 2, 叁: 3, 肆: 4, 伍: 5, 陆: 6, 柒: 7, 捌: 8, 玖: 9, 拾: 10 };
@@ -301,6 +303,21 @@ function noteGift(npc, kind, key, amount) {
   return st.gifts;
 }
 
+/** 动态句取句（design/77 §2.0.3，R2 2026-10-13）——纯函数，守卫直接测这份实现。
+ *  ⚠️ 放**模块顶层**（不是 buildCommands 的闭包内）——skillTierCN 的老坑：
+ *     闭包里的函数 module.exports 引用不到，守卫一跑就 ReferenceError。
+ *  1. isNight() 且房间有 night 句 → 取 night 句（夜句优先于天气）
+ *  2. 否则 → 取 weather 句（w.weather 值域恰好是中文字符键，直接索引）
+ *  3. room.ambient 里没有这一条 → 返回 null，调用方不显示（不兜底、不复用别的天气 —— 硬的）。 */
+function ambientLine(room, w) {
+  const amb = room && room.ambient;
+  if (!amb || typeof amb !== 'object') return null;
+  if (typeof w.isNight === 'function' && w.isNight()
+      && typeof amb.night === 'string' && amb.night.trim()) return amb.night;
+  if (typeof amb[w.weather] === 'string' && amb[w.weather].trim()) return amb[w.weather];
+  return null;
+}
+
 function buildCommands(world) {
   const CMD = {};
 
@@ -489,6 +506,14 @@ function buildCommands(world) {
       const pc = require('./patrol').maybeCheck(w, p, w.getRoom(p.room), w.npcsIncludingTemplates(p.room));
       if (pc) lines.push(pc);
     } catch (e) { /* 盘查失败不该挡路 */ }
+    /* ---- 闯山门拦截（design/71 §四）----
+       踏进某家山门房，守卫拦下问话。与上面几条同一层
+       （只在**玩家自己走一格**时触发）—— 放进 lookRoom 就成了「站在门口也被反复盘问」。
+       三个出口：报上名号 / 塞钱打点 / 硬闯（不另造战斗分支，硬闯就是普通的「打」）。 */
+    try {
+      const gb = require('./guards').maybeBar(w, p, w.getRoom(p.room), w.npcsIncludingTemplates(p.room));
+      if (gb) lines.push(gb);
+    } catch (e) { /* 守卫拦人失败不该挡路 */ }
     /* ---- 押镖路上可能被劫（design/67 §4）----
        同一层（玩家自己走一格才掷），不与 patrol 共用冷却。 */
     try {
@@ -646,6 +671,12 @@ function buildCommands(world) {
     const region = w.getRegion(room.region);
     if (region) lines.push({ kind: 'plain', text: `(${region.name || room.region} · ${shichen(p.timeMinutes)} · 天色${w.weather})` });
     lines.push({ kind: 'desc', text: evalTemplate(room.desc || '', ctx) });
+
+    /* ---- 动态句（design/77 §2.0.3）：取句逻辑在 ambientLine()，句子同 desc 一套 evalTemplate 口径 ---- */
+    {
+      const line = ambientLine(room, w);
+      if (line) lines.push({ kind: 'plain', text: evalTemplate(line, ctx) });
+    }
 
     /* ---- 世界动态 W6/W7 的外显（design/27 §3.3-6 地盘标识 / §4 节庆）----
        · 地盘：此地属某势力 → 一行「此处已是XX的地界」，势力越盛越明显。
@@ -891,6 +922,11 @@ function buildCommands(world) {
     // 尸体
     const corpses = w.corpsesIn(p.room);
     if (corpses.length) lines.push({ kind: 'items', text: `地上躺着：${corpses.map(c => c.name).join('、')}。` });
+    /* ---- R4 痕迹句（design/85 §〇/77 §2.0.2）：渲染在固定描写、动态句之后，
+       单值，不过 .hl 管线（trace 层整句输出，79 §2.1 视觉）---- */
+    if (p.roomNotes && p.roomNotes[p.room]) {
+      lines.push({ kind: 'trace', text: p.roomNotes[p.room] });
+    }
     // 出口：结构化（普通出口 → 方位图；互动出口 → 可点击互动）
     const exitMap = {};
     const viaExits = [];
@@ -995,7 +1031,7 @@ function buildCommands(world) {
       if (!a.effects || !a.effects.length) {
         return { lines: [{ kind: 'plain', text: `你细看了看，此处暂无更多可看的了。` }] };
       }
-      return { lines: evalEffects(a.effects || [], ctx) };
+      return { lines: (writeRoomNote(ctx, a), evalEffects(a.effects || [], ctx)) };
     }
     // NPC
     const npcs = npcsHere;
@@ -1428,24 +1464,52 @@ function buildCommands(world) {
     return { lines: [{ kind: r.ok ? 'sys' : 'warn', text: r.msg }] };
   });
 
+  /* B22：喝酒要出市井传闻（rs_drunkard 此前是死种子）。
+     判据用**物品 id / 名字含「酒」**，不新造 tag —— 免得又开一个平行口径。
+     只在真的喝下去之后才传，且带点概率：喝一口就传遍全城不合情理。
+     ⚠️ 抽成函数的原因：战斗内 / 战斗外两条路径都要传，各写一份就是
+        「改一个忘一个」的老毛病 —— 而且那两份的 `ok` 来源还不一样
+        （一条来自 useItem、一条是 combatStep 的 item 分支透出来的），
+        写两遍更容易只对齐一半。 */
+  function drunkRumor(ctx, hit, ok) {
+    if (!ok) return;
+    const w = ctx.world, p = ctx.player;
+    const iid = (typeof hit === 'object' && hit) ? hit.id : hit;
+    const idef = w.getItem(iid) || {};
+    if (typeof w.addRumor === 'function'
+      && (/酒/.test(iid || '') || /酒/.test(idef.name || ''))
+      && (w.rng.next ? w.rng.next() : Math.random()) < 0.5) {
+      const room = w.getRoom(p.room) || {};
+      w.addRumor('rs_drunkard', { room: p.room, vars: { who: p.name || '有人', where: room.name || '此地' } });
+    }
+  }
+
   reg(['use', '吃', '喝', '服用', '使用'], (ctx, args) => {
     if (!args.length) return { lines: [{ kind: 'warn', text: '你想用什么？' }] };
     const kw = args.join(' ');
     const w = ctx.world, p = ctx.player;
     const hit = fuzzyFind(p.inventory || [], kw, i => { const id = (typeof i === 'object' && i) ? i.id : i; const d = w.getItem(id); return (d && d.name) || id; });
     if (!hit) return { lines: [{ kind: 'warn', text: `你身上没有「${kw}」。` }] };
-    const r = w.useItem(p, hit.uid);
-    /* B22：喝酒要出市井传闻（rs_drunkard 此前是死种子）。
-       判据用**物品 id / 名字含「酒」**，不新造 tag —— 免得又开一个平行口径。
-       只在真的喝下去之后才传，且带点概率：喝一口就传遍全城不合情理。 */
-    const _iid = (typeof hit === 'object' && hit) ? hit.id : hit;
-    const _idef = w.getItem(_iid) || {};
-    if (r && r.ok && typeof w.addRumor === 'function'
-        && (/酒/.test(_iid || '') || /酒/.test(_idef.name || ''))
-        && (w.rng.next ? w.rng.next() : Math.random()) < 0.5) {
-      const room = w.getRoom(p.room) || {};
-      w.addRumor('rs_drunkard', { room: p.room, vars: { who: p.name || '有人', where: room.name || '此地' } });
+
+    /* ⚠️ 战斗中吃药必须走 combatStep，不能绕过战斗直接 useItem。
+       同一个动作此前有**两套时序**：
+         · 面板 / API：`engine.exec({ action: 'item' })` → `combatStep({ type: 'item' })`
+           （engine.js:2195）⇒ 吃药算一回合，敌人照常出手、回合数照涨；
+         · 手打「use 金创药」：走这里 → `w.useItem()` ⇒ **完全不经过战斗**，
+           敌人一动不动、turn 也不涨。
+       后者等于给玩家一个「战斗中免费回血」的口子：只要背包里还有药，
+       就能一直吃，而对面一拳都递不出来 —— 战斗面板上那句「敌人出手」
+       是玩家对时序的唯一感知，这么一绕，感知就断了。
+       ⇒ 战斗中统一交给 combatStep，只留一条时序；非战斗时照旧走 useItem。 */
+    if (w.battle && !w.battle.over) {
+      const rr = w.combatStep({ type: 'item', uid: hit.uid });
+      const lines = (rr && rr.lines) || [];
+      drunkRumor(ctx, hit, !!(rr && rr.ok));
+      return { lines, combatStep: true };
     }
+
+    const r = w.useItem(p, hit.uid);
+    drunkRumor(ctx, hit, !!(r && r.ok));
     return { lines: (r.lines || []).concat([{ kind: r.ok ? 'sys' : 'warn', text: r.msg }]) };
   });
 
@@ -3428,16 +3492,43 @@ function buildCommands(world) {
     return { lines: r ? r.lines : [], combatStep: true };
   });
 
-  reg(['auto', '自动战斗'], (ctx) => {
+  /* ⚠️ 这个指令叫「挂机」，**不是**「普通攻击」。
+     主人 2026-10-11 让删掉战斗面板的「全力一击」，删的时候把「普通攻击」
+     那个按钮指到了这里的 `auto` —— 于是点一下「普通攻击」实际上是**自动打满
+     60 回合**。这就是「点一下人就没了」的第一现场。
+     ⇒ 改名「挂机」让两件事在字面上分开；按钮那头已改回 `attack`（ui.js 战斗面板）。
+     ⚠️ 保留 60 回合上限：它是**防死循环**的兜底，不是玩法。 */
+  reg(['auto', '自动战斗', '挂机'], (ctx) => {
     if (!ctx.world.battle) return { lines: [{ kind: 'warn', text: '你并没有在战斗。' }] };
     const lines = [];
+    /* ⚠️ 上限与平局判定共用同一个常量：这边是防死循环，`combat.js` 那边是判和。
+       各写一个 60 就是两份真理 —— 改一个忘一个，另一边就变成新的死循环入口。 */
+    const { DRAW_TURNS } = require('./combat');
     let guard = 0;
-    while (ctx.world.battle && !ctx.world.battle.over && guard++ < 60) {
+    while (ctx.world.battle && !ctx.world.battle.over && guard++ < DRAW_TURNS) {
       const r = ctx.world.combatStep();
       if (!r) break;
       lines.push(...r.lines);
       if (r.over) break;
       if (ctx.player.hp <= 0) break;
+    }
+    /* ⚠️ 跑满上限还没分出胜负 ⇒ 这一架就到此为止（平局），别把战斗悬在场上。
+       为什么不能干等 `advanceTurn` 自己跨过上限收尾：
+         循环条件是 `guard++ < DRAW_TURNS`，跑满正好 DRAW_TURNS 手 ⇒ turn 停在 DRAW_TURNS；
+         而平局判的是 `turn > DRAW_TURNS`（`advanceTurn` 里那句），**差着一格**。
+       于是挂机退出时战斗既没赢也没输也没和 —— 面板不消失、一句话也不说，
+       玩家只看见"挂机完了，然后呢？"，而这一格差还会随任何一边改上限重新长出来。
+       ⇒ 不去对齐那两个边界（改一个忘一个，错位会复发），改成在退出点显式收尾：
+         「挂机打满了 DRAW_TURNS 手还没打完」本身就是判和的理由，不必再走一回合。
+       走 `finishCombat` 而不是只置 `over`：它会把双方 `inCombat` 清掉、
+       把 Boss 阶段状态复位 —— 只置 over 会留一堆"还在打"的人站在原地。 */
+    if (ctx.world.battle && !ctx.world.battle.over) {
+      const b = ctx.world.battle;
+      b.over = true; b.winner = 'draw';
+      const fin = ctx.world.finishCombat([
+        { kind: 'warn', text: '这一架打了许久，谁也奈何不了谁，各自退开。' },
+      ]);
+      lines.push(...(fin.lines || []));
     }
     return { lines, combatStep: true };
   });
@@ -3506,10 +3597,10 @@ function buildCommands(world) {
         st.chatCount = (st.chatCount || 0) + 1;
         /* 走 world.gainFavor：正向增量会过「口才便给」天赋倍率 */
         const fd = Math.round(w.gainFavor(npc, 1));
-        lines.push({ kind: 'sys', text: `　（闲谈几句，${npc.name}对你多了三分熟络。好感 ${fd > 0 ? '+' : ''}${fd}）` });
-      } else {
-        lines.push({ kind: 'hint', text: '　（话已说尽，再说就成聒噪了——明日再来。）' });
+        if (fd) lines.push({ kind: 'sys', text: `　（闲谈几句，${npc.name}对你多了三分熟络。）` });
       }
+      /* 主人 2026-10-13：「再多说就显得聒噪」那段黄字删了 —— 话头断了就断了，
+         不必追一句系统提醒。（好感那边也是：涨了才提一句，没涨不吭声。） */
     }
     /* ---- 话头：把回话里的**名字**做成可点菜单 ----
        这是「交谈」从「看一句话」变成「聊得下去」的关键：
@@ -4032,6 +4123,55 @@ function buildCommands(world) {
       w.addRumor('rs_sect_join', { room: p.room, about: targetSect.id, vars: { who: p.name, where: targetSect.name } });
     }
     return { lines };
+  });
+
+  /* ---------------- 山门守卫（design/71 §四）----------------
+     主人：「守门处有个闯山门的按钮是个摆设玩家直接就能进去」。
+     守卫在 doMove 钩子层拦人（给出 choices），这三个指令是那三个出口的**执行端**：
+       · `报名入山 <门派名>` —— 报上名号，守卫按 joinSect 那套放行/回绝
+       · `打点入山 <门派名>` —— 塞钱（只对恶名在身的人有意义）
+       · `硬闯 <门派名>`     —— 硬来（走普通战斗；守门人太行就直接擒下）
+     参数缺省时用当前被拦的门派（choices 里带全名，但手敲可以只敲两个字）。 */
+  const _guardSectArg = (w, p, args) => {
+    const kw = (args || []).join('').trim();
+    if (kw) {
+      const hit = Object.values(w.data.sects || {}).find(s => s.name === kw || s.id === kw)
+        || Object.values(w.data.sects || {}).find(s => s.name && (s.name.includes(kw) || kw.includes(s.name)));
+      if (hit) return hit.id;
+    }
+    const at = require('./guards').sectAtRoom(w, p.room);
+    return at ? at.id : null;
+  };
+  reg(['报名入山', '报名'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const G = require('./guards');
+    if (!p.vars || !p.vars.guardBy) return { lines: [{ kind: 'plain', text: '没人拦着你。' }] };
+    const sid = _guardSectArg(w, p, args) || (p.vars.guardAt && p.vars.guardAt.sect);
+    return { lines: G.stateName(w, p, sid) };
+  });
+  reg(['打点入山', '打点'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const G = require('./guards');
+    if (!p.vars || !p.vars.guardBy) return { lines: [{ kind: 'plain', text: '没人拦着你。' }] };
+    const sid = _guardSectArg(w, p, args) || (p.vars.guardAt && p.vars.guardAt.sect);
+    return { lines: G.bribe(w, p, sid) };
+  });
+  reg(['硬闯', '闯山门', '硬闯山门'], (ctx, args) => {
+    const p = ctx.player, w = ctx.world;
+    const G = require('./guards');
+    const sid = _guardSectArg(w, p, args);
+    if (!sid) return { lines: [{ kind: 'warn', text: '这里不是谁家的山门。' }] };
+    return { lines: G.forceIn(w, p, sid) };
+  });
+  reg(['退下', '退走', '不闯了'], (ctx) => {
+    const p = ctx.player, w = ctx.world;
+    const G = require('./guards');
+    const g = G.guardIn(w, p.room);
+    if (p.vars && p.vars.guardBy) {
+      p.vars.guardBy = null;
+      return { lines: [{ kind: 'plain', text: `${g ? g.name : '那守卫'}看你退了半步，也就没再逼上来。` }] };
+    }
+    return { lines: [{ kind: 'plain', text: '你退后一步。' }] };
   });
 
   /* ---------------- 门派生涯（主人 2026-10-08）---------------- */
@@ -4781,16 +4921,19 @@ function buildCommands(world) {
     return { lines };
   });
 
-  /* ---------------- 飞往（去过的地方） ----------------
-     主人 2026-10-11：「地图里有一个『飞往』……可以改成玩家去过的城市都可以飞到该城市入口处，
-     门派也是一样入口处，前提是玩家去过那里」。
+  /* ---------------- 飞往（练成轻功就能飞，远处费内力） ----------------
+     主人 2026-10-11 定的规矩是「去过的地方才准飞」；2026-10-13 改口径：
 
-     规矩（照主人的原话）：
-       · 只认**区域的 `entry` 房间**（每个 region 都定义了 entry，就是它的门户）；
-       · **必须去过那个入口**（`visited_<entry>` 旗标）—— 没去过的只能在地图上看看；
-       · 门派与城市一视同仁，都在同一张 region 表里，所以一条逻辑管两边。
+       > 「让飞行现在不限制必须先去到某个区域。」
 
-     加了两条限制，都是防「传送把江湖走没了」：
+     所以「**去过没有**」这道闸拆了 —— 没去过华山也能飞到华山门口。
+     换成武侠里本来就有的两道：
+       · **脚下得有轻功**（`bestQinggong`）—— 不会轻功的人飞不起来；
+       · **内力要够**（`flightCost`）—— 远路费内力，落地要留余量，够不到就在半路落脚。
+     判定与耗力的算法全在 `flight.js`，`mapView` 下发的 `canFly` 也走它，
+     两处不各判一套（历史上「按钮亮着、后端说飞不了」就是这么来的）。
+
+     另外两条老限制不动：
        · 战斗中不能飞；
        · 收 60 分钟脚程（不是白给，但比一步步走便宜得多）。 */
   reg(['飞往', '传送', '去往', '赶往', 'feiwang'], (ctx, args) => {
@@ -4814,20 +4957,38 @@ function buildCommands(world) {
        （Mod 作者不会知道要补这个字段，别让新功能一到 Mod 就废）。 */
     const entryId = hit.entry
       || (Object.values(w.data.rooms).find(x => x.region === hit.id) || {}).id;
-    if (!entryId || !w.getRoom(entryId)) {
-      return { lines: [{ kind: 'warn', text: `${hit.name}没有可以落脚的入口。` }] };
+
+    /* 门槛与耗内力：全部交给 flight.js，和 mapView 的 canFly 同源。 */
+    const chk = flight.canFlyTo(p, w, entryId);
+    if (!chk.ok) {
+      const r = { lines: [{ kind: 'warn', text: chk.reason }] };
+      /* 轻功是玩家最该知道的一条路 —— 补一句怎么解决，别只说「飞不了」。 */
+      if (/轻功/.test(chk.reason)) {
+        r.lines.push({ kind: 'hint', text: '（江湖上飘着「梯云纵」「逍遥游」一类轻功；学会一门，再找处僻静地方练上几层，就能飞了。）' });
+      }
+      return r;
     }
-    if (p.room === entryId) return { lines: [{ kind: 'plain', text: `你已经站在${hit.name}的门口了。` }] };
-    if (!p.hasFlag('visited_' + entryId)) {
-      return { lines: [{ kind: 'warn', text: `你没去过${hit.name}，路不认得，飞不了。先自己走一趟吧。` }] };
+    if (!flight.canAfford(p, chk.cost)) {
+      return { lines: [
+        { kind: 'warn', text: `这一趟要 ${chk.cost} 点内力，你丹田里只剩 ${Math.floor(p.mp)} —— 硬飞过去怕是要栽在半路。` },
+        { kind: 'hint', text: '（「打坐」养气，或者找个客栈歇一晚。）' },
+      ] };
     }
-    /* 找一条「你知道怎么走」的说法：入口房间的名字 */
+
     const tgt = w.getRoom(entryId);
+    p.mp = Math.max(0, p.mp - chk.cost);
     p.room = entryId;
     p.advanceTime(60);
     if (!p.hasFlag('visited_' + entryId)) p.setFlag('visited_' + entryId, true);
-    lines.push({ kind: 'story', text: `你记起${hit.name}的方向，收了收行囊，一路赶了过去。` });
-    lines.push({ kind: 'sys', text: `你来到了${tgt.name}。` });
+
+    const far = chk.steps > 20;
+    lines.push({
+      kind: 'story',
+      text: far
+        ? `你运起${chk.qinggong.name}，脚下生风，一口气掠过了${chk.steps}里山路，衣袂上全是山草木叶的味道。`
+        : `不远，${chk.qinggong.name}轻轻一纵，${hit.name}就到了。`,
+    });
+    lines.push({ kind: 'sys', text: `内力耗去 ${chk.cost} 点。你来到了${tgt.name}。` });
     return { lines };
   });
 
@@ -5423,6 +5584,7 @@ function buildCommands(world) {
       }
       const blocked = actionLimit(ctx, selfSuff);
       if (blocked) return { lines: blocked };
+      writeRoomNote(ctx, selfSuff);
       return { lines: evalEffects(selfSuff.effects, ctx) };
     }
 
@@ -5540,6 +5702,8 @@ function questKeyword(ctx, cmd, args, rawFull) {
              「你溪里试试手气」这种半句话），只给一句明确的「无发现」。 */
           return [{ kind: 'plain', text: `你留心察看了一番，此处暂时没有更多可做的了。` }];
         }
+        /* R4：动作成功才留痕（85 §0.2）——cond/限次/E缺 effects 的失败路径都到不了这 */
+        writeRoomNote(ctx, a);
         return evalEffects(a.effects, ctx);
       }
     }
@@ -6145,6 +6309,36 @@ function findPath(world, from, to, ctx) {
   return null;
 }
 
+/* ---- R4 roomNotes 痕迹句（design/85 §〇/§三，2026-10-15 落地）----
+ * 行为点 = 「能下手的地方」的回声：只有房间 action 才产生行为点，
+ * 动作**成功**才写（cond 不过 / 限次被拦 / effects 缺失都不写 —— 85 §0.2）。
+ * 写 p.roomNotes[roomId]，**单值**静默覆盖（77 §6.1 V3），序列化随 Character.toJSON 自带走。
+ * 本批只落 85 §三.2 的「!combat 常驻位」6 条（#3 掬泉/#4 坐歇/#11 上香/#14 藏物/#15 施舍/#18 净面）；
+ * 其余 12 条带 ⚠️ 字段（weather/isNight/flag）等字段对齐后再补，不硬造。
+ * 痕迹句是回述（过去时），**不过 .hl 渲染管线**（85 §二.1 / 81 N-V-25）。 */
+const ROOMNOTE_RULES = [
+  { id: 'drink',   keys: ['泉水', '饮水', '掬'], note: '潭边的石上留着一圈水渍。' },
+  { id: 'rest',    keys: ['坐歇', '歇息', '小坐'], note: '石面上蹭出一小片光，是常坐的人才坐得出的。' },
+  { id: 'incense', keys: ['上香'], note: '香炉里多了一截烧尽的香灰。' },
+  { id: 'hide',    keys: ['藏物', '藏东西', '埋'], note: '那块松动的砖，按过之后更松了。' },
+  { id: 'alms',    keys: ['施舍', '施'], note: '破碗里的铜钱叠着两枚。' },
+  { id: 'wash',    keys: ['净面', '洗手', '洗脸'], note: '井台的石沿湿了一块。' },
+];
+function roomNoteRuleFor(action) {
+  const hay = [action && action.cmd, ...((action && action.keywords) || [])].filter(Boolean).join('|');
+  if (!hay) return null;
+  return ROOMNOTE_RULES.find(r => r.keys.some(k => hay.indexOf(k) >= 0)) || null;
+}
+/* 写入点：只在房间 action 执行成功后调（三条成功路径共用这一份） */
+function writeRoomNote(ctx, action) {
+  const p = ctx.player, w = ctx.world;
+  const rule = roomNoteRuleFor(action);
+  if (!rule) return;
+  if (!evalCond('!combat', ctx)) return;
+  if (!p.roomNotes) p.roomNotes = {};
+  p.roomNotes[p.room] = rule.note;
+}
+
 module.exports = {
   buildCommands, findPath, cnNum, DIRECTIONS, DIR_CN,
   /* 物品类型/装备属性的中文名（唯一一份）—— engine 的 modmaker 数据面也读它 */
@@ -6152,6 +6346,10 @@ module.exports = {
   /* 「询问」配套：话题写法归一化 + 他认识的人 + 问起那人他怎么说。
      前端人名清单与后端回答**共用这一份**，别在 UI 里再写一份名单。 */
   normalizeAskList, npcKnownPeople, npcAboutPerson,
+  /* ambient 动态句取句（design/77 §2.0.3）——守卫 tools/ambient-check.js 直接测这份 */
+  ambientLine,
+  /* R4 roomNotes（design/85）——守卫直接测这份（规则表 + 匹配 + 写入） */
+  ROOMNOTE_RULES, roomNoteRuleFor, writeRoomNote,
   /* 身份标签 / 关系称谓：导出给测试与其它模块用（见 tools/identity-check.js） */
   __api: {
     npcIdentity, relKindCN, tagCN, JOB_CN, TAG_CN, REL_KIND_CN, relFavorBetween, fmtRelFavor, REL_FAVOR_BASE,

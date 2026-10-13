@@ -93,6 +93,9 @@
       U.renderAll(S.view);
       U.show('game');
       U.toast('读取成功', 'ok');
+      /* 关键节点：读档后立刻落盘把这份进度写成自己的自动存档 ——
+         否则接下来 30 秒内的操作仍然记在**读档之前**的旧进度上。 */
+      if (U.autoSaveNow) U.autoSaveNow();
       /* 与新建角色后一致：进游戏才拉起键盘。触屏机型点「继续游戏」
          不该被软键盘挡住视野（验收标准 B2-6）。 */
       setTimeout(() => { const i = $('cmd-input'); if (i && !('ontouchstart' in window)) i.focus(); }, 200);

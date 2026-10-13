@@ -2,973 +2,2729 @@
   "_note": "design/67 §5 主线分化 P2~P5 的内容落点：前置支线（垫人物）+ 皇宫衙门线（P3）+ 中立线（P5）。文件名 98_ 是刻意的：数据按文件名**字符串**排序加载，98 排在 40_npcs/101_classic_npcs 之后、99_city_npcs 之前，所以这里给既有 NPC 挂的 quests 数组不会被覆盖（写 103_ 之类反而会排到 40 前面去）。",
   "npcs": {
     "cy_pre_teaman": {
-      "id": "cy_pre_teaman", "name": "老周", "gender": "male", "tag": "commoner", "title": "茶摊摊主",
-      "room": "road_jiangnan_1", "home": "house:cy_pre_teaman", "personality": "mune",
+      "id": "cy_pre_teaman",
+      "name": "老周",
+      "gender": "male",
+      "tag": "commoner",
+      "title": "茶摊摊主",
+      "room": "road_jiangnan_1",
+      "home": "house:cy_pre_teaman",
+      "personality": "mune",
       "desc": "灶上的水一直开着。他手背上有一块烫疤，不去管。",
-      "talk": ["坐下歇歇脚？茶钱随意。", "这条道上过的人多，留下来的少。"],
-      "age": 55, "likes": ["tea"], "level": 2, "hp": 60, "atk": 6, "def": 3, "dodge": 3, "speed": 9,
-      "money": 40, "hostile": false, "favorBase": 1, "favorInit": 8,
-      "carry": { "money": 20, "items": [] },
-      "schedule": { "day": "road_jiangnan_1", "night": "road_jiangnan_1" },
-      "tier": "C", "district": "jiangnan", "homeless": true,
-      "quests": ["sq_pre_a1_chuan"],
+      "talk": [
+        "坐下歇歇脚？茶钱随意。",
+        "这条道上过的人多，留下来的少。"
+      ],
+      "age": 55,
+      "likes": [
+        "tea"
+      ],
+      "level": 2,
+      "hp": 60,
+      "atk": 6,
+      "def": 3,
+      "dodge": 3,
+      "speed": 9,
+      "money": 40,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 20,
+        "items": []
+      },
+      "schedule": {
+        "day": "road_jiangnan_1",
+        "night": "road_jiangnan_1"
+      },
+      "tier": "C",
+      "district": "jiangnan",
+      "homeless": true,
+      "quests": [
+        "sq_pre_a1_chuan"
+      ],
       "portrait": {
-        "v": 1, "tier": "C", "lock": false,
+        "v": 1,
+        "tier": "C",
+        "lock": false,
         "role": "在江南道口支了个茶摊，挑了半辈子水",
         "now": "今年雨水多，井水浑，他一天要澄三回。",
         "want": "这口井别干",
-        "voice": { "tone": "讷", "catchphrase": "坐下歇歇脚。" },
-        "routine": [{ "at": "day", "act": "蹲在灶前拨火，看路上的人来去" }],
-        "arc": { "init": "你不问他就不开口。", "warm": "会多给你续一碗。" },
-        "marks": ["消息"]
+        "voice": {
+          "tone": "讷",
+          "catchphrase": "坐下歇歇脚。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "蹲在灶前拨火，看路上的人来去"
+          }
+        ],
+        "arc": {
+          "init": "你不问他就不开口。",
+          "warm": "会多给你续一碗。"
+        },
+        "marks": [
+          "消息"
+        ]
       }
     },
-
     "cy_pre_bookseller": {
-      "id": "cy_pre_bookseller", "name": "温掌柜", "gender": "male", "tag": "merchant", "title": "书坊掌柜",
-      "room": "jiangnan_street", "home": "house:cy_pre_bookseller", "personality": "youhua",
+      "id": "cy_pre_bookseller",
+      "name": "温掌柜",
+      "gender": "male",
+      "tag": "merchant",
+      "title": "书坊掌柜",
+      "room": "jiangnan_street",
+      "home": "house:cy_pre_bookseller",
+      "personality": "youhua",
       "desc": "袖口常年沾着墨。他跟人说话的时候，手在柜台上划字，划完自己擦掉。",
-      "talk": ["新到的书在里屋，随便翻。", "印书的纸今年贵了三成，你说这日子。"],
-      "age": 44, "likes": ["book"], "level": 6, "hp": 120, "atk": 14, "def": 7, "dodge": 7, "speed": 11,
-      "money": 210, "hostile": false, "favorBase": 2, "favorInit": 10,
-      "carry": { "money": 90, "items": [] },
-      "schedule": { "day": "jiangnan_street", "night": "jiangnan_tavern" },
-      "tier": "B", "district": "jiangnan", "homeless": true,
-      "quests": ["sq_pre_a1_shi"],
+      "talk": [
+        "新到的书在里屋，随便翻。",
+        "印书的纸今年贵了三成，你说这日子。"
+      ],
+      "age": 44,
+      "likes": [
+        "book"
+      ],
+      "level": 6,
+      "hp": 120,
+      "atk": 14,
+      "def": 7,
+      "dodge": 7,
+      "speed": 11,
+      "money": 210,
+      "hostile": false,
+      "favorBase": 2,
+      "favorInit": 10,
+      "carry": {
+        "money": 90,
+        "items": []
+      },
+      "schedule": {
+        "day": "jiangnan_street",
+        "night": "jiangnan_tavern"
+      },
+      "tier": "B",
+      "district": "jiangnan",
+      "homeless": true,
+      "quests": [
+        "sq_pre_a1_shi"
+      ],
       "portrait": {
-        "v": 1, "tier": "B", "lock": false,
+        "v": 1,
+        "tier": "B",
+        "lock": false,
         "role": "江南街面上开书坊的，卖四书也卖话本，两样都不赚钱",
         "origin": "他爹是个刻工，一双手刻了三十年，到死没置下一间铺子。",
         "now": "木版年头久了，印出来的字一批比一批糊。",
         "want": "把那副老版补全，别让书在手里断掉",
         "fear": "怕自己刻不动的那天来得比补全早",
-        "voice": { "tone": "油", "catchphrase": "这话本子，翻翻就知道了。" },
-        "routine": [{ "at": "day", "act": "在柜台后头补版，袖口蹭着墨" }],
-        "arc": { "init": "先看你的手，再看你的钱。", "warm": "会从里屋拿出一本不肯外借的。" },
-        "marks": ["字", "商"]
+        "voice": {
+          "tone": "油",
+          "catchphrase": "这话本子，翻翻就知道了。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在柜台后头补版，袖口蹭着墨"
+          }
+        ],
+        "arc": {
+          "init": "先看你的手，再看你的钱。",
+          "warm": "会从里屋拿出一本不肯外借的。"
+        },
+        "marks": [
+          "字",
+          "商"
+        ]
       }
     },
-
     "cy_pre_doorkeeper": {
-      "id": "cy_pre_doorkeeper", "name": "老张", "gender": "male", "tag": "guard", "title": "城门门房",
-      "room": "jiangnan_gate", "home": "house:cy_pre_doorkeeper", "personality": "mune",
+      "id": "cy_pre_doorkeeper",
+      "name": "老张",
+      "gender": "male",
+      "tag": "guard",
+      "title": "城门门房",
+      "room": "jiangnan_gate",
+      "home": "house:cy_pre_doorkeeper",
+      "personality": "mune",
       "desc": "背有点驼，手里那只更漏的沙子走得很慢。他见谁都先让路。",
-      "talk": ["城门申时落闸，要进趁早。", "路引带在身上么？"],
-      "age": 52, "likes": ["silver"], "level": 5, "hp": 110, "atk": 12, "def": 6, "dodge": 5, "speed": 8,
-      "money": 75, "hostile": false, "favorBase": 1, "favorInit": 6,
-      "carry": { "money": 30, "items": [] },
-      "schedule": { "day": "jiangnan_gate", "night": "jiangnan_gate" },
-      "tier": "C", "district": "jiangnan", "homeless": true,
-      "quests": ["sq_pre_a2_menfang"],
+      "talk": [
+        "城门申时落闸，要进趁早。",
+        "路引带在身上么？"
+      ],
+      "age": 52,
+      "likes": [
+        "silver"
+      ],
+      "level": 5,
+      "hp": 110,
+      "atk": 12,
+      "def": 6,
+      "dodge": 5,
+      "speed": 8,
+      "money": 75,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 6,
+      "carry": {
+        "money": 30,
+        "items": []
+      },
+      "schedule": {
+        "day": "jiangnan_gate",
+        "night": "jiangnan_gate"
+      },
+      "tier": "C",
+      "district": "jiangnan",
+      "homeless": true,
+      "quests": [
+        "sq_pre_a2_menfang"
+      ],
       "portrait": {
-        "v": 1, "tier": "C", "lock": false,
+        "v": 1,
+        "tier": "C",
+        "lock": false,
         "role": "江南城门口看门的，管一本进出的册子",
         "now": "城里前阵子出了事，门房查得比往年紧。",
         "want": "在这门洞里站到不用站的那天",
-        "voice": { "tone": "讷", "catchphrase": "路引带在身上么？" },
-        "routine": [{ "at": "day", "act": "靠在门框上翻进出册子，翻得很慢" }],
-        "arc": { "init": "规规矩矩，多余的话没有。", "warm": "会替你留一句门里的实情。" },
-        "marks": ["消息"]
+        "voice": {
+          "tone": "讷",
+          "catchphrase": "路引带在身上么？"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "靠在门框上翻进出册子，翻得很慢"
+          }
+        ],
+        "arc": {
+          "init": "规规矩矩，多余的话没有。",
+          "warm": "会替你留一句门里的实情。"
+        },
+        "marks": [
+          "消息"
+        ]
       }
     },
-
     "cy_pre_herbalist": {
-      "id": "cy_pre_herbalist", "name": "柳婆婆", "gender": "female", "tag": "physician", "title": "药圃主人",
-      "room": "jn_pharmacy_back", "home": "house:cy_pre_herbalist", "personality": "baozhao",
+      "id": "cy_pre_herbalist",
+      "name": "柳婆婆",
+      "gender": "female",
+      "tag": "physician",
+      "title": "药圃主人",
+      "room": "jn_pharmacy_back",
+      "home": "house:cy_pre_herbalist",
+      "personality": "baozhao",
       "desc": "指甲缝里是土，指头被药汁染成褐色。她说话快，说完了自己先不耐烦。",
-      "talk": ["别踩垄，那是黄芪。", "药是慢东西，急不来——你急你走。"],
-      "age": 63, "likes": ["herb"], "level": 8, "hp": 150, "atk": 16, "def": 8, "dodge": 6, "speed": 8,
-      "money": 130, "hostile": false, "favorBase": 1, "favorInit": 5,
-      "carry": { "money": 40, "items": [] },
-      "schedule": { "day": "jn_pharmacy_back", "night": "jn_pharmacy" },
-      "tier": "B", "district": "jiangnan", "homeless": true,
-      "quests": ["sq_pre_a1_yao"],
+      "talk": [
+        "别踩垄，那是黄芪。",
+        "药是慢东西，急不来。你急，你走。"
+      ],
+      "age": 63,
+      "likes": [
+        "herb"
+      ],
+      "level": 8,
+      "hp": 150,
+      "atk": 16,
+      "def": 8,
+      "dodge": 6,
+      "speed": 8,
+      "money": 130,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 40,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_pharmacy_back",
+        "night": "jn_pharmacy"
+      },
+      "tier": "B",
+      "district": "jiangnan",
+      "homeless": true,
+      "quests": [
+        "sq_pre_a1_yao"
+      ],
       "portrait": {
-        "v": 1, "tier": "B", "lock": false,
+        "v": 1,
+        "tier": "B",
+        "lock": false,
         "role": "药铺后头那片药圃是她的，铺子里的药一半靠这儿出",
         "origin": "她娘就是认药的，认了一辈子，到死没认出自己那味病。",
         "now": "今年雨水不对劲，几垄药起了虫。",
         "want": "把这季的药保下来",
         "fear": "怕断了一味药，让人白等一年",
-        "voice": { "tone": "泼", "catchphrase": "别踩垄！" },
-        "routine": [{ "at": "day", "act": "蹲在垄边翻叶子背面看虫" }],
-        "arc": { "init": "看你像看一棵长歪的苗。", "warm": "会塞给你一小包晒好的东西。" },
-        "marks": ["药", "医"]
+        "voice": {
+          "tone": "泼",
+          "catchphrase": "别踩垄！"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "蹲在垄边翻叶子背面看虫"
+          }
+        ],
+        "arc": {
+          "init": "看你像看一棵长歪的苗。",
+          "warm": "会塞给你一小包晒好的东西。"
+        },
+        "marks": [
+          "药",
+          "医"
+        ]
       }
     },
-
     "cy_pre_pawn": {
-      "id": "cy_pre_pawn", "name": "焦朝奉", "gender": "male", "tag": "merchant", "title": "当铺朝奉",
-      "room": "luoyang_lane", "home": "house:cy_pre_pawn", "personality": "youhua",
+      "id": "cy_pre_pawn",
+      "name": "焦朝奉",
+      "gender": "male",
+      "tag": "merchant",
+      "title": "当铺朝奉",
+      "room": "luoyang_lane",
+      "home": "house:cy_pre_pawn",
+      "personality": "youhua",
       "desc": "眼睛在东西上只停一瞬，在你脸上停得久些。",
-      "talk": ["有东西要当？先拿来我看。", "死当活当，价钱不一样。"],
-      "age": 48, "likes": ["silver"], "level": 12, "hp": 240, "atk": 30, "def": 14, "dodge": 12, "speed": 13,
-      "money": 520, "hostile": false, "favorBase": 1, "favorInit": 4,
-      "carry": { "money": 260, "items": [] },
-      "schedule": { "day": "luoyang_lane", "night": "luoyang_inn" },
-      "tier": "B", "district": "luoyang", "homeless": true,
-      "quests": ["sq_pre_a3_dangpu"],
+      "talk": [
+        "有东西要当？先拿来我看。",
+        "死当活当，价钱不一样。"
+      ],
+      "age": 48,
+      "likes": [
+        "silver"
+      ],
+      "level": 12,
+      "hp": 240,
+      "atk": 30,
+      "def": 14,
+      "dodge": 12,
+      "speed": 13,
+      "money": 520,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 4,
+      "carry": {
+        "money": 260,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_lane",
+        "night": "luoyang_inn"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "quests": [
+        "sq_pre_a3_dangpu"
+      ],
       "portrait": {
-        "v": 1, "tier": "B", "lock": false,
+        "v": 1,
+        "tier": "B",
+        "lock": false,
         "role": "洛阳巷子里的当铺朝奉，一眼能看出东西值几个钱",
         "origin": "他十二岁进当铺学徒，师傅教的第一句是「别信人，信东西」。",
         "now": "这两年当进来的东西，十件里有七件没人来赎。",
         "want": "把这桩看不懂的当，弄明白它到底值什么",
         "fear": "怕自己这双眼睛头一回看走了眼",
-        "voice": { "tone": "油", "catchphrase": "先拿来我看。" },
-        "routine": [{ "at": "day", "act": "坐在高凳上，用绢布擦一件又一件当品" }],
-        "arc": { "init": "跟你说话时，眼睛还在算。", "warm": "会把柜台底下的东西拿给你看。" },
-        "marks": ["商", "债"]
+        "voice": {
+          "tone": "油",
+          "catchphrase": "先拿来我看。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在高凳上，用绢布擦一件又一件当品"
+          }
+        ],
+        "arc": {
+          "init": "跟你说话时，眼睛还在算。",
+          "warm": "会把柜台底下的东西拿给你看。"
+        },
+        "marks": [
+          "商",
+          "债"
+        ]
       }
     },
-
     "cy_pre_woodblock": {
-      "id": "cy_pre_woodblock", "name": "岑师傅", "gender": "male", "tag": "artisan", "title": "刻工",
-      "room": "chengdu_lane", "home": "house:cy_pre_woodblock", "personality": "lengmo",
+      "id": "cy_pre_woodblock",
+      "name": "岑师傅",
+      "gender": "male",
+      "tag": "artisan",
+      "title": "刻工",
+      "room": "chengdu_lane",
+      "home": "house:cy_pre_woodblock",
+      "personality": "lengmo",
       "desc": "手上有刀口，一道压着一道。他刻字的时候不看人。",
-      "talk": ["版子脆了，一刀下去就得重来。", "字是刻出来的，不是写出来的。"],
-      "age": 50, "likes": ["book"], "level": 9, "hp": 170, "atk": 22, "def": 10, "dodge": 9, "speed": 10,
-      "money": 160, "hostile": false, "favorBase": 1, "favorInit": 6,
-      "carry": { "money": 60, "items": [] },
-      "schedule": { "day": "chengdu_lane", "night": "chengdu_inn" },
-      "tier": "B", "district": "chengdu", "homeless": true,
-      "quests": ["sq_pre_a3_shufang"],
+      "talk": [
+        "版子脆了，一刀下去就得重来。",
+        "字是刻出来的，不是写出来的。"
+      ],
+      "age": 50,
+      "likes": [
+        "book"
+      ],
+      "level": 9,
+      "hp": 170,
+      "atk": 22,
+      "def": 10,
+      "dodge": 9,
+      "speed": 10,
+      "money": 160,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 6,
+      "carry": {
+        "money": 60,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_lane",
+        "night": "chengdu_inn"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "quests": [
+        "sq_pre_a3_shufang"
+      ],
       "portrait": {
-        "v": 1, "tier": "B", "lock": false,
+        "v": 1,
+        "tier": "B",
+        "lock": false,
         "role": "成都街上刻版的，一手反字刻了三十年",
         "origin": "他是跟着一册坊刻本学的字，册子主人早不知道是谁了。",
         "now": "前些日子有人拿来一块旧版，让他照着刻一副新的。",
-        "want": "把那副版刻完——只为了看清它到底印的是什么",
+        "want": "把那副版刻完。只为了看清它到底印的是什么",
         "fear": "怕自己刻的是别人的祸事",
-        "voice": { "tone": "冷", "catchphrase": "字是刻出来的。" },
-        "routine": [{ "at": "day", "act": "伏在案上刻版，刀口斜着进去" }],
-        "arc": { "init": "只谈活，不谈别的。", "warm": "会把手上的活停一下。" },
-        "marks": ["字"]
+        "voice": {
+          "tone": "冷",
+          "catchphrase": "字是刻出来的。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "伏在案上刻版，刀口斜着进去"
+          }
+        ],
+        "arc": {
+          "init": "只谈活，不谈别的。",
+          "warm": "会把手上的活停一下。"
+        },
+        "marks": [
+          "字"
+        ]
       }
     },
-
     "cy_pre_ferryman": {
-      "id": "cy_pre_ferryman", "name": "韩老栓", "gender": "male", "tag": "boatman", "title": "渡口船夫",
-      "room": "jiangnan_qiao", "home": "house:cy_pre_ferryman", "personality": "baozhao",
+      "id": "cy_pre_ferryman",
+      "name": "韩老栓",
+      "gender": "male",
+      "tag": "boatman",
+      "title": "渡口船夫",
+      "room": "jiangnan_qiao",
+      "home": "house:cy_pre_ferryman",
+      "personality": "baozhao",
       "desc": "裤脚永远是湿的。他手上的茧长在虎口上，那是撑篙撑出来的。",
-      "talk": ["过河两文，不赊。", "这水看着平，底下有涡。"],
-      "age": 58, "likes": ["wine"], "level": 10, "hp": 190, "atk": 24, "def": 10, "dodge": 11, "speed": 12,
-      "money": 90, "hostile": false, "favorBase": 2, "favorInit": 10,
-      "carry": { "money": 35, "items": [] },
-      "schedule": { "day": "jiangnan_qiao", "night": "jiangnan_qiao" },
-      "tier": "B", "district": "jiangnan", "homeless": true,
-      "quests": ["sq_pre_a4_dukou"],
+      "talk": [
+        "过河两文，不赊。",
+        "这水看着平，底下有涡。"
+      ],
+      "age": 58,
+      "likes": [
+        "wine"
+      ],
+      "level": 10,
+      "hp": 190,
+      "atk": 24,
+      "def": 10,
+      "dodge": 11,
+      "speed": 12,
+      "money": 90,
+      "hostile": false,
+      "favorBase": 2,
+      "favorInit": 10,
+      "carry": {
+        "money": 35,
+        "items": []
+      },
+      "schedule": {
+        "day": "jiangnan_qiao",
+        "night": "jiangnan_qiao"
+      },
+      "tier": "B",
+      "district": "jiangnan",
+      "homeless": true,
+      "quests": [
+        "sq_pre_a4_dukou"
+      ],
       "portrait": {
-        "v": 1, "tier": "B", "lock": false,
+        "v": 1,
+        "tier": "B",
+        "lock": false,
         "role": "在江南桥下摆渡，一天来回几十趟",
         "origin": "他爹也撑船，撑的是同一条河，死在水里。",
         "now": "这几天夜里，总有人赶在落闸前过河，不点灯。",
         "want": "把这一河的人平平安安送过去",
         "fear": "怕哪天翻的是自己这条船",
-        "voice": { "tone": "泼", "catchphrase": "过河两文，不赊。" },
-        "routine": [{ "at": "day", "act": "撑篙离岸，眼睛盯着水面" }],
-        "arc": { "init": "先要钱，再搭话。", "warm": "会少收你一文。" },
-        "marks": ["船"]
+        "voice": {
+          "tone": "泼",
+          "catchphrase": "过河两文，不赊。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "撑篙离岸，眼睛盯着水面"
+          }
+        ],
+        "arc": {
+          "init": "先要钱，再搭话。",
+          "warm": "会少收你一文。"
+        },
+        "marks": [
+          "船"
+        ]
       }
     },
-
     "cy_pre_carrier": {
-      "id": "cy_pre_carrier", "name": "石三", "gender": "male", "tag": "laborer", "title": "挑夫",
-      "room": "changan_market", "home": "house:cy_pre_carrier", "personality": "baozhao",
+      "id": "cy_pre_carrier",
+      "name": "石三",
+      "gender": "male",
+      "tag": "laborer",
+      "title": "挑夫",
+      "room": "changan_market",
+      "home": "house:cy_pre_carrier",
+      "personality": "baozhao",
       "desc": "扁担搁在肩上，一头空着。他走路的时候上身不动，脚在动。",
-      "talk": ["一担两文，十里起算。", "长安的街，我闭着眼也摸得着。"],
-      "age": 35, "likes": ["wine"], "level": 8, "hp": 165, "atk": 20, "def": 9, "dodge": 10, "speed": 13,
-      "money": 55, "hostile": false, "favorBase": 2, "favorInit": 12,
-      "carry": { "money": 15, "items": [] },
-      "schedule": { "day": "changan_market", "night": "changan_tavern" },
-      "tier": "C", "district": "changan", "homeless": true,
-      "quests": ["sq_pre_a4_qiaofu"],
+      "talk": [
+        "一担两文，十里起算。",
+        "长安的街，我闭着眼也摸得着。"
+      ],
+      "age": 35,
+      "likes": [
+        "wine"
+      ],
+      "level": 8,
+      "hp": 165,
+      "atk": 20,
+      "def": 9,
+      "dodge": 10,
+      "speed": 13,
+      "money": 55,
+      "hostile": false,
+      "favorBase": 2,
+      "favorInit": 12,
+      "carry": {
+        "money": 15,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_market",
+        "night": "changan_tavern"
+      },
+      "tier": "C",
+      "district": "changan",
+      "homeless": true,
+      "quests": [
+        "sq_pre_a4_qiaofu"
+      ],
       "portrait": {
-        "v": 1, "tier": "C", "lock": false,
+        "v": 1,
+        "tier": "C",
+        "lock": false,
         "role": "长安城里挑担的，一天走四十里",
         "now": "近来他接的活比往年重，工钱却没涨。",
         "want": "攒够钱，买一副不硌肩的扁担",
-        "voice": { "tone": "泼", "catchphrase": "一担两文。" },
-        "routine": [{ "at": "day", "act": "挑着空担在街口等活，脚在地上磨" }],
-        "arc": { "init": "只谈价钱。", "warm": "会顺手替你捎一段路。" },
-        "marks": ["货"]
+        "voice": {
+          "tone": "泼",
+          "catchphrase": "一担两文。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "挑着空担在街口等活，脚在地上磨"
+          }
+        ],
+        "arc": {
+          "init": "只谈价钱。",
+          "warm": "会顺手替你捎一段路。"
+        },
+        "marks": [
+          "货"
+        ]
       }
     },
-
     "cy_pre_storyteller": {
-      "id": "cy_pre_storyteller", "name": "冯三", "gender": "male", "tag": "storyteller", "title": "说书人",
-      "room": "luoyang_tavern", "home": "house:cy_pre_storyteller", "personality": "youhua",
+      "id": "cy_pre_storyteller",
+      "name": "冯三",
+      "gender": "male",
+      "tag": "storyteller",
+      "title": "说书人",
+      "room": "luoyang_tavern",
+      "home": "house:cy_pre_storyteller",
+      "personality": "youhua",
       "desc": "醒木拍在桌上，拍完自己先笑。他说的书十句里三句是编的。",
-      "talk": ["听一段？给你算半价。", "这些事我编过，编得比真的还好听。"],
-      "age": 46, "likes": ["wine"], "level": 7, "hp": 130, "atk": 15, "def": 8, "dodge": 9, "speed": 11,
-      "money": 120, "hostile": false, "favorBase": 2, "favorInit": 10,
-      "carry": { "money": 45, "items": [] },
-      "schedule": { "day": "luoyang_tavern", "night": "luoyang_tavern_up" },
-      "tier": "B", "district": "luoyang", "homeless": true,
-      "quests": ["sq_pre_a5_kou"],
+      "talk": [
+        "听一段？给你算半价。",
+        "这些事我编过，编得比真的还好听。"
+      ],
+      "age": 46,
+      "likes": [
+        "wine"
+      ],
+      "level": 7,
+      "hp": 130,
+      "atk": 15,
+      "def": 8,
+      "dodge": 9,
+      "speed": 11,
+      "money": 120,
+      "hostile": false,
+      "favorBase": 2,
+      "favorInit": 10,
+      "carry": {
+        "money": 45,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_tavern",
+        "night": "luoyang_tavern_up"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "quests": [
+        "sq_pre_a5_kou"
+      ],
       "portrait": {
-        "v": 1, "tier": "B", "lock": false,
+        "v": 1,
+        "tier": "B",
+        "lock": false,
         "role": "洛阳客栈里说书的，一天两场，说得最多的是江湖",
         "origin": "他原在一家镖局记账。镖局散了，他改行说书。",
         "now": "近来散场之后，他总要在座上多坐一刻才起身。",
         "want": "把这段书说完，别让人替他补上结尾",
         "fear": "怕有人听出来的正是真的那部分",
-        "voice": { "tone": "油", "catchphrase": "听一段？" },
-        "routine": [{ "at": "day", "act": "拍醒木说书，眼睛扫底下的座" }],
-        "arc": { "init": "跟你说话像说书。", "warm": "会把没编进去的那半句告诉你。" },
-        "marks": ["消息", "游"]
+        "voice": {
+          "tone": "油",
+          "catchphrase": "听一段？"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "拍醒木说书，眼睛扫底下的座"
+          }
+        ],
+        "arc": {
+          "init": "跟你说话像说书。",
+          "warm": "会把没编进去的那半句告诉你。"
+        },
+        "marks": [
+          "消息",
+          "游"
+        ]
       }
     },
-
     "cy_pre_gravedigger": {
-      "id": "cy_pre_gravedigger", "name": "老聂", "gender": "male", "tag": "commoner", "title": "守坟人",
-      "room": "jiangnan_hill", "home": "house:cy_pre_gravedigger", "personality": "mune",
+      "id": "cy_pre_gravedigger",
+      "name": "老聂",
+      "gender": "male",
+      "tag": "commoner",
+      "title": "守坟人",
+      "room": "jiangnan_hill",
+      "home": "house:cy_pre_gravedigger",
+      "personality": "mune",
       "desc": "背驼得像一座小山。他扫坟的时候，扫帚压着地皮走，一点土都不扬。",
-      "talk": ["坟头草我拔了三回。", "埋在这儿的人，家里人再没来过。"],
-      "age": 66, "likes": ["tea"], "level": 4, "hp": 85, "atk": 9, "def": 5, "dodge": 4, "speed": 7,
-      "money": 25, "hostile": false, "favorBase": 1, "favorInit": 7,
-      "carry": { "money": 8, "items": [] },
-      "schedule": { "day": "jiangnan_hill", "night": "jiangnan_hill" },
-      "tier": "C", "district": "jiangnan", "homeless": true,
-      "quests": ["sq_pre_a5_mubei"],
+      "talk": [
+        "坟头草我拔了三回。",
+        "埋在这儿的人，家里人再没来过。"
+      ],
+      "age": 66,
+      "likes": [
+        "tea"
+      ],
+      "level": 4,
+      "hp": 85,
+      "atk": 9,
+      "def": 5,
+      "dodge": 4,
+      "speed": 7,
+      "money": 25,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 7,
+      "carry": {
+        "money": 8,
+        "items": []
+      },
+      "schedule": {
+        "day": "jiangnan_hill",
+        "night": "jiangnan_hill"
+      },
+      "tier": "C",
+      "district": "jiangnan",
+      "homeless": true,
+      "quests": [
+        "sq_pre_a5_mubei"
+      ],
       "portrait": {
-        "v": 1, "tier": "C", "lock": false,
+        "v": 1,
+        "tier": "C",
+        "lock": false,
         "role": "替人守着江南坡上的一片坟，守了四十年",
         "now": "今年坡上多了两座新坟，碑还是空的。",
         "want": "把无名的那几座也认下来",
-        "voice": { "tone": "讷", "catchphrase": "坟头草我拔了三回。" },
-        "routine": [{ "at": "day", "act": "拿扫帚压着地皮扫坟前的土" }],
-        "arc": { "init": "只说他自己的事。", "warm": "会指给你看哪一座没人来。" },
-        "marks": ["旧案"]
+        "voice": {
+          "tone": "讷",
+          "catchphrase": "坟头草我拔了三回。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "拿扫帚压着地皮扫坟前的土"
+          }
+        ],
+        "arc": {
+          "init": "只说他自己的事。",
+          "warm": "会指给你看哪一座没人来。"
+        },
+        "marks": [
+          "旧案"
+        ]
       }
     },
-
     "cy_pre_postman": {
-      "id": "cy_pre_postman", "name": "郑七", "gender": "male", "tag": "courier", "title": "驿卒",
-      "room": "changan_gate", "home": "house:cy_pre_postman", "personality": "mune",
+      "id": "cy_pre_postman",
+      "name": "郑七",
+      "gender": "male",
+      "tag": "courier",
+      "title": "驿卒",
+      "room": "changan_gate",
+      "home": "house:cy_pre_postman",
+      "personality": "mune",
       "desc": "小腿上绑着行缠，走了一天的路还站得很直。",
-      "talk": ["公文有公文的走法，私信有私信的。", "这趟我跑了六天。"],
-      "age": 29, "likes": ["silver"], "level": 11, "hp": 210, "atk": 26, "def": 12, "dodge": 14, "speed": 15,
-      "money": 80, "hostile": false, "favorBase": 1, "favorInit": 9,
-      "carry": { "money": 30, "items": [] },
-      "schedule": { "day": "changan_gate", "night": "changan_inn" },
-      "tier": "B", "district": "changan", "homeless": true,
-      "quests": ["sq_pre_line_orth"],
+      "talk": [
+        "公文有公文的走法，私信有私信的。",
+        "这趟我跑了六天。"
+      ],
+      "age": 29,
+      "likes": [
+        "silver"
+      ],
+      "level": 11,
+      "hp": 210,
+      "atk": 26,
+      "def": 12,
+      "dodge": 14,
+      "speed": 15,
+      "money": 80,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 9,
+      "carry": {
+        "money": 30,
+        "items": []
+      },
+      "schedule": {
+        "day": "changan_gate",
+        "night": "changan_inn"
+      },
+      "tier": "B",
+      "district": "changan",
+      "homeless": true,
+      "quests": [
+        "sq_pre_line_orth"
+      ],
       "portrait": {
-        "v": 1, "tier": "B", "lock": false,
+        "v": 1,
+        "tier": "B",
+        "lock": false,
         "role": "长安驿站的驿卒，六天一趟，专跑往京里去的线",
         "origin": "他是顶了他爹的缺，他爹跑到跑不动为止。",
         "now": "他这趟的驿袋比往常沉，多出一封没处投的信。",
         "want": "把这个缺顶到他自己不想顶",
         "fear": "怕信送到不该到的人手里",
-        "voice": { "tone": "讷", "catchphrase": "这趟我跑了六天。" },
-        "routine": [{ "at": "day", "act": "把驿袋往肩上一甩，出城门" }],
-        "arc": { "init": "只递东西，不递话。", "warm": "会替你把名字念一遍。" },
-        "marks": ["消息", "官"]
+        "voice": {
+          "tone": "讷",
+          "catchphrase": "这趟我跑了六天。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "把驿袋往肩上一甩，出城门"
+          }
+        ],
+        "arc": {
+          "init": "只递东西，不递话。",
+          "warm": "会替你把名字念一遍。"
+        },
+        "marks": [
+          "消息",
+          "官"
+        ]
       }
     },
-
     "cy_pre_usurer": {
-      "id": "cy_pre_usurer", "name": "贾二", "gender": "male", "tag": "merchant", "title": "放债的",
-      "room": "chengdu_market", "home": "house:cy_pre_usurer", "personality": "youhua",
+      "id": "cy_pre_usurer",
+      "name": "贾二",
+      "gender": "male",
+      "tag": "merchant",
+      "title": "放债的",
+      "room": "chengdu_market",
+      "home": "house:cy_pre_usurer",
+      "personality": "youhua",
       "desc": "右手小指缺了一截。他数钱的时候，缺的那截在桌上敲。",
-      "talk": ["借多少？拿什么抵？", "利息按日算，按日。"],
-      "age": 41, "likes": ["silver"], "level": 14, "hp": 280, "atk": 36, "def": 16, "dodge": 13, "speed": 13,
-      "money": 640, "hostile": false, "favorBase": 0, "favorInit": 3,
-      "carry": { "money": 320, "items": [] },
-      "schedule": { "day": "chengdu_market", "night": "chengdu_brothel" },
-      "tier": "B", "district": "chengdu", "homeless": true,
-      "quests": ["sq_pre_line_out"],
+      "talk": [
+        "借多少？拿什么抵？",
+        "利息按日算，按日。"
+      ],
+      "age": 41,
+      "likes": [
+        "silver"
+      ],
+      "level": 14,
+      "hp": 280,
+      "atk": 36,
+      "def": 16,
+      "dodge": 13,
+      "speed": 13,
+      "money": 640,
+      "hostile": false,
+      "favorBase": 0,
+      "favorInit": 3,
+      "carry": {
+        "money": 320,
+        "items": []
+      },
+      "schedule": {
+        "day": "chengdu_market",
+        "night": "chengdu_brothel"
+      },
+      "tier": "B",
+      "district": "chengdu",
+      "homeless": true,
+      "quests": [
+        "sq_pre_line_out"
+      ],
       "portrait": {
-        "v": 1, "tier": "B", "lock": false,
+        "v": 1,
+        "tier": "B",
+        "lock": false,
         "role": "成都马市后头放债的，账本比人还厚",
         "origin": "他小时候替人送过一封信，那封信换了他一截手指。",
         "now": "有一笔旧账，他其实不想收回来。",
         "want": "把那笔账挂在那儿，让欠的人一直记着",
         "fear": "怕有人拿钱来把它一次结清",
-        "voice": { "tone": "酸", "catchphrase": "利息按日算。" },
-        "routine": [{ "at": "day", "act": "在马市边上摆一张矮桌，摊开账本" }],
-        "arc": { "init": "把你当一笔可能的生意。", "warm": "会把账本翻到不给人看的那一页。" },
-        "marks": ["债", "商"]
+        "voice": {
+          "tone": "酸",
+          "catchphrase": "利息按日算。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在马市边上摆一张矮桌，摊开账本"
+          }
+        ],
+        "arc": {
+          "init": "把你当一笔可能的生意。",
+          "warm": "会把账本翻到不给人看的那一页。"
+        },
+        "marks": [
+          "债",
+          "商"
+        ]
       }
     },
-
     "cy_pre_interpreter": {
-      "id": "cy_pre_interpreter", "name": "褚平", "gender": "male", "tag": "official", "title": "鸿胪寺通事",
-      "room": "palace_street", "home": "house:cy_pre_interpreter", "personality": "wenwan",
+      "id": "cy_pre_interpreter",
+      "name": "褚平",
+      "gender": "male",
+      "tag": "official",
+      "title": "鸿胪寺通事",
+      "room": "palace_street",
+      "home": "house:cy_pre_interpreter",
+      "personality": "wenwan",
       "desc": "衣裳是浆过的，袖口却磨白了。他说话每个字都放得很正。",
-      "talk": ["宫里的话，一个字都不能错。", "你若要进那道门，先想清楚进去做什么。"],
-      "age": 38, "likes": ["book"], "level": 16, "hp": 300, "atk": 38, "def": 18, "dodge": 15, "speed": 14,
-      "money": 340, "hostile": false, "favorBase": 1, "favorInit": 8,
-      "carry": { "money": 120, "items": [] },
-      "schedule": { "day": "palace_street", "night": "palace_street" },
-      "tier": "B", "district": "jiangnan", "homeless": true,
-      "quests": ["sq_pre_court_tongshi"],
+      "talk": [
+        "宫里的话，一个字都不能错。",
+        "你若要进那道门，先想清楚进去做什么。"
+      ],
+      "age": 38,
+      "likes": [
+        "book"
+      ],
+      "level": 16,
+      "hp": 300,
+      "atk": 38,
+      "def": 18,
+      "dodge": 15,
+      "speed": 14,
+      "money": 340,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 8,
+      "carry": {
+        "money": 120,
+        "items": []
+      },
+      "schedule": {
+        "day": "palace_street",
+        "night": "palace_street"
+      },
+      "tier": "B",
+      "district": "jiangnan",
+      "homeless": true,
+      "quests": [
+        "sq_pre_court_tongshi"
+      ],
       "portrait": {
-        "v": 1, "tier": "B", "lock": false,
+        "v": 1,
+        "tier": "B",
+        "lock": false,
         "role": "鸿胪寺的通事，替宫里译外邦的话、也替外邦译宫里的话",
         "origin": "他是靠一手好字被选进来的，家里没人做过官。",
         "now": "他抄东西抄完，总要把笔搁下，再从头看一遍。",
         "want": "把该说清楚的都说清楚，别的不管",
         "fear": "怕自己译错的那一次，早就过去了",
-        "voice": { "tone": "谦", "catchphrase": "一个字都不能错。" },
-        "routine": [{ "at": "day", "act": "在御街上核对一叠文书的抄本" }],
-        "arc": { "init": "只讲规矩。", "warm": "会告诉你哪句话别当着人说。" },
-        "marks": ["官", "消息"]
+        "voice": {
+          "tone": "谦",
+          "catchphrase": "一个字都不能错。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在御街上核对一叠文书的抄本"
+          }
+        ],
+        "arc": {
+          "init": "只讲规矩。",
+          "warm": "会告诉你哪句话别当着人说。"
+        },
+        "marks": [
+          "官",
+          "消息"
+        ]
       }
     },
-
     "cy_pre_jailer": {
-      "id": "cy_pre_jailer", "name": "韦头", "gender": "male", "tag": "official", "title": "老狱卒",
-      "room": "jn_yamen_prison", "home": "house:cy_pre_jailer", "personality": "mune",
-      "desc": "腰上挂着一串钥匙，走路的时候不响——他用手按着。",
-      "talk": ["探监要递单子。", "里头的人，多半就没指望出去了。"],
-      "age": 57, "likes": ["wine"], "level": 13, "hp": 250, "atk": 32, "def": 15, "dodge": 11, "speed": 10,
-      "money": 140, "hostile": false, "favorBase": 1, "favorInit": 7,
-      "carry": { "money": 50, "items": [] },
-      "schedule": { "day": "jn_yamen_prison", "night": "jn_yamen_prison" },
-      "tier": "B", "district": "yamen", "homeless": true,
-      "quests": ["sq_pre_court_laoyu"],
+      "id": "cy_pre_jailer",
+      "name": "韦头",
+      "gender": "male",
+      "tag": "official",
+      "title": "老狱卒",
+      "room": "jn_yamen_prison",
+      "home": "house:cy_pre_jailer",
+      "personality": "mune",
+      "desc": "腰上挂着一串钥匙，走路的时候不响。他用手按着。",
+      "talk": [
+        "探监要递单子。",
+        "里头的人，多半就没指望出去了。"
+      ],
+      "age": 57,
+      "likes": [
+        "wine"
+      ],
+      "level": 13,
+      "hp": 250,
+      "atk": 32,
+      "def": 15,
+      "dodge": 11,
+      "speed": 10,
+      "money": 140,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 7,
+      "carry": {
+        "money": 50,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_yamen_prison",
+        "night": "jn_yamen_prison"
+      },
+      "tier": "B",
+      "district": "yamen",
+      "homeless": true,
+      "quests": [
+        "sq_pre_court_laoyu"
+      ],
       "portrait": {
-        "v": 1, "tier": "B", "lock": false,
+        "v": 1,
+        "tier": "B",
+        "lock": false,
         "role": "衙门大牢里守了三十年的老狱卒",
         "origin": "他年轻时也押过囚车，押到半路心软过一次，也没人知道。",
         "now": "牢里关着一个不肯说自己名字的人。",
         "want": "在这儿站到告老，不出错",
         "fear": "怕再遇上一次要他心软的人",
-        "voice": { "tone": "讷", "catchphrase": "探监要递单子。" },
-        "routine": [{ "at": "day", "act": "按着腰上那串钥匙在廊下走一圈" }],
-        "arc": { "init": "公事公办。", "warm": "会多让你站一会儿。" },
-        "marks": ["官"]
+        "voice": {
+          "tone": "讷",
+          "catchphrase": "探监要递单子。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "按着腰上那串钥匙在廊下走一圈"
+          }
+        ],
+        "arc": {
+          "init": "公事公办。",
+          "warm": "会多让你站一会儿。"
+        },
+        "marks": [
+          "官"
+        ]
       }
     },
-
     "court_justice": {
-      "id": "court_justice", "name": "崔明远", "gender": "male", "tag": "official", "title": "大理寺卿",
-      "room": "jn_yamen_court", "home": "house:court_justice", "personality": "lengmo",
+      "id": "court_justice",
+      "name": "崔明远",
+      "gender": "male",
+      "tag": "official",
+      "title": "大理寺卿",
+      "room": "jn_yamen_court",
+      "home": "house:court_justice",
+      "personality": "lengmo",
       "desc": "袍子是半旧的，靴子却擦得很亮。他看案卷的时候，手指按在字上，一行一行挪。",
-      "talk": ["卷宗上写的，不一定是实情。", "你有话就说，说完我自会去问。"],
-      "age": 52, "likes": ["book"], "level": 24, "hp": 420, "atk": 52, "def": 26, "dodge": 20, "speed": 15,
-      "money": 480, "hostile": false, "favorBase": 1, "favorInit": 6,
-      "carry": { "money": 180, "items": [] },
-      "schedule": { "day": "jn_yamen_court", "night": "jn_yamen_office" },
-      "tier": "B", "district": "yamen", "homeless": true,
-      "quests": ["sq_pre_court_tongshi"],
+      "talk": [
+        "卷宗上写的，不一定是实情。",
+        "你有话就说，说完我自会去问。"
+      ],
+      "age": 52,
+      "likes": [
+        "book"
+      ],
+      "level": 24,
+      "hp": 420,
+      "atk": 52,
+      "def": 26,
+      "dodge": 20,
+      "speed": 15,
+      "money": 480,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 6,
+      "carry": {
+        "money": 180,
+        "items": []
+      },
+      "schedule": {
+        "day": "jn_yamen_court",
+        "night": "jn_yamen_office"
+      },
+      "tier": "B",
+      "district": "yamen",
+      "homeless": true,
+      "quests": [
+        "sq_pre_court_tongshi"
+      ],
       "portrait": {
-        "v": 1, "tier": "B", "lock": false,
+        "v": 1,
+        "tier": "B",
+        "lock": false,
         "role": "大理寺卿，掌天下刑名，堂上坐着的那一位",
         "origin": "他中过进士，外放过两任，回来的时候头发白了半边。",
         "now": "堂上那卷宗摆了三个月。他每天翻一次，翻完照原样合上。",
         "want": "把这桩案子的第一句话找出来",
         "fear": "怕翻了案，底下的人早就散光了",
-        "voice": { "tone": "冷", "catchphrase": "卷宗上写的，不一定是实情。" },
-        "routine": [{ "at": "day", "act": "在堂上翻卷宗，一行一行用手指按过去" }],
-        "arc": { "init": "只问你答得上来的话。", "warm": "会把卷宗推到你面前。" },
-        "marks": ["官"]
+        "voice": {
+          "tone": "冷",
+          "catchphrase": "卷宗上写的，不一定是实情。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在堂上翻卷宗，一行一行用手指按过去"
+          }
+        ],
+        "arc": {
+          "init": "只问你答得上来的话。",
+          "warm": "会把卷宗推到你面前。"
+        },
+        "marks": [
+          "官"
+        ]
       }
     },
-
     "court_dowager": {
-      "id": "court_dowager", "name": "慈安太后", "gender": "female", "tag": "royal", "title": "太后",
-      "room": "palace_harem", "home": "house:court_dowager", "personality": "wenwan",
+      "id": "court_dowager",
+      "name": "慈安太后",
+      "gender": "female",
+      "tag": "royal",
+      "title": "太后",
+      "room": "palace_harem",
+      "home": "house:court_dowager",
+      "personality": "wenwan",
       "desc": "手里捻着一串珠子，捻得很慢。她看人的时候，眼睛先看手。",
-      "talk": ["宫里的规矩，比外头想的松，也比外头想的紧。", "你从外头来，外头如今是什么光景？"],
-      "age": 49, "likes": ["incense"], "level": 8, "hp": 160, "atk": 10, "def": 30, "dodge": 10, "speed": 10,
-      "money": 2000, "hostile": false, "favorBase": 1, "favorInit": 5,
-      "carry": { "money": 600, "items": [] },
-      "schedule": { "day": "palace_harem", "night": "palace_harem" },
-      "tier": "B", "district": "palace", "homeless": true,
+      "talk": [
+        "宫里的规矩，比外头想的松，也比外头想的紧。",
+        "你从外头来，外头如今是什么光景？"
+      ],
+      "age": 49,
+      "likes": [
+        "incense"
+      ],
+      "level": 8,
+      "hp": 160,
+      "atk": 10,
+      "def": 30,
+      "dodge": 10,
+      "speed": 10,
+      "money": 2000,
+      "hostile": false,
+      "favorBase": 1,
+      "favorInit": 5,
+      "carry": {
+        "money": 600,
+        "items": []
+      },
+      "schedule": {
+        "day": "palace_harem",
+        "night": "palace_harem"
+      },
+      "tier": "B",
+      "district": "palace",
+      "homeless": true,
       "portrait": {
-        "v": 1, "tier": "B", "lock": false,
+        "v": 1,
+        "tier": "B",
+        "lock": false,
         "role": "后宫之主，宫里的事她说一半，另一半不必说",
         "origin": "她十六岁进宫，从最低的位份熬上来，熬走了三拨人。",
         "now": "近来前朝的事，传到她耳朵里的时候总是慢一步。",
         "want": "让宫里这两个孩子都别出事",
         "fear": "怕自己慢的那一步，慢在一次祸事上",
-        "voice": { "tone": "敬", "catchphrase": "外头如今是什么光景？" },
-        "routine": [{ "at": "day", "act": "坐在窗前捻珠子，听着院里的动静" }],
-        "arc": { "init": "客气，但那客气有一层壳。", "warm": "会让身边的宫女给你引路。" },
-        "marks": ["官"]
+        "voice": {
+          "tone": "敬",
+          "catchphrase": "外头如今是什么光景？"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在窗前捻珠子，听着院里的动静"
+          }
+        ],
+        "arc": {
+          "init": "客气，但那客气有一层壳。",
+          "warm": "会让身边的宫女给你引路。"
+        },
+        "marks": [
+          "官"
+        ]
       }
     },
-
     "court_emperor": {
-      "id": "court_emperor", "name": "当朝天子", "gender": "male", "tag": "royal", "title": "天子",
-      "room": "palace_hall", "home": "house:court_emperor", "personality": "lengmo",
+      "id": "court_emperor",
+      "name": "当朝天子",
+      "gender": "male",
+      "tag": "royal",
+      "title": "天子",
+      "room": "palace_hall",
+      "home": "house:court_emperor",
+      "personality": "lengmo",
       "desc": "坐得很高，殿里却静得能听见更漏。他说话不看人，看殿门。",
-      "talk": ["江湖的事，朕听得比你想的多。", "你说一句真话，朕许你再说一句。"],
-      "age": 33, "likes": ["incense"], "level": 30, "hp": 560, "atk": 60, "def": 40, "dodge": 20, "speed": 16,
-      "money": 9000, "hostile": false, "favorBase": 0, "favorInit": 2,
-      "carry": { "money": 2000, "items": [] },
-      "schedule": { "day": "palace_hall", "night": "palace_study" },
-      "tier": "B", "district": "palace", "homeless": true,
+      "talk": [
+        "江湖的事，朕听得比你想的多。",
+        "你说一句真话，朕许你再说一句。"
+      ],
+      "age": 33,
+      "likes": [
+        "incense"
+      ],
+      "level": 30,
+      "hp": 560,
+      "atk": 60,
+      "def": 40,
+      "dodge": 20,
+      "speed": 16,
+      "money": 9000,
+      "hostile": false,
+      "favorBase": 0,
+      "favorInit": 2,
+      "carry": {
+        "money": 2000,
+        "items": []
+      },
+      "schedule": {
+        "day": "palace_hall",
+        "night": "palace_study"
+      },
+      "tier": "B",
+      "district": "palace",
+      "homeless": true,
       "portrait": {
-        "v": 1, "tier": "B", "lock": false,
+        "v": 1,
+        "tier": "B",
+        "lock": false,
         "role": "当朝天子，坐在太和殿上，隔着九级台阶看人",
         "origin": "他是先帝最小的儿子，坐到这个位子上，自己也没料到。",
         "now": "他把一件事压了三年，压到今天还没问出口。",
         "want": "找一个人，说一件不能写在折子上的事",
         "fear": "怕问出来的答案，正是自己猜的那个",
-        "voice": { "tone": "傲", "catchphrase": "你说一句真话。" },
-        "routine": [{ "at": "day", "act": "坐在殿上听人奏事，眼睛落在殿门外" }],
-        "arc": { "init": "把你当奏折上的一行。", "warm": "会从座上下来一步。" },
-        "marks": ["官"]
+        "voice": {
+          "tone": "傲",
+          "catchphrase": "你说一句真话。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "坐在殿上听人奏事，眼睛落在殿门外"
+          }
+        ],
+        "arc": {
+          "init": "把你当奏折上的一行。",
+          "warm": "会从座上下来一步。"
+        },
+        "marks": [
+          "官"
+        ]
       }
     },
-
     "neu_zhanggui": {
-      "id": "neu_zhanggui", "name": "高四", "gender": "male", "tag": "merchant", "title": "货栈掌柜",
-      "room": "luoyang_market", "home": "house:neu_zhanggui", "personality": "youhua",
+      "id": "neu_zhanggui",
+      "name": "高四",
+      "gender": "male",
+      "tag": "merchant",
+      "title": "货栈掌柜",
+      "room": "luoyang_market",
+      "home": "house:neu_zhanggui",
+      "personality": "youhua",
       "desc": "袖子里揣着算盘。他跟人搭话之前，先看一眼你身上的行头值几文。",
-      "talk": ["有货就有路，没货就站着。", "我跟谁都能做买卖，也随时能不做。"],
-      "age": 43, "likes": ["silver"], "level": 15, "hp": 260, "atk": 34, "def": 15, "dodge": 14, "speed": 13,
-      "money": 700, "hostile": false, "favorBase": 2, "favorInit": 9,
-      "carry": { "money": 300, "items": [] },
-      "schedule": { "day": "luoyang_market", "night": "luoyang_inn" },
-      "tier": "B", "district": "luoyang", "homeless": true,
-      "quests": ["sq_pre_line_neu"],
+      "talk": [
+        "有货就有路，没货就站着。",
+        "我跟谁都能做买卖，也随时能不做。"
+      ],
+      "age": 43,
+      "likes": [
+        "silver"
+      ],
+      "level": 15,
+      "hp": 260,
+      "atk": 34,
+      "def": 15,
+      "dodge": 14,
+      "speed": 13,
+      "money": 700,
+      "hostile": false,
+      "favorBase": 2,
+      "favorInit": 9,
+      "carry": {
+        "money": 300,
+        "items": []
+      },
+      "schedule": {
+        "day": "luoyang_market",
+        "night": "luoyang_inn"
+      },
+      "tier": "B",
+      "district": "luoyang",
+      "homeless": true,
+      "quests": [
+        "sq_pre_line_neu"
+      ],
       "portrait": {
-        "v": 1, "tier": "B", "lock": false,
+        "v": 1,
+        "tier": "B",
+        "lock": false,
         "role": "洛阳马市后街的货栈掌柜，南来北往的货都过他手",
         "origin": "他十四岁替人押车，押丢了一车货，那趟之后他就再没替人押过。",
         "now": "有车货压在他手里。货主连自己姓什么都没说。",
         "want": "把这车货出手，又不问来路",
         "fear": "怕这车货最后找上的是自己",
-        "voice": { "tone": "油", "catchphrase": "有货就有路。" },
-        "routine": [{ "at": "day", "act": "在货栈门口对单子，算盘在袖子里响" }],
-        "arc": { "init": "先看你值不值得搭话。", "warm": "会给你留一句实价。" },
-        "marks": ["商", "货"]
+        "voice": {
+          "tone": "油",
+          "catchphrase": "有货就有路。"
+        },
+        "routine": [
+          {
+            "at": "day",
+            "act": "在货栈门口对单子，算盘在袖子里响"
+          }
+        ],
+        "arc": {
+          "init": "先看你值不值得搭话。",
+          "warm": "会给你留一句实价。"
+        },
+        "marks": [
+          "商",
+          "货"
+        ]
       }
     }
   },
-
   "quests": {
     "sq_pre_a1_chuan": {
-      "id": "sq_pre_a1_chuan", "name": "茶摊那壶凉的", "type": "支线",
-      "npc": "cy_pre_teaman", "giver": "cy_pre_teaman", "level": 1,
+      "id": "sq_pre_a1_chuan",
+      "name": "茶摊那壶凉的",
+      "type": "支线",
+      "npc": "cy_pre_teaman",
+      "giver": "cy_pre_teaman",
+      "level": 1,
       "desc": "道口茶摊的老周收了半车茶叶，拆开一看，底下的受了潮。他不肯说是从谁手里收的。",
       "stages": [
         {
           "desc": "去江南城的茶市，看那半车茶叶",
-          "targets": [{ "id": "go0", "kind": "room", "key": "jiangnan_market", "count": 1, "var": "sq_pre_a1_chuan_go0", "desc": "去江南城的茶市，看那半车茶叶" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jiangnan_market",
+              "count": 1,
+              "var": "sq_pre_a1_chuan_go0",
+              "desc": "去江南城的茶市，看那半车茶叶"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "车还停在茶市口，麻袋码得整齐。翻到底下三袋，绳子一解，土腥味就上来了。袋子底下印着一个字号，被人用炭抹过。" },
-            { "type": "say", "raw": "管茶市的老伙计看了一眼那字号，把头别开了。「这家的货，今年来三回了。」" }
+            {
+              "type": "narrate",
+              "raw": "车还停在茶市口，麻袋码得整齐。翻到底下三袋，绳子一解，土腥味就上来了。袋子底下印着一个字号，被人用炭抹过。"
+            },
+            {
+              "type": "say",
+              "raw": "管茶市的老伙计看了一眼那字号，把头别开了。「这家的货，今年来三回了。」"
+            }
           ]
         },
         {
           "desc": "回道口，把看到的说给老周",
-          "targets": [{ "id": "go1", "kind": "room", "key": "road_jiangnan_1", "count": 1, "var": "sq_pre_a1_chuan_go1", "desc": "回道口，把看到的说给老周" }],
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "road_jiangnan_1",
+              "count": 1,
+              "var": "sq_pre_a1_chuan_go1",
+              "desc": "回道口，把看到的说给老周"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "老周听完，蹲下去把灶门里的柴拨了拨。火苗窜起来，照亮了他手背那块疤。" },
-            { "type": "say", "raw": "「字号我认得。三年前他坑过我一回，我去找过他。他没认。」" },
-            { "type": "menu", "raw": "那半车茶|陪老周走一趟，把话当面说开>flag:pre_a1_chuan;+exp:120;+money:60;+karma:10;favor:cy_pre_teaman:25;incvar:favor_cy_pre_teaman:25;;茶钱他赔得起，别为一个字号结仇>flag:pre_a1_chuan;+exp:90;+money:40;favor:cy_pre_teaman:12;incvar:favor_cy_pre_teaman:12" }
+            {
+              "type": "narrate",
+              "raw": "老周听完，蹲下去把灶门里的柴拨了拨。火苗窜起来，照亮了他手背那块疤。"
+            },
+            {
+              "type": "say",
+              "raw": "「字号我认得。三年前他坑过我一回，我去找过他。他没认。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那半车茶|陪老周走一趟，把话当面说开>flag:pre_a1_chuan;+exp:120;+money:60;+karma:10;favor:cy_pre_teaman:25;incvar:favor_cy_pre_teaman:25;;茶钱他赔得起，别为一个字号结仇>flag:pre_a1_chuan;+exp:90;+money:40;favor:cy_pre_teaman:12;incvar:favor_cy_pre_teaman:12"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "flag", "args": ["pre_a1_chuan"] },
-        { "type": "+exp", "args": [180] },
-        { "type": "+money", "args": [70] },
-        { "type": "favor", "args": ["cy_pre_teaman", 15] },
-        { "type": "say", "raw": "老周给你续了一碗，比先前那碗浓。「路上留神。」" }
+        {
+          "type": "flag",
+          "args": [
+            "pre_a1_chuan"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            70
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "cy_pre_teaman",
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "老周给你续了一碗，比先前那碗浓。「路上留神。」"
+        }
       ]
     },
-
     "sq_pre_a1_shi": {
-      "id": "sq_pre_a1_shi", "name": "书坊的一版残页", "type": "支线",
-      "npc": "cy_pre_bookseller", "giver": "cy_pre_bookseller", "level": 2,
+      "id": "sq_pre_a1_shi",
+      "name": "书坊的一版残页",
+      "type": "支线",
+      "npc": "cy_pre_bookseller",
+      "giver": "cy_pre_bookseller",
+      "level": 2,
       "desc": "温掌柜手里有一副老版，缺了一页。缺的那页上是个地名，他翻遍了书坊也认不出。",
       "stages": [
         {
           "desc": "去江南城的天宁寺，问一册旧藏",
-          "targets": [{ "id": "go0", "kind": "room", "key": "jiangnan_temple", "count": 1, "var": "sq_pre_a1_shi_go0", "desc": "去江南城的天宁寺，问一册旧藏" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jiangnan_temple",
+              "count": 1,
+              "var": "sq_pre_a1_shi_go0",
+              "desc": "去江南城的天宁寺，问一册旧藏"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "藏经的柜子在偏殿后头，管钥匙的僧人翻了很久，翻出一册同版的，纸色发黄，边角被翻烂了。" },
-            { "type": "say", "raw": "「同一个版子印的。你看这一页——有人把那个字抠掉了，抠得干干净净。」" }
+            {
+              "type": "narrate",
+              "raw": "藏经的柜子在偏殿后头，管钥匙的僧人翻了很久，翻出一册同版的，纸色发黄，边角被翻烂了。"
+            },
+            {
+              "type": "say",
+              "raw": "「同一个版子印的。你看这一页。有人把那个字抠掉了，抠得干干净净。」"
+            }
           ]
         },
         {
           "desc": "回书坊，把这一页说给温掌柜",
-          "targets": [{ "id": "go1", "kind": "room", "key": "jiangnan_street", "count": 1, "var": "sq_pre_a1_shi_go1", "desc": "回书坊，把这一页说给温掌柜" }],
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "jiangnan_street",
+              "count": 1,
+              "var": "sq_pre_a1_shi_go1",
+              "desc": "回书坊，把这一页说给温掌柜"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "温掌柜把两本书并排放在柜台上，手指在那个空洞上停了一下。" },
-            { "type": "say", "raw": "「抠字的人，是想让后头的人认不出这个地方。」他把书合上，「这书我爹刻的。」" },
-            { "type": "menu", "raw": "那页残版|帮他照旧藏的字补刻一版>flag:pre_a1_shi;+exp:150;+money:80;favor:cy_pre_bookseller:25;incvar:favor_cy_pre_bookseller:25;;这是别人的旧账，别掺和>flag:pre_a1_shi;+exp:80;+money:30;favor:cy_pre_bookseller:10;incvar:favor_cy_pre_bookseller:10" }
+            {
+              "type": "narrate",
+              "raw": "温掌柜把两本书并排放在柜台上，手指在那个空洞上停了一下。"
+            },
+            {
+              "type": "say",
+              "raw": "「抠字的人，是想让后头的人认不出这个地方。」他把书合上，「这书我爹刻的。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那页残版|帮他照旧藏的字补刻一版>flag:pre_a1_shi;+exp:150;+money:80;favor:cy_pre_bookseller:25;incvar:favor_cy_pre_bookseller:25;;这是别人的旧账，别掺和>flag:pre_a1_shi;+exp:80;+money:30;favor:cy_pre_bookseller:10;incvar:favor_cy_pre_bookseller:10"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "flag", "args": ["pre_a1_shi"] },
-        { "type": "+exp", "args": [200] },
-        { "type": "+money", "args": [90] },
-        { "type": "favor", "args": ["cy_pre_bookseller", 15] },
-        { "type": "say", "raw": "他从里屋拿了一本不肯外借的，塞给你。「翻坏了别还我。」" }
+        {
+          "type": "flag",
+          "args": [
+            "pre_a1_shi"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            200
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            90
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "cy_pre_bookseller",
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "他从里屋拿了一本不肯外借的，塞给你。「翻坏了别还我。」"
+        }
       ]
     },
-
     "sq_pre_a1_yao": {
-      "id": "sq_pre_a1_yao", "name": "药圃的虫", "type": "支线",
-      "npc": "cy_pre_herbalist", "giver": "cy_pre_herbalist", "level": 3,
+      "id": "sq_pre_a1_yao",
+      "name": "药圃的虫",
+      "type": "支线",
+      "npc": "cy_pre_herbalist",
+      "giver": "cy_pre_herbalist",
+      "level": 3,
       "desc": "柳婆婆的黄芪起了虫。她说是虫，可垄边的土被翻过，翻的痕迹不是野物干的。",
       "stages": [
         {
           "desc": "去江南城的后山，看那几垄移栽的药",
-          "targets": [{ "id": "go0", "kind": "room", "key": "jiangnan_hill", "count": 1, "var": "sq_pre_a1_yao_go0", "desc": "去江南城的后山，看那几垄移栽的药" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jiangnan_hill",
+              "count": 1,
+              "var": "sq_pre_a1_yao_go0",
+              "desc": "去江南城的后山，看那几垄移栽的药"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "坡上那几垄药长得比圃里的好。垄头有一行脚印，踩得很深，是踩在一个地方不动才踩出来的。" },
-            { "type": "say", "raw": "看山的老人蹲下来比了比自己的脚。「有人夜里来浇过水。浇的是好水。」" }
+            {
+              "type": "narrate",
+              "raw": "坡上那几垄药长得比圃里的好。垄头有一行脚印，踩得很深，是踩在一个地方不动才踩出来的。"
+            },
+            {
+              "type": "say",
+              "raw": "看山的老人蹲下来比了比自己的脚。「有人夜里来浇过水。浇的是好水。」"
+            }
           ]
         },
         {
           "desc": "回药圃，把这话说给柳婆婆",
-          "targets": [{ "id": "go1", "kind": "room", "key": "jn_pharmacy_back", "count": 1, "var": "sq_pre_a1_yao_go1", "desc": "回药圃，把这话说给柳婆婆" }],
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "jn_pharmacy_back",
+              "count": 1,
+              "var": "sq_pre_a1_yao_go1",
+              "desc": "回药圃，把这话说给柳婆婆"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "柳婆婆站在垄边，把一棵起虫的拔出来，根上的土抖了两下。" },
-            { "type": "say", "raw": "「虫是我借着说的。」她把药秧扔进筐里，「坡上那几垄，是我替人种的。种了两年，人没来过。」" },
-            { "type": "menu", "raw": "坡上那几垄|替她看着，等人来>flag:pre_a1_yao;+exp:140;+money:50;+karma:15;favor:cy_pre_herbalist:28;incvar:favor_cy_pre_herbalist:28;;把垄铲了，省得惦记>flag:pre_a1_yao;+exp:110;+money:60;+karma:-8;favor:cy_pre_herbalist:-15;incvar:favor_cy_pre_herbalist:-15" }
+            {
+              "type": "narrate",
+              "raw": "柳婆婆站在垄边，把一棵起虫的拔出来，根上的土抖了两下。"
+            },
+            {
+              "type": "say",
+              "raw": "「虫是我借着说的。」她把药秧扔进筐里，「坡上那几垄，是我替人种的。种了两年，人没来过。」"
+            },
+            {
+              "type": "menu",
+              "raw": "坡上那几垄|替她看着，等人来>flag:pre_a1_yao;+exp:140;+money:50;+karma:15;favor:cy_pre_herbalist:28;incvar:favor_cy_pre_herbalist:28;;把垄铲了，省得惦记>flag:pre_a1_yao;+exp:110;+money:60;+karma:-8;favor:cy_pre_herbalist:-15;incvar:favor_cy_pre_herbalist:-15"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "flag", "args": ["pre_a1_yao"] },
-        { "type": "+exp", "args": [220] },
-        { "type": "+money", "args": [60] },
-        { "type": "favor", "args": ["cy_pre_herbalist", 15] },
-        { "type": "say", "raw": "她塞给你一小包晒好的东西，用旧纸包着。「跌打用。」" }
+        {
+          "type": "flag",
+          "args": [
+            "pre_a1_yao"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            220
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "cy_pre_herbalist",
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "她塞给你一小包晒好的东西，用旧纸包着。「跌打用。」"
+        }
       ]
     },
-
     "sq_pre_a2_menfang": {
-      "id": "sq_pre_a2_menfang", "name": "门房的更漏", "type": "支线",
-      "npc": "cy_pre_doorkeeper", "giver": "cy_pre_doorkeeper", "level": 8,
-      "require": { "flag": "know_east_depot" },
+      "id": "sq_pre_a2_menfang",
+      "name": "门房的更漏",
+      "type": "支线",
+      "npc": "cy_pre_doorkeeper",
+      "giver": "cy_pre_doorkeeper",
+      "level": 8,
+      "require": {
+        "flag": "know_east_depot"
+      },
       "desc": "老张的更漏走得慢了一刻。他说是沙子潮了，可城门落闸的时辰一分都没改。",
       "stages": [
         {
           "desc": "去江南城的茶市，问一句换更的事",
-          "targets": [{ "id": "go0", "kind": "room", "key": "jiangnan_market", "count": 1, "var": "sq_pre_a2_menfang_go0", "desc": "去江南城的茶市，问一句换更的事" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jiangnan_market",
+              "count": 1,
+              "var": "sq_pre_a2_menfang_go0",
+              "desc": "去江南城的茶市，问一句换更的事"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "茶市的老伙计把更漏抬出来看了一眼，又抬回去。他手上的动作很熟，显然看过很多回。" },
-            { "type": "say", "raw": "「这漏是新换的。旧的漏水，报上去了三回，前阵子才批下来。」" }
+            {
+              "type": "narrate",
+              "raw": "茶市的老伙计把更漏抬出来看了一眼，又抬回去。他手上的动作很熟，显然看过很多回。"
+            },
+            {
+              "type": "say",
+              "raw": "「这漏是新换的。旧的漏水，报上去了三回，前阵子才批下来。」"
+            }
           ]
         },
         {
           "desc": "回城门，把更漏的来路告诉老张",
-          "targets": [{ "id": "go1", "kind": "room", "key": "jiangnan_gate", "count": 1, "var": "sq_pre_a2_menfang_go1", "desc": "回城门，把更漏的来路告诉老张" }],
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "jiangnan_gate",
+              "count": 1,
+              "var": "sq_pre_a2_menfang_go1",
+              "desc": "回城门，把更漏的来路告诉老张"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "老张把更漏翻过来，底座底下刮着一行小字，是造漏的铺子留的。" },
-            { "type": "say", "raw": "「记号不是本地的。」他把漏摆回原处，「前阵子东库的事闹出来，我就觉得这城里有别人的手。」" },
-            { "type": "menu", "raw": "那只更漏|把记号抄下来，往上报>flag:pre_a2_menfang;+exp:260;+money:120;+karma:12;favor:cy_pre_doorkeeper:25;incvar:favor_cy_pre_doorkeeper:25;;记在心里，先不说>flag:pre_a2_menfang;+exp:200;+money:80;favor:cy_pre_doorkeeper:12;incvar:favor_cy_pre_doorkeeper:12" }
+            {
+              "type": "narrate",
+              "raw": "老张把更漏翻过来，底座底下刮着一行小字，是造漏的铺子留的。"
+            },
+            {
+              "type": "say",
+              "raw": "「记号不是本地的。」他把漏摆回原处，「前阵子东库的事闹出来，我就觉得这城里有别人的手。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那只更漏|把记号抄下来，往上报>flag:pre_a2_menfang;+exp:260;+money:120;+karma:12;favor:cy_pre_doorkeeper:25;incvar:favor_cy_pre_doorkeeper:25;;记在心里，先不说>flag:pre_a2_menfang;+exp:200;+money:80;favor:cy_pre_doorkeeper:12;incvar:favor_cy_pre_doorkeeper:12"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "flag", "args": ["pre_a2_menfang"] },
-        { "type": "+exp", "args": [320] },
-        { "type": "+money", "args": [110] },
-        { "type": "favor", "args": ["cy_pre_doorkeeper", 15] },
-        { "type": "say", "raw": "老张给你开了半边门，让你省了排队。「下回走这边。」" }
+        {
+          "type": "flag",
+          "args": [
+            "pre_a2_menfang"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            320
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            110
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "cy_pre_doorkeeper",
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "老张给你开了半边门，让你省了排队。「下回走这边。」"
+        }
       ]
     },
-
     "sq_pre_a3_dangpu": {
-      "id": "sq_pre_a3_dangpu", "name": "当铺那一页", "type": "支线",
-      "npc": "cy_pre_pawn", "giver": "cy_pre_pawn", "level": 14,
-      "require": { "flag": "act2_done" },
+      "id": "sq_pre_a3_dangpu",
+      "name": "当铺那一页",
+      "type": "支线",
+      "npc": "cy_pre_pawn",
+      "giver": "cy_pre_pawn",
+      "level": 14,
+      "require": {
+        "flag": "act2_done"
+      },
       "desc": "焦朝奉手里有一册手抄，当金给得高。当的人不肯留名，只说不许转当。",
       "stages": [
         {
           "desc": "去洛阳的马市，问那一册手抄的纸从哪来",
-          "targets": [{ "id": "go0", "kind": "room", "key": "luoyang_market", "count": 1, "var": "sq_pre_a3_dangpu_go0", "desc": "去洛阳的马市，问那一册手抄的纸从哪来" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "luoyang_market",
+              "count": 1,
+              "var": "sq_pre_a3_dangpu_go0",
+              "desc": "去洛阳的马市，问那一册手抄的纸从哪来"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "卖纸的摊子上摞着几刀，摊主把最底下一刀抽出来，纸边带着一道水渍。" },
-            { "type": "say", "raw": "「这种纸只有一家坊做。前阵子被人包了整整十刀，说是抄经。」" }
+            {
+              "type": "narrate",
+              "raw": "卖纸的摊子上摞着几刀，摊主把最底下一刀抽出来，纸边带着一道水渍。"
+            },
+            {
+              "type": "say",
+              "raw": "「这种纸只有一家坊做。前阵子被人包了整整十刀，说是抄经。」"
+            }
           ]
         },
         {
           "desc": "回当铺，把这话原样说给焦朝奉",
-          "targets": [{ "id": "go1", "kind": "room", "key": "luoyang_lane", "count": 1, "var": "sq_pre_a3_dangpu_go1", "desc": "回当铺，把这话原样说给焦朝奉" }],
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "luoyang_lane",
+              "count": 1,
+              "var": "sq_pre_a3_dangpu_go1",
+              "desc": "回当铺，把这话原样说给焦朝奉"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "焦朝奉把那册手抄从柜台底下拿出来，翻到中间一页。那一页的字跟别处不一样，写得急。" },
-            { "type": "say", "raw": "「抄经的纸，抄出来的是这个。」他把册子推给你看，「我不识字，我只认纸。」" },
-            { "type": "menu", "raw": "那一册手抄|买下来，收着>flag:pre_a3_dangpu;+exp:420;+money:-200;+karma:10;favor:cy_pre_pawn:28;incvar:favor_cy_pre_pawn:28;;照规矩上报，别压在手里>flag:pre_a3_dangpu;+exp:360;+money:150;favor:cy_pre_pawn:15;incvar:favor_cy_pre_pawn:15" }
+            {
+              "type": "narrate",
+              "raw": "焦朝奉把那册手抄从柜台底下拿出来，翻到中间一页。那一页的字跟别处不一样，写得急。"
+            },
+            {
+              "type": "say",
+              "raw": "「抄经的纸，抄出来的是这个。」他把册子推给你看，「我不识字，我只认纸。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那一册手抄|买下来，收着>flag:pre_a3_dangpu;+exp:420;+money:-200;+karma:10;favor:cy_pre_pawn:28;incvar:favor_cy_pre_pawn:28;;照规矩上报，别压在手里>flag:pre_a3_dangpu;+exp:360;+money:150;favor:cy_pre_pawn:15;incvar:favor_cy_pre_pawn:15"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "flag", "args": ["pre_a3_dangpu"] },
-        { "type": "+exp", "args": [500] },
-        { "type": "+money", "args": [160] },
-        { "type": "favor", "args": ["cy_pre_pawn", 15] },
-        { "type": "say", "raw": "焦朝奉把柜台上的绢布收了，第一次正眼看你。「下回来，我给你留个位置坐。」" }
+        {
+          "type": "flag",
+          "args": [
+            "pre_a3_dangpu"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            500
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            160
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "cy_pre_pawn",
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "焦朝奉把柜台上的绢布收了，第一次正眼看你。「下回来，我给你留个位置坐。」"
+        }
       ]
     },
-
     "sq_pre_a3_shufang": {
-      "id": "sq_pre_a3_shufang", "name": "书坊的印", "type": "支线",
-      "npc": "cy_pre_woodblock", "giver": "cy_pre_woodblock", "level": 15,
-      "require": { "flag": "act2_done" },
+      "id": "sq_pre_a3_shufang",
+      "name": "书坊的印",
+      "type": "支线",
+      "npc": "cy_pre_woodblock",
+      "giver": "cy_pre_woodblock",
+      "level": 15,
+      "require": {
+        "flag": "act2_done"
+      },
       "desc": "岑师傅接了一副旧版，让他照着刻新的。刻到一半，他发现原版上有一笔是后加的。",
       "stages": [
         {
           "desc": "去成都的纸市，问那一版原该印多少",
-          "targets": [{ "id": "go0", "kind": "room", "key": "chengdu_market", "count": 1, "var": "sq_pre_a3_shufang_go0", "desc": "去成都的纸市，问那一版原该印多少" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "chengdu_market",
+              "count": 1,
+              "var": "sq_pre_a3_shufang_go0",
+              "desc": "去成都的纸市，问那一版原该印多少"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "纸市的老掌事翻了翻旧账，账上那一行被人拿指甲刮过，只剩个「三」字。" },
-            { "type": "say", "raw": "「三什么，看不出了。刮的人手很稳，是坐在这儿慢慢刮的。」" }
+            {
+              "type": "narrate",
+              "raw": "纸市的老掌事翻了翻旧账，账上那一行被人拿指甲刮过，只剩个「三」字。"
+            },
+            {
+              "type": "say",
+              "raw": "「三什么，看不出了。刮的人手很稳，是坐在这儿慢慢刮的。」"
+            }
           ]
         },
         {
           "desc": "回成都的巷子，把这一行告诉岑师傅",
-          "targets": [{ "id": "go1", "kind": "room", "key": "chengdu_lane", "count": 1, "var": "sq_pre_a3_shufang_go1", "desc": "回成都的巷子，把这一行告诉岑师傅" }],
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "chengdu_lane",
+              "count": 1,
+              "var": "sq_pre_a3_shufang_go1",
+              "desc": "回成都的巷子，把这一行告诉岑师傅"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "岑师傅把刻了一半的版推到你面前。那一笔后加的字，比他刻的深了半分。" },
-            { "type": "say", "raw": "「原版上这一笔是后来补刻的。」他把刀搁下，「补的人想让这句话变成另一句话。」" },
-            { "type": "menu", "raw": "那副刻了一半的版|照原版刻，把那一笔也刻上>flag:pre_a3_shufang;+exp:430;+money:120;+karma:12;favor:cy_pre_woodblock:28;incvar:favor_cy_pre_woodblock:28;;把那一笔改了，照现在的意思刻>flag:pre_a3_shufang;+exp:340;+money:220;favor:cy_pre_woodblock:8;incvar:favor_cy_pre_woodblock:8" }
+            {
+              "type": "narrate",
+              "raw": "岑师傅把刻了一半的版推到你面前。那一笔后加的字，比他刻的深了半分。"
+            },
+            {
+              "type": "say",
+              "raw": "「原版上这一笔是后来补刻的。」他把刀搁下，「补的人想让这句话变成另一句话。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那副刻了一半的版|照原版刻，把那一笔也刻上>flag:pre_a3_shufang;+exp:430;+money:120;+karma:12;favor:cy_pre_woodblock:28;incvar:favor_cy_pre_woodblock:28;;把那一笔改了，照现在的意思刻>flag:pre_a3_shufang;+exp:340;+money:220;favor:cy_pre_woodblock:8;incvar:favor_cy_pre_woodblock:8"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "flag", "args": ["pre_a3_shufang"] },
-        { "type": "+exp", "args": [520] },
-        { "type": "+money", "args": [140] },
-        { "type": "favor", "args": ["cy_pre_woodblock", 15] },
-        { "type": "say", "raw": "岑师傅把手上的活停了一下，这是头一回。「你懂刀。」" }
+        {
+          "type": "flag",
+          "args": [
+            "pre_a3_shufang"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            520
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            140
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "cy_pre_woodblock",
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "岑师傅把手上的活停了一下，这是头一回。「你懂刀。」"
+        }
       ]
     },
-
     "sq_pre_a4_dukou": {
-      "id": "sq_pre_a4_dukou", "name": "渡口那趟船", "type": "支线",
-      "npc": "cy_pre_ferryman", "giver": "cy_pre_ferryman", "level": 20,
-      "require": { "flag": "act3_done" },
+      "id": "sq_pre_a4_dukou",
+      "name": "渡口那趟船",
+      "type": "支线",
+      "npc": "cy_pre_ferryman",
+      "giver": "cy_pre_ferryman",
+      "level": 20,
+      "require": {
+        "flag": "act3_done"
+      },
       "desc": "韩老栓夜里被人叫起来撑过一趟船。天亮回来，船底多了一道划痕。",
       "stages": [
         {
           "desc": "去江南城的城门，问落闸的时辰改没改",
-          "targets": [{ "id": "go0", "kind": "room", "key": "jiangnan_gate", "count": 1, "var": "sq_pre_a4_dukou_go0", "desc": "去江南城的城门，问落闸的时辰改没改" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jiangnan_gate",
+              "count": 1,
+              "var": "sq_pre_a4_dukou_go0",
+              "desc": "去江南城的城门，问落闸的时辰改没改"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "门房里那本进出册子摊开着，有一页的角被撕了，撕口是新的。" },
-            { "type": "say", "raw": "「那一夜有人出城，记的是公事。」看门的人把册子合上，「公事不写名字。」" }
+            {
+              "type": "narrate",
+              "raw": "门房里那本进出册子摊开着，有一页的角被撕了，撕口是新的。"
+            },
+            {
+              "type": "say",
+              "raw": "「那一夜有人出城，记的是公事。」看门的人把册子合上，「公事不写名字。」"
+            }
           ]
         },
         {
           "desc": "回渡口，把册子的事告诉韩老栓",
-          "targets": [{ "id": "go1", "kind": "room", "key": "jiangnan_qiao", "count": 1, "var": "sq_pre_a4_dukou_go1", "desc": "回渡口，把册子的事告诉韩老栓" }],
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "jiangnan_qiao",
+              "count": 1,
+              "var": "sq_pre_a4_dukou_go1",
+              "desc": "回渡口，把册子的事告诉韩老栓"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "韩老栓蹲在船头，把那道划痕摸了一遍。他摸得很慢，像在量什么。" },
-            { "type": "say", "raw": "「撑船的人手上都有数。」他把手在裤子上擦干，「那一船装的是铁。装了多少，我心里有。」" },
-            { "type": "menu", "raw": "那道划痕|陪他再去一趟，看看对岸>flag:pre_a4_dukou;+exp:520;+money:200;+karma:10;favor:cy_pre_ferryman:28;incvar:favor_cy_pre_ferryman:28;;把船底的痕补上，别声张>flag:pre_a4_dukou;+exp:420;+money:260;favor:cy_pre_ferryman:12;incvar:favor_cy_pre_ferryman:12" }
+            {
+              "type": "narrate",
+              "raw": "韩老栓蹲在船头，把那道划痕摸了一遍。他摸得很慢，像在量什么。"
+            },
+            {
+              "type": "say",
+              "raw": "「撑船的人手上都有数。」他把手在裤子上擦干，「那一船装的是铁。装了多少，我心里有。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那道划痕|陪他再去一趟，看看对岸>flag:pre_a4_dukou;+exp:520;+money:200;+karma:10;favor:cy_pre_ferryman:28;incvar:favor_cy_pre_ferryman:28;;把船底的痕补上，别声张>flag:pre_a4_dukou;+exp:420;+money:260;favor:cy_pre_ferryman:12;incvar:favor_cy_pre_ferryman:12"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "flag", "args": ["pre_a4_dukou"] },
-        { "type": "+exp", "args": [620] },
-        { "type": "+money", "args": [190] },
-        { "type": "favor", "args": ["cy_pre_ferryman", 15] },
-        { "type": "say", "raw": "韩老栓摆你过河，一文没要。「下回也这个价。」" }
+        {
+          "type": "flag",
+          "args": [
+            "pre_a4_dukou"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            620
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            190
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "cy_pre_ferryman",
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "韩老栓摆你过河，一文没要。「下回也这个价。」"
+        }
       ]
     },
-
     "sq_pre_a4_qiaofu": {
-      "id": "sq_pre_a4_qiaofu", "name": "挑夫的脚程", "type": "支线",
-      "npc": "cy_pre_carrier", "giver": "cy_pre_carrier", "level": 20,
-      "require": { "flag": "act3_done" },
+      "id": "sq_pre_a4_qiaofu",
+      "name": "挑夫的脚程",
+      "type": "支线",
+      "npc": "cy_pre_carrier",
+      "giver": "cy_pre_carrier",
+      "level": 20,
+      "require": {
+        "flag": "act3_done"
+      },
       "desc": "石三接了一趟不该接的活：把一只木箱从长安挑到城外，不许开、不许问、不许走大路。",
       "stages": [
         {
           "desc": "去长安的后巷，看那趟活交货的地方",
-          "targets": [{ "id": "go0", "kind": "room", "key": "changan_lane", "count": 1, "var": "sq_pre_a4_qiaofu_go0", "desc": "去长安的后巷，看那趟活交货的地方" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "changan_lane",
+              "count": 1,
+              "var": "sq_pre_a4_qiaofu_go0",
+              "desc": "去长安的后巷，看那趟活交货的地方"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "巷子尽头那间空屋，地上有一圈灰印，比木箱大一圈。墙角堆着几条断了的草绳。" },
-            { "type": "say", "raw": "隔壁的老婆子探出头看了一眼，又缩回去。「前阵子夜夜有人搬东西，昨晚忽然不搬了。」" }
+            {
+              "type": "narrate",
+              "raw": "巷子尽头那间空屋，地上有一圈灰印，比木箱大一圈。墙角堆着几条断了的草绳。"
+            },
+            {
+              "type": "say",
+              "raw": "隔壁的老婆子探出头看了一眼，又缩回去。「前阵子夜夜有人搬东西，昨晚忽然不搬了。」"
+            }
           ]
         },
         {
           "desc": "回长安的集市，把空屋的情形说给石三",
-          "targets": [{ "id": "go1", "kind": "room", "key": "changan_market", "count": 1, "var": "sq_pre_a4_qiaofu_go1", "desc": "回长安的集市，把空屋的情形说给石三" }],
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "changan_market",
+              "count": 1,
+              "var": "sq_pre_a4_qiaofu_go1",
+              "desc": "回长安的集市，把空屋的情形说给石三"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "石三把扁担从肩上取下来，往地上一杵。他肩膀上一道红印，比平时深。" },
-            { "type": "say", "raw": "「那口箱子压手，里头不是空的。」他看了看四周，「他们搬完了，就该轮到搬我。」" },
-            { "type": "menu", "raw": "那趟没走完的活|陪他把这趟工钱讨回来>flag:pre_a4_qiaofu;+exp:500;+money:230;+karma:12;favor:cy_pre_carrier:28;incvar:favor_cy_pre_carrier:28;;劝他连夜出城,别留>flag:pre_a4_qiaofu;+exp:400;+money:150;favor:cy_pre_carrier:15;incvar:favor_cy_pre_carrier:15" }
+            {
+              "type": "narrate",
+              "raw": "石三把扁担从肩上取下来，往地上一杵。他肩膀上一道红印，比平时深。"
+            },
+            {
+              "type": "say",
+              "raw": "「那口箱子压手，里头不是空的。」他看了看四周，「他们搬完了，就该轮到搬我。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那趟没走完的活|陪他把这趟工钱讨回来>flag:pre_a4_qiaofu;+exp:500;+money:230;+karma:12;favor:cy_pre_carrier:28;incvar:favor_cy_pre_carrier:28;;劝他连夜出城,别留>flag:pre_a4_qiaofu;+exp:400;+money:150;favor:cy_pre_carrier:15;incvar:favor_cy_pre_carrier:15"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "flag", "args": ["pre_a4_qiaofu"] },
-        { "type": "+exp", "args": [600] },
-        { "type": "+money", "args": [210] },
-        { "type": "favor", "args": ["cy_pre_carrier", 15] },
-        { "type": "say", "raw": "石三把扁担往你手上一递，让你掂了掂。「不重。压人的是别的东西。」" }
+        {
+          "type": "flag",
+          "args": [
+            "pre_a4_qiaofu"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            600
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            210
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "cy_pre_carrier",
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "石三把扁担往你手上一递，让你掂了掂。「不重。压人的是别的东西。」"
+        }
       ]
     },
-
     "sq_pre_a5_kou": {
-      "id": "sq_pre_a5_kou", "name": "众人的口信", "type": "支线",
-      "npc": "cy_pre_storyteller", "giver": "cy_pre_storyteller", "level": 26,
-      "require": { "flag": "act4_done" },
+      "id": "sq_pre_a5_kou",
+      "name": "众人的口信",
+      "type": "支线",
+      "npc": "cy_pre_storyteller",
+      "giver": "cy_pre_storyteller",
+      "level": 26,
+      "require": {
+        "flag": "act4_done"
+      },
       "desc": "冯三说的那段书，最近总有人来听第二遍。他自己知道：那些不是来听书的。",
       "stages": [
         {
           "desc": "去洛阳的城门，看看是谁在等他散场",
-          "targets": [{ "id": "go0", "kind": "room", "key": "luoyang_gate", "count": 1, "var": "sq_pre_a5_kou_go0", "desc": "去洛阳的城门，看看是谁在等他散场" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "luoyang_gate",
+              "count": 1,
+              "var": "sq_pre_a5_kou_go0",
+              "desc": "去洛阳的城门，看看是谁在等他散场"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "城门底下停着一辆没有字号的车。车辕上坐着个人，脸一直朝着客栈的方向。" },
-            { "type": "say", "raw": "车夫看你走近，把脸转开了。「等人。等谁，不关你的事。」" }
+            {
+              "type": "narrate",
+              "raw": "城门底下停着一辆没有字号的车。车辕上坐着个人，脸一直朝着客栈的方向。"
+            },
+            {
+              "type": "say",
+              "raw": "车夫看你走近，把脸转开了。「等人。等谁，不关你的事。」"
+            }
           ]
         },
         {
           "desc": "回客栈，把这件事告诉冯三",
-          "targets": [{ "id": "go1", "kind": "room", "key": "luoyang_tavern", "count": 1, "var": "sq_pre_a5_kou_go1", "desc": "回客栈，把这件事告诉冯三" }],
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "luoyang_tavern",
+              "count": 1,
+              "var": "sq_pre_a5_kou_go1",
+              "desc": "回客栈，把这件事告诉冯三"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "冯三把醒木搁下，第一次没有拍。他把茶碗里的水喝干净，才开口。" },
-            { "type": "say", "raw": "「我那段书里，有一个人是真的。」他声音低下去，「真的那个人，当年没死成。」" },
-            { "type": "menu", "raw": "那段书|替他把那个人护住>flag:pre_a5_kou;+exp:700;+money:240;+karma:18;favor:cy_pre_storyteller:30;incvar:favor_cy_pre_storyteller:30;;让他把书改了，别再说>flag:pre_a5_kou;+exp:520;+money:320;favor:cy_pre_storyteller:8;incvar:favor_cy_pre_storyteller:8" }
+            {
+              "type": "narrate",
+              "raw": "冯三把醒木搁下，第一次没有拍。他把茶碗里的水喝干净，才开口。"
+            },
+            {
+              "type": "say",
+              "raw": "「我那段书里，有一个人是真的。」他声音低下去，「真的那个人，当年没死成。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那段书|替他把那个人护住>flag:pre_a5_kou;+exp:700;+money:240;+karma:18;favor:cy_pre_storyteller:30;incvar:favor_cy_pre_storyteller:30;;让他把书改了，别再说>flag:pre_a5_kou;+exp:520;+money:320;favor:cy_pre_storyteller:8;incvar:favor_cy_pre_storyteller:8"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "flag", "args": ["pre_a5_kou"] },
-        { "type": "+exp", "args": [780] },
-        { "type": "+money", "args": [230] },
-        { "type": "favor", "args": ["cy_pre_storyteller", 15] },
-        { "type": "say", "raw": "他把没编进去的那半句说完了，说完拍了一下醒木，声音很轻。" }
+        {
+          "type": "flag",
+          "args": [
+            "pre_a5_kou"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            780
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            230
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "cy_pre_storyteller",
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "他把没编进去的那半句说完了，说完拍了一下醒木，声音很轻。"
+        }
       ]
     },
-
     "sq_pre_a5_mubei": {
-      "id": "sq_pre_a5_mubei", "name": "碑上的字", "type": "支线",
-      "npc": "cy_pre_gravedigger", "giver": "cy_pre_gravedigger", "level": 26,
-      "require": { "flag": "act4_done" },
+      "id": "sq_pre_a5_mubei",
+      "name": "碑上的字",
+      "type": "支线",
+      "npc": "cy_pre_gravedigger",
+      "giver": "cy_pre_gravedigger",
+      "level": 26,
+      "require": {
+        "flag": "act4_done"
+      },
       "desc": "江南坡上有一片坟，其中几座碑上没有字。老聂守了四十年，也没敢问。",
       "stages": [
         {
           "desc": "去江南城的天宁寺，查那几年的往生簿",
-          "targets": [{ "id": "go0", "kind": "room", "key": "jiangnan_temple", "count": 1, "var": "sq_pre_a5_mubei_go0", "desc": "去江南城的天宁寺，查那几年的往生簿" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jiangnan_temple",
+              "count": 1,
+              "var": "sq_pre_a5_mubei_go0",
+              "desc": "去江南城的天宁寺，查那几年的往生簿"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "往生簿一年一册，翻到那一年，中间连着撕掉了七页。撕口被香火熏黄了，是很多年前撕的。" },
-            { "type": "say", "raw": "「那一年的簿子，是衙门的人来收的。」老僧把册子合上，「收的时候说，这几个人不入册。」" }
+            {
+              "type": "narrate",
+              "raw": "往生簿一年一册，翻到那一年，中间连着撕掉了七页。撕口被香火熏黄了，是很多年前撕的。"
+            },
+            {
+              "type": "say",
+              "raw": "「那一年的簿子，是衙门的人来收的。」老僧把册子合上，「收的时候说，这几个人不入册。」"
+            }
           ]
         },
         {
           "desc": "回坡上，把往生簿的事说给老聂",
-          "targets": [{ "id": "go1", "kind": "room", "key": "jiangnan_hill", "count": 1, "var": "sq_pre_a5_mubei_go1", "desc": "回坡上，把往生簿的事说给老聂" }],
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "jiangnan_hill",
+              "count": 1,
+              "var": "sq_pre_a5_mubei_go1",
+              "desc": "回坡上，把往生簿的事说给老聂"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "老聂在无名的那几座坟前站了很久。他从怀里摸出一样东西，是半块磨平了的碑，边角还带着凿痕。" },
-            { "type": "say", "raw": "「当年有人让我别刻字。」他把那半块碑放回去，「我把名字刻在背后了，冲着土。」" },
-            { "type": "menu", "raw": "那半块碑|替他翻过来，把名字凿干净>flag:pre_a5_mubei;+exp:720;+money:200;+karma:20;favor:cy_pre_gravedigger:30;incvar:favor_cy_pre_gravedigger:30;;就让它冲着土，谁也不看>flag:pre_a5_mubei;+exp:600;+money:160;+karma:8;favor:cy_pre_gravedigger:18;incvar:favor_cy_pre_gravedigger:18" }
+            {
+              "type": "narrate",
+              "raw": "老聂在无名的那几座坟前站了很久。他从怀里摸出一样东西，是半块磨平了的碑，边角还带着凿痕。"
+            },
+            {
+              "type": "say",
+              "raw": "「当年有人让我别刻字。」他把那半块碑放回去，「我把名字刻在背后了，冲着土。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那半块碑|替他翻过来，把名字凿干净>flag:pre_a5_mubei;+exp:720;+money:200;+karma:20;favor:cy_pre_gravedigger:30;incvar:favor_cy_pre_gravedigger:30;;就让它冲着土，谁也不看>flag:pre_a5_mubei;+exp:600;+money:160;+karma:8;favor:cy_pre_gravedigger:18;incvar:favor_cy_pre_gravedigger:18"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "flag", "args": ["pre_a5_mubei"] },
-        { "type": "+exp", "args": [800] },
-        { "type": "+money", "args": [200] },
-        { "type": "favor", "args": ["cy_pre_gravedigger", 15] },
-        { "type": "say", "raw": "老聂把扫帚靠在碑上，坐了下来。他第一次跟人坐了这么久。" }
+        {
+          "type": "flag",
+          "args": [
+            "pre_a5_mubei"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            800
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            200
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "cy_pre_gravedigger",
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "老聂把扫帚靠在碑上，坐了下来。他第一次跟人坐了这么久。"
+        }
       ]
     },
-
     "sq_pre_line_orth": {
-      "id": "sq_pre_line_orth", "name": "驿路上那封信", "type": "支线",
-      "npc": "cy_pre_postman", "giver": "cy_pre_postman", "level": 12,
-      "require": { "line": "orthodox" },
+      "id": "sq_pre_line_orth",
+      "name": "驿路上那封信",
+      "type": "支线",
+      "npc": "cy_pre_postman",
+      "giver": "cy_pre_postman",
+      "level": 12,
+      "require": {
+        "line": "orthodox"
+      },
       "desc": "郑七的驿袋里有一封信，收信人的名字被墨涂了。这封信已经在路上走了三个月。",
       "stages": [
         {
           "desc": "去皇城外的御街，问一句这个驿袋的来路",
-          "targets": [{ "id": "go0", "kind": "room", "key": "palace_street", "count": 1, "var": "sq_pre_line_orth_go0", "desc": "去皇城外的御街，问一句这个驿袋的来路" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "palace_street",
+              "count": 1,
+              "var": "sq_pre_line_orth_go0",
+              "desc": "去皇城外的御街，问一句这个驿袋的来路"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "御街边的驿铺挂着当日的签牌。签牌上有一行字被人用指甲划掉了，划得很急。" },
-            { "type": "say", "raw": "驿铺的老吏看了一眼驿袋上的火漆。「这火漆不是我们盖的。他也不是从我们这儿接的。」" }
+            {
+              "type": "narrate",
+              "raw": "御街边的驿铺挂着当日的签牌。签牌上有一行字被人用指甲划掉了，划得很急。"
+            },
+            {
+              "type": "say",
+              "raw": "驿铺的老吏看了一眼驿袋上的火漆。「这火漆不是我们盖的。他也不是从我们这儿接的。」"
+            }
           ]
         },
         {
           "desc": "回长安城门，把驿铺的话带给郑七",
-          "targets": [{ "id": "go1", "kind": "room", "key": "changan_gate", "count": 1, "var": "sq_pre_line_orth_go1", "desc": "回长安城门，把驿铺的话带给郑七" }],
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "changan_gate",
+              "count": 1,
+              "var": "sq_pre_line_orth_go1",
+              "desc": "回长安城门，把驿铺的话带给郑七"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "郑七把驿袋解下来，翻到背面。那里有一道拆过又缝上的线，针脚很密。" },
-            { "type": "say", "raw": "「有人拆过，又缝回去了。」他把袋子递到你面前，「拆的人不想让人知道收信的是谁。你说我该往哪儿送？」" },
-            { "type": "menu", "raw": "那封信|替他送去大理寺>flag:pre_line_orth;+exp:400;+money:120;+karma:20;+rep:朝廷:20;favor:cy_pre_postman:28;incvar:favor_cy_pre_postman:28;;原样退回去，走完这趟>flag:pre_line_orth;+exp:300;+money:180;favor:cy_pre_postman:14;incvar:favor_cy_pre_postman:14" }
+            {
+              "type": "narrate",
+              "raw": "郑七把驿袋解下来，翻到背面。那里有一道拆过又缝上的线，针脚很密。"
+            },
+            {
+              "type": "say",
+              "raw": "「有人拆过，又缝回去了。」他把袋子递到你面前，「拆的人不想让人知道收信的是谁。你说我该往哪儿送？」"
+            },
+            {
+              "type": "menu",
+              "raw": "那封信|替他送去大理寺>flag:pre_line_orth;+exp:400;+money:120;+karma:20;+rep:朝廷:20;favor:cy_pre_postman:28;incvar:favor_cy_pre_postman:28;;原样退回去，走完这趟>flag:pre_line_orth;+exp:300;+money:180;favor:cy_pre_postman:14;incvar:favor_cy_pre_postman:14"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "flag", "args": ["pre_line_orth"] },
-        { "type": "+exp", "args": [460] },
-        { "type": "+money", "args": [130] },
-        { "type": "favor", "args": ["cy_pre_postman", 15] },
-        { "type": "say", "raw": "郑七把驿袋重新系紧，打了一个只有驿卒会的结。「这结，路上没人解得开。」" }
+        {
+          "type": "flag",
+          "args": [
+            "pre_line_orth"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            460
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            130
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "cy_pre_postman",
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "郑七把驿袋重新系紧，打了一个只有驿卒会的结。「这结，路上没人解得开。」"
+        }
       ]
     },
-
     "sq_pre_line_out": {
-      "id": "sq_pre_line_out", "name": "一笔旧债", "type": "支线",
-      "npc": "cy_pre_usurer", "giver": "cy_pre_usurer", "level": 14,
-      "require": { "line": "outlaw" },
+      "id": "sq_pre_line_out",
+      "name": "一笔旧债",
+      "type": "支线",
+      "npc": "cy_pre_usurer",
+      "giver": "cy_pre_usurer",
+      "level": 14,
+      "require": {
+        "line": "outlaw"
+      },
       "desc": "贾二的账本上有一笔挂了很多年的旧账。他每年都翻，翻完不勾。",
       "stages": [
         {
           "desc": "去洛阳的巷子，找那一笔账上的人",
-          "targets": [{ "id": "go0", "kind": "room", "key": "luoyang_lane", "count": 1, "var": "sq_pre_line_out_go0", "desc": "去洛阳的巷子，找那一笔账上的人" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "luoyang_lane",
+              "count": 1,
+              "var": "sq_pre_line_out_go0",
+              "desc": "去洛阳的巷子，找那一笔账上的人"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "巷子最里头那户人家空着。门环锈死了，门缝里塞着几张纸，是这些年贴的催单。" },
-            { "type": "say", "raw": "隔壁的裁缝把门开了一条缝。「那家人早搬了。搬的时候，是个断手的人来送的钱。」" }
+            {
+              "type": "narrate",
+              "raw": "巷子最里头那户人家空着。门环锈死了，门缝里塞着几张纸，是这些年贴的催单。"
+            },
+            {
+              "type": "say",
+              "raw": "隔壁的裁缝把门开了一条缝。「那家人早搬了。搬的时候，是个断手的人来送的钱。」"
+            }
           ]
         },
         {
           "desc": "回成都的马市，把这话说给贾二",
-          "targets": [{ "id": "go1", "kind": "room", "key": "chengdu_market", "count": 1, "var": "sq_pre_line_out_go1", "desc": "回成都的马市，把这话说给贾二" }],
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "chengdu_market",
+              "count": 1,
+              "var": "sq_pre_line_out_go1",
+              "desc": "回成都的马市，把这话说给贾二"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "贾二把账本翻到那一页，用手指按住。他缺了一截的小指在纸上敲了两下。" },
-            { "type": "say", "raw": "「断手的那个，当年替他们家送过信。」他把手指收回去，「我欠的是这个。」" },
-            { "type": "menu", "raw": "那笔旧账|替他把这页撕了>flag:pre_line_out;+exp:420;+money:0;+karma:15;favor:cy_pre_usurer:30;incvar:favor_cy_pre_usurer:30;;把这笔账接过来，替他讨>flag:pre_line_out;+exp:340;+money:400;+karma:-12;favor:cy_pre_usurer:18;incvar:favor_cy_pre_usurer:18" }
+            {
+              "type": "narrate",
+              "raw": "贾二把账本翻到那一页，用手指按住。他缺了一截的小指在纸上敲了两下。"
+            },
+            {
+              "type": "say",
+              "raw": "「断手的那个，当年替他们家送过信。」他把手指收回去，「我欠的是这个。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那笔旧账|替他把这页撕了>flag:pre_line_out;+exp:420;+money:0;+karma:15;favor:cy_pre_usurer:30;incvar:favor_cy_pre_usurer:30;;把这笔账接过来，替他讨>flag:pre_line_out;+exp:340;+money:400;+karma:-12;favor:cy_pre_usurer:18;incvar:favor_cy_pre_usurer:18"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "flag", "args": ["pre_line_out"] },
-        { "type": "+exp", "args": [480] },
-        { "type": "+money", "args": [260] },
-        { "type": "favor", "args": ["cy_pre_usurer", 15] },
-        { "type": "say", "raw": "贾二把账本合上，压在最底下那本底下。「这本不给人看了。」" }
+        {
+          "type": "flag",
+          "args": [
+            "pre_line_out"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            480
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            260
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "cy_pre_usurer",
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "贾二把账本合上，压在最底下那本底下。「这本不给人看了。」"
+        }
       ]
     },
-
     "sq_pre_line_neu": {
-      "id": "sq_pre_line_neu", "name": "一车货", "type": "支线",
-      "npc": "neu_zhanggui", "giver": "neu_zhanggui", "level": 13,
-      "require": { "line": "neutral" },
+      "id": "sq_pre_line_neu",
+      "name": "一车货",
+      "type": "支线",
+      "npc": "neu_zhanggui",
+      "giver": "neu_zhanggui",
+      "level": 13,
+      "require": {
+        "line": "neutral"
+      },
       "desc": "高四手上压着一车货。货主说不清是哪一家的，只催着出手，价钱随便开。",
       "stages": [
         {
           "desc": "去长安的集市，看这车货要卖给谁",
-          "targets": [{ "id": "go0", "kind": "room", "key": "changan_market", "count": 1, "var": "sq_pre_line_neu_go0", "desc": "去长安的集市，看这车货要卖给谁" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "changan_market",
+              "count": 1,
+              "var": "sq_pre_line_neu_go0",
+              "desc": "去长安的集市，看这车货要卖给谁"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "集市东头那间铺子挂着歇业的牌，门却半开着。门槛上落了一层新土，是车轱辘带进来的。" },
-            { "type": "say", "raw": "铺子里的人隔着门缝看你。「货的事别问我们。我们只管收，不管来路。」" }
+            {
+              "type": "narrate",
+              "raw": "集市东头那间铺子挂着歇业的牌，门却半开着。门槛上落了一层新土，是车轱辘带进来的。"
+            },
+            {
+              "type": "say",
+              "raw": "铺子里的人隔着门缝看你。「货的事别问我们。我们只管收，不管来路。」"
+            }
           ]
         },
         {
           "desc": "回洛阳的马市，把这话说给高四",
-          "targets": [{ "id": "go1", "kind": "room", "key": "luoyang_market", "count": 1, "var": "sq_pre_line_neu_go1", "desc": "回洛阳的马市，把这话说给高四" }],
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "luoyang_market",
+              "count": 1,
+              "var": "sq_pre_line_neu_go1",
+              "desc": "回洛阳的马市，把这话说给高四"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "高四把袖子里那把算盘掏出来，拨了一串，又推回去。" },
-            { "type": "say", "raw": "「价钱开得随便，就是不打算让人记住是谁付的钱。」他看了你一眼，「你要接这车，还是把这车甩了？」" },
-            { "type": "menu", "raw": "那车货|接过来，转手出一趟>flag:pre_line_neu;+exp:380;+money:520;+karma:-8;favor:neu_zhanggui:30;incvar:favor_neu_zhanggui:30;;替他甩回去，谁的货谁认>flag:pre_line_neu;+exp:420;+money:180;+karma:12;favor:neu_zhanggui:16;incvar:favor_neu_zhanggui:16" }
+            {
+              "type": "narrate",
+              "raw": "高四把袖子里那把算盘掏出来，拨了一串，又推回去。"
+            },
+            {
+              "type": "say",
+              "raw": "「价钱开得随便，就是不打算让人记住是谁付的钱。」他看了你一眼，「你要接这车，还是把这车甩了？」"
+            },
+            {
+              "type": "menu",
+              "raw": "那车货|接过来，转手出一趟>flag:pre_line_neu;+exp:380;+money:520;+karma:-8;favor:neu_zhanggui:30;incvar:favor_neu_zhanggui:30;;替他甩回去，谁的货谁认>flag:pre_line_neu;+exp:420;+money:180;+karma:12;favor:neu_zhanggui:16;incvar:favor_neu_zhanggui:16"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "flag", "args": ["pre_line_neu"] },
-        { "type": "+exp", "args": [450] },
-        { "type": "+money", "args": [200] },
-        { "type": "favor", "args": ["neu_zhanggui", 15] },
-        { "type": "say", "raw": "高四给你留了一句实价，说完就把算盘收回袖子里。" }
+        {
+          "type": "flag",
+          "args": [
+            "pre_line_neu"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            450
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            200
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "neu_zhanggui",
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "高四给你留了一句实价，说完就把算盘收回袖子里。"
+        }
       ]
     },
-
     "sq_pre_court_tongshi": {
-      "id": "sq_pre_court_tongshi", "name": "抄本上那两行", "type": "支线",
-      "npc": "cy_pre_interpreter", "giver": "cy_pre_interpreter", "level": 22,
-      "require": { "act": ">=2", "lineNot": "outlaw" },
+      "id": "sq_pre_court_tongshi",
+      "name": "抄本上那两行",
+      "type": "支线",
+      "npc": "cy_pre_interpreter",
+      "giver": "cy_pre_interpreter",
+      "level": 22,
+      "require": {
+        "act": ">=2",
+        "lineNot": "outlaw"
+      },
       "desc": "褚平手上有一叠抄本。同一道旨意，抄本上那两行跟传出去的不一样。",
       "stages": [
         {
           "desc": "去衙门的大堂，看卷宗上的原件",
-          "targets": [{ "id": "go0", "kind": "room", "key": "jn_yamen_court", "count": 1, "var": "sq_pre_court_tongshi_go0", "desc": "去衙门的大堂，看卷宗上的原件" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_yamen_court",
+              "count": 1,
+              "var": "sq_pre_court_tongshi_go0",
+              "desc": "去衙门的大堂，看卷宗上的原件"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "原件锁在架阁库的柜里，取出来的时候纸还是硬的。那两行字上有一道淡痕，是被人用湿手指按过的。" },
-            { "type": "say", "raw": "守库的老吏把卷宗推给你。「这本不常取。上回取，还是三年前。」" }
+            {
+              "type": "narrate",
+              "raw": "原件锁在架阁库的柜里，取出来的时候纸还是硬的。那两行字上有一道淡痕，是被人用湿手指按过的。"
+            },
+            {
+              "type": "say",
+              "raw": "守库的老吏把卷宗推给你。「这本不常取。上回取，还是三年前。」"
+            }
           ]
         },
         {
           "desc": "回御街，把原件的样子讲给褚平",
-          "targets": [{ "id": "go1", "kind": "room", "key": "palace_street", "count": 1, "var": "sq_pre_court_tongshi_go1", "desc": "回御街，把原件的样子讲给褚平" }],
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "palace_street",
+              "count": 1,
+              "var": "sq_pre_court_tongshi_go1",
+              "desc": "回御街，把原件的样子讲给褚平"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "褚平把抄本摊开，跟原件的样子一格一格对。对到那两行，他的手指停了。" },
-            { "type": "say", "raw": "「抄错一个字，能杀一个人。」他把抄本收起来，「这叠我得重抄一遍。你陪我抄。」" },
-            { "type": "menu", "raw": "那叠抄本|陪他重抄一遍>flag:pre_court_tongshi;+exp:600;+money:150;+karma:16;+rep:朝廷:15;favor:cy_pre_interpreter:30;incvar:favor_cy_pre_interpreter:30;;把抄本扣下，交给大理寺>flag:pre_court_tongshi;+exp:520;+money:220;+karma:10;favor:cy_pre_interpreter:12;incvar:favor_cy_pre_interpreter:12" }
+            {
+              "type": "narrate",
+              "raw": "褚平把抄本摊开，跟原件的样子一格一格对。对到那两行，他的手指停了。"
+            },
+            {
+              "type": "say",
+              "raw": "「抄错一个字，能杀一个人。」他把抄本收起来，「这叠我得重抄一遍。你陪我抄。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那叠抄本|陪他重抄一遍>flag:pre_court_tongshi;+exp:600;+money:150;+karma:16;+rep:朝廷:15;favor:cy_pre_interpreter:30;incvar:favor_cy_pre_interpreter:30;;把抄本扣下，交给大理寺>flag:pre_court_tongshi;+exp:520;+money:220;+karma:10;favor:cy_pre_interpreter:12;incvar:favor_cy_pre_interpreter:12"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "flag", "args": ["pre_court_tongshi"] },
-        { "type": "+exp", "args": [650] },
-        { "type": "+money", "args": [160] },
-        { "type": "favor", "args": ["cy_pre_interpreter", 15] },
-        { "type": "say", "raw": "褚平把重抄的那叠晾在窗台上，一页一页压平。「往后你进那道门，我替你说话。」" }
+        {
+          "type": "flag",
+          "args": [
+            "pre_court_tongshi"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            650
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            160
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "cy_pre_interpreter",
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "褚平把重抄的那叠晾在窗台上，一页一页压平。「往后你进那道门，我替你说话。」"
+        }
       ]
     },
-
     "sq_pre_court_laoyu": {
-      "id": "sq_pre_court_laoyu", "name": "牢里那个不说话的", "type": "支线",
-      "npc": "cy_pre_jailer", "giver": "cy_pre_jailer", "level": 22,
-      "require": { "act": ">=2", "lineNot": "outlaw" },
+      "id": "sq_pre_court_laoyu",
+      "name": "牢里那个不说话的",
+      "type": "支线",
+      "npc": "cy_pre_jailer",
+      "giver": "cy_pre_jailer",
+      "level": 22,
+      "require": {
+        "act": ">=2",
+        "lineNot": "outlaw"
+      },
       "desc": "衙门大牢最里面关着一个人，关了三个月，没说过一句话，也没人提审过。",
       "stages": [
         {
           "desc": "去衙门的签押房，问这桩案子的卷宗",
-          "targets": [{ "id": "go0", "kind": "room", "key": "jn_yamen_office", "count": 1, "var": "sq_pre_court_laoyu_go0", "desc": "去衙门的签押房，问这桩案子的卷宗" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_yamen_office",
+              "count": 1,
+              "var": "sq_pre_court_laoyu_go0",
+              "desc": "去衙门的签押房，问这桩案子的卷宗"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "签押房的架子上一格是空的。管签押的书吏翻了半天，翻出一张收押的条子，上面只有日子，没有人名。" },
-            { "type": "say", "raw": "「人是我收的，条子不是我写的。」书吏把条子推给你，「这一笔，我记得是上头递下来的。」" }
+            {
+              "type": "narrate",
+              "raw": "签押房的架子上一格是空的。管签押的书吏翻了半天，翻出一张收押的条子，上面只有日子，没有人名。"
+            },
+            {
+              "type": "say",
+              "raw": "「人是我收的，条子不是我写的。」书吏把条子推给你，「这一笔，我记得是上头递下来的。」"
+            }
           ]
         },
         {
           "desc": "回大牢，把条子的事告诉韦头",
-          "targets": [{ "id": "go1", "kind": "room", "key": "jn_yamen_prison", "count": 1, "var": "sq_pre_court_laoyu_go1", "desc": "回大牢，把条子的事告诉韦头" }],
+          "targets": [
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "jn_yamen_prison",
+              "count": 1,
+              "var": "sq_pre_court_laoyu_go1",
+              "desc": "回大牢，把条子的事告诉韦头"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "韦头把腰上那串钥匙解下来，放在桌上。他看了很久，没有去拿。" },
-            { "type": "say", "raw": "「上头递下来的人，我见过一回。」他的声音低下去，「那一回，人也没出来。」" },
-            { "type": "menu", "raw": "牢里那个人|替他把人往大理寺递>flag:pre_court_laoyu;+exp:620;+money:140;+karma:20;+rep:朝廷:15;favor:cy_pre_jailer:30;incvar:favor_cy_pre_jailer:30;;把条子烧了，就当没这个人>flag:pre_court_laoyu;+exp:480;+money:200;+karma:-14;favor:cy_pre_jailer:10;incvar:favor_cy_pre_jailer:10" }
+            {
+              "type": "narrate",
+              "raw": "韦头把腰上那串钥匙解下来，放在桌上。他看了很久，没有去拿。"
+            },
+            {
+              "type": "say",
+              "raw": "「上头递下来的人，我见过一回。」他的声音低下去，「那一回，人也没出来。」"
+            },
+            {
+              "type": "menu",
+              "raw": "牢里那个人|替他把人往大理寺递>flag:pre_court_laoyu;+exp:620;+money:140;+karma:20;+rep:朝廷:15;favor:cy_pre_jailer:30;incvar:favor_cy_pre_jailer:30;;把条子烧了，就当没这个人>flag:pre_court_laoyu;+exp:480;+money:200;+karma:-14;favor:cy_pre_jailer:10;incvar:favor_cy_pre_jailer:10"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "flag", "args": ["pre_court_laoyu"] },
-        { "type": "+exp", "args": [680] },
-        { "type": "+money", "args": [150] },
-        { "type": "favor", "args": ["cy_pre_jailer", 15] },
-        { "type": "say", "raw": "韦头把钥匙重新挂回腰上，按着走了一圈。这回钥匙没有响。" }
+        {
+          "type": "flag",
+          "args": [
+            "pre_court_laoyu"
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            680
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            150
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "cy_pre_jailer",
+            15
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "韦头把钥匙重新挂回腰上，按着走了一圈。这回钥匙没有响。"
+        }
       ]
     },
-
     "q_main_court": {
-      "id": "q_main_court", "name": "【主线】庙堂之侧", "type": "主线",
-      "npc": "court_justice", "giver": "court_justice", "level": 25,
-      "require": { "and": [{ "lineNot": "outlaw" }, { "flag": "act3_done" }, { "flag": "pre_court_tongshi" }] },
+      "id": "q_main_court",
+      "name": "【主线】庙堂之侧",
+      "type": "主线",
+      "npc": "court_justice",
+      "giver": "court_justice",
+      "level": 25,
+      "require": {
+        "and": [
+          {
+            "lineNot": "outlaw"
+          },
+          {
+            "flag": "act3_done"
+          },
+          {
+            "flag": "pre_court_tongshi"
+          }
+        ]
+      },
       "requireMsg": "崔明远抬眼看你：「庙堂上的事，不是谁都能听。先把抄本那桩了了，再来。」",
       "desc": "大理寺卿把一桩旧案翻了三遍，三遍都对不上。他说，卷宗上的第一句话就写错了。",
       "stages": [
@@ -978,11 +2734,26 @@
             "orthodox": "你身上有师门的印子，宫里认这个。进皇城，到太和殿上回话",
             "neutral": "你没有根，宫里谁都不认得你。那就自己走进去，到太和殿上站着"
           },
-          "targets": [{ "id": "go0", "kind": "room", "key": "palace_hall", "count": 1, "var": "q_main_court_go0", "desc": "进皇城，到太和殿上回话" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "palace_hall",
+              "count": 1,
+              "var": "q_main_court_go0",
+              "desc": "进皇城，到太和殿上回话"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "殿门一开，九级台阶上的那个人没有抬头。殿里静得能听见更漏，一漏，一漏。" },
-            { "type": "say", "raw": "「江湖上的事，朕听得比你想的多。」他终于看过来，「这一句，不是朕要问的。」" }
+            {
+              "type": "narrate",
+              "raw": "殿门一开，九级台阶上的那个人没有抬头。殿里静得能听见更漏，一漏，一漏。"
+            },
+            {
+              "type": "say",
+              "raw": "「江湖上的事，朕听得比你想的多。」他终于看过来，「这一句，不是朕要问的。」"
+            }
           ]
         },
         {
@@ -992,55 +2763,147 @@
             "female": "宫门不易进。太后身边的宫女欠你人情，从后宫这条线进去"
           },
           "targetsByGender": {
-            "male": [{ "id": "go1m", "kind": "room", "key": "palace_study", "count": 1, "var": "q_main_court_go1m", "desc": "去御书房，把门路打通" }],
-            "female": [{ "id": "go1f", "kind": "room", "key": "palace_harem", "count": 1, "var": "q_main_court_go1f", "desc": "从后宫这条线进去" }]
+            "male": [
+              {
+                "id": "go1m",
+                "kind": "room",
+                "key": "palace_study",
+                "count": 1,
+                "var": "q_main_court_go1m",
+                "desc": "去御书房，把门路打通"
+              }
+            ],
+            "female": [
+              {
+                "id": "go1f",
+                "kind": "room",
+                "key": "palace_harem",
+                "count": 1,
+                "var": "q_main_court_go1f",
+                "desc": "从后宫这条线进去"
+              }
+            ]
           },
           "next": 2,
           "effectsByGender": {
             "male": [
-              { "type": "narrate", "raw": "御书房外的廊下站着两个内侍。你把话递进去，等了小半个时辰，门才开了一半。" },
-              { "type": "say", "raw": "「通事说了你的事。」内侍把袖子里的一张纸塞给你，「这道口谕，原本不该往外递。」" }
+              {
+                "type": "narrate",
+                "raw": "御书房外的廊下站着两个内侍。你把话递进去，等了小半个时辰，门才开了一半。"
+              },
+              {
+                "type": "say",
+                "raw": "「通事说了你的事。」内侍把袖子里的一张纸塞给你，「这道口谕，原本不该往外递。」"
+              }
             ],
             "female": [
-              { "type": "narrate", "raw": "宫女领你从夹道进的后宫。廊下晒着几匾药，风一过，药香压过了熏香。" },
-              { "type": "say", "raw": "「太后说了，宫里的话传到外头会变。」她把一张纸折成很小一块，「这一张没变过。」" }
+              {
+                "type": "narrate",
+                "raw": "宫女领你从夹道进的后宫。廊下晒着几匾药，风一过，药香压过了熏香。"
+              },
+              {
+                "type": "say",
+                "raw": "「太后说了，宫里的话传到外头会变。」她把一张纸折成很小一块，「这一张没变过。」"
+              }
             ]
           }
         },
         {
           "desc": "去皇城天牢，把那桩旧案的底摸清楚",
-          "targets": [{ "id": "go2", "kind": "room", "key": "palace_prison", "count": 1, "var": "q_main_court_go2", "desc": "去皇城天牢，把那桩旧案的底摸清楚" }],
+          "targets": [
+            {
+              "id": "go2",
+              "kind": "room",
+              "key": "palace_prison",
+              "count": 1,
+              "var": "q_main_court_go2",
+              "desc": "去皇城天牢，把那桩旧案的底摸清楚"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "天牢里的灯是长明灯，油味很重。最里面那间牢房的门开着，里头没有人，草席还是热的。" },
-            { "type": "say", "raw": "「昨天夜里提走的。」守牢的禁军把灯挑高了些，「提人的牌子上写的是大理寺。可大理寺昨夜没人当值。」" },
-            { "type": "menu", "raw": "那桩旧案|把这件说给崔明远，让他亲自翻>flag:court_open_case;+exp:1400;+money:600;+karma:20;+rep:朝廷:40;favor:court_justice:35;incvar:favor_court_justice:35;;先把这桩压下来，看看谁着急>flag:court_bury_case;+exp:1000;+money:400;+karma:-12;favor:court_justice:-15;incvar:favor_court_justice:-15" }
+            {
+              "type": "narrate",
+              "raw": "天牢里的灯是长明灯，油味很重。最里面那间牢房的门开着，里头没有人，草席还是热的。"
+            },
+            {
+              "type": "say",
+              "raw": "「昨天夜里提走的。」守牢的禁军把灯挑高了些，「提人的牌子上写的是大理寺。可大理寺昨夜没人当值。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那桩旧案|把这件说给崔明远，让他亲自翻>flag:court_open_case;+exp:1400;+money:600;+karma:20;+rep:朝廷:40;favor:court_justice:35;incvar:favor_court_justice:35;;先把这桩压下来，看看谁着急>flag:court_bury_case;+exp:1000;+money:400;+karma:-12;favor:court_justice:-15;incvar:favor_court_justice:-15"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "+exp", "args": [1800] },
-        { "type": "+money", "args": [500] },
-        { "type": "flag", "args": ["act_court_done"] },
-        { "type": "favor", "args": ["court_justice", 20] },
-        { "type": "say", "raw": "崔明远把那卷宗摊在堂上，用手指按着第一行。「这一句，我要重写了。」" }
+        {
+          "type": "+exp",
+          "args": [
+            1800
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            500
+          ]
+        },
+        {
+          "type": "flag",
+          "args": [
+            "act_court_done"
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "court_justice",
+            20
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "崔明远把那卷宗摊在堂上，用手指按着第一行。「这一句，我要重写了。」"
+        }
       ]
     },
-
     "q_main_neutral": {
-      "id": "q_main_neutral", "name": "【主线】没有名字的那一个", "type": "主线",
-      "npc": "neu_zhanggui", "giver": "neu_zhanggui", "level": 16,
-      "require": { "line": "neutral" },
+      "id": "q_main_neutral",
+      "name": "【主线】没有名字的那一个",
+      "type": "主线",
+      "npc": "neu_zhanggui",
+      "giver": "neu_zhanggui",
+      "level": 16,
+      "require": {
+        "line": "neutral"
+      },
       "requireMsg": "高四摆摆手：「这条路不是给你走的。你是哪一路的人，自己心里有数。」",
       "desc": "你没有门派，也没有仇家。别人认你，靠的是一桩一桩的事，不是一张门帖。",
       "stages": [
         {
           "desc": "替高四押一车货，走一趟长安",
-          "targets": [{ "id": "go0", "kind": "room", "key": "changan_market", "count": 1, "var": "q_main_neutral_go0", "desc": "押一车货到长安的集市" }],
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "changan_market",
+              "count": 1,
+              "var": "q_main_neutral_go0",
+              "desc": "押一车货到长安的集市"
+            }
+          ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "车是旧的，轮子上补过三处。集市东头那间铺子收货，不看货，先看押车的是谁。" },
-            { "type": "say", "raw": "「你不带门派腰牌？」收货的伙计笑了一下，「那更好，谁都不得罪。」" }
+            {
+              "type": "narrate",
+              "raw": "车是旧的，轮子上补过三处。集市东头那间铺子收货，不看货，先看押车的是谁。"
+            },
+            {
+              "type": "say",
+              "raw": "「你不带门派腰牌？」收货的伙计笑了一下，「那更好，谁都不得罪。」"
+            }
           ]
         },
         {
@@ -1050,46 +2913,130 @@
             "female": "货栈那边咬死不认。客栈的掌事知道，先把她的嘴撬开"
           },
           "targetsByGender": {
-            "male": [{ "id": "go1m", "kind": "room", "key": "luoyang_market", "count": 1, "var": "q_main_neutral_go1m", "desc": "去洛阳马市，当着人把账对开" }],
-            "female": [{ "id": "go1f", "kind": "room", "key": "luoyang_tavern", "count": 1, "var": "q_main_neutral_go1f", "desc": "去客栈，从掌事嘴里把话套出来" }]
+            "male": [
+              {
+                "id": "go1m",
+                "kind": "room",
+                "key": "luoyang_market",
+                "count": 1,
+                "var": "q_main_neutral_go1m",
+                "desc": "去洛阳马市，当着人把账对开"
+              }
+            ],
+            "female": [
+              {
+                "id": "go1f",
+                "kind": "room",
+                "key": "luoyang_tavern",
+                "count": 1,
+                "var": "q_main_neutral_go1f",
+                "desc": "去客栈，从掌事嘴里把话套出来"
+              }
+            ]
           },
           "next": 2,
           "effectsByGender": {
             "male": [
-              { "type": "narrate", "raw": "账本摊在马市的石台子上，围观的人越来越多。对到第三笔，高四的手停了一下。" },
-              { "type": "say", "raw": "「当着人，我认。」他把算盘收进袖子，「少的两成，是我让人扣的。」" }
+              {
+                "type": "narrate",
+                "raw": "账本摊在马市的石台子上，围观的人越来越多。对到第三笔，高四的手停了一下。"
+              },
+              {
+                "type": "say",
+                "raw": "「当着人，我认。」他把算盘收进袖子，「少的两成，是我让人扣的。」"
+              }
             ],
             "female": [
-              { "type": "narrate", "raw": "客栈的掌事把酒温上，说话之前先关了门。她说这些年的账，她比货栈记得清。" },
-              { "type": "say", "raw": "「少的两成不是丢了。」她压低声音，「是有人拿它买了另一样东西。这样东西，不好写在账上。」" }
+              {
+                "type": "narrate",
+                "raw": "客栈的掌事把酒温上，说话之前先关了门。她说这些年的账，她比货栈记得清。"
+              },
+              {
+                "type": "say",
+                "raw": "「少的两成不是丢了。」她压低声音，「是有人拿它买了另一样东西。这样东西，不好写在账上。」"
+              }
             ]
           }
         },
         {
           "desc": "去成都的马市，把这条线掐断",
-          "targets": [{ "id": "go2", "kind": "room", "key": "chengdu_market", "count": 1, "var": "q_main_neutral_go2", "desc": "去成都的马市，把这条线掐断" }],
+          "targets": [
+            {
+              "id": "go2",
+              "kind": "room",
+              "key": "chengdu_market",
+              "count": 1,
+              "var": "q_main_neutral_go2",
+              "desc": "去成都的马市，把这条线掐断"
+            }
+          ],
           "next": 3,
           "effects": [
-            { "type": "narrate", "raw": "马市后头那间矮房是空的，桌上留着一把算盘，珠子被人拨到一半。" },
-            { "type": "say", "raw": "「人走了半个时辰。」卖纸的摊主收着摊，「走的时候，回头看了一眼那把算盘。」" }
+            {
+              "type": "narrate",
+              "raw": "马市后头那间矮房是空的，桌上留着一把算盘，珠子被人拨到一半。"
+            },
+            {
+              "type": "say",
+              "raw": "「人走了半个时辰。」卖纸的摊主收着摊，「走的时候，回头看了一眼那把算盘。」"
+            }
           ]
         },
         {
           "desc": "回江南桥，把这一趟收尾",
-          "targets": [{ "id": "go3", "kind": "room", "key": "jiangnan_qiao", "count": 1, "var": "q_main_neutral_go3", "desc": "回江南桥，把这一趟收尾" }],
+          "targets": [
+            {
+              "id": "go3",
+              "kind": "room",
+              "key": "jiangnan_qiao",
+              "count": 1,
+              "var": "q_main_neutral_go3",
+              "desc": "回江南桥，把这一趟收尾"
+            }
+          ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "桥下的水还是那样，看着平，底下有涡。韩老栓把船撑到岸边，等你上船。" },
-            { "type": "say", "raw": "「这一趟你没替谁办事。」他把篙一点，「往后江湖上提起你，先想起的是你这个人。」" }
+            {
+              "type": "narrate",
+              "raw": "桥下的水还是那样，看着平，底下有涡。韩老栓把船撑到岸边，等你上船。"
+            },
+            {
+              "type": "say",
+              "raw": "「这一趟你没替谁办事。」他把篙一点，「往后江湖上提起你，先想起的是你这个人。」"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "+exp", "args": [900] },
-        { "type": "+money", "args": [380] },
-        { "type": "flag", "args": ["act_neutral_done"] },
-        { "type": "favor", "args": ["neu_zhanggui", 20] },
-        { "type": "say", "raw": "高四把袖子里那把算盘送了你。「记数用的。人心这笔账，它算不了。」" }
+        {
+          "type": "+exp",
+          "args": [
+            900
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            380
+          ]
+        },
+        {
+          "type": "flag",
+          "args": [
+            "act_neutral_done"
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "neu_zhanggui",
+            20
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "高四把袖子里那把算盘送了你。「记数用的。人心这笔账，它算不了。」"
+        }
       ]
     }
   }

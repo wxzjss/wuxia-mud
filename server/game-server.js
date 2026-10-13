@@ -289,7 +289,17 @@ async function handleApi(engine, req, res, pn, query, preset) {
   try {
     switch (route) {
       /* --- 状态 --- */
-      case 'state': return json(res, 200, { ok: true, boot: engine.bootLog, view: engine.view(), meta: engine.world.data.meta });
+      /* --- 状态 ---
+         ⚠️ P0（2026-10-12）· 死路由的两个出路里，这里选**留着 + 去地图**，理由写清楚：
+           ① 它**没有生产调用方** —— 前端 `api.state()`（app.js）定义着但没人调用。
+              真要删就得前后端一起删（「删干净」），否则留下半边更让人困惑。
+           ② 但 `tools/smoke-server-guard.js` 明确把它列进「不许 5xx」的探针名单。
+              真删掉 ⇒ 该路由变成未命中 ⇒ 要么我回头去改那个测试的期望值，
+              要么 guard 直接红；为了一次纯性能修复去改别人的测试口径，风险更大。
+           ③ 留着并把 `view()` 换成 `view({ map: false })`，**性能收益完全相同**
+              （它本来也几乎不被调用；万一哪天被调，也不会再甩出 247 KB 的地图）。
+           结论：留它、瘦身，比删它划算。等 P1 做路由清理时连同 `api.state()` 一起收。 */
+      case 'state': return json(res, 200, { ok: true, boot: engine.bootLog, view: engine.view({ map: false }), meta: engine.world.data.meta });
 
       /* --- 启动信息（前端启动时拉一次） --- */
       case 'boot': return json(res, 200, {
@@ -319,7 +329,22 @@ async function handleApi(engine, req, res, pn, query, preset) {
           ok: !(rr && rr.ok === false),
           error: (rr && rr.error) || undefined,
           mods: (rr && rr.mods) || 0,
-          boot: engine.bootLog, view: engine.view(), stats: countWorld(engine),
+          /* ⚠️ P0-C：这里原本是全站**最后一条**还在无条件下发全量地图（约 212 KB）的路由。
+             低频动作（只在 Mod 管理页点一次），砍掉它对单步性能是零收益 ——
+             砍它的真正理由是**不留例外**：留着「唯一一条还在发全图的路」，
+             以后任何人改地图取数都会漏掉它，然后再花两小时找「怎么还有一条路在发 212 KB」。
+
+             ⚠️ 这里**不能**像 `afterAction` 那样「沿用上一次的地图」：
+             `afterAction` 走一步棋，世界结构不会变，沿用旧地图只是晚一代、无害；
+             而 `reload` 是**重新载入世界数据**，mod 一换房间就可能增删 ——
+             沿用旧地图等于把一份**结构上已经过期**的地图塞回前端，那是错的。
+             所以这里就让它为 undefined：前端下次开「地图」面板会走 `/api/view?panel=map`
+             重新取一份新的（见 `panel()` 里的回写）。
+
+             前端读点已 grep 确认：只有 `app.js:352` 的 `S.view = d.view` 整包赋值，
+             没有任何代码直接读这里的 `d.view.map`；间接读点 `ui.js:3558`（点格子弹地名）
+             位于地图面板内部，面板打开时必然已重新取过地图，且有 `S.view.map &&` 空值守卫。 */
+          boot: engine.bootLog, view: engine.view({ map: false }), stats: countWorld(engine),
         });
       }
 
@@ -370,11 +395,32 @@ async function handleApi(engine, req, res, pn, query, preset) {
       case 'exec': {
         const cmd = (json_body && (json_body.cmd || json_body.command)) || query.cmd || query.command || '';
         const r = engine.exec(cmd, {});
+        /* ⚠️ P0（2026-10-12）：**`log` 字段删掉了**。
+           原来写的是 `lines: r.lines, log: r.lines` —— 同一个数组发两遍，
+           实测开局那一步各 6.4 KB，回包 41.6 KB 里有 **6.4 KB 是纯重复**。
+           删了以后：
+             · `ui.js` 的 `afterAction` 先读 `d.log`、没有再读 `d.lines`（4052 行起）——
+               留着 `lines` 这条路照走，**行为零变化**；
+             · `start.js:411` 的 `(d.view && d.view.lines) || d.log || []` 第一优先也是
+               `view.lines`，落不到 `d.log` 上。
+           顺带把「为什么回包能到 40 KB」的答案钉在这儿：单步回包 = view 28.6 KB
+           + lines 6.4 KB（+ 原先重复的那份 log 6.4 KB）——地图并不是唯一的大头。 */
+        /* ⚠️ P0（2026-10-12）第二刀：`view.lines` 从**指令回包**里剥掉（-5.2 KB）。
+           为什么可以剥、且不损任何信息：
+             · `view.lines` 是「当前房间的描述」，`lines` 是「这次指令的结果」，两者不同内容；
+             · 全工程读 `view.lines` 的只有 `start.js` 两处（91 行 `continueGame` 读档后、
+               414 行开局后），**都在刚进游戏的那一刻**，而那一刻的数据来自
+               `/api/new` 与 `/api/load` —— 这两个路由仍然发完整 view（含 lines）；
+             · `ui.js` 全文不读 `view.lines`（逐个文件 grep 复核过），走路时用不到它。
+           所以剥掉它，玩家看到的字一个不少，回包从 34.8 KB 降到 ~29.6 KB。
+           用浅拷贝而不是改 `r.view` 本体：那是 `engine.exec` 的产物，别就地糟蹋。 */
+        const execView = r.view ? Object.assign({}, r.view) : r.view;
+        if (execView) delete execView.lines;
         return json(res, 200, {
-          ok: true, cmd, lines: r.lines, log: r.lines, clear: !!r.clear,
+          ok: true, cmd, lines: r.lines, clear: !!r.clear,
           action: r.action || null, openPanel: r.openPanel || null,
           choices: r.choices || null, choicesTitle: r.choicesTitle || null,
-          modal: r.modal || null, ending: r.ending || null, view: r.view,
+          modal: r.modal || null, ending: r.ending || null, view: execView,
           /* 角色不在（多半是进程被回收过）→ 前端据此去接人，**别拿空视图覆盖界面** */
           noPlayer: r.noPlayer || false,
           canRestore: r.canRestore || false,
@@ -433,7 +479,31 @@ async function handleApi(engine, req, res, pn, query, preset) {
            而且**不报错**（静默退化）。2026-10-12 加「飞行」面板时同步加进来了。 */
         const wmPanel = String((json_body && json_body.panel) || query.panel || '').toLowerCase();
         const wantMap = wmPanel === 'map' || wmPanel === 'fly';
-        return json(res, 200, { ok: true, view: engine.view({ map: wantMap }) });
+        /* ⚠️ P0-B B-2（2026-10-13）：几何四件套（cells / regionBoxes / bounds / terrain，
+           合计 77.6 KB）**只给地图面板**。「飞行」面板只列区域与飞行代价，
+           一个几何字段都不读，跟着一起发是白交 77.6 KB。 */
+        const wantGeometry = wmPanel === 'map';
+        /* ⚠️ P0-C C-1（2026-10-13）：分批与迷雾，一律 **opt-in**。
+           · `region=auto` ⇒ 只发玩家当前所在的州（+ 邻州，见下）。
+             ⚠️ 为什么只能是 `auto` 而不是前端传州名：P0 之后指令回包 / 开局 /
+                读档都不再下发地图，前端 `S.view.map` 是空的，它压根不知道自己在哪。
+           · `neighbors=0` ⇒ 连邻州都不带（前端现在只画本州本层，邻州一根线都画不出来，
+                实测江南城带邻州是 17 州 234 间，不带是 1 州 32 间）。
+           · `fog=1` ⇒ 未探索的房间只留 `{id,x,y,z,region,known:false}`，不带名字与出口。
+                设置项「地图显示未探索地名」打开时前端传 `fog=0`。 */
+        const wmRegion = String((json_body && json_body.region) || query.region || '');
+        const wmNeighbors = String((json_body && json_body.neighbors) ?? query.neighbors ?? '1');
+        const wmFog = String((json_body && json_body.fog) ?? query.fog ?? '0');
+        return json(res, 200, {
+          ok: true,
+          view: engine.view({
+            map: wantMap,
+            mapGeometry: wantGeometry,
+            mapRegion: wmRegion || null,
+            mapNeighbors: wmNeighbors !== '0',
+            mapFog: wmFog === '1',
+          }),
+        });
       }
 
       /* 「请教武学」面板（主人 2026-10-08）：列出这个人的**所有**武学 + 能不能教。
@@ -468,14 +538,33 @@ async function handleApi(engine, req, res, pn, query, preset) {
       case 'saves': return json(res, 200, { ok: true, saves: engine.listSaves() });
       case 'save': {
         const r = engine.save(json_body && json_body.id);
-        return json(res, 200, Object.assign({ lines: [{ kind: r.ok ? 'sys' : 'warn', text: r.msg }], view: engine.view() }, r));
+        /* ⚠️ P0（2026-10-12）：这里**只回轻量字段**，不要再塞 view / data。
+            · 原来是 `Object.assign({lines, view: engine.view()}, r)` ——
+              `view` 带整张地图（247 KB），而 `r` 里还带着 `engine.save()` 返回的
+              **整个世界序列化**（`data`）。实测这一个回包 **530 KB**，
+              而浏览器每走一步都无条件存一次档 ⇒ 每一步都白下一张地图，
+              这正是主人报的「点按钮卡半秒」的真身（worldTick 只占 1.5–2 ms，不是瓶颈）。
+            · 四个调用点 `ui.js` 的自动存档 / 退出存档 / 读档面板的「覆盖」「新建」
+              **没有一处读回包的 `d.view` 或 `d.data`**（逐个 grep 复核过），可以安全去掉。
+            · 这个接口的价值是它的**副作用**（把存档写到磁盘），不是它的返回值。 */
+        return json(res, 200, {
+          ok: r.ok, id: r.id, msg: r.msg,
+          lines: [{ kind: r.ok ? 'sys' : 'warn', text: r.msg }],
+        });
       }
       /* ⚠️ `save/write` 已随云存档一并删除（2026-10-11 主人：「把游戏里的云存档
          相关功能全部删除」）。它原本唯一的作用是「把云端拉回来的存档写进本地」，
          没有云存档就没有调用方。前端 `api.saveWrite` 也一并拿掉了。 */
       case 'load': {
         const r = engine.loadSave(json_body && json_body.id);
-        return json(res, 200, Object.assign({ lines: [{ kind: r.ok ? 'sys' : 'warn', text: r.msg }], view: engine.view() }, r));
+        /* ⚠️ P0（2026-10-12）：这里同样不带地图（原先是 `engine.view()`，带全图）。
+           ⚠️ 反向约束：`view` **必须留着**，而且里面有 `player`
+           —— `ui.js` 的 `recoverLostPlayer()` 靠 `d.view.player` 判定「人接回来了没有」，
+              `app.js` 的 `keepView()` 也靠它决定要不要覆盖 `S.view`。
+              把它删了 ⇒ 断线重连永远判定「没接上」，直接把玩家踢回主菜单。
+              所以这里是「去地图」不是「去 view」，两件事别混为一谈。 */
+        const v = engine.view({ map: false });
+        return json(res, 200, Object.assign({ lines: [{ kind: r.ok ? 'sys' : 'warn', text: r.msg }] }, r, { view: v }));
       }
       case 'deletesave': {
         const r = engine.deleteSave(json_body && json_body.id);

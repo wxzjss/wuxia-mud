@@ -351,16 +351,61 @@ section('4 · 质量红线');
 {
   const items = BATCH.map(id => [id, N[id], N[id].portrait]);
 
-  /* 红线1 性别一致：女性不得出现「汉子 / 他 / 爷们 / 兄弟」 */
+  /* 红线1 性别一致：女性不得出现「汉子 / 他 / 爷们 / 兄弟」
+     ⚠️ 判据改过（严过关 P0-2d，team-lead 裁定 D-5）。
+     原判据是 `JSON.stringify(p)` **整串匹配**「他」，于是
+       「压下来，他就一直背着」（他 = 背锅的第三人，不是这位女性自称）
+     也被判红 —— 那是误报，而误报会让人不信这台量具。
+     改成**分语境**查：
+       · 以本人为主语的字段（role/origin/now/want/fear/secret/obsession/voice）
+         → 出现「他」一律红（这些地方用「他」指自己才是真错）；
+       · hooks[]（讲的是「别人会对玩家怎么样」，主语天然是第三方）
+         → 只有「他」和**本人姓名同现**才红（那才是真把她叫成了他）。
+
+     ⚠️ 顺序教训（team-lead 与严过关共同记，2026-10 P0-2d）：
+     上一轮我**先改内容**（把 3 句 rewardHint 里的「他/他们/给他」改掉去躲这条误报），
+     **后修判据**，修完才发现那 3 句按新判据本来不会红 —— 白改一次。
+     ⇒ 以后凡是「为了躲误报而改内容」，一律 **先修判据 → 重跑看还剩几条红 → 再动内容**。 */
+  const SELF_KEYS = ['role', 'origin', 'now', 'want', 'fear', 'secret', 'obsession', 'voice'];
+  const femPronounHits = (def, p) => {
+    const out = [];
+    const self = SELF_KEYS.map(k => JSON.stringify(p[k] === undefined ? null : p[k])).join(' ');
+    if (/汉子|爷们|兄弟/.test(self)) out.push('自称:汉子');
+    const c = (self.match(/他/g) || []).length;
+    if (c) out.push('自称:他×' + c);
+    /* hooks：只查「他 + 本人姓名同现」 */
+    const nm = String(def.name || '');
+    for (const h of (p.hooks || [])) {
+      const t = JSON.stringify(h);
+      if (/汉子|爷们|兄弟/.test(t) && nm && t.includes(nm)) out.push('hooks:汉子');
+      if (nm && t.includes('他') && t.includes(nm)) out.push('hooks:他(疑似指本人)');
+    }
+    return out;
+  };
   const femBad = [];
   for (const [id, def, p] of items) {
     if (def.gender !== 'female') continue;
-    const t = JSON.stringify(p);
-    if (/汉子|爷们|兄弟/.test(t)) femBad.push(id + ':汉子');
-    const c = (t.match(/他/g) || []).length;
-    if (c) femBad.push(id + ':他×' + c);
+    for (const h of femPronounHits(def, p)) femBad.push(id + ':' + h);
   }
-  eq('4.1 女性 NPC 画像不含「汉子/他/爷们/兄弟」', femBad.length, 0, femBad.slice(0, 5).join(','));
+  eq('4.1 女性 NPC 画像不含「汉子/他/爷们/兄弟」（分语境）', femBad.length, 0, femBad.slice(0, 5).join(','));
+
+  /* 4.1c 反向自证：判据改宽了，必须证明「该红的仍然红」，否则等于把红线拆了 */
+  {
+    const F = { gender: 'female', name: '樊湘' };
+    const mkPortrait = (now, hooks) => ({ role: '', origin: '', now, want: '', fear: '', secret: '', obsession: '', voice: {}, hooks: hooks || [] });
+    /* 应命中：自称语境里写「他」 */
+    eq('4.1c-a 自称字段写「他」→ 判红（新判据没把红线拆掉）',
+      femPronounHits(F, mkPortrait('他自己也知道这事干不得。')).length > 0, true);
+    /* 应命中：hooks 里「他」和本人姓名同现（真把她叫成了他） */
+    eq('4.1c-b hooks 里「他」与本人姓名同现 → 判红',
+      femPronounHits(F, mkPortrait('', [{ rewardHint: '替他把樊湘的案翻过来。' }])).length > 0, true);
+    /* 应不命中：hooks 里「他」指第三人（他人姓名，不是本人） */
+    eq('4.1c-c hooks 里「他」指第三人 → 不判红（这是 D-5 要修的误报）',
+      femPronounHits(F, mkPortrait('', [{ rewardHint: '孟明亡母那笔钱，说不说给他听。' }])).length, 0);
+    /* 应不命中：自称用「她」正常 */
+    eq('4.1c-d 自称用「她」→ 不判红',
+      femPronounHits(F, mkPortrait('她自己也不肯提。')).length, 0);
+  }
 
   /* 红线3 反面必须有 hooks */
   const villain = items.filter(([, , p]) => p.marks.some(m => gen.VILLAIN_MARKS.includes(m)));

@@ -231,19 +231,17 @@ const npcs5 = gotoFirst(3);
 const npc5 = npcs5[0];
 const likes5 = (npc5.def && npc5.def.likes) || [];
 ok('NPC 有喜爱类型', likes5.length > 0, likes5.join(','));
-/* 找一件他喜欢的物品 */
-const LIKE_ITEM_MAP = {
-  painting: 'painting_landscape', porcelain: 'porcelain_vase', book: 'book_classic',
-  jade: 'jade_pendant', wine: 'wine_bamboo', tea: 'tea_longjing', jewelry: 'gold_bangle',
-  incense: 'incense_agarwood', weapon: 'fine_sword', herb: 'herb_ginseng',
-  food: 'steamed_bun', music: 'guqin', toy: 'clay_figure', makeup: 'rouge_box',
-};
-let liked = null, unliked = null;
-for (const l of likes5) if (LIKE_ITEM_MAP[l]) { liked = LIKE_ITEM_MAP[l]; break; }
-unliked = ITEMS.find(i => !likes5.some(l => (w.data.items[i].tags || []).includes(l)) && w.data.items[i].value > 100);
+/* 找一件他喜欢的物品 —— 必须真的命中 tags（主人 2026-10-13 教的坑：
+   光按 like 类型查一张写死的表，改数据就哑火。steamed_bun 就是没 tags 的例子） */
+let liked = null;
+for (const l of likes5) {
+  const hit = ITEMS.find(i => (w.data.items[i].tags || []).includes(l));
+  if (hit) { liked = hit; break; }
+}
+const unliked = ITEMS.find(i => !likes5.some(l => (w.data.items[i].tags || []).includes(l)) && w.data.items[i].value > 100);
 if (liked) {
   const gvLiked = social.giftValue(w, npc5, liked);
-  ok('送喜爱的物品 → 有加成', gvLiked.matched === true, `${w.data.items[liked].name} → +${gvLiked.favor}`);
+  ok('送喜爱的物品 → 有加成', gvLiked.matched === true && gvLiked.favor > 0, `${w.data.items[liked].name} → +${gvLiked.favor}`);
   if (unliked) {
     const gvUnliked = social.giftValue(w, npc5, unliked);
     ok('送不对胃口的 → 加成低', gvUnliked.favor < gvLiked.favor, `${gvUnliked.favor} < ${gvLiked.favor}`);
@@ -304,11 +302,16 @@ if (npc7r) {
 }
 
 section('⑧ 切磋');
-const npc8 = gotoFirst(3).find(n => !/狼|虎|熊|蛇|豹|兽/.test(n.name));
+/* 前几节（交谈/请教/花钱请教）可能已经跟人动上手，battle 没清干净，
+   切磋的三道闸里「战斗中」直接把门关上 —— 那是测试状态残留，不是功能缺陷。
+   这里先把战斗状态复位，再挑一个真正躺着的对象。 */
+w.battle = null;
+p.inCombat = false;
+const npc8 = gotoFirst(3).find(n => !/狼|虎|熊|蛇|豹|兽/.test(n.name) && !n.inCombat && !n.dead && !n.knockedOut);
 ok('找到可切磋对象', !!npc8, npc8 && npc8.name);
 const f8 = npc8.favor || 0;
 const duel = w.startDuel(p, npc8);
-ok('切磋能开启', !!duel.battle, '');
+ok('切磋能开启', !!duel.battle, duel.battle ? '' : ((duel.lines || []).map(l => l.text).join(' / ') || '（无提示）'));
 ok('标记为切磋', duel.battle && duel.battle.duel === true);
 if (duel.battle) {
   /* 直接结算为玩家胜 */

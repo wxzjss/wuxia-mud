@@ -1,0 +1,2417 @@
+{
+  "_meta": {
+    "generatedAt": "2026-10-12T16:03:23.919Z",
+    "generator": "tools/room-batch-plan.js（重跑即可重新切分，别手改这个 JSON）",
+    "source": [
+      "game/data/**（真引擎加载链）",
+      "design/77-room-rewrite-sample.md"
+    ],
+    "totalRooms": 531,
+    "totalRegions": 34,
+    "totalBatches": 34,
+    "maxBatchSize": 40,
+    "renameTotal": 83,
+    "renameFromTable": 82,
+    "renameFromRuling": 1,
+    "sample77Total": 20,
+    "sampleOutsideRename": [
+      "shaolin_library",
+      "tangmen_library",
+      "taohua_vault",
+      "gaibang_vault",
+      "jindao_vault",
+      "baituo_vault"
+    ],
+    "descTodoA_total": 69,
+    "descTodoB_total": 69,
+    "needDesc77Total": 14,
+    "docMissingFromDisk": [],
+    "sampleMissingFromDisk": [],
+    "discrepancies": [
+      "「62 间」对不上：文档 V1 / §1.4.2-A6 说 82 间里 20 间已有（或需配）、其余 62 间。实算两种口径都不是 62 —— 读法A（§2.2 样张全文）= 69 间待补，读法B（需配新 desc 标记）= 69 间没标标记（而表里真正带「需配新 desc」的只有 14 间，不是 20）。原因：§2.2 的 20 间样张里有 6 间**不在 82 间改名名单内**（shaolin_library、tangmen_library、taohua_vault、gaibang_vault、jindao_vault、baituo_vault，全是 D/E/F 组的重地）。**要人定：62 到底指哪一张名单。**",
+      "§3 正文里还有 1 间改名裁定不在 §1 表里：`shaolin_cangjing`→「少林·碑廊」（第 1512 行）。已并入本清单的 rename，但**跟 §1 的那 82 间来历不同，改之前人要看一眼**。"
+    ],
+    "rule": "按 region 分批，每批 ≤ 40 间。判据：这批改动会不会动到 id 或 exits？动到 ⇒ 必须分批（引用关系变了，批次边界就是归因边界）；只改 name/desc ⇒ 可以大批量。"
+  },
+  "_howToUse": [
+    "1) 一批一批做，不要跨批混着改。",
+    "2) 每批： node tools/data-edit-cycle.js cycle --only map   （守卫 + 悬空引用 + 定向回归，一步红就停）",
+    "3) 绿了再进下一批。",
+    "4) 全部批跑完，最后跑一次 node tools/run-regression.js（全量）。",
+    "5) 改完想知道这批到底是「结构性」还是「文案」： node tools/data-edit-cycle.js diff   （它会打印，不替你决定）",
+    "6) 开工前先看 _meta.discrepancies —— 那里有文档自相对不上的地方，得人拍板。"
+  ],
+  "batches": [
+    {
+      "id": "B01",
+      "region": "huashan",
+      "split": null,
+      "roomCount": 27,
+      "roomIds": [
+        "hm_linghu",
+        "hm_master_yue",
+        "hm_nv_yue",
+        "hm_wen_huashan_shop",
+        "hs_village_kou",
+        "hs_village_shrine",
+        "hs_village_tea",
+        "hs_village_yard",
+        "huashan_bei",
+        "huashan_houdong",
+        "huashan_houshan",
+        "huashan_lianhua",
+        "huashan_library",
+        "huashan_path1",
+        "huashan_path2",
+        "huashan_path3",
+        "huashan_path4",
+        "huashan_path5",
+        "huashan_path6",
+        "huashan_qianchi",
+        "huashan_qingke",
+        "huashan_shanxia",
+        "huashan_siguoya",
+        "huashan_vault",
+        "huashan_yunu",
+        "huashan_zhengqi",
+        "road_huashan_1"
+      ],
+      "rename": [
+        {
+          "id": "huashan_path1",
+          "from": "华山·石阶",
+          "to": "华山·五里关",
+          "needDesc": false,
+          "why": "入山第一道关，石阶从关口凿上岩壁。真实地名，位置正合",
+          "source": "§1 改名表",
+          "line": 120
+        },
+        {
+          "id": "huashan_path2",
+          "from": "华山·松林",
+          "to": "华山·莎萝坪",
+          "needDesc": true,
+          "why": "华山第一处坪地，因莎萝树得名。⚠️ 需配新 desc（坪 + 树名，不是老松）",
+          "source": "§1 改名表",
+          "line": 121
+        },
+        {
+          "id": "huashan_path3",
+          "from": "华山·半山亭",
+          "to": "华山·毛女洞",
+          "needDesc": false,
+          "why": "传说毛女隐居的洞，香客与挑夫在此歇脚，洞里堆柴、留水囊都说得通。真实地名",
+          "source": "§1 改名表",
+          "line": 122
+        },
+        {
+          "id": "huashan_path4",
+          "from": "华山·林间道",
+          "to": "华山·云门",
+          "needDesc": false,
+          "why": "两石夹峙如门，过门即是林道。真实地名",
+          "source": "§1 改名表",
+          "line": 123
+        },
+        {
+          "id": "huashan_path5",
+          "from": "华山·山泉",
+          "to": "华山·水帘洞",
+          "needDesc": false,
+          "why": "石缝渗泉接石槽，洞就在泉边。真实地名",
+          "source": "§1 改名表",
+          "line": 124
+        },
+        {
+          "id": "huashan_path6",
+          "from": "华山·崖边路",
+          "to": "华山·回心石",
+          "needDesc": false,
+          "why": "真地名，就在青柯坪之前。原 desc 尾巴「再往上，华山·青柯坪就在前头」——**「回心」二字正好压在「再往上就难了」这个位置上**",
+          "source": "§1 改名表",
+          "line": 125
+        },
+        {
+          "id": "hs_village_kou",
+          "from": "玉泉村·村口",
+          "to": "玉泉村·老槐树",
+          "needDesc": false,
+          "why": "desc 最后一句就是「村口一棵老槐树下坐着几个人」。**把「村口」换成那棵树**，玩家一眼就知道往哪儿走",
+          "source": "§1 改名表",
+          "line": 285
+        },
+        {
+          "id": "hs_village_yard",
+          "from": "玉泉村·打谷场",
+          "to": "玉泉村·麦场",
+          "needDesc": true,
+          "why": "摊着刚收的谷子。⚠️ 需配新 desc",
+          "source": "§1 改名表",
+          "line": 286
+        },
+        {
+          "id": "hs_village_tea",
+          "from": "玉泉村·茶棚",
+          "to": "玉泉村·挑夫棚",
+          "needDesc": false,
+          "why": "desc 说「上山的人在这儿喝一碗再走」，村口 desc 说来的有「香客、挑夫、赶考的」——**取「挑夫」，这是玉泉村才有的客人**",
+          "source": "§1 改名表",
+          "line": 287
+        },
+        {
+          "id": "hs_village_shrine",
+          "from": "玉泉村·山神庙",
+          "to": "玉泉村·西岭庙",
+          "needDesc": true,
+          "why": "供山神与土地，庙在村西岭上。⚠️ 需配新 desc",
+          "source": "§1 改名表",
+          "line": 288
+        }
+      ],
+      "renameCount": 10,
+      "fromRuling": [],
+      "sample77": [
+        "hs_village_kou",
+        "hs_village_shrine",
+        "hs_village_tea",
+        "hs_village_yard",
+        "huashan_path1",
+        "huashan_path2",
+        "huashan_path3",
+        "huashan_path4",
+        "huashan_path5",
+        "huashan_path6"
+      ],
+      "sample77Count": 10,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [
+        "hs_village_shrine",
+        "hs_village_yard",
+        "huashan_path2"
+      ],
+      "needDesc77Count": 3,
+      "heavy": [
+        "huashan_library",
+        "huashan_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "name（§1/§3 改名 10 间）",
+        "desc（10 间 §2 已有样张，替换）",
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "design/77 改名 10 间；其中 3 间标了「需配新 desc」；10 间 §2 已有样张；含重地 2 间（§3 收编）"
+    },
+    {
+      "id": "B02",
+      "region": "shaolin",
+      "split": null,
+      "roomCount": 22,
+      "roomIds": [
+        "hm_npcv_024",
+        "hm_shaolin_fangzheng",
+        "road_shaolin_1",
+        "shaolin_cangjing",
+        "shaolin_daxiong",
+        "shaolin_houshan",
+        "shaolin_lianwu",
+        "shaolin_library",
+        "shaolin_path1",
+        "shaolin_path2",
+        "shaolin_path3",
+        "shaolin_path4",
+        "shaolin_path5",
+        "shaolin_path6",
+        "shaolin_shanmen",
+        "shaolin_ta",
+        "shaolin_tianwang",
+        "shaolin_vault",
+        "sl_village_kou",
+        "sl_village_shrine",
+        "sl_village_tea",
+        "sl_village_yard"
+      ],
+      "rename": [
+        {
+          "id": "shaolin_path1",
+          "from": "少林·石阶",
+          "to": "少林·五乳磴",
+          "needDesc": false,
+          "why": "少林寺在五乳峰下，石阶沿峰脚凿出。「磴」即石阶，比「石阶」古",
+          "source": "§1 改名表",
+          "line": 133
+        },
+        {
+          "id": "shaolin_path2",
+          "from": "少林·松林",
+          "to": "少林·古柏林",
+          "needDesc": true,
+          "why": "少室山出名的是古柏不是松。⚠️ 需配新 desc（柏）",
+          "source": "§1 改名表",
+          "line": 134
+        },
+        {
+          "id": "shaolin_path3",
+          "from": "少林·半山亭",
+          "to": "少林·初祖庵",
+          "needDesc": false,
+          "why": "真实庵院，在半山，香客歇脚、檐下堆柴",
+          "source": "§1 改名表",
+          "line": 135
+        },
+        {
+          "id": "shaolin_path4",
+          "from": "少林·林间道",
+          "to": "少林·少室阴道",
+          "needDesc": false,
+          "why": "「阴」＝山之北，少林正在少室山北麓，林密不见天",
+          "source": "§1 改名表",
+          "line": 136
+        },
+        {
+          "id": "shaolin_path5",
+          "from": "少林·山泉",
+          "to": "少林·卓锡泉",
+          "needDesc": false,
+          "why": "真实泉名，「卓锡」是僧人立锡杖于地的典故，禅门味极足",
+          "source": "§1 改名表",
+          "line": 137
+        },
+        {
+          "id": "shaolin_path6",
+          "from": "少林·崖边路",
+          "to": "少林·达摩洞前",
+          "needDesc": false,
+          "why": "达摩洞在五乳峰半山，最后一段贴崖，只容一人",
+          "source": "§1 改名表",
+          "line": 138
+        },
+        {
+          "id": "sl_village_kou",
+          "from": "柏谷村·村口",
+          "to": "柏谷村·王家槐",
+          "needDesc": false,
+          "why": "desc：「村里多半姓王」——**四个村子里只有这个村给出了姓，不用白不用**",
+          "source": "§1 改名表",
+          "line": 294
+        },
+        {
+          "id": "sl_village_yard",
+          "from": "柏谷村·打谷场",
+          "to": "柏谷村·菜园场",
+          "needDesc": false,
+          "why": "desc：「世代替寺里种菜、挑水」。晒谷也在场上，但**这个村的场首先是菜园**",
+          "source": "§1 改名表",
+          "line": 295
+        },
+        {
+          "id": "sl_village_tea",
+          "from": "柏谷村·茶棚",
+          "to": "柏谷村·施茶棚",
+          "needDesc": false,
+          "why": "佛门脚下，茶是白给的不是卖的。**「施」字一出，就知道这是少林的村**",
+          "source": "§1 改名表",
+          "line": 296
+        },
+        {
+          "id": "sl_village_shrine",
+          "from": "柏谷村·山神庙",
+          "to": "柏谷村·土地祠",
+          "needDesc": false,
+          "why": "嵩山一带的叫法",
+          "source": "§1 改名表",
+          "line": 297
+        },
+        {
+          "id": "shaolin_cangjing",
+          "from": "少林·藏经阁",
+          "to": "少林·碑廊",
+          "needDesc": true,
+          "why": "desc 也要换（§3.5 收编时顺手要处理的三件事 正文裁定（不在 §1 改名表里））",
+          "source": "§3.5 收编时顺手要处理的三件事 正文裁定（不在 §1 改名表里）",
+          "line": 1512
+        }
+      ],
+      "renameCount": 11,
+      "fromRuling": [
+        {
+          "id": "shaolin_cangjing",
+          "from": "少林·藏经阁",
+          "to": "少林·碑廊",
+          "needDesc": true,
+          "why": "desc 也要换（§3.5 收编时顺手要处理的三件事 正文裁定（不在 §1 改名表里））",
+          "source": "§3.5 收编时顺手要处理的三件事 正文裁定（不在 §1 改名表里）",
+          "line": 1512
+        }
+      ],
+      "sample77": [
+        "shaolin_library"
+      ],
+      "sample77Count": 1,
+      "descTodo": [
+        "shaolin_cangjing",
+        "shaolin_path1",
+        "shaolin_path2",
+        "shaolin_path3",
+        "shaolin_path4",
+        "shaolin_path5",
+        "shaolin_path6",
+        "sl_village_kou",
+        "sl_village_shrine",
+        "sl_village_tea",
+        "sl_village_yard"
+      ],
+      "descTodoCount": 11,
+      "needDesc77": [
+        "shaolin_cangjing",
+        "shaolin_path2"
+      ],
+      "needDesc77Count": 2,
+      "heavy": [
+        "shaolin_library",
+        "shaolin_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "name（§1/§3 改名 11 间）",
+        "desc（11 间 §2 没给全文，待补）",
+        "desc（1 间 §2 已有样张，替换）",
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "design/77 改名 11 间（含 1 间来自 §3 正文裁定，不在 §1 表里）；其中 2 间标了「需配新 desc」；11 间 §2 没给全文；1 间 §2 已有样张；含重地 2 间（§3 收编）"
+    },
+    {
+      "id": "B03",
+      "region": "emei",
+      "split": null,
+      "roomCount": 21,
+      "roomIds": [
+        "em_village_kou",
+        "em_village_shrine",
+        "em_village_tea",
+        "em_village_yard",
+        "emei_houshan",
+        "emei_jinding",
+        "emei_library",
+        "emei_path1",
+        "emei_path2",
+        "emei_path3",
+        "emei_path4",
+        "emei_path5",
+        "emei_path6",
+        "emei_qingyin",
+        "emei_shanmen",
+        "emei_she_ru",
+        "emei_vault",
+        "emei_ya_di",
+        "emei_yard",
+        "hm_emei_miejue",
+        "road_emei_1"
+      ],
+      "rename": [
+        {
+          "id": "emei_path1",
+          "from": "峨眉·石阶",
+          "to": "峨眉·解脱坡",
+          "needDesc": false,
+          "why": "真实坡名，坡上有解脱桥。「解脱」二字自带佛门气，又正好在「起步往上」的位置",
+          "source": "§1 改名表",
+          "line": 155
+        },
+        {
+          "id": "emei_path2",
+          "from": "峨眉·松林",
+          "to": "峨眉·冷杉林",
+          "needDesc": true,
+          "why": "峨眉名物是冷杉不是松。⚠️ 需配新 desc",
+          "source": "§1 改名表",
+          "line": 156
+        },
+        {
+          "id": "emei_path3",
+          "from": "峨眉·半山亭",
+          "to": "峨眉·中峰寺",
+          "needDesc": false,
+          "why": "真实寺，登山中途歇脚处",
+          "source": "§1 改名表",
+          "line": 157
+        },
+        {
+          "id": "emei_path4",
+          "from": "峨眉·林间道",
+          "to": "峨眉·钻天坡",
+          "needDesc": false,
+          "why": "真实坡名，坡陡林密——**「钻天」两个字把「树密得看不见天」这条 desc 直接说完了**",
+          "source": "§1 改名表",
+          "line": 158
+        },
+        {
+          "id": "emei_path5",
+          "from": "峨眉·山泉",
+          "to": "峨眉·神水泉",
+          "needDesc": false,
+          "why": "峨眉名泉，真实",
+          "source": "§1 改名表",
+          "line": 159
+        },
+        {
+          "id": "emei_path6",
+          "from": "峨眉·崖边路",
+          "to": "峨眉·一线天",
+          "needDesc": false,
+          "why": "真实，两崖夹一线，只容一人通过",
+          "source": "§1 改名表",
+          "line": 160
+        },
+        {
+          "id": "em_village_kou",
+          "from": "伏虎村·村口",
+          "to": "伏虎村·虎石",
+          "needDesc": false,
+          "why": "desc：「村口的石头真被打磨成一只伏着的老虎」。**这句 desc 白写了——名字应该就是它**",
+          "source": "§1 改名表",
+          "line": 312
+        },
+        {
+          "id": "em_village_yard",
+          "from": "伏虎村·打谷场",
+          "to": "伏虎村·晒坝",
+          "needDesc": false,
+          "why": "四川叫「坝」不叫「场」——**一个字就把地域说出来了**",
+          "source": "§1 改名表",
+          "line": 313
+        },
+        {
+          "id": "em_village_tea",
+          "from": "伏虎村·茶棚",
+          "to": "伏虎村·幺店子",
+          "needDesc": false,
+          "why": "四川话，路边小店就叫幺店子",
+          "source": "§1 改名表",
+          "line": 314
+        },
+        {
+          "id": "em_village_shrine",
+          "from": "伏虎村·山神庙",
+          "to": "伏虎村·山王庙",
+          "needDesc": false,
+          "why": "川渝供「山王」，不叫山神",
+          "source": "§1 改名表",
+          "line": 315
+        }
+      ],
+      "renameCount": 10,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [
+        "em_village_kou",
+        "em_village_shrine",
+        "em_village_tea",
+        "em_village_yard",
+        "emei_path1",
+        "emei_path2",
+        "emei_path3",
+        "emei_path4",
+        "emei_path5",
+        "emei_path6"
+      ],
+      "descTodoCount": 10,
+      "needDesc77": [
+        "emei_path2"
+      ],
+      "needDesc77Count": 1,
+      "heavy": [
+        "emei_library",
+        "emei_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "name（§1/§3 改名 10 间）",
+        "desc（10 间 §2 没给全文，待补）",
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "design/77 改名 10 间；其中 1 间标了「需配新 desc」；10 间 §2 没给全文；含重地 2 间（§3 收编）"
+    },
+    {
+      "id": "B04",
+      "region": "wudang",
+      "split": null,
+      "roomCount": 20,
+      "roomIds": [
+        "hm_wudang_chongxu",
+        "road_wudang_1",
+        "wd_village_kou",
+        "wd_village_shrine",
+        "wd_village_tea",
+        "wd_village_yard",
+        "wudang_houshan",
+        "wudang_jinding",
+        "wudang_lianwu",
+        "wudang_library",
+        "wudang_path1",
+        "wudang_path2",
+        "wudang_path3",
+        "wudang_path4",
+        "wudang_path5",
+        "wudang_path6",
+        "wudang_shanmen",
+        "wudang_taihe",
+        "wudang_vault",
+        "wudang_zixiao"
+      ],
+      "rename": [
+        {
+          "id": "wudang_path1",
+          "from": "武当·石阶",
+          "to": "武当·玄岳门阶",
+          "needDesc": false,
+          "why": "玄岳门是进山第一门，石阶自此上山。真实地名",
+          "source": "§1 改名表",
+          "line": 144
+        },
+        {
+          "id": "wudang_path2",
+          "from": "武当·松林",
+          "to": "武当·榔梅林",
+          "needDesc": false,
+          "why": "榔梅是武当特有树，明代列为贡品，「榔梅仙果」——**武当专属，别处用不了**",
+          "source": "§1 改名表",
+          "line": 145
+        },
+        {
+          "id": "wudang_path3",
+          "from": "武当·半山亭",
+          "to": "武当·仁威观",
+          "needDesc": false,
+          "why": "真实宫观，在登山道上",
+          "source": "§1 改名表",
+          "line": 146
+        },
+        {
+          "id": "wudang_path4",
+          "from": "武当·林间道",
+          "to": "武当·上下十八盘",
+          "needDesc": false,
+          "why": "武当著名盘道，林中穿行。真实地名",
+          "source": "§1 改名表",
+          "line": 147
+        },
+        {
+          "id": "wudang_path5",
+          "from": "武当·山泉",
+          "to": "武当·九渡涧",
+          "needDesc": false,
+          "why": "真实溪涧，行人在此歇脚喝水",
+          "source": "§1 改名表",
+          "line": 148
+        },
+        {
+          "id": "wudang_path6",
+          "from": "武当·崖边路",
+          "to": "武当·南岩栈道",
+          "needDesc": false,
+          "why": "真实，南岩宫依崖而建，栈道只容一人",
+          "source": "§1 改名表",
+          "line": 149
+        },
+        {
+          "id": "wd_village_kou",
+          "from": "遇真村·村口",
+          "to": "遇真村·溪口",
+          "needDesc": false,
+          "why": "desc：「屋舍依着溪水排」——**村子在溪口，不在路口**",
+          "source": "§1 改名表",
+          "line": 303
+        },
+        {
+          "id": "wd_village_yard",
+          "from": "遇真村·打谷场",
+          "to": "遇真村·碾道",
+          "needDesc": true,
+          "why": "武当是道教地界，村里有碾米的道场。⚠️ 需配新 desc",
+          "source": "§1 改名表",
+          "line": 304
+        },
+        {
+          "id": "wd_village_tea",
+          "from": "遇真村·茶棚",
+          "to": "遇真村·三清茶棚",
+          "needDesc": false,
+          "why": "道教茶棚，挂三清",
+          "source": "§1 改名表",
+          "line": 305
+        },
+        {
+          "id": "wd_village_shrine",
+          "from": "遇真村·山神庙",
+          "to": "遇真村·真武小庙",
+          "needDesc": false,
+          "why": "武当供真武，不供山神。**这一改，四个村的庙就各供各的了**",
+          "source": "§1 改名表",
+          "line": 306
+        }
+      ],
+      "renameCount": 10,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [
+        "wd_village_kou",
+        "wd_village_shrine",
+        "wd_village_tea",
+        "wd_village_yard",
+        "wudang_path1",
+        "wudang_path2",
+        "wudang_path3",
+        "wudang_path4",
+        "wudang_path5",
+        "wudang_path6"
+      ],
+      "descTodoCount": 10,
+      "needDesc77": [
+        "wd_village_yard"
+      ],
+      "needDesc77Count": 1,
+      "heavy": [
+        "wudang_library",
+        "wudang_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "name（§1/§3 改名 10 间）",
+        "desc（10 间 §2 没给全文，待补）",
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "design/77 改名 10 间；其中 1 间标了「需配新 desc」；10 间 §2 没给全文；含重地 2 间（§3 收编）"
+    },
+    {
+      "id": "B05",
+      "region": "dali",
+      "split": null,
+      "roomCount": 20,
+      "roomIds": [
+        "dali_library",
+        "dali_path1",
+        "dali_path2",
+        "dali_path3",
+        "dali_path4",
+        "dali_path5",
+        "dali_path6",
+        "dali_tianlong",
+        "dali_vault",
+        "dali_wangfu",
+        "dali_wuhua",
+        "diancang_gate",
+        "diancang_hall",
+        "diancang_library",
+        "diancang_vault",
+        "hm_duan_yu",
+        "road_dali_1",
+        "wuliang_gate",
+        "wuliang_hall",
+        "wuliang_vault"
+      ],
+      "rename": [
+        {
+          "id": "dali_path1",
+          "from": "大理·石阶",
+          "to": "大理·中和寺道",
+          "needDesc": false,
+          "why": "中和寺在点苍中和峰，是登点苍的石阶起点。真实",
+          "source": "§1 改名表",
+          "line": 166
+        },
+        {
+          "id": "dali_path2",
+          "from": "大理·松林",
+          "to": "大理·应乐峰林",
+          "needDesc": true,
+          "why": "点苍十九峰之一「应乐峰」。⚠️ 需配新 desc",
+          "source": "§1 改名表",
+          "line": 167
+        },
+        {
+          "id": "dali_path3",
+          "from": "大理·半山亭",
+          "to": "大理·无为寺",
+          "needDesc": false,
+          "why": "真实，兰峰无为寺，大理段氏出家之地——**放在大理，比放别的任何地方都有分量**",
+          "source": "§1 改名表",
+          "line": 168
+        },
+        {
+          "id": "dali_path4",
+          "from": "大理·林间道",
+          "to": "大理·十八溪径",
+          "needDesc": false,
+          "why": "点苍十八溪，小径沿溪走",
+          "source": "§1 改名表",
+          "line": 169
+        },
+        {
+          "id": "dali_path5",
+          "from": "大理·山泉",
+          "to": "大理·七龙女池",
+          "needDesc": false,
+          "why": "点苍名景，泉池。**大理味最足的一个名字，别处用不了**",
+          "source": "§1 改名表",
+          "line": 170
+        },
+        {
+          "id": "dali_path6",
+          "from": "大理·崖边路",
+          "to": "大理·马耳峰栈",
+          "needDesc": false,
+          "why": "点苍十九峰之一「马耳峰」，栈道贴崖",
+          "source": "§1 改名表",
+          "line": 171
+        }
+      ],
+      "renameCount": 6,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [
+        "dali_path1",
+        "dali_path2",
+        "dali_path3",
+        "dali_path4",
+        "dali_path5",
+        "dali_path6"
+      ],
+      "descTodoCount": 6,
+      "needDesc77": [
+        "dali_path2"
+      ],
+      "needDesc77Count": 1,
+      "heavy": [
+        "dali_library",
+        "dali_vault",
+        "diancang_library",
+        "diancang_vault",
+        "wuliang_vault"
+      ],
+      "heavyCount": 5,
+      "touches": [
+        "name（§1/§3 改名 6 间）",
+        "desc（6 间 §2 没给全文，待补）",
+        "desc（5 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "design/77 改名 6 间；其中 1 间标了「需配新 desc」；6 间 §2 没给全文；含重地 5 间（§3 收编）"
+    },
+    {
+      "id": "B06",
+      "region": "tangmen",
+      "split": null,
+      "roomCount": 14,
+      "roomIds": [
+        "road_tangmen_1",
+        "road_tangmen_2",
+        "tangmen_armory",
+        "tangmen_gate",
+        "tangmen_hall",
+        "tangmen_library",
+        "tangmen_path1",
+        "tangmen_path2",
+        "tangmen_path3",
+        "tangmen_path4",
+        "tangmen_path5",
+        "tangmen_path6",
+        "tangmen_poison",
+        "tangmen_vault"
+      ],
+      "rename": [
+        {
+          "id": "tangmen_path1",
+          "from": "唐门·石阶",
+          "to": "唐门·百步磴",
+          "needDesc": false,
+          "why": "堡外凿出的一百级石阶，数得清 = 这是人造的，不是天生的",
+          "source": "§1 改名表",
+          "line": 177
+        },
+        {
+          "id": "tangmen_path2",
+          "from": "唐门·松林",
+          "to": "唐门·慈竹林",
+          "needDesc": true,
+          "why": "蜀中慈竹，唐门做机关也用竹。⚠️ 需配新 desc（竹）",
+          "source": "§1 改名表",
+          "line": 178
+        },
+        {
+          "id": "tangmen_path3",
+          "from": "唐门·半山亭",
+          "to": "唐门·歇马亭",
+          "needDesc": false,
+          "why": "挑夫与门人歇脚，堆柴、留水囊",
+          "source": "§1 改名表",
+          "line": 179
+        },
+        {
+          "id": "tangmen_path4",
+          "from": "唐门·林间道",
+          "to": "唐门·雾中径",
+          "needDesc": false,
+          "why": "蜀中雾大，「蜀犬吠日」",
+          "source": "§1 改名表",
+          "line": 180
+        },
+        {
+          "id": "tangmen_path5",
+          "from": "唐门·山泉",
+          "to": "唐门·浸药泉",
+          "needDesc": false,
+          "why": "泉用来浸药——**唐门独一份，一看见就知道是谁家的山**",
+          "source": "§1 改名表",
+          "line": 181
+        },
+        {
+          "id": "tangmen_path6",
+          "from": "唐门·崖边路",
+          "to": "唐门·悬空栈",
+          "needDesc": false,
+          "why": "栈道贴崖，只容一人",
+          "source": "§1 改名表",
+          "line": 182
+        }
+      ],
+      "renameCount": 6,
+      "fromRuling": [],
+      "sample77": [
+        "tangmen_library",
+        "tangmen_path5"
+      ],
+      "sample77Count": 2,
+      "descTodo": [
+        "tangmen_path1",
+        "tangmen_path2",
+        "tangmen_path3",
+        "tangmen_path4",
+        "tangmen_path6"
+      ],
+      "descTodoCount": 5,
+      "needDesc77": [
+        "tangmen_path2"
+      ],
+      "needDesc77Count": 1,
+      "heavy": [
+        "tangmen_library",
+        "tangmen_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "name（§1/§3 改名 6 间）",
+        "desc（5 间 §2 没给全文，待补）",
+        "desc（2 间 §2 已有样张，替换）",
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "design/77 改名 6 间；其中 1 间标了「需配新 desc」；5 间 §2 没给全文；2 间 §2 已有样张；含重地 2 间（§3 收编）"
+    },
+    {
+      "id": "B07",
+      "region": "taohuadao",
+      "split": null,
+      "roomCount": 14,
+      "roomIds": [
+        "hm_nv_huang",
+        "taohua_library",
+        "taohua_vault",
+        "taohuadao_dock",
+        "taohuadao_forest",
+        "taohuadao_path1",
+        "taohuadao_path2",
+        "taohuadao_path3",
+        "taohuadao_path4",
+        "taohuadao_path5",
+        "taohuadao_path6",
+        "taohuadao_qingyin",
+        "taohuadao_she",
+        "taohuadao_zhu"
+      ],
+      "rename": [
+        {
+          "id": "taohuadao_path1",
+          "from": "桃花岛·石阶",
+          "to": "桃花岛·弹指阶",
+          "needDesc": false,
+          "why": "黄药师「弹指神通」",
+          "source": "§1 改名表",
+          "line": 232
+        },
+        {
+          "id": "taohuadao_path2",
+          "from": "桃花岛·松林",
+          "to": "桃花岛·落英林",
+          "needDesc": true,
+          "why": "「落英神剑掌」。⚠️ 需配新 desc（落英 ≠ 松）",
+          "source": "§1 改名表",
+          "line": 233
+        },
+        {
+          "id": "taohuadao_path3",
+          "from": "桃花岛·半山亭",
+          "to": "桃花岛·试剑亭",
+          "needDesc": false,
+          "why": "桃花岛真有试剑亭",
+          "source": "§1 改名表",
+          "line": 234
+        },
+        {
+          "id": "taohuadao_path4",
+          "from": "桃花岛·林间道",
+          "to": "桃花岛·迷踪径",
+          "needDesc": false,
+          "why": "奇门遁甲，走错就绕回原地",
+          "source": "§1 改名表",
+          "line": 235
+        },
+        {
+          "id": "taohuadao_path5",
+          "from": "桃花岛·山泉",
+          "to": "桃花岛·潮声泉",
+          "needDesc": false,
+          "why": "扣「碧海潮生曲」——**泉声如潮，只有桃花岛会有这种联想**",
+          "source": "§1 改名表",
+          "line": 236
+        },
+        {
+          "id": "taohuadao_path6",
+          "from": "桃花岛·崖边路",
+          "to": "桃花岛·临风栈",
+          "needDesc": false,
+          "why": "崖边看海",
+          "source": "§1 改名表",
+          "line": 237
+        }
+      ],
+      "renameCount": 6,
+      "fromRuling": [],
+      "sample77": [
+        "taohua_vault"
+      ],
+      "sample77Count": 1,
+      "descTodo": [
+        "taohuadao_path1",
+        "taohuadao_path2",
+        "taohuadao_path3",
+        "taohuadao_path4",
+        "taohuadao_path5",
+        "taohuadao_path6"
+      ],
+      "descTodoCount": 6,
+      "needDesc77": [
+        "taohuadao_path2"
+      ],
+      "needDesc77Count": 1,
+      "heavy": [
+        "taohua_library",
+        "taohua_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "name（§1/§3 改名 6 间）",
+        "desc（6 间 §2 没给全文，待补）",
+        "desc（1 间 §2 已有样张，替换）",
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "design/77 改名 6 间；其中 1 间标了「需配新 desc」；6 间 §2 没给全文；1 间 §2 已有样张；含重地 2 间（§3 收编）"
+    },
+    {
+      "id": "B08",
+      "region": "miaojiang",
+      "split": null,
+      "roomCount": 13,
+      "roomIds": [
+        "hm_miao_lan",
+        "miaojiang_gu",
+        "miaojiang_library",
+        "miaojiang_path1",
+        "miaojiang_path2",
+        "miaojiang_path3",
+        "miaojiang_path4",
+        "miaojiang_path5",
+        "miaojiang_path6",
+        "miaojiang_sheng",
+        "miaojiang_vault",
+        "miaojiang_zhai",
+        "road_miao_1"
+      ],
+      "rename": [
+        {
+          "id": "miaojiang_path1",
+          "from": "苗疆·石阶",
+          "to": "苗疆·踩山道",
+          "needDesc": false,
+          "why": "「踩山」是苗族年节，路是踩出来的",
+          "source": "§1 改名表",
+          "line": 188
+        },
+        {
+          "id": "miaojiang_path2",
+          "from": "苗疆·松林",
+          "to": "苗疆·榕树坪",
+          "needDesc": true,
+          "why": "南方榕树气根垂下，正合「枝子横着长，把路遮得半明半暗」。⚠️ 需配新 desc",
+          "source": "§1 改名表",
+          "line": 189
+        },
+        {
+          "id": "miaojiang_path3",
+          "from": "苗疆·半山亭",
+          "to": "苗疆·歇脚寮",
+          "needDesc": false,
+          "why": "「寮」是南方小屋，不用「亭」——**亭是汉地的东西**",
+          "source": "§1 改名表",
+          "line": 190
+        },
+        {
+          "id": "miaojiang_path4",
+          "from": "苗疆·林间道",
+          "to": "苗疆·瘴气沟",
+          "needDesc": false,
+          "why": "湿热林沟起瘴，苗疆的林子就是这样的",
+          "source": "§1 改名表",
+          "line": 191
+        },
+        {
+          "id": "miaojiang_path5",
+          "from": "苗疆·山泉",
+          "to": "苗疆·凉水井",
+          "needDesc": false,
+          "why": "南方叫「井」不叫「泉」",
+          "source": "§1 改名表",
+          "line": 192
+        },
+        {
+          "id": "miaojiang_path6",
+          "from": "苗疆·崖边路",
+          "to": "苗疆·溜索崖",
+          "needDesc": false,
+          "why": "西南过崖用溜索——**整个江湖里只有这一处会这么过崖**",
+          "source": "§1 改名表",
+          "line": 193
+        }
+      ],
+      "renameCount": 6,
+      "fromRuling": [],
+      "sample77": [
+        "miaojiang_path6"
+      ],
+      "sample77Count": 1,
+      "descTodo": [
+        "miaojiang_path1",
+        "miaojiang_path2",
+        "miaojiang_path3",
+        "miaojiang_path4",
+        "miaojiang_path5"
+      ],
+      "descTodoCount": 5,
+      "needDesc77": [
+        "miaojiang_path2"
+      ],
+      "needDesc77Count": 1,
+      "heavy": [
+        "miaojiang_library",
+        "miaojiang_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "name（§1/§3 改名 6 间）",
+        "desc（5 间 §2 没给全文，待补）",
+        "desc（1 间 §2 已有样张，替换）",
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "design/77 改名 6 间；其中 1 间标了「需配新 desc」；5 间 §2 没给全文；1 间 §2 已有样张；含重地 2 间（§3 收编）"
+    },
+    {
+      "id": "B09",
+      "region": "gaibang",
+      "split": null,
+      "roomCount": 13,
+      "roomIds": [
+        "gaibang_library",
+        "gaibang_path1",
+        "gaibang_path2",
+        "gaibang_path3",
+        "gaibang_path4",
+        "gaibang_path5",
+        "gaibang_path6",
+        "gaibang_po_miao",
+        "gaibang_vault",
+        "hm_gaibang_hong",
+        "hm_npcv_062",
+        "road_gaibang_1",
+        "road_nan_1"
+      ],
+      "rename": [
+        {
+          "id": "gaibang_path1",
+          "from": "丐帮·石阶",
+          "to": "丐帮·断碑磴",
+          "needDesc": false,
+          "why": "路边一截断碑，石阶从碑旁上",
+          "source": "§1 改名表",
+          "line": 199
+        },
+        {
+          "id": "gaibang_path2",
+          "from": "丐帮·松林",
+          "to": "丐帮·野棘林",
+          "needDesc": true,
+          "why": "丐帮的山头长不出老松，长荆棘。⚠️ 需配新 desc",
+          "source": "§1 改名表",
+          "line": 200
+        },
+        {
+          "id": "gaibang_path3",
+          "from": "丐帮·半山亭",
+          "to": "丐帮·破凉亭",
+          "needDesc": false,
+          "why": "丐帮的亭子就是破的——**名字里带个「破」字，就是这个门派的样子**",
+          "source": "§1 改名表",
+          "line": 201
+        },
+        {
+          "id": "gaibang_path4",
+          "from": "丐帮·林间道",
+          "to": "丐帮·花子径",
+          "needDesc": false,
+          "why": "「花子」是乞丐旧称，路上常有叫花子",
+          "source": "§1 改名表",
+          "line": 202
+        },
+        {
+          "id": "gaibang_path5",
+          "from": "丐帮·山泉",
+          "to": "丐帮·一碗泉",
+          "needDesc": false,
+          "why": "一汪水刚好一碗，乞丐用碗舀",
+          "source": "§1 改名表",
+          "line": 203
+        },
+        {
+          "id": "gaibang_path6",
+          "from": "丐帮·崖边路",
+          "to": "丐帮·鹰嘴崖",
+          "needDesc": false,
+          "why": "崖口窄如鹰嘴",
+          "source": "§1 改名表",
+          "line": 204
+        }
+      ],
+      "renameCount": 6,
+      "fromRuling": [],
+      "sample77": [
+        "gaibang_vault"
+      ],
+      "sample77Count": 1,
+      "descTodo": [
+        "gaibang_path1",
+        "gaibang_path2",
+        "gaibang_path3",
+        "gaibang_path4",
+        "gaibang_path5",
+        "gaibang_path6"
+      ],
+      "descTodoCount": 6,
+      "needDesc77": [
+        "gaibang_path2"
+      ],
+      "needDesc77Count": 1,
+      "heavy": [
+        "gaibang_library",
+        "gaibang_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "name（§1/§3 改名 6 间）",
+        "desc（6 间 §2 没给全文，待补）",
+        "desc（1 间 §2 已有样张，替换）",
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "design/77 改名 6 间；其中 1 间标了「需配新 desc」；6 间 §2 没给全文；1 间 §2 已有样张；含重地 2 间（§3 收编）"
+    },
+    {
+      "id": "B10",
+      "region": "gumu",
+      "split": null,
+      "roomCount": 12,
+      "roomIds": [
+        "gumu_library",
+        "gumu_mu",
+        "gumu_path1",
+        "gumu_path2",
+        "gumu_path3",
+        "gumu_path4",
+        "gumu_path5",
+        "gumu_path6",
+        "gumu_quanzhen",
+        "gumu_shan",
+        "gumu_shi",
+        "gumu_vault"
+      ],
+      "rename": [
+        {
+          "id": "gumu_path1",
+          "from": "终南山·石阶",
+          "to": "终南·三清磴",
+          "needDesc": false,
+          "why": "道教三清；「终南捷径」的典故就在这条道上",
+          "source": "§1 改名表",
+          "line": 210
+        },
+        {
+          "id": "gumu_path2",
+          "from": "终南山·松林",
+          "to": "终南·重阳林",
+          "needDesc": true,
+          "why": "重阳宫外的林子。⚠️ 需配新 desc",
+          "source": "§1 改名表",
+          "line": 211
+        },
+        {
+          "id": "gumu_path3",
+          "from": "终南山·半山亭",
+          "to": "终南·避雨庵",
+          "needDesc": false,
+          "why": "山中避雨小庵，堆柴、留水囊",
+          "source": "§1 改名表",
+          "line": 212
+        },
+        {
+          "id": "gumu_path4",
+          "from": "终南山·林间道",
+          "to": "终南·采药径",
+          "needDesc": false,
+          "why": "终南山是采药名山，「径」字自带典故",
+          "source": "§1 改名表",
+          "line": 213
+        },
+        {
+          "id": "gumu_path5",
+          "from": "终南山·山泉",
+          "to": "终南·寒潭",
+          "needDesc": false,
+          "why": "古墓派清冷，连水都是凉的",
+          "source": "§1 改名表",
+          "line": 214
+        },
+        {
+          "id": "gumu_path6",
+          "from": "终南山·崖边路",
+          "to": "终南·断魂崖",
+          "needDesc": false,
+          "why": "贴崖只容一人",
+          "source": "§1 改名表",
+          "line": 215
+        }
+      ],
+      "renameCount": 6,
+      "fromRuling": [],
+      "sample77": [
+        "gumu_path4"
+      ],
+      "sample77Count": 1,
+      "descTodo": [
+        "gumu_path1",
+        "gumu_path2",
+        "gumu_path3",
+        "gumu_path5",
+        "gumu_path6"
+      ],
+      "descTodoCount": 5,
+      "needDesc77": [
+        "gumu_path2"
+      ],
+      "needDesc77Count": 1,
+      "heavy": [
+        "gumu_library",
+        "gumu_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "name（§1/§3 改名 6 间）",
+        "desc（5 间 §2 没给全文，待补）",
+        "desc（1 间 §2 已有样张，替换）",
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "design/77 改名 6 间；其中 1 间标了「需配新 desc」；5 间 §2 没给全文；1 间 §2 已有样张；含重地 2 间（§3 收编）"
+    },
+    {
+      "id": "B11",
+      "region": "mojiao",
+      "split": null,
+      "roomCount": 12,
+      "roomIds": [
+        "hm_mojiao_dongfang",
+        "mojiao_hall",
+        "mojiao_library",
+        "mojiao_path1",
+        "mojiao_path2",
+        "mojiao_path3",
+        "mojiao_path4",
+        "mojiao_path5",
+        "mojiao_path6",
+        "mojiao_shanmen",
+        "mojiao_shuangxiu",
+        "mojiao_vault"
+      ],
+      "rename": [
+        {
+          "id": "mojiao_path1",
+          "from": "黑木崖·石阶",
+          "to": "黑木崖·铁钉磴",
+          "needDesc": false,
+          "why": "阶是铁钉钉进崖壁的——**魔教不会老老实实凿石阶**",
+          "source": "§1 改名表",
+          "line": 221
+        },
+        {
+          "id": "mojiao_path2",
+          "from": "黑木崖·松林",
+          "to": "黑木崖·枯木林",
+          "needDesc": true,
+          "why": "魔教的地界不该是生机勃勃的老松。⚠️ 需配新 desc",
+          "source": "§1 改名表",
+          "line": 222
+        },
+        {
+          "id": "mojiao_path3",
+          "from": "黑木崖·半山亭",
+          "to": "黑木崖·黑木亭",
+          "needDesc": false,
+          "why": "扣「黑木崖」三个字",
+          "source": "§1 改名表",
+          "line": 223
+        },
+        {
+          "id": "mojiao_path4",
+          "from": "黑木崖·林间道",
+          "to": "黑木崖·鬼行径",
+          "needDesc": false,
+          "why": "魔教的路，走的是鬼",
+          "source": "§1 改名表",
+          "line": 224
+        },
+        {
+          "id": "mojiao_path5",
+          "from": "黑木崖·山泉",
+          "to": "黑木崖·锈泉",
+          "needDesc": false,
+          "why": "水带锈色，喝不得",
+          "source": "§1 改名表",
+          "line": 225
+        },
+        {
+          "id": "mojiao_path6",
+          "from": "黑木崖·崖边路",
+          "to": "黑木崖·绝壁栈",
+          "needDesc": false,
+          "why": "贴崖只容一人",
+          "source": "§1 改名表",
+          "line": 226
+        }
+      ],
+      "renameCount": 6,
+      "fromRuling": [],
+      "sample77": [
+        "mojiao_path2"
+      ],
+      "sample77Count": 1,
+      "descTodo": [
+        "mojiao_path1",
+        "mojiao_path3",
+        "mojiao_path4",
+        "mojiao_path5",
+        "mojiao_path6"
+      ],
+      "descTodoCount": 5,
+      "needDesc77": [
+        "mojiao_path2"
+      ],
+      "needDesc77Count": 1,
+      "heavy": [
+        "mojiao_library",
+        "mojiao_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "name（§1/§3 改名 6 间）",
+        "desc（5 间 §2 没给全文，待补）",
+        "desc（1 间 §2 已有样张，替换）",
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "design/77 改名 6 间；其中 1 间标了「需配新 desc」；5 间 §2 没给全文；1 间 §2 已有样张；含重地 2 间（§3 收编）"
+    },
+    {
+      "id": "B12",
+      "region": "changan",
+      "split": null,
+      "roomCount": 35,
+      "roomIds": [
+        "ca_home_01",
+        "ca_home_02",
+        "ca_home_03",
+        "ca_home_04",
+        "changan_brothel",
+        "changan_gate",
+        "changan_huanguan_lane",
+        "changan_inn",
+        "changan_lane",
+        "changan_market",
+        "changan_street",
+        "changan_tavern",
+        "changan_tavern_up",
+        "dafeng_gate",
+        "dafeng_hall",
+        "dafeng_vault",
+        "feihu_gate",
+        "feihu_hall",
+        "feihu_vault",
+        "hengshanN_gate",
+        "hengshanN_hall",
+        "hengshanN_library",
+        "hengshanN_vault",
+        "kongtong_gate",
+        "kongtong_hall",
+        "kongtong_library",
+        "kongtong_vault",
+        "taishan_gate",
+        "taishan_hall",
+        "taishan_library",
+        "taishan_vault",
+        "wg_changan",
+        "wuhu_gate",
+        "wuhu_hall",
+        "wuhu_vault"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [
+        "dafeng_vault",
+        "feihu_vault",
+        "hengshanN_library",
+        "hengshanN_vault",
+        "kongtong_library",
+        "kongtong_vault",
+        "taishan_library",
+        "taishan_vault",
+        "wuhu_vault"
+      ],
+      "heavyCount": 9,
+      "touches": [
+        "desc（9 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B13",
+      "region": "jiangnan",
+      "split": null,
+      "roomCount": 33,
+      "roomIds": [
+        "hm_npcv_027",
+        "jiangnan_brothel",
+        "jiangnan_east_road",
+        "jiangnan_gate",
+        "jiangnan_hill",
+        "jiangnan_inn",
+        "jiangnan_market",
+        "jiangnan_qiao",
+        "jiangnan_smithy",
+        "jiangnan_street",
+        "jiangnan_temple",
+        "jiangnan_west_road",
+        "jinlong_vault",
+        "jn_carriage",
+        "jn_home_01",
+        "jn_misc_shop",
+        "jn_pharmacy",
+        "jn_pharmacy_back",
+        "jn_resident_1",
+        "jn_resident_2",
+        "jn_resident_3",
+        "jn_rich_garden",
+        "jn_rich_hall",
+        "jn_rich_house",
+        "jn_smith_inner",
+        "jn_yizhuang",
+        "palace_street",
+        "qingzhu_gate",
+        "qingzhu_hall",
+        "qingzhu_vault",
+        "road_jiangnan_1",
+        "road_jiangnan_2",
+        "wg_jiangnan"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [
+        "jinlong_vault",
+        "qingzhu_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B14",
+      "region": "luoyang",
+      "split": null,
+      "roomCount": 27,
+      "roomIds": [
+        "baisheng_gate",
+        "baisheng_hall",
+        "baisheng_vault",
+        "jindao_gate",
+        "jindao_hall",
+        "jindao_vault",
+        "luoyang_arena",
+        "luoyang_brothel",
+        "luoyang_gate",
+        "luoyang_inn",
+        "luoyang_lane",
+        "luoyang_market",
+        "luoyang_mudan_lane",
+        "luoyang_street",
+        "luoyang_tavern",
+        "luoyang_tavern_up",
+        "ly_home_01",
+        "ly_home_02",
+        "ly_home_03",
+        "ly_home_04",
+        "tieqiang_gate",
+        "tieqiang_hall",
+        "tieqiang_vault",
+        "wg_luoyang",
+        "zhenyuan_gate",
+        "zhenyuan_hall",
+        "zhenyuan_vault"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [
+        "jindao_vault"
+      ],
+      "sample77Count": 1,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [
+        "baisheng_vault",
+        "jindao_vault",
+        "tieqiang_vault",
+        "zhenyuan_vault"
+      ],
+      "heavyCount": 4,
+      "touches": [
+        "desc（1 间 §2 已有样张，替换）",
+        "desc（4 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B15",
+      "region": "xiangyang",
+      "split": null,
+      "roomCount": 27,
+      "roomIds": [
+        "funiu_gate",
+        "funiu_hall",
+        "funiu_vault",
+        "hengshan_gate",
+        "hengshan_hall",
+        "hengshan_library",
+        "hengshan_vault",
+        "luohan_gate",
+        "luohan_hall",
+        "luohan_vault",
+        "tiezhang_gate",
+        "tiezhang_hall",
+        "tiezhang_library",
+        "tiezhang_vault",
+        "wg_xiangyang",
+        "xiangyang_brothel",
+        "xiangyang_gate",
+        "xiangyang_inn",
+        "xiangyang_jiangmen_lane",
+        "xiangyang_lane",
+        "xiangyang_market",
+        "xiangyang_street",
+        "xiangyang_tavern",
+        "xiangyang_tavern_up",
+        "xy_home_01",
+        "xy_home_02",
+        "xy_home_03"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [
+        "funiu_vault",
+        "hengshan_library",
+        "hengshan_vault",
+        "luohan_vault",
+        "tiezhang_library",
+        "tiezhang_vault"
+      ],
+      "heavyCount": 6,
+      "touches": [
+        "desc（6 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B16",
+      "region": "chengdu",
+      "split": null,
+      "roomCount": 23,
+      "roomIds": [
+        "cd_home_01",
+        "cd_home_02",
+        "cd_home_03",
+        "chengdu_brothel",
+        "chengdu_gate",
+        "chengdu_inn",
+        "chengdu_jinli_lane",
+        "chengdu_lane",
+        "chengdu_market",
+        "chengdu_street",
+        "chengdu_tavern",
+        "chengdu_tavern_up",
+        "kuaidao_gate",
+        "kuaidao_hall",
+        "kuaidao_vault",
+        "qingcheng_gate",
+        "qingcheng_hall",
+        "qingcheng_library",
+        "qingcheng_vault",
+        "wg_chengdu",
+        "wuyun_gate",
+        "wuyun_hall",
+        "wuyun_vault"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [
+        "kuaidao_vault",
+        "qingcheng_library",
+        "qingcheng_vault",
+        "wuyun_vault"
+      ],
+      "heavyCount": 4,
+      "touches": [
+        "desc（4 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B17",
+      "region": "market",
+      "split": null,
+      "roomCount": 22,
+      "roomIds": [
+        "hm_npcv_073",
+        "hm_npcv_081",
+        "hm_npcv_109",
+        "jm_underground",
+        "jn_fortune",
+        "jn_fruit_stall",
+        "jn_gambling_house",
+        "jn_granary",
+        "jn_market_east",
+        "jn_market_main",
+        "jn_market_north",
+        "jn_market_south",
+        "jn_market_west",
+        "jn_pawnshop",
+        "jn_pottery",
+        "jn_silk_shop",
+        "jn_tavern",
+        "jn_teahouse",
+        "jn_toy_stall",
+        "jn_weaver",
+        "jn_wine_house",
+        "jn_wine_room"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [],
+      "heavyCount": 0,
+      "touches": [
+        "（待派活）"
+      ],
+      "expectedKind": "（待派活）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B18",
+      "region": "gusu",
+      "split": null,
+      "roomCount": 17,
+      "roomIds": [
+        "gs_home_01",
+        "gs_home_02",
+        "gs_home_03",
+        "gusu_canhe",
+        "gusu_fengqiao",
+        "gusu_town",
+        "gusu_yanzi",
+        "gusu_zhai_lane",
+        "jinlong_gate",
+        "jinlong_hall",
+        "poyang_gate",
+        "poyang_hall",
+        "poyang_vault",
+        "taihu_gate",
+        "taihu_hall",
+        "taihu_vault",
+        "wg_gusu"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [
+        "poyang_vault",
+        "taihu_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B19",
+      "region": "yamen",
+      "split": null,
+      "roomCount": 17,
+      "roomIds": [
+        "hm_npcv_149",
+        "hm_npcv_181",
+        "jn_gongyuan_gate",
+        "jn_gongyuan_hall",
+        "jn_yamen_arch",
+        "jn_yamen_back",
+        "jn_yamen_court",
+        "jn_yamen_gate",
+        "jn_yamen_guest",
+        "jn_yamen_office",
+        "jn_yamen_prison",
+        "jn_yamen_side",
+        "jn_yamen_store",
+        "jn_yamen_wt",
+        "ya_home_01",
+        "ya_home_02",
+        "ya_home_03"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [
+        "jn_yamen_store"
+      ],
+      "heavyCount": 1,
+      "touches": [
+        "desc（1 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B20",
+      "region": "harbor",
+      "split": null,
+      "roomCount": 17,
+      "roomIds": [
+        "hb_home_01",
+        "hb_home_02",
+        "hb_home_03",
+        "hb_home_04",
+        "huanghe_gate",
+        "huanghe_hall",
+        "huanghe_vault",
+        "jn_boat",
+        "jn_harbor",
+        "jn_harbor_backstreet",
+        "jn_harbor_inn",
+        "jn_harbor_shed",
+        "jn_harbor_stall",
+        "jn_harbor_wharf",
+        "jujing_gate",
+        "jujing_hall",
+        "jujing_vault"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [
+        "huanghe_vault",
+        "jujing_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B21",
+      "region": "cunzhen",
+      "split": null,
+      "roomCount": 16,
+      "roomIds": [
+        "cun_home_01",
+        "cun_home_02",
+        "cun_home_03",
+        "cun_home_04",
+        "cun_home_05",
+        "cun_home_06",
+        "cunzhen_farm",
+        "cunzhen_gate",
+        "cunzhen_inn",
+        "cunzhen_mill",
+        "cunzhen_pond",
+        "cunzhen_street",
+        "cunzhen_temple",
+        "shenquan_gate",
+        "shenquan_hall",
+        "shenquan_vault"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [
+        "shenquan_vault"
+      ],
+      "heavyCount": 1,
+      "touches": [
+        "desc（1 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B22",
+      "region": "wild",
+      "split": null,
+      "roomCount": 15,
+      "roomIds": [
+        "jn_cave",
+        "jn_hill_top",
+        "jn_stream",
+        "jn_temple_1",
+        "jn_temple_2",
+        "jn_temple_3",
+        "jn_woods_1",
+        "jn_woods_2",
+        "road_wild_1",
+        "wild_cave_1",
+        "wild_cave_2",
+        "wild_cave_3",
+        "wild_forest_1",
+        "wild_forest_2",
+        "wild_pool"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [],
+      "heavyCount": 0,
+      "touches": [
+        "（待派活）"
+      ],
+      "expectedKind": "（待派活）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B23",
+      "region": "palace",
+      "split": null,
+      "roomCount": 15,
+      "roomIds": [
+        "palace_court1",
+        "palace_court2",
+        "palace_court3",
+        "palace_court4",
+        "palace_court5",
+        "palace_court6",
+        "palace_garden",
+        "palace_gate",
+        "palace_hall",
+        "palace_harem",
+        "palace_plaza",
+        "palace_prison",
+        "palace_road",
+        "palace_study",
+        "palace_treasury"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [
+        "palace_treasury"
+      ],
+      "heavyCount": 1,
+      "touches": [
+        "desc（1 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B24",
+      "region": "shuyuan",
+      "split": null,
+      "roomCount": 12,
+      "roomIds": [
+        "hm_npcv_102",
+        "jn_bookshop",
+        "jn_school",
+        "jn_school_hall",
+        "jn_school_herb",
+        "jn_school_lib",
+        "jn_school_room1",
+        "jn_school_room2",
+        "jn_school_yard",
+        "jn_study_1",
+        "jn_study_2",
+        "jn_wenmo_zhai"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [],
+      "heavyCount": 0,
+      "touches": [
+        "（待派活）"
+      ],
+      "expectedKind": "（待派活）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B25",
+      "region": "farmland",
+      "split": null,
+      "roomCount": 12,
+      "roomIds": [
+        "hm_npcv_037",
+        "jn_farm_1",
+        "jn_farm_2",
+        "jn_farm_3",
+        "jn_farm_4",
+        "jn_farm_5",
+        "jn_farm_6",
+        "jn_farm_7",
+        "jn_farm_8",
+        "jn_farm_house",
+        "jn_farm_road",
+        "jn_farm_shed"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [],
+      "heavyCount": 0,
+      "touches": [
+        "（待派活）"
+      ],
+      "expectedKind": "（待派活）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B26",
+      "region": "qinglou",
+      "split": null,
+      "roomCount": 11,
+      "roomIds": [
+        "hehuan_gate",
+        "hehuan_hall",
+        "hehuan_library",
+        "hehuan_vault",
+        "jn_brothel_2",
+        "jn_brothel_3",
+        "jn_brothel_gate",
+        "jn_brothel_hall",
+        "jn_brothel_kitchen",
+        "jn_brothel_room",
+        "jn_brothel_stage"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [
+        "hehuan_library",
+        "hehuan_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B27",
+      "region": "xixia",
+      "split": null,
+      "roomCount": 10,
+      "roomIds": [
+        "baituo_gate",
+        "baituo_hall",
+        "baituo_vault",
+        "kunlun_gate",
+        "kunlun_hall",
+        "kunlun_library",
+        "kunlun_vault",
+        "road_xixia_1",
+        "xixia_ice",
+        "xixia_yanchang"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [
+        "baituo_vault"
+      ],
+      "sample77Count": 1,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [
+        "baituo_vault",
+        "kunlun_library",
+        "kunlun_vault"
+      ],
+      "heavyCount": 3,
+      "touches": [
+        "desc（1 间 §2 已有样张，替换）",
+        "desc（3 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B28",
+      "region": "beijiang",
+      "split": null,
+      "roomCount": 7,
+      "roomIds": [
+        "beijiang_houzhai",
+        "beijiang_shankou",
+        "beijiang_xuedao",
+        "hm_blood_saber",
+        "road_beijiang_1",
+        "xuedao_library",
+        "xuedao_vault"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [
+        "xuedao_library",
+        "xuedao_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B29",
+      "region": "xiyu",
+      "split": null,
+      "roomCount": 7,
+      "roomIds": [
+        "hm_xingxiu_laoxian",
+        "road_xiyu_1",
+        "xingxiu_library",
+        "xingxiu_vault",
+        "xiyu_oasis",
+        "xiyu_shule",
+        "xiyu_xingxiu"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [
+        "xingxiu_library",
+        "xingxiu_vault"
+      ],
+      "heavyCount": 2,
+      "touches": [
+        "desc（2 间重地，§3 收编）"
+      ],
+      "expectedKind": "文案批次（预期：只动 name/desc，不动 id/exits）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B30",
+      "region": "haitan",
+      "split": null,
+      "roomCount": 4,
+      "roomIds": [
+        "haitan_boat",
+        "haitan_dock",
+        "haitan_village",
+        "road_haibin_1"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [],
+      "heavyCount": 0,
+      "touches": [
+        "（待派活）"
+      ],
+      "expectedKind": "（待派活）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B31",
+      "region": "many",
+      "split": null,
+      "roomCount": 4,
+      "roomIds": [
+        "many_camp",
+        "many_pool",
+        "many_ruin",
+        "road_many_1"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [],
+      "heavyCount": 0,
+      "touches": [
+        "（待派活）"
+      ],
+      "expectedKind": "（待派活）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B32",
+      "region": "secret",
+      "split": null,
+      "roomCount": 4,
+      "roomIds": [
+        "secret_anxiang",
+        "secret_black_market",
+        "secret_cage",
+        "secret_guishi"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [],
+      "heavyCount": 0,
+      "touches": [
+        "（待派活）"
+      ],
+      "expectedKind": "（待派活）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B33",
+      "region": "xiake",
+      "split": null,
+      "roomCount": 4,
+      "roomIds": [
+        "secret_xiake",
+        "xiake_dong",
+        "xiake_dukou",
+        "xiake_neike"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [],
+      "heavyCount": 0,
+      "touches": [
+        "（待派活）"
+      ],
+      "expectedKind": "（待派活）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    },
+    {
+      "id": "B34",
+      "region": "jinguo",
+      "split": null,
+      "roomCount": 4,
+      "roomIds": [
+        "jinguo_ruin",
+        "jinguo_ruin_d",
+        "jinguo_shi",
+        "jinguo_tomb"
+      ],
+      "rename": [],
+      "renameCount": 0,
+      "fromRuling": [],
+      "sample77": [],
+      "sample77Count": 0,
+      "descTodo": [],
+      "descTodoCount": 0,
+      "needDesc77": [],
+      "needDesc77Count": 0,
+      "heavy": [],
+      "heavyCount": 0,
+      "touches": [
+        "（待派活）"
+      ],
+      "expectedKind": "（待派活）",
+      "note": "本批不在 design/77 已点名的名单里 —— 后续 200 间 / 300 间密度的候选批"
+    }
+  ]
+}

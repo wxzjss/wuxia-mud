@@ -249,7 +249,7 @@ const ID_OVERRIDES = {
    动物走 bestiary.js 的 speciesMoves（B3），这里必须放手——否则会与人形规则打架。 */
 const SKIP_IDS = new Set([
   'mob_wolf', 'mob_boar', 'mob_snake', 'mob_black_bear', 'mob_tiger',   // 动物（B3 领地）
-  'test_npc', 'demo_swordman',                                          // 测试/演示
+  'demo_swordman',                                          // 演示角色
 ]);
 
 /* ==================================================================

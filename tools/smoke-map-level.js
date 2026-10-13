@@ -93,10 +93,16 @@ const section = t => console.log('\n── ' + t + ' ──');
     const here = (m.rooms || []).find(r => r.current);
     ok('C-1 数据里有「你在这里」', !!here, here ? here.name : '无');
     const curRegion = here ? here.region : null;
+    const curZ = here ? (here.z || 0) : 0;
     const inReg = (m.rooms || []).filter(r => r.region === curRegion);
+    /* ★ 2026-10-13 口径改动（主人：「江南城大街上，把怡红院这种要上/下的地块隐藏掉」）：
+       区域地图**只画玩家所在那一层（z）**。所以「渲染出的格数」= 本区**同层**房间数，
+       不再是「本区全部房间数」。外区混进来仍是零（这一条不变）。 */
+    const inRegSameZ = inReg.filter(r => (r.z || 0) === curZ);
     const nodes = (html.match(/class="map-node/g) || []).length;
-    ok('C-2 ★ 地块数 == 本区房间数（一个外区的都没混进来）',
-      nodes === inReg.length, '渲染 ' + nodes + ' / 本区 ' + inReg.length);
+    ok('C-2 ★ 地块数 == 本区**同层**房间数（外区的没混进来，异层的按新口径隐藏）',
+      nodes === inRegSameZ.length,
+      '渲染 ' + nodes + ' / 本区同层 ' + inRegSameZ.length + '（本区全部 ' + inReg.length + '，当前层 z=' + curZ + '）');
     ok('C-3 本区房间数远小于全图（否则这条断言没意义）',
       inReg.length < (m.rooms || []).length,
       inReg.length + ' vs 全图 ' + (m.rooms || []).length);
@@ -123,9 +129,14 @@ const section = t => console.log('\n── ' + t + ' ──');
       marks.length > 0, marks.length + ' 个');
     ok('D-3 角标带 title 说明（可上楼 / 可下楼 / 两样都行）',
       /class="mn-lv" title="[^"]*"/.test(html));
-    /* tooltip 里写「三层 / 地下2层」—— 这是另一条「层信息没丢」的通道 */
-    ok('D-4 ★ tooltip 里仍写着层名（lvName 没跟着分层一起删）',
-      /\d层|地下\d+层/.test(html), (html.match(/title="[^"]*(?:三层|地下|一层|\d层)[^"]*"/) || [''])[0].slice(0, 80));
+    /* tooltip 里写「三层 / 地下2层」—— 这是另一条「层信息没丢」的通道。
+       ⚠️ 2026-10-13 起：区域地图只画本层，本层（地面 z=0）那批格子**不再**逐个写层名
+          （写了就是满图「一层」，纯噪音）；层名只在**玩家站在楼上/地下**时才出现在
+          顶部说明里（`.ms-lv`），或有 ▲/▼ 的格子 tooltip 上一句「可以上楼」。
+          所以断言改成：**层信息仍在**（要么格子 tooltip 带层名，要么顶部说明带层名）。 */
+    ok('D-4 ★ 层信息没丢（格子 tooltip 或顶部说明里出现层名）',
+      /地下\d+层|\d层/.test(html),
+      (html.match(/(?:地下\d+层|\d层)/) || [''])[0]);
     ok('D-5 lvName 仍在源码里（房间 tooltip 的依赖）',
       /const lvName\s*=/.test(UISRC));
     const css = fs.readFileSync(CSS, 'utf8');

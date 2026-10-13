@@ -1,0 +1,42 @@
+{
+  "_说明": [
+    "单步性能基线（严过关 2026-10-13 建档，主人裁：方案 A + 比值判）。",
+    "pre = P0 止血批次之前的快照（commit a369125，用 git worktree 检出后跑 tools/perf-step-check.js 300 步实测）。",
+    "post = P0 止血之后的现状（commit 61c729a 工作区，独占时段实测，原文存 tools/_re_perf.txt）。",
+    "同机同 Node（22.22.2）同口径：300 步 × 3 轮取 p95 最小轮、剔除前 10 步冷启动。",
+    "⚠️ pre 的实测在团队并发时段做的，p50 可能偏慢 ≤7%（本机 CPU 74% 时 p50 3.86→4.12）——",
+    "   即便按偏慢读数，结论也不变：P0 修的是【体积】（new 308.6→28.6 KB，save 517.9→0.1 KB），",
+    "   【延迟】几乎没动（p50 3.89→3.79，p95 7.03→4.91）。比值门因此分两档：延迟松（×1.5）、体积紧（×0.5）。",
+    "环境变动（换机器 / 换 Node 大版本 / 改测量口径）时由 QA 重测两份并更新本文件，改前报团队长。"
+  ],
+  "env": {
+    "node": "22.22.2",
+    "os": "Windows 10",
+    "steps": 300,
+    "method": "best-of-3 rounds, p95-min round, drop first 10 warmup steps, real HTTP on 127.0.0.1"
+  },
+  "pre": {
+    "commit": "a369125",
+    "date": "2026-10-13 复测",
+    "p50Ms": 3.89,
+    "p95Ms": 7.03,
+    "maxMs": 11.71,
+    "newRawKB": 308.6,
+    "loadRawKB": 32.7,
+    "downMaxKB": 542.2,
+    "saveMaxKB": 517.9,
+    "note": "开局回包带整张地图（view.map=object）；save 回包 900/900 步带 view"
+  },
+  "post": {
+    "commit": "61c729a",
+    "date": "2026-10-12 独占时段",
+    "p50Ms": 3.79,
+    "p95Ms": 4.91,
+    "maxMs": 7.16,
+    "newRawKB": 28.6,
+    "loadRawKB": 29.0,
+    "downMaxKB": 30.2,
+    "saveMaxKB": 0.1,
+    "evidence": "tools/_re_perf.txt"
+  }
+}

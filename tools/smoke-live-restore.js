@@ -14,7 +14,7 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const { GameEngine } = require(path.join(ROOT, 'game/src/core/engine.js'));
 
-const TMP = path.join(__dirname, '_livetest');
+const TMP = path.join(ROOT, '.livetest', 'live-restore');
 let pass = 0, fail = 0;
 function ok(name, cond, extra) {
   if (cond) { pass++; console.log('  ✔ ' + name + (extra ? '  ' + extra : '')); }
@@ -63,7 +63,7 @@ function section(t) { console.log('\n── ' + t + ' ──'); }
   ok('已经有玩家时 restoreLive 不动手（幂等）', e2.restoreLive().ok === false);
 
   /* 真的没档时，仍然该说「请先创建角色」——别把新手也拦在门外 */
-  const EMPTY = path.join(__dirname, '_livetest2');
+  const EMPTY = path.join(ROOT, '.livetest', 'live-restore-empty');
   fs.rmSync(EMPTY, { recursive: true, force: true });
   fs.mkdirSync(EMPTY, { recursive: true });
   const e3 = new GameEngine({ seed: 7, saveDir: EMPTY });
@@ -101,7 +101,7 @@ function section(t) { console.log('\n── ' + t + ' ──'); }
 
   section('4 存档列表上的时间（主人亲报：全是 1970-01-01 08:00）');
   {
-    const T2 = path.join(__dirname, '_livetest3');
+    const T2 = path.join(ROOT, '.livetest', 'live-restore-t2');
     fs.rmSync(T2, { recursive: true, force: true });
     fs.mkdirSync(T2, { recursive: true });
     const e9 = new GameEngine({ seed: 5, saveDir: T2 });

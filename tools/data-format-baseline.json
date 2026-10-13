@@ -1,0 +1,486 @@
+{
+  "_meta": {
+    "generated": "2026-10-12T11:19:52.793Z",
+    "generator": "tools/data-write-guard.js --baseline",
+    "note": "格式指纹基线。每个数据文件的既有写法（BOM/缩进/换行符/末尾换行/是否可逐字节还原）。canonical=true 的文件有逐字节断言，改格式会静默打红回归，务必保持。"
+  },
+  "files": {
+    "00_core.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 11037
+    },
+    "101_classic_npcs.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 35257
+    },
+    "102_classic_quests.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 12620
+    },
+    "10_skills.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 38784
+    },
+    "20_items.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 42670
+    },
+    "25_craft.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 6978
+    },
+    "30_sects.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 8726
+    },
+    "40_npcs.json": {
+      "bom": false,
+      "char": " ",
+      "width": 1,
+      "eol": "\n",
+      "trailing": false,
+      "canonical": true,
+      "bytes": 722457
+    },
+    "41_sect_entry.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\r\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 2892
+    },
+    "42_sect_guards.json": {
+      "bom": false,
+      "char": " ",
+      "width": 1,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 79952
+    },
+    "43_sect_disciples.json": {
+      "bom": false,
+      "char": " ",
+      "width": 1,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 319663
+    },
+    "44_disciple_sidequests.json": {
+      "bom": false,
+      "char": " ",
+      "width": 1,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 49200
+    },
+    "50_map.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 285938
+    },
+    "60_quests.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\r\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 171995
+    },
+    "61_sidequests.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 124877
+    },
+    "62_shops.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 25069
+    },
+    "63_births.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 4815
+    },
+    "64_world_detail.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 3088
+    },
+    "65_mainline_act3.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 42437
+    },
+    "66_mainline_act45.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 60532
+    },
+    "67_sidequests2.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 27917
+    },
+    "68_talents.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 3200
+    },
+    "70_world.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\r\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 61613
+    },
+    "71_martial_balance.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 7516
+    },
+    "72_sects_tier.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 65871
+    },
+    "73_sects_place.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\r\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 162404
+    },
+    "74_martial_sects.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 358909
+    },
+    "75_content_extra.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 39390
+    },
+    "76_factions_relations.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 2310
+    },
+    "77_npc_martial.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 4439
+    },
+    "78_culture.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 8502
+    },
+    "79_culture_npcs.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 17092
+    },
+    "80_culture_place.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 3832
+    },
+    "81_treasury.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 5154
+    },
+    "82_treasury_place.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 110766
+    },
+    "83_arts.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 4702
+    },
+    "84_hehuan.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 3786
+    },
+    "85_sect_arts.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 24866
+    },
+    "86_npc_neili.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 13828
+    },
+    "87_persona.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 26080
+    },
+    "88_mountain_paths.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 52594
+    },
+    "89_stories.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 11089
+    },
+    "90_lore_fix.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 1223
+    },
+    "91_npclife.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 16470
+    },
+    "92_rumor_extra.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 2130
+    },
+    "93_wuguan.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 11610
+    },
+    "94_brothel.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\r\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 2608
+    },
+    "95_support_moves.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 8618
+    },
+    "96_portraits_a.json": {
+      "bom": false,
+      "char": " ",
+      "width": 1,
+      "eol": "\n",
+      "trailing": false,
+      "canonical": true,
+      "bytes": 37544
+    },
+    "97_portraits_bc.json": {
+      "bom": false,
+      "char": " ",
+      "width": 1,
+      "eol": "\n",
+      "trailing": false,
+      "canonical": true,
+      "bytes": 82188
+    },
+    "98_mainline_expansion.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": false,
+      "bytes": 70869
+    },
+    "98_sidequests_culture.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 15747
+    },
+    "99_city_npcs.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "canonical": true,
+      "bytes": 253950
+    }
+  }
+}

@@ -47,6 +47,58 @@ function weaponPenalty(u, skill) {
   return { mult: 0.45, acc: -25, note: `手中无${skill.type}类兵刃，威力大减` };
 }
 
+/* ── 兵刃 / 武学类型 → 演出句库的四类（design/75 §1.6）─────────────────────
+   句库只有四类：sword 剑 / blade 刀 / fist 拳 / hidden 暗器。
+   七种兵刃类型要落进这四类，映射写在这里，别散到渲染层去。
+
+   ⚠️ 取值顺序按 design/75 §1.6：
+      ① 武学数据自己的 `style` 字段（**目前数据里还没有**，design/75 说好是
+         §B.4 武学合并时顺手补的 —— 等它补上，这里自动优先用它，代码不用改）
+      ② 退化到 `type`（拳/剑/刀/棍/鞭/暗器）
+      ③ 再退化到角色当前手上拿的兵刃
+      ④ 最后是 fist
+
+   ⚠️ 棍 / 鞭 没有对应的第四类，硬塞进哪一类都不干净。这里的判断是：
+      棍走 blade（有分量、硬碰硬，跟"刀走分量"一路），鞭也走 blade（抽、削，
+      是"有刃口动作"的那一路）—— 都比塞进 fist（贴身短打）合理。
+
+   ⚠️ 音波：全库 761 门武学里只有 **1 门**（`basic_sing` 基本乐理）。
+      四类里没有它能落进去的：sword/blade 要有刃口，hidden 通篇说「那东西」
+      （甩出去的暗器），音波既没刃也没有实体。fist 是唯一**不凭空引入一个
+      不存在的物件**的兜底，所以落在 fist，不新编第五类。
+      等真要做音波演出，走两条正路：① 数据补 `style` 字段指定；
+      ② 句库加第五类（那是 design/75 的活，不是接线的人顺手加的）。 */
+const COMBAT_STYLE_VALUES = { sword: 1, blade: 1, fist: 1, hidden: 1 };
+const COMBAT_STYLE_OF_TYPE = {
+  剑: 'sword', 刀: 'blade', 拳: 'fist', 暗器: 'hidden',
+  棍: 'blade', 鞭: 'blade', 音波: 'fist',
+};
+
+function styleOf(u, skill, move) {
+  const direct = (skill && skill.style) || (move && move.style);
+  if (direct && COMBAT_STYLE_VALUES[direct]) return direct;
+
+  const ty = (skill && skill.type) || (move && move.type);
+  if (ty && COMBAT_STYLE_OF_TYPE[ty]) return COMBAT_STYLE_OF_TYPE[ty];
+
+  /* 没指定武学（普通攻击）⇒ 看手上拿的是什么：
+     从已装备的武器道具反查 weaponType，再走同一张映射表。 */
+  const wpnId = u && u.equipment && u.equipment['武器'];
+  const item = wpnId && u.world ? u.world.getItem(wpnId) : null;
+  const wt = item && item.weaponType;
+  if (wt && COMBAT_STYLE_OF_TYPE[wt]) return COMBAT_STYLE_OF_TYPE[wt];
+
+  return 'fist';
+}
+
+/* 平局上限：打满这么多回合还没分胜负就判和。
+   ⚠️ 这个数有**两个**用处，别拆成两份：
+     ① `CombatEngine.step()` 里收尾判一次（直接调 step 的调用方，如几个冒烟脚本）
+     ② `World.advanceTurn()` 里判一次（玩家走「普攻 / 绝招 / 防御 / 物品」四条分支时）
+   两处**共用这一个常量** —— 各写一个 60 就是「两处各写一份」，改一个忘一个。
+   ⚠️ 它同时也是**防死循环**的兜底：`auto`（挂机）与几个脚本都靠它收住。 */
+const DRAW_TURNS = 60;
+
 const DEFAULT_HOOKS = {
   // 命中判定：返回 bool
   hitRoll(attacker, defender, skill, ctx) {
@@ -181,7 +233,10 @@ class CombatEngine {
     }
 
     battle.log = battle.log.concat(lines);
-    if (!battle.over && battle.turn > 60) { battle.over = true; battle.winner = 'draw'; }
+    /* 平局判定。⚠️ `step()` 现在**只被直接调用的调用方**用（几个冒烟脚本、
+       `smoke-events` 的「真打死一只野兽」），玩家那四条分支已改走
+       `World.advanceTurn()`。两边共用 `DRAW_TURNS` 这一个常量。 */
+    if (!battle.over && battle.turn > DRAW_TURNS) { battle.over = true; battle.winner = 'draw'; }
     return { battle, lines };
   }
 
@@ -398,6 +453,17 @@ class CombatEngine {
     const lv = skill ? u.skillLevel(skill.id) : 0;
     const tier = skill ? profTierOf(u, skill.id) : 0;
 
+    /* ★ 战斗演出要用的结构化字段（design/75 §1.6）
+       以前这里只回一句拼好的文本，渲染层要表现"这一刀多重/是不是暴击/谁打谁"
+       只能去**反解那句话**——加一个字段就得改一次正则，改一次崩一次。
+       现在把结算结果原样交出去，文本降格成兜底。
+       ⚠️ `text` **必须留着且措辞不许动**：`tools/smoke-arts.js:144` 还在
+       `/造成 (\d+) 点伤害/` 上取伤害比大小。谁读不到新字段（老存档回放、
+       第三方 mod、测试脚本）就还是走老路，不许静默变空。 */
+    const aName = u.isPlayer ? '你' : u.name;
+    const tName = t.isPlayer ? '你' : t.name;
+    const style = styleOf(u, skill, move);
+
     // 内力消耗（武技的 mpCost 是**额外**叠加在武学之上的）
     const mpNeed = (skill && skill.mpCost ? skill.mpCost : 0) + (move && move.mpCost ? move.mpCost : 0);
     if (mpNeed) {
@@ -435,7 +501,16 @@ class CombatEngine {
     if (w.combatHooks.hitRoll) {
       const hitFn = w.combatHooks.hitRoll;
       if (!hitFn(u, t, skill, ctx)) {
-        return { kind: 'combat', text: `${u.name}${skill ? '一招“' + skill.name + '”' : '的攻击'}被${t.name}闪身避过。` };
+        return {
+          kind: 'combat',
+          missed: true, blocked: false, crit: false,
+          style, dmg: 0, hpRatio: 0, aName, tName,
+          /* 落空也走句库的 miss 分支（4 类 × 8 条），不再只有这一句。
+             ⚠️ 原来是 `u.name`/`t.name`，玩家自己落空时会写成
+             "张三一招…”被李四闪身避过。" —— 第二人称的 MUD 里不这么说，
+             这里统一成 aName/tName。全库 grep 过，没有测试依赖这句原文。 */
+          text: `${aName}${skill ? '一招“' + skill.name + '”' : '的攻击'}被${tName}闪身避过。`,
+        };
       }
     }
 
@@ -493,9 +568,7 @@ class CombatEngine {
       if (rf > 0) u.hp = clamp(u.hp - rf, 0, u.maxHp);
     }
 
-    const name = u.isPlayer ? '你' : u.name;
-    const tname = t.isPlayer ? '你' : t.name;
-    let text = `${name}${move ? '使出一式「' + move.name + '」' : skill ? '使出一招「' + skill.name + '」' : '挥拳'}，击中${tname}`;
+    let text = `${aName}${move ? '使出一式「' + move.name + '」' : skill ? '使出一招「' + skill.name + '」' : '挥拳'}，击中${tName}`;
     if (crit) text += `，正中要害（暴击）`;
     text += `，造成 ${dmg} 点伤害。`;
     if (pen.note && idx === 0) text += `（${pen.note}）`;
@@ -507,8 +580,34 @@ class CombatEngine {
       if (t.hp <= 0) u.gainSkillExp(skill.id, 20 + tier * 4);
     }
 
-    if (t.hp <= 0) text += ` ${tname}${t.isPlayer ? '' : '闷哼一声，'}倒地不起！`;
-    return { kind: 'combat', text };
+    if (t.hp <= 0) text += ` ${tName}${t.isPlayer ? '' : '闷哼一声，'}倒地不起！`;
+
+    /* hpRatio = 本次伤害 / 挨打那位的气血上限。design/75 §1.6 写死了
+       "`dmg` 和 `t.maxHp` 都已经在手边，不需要新增任何计算" —— 确实如此。
+       ⚠️ 这是**视觉分层的唯一输入**：④ 的五档靠它算 tier。渲染层不许自己再算一遍，
+       否则同一条口径两处各写一份，改一个忘一个。
+       ⚠️ maxHp 为 0 / NaN 的老人物质（旧存档里见过）不能让这里出 NaN，兜到 1。 */
+    const hpRatio = (typeof t.maxHp === 'number' && t.maxHp > 0)
+      ? clamp(dmg / t.maxHp, 0, 1)
+      : 1;
+
+    return {
+      kind: 'combat',
+      style,
+      hpRatio,
+      crit: !!crit,
+      blocked: false,   /* ⚠️ 见下：引擎里现在没有"被架住"这个状态 */
+      missed: false,
+      dmg,
+      aName,
+      tName,
+      text,
+    };
+    /* ⚠️ `blocked` 恒为 false —— 句库里那 32 条「被架住」目前**没有任何触发路径**。
+       不是漏接，是引擎里根本没有"招式被架住"这个结算结果：命中判定只有
+       hitRoll 的 true/false 两态（中 / 落空），没有第三态。
+       要让它们生效得先有格挡机制（招架值 / 兵器相格 / 防御姿态），那是玩法设计，
+       不该由接线的人顺手编。字段先留着，等机制落地就有地方接。 */
   }
 
   applySkillEffect(eff, u, t, skill, battle) {
@@ -696,4 +795,4 @@ class CombatEngine {
   }
 }
 
-module.exports = { CombatEngine, DEFAULT_HOOKS, defenseOf, weaponPenalty };
+module.exports = { CombatEngine, DEFAULT_HOOKS, defenseOf, weaponPenalty, DRAW_TURNS };

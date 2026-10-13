@@ -13,8 +13,25 @@
  *   只有列表过滤，下次谁再裸写一次又会漏进来。
  */
 'use strict';
-const os = require('os');
+const fs = require('fs');
 const path = require('path');
 
-/** 操作系统临时目录下的隔离沙盒，随系统临时目录一起被清掉 */
-module.exports = path.join(os.tmpdir(), 'jinyong-mud_test-saves');
+/* ⚠️ 2026-10-12 改：从 `os.tmpdir()` 迁到**项目内** `.livetest/`。
+   理由（项目铁律「测试不许写仓库真实目录」的配套）：
+   系统临时目录在别的机器上权限不可控（可能被清、可能不可写、路径含空格/中文），
+   而 `.livetest/` 已被 .gitignore 忽略（第 8 行），既隔离又可查。
+   项目里一度有**三套写法**（.packtest/ · os.tmpdir · .livetest/），统一到这里。
+
+   ⚠️ 2026-10-13 再改：目录名带 `process.pid`（团队长批准）。
+   为什么：回归是 **4 并发**，而这个文件被 20 个脚本共用；原来是固定路径
+   `.livetest/test-saves`，理论上两个并发套件在同一毫秒写同名存档档
+   （如 test_slot.json）就会互踩 —— 那种红是「并发时序」红，跟内容无关，
+   排查它纯属浪费人。按进程分目录后各写各的，互踩在物理上不可能发生。
+   为什么敢分：没有任何脚本**跨进程**读别人写的存档 —— 每个套件都是
+   自己写自己读（run-regression 本来就给每套发了独立的 WX_SAVE_DIR，
+   这个文件只是兜底层，兜底层也照分不误）。
+   ⚠️ 别在这里加「清理别的 test-saves-* 目录」的逻辑：回归并发时那可能是
+   别人正用着的活目录，清了就是人为制造互踩。残留交给磁盘，.livetest 不进 git。 */
+const DIR = path.join(__dirname, '..', '.livetest', 'test-saves-' + process.pid);
+try { fs.mkdirSync(DIR, { recursive: true }); } catch (e) { /* 建不了就让后面去报错，别静默 */ }
+module.exports = DIR;

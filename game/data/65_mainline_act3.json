@@ -24,7 +24,7 @@
         "clue"
       ],
       "quality": "rare",
-      "desc": "印好的一叠纸，匣子里翻出来的。字是好字，理是歪理——两卷并在一起，字迹一样，气路却正反相冲。"
+      "desc": "印好的一叠纸，匣子里翻出来的。字是好字，理是歪理。两卷并在一起，字迹一样，气路却正反相冲。"
     },
     "yu_ledger_item": {
       "id": "yu_ledger_item",
@@ -43,7 +43,7 @@
       "id": "star_cure_item",
       "name": "星宿海解药",
       "type": "consumable",
-      "desc": "一小包药，纸包了三层。含在舌下，别咽——到了地方再说。",
+      "desc": "一小包药，纸包了三层。含在舌下，别咽。到了地方再说。",
       "healHp": 60,
       "stackable": true,
       "stackMax": 9,
@@ -74,7 +74,7 @@
       "level": 40,
       "type": "主线",
       "giver": "shaolin_fangzheng",
-      "desc": "东厂收武功秘典，收去做什么？——少林少了一卷，北疆丢了半卷，西域有人卖「七天」。三条线，指向同一只手。",
+      "desc": "东厂收武功秘典，收去做什么？少林少了一卷，北疆丢了半卷，西域有人卖「七天」。三条线，指向同一只手。",
       "require": {
         "flag": "act2_done"
       },
@@ -87,7 +87,10 @@
           "next": 1
         },
         {
-          "lock": { "flag": "pre_a3_dangpu", "quest": "sq_pre_a3_dangpu" },
+          "lock": {
+            "flag": "pre_a3_dangpu",
+            "quest": "sq_pre_a3_dangpu"
+          },
           "desc": "雪谷·山口，破第一道哨卡",
           "cond": {
             "flag": "pass_shankou"
@@ -116,7 +119,7 @@
           "next": 4
         },
         {
-          "desc": "刀血——赢下血刀老祖",
+          "desc": "凭刀见血，赢下血刀老祖",
           "cond": {
             "flag": "blood_saber_down"
           },
@@ -187,7 +190,7 @@
         },
         {
           "type": "narrate",
-          "raw": "信上只有两行。残卷在绣阁，京里的那位等不了太久。你把信折好收进怀里——这一步踏出去，江湖就回不了头了。"
+          "raw": "信上只有两行。残卷在绣阁，京里的那位等不了太久。你把信折好收进怀里。这一步踏出去，江湖就回不了头了。"
         }
       ]
     }
@@ -219,7 +222,7 @@
           "name": "化血",
           "skill": "xuedao",
           "line": "（他忽然吸了口气。你腕上那道血线，竟逆着往上爬。）",
-          "desc": "刀口吃过的人越多，他站得越稳——那些血本来是你的。",
+          "desc": "刀口吃过的人越多，他站得越稳。那些血，本来是你的。",
           "mult": {
             "atk": 1.05,
             "def": 1.15,
@@ -261,7 +264,7 @@
           "name": "化功",
           "skill": "cuixin_zhang",
           "line": "「你这一身内力，放着也是放着。」",
-          "desc": "你每出一掌，他就多一分力气——那力气原本是你的。",
+          "desc": "你每出一掌，他就多一分力气。那力气，原本是你的。",
           "mult": {
             "atk": 1.1,
             "lifesteal": 0.35
@@ -332,7 +335,7 @@
             },
             {
               "type": "menu",
-              "raw": "（拦，还是不拦）|（拦在车前）>flag:jiuye_fought;say:你一步踏出去，手按在马笼头上。那马喷着白气，站住了。;say:公文你也敢拦？;combat:mob_soldier;narrate:车板上滚下一个人来，摔在道边的碎石上。;narrate:他撑着半个身子，抓住了你的袖口。;narrate:他往你手心塞过来一样东西——硬的，凉的，边上有个断口，像从整块上掰下来的半块。;say:……谁要，都别给。;narrate:他没有再说别的。他松了手，人就不动了。;flag:know_east_depot;+item:depot_token_half;narrate:那名将死之人塞给你的半块铜牌，还带着他掌心的汗。;flag:jiuye_done;quest:q_main_sect:0;;（退到道旁）>flag:jiuye_stood_aside;narrate:你往道边让了一步。山门的影子落在你身上，是凉的。;narrate:车从你面前过去。赶车的斜了你一眼，没停。;narrate:那人没出声。你也看不见他的脸，可你知道他在看你。;narrate:你没伸手，只站在道旁看着。拦得住今晚，拦不住这条路——这话，是你对自己说的。;narrate:车走出半里地，前头一匹马忽然惊了，车一歪。;narrate:车板上滚下一个人来，摔在道上。车没停，把他就这么丢下了。;narrate:他撑着半个身子，抓住了你的袖口。;narrate:他往你手心塞过来一样东西——硬的，凉的，边上有个断口，像从整块上掰下来的半块。;say:……谁要，都别给。;narrate:他没有再说别的。他松了手，人就不动了。;flag:know_east_depot;+item:depot_token_half;narrate:那名将死之人塞给你的半块铜牌，还带着他掌心的汗。;flag:jiuye_done;quest:q_main_sect:0"
+              "raw": "（拦，还是不拦）|（拦在车前）>flag:jiuye_fought;say:你一步踏出去，手按在马笼头上。那马喷着白气，站住了。;say:公文你也敢拦？;combat:mob_soldier;narrate:车板上滚下一个人来，摔在道边的碎石上。;narrate:他撑着半个身子，抓住了你的袖口。;narrate:他往你手心塞过来一样东西。硬的，凉的，边上有个断口，像从整块上掰下来的半块。;say:……谁要，都别给。;narrate:他没有再说别的。他松了手，人就不动了。;flag:know_east_depot;+item:depot_token_half;narrate:那名将死之人塞给你的半块铜牌，还带着他掌心的汗。;flag:jiuye_done;quest:q_main_sect:0;;（退到道旁）>flag:jiuye_stood_aside;narrate:你往道边让了一步。山门的影子落在你身上，是凉的。;narrate:车从你面前过去。赶车的斜了你一眼，没停。;narrate:那人没出声。你也看不见他的脸，可你知道他在看你。;narrate:你没伸手，只站在道旁看着。拦得住今晚，拦不住这条路。这话，是你对自己说的。;narrate:车走出半里地，前头一匹马忽然惊了，车一歪。;narrate:车板上滚下一个人来，摔在道上。车没停，把他就这么丢下了。;narrate:他撑着半个身子，抓住了你的袖口。;narrate:他往你手心塞过来一样东西。硬的，凉的，边上有个断口，像从整块上掰下来的半块。;say:……谁要，都别给。;narrate:他没有再说别的。他松了手，人就不动了。;flag:know_east_depot;+item:depot_token_half;narrate:那名将死之人塞给你的半块铜牌，还带着他掌心的汗。;flag:jiuye_done;quest:q_main_sect:0"
             }
           ]
         }
@@ -357,7 +360,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "方证大师合掌，让你在下首第一位——那是留给「有资格问话的人」的位子。"
+              "raw": "方证大师合掌，让你在下首第一位。那是留给「有资格问话的人」的位子。"
             },
             {
               "type": "say",
@@ -490,7 +493,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "架子上空出一格。旁边每一格都蒙着薄灰，只有空出来的这一格——干干净净。"
+              "raw": "架子上空出一格。旁边每一格都蒙着薄灰，只有空出来的这一格。干干净净。"
             },
             {
               "type": "narrate",
@@ -537,7 +540,7 @@
             },
             {
               "type": "say",
-              "raw": "「前几日有个被押的人半路跑了。他让我带句话给你——他说他欠你一条命。」"
+              "raw": "「前几日有个被押的人半路跑了。他让我带句话给你。他说，他欠你一条命。」"
             },
             {
               "type": "flag",
@@ -761,7 +764,7 @@
             },
             {
               "type": "narrate",
-              "raw": "字是别人的手笔，一笔一笔都很稳，收笔顿得很轻——和你在别处见过的那种\"抄书人\"的字，一模一样。"
+              "raw": "字是别人的手笔，一笔一笔都很稳，收笔顿得很轻。和你在别处见过的那种\"抄书人\"的字，一模一样。"
             },
             {
               "type": "narrate",
@@ -889,13 +892,13 @@
               "then": [
                 {
                   "type": "menu",
-                  "raw": "（七天，还是三十年）|（把匣子接过来）>narrate:你确实觉得快了。快得心口发慌。;narrate:第二天，你手背上起了三个红点，不疼，一按就退。;say:看。老祖从不骗人。;narrate:他把匣子合上，收进袖里。;+attr:力量:2;+skill:cuixin_zhang:100;flag:poisoned_xingxiu;narrate:他拍手的时候，星宿海的水面浮起来一排人——那是他教出来的，也长得像他。;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down;;（把匣子推回去）>narrate:你没接那只匣子。;say:聪明的傻子。;narrate:他笑了一声，转身去看水。水里那群小圈，比刚才多了一层。;flag:refuse_fake;narrate:他拍手的时候，星宿海的水面浮起来一排人——那是他教出来的，也长得像他。;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down;;（把两卷纸并在一起，对着光）>narrate:同一个人抄的，字迹一模一样。可一卷说气往下走，一卷说气往上走。一个人身上的气，不会同时往两头走。;say:……你看得懂？;narrate:他说这句话的时候，声音比刚才低。;say:那你走不掉了。;narrate:星宿海的水面下，浮起来一排人。;flag:zhenyi_bait;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down"
+                  "raw": "（七天，还是三十年）|（把匣子接过来）>narrate:你确实觉得快了。快得心口发慌。;narrate:第二天，你手背上起了三个红点，不疼，一按就退。;say:看。老祖从不骗人。;narrate:他把匣子合上，收进袖里。;+attr:力量:2;+skill:cuixin_zhang:100;flag:poisoned_xingxiu;narrate:他拍手的时候，星宿海的水面浮起来一排人。那是他教出来的，也长得像他。;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down;;（把匣子推回去）>narrate:你没接那只匣子。;say:聪明的傻子。;narrate:他笑了一声，转身去看水。水里那群小圈，比刚才多了一层。;flag:refuse_fake;narrate:他拍手的时候，星宿海的水面浮起来一排人。那是他教出来的，也长得像他。;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down;;（把两卷纸并在一起，对着光）>narrate:同一个人抄的，字迹一模一样。可一卷说气往下走，一卷说气往上走。一个人身上的气，不会同时往两头走。;say:……你看得懂？;narrate:他说这句话的时候，声音比刚才低。;say:那你走不掉了。;narrate:星宿海的水面下，浮起来一排人。;flag:zhenyi_bait;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down"
                 }
               ],
               "else": [
                 {
                   "type": "menu",
-                  "raw": "（七天，还是三十年）|（把匣子接过来）>narrate:你确实觉得快了。快得心口发慌。;narrate:第二天，你手背上起了三个红点，不疼，一按就退。;say:看。老祖从不骗人。;narrate:他把匣子合上，收进袖里。;+attr:力量:2;+skill:cuixin_zhang:100;flag:poisoned_xingxiu;narrate:他拍手的时候，星宿海的水面浮起来一排人——那是他教出来的，也长得像他。;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down;;（把匣子推回去）>narrate:你没接那只匣子。;say:聪明的傻子。;narrate:他笑了一声，转身去看水。水里那群小圈，比刚才多了一层。;flag:refuse_fake;narrate:他拍手的时候，星宿海的水面浮起来一排人——那是他教出来的，也长得像他。;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down"
+                  "raw": "（七天，还是三十年）|（把匣子接过来）>narrate:你确实觉得快了。快得心口发慌。;narrate:第二天，你手背上起了三个红点，不疼，一按就退。;say:看。老祖从不骗人。;narrate:他把匣子合上，收进袖里。;+attr:力量:2;+skill:cuixin_zhang:100;flag:poisoned_xingxiu;narrate:他拍手的时候，星宿海的水面浮起来一排人。那是他教出来的，也长得像他。;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down;;（把匣子推回去）>narrate:你没接那只匣子。;say:聪明的傻子。;narrate:他笑了一声，转身去看水。水里那群小圈，比刚才多了一层。;flag:refuse_fake;narrate:他拍手的时候，星宿海的水面浮起来一排人。那是他教出来的，也长得像他。;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down"
                 }
               ]
             }
@@ -931,7 +934,7 @@
               }
             ]
           },
-          "failMsg": "盐场的人不会无缘无故开口——你得先攥住点什么，他们才敢说。",
+          "failMsg": "盐场的人不会无缘无故开口。你得先攥住点什么，他们才敢说。",
           "effects": [
             {
               "type": "narrate",
@@ -1066,7 +1069,7 @@
               }
             ]
           },
-          "failMsg": "镖车前的女镖头不是随便搭话的人——先弄清北边出了什么事再来。",
+          "failMsg": "镖车前的女镖头不是随便搭话的人。先弄清北边出了什么事再来。",
           "effects": [
             {
               "type": "narrate",
@@ -1086,7 +1089,7 @@
             },
             {
               "type": "menu",
-              "raw": "（你怎么答）|（不提那面旗，只问她往北走哪条道）>narrate:她手上停了一下，才把旗卷好。;say:……不问旗，倒是个懂规矩的。;say:北边这条道，官道三里一卡，卡上的人要钱也要命。车辙往西那条干沟，绕得过去。;say:我这趟也往北。你要跟，就跟半程——到山口我们分道。;flag:yue_zhi_road;flag:npv180_warm;favor:npcv_180:15;;（那面旗，是华山的吧）>narrate:她把旗捏皱了。;say:谁跟你说的。;say:那旗是我借的。借了二十年。;say:头一趟镖，我车上插着它，道上没人敢劫。后来我早不靠华山了——旗还挂在车上。我没摘。;narrate:她把旗从车上扯下来，扔进车辙边的沟里。;say:你去说啊。说乐知的镖是借华山的名头走稳的。;narrate:她跳上车，抖了一下缰绳。骡子走了。走出十几步，一袋钱从车上落下来，砸在你脚边。;say:拿着。当是我买你个不说。;flag:npv180_broken;+money:300"
+              "raw": "（你怎么答）|（不提那面旗，只问她往北走哪条道）>narrate:她手上停了一下，才把旗卷好。;say:……不问旗，倒是个懂规矩的。;say:北边这条道，官道三里一卡，卡上的人要钱也要命。车辙往西那条干沟，绕得过去。;say:我这趟也往北。你要跟，就跟半程，到山口我们分道。;flag:yue_zhi_road;flag:npv180_warm;favor:npcv_180:15;;（那面旗，是华山的吧）>narrate:她把旗捏皱了。;say:谁跟你说的。;say:那旗是我借的。借了二十年。;say:头一趟镖，我车上插着它，道上没人敢劫。后来我早不靠华山了。旗还挂在车上。我没摘。;narrate:她把旗从车上扯下来，扔进车辙边的沟里。;say:你去说啊。说乐知的镖是借华山的名头走稳的。;narrate:她跳上车，抖了一下缰绳。骡子走了。走出十几步，一袋钱从车上落下来，砸在你脚边。;say:拿着。当是我买你个不说。;flag:npv180_broken;+money:300"
             }
           ]
         }
@@ -1119,7 +1122,7 @@
               }
             ]
           },
-          "failMsg": "楼上的姑娘不是随便搭话的人——先弄清北边出了什么事再来。",
+          "failMsg": "楼上的姑娘不是随便搭话的人。先弄清北边出了什么事再来。",
           "effects": [
             {
               "type": "narrate",
@@ -1135,7 +1138,7 @@
             },
             {
               "type": "menu",
-              "raw": "（你说什么）|（坐下。等她唱完）>narrate:她唱得很慢。唱到第二段，声音低下去，隔了两拍才抬起来。;say:……姐姐教我认的字，我都记着呢。;narrate:她把桌上那几张纸翻过来，一张张扣住。;say:这些不是曲词。;say:是书。有人出钱，要我抄——抄完了往西送。抄一页，给一两。;narrate:她抬头看了你一眼，很快又低下去。;say:爷要是也往西去……那批抄好的，走的是疏勒镇往黑水的那条道。装货的人姓常，脸上有块疤。;flag:chen_chaoben;+item:wulin_zhenyi_chaoben:1;flag:252_warm;;（抽一张纸带走，下楼去花厅）>narrate:花厅里坐着梅拾。她把那张纸接过去，看了很久，比看自己的字还久。;say:……这是冰儿写的。;narrate:楼上传来一声响，像是笔摔在桌上。老鸨的脚步上了楼。;narrate:你走出醉春楼的时候，楼上的灯灭了一盏。;flag:252_broken;+karma:-10"
+              "raw": "（你说什么）|（坐下。等她唱完）>narrate:她唱得很慢。唱到第二段，声音低下去，隔了两拍才抬起来。;say:……姐姐教我认的字，我都记着呢。;narrate:她把桌上那几张纸翻过来，一张张扣住。;say:这些不是曲词。;say:是书。有人出钱，要我抄。抄完了往西送。抄一页，给一两。;narrate:她抬头看了你一眼，很快又低下去。;say:爷要是也往西去……那批抄好的，走的是疏勒镇往黑水的那条道。装货的人姓常，脸上有块疤。;flag:chen_chaoben;+item:wulin_zhenyi_chaoben:1;flag:252_warm;;（抽一张纸带走，下楼去花厅）>narrate:花厅里坐着梅拾。她把那张纸接过去，看了很久，比看自己的字还久。;say:……这是冰儿写的。;narrate:楼上传来一声响，像是笔摔在桌上。老鸨的脚步上了楼。;narrate:你走出醉春楼的时候，楼上的灯灭了一盏。;flag:252_broken;+karma:-10"
             }
           ]
         }
@@ -1151,7 +1154,8 @@
             "水果",
             "桃"
           ],
-          "desc": "买两个果子"
+          "desc": "买两个果子",
+          "say": "果子"
         },
         {
           "cmd": "问解药",
@@ -1178,7 +1182,7 @@
               }
             ]
           },
-          "failMsg": "果子摊边那个人不理会闲话——先弄清北边出了什么事再来。",
+          "failMsg": "果子摊边那个人不理会闲话。先弄清北边出了什么事再来。",
           "effects": [
             {
               "type": "narrate",
@@ -1198,7 +1202,7 @@
             },
             {
               "type": "menu",
-              "raw": "（你问什么）|（不问箱子。只说你要往西去）>narrate:他看了你三息，把手从箱子上挪开，又放回去。;say:西边。……那地方，去了别喝生水，别闻香。风里有甜的味，就是有人在水里下东西了。;narrate:他从怀里摸出一小包东西，纸包了三层，塞进你手里。;say:含在舌下，别咽。到了地方再说。;say:你要是真去，替我带句话给疏勒镇的货郎。就说——瓶子满了。;flag:ruan_cure;flag:npv090_warm;+item:star_cure_item;;（问他那箱子里装的是什么）>narrate:他没有答。手背上一根青筋鼓起来，又平下去。;say:……你走吧。;narrate:他把箱子抱起来，往城东走。走到街口，停了一下，没有回头。;narrate:第二天，果子摊的老板说，那个人天没亮就出城了。;flag:npv090_broken;+karma:-10"
+              "raw": "（你问什么）|（不问箱子。只说你要往西去）>narrate:他看了你三息，把手从箱子上挪开，又放回去。;say:西边。……那地方，去了别喝生水，别闻香。风里有甜的味，就是有人在水里下东西了。;narrate:他从怀里摸出一小包东西，纸包了三层，塞进你手里。;say:含在舌下，别咽。到了地方再说。;say:你要是真去，替我带句话给疏勒镇的货郎。就说，瓶子满了。;flag:ruan_cure;flag:npv090_warm;+item:star_cure_item;;（问他那箱子里装的是什么）>narrate:他没有答。手背上一根青筋鼓起来，又平下去。;say:……你走吧。;narrate:他把箱子抱起来，往城东走。走到街口，停了一下，没有回头。;narrate:第二天，果子摊的老板说，那个人天没亮就出城了。;flag:npv090_broken;+karma:-10"
             }
           ]
         }

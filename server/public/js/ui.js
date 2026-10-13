@@ -233,7 +233,24 @@
     renderStory(v.story || null);
 
     let desc = room.desc || '';
-    $('room-desc').innerHTML = esc(desc).replace(/\n/g, '<br>');
+    /* 81/N-V-18（🔴 面板与日志同源）：后端给 desc 配了 hl（描写内可交互词，数据侧 §0.1 的
+       "从哪来"落地后就会有）时，面板**必须**走与日志 renderLogText 同一条渲染管线——
+       绝不允许面板 esc() 裸出、日志高亮，同一段文字两副面孔。
+       今天 room.hl 还没有数据源，这段是零成本的前向兼容：数据一到两边同时亮。
+       注册表挂在面板自己的 _panelHlReg 上（与日志的 _hlRegistry 同一套 renderLogText
+       语义、各自的渲染批次），点击 handler 与 paintLog 里那份完全一致。 */
+    if (room.hl && room.hl.length) {
+      const reg = [];
+      $('room-desc').innerHTML = renderLogText({ text: desc, hl: room.hl }, reg);
+      $('room-desc').querySelectorAll('.hl').forEach(b => {
+        b.onclick = () => {
+          const h = reg[+b.getAttribute('data-hl')];
+          if (h) openInteractMenu(h, b);
+        };
+      });
+    } else {
+      $('room-desc').innerHTML = esc(desc).replace(/\n/g, '<br>');
+    }
 
     /* ⚠️ 出口按钮 + 「此地可做」按钮**不再**画在房间面板里了。
        以前这两块（#exits / #room-actions）挤在房间描述下面，跟日志流里
@@ -371,6 +388,24 @@
       if (l.exitMap) item.exitMap = l.exitMap;
       if (l.exitBtns && l.exitBtns.length) item.exitBtns = l.exitBtns;
       if (l.roomName) item.roomName = l.roomName;
+      /* 剧情标签（主人 2026-10-08 提的，一直没生效）：后端发的是 `kind:'story'`，
+         归一化后只剩 type，474 行那个 `l.story` 就永远拿不到 —— 现在补上这一步搬运。 */
+      if (type === 'story') item.story = true;
+      /* 战斗行：`combat.oneAttack()` 现在会回结构化字段（design/75 §1.6）。
+         这里原样带过去，**不在这里算档位** —— 档位到 paintLog 才由
+         combatTierOf() 从 COMBAT_LINES.severity 读出来，避免同一条口径散两处。 */
+      if (type === 'combat') {
+        item.cb = {
+          style: l.style || 'fist',
+          hpRatio: (typeof l.hpRatio === 'number' && isFinite(l.hpRatio)) ? l.hpRatio : 0,
+          crit: !!l.crit,
+          missed: !!l.missed,
+          blocked: !!l.blocked,
+          dmg: typeof l.dmg === 'number' ? l.dmg : 0,
+          aName: l.aName || '',
+          tName: l.tName || '',
+        };
+      }
       /* 服务端来的「选择」（如匪类掠过时的「拦不拦」）—— 日志照常落一行，
          弹窗排到 paintLog 之后弹（不然会被随后的日志盖掉）。 */
       if (l.choices && l.choices.length) _pendingChoices.push({ title: l.choicesTitle || '', list: l.choices });
@@ -395,23 +430,76 @@
   /* 日志里 hl 的完整信息（含 actions 数组，不能塞进 DOM，用索引关联） */
   let _hlRegistry = [];
 
+  /* ================================================================
+     战斗文本的五档（design/76 §3.1）
+     ----------------------------------------------------------------
+     ★ 档位表只有**一个来源**：`COMBAT_LINES.severity`（= design/75 §1.8 里那张
+     `hp 区间 + uiTier` 的表）。这里**不抄区间**——抄一份就是「两处各写一份」，
+     以后改了句库的档位，视觉这边还停在老地方，而它俩看起来都"没报错"。
+
+     取值规则与句库 `render()` 内部**逐条对齐**：
+       · 选档：第一个 `hpRatio < hp[1]` 的档；都不满足就取最后一档
+       · 暴击：`sev.id < 3` 时抬到第 3 档 —— 与句库里
+         `if (opts.crit && sev.id < 3) sev = severity[2]` 是同一条规则
+     `tools/combat-fields-check.js` §10 会把这里算出来的档位，跟句库**实际渲染
+     出来的那一句**反查出的档位对撞一遍，确保两份实现不漂移。
+
+     @param {{hpRatio:number, crit:boolean, missed:boolean, blocked:boolean}} cb
+     @returns {number} 1–5；0 = 落空（不画杠）
+     ================================================================ */
+  function combatTierOf(cb) {
+    if (!cb) return 0;
+    if (cb.missed) return 0;
+    const CL = (typeof window !== 'undefined') ? window.COMBAT_LINES : null;
+    const sev = CL && CL.severity;
+    if (!sev || !sev.length) return 3;      /* 句库还没加载：给中档，别让整行掉色 */
+    const r = (typeof cb.hpRatio === 'number' && isFinite(cb.hpRatio)) ? cb.hpRatio : 0;
+    let s = sev[sev.length - 1];
+    for (let i = 0; i < sev.length; i++) { if (r < sev[i].hp[1]) { s = sev[i]; break; } }
+    if (cb.crit && s.id < 3) s = sev[2];
+    return s.uiTier;
+  }
+
+  /* 战斗行要挂的 class（档位 + 主客 + 状态）。
+     主客的判据是**血是谁的**，不是"我打出的/我挨的"——
+     后者在 NPC 打 NPC 时无处安放（design/76 §1.4）。 */
+  function combatClsOf(l) {
+    const cb = l.cb;
+    if (!cb) return { cls: '', tier: 0 };
+    if (cb.missed) return { cls: ' cb-miss', tier: 0 };
+    if (cb.blocked) return { cls: ' cb-block', tier: 0 };
+    const tier = combatTierOf(cb);
+    /* 挨打的是「你」⇒ 血是我的 ⇒ 实心杠 */
+    const mine = cb.tName === '你';
+    return { cls: ' cb-t' + tier + (mine ? ' cb-in' : ' cb-out') + (cb.crit ? ' cb-crit' : ''), tier };
+  }
+
   function paintLog(scroll) {
     const el = $('log');
     _hlRegistry = [];
     el.innerHTML = logLines.map((l, i) => {
-      const cls = 'log-line ' + (l.type || 'plain');
+      let cls = 'log-line ' + (l.type || 'plain');
+      /* 战斗行：把档位与主客翻译成 class（视觉全部由 CSS 承担，
+         这里只负责挂类名，不在这里算颜色、不算宽度）。 */
+      let tierAttr = '';
+      if (l.type === 'combat' && l.cb) {
+        const cc = combatClsOf(l);
+        cls += cc.cls;
+        if (cc.tier) tierAttr = ' data-tier="' + cc.tier + '"';
+      }
       /* 剧情标签（主人 2026-10-08：「那些灰字上方要写有剧情标签」）：
          带 `story` 标记的行 = 剧情里 NPC 的言行（旁白正文在大框里），
          在这段灰字**上方**压一行小标签，玩家一眼分得清「这句是剧情」还是「路人在动」。
          房间氛围那些没有这个标记，不打标签。 */
       const tag = l.story ? '<span class="log-tag">剧情</span>' : '';
-      return '<div class="' + cls + '" data-li="' + i + '">' + tag + renderLogText(l, _hlRegistry) + '</div>';
+      return '<div class="' + cls + '" data-li="' + i + '"' + tierAttr + '>' + tag + renderLogText(l, _hlRegistry) + '</div>';
     }).join('');
-    /* 日志里高亮的可交互名词 -> 弹出「能做什么」的中文菜单 */
+    /* 日志里高亮的可交互名词 -> 按可逆性分流（design/81 §3.2）：可逆单动作直接执行，
+       不可逆 / 多动作展开行内提示行。 */
     el.querySelectorAll('.hl').forEach(b => {
       b.onclick = () => {
         const h = _hlRegistry[+b.getAttribute('data-hl')];
-        if (h) openInteractMenu(h);
+        if (h) openInteractMenu(h, b);
       };
     });
     /* 出口方向可点击：点「北」就走一格 */
@@ -419,6 +507,7 @@
       b.onclick = () => doCmd(b.getAttribute('data-dir'), { fromButton: true });
     });
     /* 「出口」行下方那排按钮**已删**（主人要求：九宫格就是全部，别再 redundancy） */
+    bindHlTipDismiss();
     if (scroll !== false) el.scrollTop = el.scrollHeight;
   }
 
@@ -474,7 +563,9 @@
         if (idx < 0) return;
         const hi = reg ? reg.length : 0;
         if (reg) reg.push(h);
-        const tag = '<button class="hl" data-hl="' + hi + '" title="点击查看能做什么">' + needle + '</button>';
+        /* 81/N-V-26（L1 一个字都不说）：屏幕上不许有 hover 冒泡提示，
+           title= 已删；无障碍信息走 aria-label（读屏念，屏幕不显示）。 */
+        const tag = '<button class="hl" data-hl="' + hi + '" aria-label="' + esc(esc(h.text) + '（可交互）') + '">' + needle + '</button>';
         raw = raw.slice(0, idx) + tag + raw.slice(idx + needle.length);
       });
     }
@@ -499,29 +590,101 @@
     return raw;
   }
 
-  /* 点「这里有」的名词 → 弹一个「对它做什么」的中文菜单（类似 NPC 菜单） */
-  function openInteractMenu(h) {
+  /* ---- 可交互名词的点开流程（design/81 §3.2 合流版，2026-10-14 落地）----
+     点亮 = 邀请点击。按**可逆性**分流，不再"单动作静默执行"（81 §0.3 / N-V-21）：
+       · 可逆无害的单动作（端碗/交谈/细看…）→ 直接执行（教指令的事交给 L3 回执）
+       · 带 act 的动作（开详情面板 / 接任务预览）→ 直接执行（ preserves 主人第四轮的口径）
+       · 不可逆动作（偷袭/kill/绑架…）→ **先展开提示行**，提示行里那颗指令点了才执行
+       · 多动作（2–3 条）→ 一律先展开提示行
+     旧 choices 浮层路径已删（§3.2：单房 action 最多 3 条，">4 走 choices"永不触发，不留死代码）。 */
+  /* 不可逆指令首词清单（81/N-V-21；命中即"有代价"，需要一道看得见的刹车） */
+  const HL_RISKY_CMDS = ['偷袭', 'attack', 'kill', '绑架', '偷', 'drop', '叛门', '抢', '下毒', '暗算', '打劫', '劫'];
+  function hlCmdRisky(cmd) {
+    const first = String(cmd || '').trim().split(/\s+/)[0] || '';
+    return HL_RISKY_CMDS.indexOf(first) >= 0;
+  }
+  /* 81/N-V-14：data-cmd 绝不能命中 PANEL_CMDS——整串精确命中会被前端拦成"开面板"，
+     后端根本收不到。命中就换写法：退回 `look <名词>`（无害、后端认、不可能是面板词）。 */
+  function safeTipCmd(a, fallbackName) {
+    const cmd = String((a && a.cmd) || '').trim();
+    if (cmd && !panelForCmd(cmd)) return cmd;
+    return ('look ' + (fallbackName || '')).trim();
+  }
+
+  function openInteractMenu(h, btnEl) {
     const name = h && h.text || '';
     const acts = (h && h.actions) || [];
     if (!acts.length) return;
-    /* 只有一个动作就直接执行，别弹窗 */
-    if (acts.length === 1) {
+    const risky = acts.some(a => hlCmdRisky(a.cmd));
+    const hasAct = acts.some(a => a.act);
+    if (acts.length === 1 && !risky) {
+      /* 可逆单动作（含带 act 的）：直接执行。 */
       runInteractAct(acts[0], name);
       return;
     }
-    choices('对「' + name + '」做什么', acts.map(a => ({
-      label: a.label || a.cmd,
-      hint: a.hint || '',
-      cmd: a.cmd,
-      /* ⚠️ `act` / `uid` / `qid` 必须原样传给回调（choices 会把整个 it 透传）——
-         后端给的第一项是 `{act:'profile', uid:实例id}`：**开详情面板**。
-         这里若只认 cmd，就会退回 `look <名字>` 那段文本流，
-         也就是主人报的「点了看看却不弹面板」。
-         `qid` 是「接取任务」要的：前端靠它去拉任务详情。 */
-      act: a.act,
-      uid: a.uid,
-      qid: a.qid,
-    })), it => runInteractAct(it, name));
+    /* 不可逆 / 多动作：展开行内提示行（N-V-21：点它之后不发 exec，指令点了才执行） */
+    toggleHlTip(btnEl, name, acts);
+  }
+
+  /* 收起 #log 里所有展开的提示行（互斥 N-V-11：同一时刻只允许一张展开） */
+  function closeHlTips() {
+    const el = $('log');
+    if (!el) return;
+    el.querySelectorAll('.hl-tip:not([hidden])').forEach(t => { t.hidden = true; });
+    el.querySelectorAll('.hl[aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded', 'false'));
+  }
+
+  /* 展开 / 收起某个 .hl 的提示行（§3.2：行内展开，挂在 .log-line 内作最后一个块级子元素） */
+  function toggleHlTip(btn, name, acts) {
+    if (!btn) return;
+    const line = btn.closest('.log-line');
+    if (!line) return;
+    const id = 'hl-tip-' + btn.getAttribute('data-hl');
+    let tip = document.getElementById(id);
+    /* ① 再点一次同一个 .hl → 收 */
+    if (tip && !tip.hidden) { tip.hidden = true; btn.setAttribute('aria-expanded', 'false'); return; }
+    /* ② 点了别处的 .hl：旧的收、新的开（互斥） */
+    closeHlTips();
+    if (!tip) {
+      tip = document.createElement('div');
+      tip.className = 'hl-tip';
+      tip.id = id;
+      /* 指令按钮：显示的就是玩家该敲的那串字（data-cmd），点了直接执行（"知道该敲什么"
+         和"直接就做了"是同一条路——81 §九）。1–3 个全部并列，没有第四档。 */
+      tip.innerHTML = acts.map(a => {
+        const cmd = safeTipCmd(a, name);
+        return '<button class="hl-tip-cmd" data-cmd="' + esc(cmd) + '">' + esc(cmd) + '</button>';
+      }).join('');
+      const btns = tip.querySelectorAll('.hl-tip-cmd');
+      btns.forEach((cb, i) => {
+        cb.onclick = (ev) => {
+          ev.stopPropagation();
+          runInteractAct(acts[i], name);
+          closeHlTips();     /* ③ 点了提示行里的指令（执行 → 收） */
+        };
+      });
+      line.appendChild(tip);
+    }
+    tip.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');   /* ARIA 与可见一致（N-V-12） */
+    /* 缩进：视觉上挂在那颗点下面。量得到词位就按 offsetLeft，量不到走 --tip-indent-fb 兜底 */
+    try {
+      const off = btn.offsetLeft;
+      tip.style.paddingLeft = (off && off > 0) ? off + 'px' : '';
+    } catch (e) { /* 量不到就保持 CSS 兜底 2em */ }
+  }
+
+  /* 点日志空白处 → 收起提示行（§3.2 收起时机 ④）。Esc 走全局 bindHotkeys。
+     绑一次（paintLog 反复跑，用挂旗防重复）。 */
+  function bindHlTipDismiss() {
+    const log = $('log');
+    if (!log || log.__tipDismissBound) return;
+    log.__tipDismissBound = true;
+    log.addEventListener('click', (e) => {
+      /* 点在 .hl / .hl-tip-cmd 上有自己的 handler，不算"空白处" */
+      if (e.target.closest('.hl') || e.target.closest('.hl-tip')) return;
+      closeHlTips();
+    });
   }
 
   /** 执行日志高亮菜单里的一项：认 `act`，否则退回 `cmd` */
@@ -1588,13 +1751,54 @@
   /* ============================================================
    *  左侧面板（状态/属性/武学/任务/门派/背包/装备/效果/地图/帮助）
    * ============================================================ */
+  /* ================================================================
+   *  P0-C C-1：「地图」面板取图时的分批 / 迷雾开关
+   * ================================================================
+   *  ⚠️ `region` 只能写 `auto`：P0 之后指令回包 / 开局 / 读档都不再下发地图，
+   *     前端的 `S.view.map` 是空的 —— 它**不知道自己现在在哪个州**。
+   *     想让前端传州名就得先拿到地图，而拿到地图又得先知道州名，循环依赖。
+   *     所以交给服务端从玩家脚下这间房自己推。
+   *
+   *  ⚠️ `neighbors`：**实测后定为 0**（只发本州），不走 spec 的「本州 + 邻州」。
+   *     spec §M 那句「只发该州 + 邻州」是对的，但那是**为「地图能平移」准备的**；
+   *     而当前前端（`mapHtml`）在画之前先
+   *     `filter(r => r.region === curRegion)` 再 `filter(z === curZ)` ——
+   *     **视野就是本区本层，邻州的房间一根线都画不出来**。
+   *     实测（走真 HTTP 量出来）：江南城带邻州 = 17 个州 / 234 间 → 113.7 KB；
+   *     不带 = 1 个州 / 32 间 → **52.1 KB**（gzip 13.8 KB）。
+   *     差的这 49 KB 是**纯空气**：下载了、解析了、然后被 filter 扔掉。
+   *     ⇒ 默认路径只服务于**现在真能画出来的东西**。
+   *     开关留着，等真做地图平移那天，把这里翻成 1 并连验收一起开 ——
+   *     那时它才有意义，现在带着只是给未来预支带宽。 */
+  const MAP_VIEW_NEIGHBORS = 0;
+
+  function mapViewOpts() {
+    return {
+      region: 'auto',
+      neighbors: MAP_VIEW_NEIGHBORS,
+      /* 「地图显示未探索地名」默认关 ⇒ fog=1（不剧透名字与出口）；
+         玩家在设置里打开 ⇒ fog=0，服务端把全量名字发回来。
+         ⚠️ 每次开面板都重新取图，所以改完设置**重开一次地图面板**即生效。 */
+      fog: (S.settings && S.settings.mapnames) ? 0 : 1,
+    };
+  }
+
   async function panel(name) {
     let v = S.view;
     try {
-      const d = await api.view(name);
+      const d = await api.view(name, name === 'map' ? mapViewOpts() : null);
       v = d.view || v;
     } catch (e) { /* 用缓存 */ }
     if (!v) return;
+    /* 🔴 P0 配套（2026-10-12）：把刚取回的地图**并回** `S.view`。
+       为什么非做不可：指令回包故意不带地图（247 KB），开局 / 读档也从这一步起
+       不再下发地图，于是「打开地图面板」是全工程**唯一**还能拿到整张地图的地方。
+       而下面「点看得到但走不到的格子 → 弹完整房间名」（触屏看不到 title 提示，
+       主人报的「地块名看不全」就靠它）读的是 **`S.view.map`** ——
+       不并入的话它永远取不到那个房间，静默退化成「点了没反应」，而且不报错。
+       只写回 `map` 一个字段、不整包替换 `S.view`：面板取回的是完整快照，
+       整包盖回去会把它落后于此刻的状态（这次取面板期间别的请求带回来的）写回去。 */
+    if (v.map && S.view && S.view !== v) S.view.map = v.map;
     const p = v.player || {};
 
     /* 🔴 2026-10-12 主人「新手教程剧情全删」：
@@ -2728,41 +2932,55 @@
      全图没了，分层是全图专属，一并撤掉。下面的 `pendingPanRegion`（跨渲染平移目标）
      也随之删：区域模式只画本区，没有「换区平移」这件事了。 */
 
+  /* ⚠️ 断点常量：**必须与 `main.css` 里的 `@media` 断点同源**。
+     老代码是 JS 用 640、CSS 用 560 —— 600px 宽的窗口里 CSS 已切窄屏、
+     JS 还走桌面分支，两边不是同一张图。spec §3.7 把 JS 阈值改成 560 与 CSS 对齐。
+     本项目在 `ZMIN/ZMAX` 上已经被这种「两处各写一份」坑过两次（见 bindPanelActions），
+     别攒第三次：改这里就去改 main.css 那几个 @media，反之亦然。 */
+  const BP_S = 380;      /* XS | S */
+  const BP_NARROW = 560; /* S | M —— 与 main.css 的窄屏断点同一个数 */
+  const BP_L = 820;      /* M | L */
+
   function mapHtml(v) {
     /* ---- 尺寸自适应（主人报的 bug：手机上地块名看不清 / 看不全）----
-       视口宽度 < 640 视为手机窄屏：把格子与字号一起放大，
-       名字从「最多 4 字」放宽到「最多 6 字」，46px 方块两行塞得下。
-       桌面端（≥640）维持原值 30/26/8，观感零改动。 */
+       🔴 P0-C C-2（甄塑之《墨拓残卷》§3.7）：从「窄屏 / 桌面」两档改为**四档**，
+       格距由 30px 抬到 52–66px —— 这是「不许砍字」能成立的前提：
+       4 字名在 30px 格里按 7px 排要 28px，看着塞得下，可 7 字名就要 49px，
+       溢 19px 压到邻格上（主人报的「唐门遮挡旁边地块名」就是这么来的）。
+       格子放大后，§3.9 的算法才能在**不砍字**的前提下把 312 个全名全摆下。 */
     let vw = 0, vh = 0;
     try {
       if (typeof global !== 'undefined' && global && typeof global.innerWidth === 'number') vw = global.innerWidth;
       if (typeof global !== 'undefined' && global && typeof global.innerHeight === 'number') vh = global.innerHeight;
     } catch (e) { vw = 0; vh = 0; }
-    const NARROW = vw > 0 && vw < 640;
+    /* ⚠️ `vw === 0`（抽取测试环境里没有 DOM）落 **L 档 52px**：
+       这是 spec §5.2 第 1 条定的兜底值，别改成别的 —— 改了所有抽取测试的
+       格子尺寸都会跟着漂，而它们断言的是「格子数对不对」「有没有砍字」，
+       格距一漂，行宽判定就跟着变，红得莫名其妙。 */
+    const tier = (vw > 0 && vw < BP_S) ? { cell: 66, font: 13.5 }     /* XS */
+      : (vw > 0 && vw < BP_NARROW) ? { cell: 60, font: 13 }            /* S  */
+        : (vw > 0 && vw < BP_L) ? { cell: 56, font: 12 }               /* M  */
+          : { cell: 52, font: 11 };                                    /* L  / vw===0 */
+    const NARROW = vw > 0 && vw < BP_NARROW;
     /* 缩放档位（画布右上角工具条切换）。抽取环境里没有 mapZoom → 退回 1。
-       ⚠️ 上限 2.4 与 bindPanelActions 里那颗 ＋ 按钮的钳位**手动对齐** ——
-          超出了会被那条钳回 2.4，按钮却显示成"还能再点"，两边就打起来了。
-       为什么从 1.4 抬到 2.4：主人 2026-10-12 要求「当前区域地图＝世界地图删去其他区域」，
-       于是区域模式不再按弹窗尺寸自动放大格距（下面那段 fitCell 已删），
-       桌面端小区域就只有基础格距 —— 想看清只能靠自己放大，± 的范围得给够。 */
+       ⚠️ ZMIN / ZMAX 与 bindPanelActions 里那颗 ＋ 按钮的钳位**必须同一个常量** ——
+          超出了会被那条钳回来，按钮却显示成"还能再点"，两边就打起来了。
+          （这个坑在本项目里已经踩过两次，注释里记着呢。）
+       ⚠️ C-2 从 0.7/2.4 改为 **0.9/2.2**（spec §3.7）：格距基准抬到 52 之后，
+          0.7 会掉到 36.4px、字号被压到 8px —— 又回到「蚂蚁」。
+          0.9×52 = 46.8px 是「还放得下 4 字/行、字不小于 10px」的地板。 */
     let z = (typeof mapZoom === 'undefined') ? 1 : Number(mapZoom);
     if (!(z > 0)) z = 1;
-    const ZMIN = 0.7, ZMAX = 2.4;
+    const ZMIN = 0.9, ZMAX = 2.2;
     z = Math.min(ZMAX, Math.max(ZMIN, z));
-    let MAP_CELL = Math.round((NARROW ? 52 : 30) * z);   // 每格边长（含走廊）
+    let MAP_CELL = Math.round(tier.cell * z);   // 每格边长（含走廊）
     const MAP_PAD = NARROW ? 30 : 34;     // 画布留白
     const M_LINE = NARROW ? 1.15 : 1;     // 名字行距
-    /* （名字上限 `M_NAME_MAX` 已随「纯地名」一起退休：格子里摆的是**短名**
-        （`mapLabel()`，≤4 字），字号保持基准，不再靠缩字号塞长名。） */
-    /* ★ 2026-10-13 主人报「唐门遮挡旁边地块名」后的标定：
-       格子里最多 4 个字（`MAP_NAME_MAX`），所以基准字号必须满足
-       `4 × 字号 ≤ 格宽`，否则又是溢出压字：
-         · 桌面格 30px ⇒ 4×7=28px ✓（原 8px 会到 32px，超 2px）
-         · 窄屏格 52px ⇒ 4×13=52px ✓（正好一格，收一点字距就稳）
-       ⇒ 桌面档从 8/9 调到 **7/8**。为什么不是继续缩到 6px：7px 在
-         4 字名上仍是「一行摆得下」的最小可读档；再小就只能靠 CSS 的
-         `overflow:hidden` 硬裁，裁字比小一档更难看。 */
-    const mFont = r => Math.max(7, Math.round((NARROW ? (r.current ? 14 : 13) : (r.current ? 8 : 7)) * z));
+    /* ⚠️ C-2：旧的 `mFont`（8/7 与 14/13，地板 7px）**整段删除**，
+       字号改由下面的 `fontOf()` 给 —— 它按 spec §3.7 的四档取基准
+       （11 / 12 / 13 / 13.5，当前格 +1），并且**地板 clamp 10px**。
+       7px 那种「蚂蚁字号」是老方案为了把 4 字名塞进 30px 格子才压出来的，
+       格子放大到 52px 之后没有这个必要了，字号就该回到能看清的档位。 */
 
     const m = v.map || {};
     const allRooms = m.rooms || [];
@@ -2776,7 +2994,21 @@
     const curRegion = here ? here.region : null;
 
     /* 本区房间。curRegion 取不到（数据异常）时退回全部，至少不白屏。 */
-    const rooms = curRegion ? allRooms.filter(r => r.region === curRegion) : allRooms;
+    const regionRooms = curRegion ? allRooms.filter(r => r.region === curRegion) : allRooms;
+
+    /* ★ 主人 2026-10-13：「我在江南城大街上，当前江南区域地图把怡红院这种
+       需要上/下的地块隐藏掉」。
+       ⇒ 区域地图**只画玩家所在那一层（z）**的地块：站在地面（z=0）就只画 z=0，
+          那些「要上楼/下楼才到得了」的屋子（怡红院 z=1、青竹帮演武场 z=1…）
+          不再作为平地上的散格摆出来 —— 它们本来就不同层，摊在地上既挤又误导。
+       层号沿用后端下发的 `r.z`（不是硬编码 0/1），因为数据里有 z 到 8 的深楼。
+       ⚠️ 被隐藏的房间**不是凭空消失**：只要它对应的上/下楼口在本层，
+          本层那格仍挂着 ▲/▼ 角标（见下面地块那段），玩家照样知道「这儿能上楼」。
+       ⚠️ 找不到当前房（数据异常）时不做层过滤，退回本区全部，至少不白屏。 */
+    const curZ = here ? (here.z || 0) : null;
+    const rooms = curZ === null ? regionRooms : regionRooms.filter(r => (r.z || 0) === curZ);
+    /* 本区**所有层**的房间（用于角标判定：某格的上/下出口通向的那间房在哪一层）。 */
+    const regionRoomsAllZ = regionRooms;
 
     /* 层名读法（🔴 分层切换器已随「天下全图」一起删掉，但**房间 tooltip 仍用**它
        说明某个带 ▲/▼ 出口的地块在几层 —— 0 = 一层（地面）/ 正数 = 楼层 / 负数 = 地下层）。 */
@@ -2822,7 +3054,15 @@
        ⚠️ ①（居中）**保留** —— 它跟"两页一致"不冲突，是被删那条的独立一半。
        `b` 仍然是**本区域的紧包围盒**：那是"裁"的那一刀，不能省，
        省了就变成一个大画布里缩着一个小区域。 */
-    const ex = m.explore || { visited: 0, total: allRooms.length };
+    /* ⚠️ 别再拿「批内房间数」给全江湖分母兜底（design/78 §4.5.3 的 M-V-13）。
+       `allRooms`（上面第 2890 行）是**批内**集合 —— P0-C 分批之后它 ≈32–34，
+       而 `m.explore.total` 是**世界全集** 512。
+       原来这里写 `m.explore || { visited: 0, total: allRooms.length }`，
+       于是后端哪天漏了 `explore` 字段，界面就静默显示「全江湖 1/34」：
+       **不报错、不崩溃，只是江湖变小了**，而玩家会当真 —— 这比崩了还难发现。
+       ⇒ 缺字段时显示「—」。宁可不说，也不许说错。 */
+    const ex = m.explore || null;
+    const allTxt = ex ? (ex.visited + '/' + ex.total) : '—';
     const scopeCount = rooms.length;
     const scopeVisited = rooms.filter(r => r.visited).length;
 
@@ -2856,14 +3096,19 @@
     h += '<div class="map-scope">';
     h += '<span class="ms-where">' +
       '只显示你脚下这一片：' + esc(((m.regions || []).find(x => x.id === curRegion) || {}).name || '—') +
+      (curZ !== null && curZ !== 0
+        /* 站在楼上/地下时点一句，免得玩家以为「地面那些屋全没了」。地面层（z=0）
+           不加这句：那是常态，加了一行字反而啰嗦。 */
+        ? '<span class="ms-lv">　' + esc(lvName(curZ)) + '（楼下/楼上的地块要走近才看得到）</span>'
+        : '') +
       '</span></div>';
 
     const pct = scopeCount ? Math.round(scopeVisited / scopeCount * 100) : 0;
     h += '<div class="map-progress" title="本范围已探索 ' + scopeVisited + '/' + scopeCount +
-      '；全江湖 ' + ex.visited + '/' + ex.total + '">' +
+      '；全江湖 ' + allTxt + '">' +
       '<span class="mp-bar"><i style="width:' + pct + '%"></i></span>' +
       '<span class="mp-txt">本范围 ' + scopeVisited + '/' + scopeCount +
-      '　全江湖 ' + ex.visited + '/' + ex.total + '</span></div>';
+      '　全江湖 ' + allTxt + '</span></div>';
     h += '</div>';
 
     /* --- 图例：★ 2026-10-12 主人「把地图界面的『你在这里』与『未探索』删了」，
@@ -2902,11 +3147,34 @@
       '<span class="mt-zoom" title="当前缩放">' + Math.round(z * 100) + '%</span>' +
       '<button class="mt-btn mt-z" data-map-tool="zin" title="放大，看得更清"' + (z >= ZMAX - 1e-6 ? ' disabled' : '') + '>＋</button>' +
       '</div>';
-    h += '<div class="map-canvas' + (NARROW ? ' map-narrow' : '') + '" style="width:' + W + 'px;height:' + H + 'px" tabindex="0">';
+    /* 羽化中心 = **已探索格子的重心**（spec §5.2 第 7 条）。
+       ⚠️ 一格都没探索过（刚开局）时取画布中心，别退化成 0%,0% ——
+          那样羽化圆心贴在左上角，看起来像左上角被擦掉了一块。 */
+    const litRooms = rooms.filter(r => r.visited || r.current);
+    const litX = litRooms.length
+      ? (litRooms.reduce((s, r) => s + (r.x - b.minX), 0) / litRooms.length + 0.5) * MAP_CELL + MAP_PAD
+      : W / 2;
+    const litY = litRooms.length
+      ? (litRooms.reduce((s, r) => s + (r.y - b.minY), 0) / litRooms.length + 0.5) * MAP_CELL + MAP_PAD
+      : H / 2;
+    h += '<div class="map-canvas' + (NARROW ? ' map-narrow' : '') + '" style="width:' + W + 'px;height:' + H + 'px;' +
+      '--map-lit-x:' + Math.round(litX) + 'px;--map-lit-y:' + Math.round(litY) + 'px" tabindex="0">';
 
-    /* 1) 底：整张网格纸（让它看起来是一张连续地图） */
-    h += '<div class="map-grid-bg" style="width:' + (b.w * MAP_CELL) + 'px;height:' + (b.h * MAP_CELL) + 'px;' +
-      'left:' + MAP_PAD + 'px;top:' + MAP_PAD + 'px;background-size:' + MAP_CELL + 'px ' + MAP_CELL + 'px"></div>';
+    /* 1) 底：一张带帘纹的纸（让它看着是**纸**，不是坐标纸）
+       🔴 P0-C C-2（spec §4.3 第 1 条）：`.map-grid-bg` → **`.map-paper-grain`**，
+       并且**删掉内联的 `background-size: MAP_CELL px`** ——
+       那个值等于格距 ⇒ 帘纹间距 == 格距 ⇒ **那不是帘纹，那是网格线**，
+       直接违反「不许坐标 / 网格 / 缩尺」这条硬约束（spec V-6）。
+       间距改由 CSS 的 `--map-grain-step`（固定 7px）给，与格距彻底脱钩。 */
+    h += '<div class="map-paper-grain" style="width:' + (b.w * MAP_CELL) + 'px;height:' + (b.h * MAP_CELL) + 'px;' +
+      'left:' + MAP_PAD + 'px;top:' + MAP_PAD + 'px"></div>';
+
+    /* 1b) 未探索羽化层（spec §3.2）：压在纸纹之上、地块之下（`z-index` 见 CSS）。
+       未探索 = **纸本身褪回页面底色，连帘纹都淡掉**，不是画一层云、
+       不是盖一层淡墨 —— 那些都还是在没去过的地方「画了东西」，语义反了。
+       `--map-lit-x/y` 由「已探索格子的重心」算出（见下面 §4 之前那段），
+       内联到 `.map-canvas` 上，这里只负责铺一层。 */
+    h += '<div class="map-veil"></div>';
 
     /* 2) 区域底色块 —— ★ 只画**真实房间占的那块**（主人第四轮：
        「没有真实地块的那些地图上的背景方块在地图上删了」）。
@@ -3087,26 +3355,50 @@
        这样主人举的「唐门」「白鹿书院」两处，格子里分别是「堡门」「讲堂」，
        一格一词、互不压字 —— 而区域的大地名（唐门 / 白鹿书院）本来就不画在地块上，
        改由「地名索引」那排按钮承担（见下面 `.map-region-nav` 那段）。 */
-    /* 地图格子里的短名（≤4 字）。⚠️ `shortName()`（旧的「砍刀」）在地图里没用，
-       它按**字数上限**砍（4/6），但不管「砍哪一头」「会不会撞名」；
-       这里要的是「取哪一段才唯一」，规则比它细，所以单独一份。 */
-    const MAP_NAME_MAX = 4;
-    const mapLabel = name => {
-      const s = String(name || '');
-      if ([...s].length <= MAP_NAME_MAX) return s;
+    /* ================================================================
+     *  🔴 P0-C C-2：格子里摆**全名**，不再砍字
+     * ================================================================
+     *  `MAP_NAME_MAX = 4` 与 `mapLabel()`（取「·」后那段的砍刀）**整段删除** ——
+     *  它就是把「江南城·长街」砍成「长街」的直接元凶（spec §3.9 点名）。
+     *
+     *  换上的是 spec §3.9 的算法，四条：
+     *    1. 「·」处插 `<wbr>`：断在语义边界上（「江南城 / 长街」），
+     *       而不是「江南城·长 / 街」—— 后者读起来是断的
+     *    2. 行数由**码点数 × 字号 vs 可用宽**算出来，不是拍脑袋定 2 行
+     *    3. 三行还放不下 ⇒ **不降字号**，把这格**撑宽**压过邻格（overflow visible）
+     *       —— 宁可这一格大一点也不许截字
+     *    4. 字号地板 **clamp 10px**，永不再降（老代码会降到 7px，那是「蚂蚁」）
+     *
+     *  ⚠️ 未探索的房间**连名字都不下发**（后端 fog 已裁掉 `name`），
+     *     这里就渲染一个空的 `.mn-name` —— 不是「？」，也不是淡字。
+     *     「未探索 = 纸本身褪回底色」（spec §3.2）：画个「？」等于在
+     *     没去过的地方画了个东西，语义反了。
+     * ================================================================ */
+    const MAP_FONT_FLOOR = 10;    /* 字号地板（spec §3.9 第 6 条），永不再降 */
+    const W_RATIO = 0.92;         /* 可用宽 / 格距（spec §3.9 输入项） */
+    const fontOf = r => Math.max(MAP_FONT_FLOOR,
+      Math.round((tier.font + (r.current ? 1 : 0)) * z));
+    /** 全名 → 格子里的 HTML。返回 `{ html, needW }`，`needW` 是这一格至少要多宽 */
+    const nameHtml = (r) => {
+      const s = String(r.name || '');
+      if (!s) return { html: '<span class="mn-name"></span>', needW: MAP_CELL };
+      const n = [...s].length;
+      const F = fontOf(r);
+      const W = MAP_CELL * W_RATIO;
+      /* 行数：1 行放得下就 1 行，否则 2 行，再否则 3 行（spec §3.9 第 2/3/4 步） */
+      const lines = (n * F <= W) ? 1 : (Math.ceil(n / 2) * F <= W) ? 2 : 3;
+      const perLine = Math.ceil(n / lines);
+      /* 「·」处插 `<wbr>`（spec §3.9 第 1 步） */
       const dot = s.indexOf('·');
-      /* 「·」后面那段是「哪一间房」，最不容易撞名 —— 优先用它 */
-      if (dot > 0) {
-        const tail = [...s.slice(dot + 1)];
-        if (tail.length && tail.length <= MAP_NAME_MAX) return tail.join('');
-      }
-      /* 没「·」（「黑松林深处」）或尾段太长的，退回前 4 字 */
-      return [...s].slice(0, MAP_NAME_MAX).join('');
-    };
-    const fontOf = r => {
-      /* 字号只跟「短名的字数」有关：4 字以内一律基准字号，不缩。
-         （`mFont` 给的是基准，`current` 那格再大一点点，保持「我在哪」好认。） */
-      return mFont(r);
+      const body = esc(dot > 0 ? s.slice(0, dot + 1) : s)
+        + (dot > 0 ? '<wbr>' + esc(s.slice(dot + 1)) : '');
+      /* 三行还放不下 ⇒ 不降字号，把这格撑宽（spec §3.9 第 5 步） */
+      const needW = Math.max(MAP_CELL, Math.ceil(perLine * F / W_RATIO));
+      return {
+        html: '<span class="mn-name" style="font-size:' + F + 'px;line-height:' + M_LINE +
+          ';max-width:' + Math.ceil(perLine * F) + 'px">' + body + '</span>',
+        needW,
+      };
     };
     rooms.forEach(r => {
       const left = (r.x - b.minX) * MAP_CELL + MAP_PAD;
@@ -3122,14 +3414,14 @@
       else if (r.visited) cls += ' known';
       else cls += ' unknown';
       const reg = (m.regions || []).find(x => x.id === r.region);
-      /* ★ 去掉「战争迷雾」（主人第四轮要求：「地图不要搞那些战争迷雾」）。
-         原来是「去过/一步可达才显示名字，没去过的只留一个淡点」——
-         世界地图上看过去一片空白小方块，不知道哪儿是哪儿，也没法规划路线。
-         现在**所有地块都显示名字**，只用颜色区分「去过 / 没去过」。
-         ⚠️ 格子里摆的是 `mapLabel(r.name)`（短名），**全名在 title 里**
-            （鼠标悬停能看全，点开面板抬头也是全名）。 */
-      const label = r.name || '？';
-      const short = label === '？' ? label : mapLabel(label);
+      /* ★ P0-C C-2：三档语义（spec §3.1 的 L1/L2/L3 + §3.2 的留白）：
+           L1 我在这里  → `.here`  + 朱印 `.mn-seal`，全名，粗字
+           L2 我从哪来  → `.known` + 全名
+           L3 其余      → `.unknown`，**不显示名字**（未探索 = 纸褪回底色）
+         ⚠️ 老代码给没去过的格子加 `.dim`（淡字），那条**删了**：
+            「淡字」还是在未去过的地方画了东西，与 spec §3.2「未探索 = 留白」直接冲突，
+            而且淡墨与 L2 的浓墨是同一色相的两档，色觉差异下极易混。 */
+      const nm = nameHtml(r);
       /* ★ 2026-10-13 分层配套：格子角上挂 **▲ / ▼ 角标**，
          表示「这里能上楼 / 能下楼」。
          为什么必须有：分层之后别的层的房间不画了，如果连「这屋有楼梯」都不标，
@@ -3140,19 +3432,60 @@
             所以用 indexOf 判，别写成 `r.exits.u`。 */
       const ex = r.exits || [];
       const up = ex.indexOf('u') >= 0, dn = ex.indexOf('d') >= 0;
+      /* ★ 2026-10-13：区域地图改成**只画本层**之后，楼上/楼下的那块地不再露面，
+         角标的 tooltip 就得更顶用 —— 点出「上楼去怡红院（2层）」，
+         既说了去哪、又说了在几层（层名由此保留成一条通道，不再满图「一层」刷屏）。
+         终点名从**本区全层**里按「高一/低一层」反查（近似即可：`r` 只带方向名）。 */
+      const upTo = up
+        ? ((regionRoomsAllZ.find(x => (x.z || 0) === (r.z || 0) + 1) || {}).name || '')
+        : '';
+      const dnTo = dn
+        ? ((regionRoomsAllZ.find(x => (x.z || 0) === (r.z || 0) - 1) || {}).name || '')
+        : '';
+      const tipPiece = (label, to, dz) => {
+        const lv = lvName((r.z || 0) + dz);
+        return label + (to ? '去' + to : '') + '（' + lv + '）';
+      };
+      const lvTip = up && dn
+        ? (tipPiece('上楼', upTo, 1) + '，也可' + tipPiece('下楼', dnTo, -1))
+        : (up ? tipPiece('上楼', upTo, 1) : tipPiece('下楼', dnTo, -1));
       const lvMark = (up || dn)
-        ? '<i class="mn-lv" title="' + (up && dn ? '可上楼，也可下楼' : (up ? '可以上楼' : '可以下楼')) + '">' +
+        ? '<i class="mn-lv" title="' + esc(lvTip) + '">' +
           (up ? '▲' : '') + (dn ? '▼' : '') + '</i>'
         : '';
-      h += '<button class="' + cls + (r.visited || r.current ? '' : ' dim') +
-        '" style="left:' + left + 'px;top:' + top + 'px;' +
-        'width:' + MAP_CELL + 'px;height:' + MAP_CELL + 'px"' +
-        ' title="' + esc(r.name) + (r.region ? '（' + esc((reg && reg.name) || r.region) + '）' : '') +
-        (r.z ? '　' + esc(lvName(Number(r.z))) : '') +
-        (r.dist >= 0 ? '　' + r.dist + ' 步' : '　很远') + '"' +
-        ' data-room="' + esc(r.id) + '">' +
-        '<span class="mn-name" style="font-size:' + fontOf(r) + 'px;line-height:' + M_LINE + '">' +
-        esc(short) + '</span>' + lvMark + '</button>';
+      /* L1 朱砂方印（spec §3.3）：印是「人在纸上留下的动作」，与「私人笔记」同构。
+         ⚠️ 老方案只有一个黄字色来标「我在这里」—— 那是**颜色做唯一信息载体**，
+            去色就全没了。印是形状（实心方块 + 金环 + 阴刻「我」），灰度下仍在。 */
+      const seal = r.current ? '<i class="mn-seal" aria-hidden="true">我</i>' : '';
+      /* ★ 「相邻可走、但还没走过」那一档的**空心圈**（design/78 §4.5.1 M-V-2 / M-V-4）。
+         判据是 `r.name` 为空 + `near`：
+           · fog=1（迷雾开）⇒ 后端给这一类**只留 `near:1`、不发名字** ⇒ 画圈；
+           · fog=0（迷雾关）⇒ 后端发全量名字 ⇒ 这一类 `r.name` 非空 ⇒ **不画圈**，
+             正好对上 M-V-9「关掉迷雾后 `.mn-ring` 数量 === 0，所有格子都有名字」。
+         ⇒ 用「有没有名字」当判据，比再传一个 fog 标志给前端更省事，也**不会两边打架**：
+            后端什么时候决定发名字，前端就什么时候决定画不画圈，只有一处真相。
+         ⚠️ 别写成 `node.className = '...'` 整块赋值 —— 会冲掉 `data-visited` / `data-near`
+            这些同批写进去的状态（design/78 §4.5.3-bis 点名的坑）。这里是拼字符串后一次性
+            写进 class，属性各自 `setAttribute` / 内联，两条路都避开了。 */
+      const ring = (r.near && !r.visited && !r.current && !r.name)
+        ? '<i class="mn-ring" aria-hidden="true"></i>'
+        : '';
+      /* ⚠️ 未探索的格子**不给 title**：title 里写的是全名 + 州名，
+         鼠标一悬停就把没去过的地方剧透了（spec V-12 同理）。 */
+      const title = r.name
+        ? (esc(r.name) + (r.region ? '（' + esc((reg && reg.name) || r.region) + '）' : '') +
+          (r.z ? '　' + esc(lvName(Number(r.z))) : '') +
+          (r.dist >= 0 ? '　' + r.dist + ' 步' : '　很远'))
+        : '尚未探索';
+      h += '<button class="' + cls + '"' +
+        ' style="left:' + left + 'px;top:' + top + 'px;' +
+        'width:' + nm.needW + 'px;height:' + MAP_CELL + 'px"' +
+        ' title="' + title + '"' +
+        ' data-room="' + esc(r.id) + '"' +
+        ' data-visited="' + (r.visited || r.current ? '1' : '0') + '"' +
+        ' data-near="' + (r.near ? '1' : '0') + '"' +
+        (r.region ? ' data-region="' + esc(r.region) + '"' : '') +
+        '>' + seal + ring + nm.html + lvMark + '</button>';
     });
 
     /* （区域/城市名已按主人 2026-10-12 要求整体下线，见上方 map-region-box 那段注释。） */
@@ -3188,11 +3521,12 @@
     const rest = regs.filter(r => !r.canFly);
     const regBtn = (r) => {
       const can = !!r.canFly;
+      /* ⚠️ 2026-10-13：口径变了 —— 不再是「去过才准飞」，而是「脚下有轻功 + 内力够」。
+         所以压暗时的话术不能再说「没去过」（那是老规矩），直接说后端给的 `flyReason`。 */
       const tip = can
-        ? ('飞往' + r.name + (r.entryName ? '（落在' + r.entryName + '）' : ''))
-        /* 🔴 2026-10-12 全图下线后，没去过的区域**没法「移视角过去看」**了
-           （地图只画本区）—— 按钮压暗且不给 data 属性，点了什么都不会发生。 */
-        : ('没去过' + r.name);
+        ? ('飞往' + r.name + (r.entryName ? '（落在' + r.entryName + '）' : '')
+          + (r.flyCost ? '　耗内力 ' + r.flyCost + ' 点' : ''))
+        : (r.flyReason || ('飞不到' + r.name));
       return '<button class="mrn-btn' + (r.id === curRegion ? ' cur' : '') + (can ? ' canfly' : ' nofly') + '"' +
         (can ? ' data-fly-region="' + esc(r.name) + '"' : ' disabled') +
         /* `--mr-c` = 该区域自己的颜色（`regions[].color`），给名字底下那条虚线下划线用。
@@ -3204,15 +3538,15 @@
         '<span class="mrn-num">' + (r.visitedCount || 0) + '/' + (r.count || 0) + '</span>' +
         (can ? '<i class="mrn-fly">↗</i>' : '') + '</button>';
     };
-    h += '<div class="map-region-nav" title="去过的地方，点一下人就直接过去">';
+    h += '<div class="map-region-nav" title="练成轻功的地方，点一下人就直接过去">';
     h += '<div class="mrn-head"><span class="mrn-title">地名索引</span>' +
       '<span class="mrn-sub">去过 ' + regs.filter(r => (r.visitedCount || 0) > 0).length + '/' + regs.length +
-      ' 处　带 ↗ 的能直接过去</span></div>';
+      ' 处　带 ↗ 的现在就能飞过去</span></div>';
     if (canFly.length) h += '<div class="mrn-grid">' + canFly.map(regBtn).join('') + '</div>';
-    else h += '<div class="mrn-empty">还没去过别处。先把脚下这一片走熟。</div>';
+    else h += '<div class="mrn-empty">还没学会轻功，脚底不沾风 —— 学一门轻功就能飞了。</div>';
     if (rest.length) {
       h += '<details class="mrn-more"' + (canFly.length ? '' : ' open') + '>' +
-        '<summary>其余 ' + rest.length + ' 处（没去过）</summary>' +
+        '<summary>其余 ' + rest.length + ' 处（暂时飞不到）</summary>' +
         '<div class="mrn-grid">' + rest.map(regBtn).join('') + '</div></details>';
     }
     /* 服务端「区域总览」那份数据仍在（m.regions 的 visitedCount / hasCurrent 都用上了），
@@ -3230,11 +3564,12 @@
    *  面板上列出所有玩家去过的区域名称，点击即可去该区域的入口处。」
    *
    *  数据源与地图面板的「地名索引」**同一个**：`view.map.regions`，
-   *  其中 `canFly` 是**后端**按「去过没有」算好的。所以这里不自己猜、不自己算 ——
-   *  后端说能飞才画按钮（前端拿不到 visited 旗标，自己判一定判错）。
+   *  其中 `canFly` 是**后端**算好的（2026-10-13 起口径是「脚下有轻功 + 内力够」，
+   *  不再要求「去过」）。所以这里不自己猜、不自己算 ——
+   *  后端说能飞才画按钮（前端拿不到 learned 旗标，自己判一定判错）。
    *
    *  发的是后端真指令 `飞往 <区域名>`，与地图面板那颗 ↗ 完全同一条路，
-   *  后端照旧复核「去过没有」；前端只负责列出来。
+   *  后端照旧复核轻功与内力；前端只负责列出来。
    * ============================================================ */
   function flyHtml(v) {
     const m = (v && v.map) || {};
@@ -3243,33 +3578,42 @@
     const regs = (m.regions || []).slice();
     const can = regs.filter(r => r.canFly);
     const cant = regs.filter(r => !r.canFly);
+    /* 飞不动的原因分两类，给玩家看的话也不一样 */
+    const noQinggong = cant.filter(r => /轻功/.test(r.flyReason || ''));
+    const shortMp = cant.filter(r => !/轻功/.test(r.flyReason || ''));
 
     let h = '<div class="fly-wrap">';
     if (!can.length) {
       /* 空态要说清楚「为什么空」和「怎么才有」——
          只写「暂无」的话，玩家会以为这个按钮坏了。 */
-      h += '<div class="fly-empty">你还没有去过别的地方，眼下无处可飞。' +
-        '<br>先靠两条腿把这一带走熟：踏进过一个区域的入口，它就记在这张单子上。</div>';
+      h += '<div class="fly-empty">你还飞不动。脚下没轻功，纵有内力也起不了身。' +
+        '<br>江湖上飘着「梯云纵」「逍遥游」一类轻功；学会一门，再练上几层，整片江山就都在你脚下了。</div>';
       h += '</div>';
       return h;
     }
-    h += '<div class="fly-tip">共 ' + can.length + ' 处去过的地方。点一下，人就落在该处的入口。</div>';
+    h += '<div class="fly-tip">现在飞得过去 ' + can.length + ' 处。点一下，人就落在该处的入口（按路程耗内力）。</div>';
     h += '<div class="fly-grid">';
     can.forEach(r => {
       const cur = r.id === curRegion;
-      const tip = '飞往' + r.name + (r.entryName ? '（落在' + r.entryName + '）' : '');
+      const tip = '飞往' + r.name + (r.entryName ? '（落在' + r.entryName + '）' : '')
+        + (r.flyCost ? '　耗内力 ' + r.flyCost + ' 点' : '');
       h += '<button class="fly-btn' + (cur ? ' cur' : '') + '"' +
         ' data-fly-region="' + esc(r.name) + '"' +
         ' title="' + esc(tip) + '">' +
         '<span class="fly-name">' + esc(r.name) + (cur ? '　（你在这里）' : '') + '</span>' +
         (r.entryName ? '<span class="fly-sub">落点：' + esc(r.entryName) + '</span>' : '') +
+        (r.flyCost ? '<span class="fly-sub">耗内力 ' + r.flyCost + ' 点</span>' : '') +
         '</button>';
     });
     h += '</div>';
-    if (cant.length) {
-      /* 没去过的**不列成按钮**（列了也点不动，等于骗人），只报个数 ——
-         让玩家知道「还有得走」，而不是「这面板就这么多」。 */
-      h += '<div class="fly-empty">另有 ' + cant.length + ' 处尚未踏足，去过之后自会出现在上面。</div>';
+    if (shortMp.length) {
+      /* 内力不够：**按钮还是能点的**（点了后端会给明确的话），所以这里说清楚差多少。 */
+      h += '<div class="fly-empty">另有 ' + shortMp.length + ' 处飞得到、但内力不够（' +
+        esc(shortMp.slice(0, 3).map(r => r.name + '差' + r.flyReason.replace(/^还差\s*/, '')).join('、')) +
+        (shortMp.length > 3 ? ' 等' : '') + '）—— 打坐养气，或找个客栈歇一晚。</div>';
+    }
+    if (noQinggong.length) {
+      h += '<div class="fly-empty">另有 ' + noQinggong.length + ' 处去不得 —— 轻功再深些才够。</div>';
     }
     h += '</div>';
     return h;
@@ -3473,10 +3817,13 @@
           const t = b.getAttribute('data-map-tool');
           const step = 0.2;
           const next = t === 'zin' ? mapZoom + step : mapZoom - step;
-          /* 0.7 / 2.4 要与 mapHtml 里的 ZMIN / ZMAX **手动对齐**。
+          /* ⚠️ 这里的 0.9 / 2.2 要与 mapHtml 里的 `ZMIN / ZMAX` **手动对齐**
+             （C-2 之前是 0.7 / 2.4，格距基准抬到 52 后一起改成 0.9 / 2.2）。
              不抽成模块常量是因为 mapHtml 会被多个测试脚本单独抽出来在别的环境跑，
-             外面的常量在那个环境里取不到（老规矩，见 mapHtml 顶部注释）。 */
-          mapZoom = Math.min(2.4, Math.max(0.7, Math.round(next * 100) / 100));
+             外面的常量在那个环境里取不到（老规矩，见 mapHtml 顶部注释）。
+             ⇒ 所以：**改这一行就必须改 mapHtml 里那一行，反之亦然。**
+                这是本项目第三次被这种「两处各写一份」坑，注释就写在这儿了。 */
+          mapZoom = Math.min(2.2, Math.max(0.9, Math.round(next * 100) / 100));
           closeModal();
           panel('map');
         };
@@ -3870,6 +4217,9 @@
   async function doCmd(cmd, opts) {
     cmd = String(cmd || '').trim();
     if (!cmd) return;
+    /* 81/N-V-20（执行即收）：任意指令之后，旧上下文已不成立，提示行一律收掉。
+       （日志重绘本身也会清掉它们——这里收在前头，防"没重绘也挂着"。） */
+    closeHlTips();
     /* 记来源：默认当作「用户主动敲的」（老调用点全部保持原行为，不破坏任何既有逻辑） */
     const fromButton = !!(opts && opts.fromButton);
     if (S.busy) { toast('上一道指令还在执行…', 'warn', 1200); return; }
@@ -3950,9 +4300,20 @@
    *    ③ 真找不回来也不留一个空壳界面 —— 说明白 + 回主菜单，进度在存档里
    * ============================================================ */
   let _recovering = false;
+  /* 跨帧快照（换视图之前那一帧的三个量），给 afterAction 判「关键节点」用。
+     为什么记在这儿而不是 afterAction 开头：`applyView` 是**唯一同时握着新旧两份
+     视图**的地方（旧的是 `S.view`，新的是入参 `v`），在这个位置上取样天然而不小；
+     放到 afterAction 里则要在 `applyView(d.view)` 之前另加三行 —— 那种插法会
+     顶到 `smoke-live-restore` 那条「afterAction 到 applyView 距离」的守卫窗上。
+     规矩：以后要给 afterAction 加取样状态时，先想想能不能挂到这儿。 */
+  let _prevCombat = false, _prevDay = null, _prevQuests = null;
   function applyView(v) {
     if (!v) return;
     if (!v.player && S.view && S.view.player) { recoverLostPlayer(); return; }
+    /* 换视图的**前一瞬**把旧状态抄下来 —— 换完就再也比不出「这一步变了什么」 */
+    _prevCombat = !!(S.view && S.view.combat);
+    _prevDay = (S.view && S.view.time && S.view.time.day) || null;
+    _prevQuests = questStagesOf(S.view);
     S.view = v;
     renderAll(v);
   }
@@ -4017,6 +4378,26 @@
       applyView(d.view);
     }
 
+    /* ★ 这三个布尔量回答同一个问题：**这一步值不值得立刻落盘**。
+       取样已经在 `applyView` 里完成（换视图的那一瞬抄下的旧状态）——
+        · 战斗结算：`combat` 从有到无（打赢 / 打输 / 脱战都算打完一场）
+        · 任务推进：`quests.active` 里任意一门的 stage 前进了，或完成数变了
+        · 跨日：`view.time.day` 变了（`fmtTime` 本来就下发 `day`，不必新增字段）
+       除这三类之外的普通一步，交给「静止 30 s 才写」的防抖。 */
+    const _isCombatEnd = _prevCombat && d.view && !d.view.combat;
+    const _isDayChange = _prevDay != null && d.view && d.view.time && d.view.time.day !== _prevDay;
+    const _qNow = d.view ? questStagesOf(d.view) : null;
+    const _isQuestStep = !!(_prevQuests && _qNow && _qNow !== _prevQuests);
+
+    if (d.view) {
+      if (d.ending || _isCombatEnd || _isDayChange || _isQuestStep) {
+        /* 打完了刀 / 交付了任务 / 过了一天 / 到了结局 —— 这时候丢档最心疼，立刻写 */
+        autoSaveNow();
+      } else {
+        autoSave();
+      }
+    }
+
     /* 需要弹选择框 */
     if (d.choices) {
       choices(d.choicesTitle || '请选择', d.choices, it => {
@@ -4041,27 +4422,61 @@
       });
     }
 
-    /* 一步一存档：每次指令执行后都落一次盘（走一步/输指令/点按钮/增减状态物品
-       都走 doCmd → afterAction，这里统一兜住） */
-    if (d.view) autoSave();
   }
 
   /* ============================================================
-   *  自动存档（一步一存：每次指令后落盘；槽位按设备标识隔离）
+   *  自动存档（**静止 30 秒**才落盘；槽位按设备标识隔离）
+   *
+   *  为什么不再是「一步一存」（2026-10-12 P0）：
+   *    「每走一步存一次」听着稳妥，代价是**每一步都跟着一次 530 KB 的下行**
+   *    （`/api/save` 把带地图的整份 view 连同整个世界序列化一起回传）
+   *    + 服务端同步写盘 3.8 ms。而 `worldTick` 每 30 步才跑一次、只占 1.5–2 ms ——
+   *    **真正在拖后腿的是存档，不是模拟**（这是当时实测的结论，不是猜测）。
+   *
+   *    改成「静止 30 s 才写」以后：
+   *      · 连续走路一次都不写，停下来 30 s 才补一次；
+   *      · 关键节点（战斗结算 / 任务推进 / 跨日 / 读档 / 退出 / 关页面）**立即写**，
+   *        不拿这 30 s 去赌；
+   *      · 5 分钟兜底定时器照旧（`startAutoSave`），挂机不动也最多丢 5 分钟。
+   *    最坏情况丢失的量 =「最后一次操作到现在」且必定 ≤ 30 s。
    * ============================================================ */
-  let _autosaveTimer = null;
+  /* 「任务推进到哪一步」的可比较指纹（给上面的关键节点判定用）。
+     为什么要压成字符串比：任务表是对象数组，比引用永远「变了」，
+     比 JSON 又容易被字段顺序骗。`id:stage` 的文本只关心**阶段号**本身。 */
+  function questStagesOf(v) {
+    const active = (v && v.quests && v.quests.active) || [];
+    return active
+      .map(q => String(q && q.id) + ':' + String((q && q.stage) != null ? q.stage : -1))
+      .sort()
+      .join('|') + '#' + (((v && v.quests && v.quests.completedCount) != null) ? v.quests.completedCount : -1);
+  }
+  const AUTOSAVE_IDLE_MS = 30000;
+  let _autosaveTimer = null;      /* 5 分钟兜底的 interval */
+  let _autosaveIdle = null;       /* 「静止 30 秒」的 timeout */
   let _autosavePending = false;
   function autosaveId() {
     const dev = (global.WX && global.WX.S && global.WX.S.deviceId) || 'dev';
     return 'autosave_' + dev;
   }
+
+  /** 请求一次存档：静止 30 s 后才真的落盘（期间每有操作就把计时往后推） */
   function autoSave() {
     if (!S.settings.autosave) return;
     if (!S.view || !S.view.player) return;
-    if (_autosavePending) return;   /* 上一次还在写，跳过（防高频重复） */
+    if (_autosaveIdle) clearTimeout(_autosaveIdle);
+    _autosaveIdle = setTimeout(() => { _autosaveIdle = null; autoSaveNow(); }, AUTOSAVE_IDLE_MS);
+  }
+
+  /** 立刻落盘：关键节点 + 静止计时到期共用这一条路（返回 Promise 便于 await） */
+  function autoSaveNow() {
+    if (!S.settings.autosave) return Promise.resolve(null);
+    if (!S.view || !S.view.player) return Promise.resolve(null);
+    /* 既然马上要写了，pending 的那次定时就没有意义了，掐掉避免写两遍 */
+    if (_autosaveIdle) { clearTimeout(_autosaveIdle); _autosaveIdle = null; }
+    if (_autosavePending) return Promise.resolve(null);   /* 上一次还在写，跳过 */
     _autosavePending = true;
     const key = autosaveId();
-    api.save(key)
+    return api.save(key)
       .catch(() => { /* 静默，失败不打扰 */ })
       .finally(() => { _autosavePending = false; });
   }
@@ -4106,10 +4521,44 @@
       saved ? 'ok' : 'warn');
   }
 
+  let _autosaveUnloadBound = false;
   function startAutoSave() {
-    /* 兜底：万一玩家挂机不动，也 5 分钟补一次（一步一存是主力） */
+    /* 兜底：万一玩家挂机不动，也 5 分钟补一次。
+       ⚠️ 这里必须调 `autoSaveNow` 而不是 `autoSave`：5 分钟一到就该**真正落盘**，
+          再排一个 30 s 的防抖等于把兜底也变成了「再等等」。 */
     if (_autosaveTimer) clearInterval(_autosaveTimer);
-    _autosaveTimer = setInterval(() => autoSave(), 5 * 60 * 1000);
+    _autosaveTimer = setInterval(() => autoSaveNow(), 5 * 60 * 1000);
+
+    /* ⚠️ 关标签页 / 刷新：直接走 `beforeunload` **立即存**。
+       为什么非加不可：改成「静止 30 s 才存」之后，玩家走完最后一步**不到 30 秒**就把标签页关掉，
+       这一步就永远丢了 —— 这是防抖唯一的真实代价，必须补回来。
+       为什么用 `sendBeacon` 而不是 `api.save`：`beforeunload` 里页面随时会被回收，
+       `fetch` 很可能发不出去就随页面一起没了；`sendBeacon` 是浏览器专门给这种
+       「最后一口气」准备的，交给浏览器去发，页面死活不影响它。
+       没有 `sendBeacon`（老浏览器）就退回 `api.save`，尽力而为。
+       ⚠️ 不 return 值 —— 返回非空会在某些浏览器上触发「确定要离开吗」的系统弹窗，
+          那是把「保存」做成了「骚扰」。 */
+    if (_autosaveUnloadBound) return;
+    _autosaveUnloadBound = true;
+    try {
+      global.addEventListener('beforeunload', () => {
+        try {
+          if (!S.settings.autosave) return;
+          if (!S.view || !S.view.player) return;
+          const key = autosaveId();
+          if (navigator && typeof navigator.sendBeacon === 'function') {
+            /* sendBeacon 只能发 Blob/FormData，而且读不到响应 ——
+               正好，这个请求我们只关心「发出去了」，不关心回包。
+               ⚠️ body 的形状必须跟 `api.save` 一致（同样只发 `{id}`），
+                  否则服务端拿不到 id 就存到默认槽位去了。 */
+            const blob = new Blob([JSON.stringify({ id: key })], { type: 'application/json' });
+            navigator.sendBeacon('/api/save', blob);
+          } else {
+            api.save(key).catch(() => { /* 最后一口气，失败也无所谓了 */ });
+          }
+        } catch (e) { /* 关页面的路上不许再抛异常打扰玩家 */ }
+      });
+    } catch (e) { /* 某些环境（测试桩）没有 addEventListener */ }
   }
 
   /* ============================================================
@@ -4206,8 +4655,17 @@
            ② 只收**已激活**（挂在槽位上 / 散手已激活）的武学；
            ③ 基础武学（isBasic，如基本内功 / 基本拳脚）**不摆**，它们本来就没有武技。
           ⚠️ 也不再拿「整门功夫」兜底当按钮 —— 那正是「基本内功」混进战斗栏的由来。 */
+      /* ⚠️ 修一条按错线的按钮（主人报的「战斗很怪」第一现场）：
+         这里原来把「普通攻击」那条按钮的 cmd 写成了挂机指令。
+         （刻意不把那条旧代码原样抄在注释里 —— 注释里一旦出现"cmd 指向挂机指令"
+           那种长得像代码的字面量，任何 grep / 正则守卫都会先撞上注释、
+           误判成"还没修"。上面这句是反例，下面守卫已改为先剥注释再匹配。）
+         `auto` 是**挂机** —— 它 while 循环把战斗打满 60 回合。
+         于是玩家点一下「普通攻击」，人就没了。
+         ⇒ 「普通攻击」该发 `attack`（光杆 attack 在交战中 = 朝当前对手出一手，
+            见 commands.js 的 kill/fight/attack 处理器）；挂机是另一个指令，不进面板。 */
       items = [
-        { label: '普通攻击', cmd: 'auto' },
+        { label: '普通攻击', cmd: 'attack' },
         { label: '防御', cmd: 'defend' },
         { label: '逃跑', cmd: 'flee' }
       ];
@@ -4343,8 +4801,16 @@
       '<div class="settings">' +
       '<div class="set-row"><label>字体大小</label><input type="range" id="set-font" min="80" max="140" step="5" value="' + s.font + '"><span id="set-font-v">' + s.font + '%</span></div>' +
       '<div class="set-row"><label>界面动画</label><button class="switch' + (s.anim ? ' on' : '') + '" id="set-anim">' + (s.anim ? '开' : '关') + '</button></div>' +
-      '<div class="set-row"><label>自动存档</label><button class="switch' + (s.autosave ? ' on' : '') + '" id="set-auto">' + (s.autosave ? '开' : '关') + '</button></div>' +
+      /* ⚠️ 这个 id 必须和下面开关数组里的键**逐字相同**：绑定走的是 `$('set-' + k)`，
+         id 叫 `set-auto` 而键叫 `autosave` 时，`$()` 拿到元素、但写进 `S.settings.auto`
+         —— 界面看着一开一关，读的那个 `S.settings.autosave` 从头到尾没动过。
+         这个开关就这样死了很久（2026-10-13 修）。改名时两处一起改，别只改一半。 */
+      '<div class="set-row"><label>自动存档</label><button class="switch' + (s.autosave ? ' on' : '') + '" id="set-autosave">' + (s.autosave ? '开' : '关') + '</button></div>' +
       '<div class="set-row"><label>紧凑模式</label><button class="switch' + (s.narrow ? ' on' : '') + '" id="set-narrow">' + (s.narrow ? '开' : '关') + '</button></div>' +
+      /* P0-C C-1「地图显示未探索地名」：默认关 ⇒ 未探索地块只留白，不剧透。
+         ⚠️ 改的是**下次取图**的参数，不是当前这份缓存 —— 关掉设置面板后
+            重开一次「地图」就生效（panel('map') 每次都重新请求）。 */
+      '<div class="set-row"><label>地图显示未探索地名</label><button class="switch' + (s.mapnames ? ' on' : '') + '" id="set-mapnames">' + (s.mapnames ? '开' : '关') + '</button></div>' +
       /* 外观：默认暗色（主人 2026-10-11 要的「浏览器强制暗色」那种整页暗），
          但浅色那套没删 —— 想切回来随时切，不用再改代码。 */
       '<div class="set-row"><label>界面配色</label>' +
@@ -4360,7 +4826,9 @@
       $('set-font-v').textContent = v + '%';
       document.documentElement.style.fontSize = (16 * v / 100) + 'px';
     };
-    ['anim', 'auto', 'narrow'].forEach(k => {
+    /* ⚠️ 数组里的每一项 **k** 同时是：① 元素 id 的后半截（`set-' + k`）
+         ② `S.settings` 的键名。**两边必须是同一个名字**，见上面 `set-autosave` 的注释。 */
+    ['anim', 'autosave', 'narrow', 'mapnames'].forEach(k => {
       const btn = $('set-' + k);
       btn.onclick = () => {
         S.settings[k] = !S.settings[k];
@@ -4465,6 +4933,9 @@
         renderAll(S.view);
         show('game');
         toast('读取成功', 'ok');
+        /* 关键节点：刚读出来的档，立刻把它写成自己的自动存档 ——
+           否则接下来 30 秒内玩家的任何操作都还记在**读档之前**那份旧进度上。 */
+        autoSaveNow();
       } catch (e) { toast(e.message, 'error'); }
     });
 
@@ -4538,6 +5009,9 @@
       if (e.key === 'Escape') {
         if (!$('choices-mask').classList.contains('hidden')) { closeChoices(); return; }
         if (!$('modal-mask').classList.contains('hidden')) { closeModal(); return; }
+        /* 81 §3.2 收起时机 ④：Esc 收提示行（放在弹窗之后——弹窗开着时优先关弹窗） */
+        closeHlTips();
+        return;
       }
       /* 只在游戏界面生效 */
       if (S.screen !== 'game') return;
@@ -4675,7 +5149,9 @@
     openQuestPreview,
     bindInput, bindHotkeys, bindSidebar,
     showModCenter, showModMaker, showMarket,
-    afterAction, autoSave, autosaveId,
+    /* `autoSaveNow` 挂出来：一是 `start.js` 的「继续游戏」读档后要立刻落盘，
+       二是测试要能**真的跑到这条路径**上断言「关键节点确实写了、普通步确实没写」。 */
+    afterAction, autoSave, autoSaveNow, autosaveId,
     /* 测试出口：把纯渲染函数挂出来。
        为什么要它：这些函数是 IIFE 内部的闭包，外面拿不到，
        以前只能从真 DOM（modal-body.innerHTML）里读文本，

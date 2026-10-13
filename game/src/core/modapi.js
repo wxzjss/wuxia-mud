@@ -423,6 +423,16 @@ function evalEffect(eff, ctx) {
   } else {
     type = eff.type; args = eff.args || [];
     rawVal = eff.raw;
+    /* ⚠️ 对象式 effect 有两种写法：`{type, args:[...]}` 与 `{type, raw:'...'}`。
+       后者只写 raw、**没有 args**，于是下面用 `args[0]` 的效果（incvar / decvar /
+       flag / unflag / item / skill…）全都取到 `undefined` —— 不报错、只是**静默不生效**。
+       实测踩过：「青楼招揽」写的是 `{type:'incvar', raw:'q_brothel_host'}`，
+       点一次计数不动一格 ⇒ 支线「楼里的门道」永远完不成 ⇒ 男性玩家永远卖不了身。
+       修法：raw 有值而 args 为空时，把 raw 按 `:` 拆成 args（与字符串式 parseEffectString
+       同源），两种写法等价。放在这里，所有 `args[i]` 效果一并受益。 */
+    if ((!args || !args.length) && typeof rawVal === 'string' && rawVal) {
+      args = splitArgs(rawVal);
+    }
   }
   const raw = rawVal || (typeof eff === 'object' ? args.join(':') : '');
 

@@ -21,3 +21,26 @@ _tmp_npc_table.txt
 
 # 临时备份
 .prose-backup/
+
+# 2026-10-12 补（严过关扫出来的两处「测试往仓库里写」的遗留，脚本已迁到 .livetest/，
+# 这两行是给**历史残留**兜底，别删）
+.tmp-act35-base/
+.map-snapshot*.html
+
+# 2026-10-14 补（施工期临时产物：备份/输出/回归日志，一律不进库）
+tools/_bak*
+tools/_out_*
+tools/_re*.txt
+tools/_re2_*
+tools/_re3_*
+tools/_reg_*
+tools/_v_*
+tools/_zhuque_*
+tools/_smoke_out*
+tools/_rh_count.txt
+tools/_ib_run.txt
+tools/_mut-batchplan.js
+tools/_head_snapshot/
+tools/_mod_baseline/
+.runall.sh
+.fullreg.sh

@@ -367,8 +367,12 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     }
     /* 未定义的直接后果：地图出口按钮 hover 底色被丢弃 → 白字发白。这里钉住声明本身。 */
     const css = fs.readFileSync(path.join(ROOT, 'game/src/renderer/css/main.css'), 'utf8');
-    ok('S3 地图出口按钮 hover 底色走 --gold-d（不再被丢弃）',
-      /\.exit-map \.exit-inline:hover\s*\{[^}]*background:\s*var\(--gold-d\)/.test(css));
+    /* 2026-10-15 判据更新：78 §7.5-bis 定稿（丙案分流）裁定该 hover 走甲案——
+       原判据锁的 `background: var(--gold-d)` 实心底正是 §2.2 点名的 2.98 ✗ 违规项，
+       新口径 = tint 底 + 字色跟主题（--gold-hover-ink 成对开关，78 §7.5-ter）。 */
+    ok('S3 地图出口按钮 hover 走甲案（tint-gold 底 + 主题字色）',
+      /\.exit-map \.exit-inline:hover\s*\{[^}]*background:\s*var\(--tint-gold\)/.test(css)
+      && /\.exit-map \.exit-inline:hover\s*\{[^}]*color:\s*var\(--gold-hover-ink\)/.test(css));
     ok('S3 手机端弹窗 ✕ / 底部按钮有 ≥40px 触屏目标',
       /\.modal-head button\s*\{[^}]*min-height:\s*40px/.test(css) && /min-width:\s*40px/.test(css));
     ok('S3 ☰ 菜单桌面隐藏、窄屏显形',

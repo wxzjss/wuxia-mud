@@ -14,7 +14,9 @@
         "half": "听说{who}在{where}拜了师，师父是谁倒没人说得准。",
         "false": "{who}在{where}给一位大人物递了帖子，往后怕是要发达了！"
       },
-      "marks": ["师承"]
+      "marks": [
+        "师承"
+      ]
     },
     "rs_sect_promote": {
       "id": "rs_sect_promote",
@@ -30,7 +32,9 @@
         "half": "听说{who}在{where}往上挪了一级，挪到哪儿众说不一。",
         "false": "{who}在{where}一步登天，门里上下见了他都得让三分！"
       },
-      "marks": ["晋位"]
+      "marks": [
+        "晋位"
+      ]
     },
     "rs_skill_fuse": {
       "id": "rs_skill_fuse",
@@ -42,11 +46,13 @@
       "ttlDays": 28,
       "loud": false,
       "texts": {
-        "true": "听人说{who}把两门功夫揉成了一门新的，叫《{whom}》——也不知是哪一路。",
+        "true": "听人说{who}把两门功夫揉成了一门新的，叫《{whom}》，也不知是哪一路。",
         "half": "风闻{who}在{where}练出个新名堂，叫什么倒没人说得清。",
         "false": "{who}在{where}创下一门绝世神功，江湖上怕是要变天了！"
       },
-      "marks": ["创功"]
+      "marks": [
+        "创功"
+      ]
     },
     "rs_take_disciple": {
       "id": "rs_take_disciple",
@@ -62,7 +68,9 @@
         "half": "听说{who}收了个徒弟，年纪据说还不小。",
         "false": "{who}在{where}广收门徒，门下怕不是要成气候了！"
       },
-      "marks": ["收徒"]
+      "marks": [
+        "收徒"
+      ]
     }
   }
 }

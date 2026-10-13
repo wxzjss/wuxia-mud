@@ -50,7 +50,10 @@ global.document = {
 };
 global.window = global;
 
-const S = { busy: false, view: null, settings: { font: 100, anim: true, autosave: true, narrow: false }, screen: 'game' };
+/* ⚠️ `settings` 这一份**不许手抄**：键集必须和 `app.js` 里 `settings: { … }` 的默认值
+   完全一致，§8 有一条断言在守它（桩漂移 ⇒ 行为跟线上不是一回事，且上面几条照样绿）。 */
+const S = { busy: false, view: null, screen: 'game',
+  settings: { font: 100, anim: true, autosave: true, narrow: false, theme: 'dark', mapnames: false } };
 
 const api = { exec: async () => ({ ok: true }), view: async () => ({ view: {} }), combat: async () => ({}), menu: async () => ({}) };
 const util = {
@@ -425,6 +428,163 @@ function ok(name, cond, extra) {
   api.exec = prevExec2;
   api.view = prevView7;
   S.view = null;
+
+  /* ⑧ 设置面板开关：键名 / 元素 id / 默认值 三处必须同名
+     ⚠️ 为什么要单独开一节守它：这个 bug 是**完全静默**的 ——
+        「自动存档」开关的绑定走 `$('set-' + k)`，id 叫 `set-auto`、键叫 `autosave`
+        时它照样拿得到元素、照样绑得上 onclick，**界面看着一开一关**，
+        可写进的是 `S.settings.auto`，而三处读的是 `S.settings.autosave`（默认 true）。
+        结果：开关从来没生效过，存档一直在自动写，没人看得出来。
+        ⇒ 一半断言守「键名 ↔ 默认值 ↔ id」三处同名（静态，防以后再漂移），
+          一半断言守「点了之后真的不落盘了」（行为，防改名只改一半）。 */
+  console.log('\n⑧ 设置面板开关（键名 / id / 默认值三处同名 + 点了真生效）');
+  {
+    const APP = fs.readFileSync('game/src/renderer/js/app.js', 'utf8');
+    const strip = (src) => src
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/^[ \t]*\/\/.*$/gm, '');
+
+    /* ① app.js 的 `settings: { … }` 默认值：花括号配平扫一遍，别用行数去切 */
+    const defKeys = (() => {
+      const src = strip(APP);
+      const at = src.indexOf('settings: {');
+      if (at < 0) return null;
+      let depth = 0, i = at + 'settings: '.length, start = -1;
+      for (; i < src.length; i++) {
+        const c = src[i];
+        if (c === '{') { if (depth === 0) start = i; depth++; }
+        else if (c === '}') { depth--; if (depth === 0) break; }
+      }
+      if (start < 0) return null;
+      const inner = src.slice(start + 1, i);
+      try { return Object.keys(new Function('return {' + inner + '}')()); }
+      catch (e) { return null; }
+    })();
+    ok('app.js 的 settings 默认值块解析得出来', !!defKeys && defKeys.length > 0,
+      defKeys ? defKeys.join(', ') : '解析失败');
+
+    /* ② ui.js 里那个开关数组：从 `$('set-' + k)` 往前找最近的一个数组字面量 */
+    const swKeys = (() => {
+      const src = strip(UI);
+      const at = src.indexOf("$('set-' + k)");
+      if (at < 0) return null;
+      const before = src.slice(0, at);
+      const all = [...before.matchAll(/\[([^\]]*?)\]\s*\.forEach/g)];
+      if (!all.length) return null;
+      return all[all.length - 1][1]
+        .split(',').map(s => s.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean);
+    })();
+    ok('ui.js 的开关数组解析得出来', !!swKeys && swKeys.length > 0,
+      swKeys ? swKeys.join(', ') : '解析失败');
+
+    /* ③ 面板 HTML 里所有 `id="set-XXX"` */
+    const ids = new Set([...UI.matchAll(/id="set-([a-z]+)"/g)].map(m => m[1]));
+
+    if (defKeys && swKeys) {
+      const ghost = swKeys.filter(k => defKeys.indexOf(k) < 0);
+      ok('★ 每个开关键都是 app.js 里**真的存在**的设置键（写进幽灵键 = 开关是死的）',
+        ghost.length === 0, ghost.length ? '幽灵键：' + ghost.join(', ') : swKeys.length + ' 个键全部对上');
+      const noEl = swKeys.filter(k => !ids.has(k));
+      ok('★ 每个开关键都能在面板里找到 id="set-<k>"（`$()` 拿不到就是 undefined.onclick）',
+        noEl.length === 0, noEl.length ? '找不到元素：' + noEl.join(', ') : swKeys.length + ' 个 id 全部对上');
+      /* ⚠️ 这条是防**测试桩自己漂移**：本文件顶部那个 `S` 是手抄的第三份默认值，
+         抄漏一个键，上面两条断言可能照样绿，行为却跟线上不是一回事。 */
+      const stubKeys = Object.keys(S.settings).sort();
+      const defSorted = defKeys.slice().sort();
+      ok('★ 测试桩的 S.settings 键集 === app.js 默认值键集（不许有第三份默认值）',
+        stubKeys.join(',') === defSorted.join(','),
+        '桩=' + stubKeys.join(',') + ' / app=' + defSorted.join(','));
+    }
+
+    /* ---- 行为那一半：点了之后**真的**不落盘 ---- */
+    const savedKeys = [];
+    const prevSave = api.save;
+    api.save = async (key) => { savedKeys.push(key); return { ok: true }; };
+    S.view = { player: { name: '试剑' } };
+    S.settings.autosave = true;
+
+    /* ⚠️ 按钮要**按产品代码自己的取法**取：`$('set-' + k)`，k 来自开关数组。
+       我第一版是写死 `els['set-autosave']` —— 那样一旦数组里的键名写错，
+       这一个断言就先红了，后面的行为断言全被 `if` 挡在门外一次都没跑。
+       等于「守卫看起来红了」，其实只有一条静态断言在干活。
+       ⇒ 优先用真键名 `autosave`；数组里没有它时退回第 1 项，
+         好让「键名写错」这个 bug 能一路走到行为断言上被抓现行。 */
+    const kAuto = (swKeys || []).indexOf('autosave') >= 0 ? 'autosave' : (swKeys || [])[1];
+    ok('★ 开关数组里有 autosave 这一项（没有它 ⇒ 这个开关没有键可写）',
+      (swKeys || []).indexOf('autosave') >= 0, (swKeys || []).join(','));
+
+    U.openSettings();
+    const btn = kAuto ? els['set-' + kAuto] : null;
+    ok('★ 自动存档开关拿得到元素且 onclick 已绑上',
+      !!btn && typeof btn.onclick === 'function',
+      btn ? ('set-' + kAuto + ' · onclick 已绑定') : ('set-' + kAuto + ' 元素不存在'));
+
+    if (btn && typeof btn.onclick === 'function') {
+      /* 开着的时候：autoSaveNow() 应该真的写一次 */
+      savedKeys.length = 0;
+      await U.autoSaveNow();
+      ok('开着时 autoSaveNow() 真的落盘了', savedKeys.length === 1, JSON.stringify(savedKeys));
+
+      /* 点一下 ⇒ 关掉 */
+      btn.onclick();
+      ok('★ 点一次 ⇒ S.settings.autosave 真的翻成 false（不是写进 S.settings.auto）',
+        S.settings.autosave === false, 'autosave=' + S.settings.autosave
+        + ' · auto=' + S.settings.auto);
+      ok('★ 而且界面跟着翻（不然玩家以为关了其实没关）',
+        btn.textContent === '关' && !btn.classList.contains('on'),
+        '文字=' + btn.textContent + ' · on=' + btn.classList.contains('on'));
+
+      /* 关掉之后：这才是「开关是死的」那条真断言 */
+      savedKeys.length = 0;
+      await U.autoSaveNow();
+      ok('★ 关掉之后 autoSaveNow() 真的一次都不写（这条以前是红的）',
+        savedKeys.length === 0, JSON.stringify(savedKeys));
+
+      /* 再点一下 ⇒ 打开，恢复 */
+      btn.onclick();
+      savedKeys.length = 0;
+      await U.autoSaveNow();
+      ok('再点一次 ⇒ 打开之后又落盘了',
+        S.settings.autosave === true && savedKeys.length === 1,
+        'autosave=' + S.settings.autosave + ' · ' + JSON.stringify(savedKeys));
+      /* `autoSave`（防抖那条）走的是同一个开关，顺手一起守 */
+      savedKeys.length = 0;
+      U.autoSave();
+      ok('autoSave()（防抖那条）也吃同一个开关', typeof U.autoSave === 'function');
+    }
+
+    api.save = prevSave;
+    S.view = null;
+  }
+
+  /* ⑨ 日志「剧情」标签（主人 2026-10-08 提的，2026-10-13 才修好）
+     ⚠️ 为什么必须有这一节：appendLog 的归一化把后端的 kind 折成 type，
+        「搬运 story 标记」那一步曾经整个不存在 —— 474 行 `l.story` 永远拿不到，
+        标签从上线起就没渲染过一次，而界面上**没有任何报错**。
+        这类「字段在归一化里被丢掉」的 bug 只有真渲染才抓得到，
+        光 grep 源码只能看到「474 行有 l.story」就误判已经做了（§6.6 铁律）。 */
+  console.log('\n⑨ 日志「剧情」标签（kind:\'story\' ⇒ 归一化 ⇒ 真 DOM 出标签）');
+  {
+    /* 喂一条剧情行 + 两条对照行（普通系统行 / 战斗行不该打标签） */
+    U.appendLog([
+      { kind: 'story', text: '云中鹤拱手道：「阁下请了。」' },
+      { kind: 'warn', text: '这是一条普通系统行' },
+      { type: 'plain', text: '这是一条纯文本行' },
+    ]);
+    U.paintLog();
+    const logHtml = els['log'].innerHTML;
+
+    ok('★ kind:\'story\' 的行在真 DOM 里带出「剧情」标签（归一化搬运没丢）',
+      /<span class="log-tag">剧情<\/span>/.test(logHtml),
+      '标签 ' + (logHtml.match(/log-tag/g) || []).length + ' 处');
+    ok('★ 标签压在剧情行**自己身上**（不是随便哪一行都带）',
+      /log-line story"[^>]*><span class="log-tag">剧情<\/span>/.test(logHtml), '');
+    ok('对照：普通系统行 / 纯文本行不打标签',
+      (logHtml.match(/log-tag/g) || []).length === 1,
+      (logHtml.match(/log-tag/g) || []).length + ' 处（期望恰 1）');
+    ok('剧情行正文照常渲染（标签没有吃掉文本）',
+      /阁下请了/.test(logHtml), '');
+  }
 
   console.log('\n' + '='.repeat(42));
   console.log('  通过 ' + pass + ' 项，失败 ' + fail + ' 项');

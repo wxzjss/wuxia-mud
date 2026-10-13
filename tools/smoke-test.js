@@ -1,9 +1,38 @@
 // 冒烟测试：启动引擎、创建角色、走几步、打一架、存档
 const path = require('path');
+const fs = require('fs');
 const { GameEngine } = require('../game/src/core/engine');
 
+const ROOT = path.resolve(__dirname, '..');
+
+/* 隔离自检：开跑前先给仓库真实 mods/ 里的 mod.json 拍一张指纹，
+   收尾时再看一次。**变了就 exit 1** —— 免得将来谁删掉上面那个 `modsDir`，
+   本文件又变回那个「删一次、下次回归自动写回来」的自我复现 bug。
+   （这条断言本身就是铁律的执行者：它守的不是"mod 能装"，是"装 mod 没弄脏仓库"。） */
+const REAL_MOD = path.join(ROOT, 'mods', 'test_mod', 'mod.json');
+const md5Of = (p) => {
+  try { return require('crypto').createHash('md5').update(fs.readFileSync(p)).digest('hex'); }
+  catch (e) { return null; }
+};
+const realModBefore = md5Of(REAL_MOD);
+
+/* 🔴 测试脚本不许写仓库真实目录 —— 项目铁律（2026-10-12，出处就是本文件）。
+   原因：测试脚本会被回归收录规则 `^(smoke-.*|.*-check)\.js$` **自动反复执行**，
+   写真实目录 = 造一个**自我复现的 bug**：你删一次，它下次跑回归自动写回来，
+   而你和它都在自动跑，永远查不到对方身上。
+   本文件就因为这个循环转了三轮：删 → 跑回归 → 被写回 → 再删（19:19/19:39/20:14/20:23）。
+   三轮里我们先后怀疑过 git、怀疑过同事、怀疑过引擎 boot **全错了** ——
+   真凶就是本文件的 `engine.writeMod('test_mod', …)` 写进了真实的 `mods/`。
+   ⇒ 隔离目录用**项目内** `.livetest/`（.gitignore 第 8 行），不用系统临时目录。 */
+const TMP = path.join(ROOT, '.livetest', 'smoke-mods');
+fs.mkdirSync(TMP, { recursive: true });
+
 /* 存档写进隔离沙盒，绝不碰玩家的 saves/（主人 bug B1）—— 见 tools/_test-save-dir.js */
-const engine = new GameEngine({ projectRoot: path.resolve(__dirname, '..'), saveDir: require('./_test-save-dir') });
+const engine = new GameEngine({
+  projectRoot: ROOT,
+  saveDir: require('./_test-save-dir'),
+  modsDir: TMP,           // ← 这一行就是三轮循环的句号：mod 写进 .livetest/，不写仓库 mods/
+});
 const boot = engine.boot();
 console.log('=== BOOT LOG ===');
 console.log(JSON.stringify(boot.bootLog, null, 1));
@@ -89,5 +118,19 @@ engine.modSetEnabled('test_mod', true);
 const w2 = engine.world;
 console.log('测试房间存在?', !!w2.getRoom('test_room'), '| 测试剑法存在?', !!w2.getSkill('test_skill'), '| 测试物品存在?', !!w2.getItem('test_item'));
 console.log('mod 加载问题:', JSON.stringify(engine.modProblems()));
+
+/* ⑤ 隔离自检收尾：仓库真实 mod.json 的指纹必须与开跑前一致 */
+{
+  const after = md5Of(REAL_MOD);
+  const okIso = after === realModBefore;
+  console.log('\n=== 隔离自检（测试不许写仓库真实目录）===');
+  console.log('  modsDir 用的是：' + TMP);
+  console.log('  仓库 mods/test_mod/mod.json：跑前 ' + (realModBefore || '(不存在)')
+    + ' → 跑后 ' + (after || '(不存在)'));
+  console.log(okIso
+    ? '  ✔ 未被本脚本写过 —— 隔离生效'
+    : '  ✘ 被本脚本写脏了！修法：本文件的 engine 必须带 modsDir 指向隔离目录');
+  if (!okIso) process.exit(1);
+}
 
 console.log('\n=== ALL DONE ===');

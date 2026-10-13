@@ -11,11 +11,13 @@
   --paper: #17140f;
   --paper-2: #201c15;
   --paper-3: #2a251b;
-  --ink: #e4ded1;
+  /* 墨阶（design/78 §7.1 变体甲暗色那套，与游戏 main.css 同源）：
+     dark-bg-check §9 守「两页共用同一套夜墨」，游戏侧整簇换了，站点侧必须跟。 */
   --ink-1: #f2ede1;
-  --ink-2: #c6bfae;
-  --ink-3: #9c9482;
-  --ink-4: #746d5e;
+  --ink:   #dad5c8;
+  --ink-2: #c4bdac;
+  --ink-3: #aea593;
+  --ink-4: #988e7c;
   --line: #3a3327;
   --line-2: #2e281f;
   --red: #d05a4e;

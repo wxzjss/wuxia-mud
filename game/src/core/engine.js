@@ -15,6 +15,8 @@ const { buildCommands, cnNum, normalizeAskList, npcKnownPeople } = commandsModul
 const { evalCond, evalEffects, evalTemplate } = require('./modapi');
 const { fmtTime, shichen, stars, clamp, fuzzyFind, normalizeCmd } = require('./utils');
 const mapLayout = require('./maplayout');
+/* 「飞往」判定（2026-10-13 起：不要求「去过」，改看轻功 + 内力） */
+const flight = require('./flight');
 const tutorial = require('./tutorial');
 const social = require('./social');
 const storybeat = require('./storybeat');
@@ -279,7 +281,12 @@ class GameEngine {
     p.track = null;
     /* 开工第一屏：剧情走**上方大框**（`view.story`），日志里不再塞剧情。
        见 storybeat 顶部那段「剧情屏」注释。 */
-    const v = this.view();
+    /* ⚠️ P0（2026-10-12）：开局**不带地图**（原来是 `this.view()` 带全图 247 KB，
+       实测 /api/new 回包 329 KB / gzip 48 KB，占开局的九成以上）。
+       地图只在玩家打开「地图」面板时由 `/api/view` 单独取 —— 开局这一屏用不上。
+       注意 `view.player` / `view.lines` 这些**必须照发**：start.js 的开局第一屏
+       （`(d.view && d.view.lines) || d.log`）、app.js 的 `keepView` 都吃它。 */
+    const v = this.view({ map: false });
     try { v.story = storybeat.currentStory(this.world, p); } catch (e) { /* 不算也不挡开局 */ }
     return v;
   }
@@ -554,7 +561,15 @@ class GameEngine {
       /* 地图是回包里最大的一项（247 KB）。指令回包不带它，见 view(opts) 的注释。
          代价：地图面板点格子时若 S.view.map 已被清掉会取不到房间 ——
          前端 afterAction 里做了「新 view 没有 map 就沿用旧 map」的兜底。 */
-      map: withMap ? this.mapView() : undefined,
+      /* B-2：几何四件套只在**明确要**的时候才带；不写 `mapGeometry` 就是全套
+         （保住 `mapguide-check` / `map-edge-check` 那两条断言的口径，见 mapView 长注）。 */
+      map: withMap ? this.mapView({
+        geometry: !opts || opts.mapGeometry !== false,
+        /* P0-C C-1：分批与迷雾都是 opt-in，不传就是 P0-B 的行为，一个字节不变。 */
+        region: (opts && opts.mapRegion) || null,
+        neighbors: !!(opts && opts.mapNeighbors),
+        fog: !!(opts && opts.mapFog),
+      }) : undefined,
       /* 🔴 2026-10-12 主人：「新手教程剧情全删」。
          原先这里回 `guide: tutorial.guideState(...)`（右侧栏进度块 / 教程面板的数据源）——
          整块已下线。**保留 `guide` 键但恒 null**：老前端、老测试还在读它，
@@ -1083,9 +1098,10 @@ class GameEngine {
         const vk = t.var || `q_${qid}_${t.id}`;
         let cur = 0;
         /* ⚠️ 目标判据必须与 `targetDone()` 同一套，否则面板上的「0/1」跟判定不同步 ——
-           `flag` 类目标**不读 var**（flag 住在 p.flags），这里原来也漏了这一支。 */
+           `flag` 类目标**不读 var**（flag 住在 p.flags），这里原来也漏了这一支。
+           另：`kind:'flag'` **带 `var`** 的是「计数目标穿 flag 壳」，读 var（同 targetDone）。 */
         if (t.kind === 'item') cur = p.countItem(t.key);
-        else if (t.kind === 'flag') cur = p.hasFlag(t.key) ? (t.count || 1) : 0;
+        else if (t.kind === 'flag') cur = t.var ? (p.getVar(t.var) || 0) : (p.hasFlag(t.key) ? (t.count || 1) : 0);
         else cur = p.getVar(vk) || 0;
         return { desc: t.desc || t.id, cur: Math.min(cur, t.count || 1), count: t.count || 1 };
       });
@@ -1157,7 +1173,21 @@ class GameEngine {
     };
   }
 
-  mapView() {
+  /* ⚠️ P0-B B-2（2026-10-13）：`opts.geometry === false` 时**不下发几何四件套**
+     （`cells` / `regionBoxes` / `bounds` / `terrain`，合计 77.6 KB）。
+     谁要它们：只有**地图面板**（ui.js 要靠 `m.cells` 建「坐标 → 房间」反查表、
+     靠 `m.regionBoxes` 定取景框）；「飞行」面板只用 `regions` 的
+     entry / canFly / flyCost，**一个几何字段都不读**。
+     ⚠️ 默认**全发**（不传 opts 就是完整版）—— 这不是偷懒：
+        `mapguide-check.js` 断言「mapView 仍返回 terrain」、`map-edge-check.js` 断言
+        「regionBoxes 里有 neighbors」，两者都走 `view({ map: true })`。
+        默认全发 ⇒ 这两处口径不变；只有 `/api/view?panel=fly` 显式要瘦身版。 */
+  mapView(opts) {
+    const withGeometry = !opts || opts.geometry !== false;
+    /* --- P0-C C-1：分批（region）与迷雾（fog），两个都是 **opt-in** --- */
+    const wantRegion = opts && opts.region ? String(opts.region) : null;
+    const withNeighbors = !!(opts && opts.neighbors);
+    const withFog = !!(opts && opts.fog);
     const w = this.world, p = w.player;
     const room = w.getRoom(p.room);
     if (!room) return { region: null, rooms: [], current: null };
@@ -1189,6 +1219,49 @@ class GameEngine {
     }
     const layout = this._mapLayout;
 
+    /* ================================================================
+     *  P0-C C-1 分批：算「这一批要发哪些州」
+     * ================================================================
+     *  ⚠️ 为什么 `region` 支持 `auto` 而且是**必须**的：
+     *     P0 之后指令回包 / 开局 / 读档都不再下发地图，前端的 `S.view.map` 是空的 ——
+     *     它**根本不知道自己现在在哪个州**，让前端把当前州传过来就是循环依赖。
+     *     所以让服务端从玩家脚下这间房自己推（`room.region` 就在手边）。
+     *
+     *  ⚠️ 「邻州」取的是**真出口邻接**，不是几何邻接：
+     *     `regionBoxes[].neighbors` 回答的是「装箱后哪个框在我的哪个方向」，
+     *     那是**画图**问题；分批要回答的是「从这批房间能不能走出去」，
+     *     那是**真出口**问题。两者差得很远 —— 实测江南城：真出口邻州 16 个，
+     *     几何邻州只有 1 个（mojiao）。所以两个都算，取**并集**，宁可多发也不漏。
+     *     （只发本州那档更省，但那是调用方传 `neighbors:false` 的选择，不是这里的默认。） */
+    const focusRegion = !wantRegion ? null
+      : (wantRegion === 'auto' ? room.region : wantRegion);
+
+    let keepRegions = null;      /* null = 不分批，全发 */
+    if (focusRegion) {
+      keepRegions = new Set([focusRegion]);
+      if (withNeighbors) {
+        /* 真出口邻接：扫一遍所有房间的出口，跨州的双向登记 */
+        for (const r of Object.values(allRooms)) {
+          const a = r.region;
+          if (!a) continue;
+          for (const d of Object.keys(r.exits || {})) {
+            const t = allRooms[r.exits[d]];
+            if (!t || !t.region || t.region === a) continue;
+            if (a === focusRegion) keepRegions.add(t.region);
+            else if (t.region === focusRegion) keepRegions.add(a);
+          }
+        }
+        /* 几何邻接：补上「装箱后紧挨着」的那一圈，免得画布边上出现空洞 */
+        const gnb = (layout.regionBoxes || {})[focusRegion];
+        for (const k of Object.keys((gnb && gnb.neighbors) || {})) {
+          if (gnb.neighbors[k]) keepRegions.add(gnb.neighbors[k]);
+        }
+      }
+    }
+    /** 房间 id → 州 id（裁 `cells` 时用：`cells` 是按房间 id 索引的） */
+    const roomRegion = {};
+    for (const id of Object.keys(allRooms)) roomRegion[id] = allRooms[id].region;
+
     /* --- 探索度：玩家去过哪些房间 --- */
     const visitedCount = Object.keys(allRooms)
       .filter(id => p.hasFlag('visited_' + id)).length;
@@ -1206,23 +1279,62 @@ class GameEngine {
       if (t && t.region && t.region !== room.region) crossExits[dir] = t.region;
     }
 
-    const rooms = Object.values(allRooms).map(r => {
-      const c = layout.cells[r.id] || { x: 0, y: 0, z: 0 };
-      const d = dist[r.id];
-      const visited = !!p.hasFlag('visited_' + r.id);
-      return {
-        id: r.id, name: r.name, region: r.region,
-        x: c.x, y: c.y, z: c.z,
-        exits: Object.keys(r.exits || {}),
-        crossExits: r.id === room.id ? crossExits : null,
-        current: r.id === room.id,
-        visited,
-        /* 分级：当前 / 相邻(1步) / 已知(去过) / 附近(可达<=4步) / 未知 */
-        near: d === 1,
-        reach: d != null && d <= 4,
-        dist: d == null ? -1 : d,
-      };
-    });
+    const rooms = Object.values(allRooms)
+      .filter(r => !keepRegions || keepRegions.has(r.region))
+      .map(r => {
+        const c = layout.cells[r.id] || { x: 0, y: 0, z: 0 };
+        const d = dist[r.id];
+        const visited = !!p.hasFlag('visited_' + r.id);
+        return {
+          id: r.id, name: r.name, region: r.region,
+          x: c.x, y: c.y, z: c.z,
+          exits: Object.keys(r.exits || {}),
+          crossExits: r.id === room.id ? crossExits : null,
+          current: r.id === room.id,
+          visited,
+          /* 分级：当前 / 相邻(1步) / 已知(去过) / 附近(可达<=4步) / 未知 */
+          near: d === 1,
+          reach: d != null && d <= 4,
+          dist: d == null ? -1 : d,
+        };
+      })
+      /* ---- P0-C C-1 迷雾：未探索的房间只留「这里有一格」 ----
+         ⚠️ 「已知」的判据是 **去过 / 就在脚下 / 紧邻一步**，三条之一：
+            · 去过（`visited`）—— 走过就是走过，地图本来就该记着
+            · 脚下（`current`）—— 你正站在这儿
+            · 紧邻一步（`near`）—— 站在门口能看见隔壁叫什么，这不算剧透
+            ⚠️ 那条「附近 ≤4 步」（`reach`）**不算已知**：它是 BFS 在**整张出口图**上
+               跑出来的「图上距离」，中间那几间你可能一间都没进过。把它算成已知，
+               等于玩家一进新城就白得一张半径 4 格的地图 —— 那正是要裁掉的东西。
+
+         ⚠️ 迷雾房**必须带 `region`**：前端 `mapHtml` 是
+            `allRooms.filter(r => r.region === curRegion)` 之后再画，
+            不给 region 的话迷雾格会被这条 filter 直接滤掉 ——
+            「未探索」就从「看得到但看不清」变成「整片不存在」，
+            地图会随探索进度**长出来**，那不是留白羽化，那是地图在变形。
+         ⚠️ `visited:false` 与 `dist:-1` 是**显式**给的，其余字段靠 undefined 的假值语义：
+            `current/near/reach/exits/crossExits` 读出来都是 undefined，
+            在前端每个读取点上都是 falsy，与「未知」等价。 */
+      .map(o => {
+        if (!withFog || o.current || o.visited) return o;
+        /* 🔴 「相邻可走但没走过」这一档（design/78 §4.5.1 的 M-V-2）：
+           ① **不发名字** —— ② 但**必须保留 `near: 1`**，前端靠它画空心圈。
+           ⚠️ 这里改过一次口径。P0-C 那版的判断是「站在门口能看见隔壁叫什么，
+              不算剧透」，于是 near 房跟 visited 一样发全名。
+              design/78（2026-10-13，主理人拍板）推翻了它：这一档要的是
+              「**无字 + 有空心圈**」—— 玩家靠它判断的是"旁边有路可以走"，
+              不是"隔壁叫什么"。名字一出来，圈就没意义了，而且会连累 M-V-7
+              （未探索格子的 title 里漏出房间名 = 悬停即剧透）。
+           ⚠️ 别把 `near` 一起裁掉：裁了前端就分不出「相邻可走」和「完全未知」，
+              地图只剩"有字"和"整片空"两档 —— 那正是主人最烦的"空白方块"。 */
+        if (o.near) {
+          return {
+            id: o.id, x: o.x, y: o.y, z: o.z, region: o.region,
+            near: true, known: false, visited: false, dist: -1,
+          };
+        }
+        return { id: o.id, x: o.x, y: o.y, z: o.z, region: o.region, known: false, visited: false, dist: -1 };
+      });
 
     /* ---- 地图分层（★ 主人 2026-10-13：「能不能加一层二层的这种，因为有的
        地块可以往下走」）----
@@ -1242,24 +1354,40 @@ class GameEngine {
 
     const regions = Object.values(w.data.regions).map(r => {
       const inRegion = rooms.filter(x => x.region === r.id);
-      /* 「飞往」（主人 2026-10-11）：区域自带的 `entry` 就是它的门户房间，
-         玩家**去过那个入口**才准飞 —— 没去过的只能在地图上看看。
-         这里把判定算好交给前端，前端不自己猜（它拿不到 flags）。 */
+      /* 「飞往」（主人 2026-10-13 改口径）：不再要求「去过那个入口」。
+         改成 —— 脚下有轻功 + 内力够（算法在 flight.js，和后端「飞往」同源）。
+         这里把判定与耗力算好交给前端，前端不自己猜（它拿不到 learned）。 */
       /* ⚠️ 区域没写 `entry` 时**回落到本区第一个房间**，不要直接判定「不能飞」。
-         基础数据里 34 个区域都写了 entry，但官方那个「地图 Mod 示例」
+         基础数据里 35 个区域都写了 entry，但官方那个「地图 Mod 示例」
          （听雨山庄）没写 —— 玩家自制 Mod 更不会知道要补这个字段。
          逼 Mod 作者写新字段 = 新功能一到 Mod 就废，所以这里给个合理的兜底。 */
       const entryId = r.entry || (inRegion[0] && inRegion[0].id) || null;
       const entryRoom = entryId ? allRooms[entryId] : null;
+      const fly = flight.canFlyTo(p, w, entryId);
       return {
         id: r.id, name: r.name, color: r.color, desc: r.desc,
         count: inRegion.length,
         visitedCount: inRegion.filter(x => x.visited).length,
         hasCurrent: inRegion.some(x => x.current),
-        rooms: inRegion,
+        /* ⚠️ P0-B B-1（2026-10-13）：这里原来是 `rooms: inRegion` ——
+           与外层 `rooms` 是**同一批对象的第二次序列化**（`JSON.stringify` 不认引用，
+           同一份东西写两遍就是两遍字节）。实测 `regions[].rooms` 合计 **96.3 KB**，
+           占 mapView（300.6 KB）的三分之一，纯属白交的账。
+           改成只发 id：**7.9 KB**，省 88.4 KB，零语义损失。
+           要本区的房间内容，从外层 `map.rooms` 按 id 取即可（`roomIds` 就是给你查表用的）。
+           ⚠️ `count` / `visitedCount` / `hasCurrent` 三个**必须留着**：前端
+              「区域总览」（ui.js 的 `regionsHtml`）与飞行面板都只读这三个聚合值，
+              不该为拿一个数字去把整个区域的房间翻一遍。 */
+        roomIds: inRegion.map(x => x.id),
         entry: entryId,
         entryName: entryRoom ? entryRoom.name : null,
-        canFly: !!(entryId && p.hasFlag('visited_' + entryId)),
+        canFly: fly.ok && flight.canAfford(p, fly.cost),
+        /* 飞不了/飞得起但内力不够，是两回事；前端据此给不同的话 */
+        flyReason: fly.ok
+          ? (flight.canAfford(p, fly.cost) ? null : `还差 ${fly.cost - Math.floor(p.mp)} 点内力`)
+          : fly.reason,
+        flyCost: fly.ok ? fly.cost : null,
+        flySteps: fly.ok ? fly.steps : null,
       };
     });
 
@@ -1292,9 +1420,17 @@ class GameEngine {
         const r = allRooms[id];
         const c1 = layout.cells[id];
         if (!c1) continue;
+        /* P0-C C-1 分批：起点的州不在这一批里 ⇒ 整条边都不发。
+           ⚠️ 这里是**两端都判**，不是只判起点：只判起点的话，会发出一条
+              「a 在批内、b 在批外」的悬空边 —— 前端 `m.cells[b]` 取不到，
+              坐标算出来是 NaN，画出去是一条拖到画布外的病态线。
+              （前端 ui.js:3042 有 `if (!a || !b) return;` 兜底，
+                但那是拿渲染集合兜的，不该指望它替后端擦屁股。） */
+        if (keepRegions && !keepRegions.has(r.region)) continue;
         for (const dir of Object.keys(r.exits || {})) {
           const t = allRooms[r.exits[dir]];
           if (!t) continue;
+          if (keepRegions && !keepRegions.has(t.region)) continue;
           const c2 = layout.cells[t.id];
           if (!c2) continue;
           const d = DD[String(dir).toLowerCase()];
@@ -1309,15 +1445,46 @@ class GameEngine {
       }
     }
 
+    /* P0-C C-1：几何四件套跟着分批裁。
+       ⚠️ `bounds` **不裁** —— 它是世界外框（0.1 KB），前端只在 `regionBoxes[x]`
+          取不到时才拿它兜底（ui.js:2811），裁了反而凭空多出一个「取不到」的分支。
+       ⚠️ `terrain` 前端**现在一个字都不读**（grep 过 `game/src/renderer/js/*.js`，
+          只有三处命中且全是注释）。这里仍然照批内区域裁着发，而不是整个删掉：
+          `mapguide-check.js:73` 钉的是「数据没删，只是不画」这个语义，
+          留着字段比悄悄删掉更诚实 —— 哪天真要删，去改那条断言，别在这里偷偷抹。 */
+    const pickBy = (obj, keepFn) => {
+      const o = {};
+      for (const k of Object.keys(obj)) if (keepFn(k)) o[k] = obj[k];
+      return o;
+    };
+    const cellsOut = keepRegions
+      ? pickBy(layout.cells, k => keepRegions.has(roomRegion[k]))
+      : layout.cells;
+    const boxesOut = keepRegions
+      ? pickBy(layout.regionBoxes || {}, k => keepRegions.has(k))
+      : (layout.regionBoxes || {});
+    const terrainOut = keepRegions
+      ? pickBy(layout.terrain || {}, k => keepRegions.has(k))
+      : (layout.terrain || {});
+
     return {
       region: region ? { id: region.id, name: region.name, desc: region.desc, color: region.color } : null,
       rooms, current: p.room, regions,
-      cells: layout.cells,
-      regionBoxes: layout.regionBoxes || {},
-      bounds: layout.bounds,
-      terrain: layout.terrain || {},
+      /* B-2：几何四件套按需（理由见函数头部长注）。要瘦身就整个不出现，
+         而不是给 `undefined` —— 后者 `JSON.stringify` 虽然也会丢掉，
+         但 `'cells' in m` 仍是 true，容易让后来的人误判「字段还在」。 */
+      ...(withGeometry ? {
+        cells: cellsOut,
+        regionBoxes: boxesOut,
+        bounds: layout.bounds,
+        terrain: terrainOut,
+      } : {}),
       bridges,
       levels,
+      /* ⚠️ `total` 恒等于**全世界**的房间数（512），不随分批变小 ——
+         主人要的是「让人知道世界多大」，分母缩水成 34 就变成「探索度 1/34」，
+         那是把「这世界只有 34 间房」这个假信息喂给玩家。
+         （`visited` 同理，是全局数，不是批内数。） */
       explore: { visited: visitedCount, total: Object.keys(allRooms).length },
     };
   }
@@ -1916,7 +2083,12 @@ class GameEngine {
                 目标 var 永远是 0 → checkQuestAuto 判不出达成 → 面板停在「去城西破庙查看」。
               全库带 `kind:'flag'` 的目标不止这一条（它是一整类），一起修掉。 */
         if (t.kind === 'room' && t.key === p.room) { if (!p.getVar(vk)) p.setVar(vk, 1); }
-        else if (t.kind === 'flag' && p.hasFlag(t.key)) { if (!p.getVar(vk)) p.setVar(vk, t.count || 1); }
+        /* flag 类：带 `var` 的走计数（真值在 var，由 incvar 攒），不带 var 的才是布尔标记。
+           与 targetDone / 上方面板判据三处同源，别只改一处。 */
+        else if (t.kind === 'flag') {
+          if (t.var) { /* 计数目标：值由 incvar 写入，此处不动 */ }
+          else if (p.hasFlag(t.key)) { if (!p.getVar(vk)) p.setVar(vk, t.count || 1); }
+        }
       }
     }
     // 饥渴昏倒：advanceTime 掉血到 0，但没走战斗的 playerDeath

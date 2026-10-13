@@ -987,7 +987,9 @@ section('B1 · 存档列表不得混入测试档，且首行必须是最新真�
      —— 磁盘上没真档时**静默跳过仍计通过**，等于「靠玩家目录的偶然状态拿绿灯」。
      现在改成：**自己在沙盒里造三档真存档**（savedAt 递增可控），
      前提恒成立，不依赖玩家 saves/ 里碰巧有什么。 */
-  const b13Dir = fs2.mkdtempSync(path.join(require('os').tmpdir(), 'b13_'));
+  /* ⚠️ 2026-10-12 改：从 os.tmpdir() 迁到项目内 .livetest/（统一隔离写法，带 pid 防并发互踩） */
+  const b13Dir = path.join(ROOT, '.livetest', 'b13-' + process.pid);
+  fs2.mkdirSync(b13Dir, { recursive: true });
   const e13 = new GameEngine({ seed: SEED, saveDir: b13Dir });
   e13.boot(); e13.newGame({ name: '首行判据', gender: 'male', birth: 'wuxue' });
   /* 造三档：**故意先存旧的、再存新的** —— 若 listSaves 没有按 savedAt 降序，

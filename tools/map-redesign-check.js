@@ -179,11 +179,26 @@ async function renderMap(view) {
        🔴 2026-10-12 又改回来：主人「把当前区域地图改为在世界地图的基础上删去其他区域的，
           其他的原模原样复制粘贴即可」⇒ fitCell 整段删掉，两种视野**共用同一个 MAP_CELL**。
        所以现在只有一条赋值，且它必须真的带 * z。 */
+    /* 🔴 P0-C C-2（spec §3.7）：格距从「窄屏 52 / 桌面 30」两档改为**四档**
+       （XS 66 / S 60 / M 56 / L 52），所以源码里的表达式从
+       `Math.round((NARROW ? 52 : 30) * z)` 变成 `Math.round(tier.cell * z)`。
+       ⇒ 判据跟着改成「格距确实由 `tier.cell × z` 算出来」，
+         守的仍是同一件事：**缩放真的乘进了格子尺寸，不是摆着看的**。 */
     ok('★ 缩放真的乘进格子尺寸（源码级判据）',
-      /MAP_CELL = Math\.round\(\(NARROW \? 52 : 30\) \* z\)/.test(uisrc));
+      /MAP_CELL = Math\.round\(tier\.cell \* z\)/.test(uisrc));
+    ok('★ 格距按四档断点给（C-2 spec §3.7：XS66 / S60 / M56 / L52）',
+      /66.*13\.5/.test(uisrc) && /60.*13\b/.test(uisrc) && /56.*12\b/.test(uisrc) && /52.*11\b/.test(uisrc));
     ok('★ 区域模式不再自己算格距（两页共用同一 MAP_CELL，主人 10-12）',
       !/const fitCell/.test(uisrc));
-    ok('　缩放有上下限（0.7~2.4 —— 上限随 fitCell 下线而放宽）', /ZMIN = 0\.7, ZMAX = 2\.4/.test(uisrc));
+    /* 🔴 C-2（spec §3.7）：上下限从 0.7/2.4 改为 **0.9/2.2**。
+       为什么：格距基准抬到 52 之后，0.7 会掉到 36.4px、字号被压到 8px —— 又回到「蚂蚁」；
+       0.9×52 = 46.8px 是「还放得下 4 字/行、字不小于 10px」的地板。
+       ⚠️ 这两个数在 `bindPanelActions` 里还有一份（＋/－ 按钮的钳位），
+          本项目已经因为「两处各写一份」踩过两次，改一处必须改另一处。 */
+    ok('　缩放有上下限（0.9~2.2 —— C-2：0.7 会把字号压到 8px 的蚂蚁档）',
+      /ZMIN = 0\.9, ZMAX = 2\.2/.test(uisrc));
+    ok('　★ 上下限与 ＋/－ 按钮的钳位是同一个数（别再攒第三次两处不一致）',
+      /Math\.min\(2\.2, Math\.max\(0\.9/.test(uisrc));
     ok('　100% 时两个缩放按钮都可用（没被误禁用）',
       !/data-map-tool="z(in|out)"[^>]*disabled/.test(html));
     ok('　源码里确实有「到顶/到底才禁用」的判据', /ZMIN \+ 1e-6 \? ' disabled'/.test(uisrc) && /ZMAX - 1e-6 \? ' disabled'/.test(uisrc));
@@ -215,11 +230,25 @@ async function renderMap(view) {
      原来这条守的是「未探索仍显示名字、只压暗一档，不做迷雾」——
      精神（不做迷雾）没变，但现在连那一档压暗都取消了，
      所以改断「名字用最亮那档墨色 + 没有任何按状态分色的规则」。 */
-  ok('★ 地块名一律亮色（主人要求所有地名都一样亮，不做明暗分级）',
-    /\.map-node \.mn-name[^}]*color:\s*var\(--ink-1\)/.test(css));
-  ok('★ 没有按「去过/没去过」分字色的规则了（分色就说明这条没改到位）',
+  /* 🔴 P0-C C-2（spec §3.1）：**「一律亮白、不做明暗分级」这条作废**。
+     spec 明确要求 L1/L2/L3 三级**必须**可辨，而且是**三重**区分：
+       ① 形状：L1 有朱印（`.mn-seal`）/ L2 只有字 / L3 没字
+       ② 字重：L1 = 700 / L2 = 400
+       ③ 色相：L1 金 `#cfa64a` / L2 墨白 `#ded6c2`
+     为什么推翻 10-12 那条：当时的判据是「未探索压暗一档」会造成
+     「淡墨 vs 浓墨」两档同色相，色觉差异下极易混。C-2 用**形状 + 字重**
+     替掉色相这一重，比「全亮白」更可辨，也更符合
+     「颜色不得成为唯一信息载体」（灰度截图下 ①② 仍然成立）。
+     ⇒ 断言反转：L2 的字色必须是 spec 的 `--map-ink-known`，L1 必须是 `--map-here-name`，
+        且**不允许**再出现 `.dim` 那种「按去过没去过压暗」的规则。 */
+  ok('★ L2 走过的地名用 spec 的浓墨变量（--map-ink-known）',
+    /\.map-node \.mn-name[^}]*color:\s*var\(--map-ink-known/.test(css));
+  ok('★ L1「我在这里」用金色且字重 700（不依赖色相也能认出）',
+    /\.map-node\.here \.mn-name[^}]*color:\s*var\(--map-here-name\)[^}]*font-weight:\s*700/.test(css));
+  ok('★ 没有按「去过/没去过」压暗的分色规则了（.dim 那套已删）',
     !/\.map-node\.(known|unknown|reach)\s+\.mn-name/.test(css)
-    && !/\.map-node\.dim\s+\.mn-name/.test(css));
+    && !/\.map-node\.dim\s+\.mn-name/.test(css)
+    && !/\.map-node\.dim\s*\{/.test(css));
   ok('　地块没有方块框了（无边框、无底色）',
     /\.map-node \{[\s\S]{0,200}border:\s*none/.test(css)
     && /\.map-node \{[\s\S]{0,200}background:\s*transparent/.test(css));
@@ -247,8 +276,17 @@ async function renderMap(view) {
     html.indexOf('data-cx') < 0 && !/function centerMapOnRegion/.test(uisrc));
   ok('★ CSS 里 .map-region-box 已无边框无底色',
     /\.map-region-box\s*\{[^}]*border:\s*0[^}]*background:\s*none/.test(css));
-  ok('★ 所有走廊连线都是虚线（主人 10-12：连线换成虚线形式）',
-    /\.map-edges\s+\.edge\s*\{[^}]*stroke-dasharray/.test(css));
+  /* 🔴 P0-C C-2（spec §3.1 / §4.3 第 11 条）：**虚/实重新分工**，旧的「全是虚线」作废。
+       · L2 走过的路 → **实线**（金褐）
+       · L3 通往未知 → **虚线**（极淡）
+     为什么：虚/实现在是「走过 / 没走过」的**第二重编码**，不依赖颜色 ——
+     灰度截图下也能数出来。旧的「`.edge` 基类挂 dasharray」会把两档一起拉虚，分工就没了。
+     ⇒ 断言从「基类有 dasharray」改为「**走过**那档没有、**未知**那档有」。 */
+  ok('★ L2 走过的连线是实线（C-2：虚/实 = 走过/没走过的第二重编码）',
+    !/\.map-edges\s+\.edge\s*\{[^}]*stroke-dasharray/.test(css)
+    && !/\.map-edges\s+\.edge-known\s*\{[^}]*stroke-dasharray/.test(css));
+  ok('★ L3 通往未知的连线是虚线',
+    /\.map-edges\s+\.edge-dim\s*\{[^}]*stroke-dasharray/.test(css));
   ok('★ 跨区那条兜底虚线整段下线（没有 edge-bridge 了）',
     html.indexOf('edge-bridge') < 0 && !/\.map-edges\s+\.edge-bridge\s*\{/.test(css));
   /* 区域模式＝世界地图裁掉别的区域：两页格距必须一致（主人 10-12 的原话）。

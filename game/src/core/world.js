@@ -19,7 +19,7 @@ const fs = require('fs');
 const { EventEmitter } = require('events');
 const { RNG, deepMerge, clone, fmtTime, shichen, fuzzyFind, clamp, uid } = require('./utils');
 const { Character } = require('./character');
-const { CombatEngine, DEFAULT_HOOKS } = require('./combat');
+const { CombatEngine, DEFAULT_HOOKS, DRAW_TURNS } = require('./combat');
 const { evalCond, evalEffects, evalTemplate } = require('./modapi');
 
 const SEASONS = ['spring', 'summer', 'autumn', 'winter'];
@@ -229,35 +229,20 @@ class World extends EventEmitter {
    * 一、数据加载与 Mod 合并
    * ================================================================ */
 
+  /**
+   * 加载基础数据。
+   *
+   * ⚠️ 实现已搬到 `game/src/core/dataload.js`（闸一 · 加载 fail-fast），这里只留转发。
+   *    搬走的原因：旧实现把 `JSON.parse` 包在 try/catch 里，坏文件只往
+   *    `modLog` 塞一条 error 就继续跑 —— 引擎照常启动、游戏照常能玩，
+   *    而那半个文件里的内容**一条都取不到**（实测：`102_classic_quests.json`
+   *    5 处引号写错 ⇒ 5 条任务凭空消失，回归 131 套全绿、不报任何错）。
+   *    内容大改要一次动几百个文件，加载层再从「吞错」变成「静默丢内容」
+   *    就没人敢改了。新实现：**坏文件 ⇒ 抛 DataLoadError，带文件名+行号+片段**。
+   *    合并语义（`mergeData`/`mergeEntry`）**仍在 world.js**，那是 Mod 也走的入口。
+   */
   loadBaseData() {
-    for (const dir of this.dataDirs) {
-      if (!fs.existsSync(dir)) continue;
-      /* ⚠ 只认 NN_xxx.json 这种命名：
-         以前把备份文件（.20_items.bak.json）放在同目录，会被一起加载，
-         旧版物品覆盖新版 → 静默丢字段（quality/tags 全没了）。
-         现在隐藏文件/非数字前缀一律跳过，并且按文件名排序保证加载顺序稳定。 */
-      const files = fs.readdirSync(dir)
-        .filter(f => f.endsWith('.json') && !f.startsWith('.') && /^\d+_/.test(f))
-        .sort();
-      for (const f of files) {
-        try {
-          const raw = fs.readFileSync(path.join(dir, f), 'utf8');
-          const json = JSON.parse(raw);
-          this.mergeData(json, { name: '基础数据:' + f, base: true });
-        } catch (e) {
-          this.modLog.push({ level: 'error', msg: `基础数据解析失败 ${f}: ${e.message}` });
-        }
-      }
-    }
-    /* 同目录下若有不符合命名的 json，记一条警告（大概率是误放的备份） */
-    for (const dir of this.dataDirs) {
-      if (!fs.existsSync(dir)) continue;
-      for (const f of fs.readdirSync(dir)) {
-        if (f.endsWith('.json') && (f.startsWith('.') || !/^\d+_/.test(f))) {
-          this.modLog.push({ level: 'warn', msg: `数据目录里的 ${f} 命名不合规范（应为 NN_名字.json），已跳过。` });
-        }
-      }
-    }
+    return require('./dataload').loadBaseData(this);
   }
 
   /** 合并一份数据包（基础数据或 mod 都是这一个入口） */
@@ -347,6 +332,46 @@ class World extends EventEmitter {
   }
 
   /** 扫描并加载 mod 目录 */
+  /**
+   * 把「装了但根本没被加载」的 Mod 报出来。
+   *
+   * 🔴 这是第三种「不报错就是不生效」，前两种都在加载层，这一种在**加载器**里：
+   *   `modloader.js#readModDir()` 读 `mod.json` 失败时 catch 一下就返回
+   *   `{broken:true, enabled:false}`（modloader.js:124），而这个 mod
+   *   **既进不到 `loadMods`**（`resolveLoadOrder` 里 `enabled && !broken` 把它滤掉了，
+   *   modloader.js:250/273），**也不进 `bootLog`**（`problems` 只收依赖成环和冲突，
+   *   modloader.js:255-268）。
+   *   ⇒ 装了一个坏 Mod 的人：游戏照常跑、mod 列表里也许看得到，但**日志和守卫
+   *     全程沉默**。玩家以为装上了，其实一条内容都没进世界。
+   *
+   * 修法与 `loadMods` 里那条同规格：**报出来，但不许拖垮 boot**。
+   * 为什么在这里重新扫一遍而不是从 engine 拿 modLoader：`World` 手里只有
+   * `modDirs`（engine.js:139 传进来的），拿不到 `ModLoader` 实例；去改 engine.js
+   * 传引用会碰别人的文件（主程序正在改战斗结算）。扫一遍的代价是 11 个目录，
+   * 只在 boot / reload 时发生，可接受。
+   */
+  reportBrokenMods() {
+    /* ⚠️ modloader.js 导出的是 `{ ModLoader, … }`，不是类本身 ——
+       直接 `new ModLoader(dir)` 会抛「不是构造函数」，被下面的 try 吞掉，
+       结果是**什么都不报**（第一次就是这么踩的：跑了，但一条都没报出来）。 */
+    let ModLoader = null;
+    try { ModLoader = require('./modloader').ModLoader; } catch (e) { return; }
+    if (typeof ModLoader !== 'function') return;
+    for (const dir of (this.modDirs || [])) {
+      if (!dir || !fs.existsSync(dir)) continue;
+      let ml;
+      try { ml = new ModLoader(dir); } catch (e) { continue; }
+      for (const m of (ml.mods || [])) {
+        if (!m || !m.broken) continue;
+        const msg = '【Mod 加载失败 · 来自 mods/' + m.id + '/mod.json】元数据解析失败：'
+          + (m.error || '未知原因') + '\n  这个 Mod 已跳过（一条内容都没进世界），游戏照常运行。'
+          + '\n  修它或者卸掉它，别让它一直挂在这儿假装装上了。';
+        this.modLog.push({ level: 'error', mod: m.id, source: 'mods', msg });
+        try { console.error('[dataload] ' + msg); } catch (_) { /* 日志打不出去不影响加载 */ }
+      }
+    }
+  }
+
   loadMods(modList) {
     // modList: [{dir, enabled, priority, id, name, version}]  已由 modloader 决定顺序
     this.mods = [];
@@ -357,14 +382,33 @@ class World extends EventEmitter {
        玩家敲下去会走到一个**已经不该存在**的脚本上（幽灵指令）。 */
     this._scripts = [];
     this.customCommands = {};
+    /* 闸二补充：把「压根没被加载」的坏 Mod 报出来（见 reportBrokenMods 头注释）。
+       ⚠️ 必须放在上面那几句 `modLog = []` **之后** —— 放前面会被自己的重置擦掉
+       （第一次就是这么踩的：报了，然后被清空，H9 当场红）。 */
+    this.reportBrokenMods();
     for (const m of modList) {
       if (!m.enabled) continue;
       for (const fname of (m.files || ['mod.json'])) {
         const fp = path.join(m.dir, fname);
         if (!fs.existsSync(fp)) continue;
+        /* 闸一：Mod 的 JSON 与基础数据走同一套**带定位**的解析（文件名+行号+片段）。
+           以前这里也是 `try { JSON.parse } catch { 记一笔 }` —— 一个坏 mod
+           等于「装上了但什么都没发生」，与基础数据那个病同族。
+           ⚠️ 但**分级不同**：`game/data/` 是我们自己的内容，坏了**硬失败**；
+           `mods/` 是玩家装的，坏了要**响亮地报出来**，**不许拖垮 boot** ——
+           不能因为某个玩家装了个坏 Mod，游戏就起不来。 */
+        const dataload = require('./dataload');
         try {
-          const raw = fs.readFileSync(fp, 'utf8');
-          const json = JSON.parse(raw);
+          const parsed = dataload.parseJsonFile(fp, (m.id || '?') + '/' + fname, dataload.SRC_MOD);
+          const json = parsed.json;
+          if (parsed.bom) {
+            this.modLog.push({ level: 'warn', mod: m.id, msg: `${fname} 带 BOM，已剥掉后解析` });
+          }
+          const shapeErrs = dataload.validateDataFile(json, (m.id || '?') + '/' + fname);
+          if (shapeErrs.length) {
+            throw new dataload.DataLoadError(
+              'Mod「' + (m.id || '?') + '」的 ' + fname + ' 结构不合法：\n  ' + shapeErrs.join('\n  '));
+          }
           const meta = json._mod || {};
           this.mergeData(json, {
             id: m.id || meta.id,
@@ -382,6 +426,21 @@ class World extends EventEmitter {
             for (const u of [].concat(json.ui)) this.uiExtensions.push(Object.assign({ mod: m.id }, u));
           }
         } catch (e) {
+          if (e && e.isDataLoadError) {
+            /* 🔴 Mod 坏了：**报出来，但不许拖垮 boot**。
+               ① 记一条 error 进 modLog（会进 bootLog，UI 上看得见）
+               ② console.error 打一遍（服务端日志里也留得下）
+               ③ **跳过这个 mod 继续** —— 其它 mod 和主数据照常加载
+               错误信息里带 `[Mod(mods/)]` 抬头 + 文件名 + 行号 + 片段，
+               玩家/作者一眼知道该去找哪个文件。 */
+            const msg = '【Mod 加载失败 · 来自 mods/' + (m.id || '?') + '/' + fname + '】'
+              + String(e.message || e).split('\n').join('\n    ');
+            this.modLog.push({ level: 'error', mod: m.id, source: 'mods', msg });
+            try { console.error('[dataload] ' + msg); } catch (_) { /* 日志打不出去不影响加载 */ }
+            continue;
+          }
+          /* 其余运行时异常（脚本、沙箱…）仍按旧行为记一笔，
+             免得一个 mod 的脚本问题把整个世界拖死。 */
           this.modLog.push({ level: 'error', mod: m.id, msg: `加载失败 ${fname}: ${e.message}` });
         }
       }
@@ -1173,8 +1232,11 @@ class World extends EventEmitter {
       npc.leavesCorpse = def.leavesCorpse !== false;
       /* ⚠️ 默认游走：数据里只有山贼写了 `wander` —— 「NPC 会随机移动」这件事
          其实**从来没发生过**。这里给公共场所的普通 NPC 补默认值；
-         有作息的人 / 名人 / 住家户不动（理由见 ambience.defaultWanderFor）。 */
-      npc.wander = def.wander || require('./ambience').defaultWanderFor(this, def);
+         有作息的人 / 名人 / 住家户不动（理由见 ambience.defaultWanderFor）。
+         ⚠️ `wander` 必须 **clone**（记忆第 14 条那条铁律，同样适用这里）：
+            直接挂 def.wander 会让同一模板的**所有实例共用一个对象** ——
+            npclife / 事件脚本改过谁的 wander.chance，全派弟子跟着一起变。 */
+      npc.wander = def.wander ? clone(def.wander) : require('./ambience').defaultWanderFor(this, def);
       npc.ai = def.ai || 'simple';
       npc.talk = def.talk || null;
       /* ---- 社交扩展字段（第一批）----
@@ -2660,8 +2722,34 @@ class World extends EventEmitter {
     return { ok: true, battle: this.battle, npc, lines: witnessLines };
   }
 
+  /* 回合推进 + 平局判定 —— **四条分支共用**（普通攻击 / 绝招 / 防御 / 物品）。
+     ⚠️ 修的病（主人报的「战斗很怪」第二条）：
+        `battle.turn++` 原来只写在 `combat.step()` 里，而**只有「普通攻击」经过它**；
+        用绝招 / 防御 / 物品的战斗，回合数**永远不动**，
+        于是 `turn > 60` 的平局判定永不触发 —— 打不赢也输不掉就一直耗着，
+        玩家的操作只是「看着血条一点点磨」，没有任何一回合是「最后一回合」。
+     ⚠️ 放在 `flee` 之后：逃跑不该记一回合，它直接结束战斗。 */
+  advanceTurn() {
+    const b = this.battle;
+    if (!b || b.over) return;
+    b.turn = (b.turn || 0) + 1;
+    /* 与 `combat.step()` 里那条共用 DRAW_TURNS —— 各写一个 60 就是两份真理 */
+    if (b.turn > DRAW_TURNS) { b.over = true; b.winner = 'draw'; }
+  }
+
   combatStep(userAction) {
     if (!this.battle || this.battle.over) return null;
+
+    /* ★ 四分支共用：进任何一个玩家行动分支之前，先把这一回合记上。
+       放在这里而不是各分支里，是因为四个分支各有各的提前 return，
+       挂在任何一处都会漏（漏了就是「这条分支永不平局」）。 */
+    if (userAction !== 'flee') this.advanceTurn();
+    if (this.battle.over) {
+      /* 平局：把「打满回合」这句话说给玩家听，不然战斗面板直接消失，
+         玩家不知道是赢了、输了、还是卡了。 */
+      return this.finishCombat([{ kind: 'warn', text: '这一架打了许久，谁也奈何不了谁，各自退开。' }]);
+    }
+
     // 玩家行动
     if (userAction === 'flee') {
       const p = this.player;
@@ -2775,16 +2863,63 @@ class World extends EventEmitter {
       const p = this.player;
       const useRes = this.useItem(p, userAction.uid);
       const lines = (useRes.lines || []).slice();
-      return { lines: this.stepEnemyOnly(lines) };
+      /* `ok` 要透出去：调用方（commands.js 的 `use`）得知道到底吃没吃上，
+         才能决定要不要接着走「喝酒传市井传闻」那一步。
+         只回 lines 的话，那边只能去正则匹配文本里的"没有"——那是拿文案当 API 用。 */
+      return { lines: this.stepEnemyOnly(lines), ok: !!useRes.ok };
     }
-    // 普通攻击 / 自动一回合
-    const r = this.combat.step(this.battle);
-    let lines = r.lines;
-    lines = this.stepEnemyOnly(lines, true);
-    if (this.battle && this.battle.over) return this.finishCombat(lines);
-    // 玩家死亡
-    if (this.player.hp <= 0) { this.playerDeath(); return this.finishCombat(lines); }
-    return { lines };
+    /* ============================================================
+       普通攻击 / 自动一回合
+       ------------------------------------------------------------
+       ⚠️ 修的病（主人报的「战斗很怪」**第一条**）：
+         原来是 `combat.step(this.battle)` 接 `stepEnemyOnly(lines, true)`。
+         `combat.step()` 的语义是「**场上所有单位各打一次**」—— 玩家和敌人都算。
+         然后再 `stepEnemyOnly` 让敌人**再打一次**。
+         ⇒ 玩家点一次「普通攻击」，实际是**玩家出手 1 次、敌人出手 2 次**。
+         同时 `combat.step()` 里对每个单位 `tickBuffs`，`stepEnemyOnly` 里
+         又对每个敌人 `tickBuffs` 一次 ⇒ **敌人的 buff 一回合结算两遍**
+         （持续伤害翻倍、增益回合数减半）。同一个根因的两副面孔。
+
+       ⇒ 改法：与 `{type:'skill'}` 那条分支**同构** —— 这里只结算**玩家这一手**，
+         敌人那一手交给下面的 `stepEnemyOnly`，各一次。
+       ============================================================ */
+    {
+      const p = this.player;
+      const t = this.battle.defenders[0];
+      const lines = [];
+
+      /* 玩家侧 buff 结算。原来由 `combat.step()` 顺带做了（它对所有单位 tick 一遍）；
+         玩家不走它了，就得自己 tick 一次 —— 否则玩家身上的持续伤害 / 增益
+         **永远不结算**（中毒不掉血、增益不消失）。 */
+      this.combat.tickBuffs(p, lines, this.battle);
+      if (p.hp <= 0) { this.playerDeath(); return this.finishCombat(lines); }
+
+      /* 玩家这一手：pickSkill 挑武学（封穴时返回 null ⇒ 只能普攻），
+         hits / baseAttackCount 决定连击数，与 combat.step() 里的写法一致。 */
+      const sk = this.combat.pickSkill(p, t);
+      const n = sk && sk.hits ? sk.hits : this.combat.baseAttackCount(p, t);
+      for (let i = 0; i < n; i++) {
+        if (!t || t.hp <= 0) break;
+        const rr = this.combat.oneAttack(p, t, i === 0 ? sk : null, this.battle, i);
+        if (rr) lines.push(rr);
+      }
+      if (t && t.hp <= 0) {
+        this.combat.onDeath(t, this.battle, lines, true);
+        this.battle.over = true;
+        this.battle.winner = 'attackers';
+      }
+      if (this.battle.over) return this.finishCombat(lines);
+
+      /* ⚠️ 这里**不再**传 skipPlayer=true。
+         那个参数的语义是「玩家的 buff 已经在 combat.step() 里 tick 过了，别再减一次」，
+         而现在玩家改由上面那行 tickBuffs 负责，敌人侧的收尾与另外三条分支一致。
+         传 true 会让辅助武技打上的 `sup:` 标记**永不递减**（挂一辈子）。 */
+      const after = this.stepEnemyOnly(lines);
+      if (this.battle && this.battle.over) return this.finishCombat(after);
+      // 玩家死亡
+      if (p.hp <= 0) { this.playerDeath(); return this.finishCombat(after); }
+      return { lines: after };
+    }
   }
 
   /** 玩家行动后，敌人行动 */

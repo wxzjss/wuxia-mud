@@ -106,8 +106,12 @@ const DIR_OFF = {
   console.log('\n§R2-1 地图走廊几何：斜向相连也必须画出连线');
   {
     const curRegion = mv.region && mv.region.id;
-    const rooms = mv.rooms.filter(r => r.region === curRegion);
-    ok('R2-1-0 当前区域确有房间（前提）', rooms.length > 0, `region=${curRegion} rooms=${rooms.length}`);
+    /* ★ 2026-10-13 口径改动：区域地图只画玩家所在那一层（z）。
+       ⇒ 算「该画几条走廊」也必须拿**同层**房间，否则会按全层去数、跟渲染对不上。 */
+    const hereRoom = (mv.rooms || []).find(r => r.current);
+    const curZ = hereRoom ? (hereRoom.z || 0) : 0;
+    const rooms = mv.rooms.filter(r => r.region === curRegion && (r.z || 0) === curZ);
+    ok('R2-1-0 当前区域确有房间（前提）', rooms.length > 0, `region=${curRegion} z=${curZ} rooms=${rooms.length}`);
 
     /* 按真实数据算出「该画几条走廊」：每个有向邻接对一条（正交 + 斜向） */
     let ortho = 0, diag = 0; const diagSamples = [];

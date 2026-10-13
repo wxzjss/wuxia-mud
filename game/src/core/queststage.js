@@ -75,7 +75,15 @@ function stageResolve(p, stage, world) {
 function targetDone(p, qid, t) {
   if (!t) return true;
   if (t.kind === 'item') return p.countItem(t.key) >= (t.count || 1);
-  if (t.kind === 'flag') return !!p.hasFlag(t.key);
+  /* ⚠️ `kind:'flag'` 却**又写了 `var`** 的目标，是「计数目标」穿错了 flag 的壳 ——
+     真值存在 var 里（`incvar` 攒的），按 flag 判 `hasFlag(t.key)` 永远是 false，
+     于是「点三趟招揽」永远交不了任务（青楼支线实测踩过）。
+     判据：**写了 var 就走计数**，与 targetDone 末尾那一支同源。
+     （没有 var 的 `kind:'flag'` 照旧当布尔标记，不动既有语义。） */
+  if (t.kind === 'flag') {
+    if (t.var) return (p.getVar(t.var) || 0) >= (t.count || 1);
+    return !!p.hasFlag(t.key);
+  }
   const vk = t.var || `q_${qid}_${t.id}`;
   return (p.getVar(vk) || 0) >= (t.count || 1);
 }

@@ -1,0 +1,364 @@
+#!/usr/bin/env node
+/* ==========================================================================
+ *  tools/perf-step-check.js —— 单步性能门禁（P0 止血批次）
+ *  --------------------------------------------------------------------------
+ *  为什么要这个脚本：
+ *    「点按钮卡半秒」这类性能问题，**代码看着改对了不等于真的瘦了**。
+ *    单步回包里塞了整张地图（300 KB），只要哪天有人在 `engine.view()` 上
+ *    少写一个 `{ map: false }`，或者给 `/api/save` 的回包顺手加个 `view:`，
+ *    体积一夜回到解放前，而**没有任何测试会红** —— 因为没人量过。
+ *    这个脚本就是把「神话」变成「读数」：每一步都量，超阈值直接退出非 0。
+ *
+ *  怎么量（关键：**走真 HTTP，不走内存调用**）：
+ *    内存里直接调 `engine.exec()` 量不到三样东西 —— JSON.stringify 的真实耗时、
+ *    `server/game-server.js` 里 json() 的 gzip（level 5）实际压缩率、
+ *    以及回包在链路上的真实字节数。所以这里**真起一个服务**（随机端口 +
+ *    `WX_SAVE_DIR` 隔离），用真 HTTP 请求打，读真回包：
+ *      · 服务端开了 gzip → 回包原始字节 = gunzip(buffer).length（**逐字节精确**）
+ *      · 服务端没开 gzip（包 < 1 KB）→ 用**同一个 level 5** 自己压一遍估算
+ *
+ *  覆盖门禁（同行ム阈值，超了 exitCode=1）：
+ *    B1 单步服务端延迟     p95 ≤ 8 ms、max ≤ 25 ms（⚠️ 走**三轮取最快**，见 §2 那条长注）
+ *                         ⚠️ 这两个阈值是**在机器安静时**定的。它们分不清
+ *                            「代码变慢」和「机器变慢」：本机 CPU 均值 74% 时，
+ *                            p50 只慢 7%（3.86→4.12），p95 却慢 83%（4.64→8.51）。
+ *                            ⇒ 读 B1 之前**先看输出里那行「三轮 p95 极差」**：
+ *                              极差小 = 读数可信；极差大 = 本机负载不稳，这只是趋势。
+ *    B2 /api/exec 回包     ≤ 32 KB 原始 / ≤ 12 KB gzip
+ *    B3 单步下行总量       ≤ 40 KB 原始 / ≤ 15 KB gzip（exec + save 两次回包相加）
+ *    B4 /api/save 回包     ≤ 2 KB
+ *    B9 boot+newGame+300 步后 heapUsed ≤ 120 MB、rss ≤ 200 MB
+ *    B1-p50 单步 p50       ≤ 6 ms 硬判 + ≤ 修前 × 1.5（2026-10-13 新增，见 LIMIT 注）
+ *
+ *  ⚠️ 2026-10-13 抽仓：地图下发类断言（B5 组、exec/save 的下发内容断言）
+ *     整体搬去了 tools/perf-map-check.js —— 它们是体积断言，不受机器负载影响，
+ *     没必要跟着 B1 一起独占时段。本文件只留延迟与通用体积。搬走 ≠ 删掉，
+ *     那边一条不少，且多了「≤ 修前 × 0.5」的比值保险栓（_perf_baseline.json）。
+ *
+ *  用法：node tools/perf-step-check.js [步数]      （默认 300 步）
+ * ========================================================================== */
+
+'use strict';
+
+const http = require('http');
+const path = require('path');
+const fs = require('fs');
+const os = require('os');
+const zlib = require('zlib');
+
+const ROOT = path.join(__dirname, '..');
+
+/* --- 测试隔离：存档 / 站点数据一律落到临时目录，绝不碰玩家真档 --- */
+const TMPROOT = fs.mkdtempSync(path.join(os.tmpdir(), 'wx-perf-'));
+process.env.WX_SAVE_DIR = path.join(TMPROOT, 'saves');
+process.env.WX_SITE_DATA = path.join(TMPROOT, 'site-data');
+fs.mkdirSync(process.env.WX_SAVE_DIR, { recursive: true });
+
+const STEPS = parseInt(process.argv[2], 10) > 0 ? parseInt(process.argv[2], 10) : 300;
+
+/* ---- 阈值（bytes）。KB 按 1024 记，与服务端 Content-Length 同口径 ---- */
+const KB = 1024;
+const LIMIT = {
+  /* p50 硬判阈值 6 ms 怎么定的（2026-10-13，严过关，口径注明）：
+     本机实测 p50 安静时 3.59–3.81 ms（tools/_re_perf.txt 三轮），本机 CPU 74% 时 4.12 ms
+     —— p50 对负载最钝（+7%），拿它做硬判最不容易「机器慢了就假红」。
+     6 ms = 实测最差非回归读数的 +55%：日常抖动够不着，真回归
+     （比如给单步加一次同步写盘）p50 一动就是翻倍级，照样红。 */
+  stepP50Ms: 6,
+  /* 比值门（主人裁「A + 比值」）：p50 ≤ 修前 × 1.5。修前 = P0 止血前快照
+     a369125 实测 p50 3.89 ms（_perf_baseline.json）。1.5×=5.84 ms，与绝对门 6 ms
+     互为保险：绝对门守「任何时候不许慢过 6」，比值门守「不许涨过修前五成」。
+     P0 修复对延迟几乎没动（3.89→3.79），比值门在这里是防恶化，不是防回吐。 */
+  stepP95Ms: 8,
+  stepMaxMs: 25,
+  execRaw: 32 * KB,
+  execGzip: 12 * KB,
+  stepDownRaw: 40 * KB,
+  stepDownGzip: 15 * KB,
+  saveRaw: 2 * KB,
+  newLoadRaw: 40 * KB,
+  heapUsed: 120 * 1024 * 1024,
+  rss: 200 * 1024 * 1024,
+};
+
+/* --- 比值门基线：读不到就明说跳过，比值门不许静默失效（perf-map-check 同款） --- */
+let BASE = null;
+try { BASE = JSON.parse(fs.readFileSync(path.join(__dirname, '_perf_baseline.json'), 'utf8')); }
+catch (e) { /* main 里判空处理 */ }
+
+let pass = 0, fail = 0; const fails = [];
+function ok(name, cond, extra) {
+  if (cond) { pass++; console.log('  \u2714 ' + name + (extra ? '  ' + extra : '')); }
+  else { fail++; fails.push(name); console.log('  \u2718 ' + name + (extra ? '  \u00ab ' + extra : '')); }
+}
+function section(t) { console.log('\n' + t); }
+function kb(n) { return (n / 1024).toFixed(1) + ' KB'; }
+function ms(n) { return n.toFixed(2) + ' ms'; }
+
+/** 百分位（nearest-rank，与常见监控口径一致） */
+function pct(sorted, q) {
+  if (!sorted.length) return NaN;
+  const idx = Math.max(0, Math.ceil((q / 100) * sorted.length) - 1);
+  return sorted[Math.min(sorted.length - 1, idx)];
+}
+
+/* ================================================================
+ *  真 HTTP 客户端
+ * ================================================================ */
+function request(port, method, urlPath, bodyObj) {
+  return new Promise((resolve, reject) => {
+    const payload = bodyObj === undefined ? null : Buffer.from(JSON.stringify(bodyObj), 'utf8');
+    const req = http.request({
+      host: '127.0.0.1', port, path: urlPath, method,
+      headers: Object.assign(
+        { 'Accept-Encoding': 'gzip' },
+        payload
+          ? { 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': payload.length }
+          : {}
+      ),
+    }, (res) => {
+      const chunks = [];
+      res.on('data', c => chunks.push(c));
+      res.on('end', () => {
+        const buf = Buffer.concat(chunks);
+        const gzipped = (res.headers['content-encoding'] || '') === 'gzip';
+        let rawLen, gzLen, text;
+        if (gzipped) {
+          /* gunzip 出来就是服务端的原始 JSON 字节 —— 长度逐字节精确 */
+          text = zlib.gunzipSync(buf).toString('utf8');
+          rawLen = Buffer.byteLength(text, 'utf8');
+          gzLen = buf.length;
+        } else {
+          text = buf.toString('utf8');
+          rawLen = buf.length;
+          gzLen = zlib.gzipSync(buf, { level: 5 }).length;   /* 与服务端同 level */
+        }
+        let jsonVal = null;
+        try { jsonVal = JSON.parse(text); } catch (e) { /* 非 json 时留给断言报错 */ }
+        resolve({ status: res.statusCode, rawLen, gzLen, json: jsonVal });
+      });
+    });
+    req.on('error', reject);
+    if (payload) req.write(payload);
+    req.end();
+  });
+}
+
+/* ================================================================
+ *  主流程
+ * ================================================================ */
+async function main() {
+  const t0Boot = Date.now();
+  const { createServer } = require(path.join(ROOT, 'server', 'game-server.js'));
+  const { server, engine } = createServer({});
+
+  await new Promise((res, rej) => {
+    server.once('error', rej);
+    server.listen(0, '127.0.0.1', res);
+  });
+  const port = server.address().port;
+  const bootMs = Date.now() - t0Boot;
+
+  console.log('');
+  console.log('  \u250c\u2500 单步性能门禁 ─────────────────────────────────────────');
+  console.log('  \u2502 服务 boots ' + ms(bootMs) + ' \u00b7 端口 ' + port + ' \u00b7 步数 ' + STEPS);
+  console.log('  \u2502 隔离存档 ' + process.env.WX_SAVE_DIR);
+  console.log('  \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500');
+
+  let saveId = 'perf_slot';
+  try {
+    /* ---------------- §1 开局 /api/new（只起局，不再断言） ----------------
+       ⚠️ B5 组（回包体积 / view.map / view.player）2026-10-13 搬去
+       tools/perf-map-check.js 了，那边一条不少。这里只留起局动作。 */
+    const rNew = await request(port, 'POST', '/api/new',
+      { name: '测速侠', gender: 'male', birth: 'wuxue' });
+
+    /* ---------------- §2 走 300 步（B1/B2/B3/B4） ---------------- */
+    section('  \u00a72 连续 ' + STEPS + ' 步（exec + save 各一次/步）');
+    const DIRS = ['n', 's', 'e', 'w', 'n', 'e', 's', 'w'];
+
+    /* ⚠️ 前 WARMUP 步怎么处置 —— **延迟和体积要分开对待**，混着处理会出假象：
+         · 延迟：最慢的一步永远是第 1 步，同一份代码连跑三次能跳出 23 / 24 / 37 ms，
+           那是 V8 还没把这条路径编译完的冷开销，与被测逻辑无关。让它参与统计的话
+           `max ≤ 25 ms` 实际由 JIT 说了算，通过与否靠掷骰子 ⇒ **统计时剔除**。
+         · 体积：刚好相反 —— 开局头几步的日志最长（自带房间描述 / 开场引文），
+           实测那是整个会话里**最胖**的回包（改前 41.8 KB）。早先我把 warmup 做成
+           「正式跑之前先偷偷走 10 步」，等于把这批最胖的回包踢出了统计，
+           B2 因此显示得比真实情况好看 ⇒ **必须照记、计入门槛**。
+       所以：不预先偷跑；300 步从头开始跑真实会话，只在算延迟时丢掉前 10 步。
+       冷启动那一步的延迟照样打出来（藏起来才是不诚实），只是不计入门槛。 */
+    const WARMUP = 10;
+
+    /* ⚠️ 跑三轮，延迟取**最快那轮**、体积取**最胖那轮**（2026-10-12 血的教训）：
+       B1 量的是**墙上时钟**，它默认「测的时候没别人抢 CPU / 机器没降频」。
+       这个默认会失效：同一份代码、同一台机器，安静时 p95 4.64 ms，
+       本机 CPU 均值 74% 时跳到 14.66 ms，**p50 也慢了 1.15 倍** ——
+       p50 一起慢、尾巴慢得更多，这个形状是**整机变慢**，不是代码变慢。
+       绝对阈值分不清这两件事，于是「今天什么都没改、perf 却红了」。
+       追两次之后所有人就学会忽略它了 —— 那比没有门禁更糟。
+
+       ⇒ 处理：**污染只会往慢的方向加，不会往快的方向加**，
+         所以「三轮里最快那一轮」就是对真值最好的估计（业界通用的 best-of-N）。
+         · 延迟：取三轮里 p95 最小的那轮，用它整条分位数判 B1，阈值**一个都没放宽**。
+           真回归会让**三轮都变慢**，包括最快的那轮 ⇒ 照样红。
+         · 体积：反过来取三轮里**最胖**的那个（体积不受负载影响，取最保守的）。
+       三轮的读数全部打印出来，不藏 —— 只挑代表轮判红。 */
+    const REPEATS = 3;
+    const reps = [];
+
+    for (let rep = 0; rep < REPEATS; rep++) {
+      /* 第 2 轮起重新开局：否则走的是上一轮留下的世界，回包体积不可比 */
+      if (rep > 0) await request(port, 'POST', '/api/new', { name: '测速侠', gender: 'male', birth: 'wuxue' });
+
+      const execTimes = [], saveTimes = [];
+      const execRaw = [], execGz = [], saveRaw = [], saveGz = [];
+      const downRaw = [], downGz = [];
+      /* ⚠️ execHasMap / saveHasView 计数随「下发内容」断言一起搬去 perf-map-check.js 了 */
+      let execNoPlayer = 0;
+      let firstExecRaw = null, lastExecRaw = null;
+
+      for (let i = 0; i < STEPS; i++) {
+        const cmd = DIRS[i % DIRS.length];
+
+        const t1 = process.hrtime.bigint();
+        const rExec = await request(port, 'POST', '/api/exec', { cmd });
+        const t2 = process.hrtime.bigint();
+        if (firstExecRaw === null) firstExecRaw = rExec.rawLen;
+        lastExecRaw = rExec.rawLen;
+        execTimes.push(Number(t2 - t1) / 1e6);
+        execRaw.push(rExec.rawLen); execGz.push(rExec.gzLen);
+        if (rExec.json && rExec.json.noPlayer) execNoPlayer++;
+
+        const t3 = process.hrtime.bigint();
+        const rSave = await request(port, 'POST', '/api/save', { id: saveId });
+        const t4 = process.hrtime.bigint();
+        saveTimes.push(Number(t4 - t3) / 1e6);
+        saveRaw.push(rSave.rawLen); saveGz.push(rSave.gzLen);
+
+        downRaw.push(rExec.rawLen + rSave.rawLen);
+        downGz.push(rExec.gzLen + rSave.gzLen);
+      }
+
+      /* 找稳态里最慢那一步的下标 —— 报「max」不报「是第几步」等于没法查：
+         是第 1 步（某个重活泄漏到这条路上）还是偶发抖动，处置完全不同。 */
+      let argmax = WARMUP;
+      for (let i = WARMUP + 1; i < execTimes.length; i++) if (execTimes[i] > execTimes[argmax]) argmax = i;
+      const coldMaxMs = Math.max.apply(null, execTimes.slice(0, WARMUP));
+
+      /* ⚠️ 只有**延迟**剔除冷启动，体积全套照算（理由见 WARMUP 处的长注） */
+      const sortedT = execTimes.slice(WARMUP).sort((a, b) => a - b);
+      reps.push({
+        rep,
+        execTimes, execRaw, execGz, saveRaw, saveGz, downRaw, downGz,
+        execNoPlayer, firstExecRaw, lastExecRaw,
+        argmax, coldMaxMs,
+        P: {
+          p50: pct(sortedT, 50), p90: pct(sortedT, 90), p95: pct(sortedT, 95),
+          p99: pct(sortedT, 99), max: sortedT[sortedT.length - 1],
+        },
+      });
+    }
+
+    reps.forEach((r) => {
+      console.log('    第 ' + (r.rep + 1) + ' 轮    p50 ' + ms(r.P.p50) + ' \u00b7 p90 ' + ms(r.P.p90)
+        + ' \u00b7 p95 ' + ms(r.P.p95) + ' \u00b7 p99 ' + ms(r.P.p99) + ' \u00b7 max ' + ms(r.P.max));
+    });
+    /* 代表轮 = p95 最小的那一轮 */
+    let best = reps[0];
+    reps.forEach((r) => { if (r.P.p95 < best.P.p95) best = r; });
+    const jitter = reps.map((r) => r.P.p95);
+    const spread = (Math.max.apply(null, jitter) - Math.min.apply(null, jitter));
+    console.log('    ── 代表轮：第 ' + (best.rep + 1) + ' 轮（p95 最小）'
+      + ' · 三轮 p95 极差 ' + ms(spread)
+      + (spread > best.P.p95 * 0.5 ? '  ← 极差过大，本机此刻负载不稳，读数仅供趋势' : ''));
+
+    const b = best;
+    console.log('    exec 体积  第1步 ' + kb(b.firstExecRaw) + ' \u00b7 第' + STEPS + '步 ' + kb(b.lastExecRaw)
+      + (b.lastExecRaw > b.firstExecRaw ? '  \u2197 \u968f\u6e38\u620f\u8fdb\u5ea6\u589e\u957f' : ''));
+    console.log('    稳态最慢  第 ' + (b.argmax + 1) + ' 步 ' + ms(b.execTimes[b.argmax]));
+    console.log('    冷启动   前 ' + WARMUP + ' 步最慢 ' + ms(b.coldMaxMs)
+      + ' \u00b7 首步 ' + ms(b.execTimes[0]) + '  ← JIT 未热，仅供参考，**不计入门槛**');
+    console.log('    （体积统计含全部 ' + STEPS + ' 步 \u00d7 ' + REPEATS + ' 轮，取最胖那轮；'
+      + '延迟取 p95 最小那轮，均剔除前 ' + WARMUP + ' 步冷启动）');
+
+    const P_EXEC_MS = b.P;
+    /* 体积：三轮里取最胖的那一轮（保守方向） */
+    const worst = reps.reduce((acc, r) => {
+      const m = Math.max.apply(null, r.execRaw);
+      return (!acc || m > acc.m) ? { m, r } : acc;
+    }, null).r;
+    const sExecRaw = worst.execRaw.slice().sort((a, b2) => a - b2);
+    const sDownRaw = worst.downRaw.slice().sort((a, b2) => a - b2);
+    const sDownGz = worst.downGz.slice().sort((a, b2) => a - b2);
+
+    console.log('    延迟      p50 ' + ms(P_EXEC_MS.p50) + ' \u00b7 p90 ' + ms(P_EXEC_MS.p90)
+      + ' \u00b7 p95 ' + ms(P_EXEC_MS.p95) + ' \u00b7 p99 ' + ms(P_EXEC_MS.p99)
+      + ' \u00b7 max ' + ms(P_EXEC_MS.max));
+    console.log('    exec 回包 p95 ' + kb(pct(sExecRaw, 95)) + ' \u00b7 max ' + kb(sExecRaw[sExecRaw.length - 1]));
+    console.log('    save 回包 p95 ' + kb(pct(worst.saveRaw.slice().sort((a, b2) => a - b2), 95)));
+    console.log('    单步下行 p95 ' + kb(pct(sDownRaw, 95)) + ' / ' + kb(pct(sDownGz, 95))
+      + ' \u00b7 max ' + kb(sDownRaw[sDownRaw.length - 1]) + ' / ' + kb(sDownGz[sDownGz.length - 1]));
+
+    ok('B1 单步服务端 p95 \u2264 ' + LIMIT.stepP95Ms + ' ms', P_EXEC_MS.p95 <= LIMIT.stepP95Ms, ms(P_EXEC_MS.p95));
+    ok('B1 单步服务端 max \u2264 ' + LIMIT.stepMaxMs + ' ms', P_EXEC_MS.max <= LIMIT.stepMaxMs, ms(P_EXEC_MS.max));
+    /* p50 硬判（2026-10-13 新增）：之前 p50 只打日志不判红 —— 只打不判 = 这条数
+       没人负责，p50 慢一倍门禁也绿着。阈值推导见 LIMIT.stepP50Ms 的注。 */
+    ok('B1 单步服务端 p50 \u2264 ' + LIMIT.stepP50Ms + ' ms（硬判）',
+      P_EXEC_MS.p50 <= LIMIT.stepP50Ms, ms(P_EXEC_MS.p50));
+    ok('B1 比值 p50 \u2264 修前 \u00d7 1.5（_perf_baseline.json）',
+      !!BASE && !!(BASE.pre && BASE.pre.p50Ms) && P_EXEC_MS.p50 <= BASE.pre.p50Ms * 1.5,
+      ms(P_EXEC_MS.p50) + ' vs 修前 ' + (BASE && BASE.pre ? BASE.pre.p50Ms : '?') + ' ms'
+        + (BASE ? '' : '  ← 基线读不到，比值门未生效'));
+
+    const maxExecRaw = sExecRaw[sExecRaw.length - 1];
+    const maxExecGz = worst.execGz.slice().sort((a, b2) => a - b2).pop();
+    ok('B2 /api/exec 回包 \u2264 ' + kb(LIMIT.execRaw), maxExecRaw <= LIMIT.execRaw,
+      'max ' + kb(maxExecRaw));
+    ok('B2 /api/exec 回包 gzip \u2264 ' + kb(LIMIT.execGzip), maxExecGz <= LIMIT.execGzip,
+      'max ' + kb(maxExecGz));
+
+    const maxDownRaw = sDownRaw[sDownRaw.length - 1];
+    const maxDownGz = sDownGz[sDownGz.length - 1];
+    ok('B3 单步下行总量 \u2264 ' + kb(LIMIT.stepDownRaw), maxDownRaw <= LIMIT.stepDownRaw,
+      'max ' + kb(maxDownRaw));
+    ok('B3 单步下行 gzip \u2264 ' + kb(LIMIT.stepDownGzip), maxDownGz <= LIMIT.stepDownGzip,
+      'max ' + kb(maxDownGz));
+
+    /* ⚠️ 「B2 complement exec 回包不带地图」「B4 回包不带 view」随下发内容断言
+       搬去 perf-map-check.js（M3/M4）。体积统计的取轮口径（最胖轮）不变。 */
+    const totNoPlayer = reps.reduce((n, r) => n + r.execNoPlayer, 0);
+    const totSteps = STEPS * REPEATS;
+    const maxSaveRaw = Math.max.apply(null, reps.map((r) => Math.max.apply(null, r.saveRaw)));
+    ok('B4 /api/save 回包 \u2264 ' + kb(LIMIT.saveRaw), maxSaveRaw <= LIMIT.saveRaw, 'max ' + kb(maxSaveRaw));
+    ok('前提 ' + totSteps + ' 步全程角色在线', totNoPlayer === 0, totNoPlayer + ' 步 noPlayer');
+
+    /* ---------------- §3 内存（B9） ---------------- */
+    section('  \u00a74 内存');
+    const mem = process.memoryUsage();
+    console.log('    heapUsed ' + (mem.heapUsed / 1048576).toFixed(1) + ' MB \u00b7 rss '
+      + (mem.rss / 1048576).toFixed(1) + ' MB \u00b7 heapTotal ' + (mem.heapTotal / 1048576).toFixed(1) + ' MB');
+    ok('B9 heapUsed \u2264 120 MB', mem.heapUsed <= LIMIT.heapUsed, (mem.heapUsed / 1048576).toFixed(1) + ' MB');
+    ok('B9 rss \u2264 200 MB', mem.rss <= LIMIT.rss, (mem.rss / 1048576).toFixed(1) + ' MB');
+
+    if (typeof engine.exec === 'function') { /* engine 句柄留着，避免误判未使用 */ }
+  } finally {
+    /* ⚠️ Node 22 的 http 默认开 keep-alive —— 不掐掉这些长连接，
+       `server.close()` 会一直等到 socket 自己超时，脚本表现为「卡住不退出」。 */
+    try { if (server.closeAllConnections) server.closeAllConnections(); } catch (e) { /* ignore */ }
+    await new Promise(r => { try { server.close(r); } catch (e) { r(); } });
+    try { fs.rmSync(TMPROOT, { recursive: true, force: true }); } catch (e) { /* ignore */ }
+  }
+
+  console.log('');
+  console.log('  \u2500\u2500 汇总 \u2500\u2500  通过 ' + pass + ' \u00b7 失败 ' + fail);
+  if (fails.length) console.log('  失败项：\n    - ' + fails.join('\n    - '));
+  console.log('');
+  /* ⚠️ 必须显式退出：服务端侧有「活档兜底」之类的定时器，事件循环不会自然排空，
+     进程会赖着不走 —— 回归入口就会把它判成「120s 超时」。测试脚本直接退即可。 */
+  process.exit(fail ? 1 : 0);
+}
+
+main().catch(e => {
+  console.error('\n  \u2605 perf-step-check 崩了：' + (e && e.stack || e) + '\n');
+  process.exitCode = 1;
+});

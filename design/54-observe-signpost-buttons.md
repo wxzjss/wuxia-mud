@@ -69,11 +69,15 @@
 - 另有 **27 处动作是拼出来的**（`data-cmd="' + esc(it.cmd) + '"` 这类），静态判不了，
   由运行时的 `ui-bind-check` 用 DOM stub 真跑一遍守着。
 
-**审计里唯一"抓错"的一条**：设置面板的三个开关（`set-anim` / `set-auto` / `set-narrow`）
+**审计里唯一"抓错"的一条**：设置面板的开关（`set-anim` / `set-autosave` / `set-narrow` / `set-mapnames`，现共四个）
 被报成"没绑事件"。跑去看，人家绑得好好的 —— 只是用**拼出来的 id**绑的
-（`['anim','auto','narrow'].forEach(k => $('set-' + k).onclick = …)`）。
+（`['anim','autosave','narrow','mapnames'].forEach(k => $('set-' + k).onclick = …)`）。
 扫描器已加前缀识别。**这是测试自己的坑，不是产品的 bug** —— 但也说明这类审计的价值：
 它逼着人把每个按钮真去看一遍。
+
+> ⚠️ 2026-10-13 更正：自动存档开关在修复"开关点了没反应"的 bug 时更名，
+> id `set-auto` → `set-autosave`、键 `'auto'` → `'autosave'`，并新增第四个开关 `set-mapnames`。
+> 上文已按现状改写（本文档当时引用的是旧 id/旧键）。守卫见 `tools/ui-bind-check.js` §8。
 
 ## §4 测试
 

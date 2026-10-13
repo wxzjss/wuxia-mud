@@ -118,9 +118,26 @@ function ok(name, cond, extra) {
         esc, MAP_CELL, MAP_NODE, MAP_PAD, DIR_CN, DIR_OFF);
     const wh = worldBuilt.mapHtml(v);
     ok('★ 跨区兜底长折线已下线（主人 10-12：删掉所有虚线）', wh.indexOf('edge-bridge') < 0);
-    ok('★ 走廊连线全是虚线（主人 10-12：连线换成虚线形式）',
-      /\.map-edges\s+\.edge\s*\{[^}]*stroke-dasharray/.test(
-        fs.readFileSync(path.join(ROOT, 'game/src/renderer/css/main.css'), 'utf8')));
+    /* 🔴 P0-C C-2 口径改动（甄塑之《墨拓残卷》§3.1 / §4.3 第 11 条）：
+       旧契约是「**所有**走廊连线都是虚线」（主人 2026-10-12 那句「连线换成虚线形式」）。
+       C-2 把虚/实**重新分工**：
+         · L2 走过的路 = **实线**（金褐 2.2px）
+         · L3 通往未知的 = **虚线**（极淡 1.4px）
+       为什么必须改：虚/实现在是「走过的 / 没走过的」的**第二重编码**，
+       它不依赖颜色 —— 灰度截图下也能数出来（spec §3.1「颜色不得成为唯一信息载体」）。
+       旧断言要求 `.edge` 基类上挂 dasharray，那会把两档**一起拉虚**，分工就没了。
+       ⇒ 新断言：dasharray 挂在**未知**那一档（`.edge-dim`）上，且**走过**那档没有。 */
+    {
+      const cssNow = fs.readFileSync(path.join(ROOT, 'game/src/renderer/css/main.css'), 'utf8');
+      const base = (cssNow.match(/\.map-edges\s+\.edge\s*\{[^}]*\}/) || [''])[0];
+      const dimR = (cssNow.match(/\.map-edges\s+\.edge-dim\s*\{[^}]*\}/) || [''])[0];
+      const knownR = (cssNow.match(/\.map-edges\s+\.edge-known\s*\{[^}]*\}/) || [''])[0];
+      ok('★ L2 走过的连线是**实线**（C-2：虚/实 = 走过/没走过的第二重编码）',
+        !/stroke-dasharray/.test(knownR) && !/stroke-dasharray/.test(base),
+        knownR.replace(/\s+/g, ' ').slice(0, 80));
+      ok('★ L3 通往未知的连线是虚线', /stroke-dasharray/.test(dimR),
+        dimR.replace(/\s+/g, ' ').slice(0, 80));
+    }
     /* 跨区边仍然要连上 —— 靠的是「布局咬合后本来就相邻」（走走廊那一段），
        不是靠兜底折线。所以这里改成查「跨区边真的被走廊画到了」：
        世界地图模式下渲染出的 path 里必须有 M/L 段（= 有走廊）。 */
@@ -175,9 +192,12 @@ function ok(name, cond, extra) {
   ok('★ 画布不再包含框外那圈空地块（严格小于后端撑大的 box）',
     tw <= cb.w && th <= cb.h, '实际 ' + tw + 'x' + th + ' vs 后端框 ' + cb.w + 'x' + cb.h);
   const shownNodes = (mh.match(/class="map-node/g) || []).length;
-  const scopeRooms = m.rooms.filter(r => r.region === curRoom.region).length;
-  ok('region 模式只渲染本区域房间', shownNodes === scopeRooms,
-    '渲染 ' + shownNodes + ' / 本区域 ' + scopeRooms);
+  const curZ = (m.rooms.find(r => r.current) || {}).z || 0;
+  /* ★ 2026-10-13 口径改动：区域地图只画玩家所在那一层（z）——
+     所以要核的是「渲染格数 == 本区**同层**房间数」，外区/异层都不该混进来。 */
+  const scopeRooms = m.rooms.filter(r => r.region === curRoom.region && (r.z || 0) === curZ).length;
+  ok('region 模式只渲染本区域同层房间', shownNodes === scopeRooms,
+    '渲染 ' + shownNodes + ' / 本区域同层 ' + scopeRooms + '（z=' + curZ + '）');
   ok('region 模式只画本区域底色块', (mh.match(/map-region-box/g) || []).length === 1,
     '底色块 ' + (mh.match(/map-region-box/g) || []).length);
   ok('画布远小于全图（不会一打开就看老远）',
@@ -186,7 +206,14 @@ function ok(name, cond, extra) {
 
   /* —— 连续大地图断言（本轮修复「被分割成很多房间」）—— */
   console.log('\n── 连续大地图 ──');
-  ok('有整张网格底纸', mh.includes('map-grid-bg'));
+  /* 🔴 P0-C C-2（spec §4.3 第 1 条）：`.map-grid-bg` 改名 **`.map-paper-grain`**。
+     两个原因，同一个根因：① 类名叫 grid 会诱导后来者去画网格；
+     ② 它内联的 `background-size` 等于格距 ⇒ 帘纹间距 == 格距 ⇒ **那不是帘纹，是网格线**，
+        直接违反「不许坐标 / 网格 / 缩尺」这条硬约束（spec V-6）。
+     ⇒ 断言跟着改名，并**顺手加一条反向断言**：底纸层不许再内联格距。 */
+  ok('有整张底纸（帘纹）', mh.includes('map-paper-grain'));
+  ok('★ 底纸层不再内联格距（内联 background-size == 格距 就是网格线）',
+    !/map-paper-grain[^>]*background-size/.test(mh));
   ok('走廊用 path 批量画', mh.includes('<path d=') && mh.includes('edge-dim'));
   ok('格子缩小到 26px', MAP_NODE === 26 && MAP_CELL === 30, 'cell=' + MAP_CELL + ' node=' + MAP_NODE);
   const gap = MAP_CELL - MAP_NODE;
@@ -205,8 +232,12 @@ function ok(name, cond, extra) {
      「把玩家当前所在地块的**红色**显示形式换成**黄色**显示形式」。
      ⇒ 「一步可达」的金字（.near）整套下线；「你在这里」从红改黄。
      现在地块状态只剩三种：你在这里（黄）/ 去过（墨）/ 没去过（淡墨）。 */
+  /* 🔴 P0-C C-2：色值从字面的 `var(--gold)` 换成 spec §4.1 定义的 `--map-here-name`
+     （它在 `:root` 里的值**就是** `var(--gold)`），语义一字未改，只是外面套了层变量名。
+     ⇒ 断言改成认这个变量名。⚠️ 别把这条放宽成「只要有 color 就行」——
+        它守的是「你在这里必须用**金**色」，换成别的色就是推翻主人 10-12 的裁决。 */
   ok('★ 你在这里 = 黄字加粗（主人 10-12 从红改黄）',
-    /\.map-node\.here\s+\.mn-name\s*\{[^}]*color:\s*var\(--gold\)/.test(cssNow));
+    /\.map-node\.here\s+\.mn-name\s*\{[^}]*color:\s*var\(--map-here-name\)/.test(cssNow));
   ok('★ 「一步可达」的金字与可点整套下线（.near 的样式规则已删）',
     !/\.map-node\.near\s*\{/.test(cssNow));
   ok('★ 地块底色框/斜纹那套仍然没有（老契约不变）',

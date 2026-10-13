@@ -4,89 +4,148 @@
       "monastic": {
         "name": "山门弃婴",
         "desc": "你生在寺门口，被知客僧捡回去，扫了十六年院子。经念得比拳脚熟，规矩也比你大。",
-        "attr": { "定力": 4, "根骨": 2 },
+        "attr": {
+          "定力": 4,
+          "根骨": 2
+        },
         "money": 10,
-        "items": ["buddha_bead", "cloth_robe"],
-        "skills": ["basic_fist"]
+        "items": [
+          "buddha_bead",
+          "cloth_robe"
+        ],
+        "skills": [
+          "basic_fist"
+        ]
       },
       "taoist_ward": {
         "name": "道观道童",
         "desc": "你在山上的小道观长大，替师父看丹炉、画符、认药性。师父走的那年，有句话没说完。",
-        "attr": { "悟性": 3, "定力": 2 },
+        "attr": {
+          "悟性": 3,
+          "定力": 2
+        },
         "money": 30,
-        "items": ["rune_paper", "cloth_robe"]
+        "items": [
+          "rune_paper",
+          "cloth_robe"
+        ]
       },
       "tomb_keep": {
         "name": "守墓人之后",
         "desc": "你家三代替人守一座无名坟。坟里埋的是谁，爹没说，你也没敢问。",
-        "attr": { "身法": 3, "定力": 2 },
+        "attr": {
+          "身法": 3,
+          "定力": 2
+        },
         "money": 20,
-        "items": ["tattered_cloak", "butcher_knife"]
+        "items": [
+          "tattered_cloak",
+          "butcher_knife"
+        ]
       },
       "deserter_child": {
         "name": "逃卒之后",
         "desc": "你爹从军伍里逃出来，一路带着你往南跑，最后死在半道上，刀留给了你。",
-        "attr": { "力量": 3, "根骨": 2 },
+        "attr": {
+          "力量": 3,
+          "根骨": 2
+        },
         "money": 40,
-        "items": ["steel_blade", "cloth_robe"],
-        "skills": ["basic_blade"]
+        "items": [
+          "steel_blade",
+          "cloth_robe"
+        ],
+        "skills": [
+          "basic_blade"
+        ]
       },
       "grudge_orphan": {
         "name": "血仇遗孤",
         "desc": "你七岁那年，一家人都死在仇家手里。你记得那张脸，也记得自己当时缩在灶膛里没敢出声。",
-        "attr": { "身法": 2, "力量": 2, "定力": 1 },
+        "attr": {
+          "身法": 2,
+          "力量": 2,
+          "定力": 1
+        },
         "money": 15,
-        "items": ["butcher_knife", "tattered_cloak"],
-        "traits": ["hardened"]
+        "items": [
+          "butcher_knife",
+          "tattered_cloak"
+        ],
+        "traits": [
+          "hardened"
+        ]
       },
       "border_drift": {
         "name": "边地流人",
         "desc": "你打关外一路南来，官话讲得半生不熟。边地活不下去的人，总得找个能吃饭的地方。",
-        "attr": { "根骨": 3, "力量": 2 },
+        "attr": {
+          "根骨": 3,
+          "力量": 2
+        },
         "money": 25,
-        "items": ["iron_blade", "tattered_cloak"]
+        "items": [
+          "iron_blade",
+          "tattered_cloak"
+        ]
       },
       "nun_ward": {
         "name": "庵堂孤儿",
         "desc": "你被丢在庵堂门槛上，师太养你到十五岁。她说庵里留不住你，山外有你该去的地方。",
-        "attr": { "悟性": 3, "身法": 2 },
+        "attr": {
+          "悟性": 3,
+          "身法": 2
+        },
         "money": 25,
-        "items": ["cloth_robe", "buddha_bead"]
+        "items": [
+          "cloth_robe",
+          "buddha_bead"
+        ]
       },
       "brothel_sold": {
         "id": "brothel_sold",
         "name": "楼里新来的",
         "gender": "female",
-        "desc": "你是被人牙子卖进醉春楼的。契已经画了押，牌子还没挂——鸨母要先教规矩，再放你见客。",
-        "attr": { "悟性": 2, "定力": 2, "福缘": 2 },
+        "desc": "你是被人牙子卖进醉春楼的。契已经画了押，牌子还没挂。鸨母要先教规矩，再放你见客。",
+        "attr": {
+          "悟性": 2,
+          "定力": 2,
+          "福缘": 2
+        },
         "money": 0,
-        "items": ["brothel_contract"],
+        "items": [
+          "brothel_contract"
+        ],
         "skills": []
       }
     }
   },
-
   "items": {
     "brothel_contract": {
       "id": "brothel_contract",
       "name": "卖身契",
       "type": "misc",
       "value": 0,
-      "tags": ["quest", "letter"],
+      "tags": [
+        "quest",
+        "letter"
+      ],
       "quality": "common",
-      "desc": "一张写了字的契纸，边角被摩挲得发毛。上头是你自己的名字和指印——按下去那天，你没看清写的是什么。"
+      "desc": "一张写了字的契纸，边角被摩挲得发毛。上头是你自己的名字和指印。按下去那天，你没看清写的是什么。"
     },
     "letter_intro": {
       "id": "letter_intro",
       "name": "引荐信",
       "type": "misc",
       "value": 0,
-      "tags": ["quest", "letter"],
+      "tags": [
+        "quest",
+        "letter"
+      ],
       "quality": "common",
       "desc": "一封封了口的旧信，封皮上没写字，按着个指印。老汉说，递到山门上，自有人认得这个指印。"
     }
   },
-
   "npcs": {
     "guide_teaman": {
       "id": "guide_teaman",
@@ -106,10 +165,16 @@
       "hostile": false,
       "noWander": true,
       "personality": "lengmo",
-      "likes": ["tea", "food"],
+      "likes": [
+        "tea",
+        "food"
+      ],
       "favorBase": 1,
       "favorInit": 4,
-      "carry": { "money": 30, "items": [] },
+      "carry": {
+        "money": 30,
+        "items": []
+      },
       "talk": [
         "茶两文一碗。没钱也行，坐会儿。",
         "这条道上走过去的人，十个有九个是去求门路的。",

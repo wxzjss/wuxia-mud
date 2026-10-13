@@ -106,3 +106,46 @@
   与 `S.spec.skills[i].effects.push(...)`），硬套 `xx.N.field` 会假红。对表要**认多种入口形态**。
 - **`_test-save-dir.js` 不能删**：它是 20+ 个测试共享的工具，清理临时文件时手滑删过，
   得 `git checkout` 恢复。`tools/_*` 前缀不代表都能删，**删前先 grep 谁在 require**。
+
+## 七、附录：modloader 损坏 mod 报错路径实测（2026-10-13 · 寇豆码，只测不修）
+
+主理人问：mod 目录里混进一个 mod.json 是坏 JSON 的 mod，现在是什么行为——静默吞、报错、还是跳过？
+本节是实测记录（脚本 `.livetest/dbg-modloader-broken.js`，10 通过 / 0 失败；**只测，没改任何产品代码**）。
+
+### 实测结论
+
+**不是静默吞，也不是 crash——是「标记 + 过滤 + 三条可见路径」，坏 mod 不进世界但玩家看得到：**
+
+1. **加载器层**（`game/src/core/modloader.js:124`）：`readModDir()` 解析 `mod.json` 失败时 catch，
+   返回 `{ id, name: '目录名（解析失败）', dir, broken: true, error: 具体报错, enabled: false }`。
+   **error 里带原始 JSON 解析报错**（实测：`Expected double-quoted property name in JSON at position 36…`）。
+2. **生效层**（modloader.js:250 / 273）：启用集与加载顺序都按 `m.enabled && !m.broken` 过滤，
+   坏 mod **一条内容都不会进世界**，游戏照常运行——不会拖垮 boot。
+3. **玩家可见路径一（MOD 管理界面）**：坏 mod 仍在 `scan()` 返回列表里（`mods` 原样发给前端），
+   玩家在 MOD 管理里能看到一个名字叫「`xxx（解析失败）`」的条目。⚠️ 附注：broken mod `enabled:false`，
+   列表里它显示为未启用状态——玩家看得到它存在，但**点不出它为什么坏**（error 字段前端是否展示未核）。
+4. **玩家可见路径二（boot 日志）**（`game/src/core/world.js:353` `reportBrokenMods()`）：
+   boot / reload 时对每个 mod 目录重扫一遍，把 broken mod 报成
+   `【Mod 加载失败 · 来自 mods/xxx/mod.json】元数据解析失败：<原因>…这个 Mod 已跳过…`
+   走 `modLog.push({level:'error'})` + `console.error('[dataload] …')`。
+   注释里明说这是「第三种不报错就是不生效」的补报（前两种在加载层）。
+
+### 实测断言清单（dbg-modloader-broken.js）
+
+| # | 断言 | 结果 |
+|---|---|---|
+| 1 | broken mod 出现在 `scan()` 返回里 | ✓ |
+| 2 | `broken === true` / `enabled === false` | ✓ |
+| 3 | `name` 含「（解析失败）」 | ✓ |
+| 4 | `error` 有具体 JSON 报错文案 | ✓ |
+| 5 | 好 mod 同目录不受牵连 | ✓ |
+| 6 | 启用集过滤（`enabled && !broken`）把坏 mod 排除 | ✓ |
+| 7 | `require('./modloader').ModLoader` 是构造函数（reportBrokenMods 的取法成立，含 world.js:354 注释里那个「不是构造函数」的坑已防） | ✓ |
+| 8 | 重扫仍能找到 broken ⇒ reportBrokenMods 会报出 | ✓ |
+
+### 判定与遗留
+
+- **现状判定：合格，不需要修。** 坏 mod 不进世界、不拖垮 boot、两处可见（列表 + boot 日志）。
+- **遗留（不立项，记录在案）**：MOD 管理列表里坏 mod 的 `error` 具体原因前端是否展示未核——
+  如果玩家只看到「（解析失败）」四个字而不知道去翻 boot 日志，体验上还差半口气。
+  属于前端展示项，与「报错路径本身」无关，故只测不修。

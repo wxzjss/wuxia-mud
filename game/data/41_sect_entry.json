@@ -1,0 +1,144 @@
+{
+  "_note": [
+    "104 · 门派山门入口（design/71 §五 第①步）",
+    "给 43 个门派补 `entry` 字段，指向**自己真实存在的山门房**。",
+    "用途：① 「飞往」落到 region.entry 时，门派 case 应该落在山门；",
+    "      ② 守卫守哪间房，与飞行飞到哪间房，用**同一个来源**（否则守卫守 A 门、你飞到 B 门）。",
+    "为什么单开一份：30_sects.json 是门派主数据（武学/职级/门槛），",
+    "山门选址属于「世界观摆放」，与 73_sects_place.json 同类，单独一份便于按地图改动。",
+    "命名规律：正道大派用 <id>_shanmen / <id>_shanxia，中小门派用 <id>_gate；",
+    "丐帮/大理/苗疆/桃花岛/古墓/星宿/血刀/侠客岛这 8 家没有独立的「山门」房，",
+    "它们的门户就是自家主庭/圣堂/渡口/墓道，那才是玩家真正踏进这家门的第一步。"
+  ],
+  "sects": {
+    "huashan": {
+      "entry": "huashan_shanxia"
+    },
+    "shaolin": {
+      "entry": "shaolin_shanmen"
+    },
+    "wudang": {
+      "entry": "wudang_shanmen"
+    },
+    "emei": {
+      "entry": "emei_shanmen"
+    },
+    "gaibang": {
+      "entry": "gaibang_po_miao"
+    },
+    "mojiao": {
+      "entry": "mojiao_shanmen"
+    },
+    "dali": {
+      "entry": "dali_wangfu"
+    },
+    "tangmen": {
+      "entry": "tangmen_gate"
+    },
+    "miaojiang": {
+      "entry": "miaojiang_sheng"
+    },
+    "taohua": {
+      "entry": "taohuadao_dock"
+    },
+    "gumu": {
+      "entry": "gumu_mu"
+    },
+    "xingxiu": {
+      "entry": "xiyu_oasis"
+    },
+    "xuedao": {
+      "entry": "beijiang_xuedao"
+    },
+    "xiake": {
+      "entry": "xiake_dukou"
+    },
+    "taishan": {
+      "entry": "taishan_gate"
+    },
+    "hengshan": {
+      "entry": "hengshan_gate"
+    },
+    "hengshanN": {
+      "entry": "hengshanN_gate"
+    },
+    "qingcheng": {
+      "entry": "qingcheng_gate"
+    },
+    "kongtong": {
+      "entry": "kongtong_gate"
+    },
+    "kunlun": {
+      "entry": "kunlun_gate"
+    },
+    "diancang": {
+      "entry": "diancang_gate"
+    },
+    "tiezhang": {
+      "entry": "tiezhang_gate"
+    },
+    "hehuan": {
+      "entry": "hehuan_gate"
+    },
+    "jindao": {
+      "entry": "jindao_gate"
+    },
+    "wuhu": {
+      "entry": "wuhu_gate"
+    },
+    "feihu": {
+      "entry": "feihu_gate"
+    },
+    "zhenyuan": {
+      "entry": "zhenyuan_gate"
+    },
+    "shenquan": {
+      "entry": "shenquan_gate"
+    },
+    "tieqiang": {
+      "entry": "tieqiang_gate"
+    },
+    "kuaidao": {
+      "entry": "kuaidao_gate"
+    },
+    "luohan": {
+      "entry": "luohan_gate"
+    },
+    "wuyun": {
+      "entry": "wuyun_gate"
+    },
+    "dafeng": {
+      "entry": "dafeng_gate"
+    },
+    "huanghe": {
+      "entry": "huanghe_gate"
+    },
+    "taihu": {
+      "entry": "taihu_gate"
+    },
+    "poyang": {
+      "entry": "poyang_gate"
+    },
+    "qingzhu": {
+      "entry": "qingzhu_gate"
+    },
+    "jujing": {
+      "entry": "jujing_gate"
+    },
+    "jinlong": {
+      "entry": "jinlong_gate"
+    },
+    "wuliang": {
+      "entry": "wuliang_gate"
+    },
+    "funiu": {
+      "entry": "funiu_gate"
+    },
+    "baisheng": {
+      "entry": "baisheng_gate"
+    },
+    "baituo": {
+      "entry": "baituo_gate"
+    }
+  }
+}

@@ -1,0 +1,2419 @@
+{
+  "_note": [
+    "43 门派弟子支线（design/71 §四 缺口 2 的补法）。",
+    "每门派挑一名弟子挂一条「小差事」，不是主线级别的委托，就是同门里跑腿、抄书、收账。",
+    "目标房限本门自家房间（按 sectId 前缀筛），不许跨门派。",
+    "奖励只给 exp / pot / 好感，记名弟子办这种活，论不上名兵名药。",
+    "⚠ 依赖 43_sect_disciples.json 的 disciple_<sectId>_<i> 命名，弟子文件重生成后本文件要重跑。"
+  ],
+  "quests": {
+    "sqd_huashan": {
+      "id": "sqd_huashan",
+      "name": "华山派·还书",
+      "level": 66,
+      "type": "支线",
+      "giver": "disciple_huashan_4",
+      "desc": "成不忧（外门弟子）拦着你：「既是同门，帮我个忙。有人借走那卷《拳要》一直没还，你替我去要。」",
+      "stages": [
+        {
+          "desc": "华山派·藏经阁：有人借走那卷《拳要》一直没还，你替我去要。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "huashan_library",
+              "desc": "华山派·藏经阁",
+              "count": 1,
+              "var": "sqd_huashan_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_huashan_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向成不忧复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            852
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            355
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_huashan_4",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "成不忧书要回来了，缺了三页。他没追究，只说：「下回我亲自去。」"
+        }
+      ]
+    },
+    "sqd_shaolin": {
+      "id": "sqd_shaolin",
+      "name": "少林派·抄经",
+      "level": 66,
+      "type": "支线",
+      "giver": "disciple_shaolin_4",
+      "desc": "玄苦（沙弥）拦着你：「既是同门，帮我个忙。经卷要补抄，缺的那几页你补上。」",
+      "stages": [
+        {
+          "desc": "少林派·藏经阁：经卷要补抄，缺的那几页你补上。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "shaolin_library",
+              "desc": "少林派·藏经阁",
+              "count": 1,
+              "var": "sqd_shaolin_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_shaolin_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向玄苦复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            852
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            355
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_shaolin_4",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "玄苦你把补好的经卷交回去，他翻开对了一眼折角的地方。"
+        }
+      ]
+    },
+    "sqd_wudang": {
+      "id": "sqd_wudang",
+      "name": "武当派·抄经",
+      "level": 66,
+      "type": "支线",
+      "giver": "disciple_wudang_4",
+      "desc": "宋青书（记名弟子）拦着你：「既是同门，帮我个忙。经卷要补抄，缺的那几页你补上。」",
+      "stages": [
+        {
+          "desc": "武当派·藏经阁：经卷要补抄，缺的那几页你补上。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "wudang_library",
+              "desc": "武当派·藏经阁",
+              "count": 1,
+              "var": "sqd_wudang_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_wudang_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向宋青书复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            852
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            355
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_wudang_4",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "宋青书你把补好的经卷交回去，他翻开对了一眼折角的地方。"
+        }
+      ]
+    },
+    "sqd_emei": {
+      "id": "sqd_emei",
+      "name": "峨眉派·抄经",
+      "level": 66,
+      "type": "支线",
+      "giver": "disciple_emei_4",
+      "desc": "孤鸿子（记名弟子）拦着你：「既是同门，帮我个忙。经卷要补抄，缺的那几页你补上。」",
+      "stages": [
+        {
+          "desc": "峨眉派·藏经阁：经卷要补抄，缺的那几页你补上。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "emei_library",
+              "desc": "峨眉派·藏经阁",
+              "count": 1,
+              "var": "sqd_emei_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_emei_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向孤鸿子复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            852
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            355
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_emei_4",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "孤鸿子你把补好的经卷交回去，他翻开对了一眼折角的地方。"
+        }
+      ]
+    },
+    "sqd_gaibang": {
+      "id": "sqd_gaibang",
+      "name": "丐帮·洗伤",
+      "level": 66,
+      "type": "支线",
+      "giver": "disciple_gaibang_4",
+      "desc": "陈孤雁（一袋弟子）拦着你：「既是同门，帮我个忙。山泉边有几个弟兄伤了，你去给上药。」",
+      "stages": [
+        {
+          "desc": "丐帮·山泉：山泉边有几个弟兄伤了，你去给上药。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "gaibang_path5",
+              "desc": "丐帮·山泉",
+              "count": 1,
+              "var": "sqd_gaibang_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_gaibang_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向陈孤雁复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            852
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            355
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_gaibang_4",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "陈孤雁上完药他没留你，只在你背后说了句「辛苦了」。"
+        }
+      ]
+    },
+    "sqd_mojiao": {
+      "id": "sqd_mojiao",
+      "name": "日月神教·跑腿",
+      "level": 62,
+      "type": "支线",
+      "giver": "disciple_mojiao_4",
+      "desc": "黄伯流（教众）拦着你：「既是同门，帮我个忙。去库房把东西取来，取的时候别点灯。」",
+      "stages": [
+        {
+          "desc": "日月神教·藏宝阁：去库房把东西取来，取的时候别点灯。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "mojiao_vault",
+              "desc": "日月神教·藏宝阁",
+              "count": 1,
+              "var": "sqd_mojiao_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_mojiao_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向黄伯流复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            804
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            335
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_mojiao_4",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "黄伯流东西交到他手里，他掂了掂，扔给你一个荷包。"
+        }
+      ]
+    },
+    "sqd_dali": {
+      "id": "sqd_dali",
+      "name": "大理段氏·抄经",
+      "level": 66,
+      "type": "支线",
+      "giver": "disciple_dali_4",
+      "desc": "古笃诚（侍卫）拦着你：「既是同门，帮我个忙。把《拳要》从头抄一卷，师父要逐字对。」",
+      "stages": [
+        {
+          "desc": "大理段氏·藏经阁：把《拳要》从头抄一卷，师父要逐字对。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "dali_library",
+              "desc": "大理段氏·藏经阁",
+              "count": 1,
+              "var": "sqd_dali_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_dali_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向古笃诚复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            852
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            355
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_dali_4",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "古笃诚师父看完点头，说你字比去年稳了。"
+        }
+      ]
+    },
+    "sqd_tangmen": {
+      "id": "sqd_tangmen",
+      "name": "唐门·抄经",
+      "level": 46,
+      "type": "支线",
+      "giver": "disciple_tangmen_2",
+      "desc": "吕四娘（外门）拦着你：「既是同门，帮我个忙。把《拳要》从头抄一卷，师父要逐字对。」",
+      "stages": [
+        {
+          "desc": "唐门·藏经阁：把《拳要》从头抄一卷，师父要逐字对。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "tangmen_library",
+              "desc": "唐门·藏经阁",
+              "count": 1,
+              "var": "sqd_tangmen_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_tangmen_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向吕四娘复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            612
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            255
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_tangmen_2",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "吕四娘师父看完点头，说你字比去年稳了。"
+        }
+      ]
+    },
+    "sqd_miaojiang": {
+      "id": "sqd_miaojiang",
+      "name": "苗疆五毒教·跑腿",
+      "level": 46,
+      "type": "支线",
+      "giver": "disciple_miaojiang_2",
+      "desc": "蓝玉苗（教众）拦着你：「既是同门，帮我个忙。去库房把东西取来，取的时候别点灯。」",
+      "stages": [
+        {
+          "desc": "苗疆五毒教·藏宝阁：去库房把东西取来，取的时候别点灯。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "miaojiang_vault",
+              "desc": "苗疆五毒教·藏宝阁",
+              "count": 1,
+              "var": "sqd_miaojiang_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_miaojiang_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向蓝玉苗复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            612
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            255
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_miaojiang_2",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "蓝玉苗东西交到他手里，他掂了掂，扔给你一个荷包。"
+        }
+      ]
+    },
+    "sqd_taohua": {
+      "id": "sqd_taohua",
+      "name": "桃花岛·清点库房",
+      "level": 46,
+      "type": "支线",
+      "giver": "disciple_taohua_2",
+      "desc": "曲灵风（记名弟子）拦着你：「既是同门，帮我个忙。库房那几箱东西今年没点过，你去数一遍，缺了报我。」",
+      "stages": [
+        {
+          "desc": "桃花岛·藏宝阁：库房那几箱东西今年没点过，你去数一遍，缺了报我。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "taohua_vault",
+              "desc": "桃花岛·藏宝阁",
+              "count": 1,
+              "var": "sqd_taohua_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_taohua_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向曲灵风复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            612
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            255
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_taohua_2",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "曲灵风你报上来的数他记在册子末尾，末尾那一行他看了两遍。"
+        }
+      ]
+    },
+    "sqd_gumu": {
+      "id": "sqd_gumu",
+      "name": "古墓派·抄经",
+      "level": 46,
+      "type": "支线",
+      "giver": "disciple_gumu_2",
+      "desc": "赵志敬（弟子）拦着你：「既是同门，帮我个忙。经卷要补抄，缺的那几页你补上。」",
+      "stages": [
+        {
+          "desc": "古墓派·藏经阁：经卷要补抄，缺的那几页你补上。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "gumu_library",
+              "desc": "古墓派·藏经阁",
+              "count": 1,
+              "var": "sqd_gumu_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_gumu_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向赵志敬复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            612
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            255
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_gumu_2",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "赵志敬你把补好的经卷交回去，他翻开对了一眼折角的地方。"
+        }
+      ]
+    },
+    "sqd_xingxiu": {
+      "id": "sqd_xingxiu",
+      "name": "星宿派·跑腿",
+      "level": 46,
+      "type": "支线",
+      "giver": "disciple_xingxiu_2",
+      "desc": "范百龄（弟子）拦着你：「既是同门，帮我个忙。去库房把东西取来，取的时候别点灯。」",
+      "stages": [
+        {
+          "desc": "星宿派·藏宝阁：去库房把东西取来，取的时候别点灯。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "xingxiu_vault",
+              "desc": "星宿派·藏宝阁",
+              "count": 1,
+              "var": "sqd_xingxiu_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_xingxiu_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向范百龄复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            612
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            255
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_xingxiu_2",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "范百龄东西交到他手里，他掂了掂，扔给你一个荷包。"
+        }
+      ]
+    },
+    "sqd_xuedao": {
+      "id": "sqd_xuedao",
+      "name": "血刀门·跑腿",
+      "level": 46,
+      "type": "支线",
+      "giver": "disciple_xuedao_2",
+      "desc": "水岱（门下）拦着你：「既是同门，帮我个忙。去库房把东西取来，取的时候别点灯。」",
+      "stages": [
+        {
+          "desc": "血刀门·藏宝阁：去库房把东西取来，取的时候别点灯。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "xuedao_vault",
+              "desc": "血刀门·藏宝阁",
+              "count": 1,
+              "var": "sqd_xuedao_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_xuedao_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向水岱复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            612
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            255
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_xuedao_2",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "水岱东西交到他手里，他掂了掂，扔给你一个荷包。"
+        }
+      ]
+    },
+    "sqd_xiake": {
+      "id": "sqd_xiake",
+      "name": "侠客岛·磨石",
+      "level": 38,
+      "type": "支线",
+      "giver": "disciple_xiake_0",
+      "desc": "周颠（岛民）拦着你：「既是同门，帮我个忙。石室里的碑文要拓一份，磨墨研好等我回来。」",
+      "stages": [
+        {
+          "desc": "侠客岛·石室：石室里的碑文要拓一份，磨墨研好等我回来。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "xiake_dong",
+              "desc": "侠客岛·石室",
+              "count": 1,
+              "var": "sqd_xiake_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_xiake_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向周颠复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            516
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            215
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_xiake_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "周颠你拓的那份字口清楚。他看了两行，抬头问：「谁教你的刀法？」"
+        }
+      ]
+    },
+    "sqd_taishan": {
+      "id": "sqd_taishan",
+      "name": "泰山派·挑水",
+      "level": 46,
+      "type": "支线",
+      "giver": "disciple_taishan_2",
+      "desc": "沈无咎（外门弟子）拦着你：「既是同门，帮我个忙。后山那眼泉眼的水缸空了，挑满。」",
+      "stages": [
+        {
+          "desc": "泰山派·演武场：后山那眼泉眼的水缸空了，挑满。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "taishan_hall",
+              "desc": "taishan_hall",
+              "count": 1,
+              "var": "sqd_taishan_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_taishan_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向沈无咎复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            612
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            255
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_taishan_2",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "沈无咎缸满了。他舀了一瓢尝了尝：「行了，下去歇着吧。」"
+        }
+      ]
+    },
+    "sqd_hengshan": {
+      "id": "sqd_hengshan",
+      "name": "衡山派·换灯",
+      "level": 46,
+      "type": "支线",
+      "giver": "disciple_hengshan_2",
+      "desc": "谢知秋（外门弟子）拦着你：「既是同门，帮我个忙。殿上长明灯该换油了，你换两盏。」",
+      "stages": [
+        {
+          "desc": "衡山派·演武场：殿上长明灯该换油了，你换两盏。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "hengshan_hall",
+              "desc": "hengshan_hall",
+              "count": 1,
+              "var": "sqd_hengshan_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_hengshan_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向谢知秋复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            612
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            255
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_hengshan_2",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "谢知秋换完他过来看了一眼灯芯的长短，转身又走了。"
+        }
+      ]
+    },
+    "sqd_hengshanN": {
+      "id": "sqd_hengshanN",
+      "name": "恒山派·换灯",
+      "level": 46,
+      "type": "支线",
+      "giver": "disciple_hengshanN_2",
+      "desc": "孟子墨（记名弟子）拦着你：「既是同门，帮我个忙。殿上长明灯该换油了，你换两盏。」",
+      "stages": [
+        {
+          "desc": "恒山派·演武场：殿上长明灯该换油了，你换两盏。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "hengshanN_hall",
+              "desc": "hengshanN_hall",
+              "count": 1,
+              "var": "sqd_hengshanN_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_hengshanN_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向孟子墨复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            612
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            255
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_hengshanN_2",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "孟子墨换完他过来看了一眼灯芯的长短，转身又走了。"
+        }
+      ]
+    },
+    "sqd_qingcheng": {
+      "id": "sqd_qingcheng",
+      "name": "青城派·挑水",
+      "level": 46,
+      "type": "支线",
+      "giver": "disciple_qingcheng_2",
+      "desc": "赵伯昭（外门弟子）拦着你：「既是同门，帮我个忙。后山那眼泉眼的水缸空了，挑满。」",
+      "stages": [
+        {
+          "desc": "青城派·演武场：后山那眼泉眼的水缸空了，挑满。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "qingcheng_hall",
+              "desc": "qingcheng_hall",
+              "count": 1,
+              "var": "sqd_qingcheng_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_qingcheng_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向赵伯昭复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            612
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            255
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_qingcheng_2",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "赵伯昭缸满了。他舀了一瓢尝了尝：「行了，下去歇着吧。」"
+        }
+      ]
+    },
+    "sqd_kongtong": {
+      "id": "sqd_kongtong",
+      "name": "崆峒派·扫院",
+      "level": 46,
+      "type": "支线",
+      "giver": "disciple_kongtong_2",
+      "desc": "谢希言（外门弟子）拦着你：「既是同门，帮我个忙。院子里的落叶扫一扫，师父们午课要过去。」",
+      "stages": [
+        {
+          "desc": "崆峒派·演武场：院子里的落叶扫一扫，师父们午课要过去。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "kongtong_hall",
+              "desc": "kongtong_hall",
+              "count": 1,
+              "var": "sqd_kongtong_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_kongtong_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向谢希言复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            612
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            255
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_kongtong_2",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "谢希言扫完他自己在廊下站了一会儿，什么也没说。"
+        }
+      ]
+    },
+    "sqd_kunlun": {
+      "id": "sqd_kunlun",
+      "name": "昆仑派·扫院",
+      "level": 46,
+      "type": "支线",
+      "giver": "disciple_kunlun_2",
+      "desc": "赵思齐（外门弟子）拦着你：「既是同门，帮我个忙。院子里的落叶扫一扫，师父们午课要过去。」",
+      "stages": [
+        {
+          "desc": "昆仑派·演武场：院子里的落叶扫一扫，师父们午课要过去。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "kunlun_hall",
+              "desc": "kunlun_hall",
+              "count": 1,
+              "var": "sqd_kunlun_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_kunlun_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向赵思齐复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            612
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            255
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_kunlun_2",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "赵思齐扫完他自己在廊下站了一会儿，什么也没说。"
+        }
+      ]
+    },
+    "sqd_diancang": {
+      "id": "sqd_diancang",
+      "name": "点苍派·晒经",
+      "level": 46,
+      "type": "支线",
+      "giver": "disciple_diancang_2",
+      "desc": "梁敬之（外门弟子）拦着你：「既是同门，帮我个忙。雨快来了，把外面晾的经卷收进来。」",
+      "stages": [
+        {
+          "desc": "点苍派·藏经阁：雨快来了，把外面晾的经卷收进来。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "diancang_library",
+              "desc": "点苍派·藏经阁",
+              "count": 1,
+              "var": "sqd_diancang_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_diancang_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向梁敬之复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            612
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            255
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_diancang_2",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "梁敬之经卷没淋着。他在廊下看了一眼天，说：「算你赶得巧。」"
+        }
+      ]
+    },
+    "sqd_tiezhang": {
+      "id": "sqd_tiezhang",
+      "name": "铁掌帮·收账",
+      "level": 46,
+      "type": "支线",
+      "giver": "disciple_tiezhang_2",
+      "desc": "郑老三（帮众）拦着你：「既是同门，帮我个忙。山下那家欠着咱们的账，去问一声，问清了就回话，别动手。」",
+      "stages": [
+        {
+          "desc": "铁掌帮·演武场：山下那家欠着咱们的账，去问一声，问清了就回话，别动手。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "tiezhang_hall",
+              "desc": "tiezhang_hall",
+              "count": 1,
+              "var": "sqd_tiezhang_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_tiezhang_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向郑老三复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            612
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            255
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_tiezhang_2",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "郑老三账收回来了。他把钱往袖里一揣：「记你一功。」"
+        }
+      ]
+    },
+    "sqd_hehuan": {
+      "id": "sqd_hehuan",
+      "name": "合欢宗·埋东西",
+      "level": 46,
+      "type": "支线",
+      "giver": "disciple_hehuan_2",
+      "desc": "张罗刹（外门）拦着你：「既是同门，帮我个忙。山门外柳树底下有样东西，埋深些。」",
+      "stages": [
+        {
+          "desc": "合欢宗·山门：山门外柳树底下有样东西，埋深些。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "hehuan_gate",
+              "desc": "合欢宗·山门",
+              "count": 1,
+              "var": "sqd_hehuan_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_hehuan_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向张罗刹复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            612
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            255
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_hehuan_2",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "张罗刹埋完他拍掉你手上的土：「今天谁问起都说不知道。」"
+        }
+      ]
+    },
+    "sqd_jindao": {
+      "id": "sqd_jindao",
+      "name": "金刀门·清点库房",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_jindao_0",
+      "desc": "西朔（门徒）拦着你：「既是同门，帮我个忙。库房那几箱东西今年没点过，你去数一遍，缺了报我。」",
+      "stages": [
+        {
+          "desc": "金刀门·库房：库房那几箱东西今年没点过，你去数一遍，缺了报我。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "jindao_vault",
+              "desc": "金刀门·库房",
+              "count": 1,
+              "var": "sqd_jindao_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_jindao_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向西朔复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_jindao_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "西朔你报上来的数他记在册子末尾，末尾那一行他看了两遍。"
+        }
+      ]
+    },
+    "sqd_wuhu": {
+      "id": "sqd_wuhu",
+      "name": "五虎断门刀·送信",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_wuhu_0",
+      "desc": "独孤钧（门人）拦着你：「既是同门，帮我个忙。这封信送进去，别拆。」",
+      "stages": [
+        {
+          "desc": "五虎断门刀·演武场：这封信送进去，别拆。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "wuhu_hall",
+              "desc": "wuhu_hall",
+              "count": 1,
+              "var": "sqd_wuhu_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_wuhu_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向独孤钧复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_wuhu_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "独孤钧信交到人了，他回你一句「顺路就好」，你说不顺路，他也就不多问了。"
+        }
+      ]
+    },
+    "sqd_feihu": {
+      "id": "sqd_feihu",
+      "name": "飞虎镖局·收账",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_feihu_0",
+      "desc": "赵大有（趟子手）拦着你：「既是同门，帮我个忙。山下那家欠着咱们的账，去问一声，问清了就回话，别动手。」",
+      "stages": [
+        {
+          "desc": "飞虎镖局·演武场：山下那家欠着咱们的账，去问一声，问清了就回话，别动手。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "feihu_hall",
+              "desc": "feihu_hall",
+              "count": 1,
+              "var": "sqd_feihu_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_feihu_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向赵大有复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_feihu_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "赵大有账收回来了。他把钱往袖里一揣：「记你一功。」"
+        }
+      ]
+    },
+    "sqd_zhenyuan": {
+      "id": "sqd_zhenyuan",
+      "name": "镇远镖局·守夜",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_zhenyuan_0",
+      "desc": "雷满仓（趟子手）拦着你：「既是同门，帮我个忙。今晚你守后半夜，我这把老骨头撑不住了。」",
+      "stages": [
+        {
+          "desc": "镇远镖局·演武场：今晚你守后半夜，我这把老骨头撑不住了。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "zhenyuan_hall",
+              "desc": "zhenyuan_hall",
+              "count": 1,
+              "var": "sqd_zhenyuan_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_zhenyuan_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向雷满仓复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_zhenyuan_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "雷满仓天亮他来接班，往你手里塞了个馒头：「吃了再走。」"
+        }
+      ]
+    },
+    "sqd_shenquan": {
+      "id": "sqd_shenquan",
+      "name": "神拳门·清点库房",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_shenquan_0",
+      "desc": "独铸（门徒）拦着你：「既是同门，帮我个忙。库房那几箱东西今年没点过，你去数一遍，缺了报我。」",
+      "stages": [
+        {
+          "desc": "神拳门·库房：库房那几箱东西今年没点过，你去数一遍，缺了报我。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "shenquan_vault",
+              "desc": "神拳门·库房",
+              "count": 1,
+              "var": "sqd_shenquan_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_shenquan_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向独铸复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_shenquan_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "独铸你报上来的数他记在册子末尾，末尾那一行他看了两遍。"
+        }
+      ]
+    },
+    "sqd_tieqiang": {
+      "id": "sqd_tieqiang",
+      "name": "铁枪门·清点库房",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_tieqiang_0",
+      "desc": "南朔（门徒）拦着你：「既是同门，帮我个忙。库房那几箱东西今年没点过，你去数一遍，缺了报我。」",
+      "stages": [
+        {
+          "desc": "铁枪门·库房：库房那几箱东西今年没点过，你去数一遍，缺了报我。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "tieqiang_vault",
+              "desc": "铁枪门·库房",
+              "count": 1,
+              "var": "sqd_tieqiang_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_tieqiang_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向南朔复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_tieqiang_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "南朔你报上来的数他记在册子末尾，末尾那一行他看了两遍。"
+        }
+      ]
+    },
+    "sqd_kuaidao": {
+      "id": "sqd_kuaidao",
+      "name": "快刀门·清点库房",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_kuaidao_0",
+      "desc": "西门烈（门徒）拦着你：「既是同门，帮我个忙。库房那几箱东西今年没点过，你去数一遍，缺了报我。」",
+      "stages": [
+        {
+          "desc": "快刀门·库房：库房那几箱东西今年没点过，你去数一遍，缺了报我。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "kuaidao_vault",
+              "desc": "快刀门·库房",
+              "count": 1,
+              "var": "sqd_kuaidao_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_kuaidao_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向西门烈复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_kuaidao_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "西门烈你报上来的数他记在册子末尾，末尾那一行他看了两遍。"
+        }
+      ]
+    },
+    "sqd_luohan": {
+      "id": "sqd_luohan",
+      "name": "罗汉门·清点库房",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_luohan_0",
+      "desc": "石铁（门徒）拦着你：「既是同门，帮我个忙。库房那几箱东西今年没点过，你去数一遍，缺了报我。」",
+      "stages": [
+        {
+          "desc": "罗汉门·库房：库房那几箱东西今年没点过，你去数一遍，缺了报我。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "luohan_vault",
+              "desc": "罗汉门·库房",
+              "count": 1,
+              "var": "sqd_luohan_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_luohan_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向石铁复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_luohan_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "石铁你报上来的数他记在册子末尾，末尾那一行他看了两遍。"
+        }
+      ]
+    },
+    "sqd_wuyun": {
+      "id": "sqd_wuyun",
+      "name": "五云手温家·清点库房",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_wuyun_0",
+      "desc": "程敬之（外姓弟子）拦着你：「既是同门，帮我个忙。库房那几箱东西今年没点过，你去数一遍，缺了报我。」",
+      "stages": [
+        {
+          "desc": "五云手温家·库房：库房那几箱东西今年没点过，你去数一遍，缺了报我。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "wuyun_vault",
+              "desc": "五云手温家·库房",
+              "count": 1,
+              "var": "sqd_wuyun_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_wuyun_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向程敬之复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_wuyun_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "程敬之你报上来的数他记在册子末尾，末尾那一行他看了两遍。"
+        }
+      ]
+    },
+    "sqd_dafeng": {
+      "id": "sqd_dafeng",
+      "name": "大风云飞门·送信",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_dafeng_0",
+      "desc": "赵希言（门徒）拦着你：「既是同门，帮我个忙。这封信送进去，别拆。」",
+      "stages": [
+        {
+          "desc": "大风云飞门·演武场：这封信送进去，别拆。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "dafeng_hall",
+              "desc": "dafeng_hall",
+              "count": 1,
+              "var": "sqd_dafeng_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_dafeng_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向赵希言复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_dafeng_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "赵希言信交到人了，他回你一句「顺路就好」，你说不顺路，他也就不多问了。"
+        }
+      ]
+    },
+    "sqd_huanghe": {
+      "id": "sqd_huanghe",
+      "name": "黄河帮·修车",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_huanghe_0",
+      "desc": "孙金山（帮众）拦着你：「既是同门，帮我个忙。院里那辆车轴又歪了，你修修。」",
+      "stages": [
+        {
+          "desc": "黄河帮·演武场：院里那辆车轴又歪了，你修修。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "huanghe_hall",
+              "desc": "huanghe_hall",
+              "count": 1,
+              "var": "sqd_huanghe_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_huanghe_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向孙金山复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_huanghe_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "孙金山车修好了。他试推了两圈，回头看你一眼：「这个学得快。」"
+        }
+      ]
+    },
+    "sqd_taihu": {
+      "id": "sqd_taihu",
+      "name": "太湖帮·送信",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_taihu_0",
+      "desc": "郑大江（帮众）拦着你：「既是同门，帮我个忙。这封信送进去，别拆。」",
+      "stages": [
+        {
+          "desc": "太湖帮·演武场：这封信送进去，别拆。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "taihu_hall",
+              "desc": "taihu_hall",
+              "count": 1,
+              "var": "sqd_taihu_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_taihu_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向郑大江复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_taihu_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "郑大江信交上去了。他出来时顺手拍了拍你的肩。"
+        }
+      ]
+    },
+    "sqd_poyang": {
+      "id": "sqd_poyang",
+      "name": "鄱阳帮·送信",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_poyang_0",
+      "desc": "李得胜（帮众）拦着你：「既是同门，帮我个忙。这封信送进去，别拆。」",
+      "stages": [
+        {
+          "desc": "鄱阳帮·演武场：这封信送进去，别拆。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "poyang_hall",
+              "desc": "poyang_hall",
+              "count": 1,
+              "var": "sqd_poyang_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_poyang_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向李得胜复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_poyang_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "李得胜信交上去了。他出来时顺手拍了拍你的肩。"
+        }
+      ]
+    },
+    "sqd_qingzhu": {
+      "id": "sqd_qingzhu",
+      "name": "青竹帮·修车",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_qingzhu_0",
+      "desc": "钱老成（帮众）拦着你：「既是同门，帮我个忙。院里那辆车轴又歪了，你修修。」",
+      "stages": [
+        {
+          "desc": "青竹帮·演武场：院里那辆车轴又歪了，你修修。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "qingzhu_hall",
+              "desc": "qingzhu_hall",
+              "count": 1,
+              "var": "sqd_qingzhu_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_qingzhu_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向钱老成复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_qingzhu_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "钱老成车修好了。他试推了两圈，回头看你一眼：「这个学得快。」"
+        }
+      ]
+    },
+    "sqd_jujing": {
+      "id": "sqd_jujing",
+      "name": "巨鲸帮·修车",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_jujing_0",
+      "desc": "铁得胜（帮众）拦着你：「既是同门，帮我个忙。院里那辆车轴又歪了，你修修。」",
+      "stages": [
+        {
+          "desc": "巨鲸帮·演武场：院里那辆车轴又歪了，你修修。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "jujing_hall",
+              "desc": "jujing_hall",
+              "count": 1,
+              "var": "sqd_jujing_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_jujing_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向铁得胜复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_jujing_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "铁得胜车修好了。他试推了两圈，回头看你一眼：「这个学得快。」"
+        }
+      ]
+    },
+    "sqd_jinlong": {
+      "id": "sqd_jinlong",
+      "name": "金龙帮·修车",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_jinlong_0",
+      "desc": "冯大江（帮众）拦着你：「既是同门，帮我个忙。院里那辆车轴又歪了，你修修。」",
+      "stages": [
+        {
+          "desc": "金龙帮·演武场：院里那辆车轴又歪了，你修修。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "jinlong_hall",
+              "desc": "jinlong_hall",
+              "count": 1,
+              "var": "sqd_jinlong_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_jinlong_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向冯大江复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_jinlong_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "冯大江车修好了。他试推了两圈，回头看你一眼：「这个学得快。」"
+        }
+      ]
+    },
+    "sqd_wuliang": {
+      "id": "sqd_wuliang",
+      "name": "无量剑派·送信",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_wuliang_0",
+      "desc": "霍鸣（弟子）拦着你：「既是同门，帮我个忙。这封信送进去，别拆。」",
+      "stages": [
+        {
+          "desc": "无量剑派·演武场：这封信送进去，别拆。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "wuliang_hall",
+              "desc": "wuliang_hall",
+              "count": 1,
+              "var": "sqd_wuliang_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_wuliang_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向霍鸣复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_wuliang_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "霍鸣信交到人了，他回你一句「顺路就好」，你说不顺路，他也就不多问了。"
+        }
+      ]
+    },
+    "sqd_funiu": {
+      "id": "sqd_funiu",
+      "name": "伏牛派·清点库房",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_funiu_0",
+      "desc": "南宫朔（门徒）拦着你：「既是同门，帮我个忙。库房那几箱东西今年没点过，你去数一遍，缺了报我。」",
+      "stages": [
+        {
+          "desc": "伏牛派·库房：库房那几箱东西今年没点过，你去数一遍，缺了报我。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "funiu_vault",
+              "desc": "伏牛派·库房",
+              "count": 1,
+              "var": "sqd_funiu_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_funiu_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向南宫朔复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_funiu_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "南宫朔你报上来的数他记在册子末尾，末尾那一行他看了两遍。"
+        }
+      ]
+    },
+    "sqd_baisheng": {
+      "id": "sqd_baisheng",
+      "name": "百胜刀门·清点库房",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_baisheng_0",
+      "desc": "慕容铸（门徒）拦着你：「既是同门，帮我个忙。库房那几箱东西今年没点过，你去数一遍，缺了报我。」",
+      "stages": [
+        {
+          "desc": "百胜刀门·库房：库房那几箱东西今年没点过，你去数一遍，缺了报我。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "baisheng_vault",
+              "desc": "百胜刀门·库房",
+              "count": 1,
+              "var": "sqd_baisheng_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_baisheng_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向慕容铸复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_baisheng_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "慕容铸你报上来的数他记在册子末尾，末尾那一行他看了两遍。"
+        }
+      ]
+    },
+    "sqd_baituo": {
+      "id": "sqd_baituo",
+      "name": "白驼山·认路",
+      "level": 32,
+      "type": "支线",
+      "giver": "disciple_baituo_0",
+      "desc": "焦六（蛇奴）拦着你：「既是同门，帮我个忙。外头那条道你走过没有？没走过就去走一趟，认熟了再回来。」",
+      "stages": [
+        {
+          "desc": "白驼山·演武场：外头那条道你走过没有？没走过就去走一趟，认熟了再回来。",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "baituo_hall",
+              "desc": "baituo_hall",
+              "count": 1,
+              "var": "sqd_baituo_go"
+            }
+          ],
+          "cond": {
+            "var": "sqd_baituo_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回去向焦六复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            444
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            185
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "disciple_baituo_0",
+            6
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "焦六你回来时他正擦一把刀，头也不抬：「认熟了就好。」"
+        }
+      ]
+    }
+  }
+}

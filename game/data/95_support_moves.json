@@ -244,26 +244,112 @@
       ]
     }
   ],
-
-  "_note": "上面 9 门是战斗辅助武技（内功/轻功/招架各 3），走 mv.support 那条通路。下面把这 9 门分派给六城武馆教头 —— 玩家在武馆「请教 <教头> <招法名>」花束脩就能学到。⚠️ teach 是数组（replace 语义），必须写全量，否则教头原来那 12 项基础功夫会被整段冲掉。",
+  "_note": "上面 9 门是战斗辅助武技（内功/轻功/招架各 3），走 mv.support 那条通路。下面把这 9 门分派给六城武馆教头，玩家在武馆「请教 <教头> <招法名>」花束脩就能学到。⚠️ teach 是数组（replace 语义），必须写全量，否则教头原来那 12 项基础功夫会被整段冲掉。",
   "npcs": {
     "wg_zhou": {
-      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing", "sup_tieqiao", "sup_guiyuan"]
+      "teach": [
+        "basic_fist",
+        "basic_sword",
+        "basic_blade",
+        "basic_staff",
+        "basic_whip",
+        "basic_throw",
+        "basic_poison",
+        "basic_force",
+        "basic_dodge",
+        "basic_parry",
+        "basic_medicine",
+        "basic_sing",
+        "sup_tieqiao",
+        "sup_guiyuan"
+      ]
     },
     "wg_lu": {
-      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing", "sup_yanzi_sanchaoshui", "sup_ta_xue"]
+      "teach": [
+        "basic_fist",
+        "basic_sword",
+        "basic_blade",
+        "basic_staff",
+        "basic_whip",
+        "basic_throw",
+        "basic_poison",
+        "basic_force",
+        "basic_dodge",
+        "basic_parry",
+        "basic_medicine",
+        "basic_sing",
+        "sup_yanzi_sanchaoshui",
+        "sup_ta_xue"
+      ]
     },
     "wg_pei": {
-      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing", "sup_xieli_fa", "sup_fengzhao"]
+      "teach": [
+        "basic_fist",
+        "basic_sword",
+        "basic_blade",
+        "basic_staff",
+        "basic_whip",
+        "basic_throw",
+        "basic_poison",
+        "basic_force",
+        "basic_dodge",
+        "basic_parry",
+        "basic_medicine",
+        "basic_sing",
+        "sup_xieli_fa",
+        "sup_fengzhao"
+      ]
     },
     "wg_ma": {
-      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing", "sup_huti_zhenqi"]
+      "teach": [
+        "basic_fist",
+        "basic_sword",
+        "basic_blade",
+        "basic_staff",
+        "basic_whip",
+        "basic_throw",
+        "basic_poison",
+        "basic_force",
+        "basic_dodge",
+        "basic_parry",
+        "basic_medicine",
+        "basic_sing",
+        "sup_huti_zhenqi"
+      ]
     },
     "wg_tang": {
-      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing", "sup_hunyuan_qi"]
+      "teach": [
+        "basic_fist",
+        "basic_sword",
+        "basic_blade",
+        "basic_staff",
+        "basic_whip",
+        "basic_throw",
+        "basic_poison",
+        "basic_force",
+        "basic_dodge",
+        "basic_parry",
+        "basic_medicine",
+        "basic_sing",
+        "sup_hunyuan_qi"
+      ]
     },
     "wg_han": {
-      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing", "sup_wuying_bu"]
+      "teach": [
+        "basic_fist",
+        "basic_sword",
+        "basic_blade",
+        "basic_staff",
+        "basic_whip",
+        "basic_throw",
+        "basic_poison",
+        "basic_force",
+        "basic_dodge",
+        "basic_parry",
+        "basic_medicine",
+        "basic_sing",
+        "sup_wuying_bu"
+      ]
     }
   }
 }

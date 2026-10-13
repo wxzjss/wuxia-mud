@@ -224,12 +224,24 @@ function nodesFromHtml(html) {
     const cls = m[1], rest = m[2];
     const st = (rest.match(/style="([^"]*)"/) || [])[1] || '';
     const num = k => { const r = st.match(new RegExp('(?:^|;)\\s*' + k + ':\\s*(-?[0-9.]+)px')); return r ? parseFloat(r[1]) : null; };
-    const nm = rest.match(/<span class="mn-name"[^>]*>([^<]*)<\/span>/);
+    /* ⚠️ P0-C C-2：名字里现在可能插着 `<wbr>`（spec §3.9：「·」处的换行点），
+       所以取文本不能再用 `[^<]*` —— 它会在第一个 `<` 处截断，
+       「江南城·<wbr>悦来客栈」会被读成「江南城·」，看着像又被砍了一次字。
+       这里改成「允许 `<wbr>` 混在文本里」，取到之后再把标签摘掉。
+       ⚠️ 只放行 `<wbr>` 这一个标签：别的标签出现在名字里都是 bug，
+          放宽成 `[\s\S]*?` 会把相邻元素的文本一起吞进来。 */
+    const nm = rest.match(/<span class="mn-name"[^>]*>((?:[^<]|<wbr>)*)<\/span>/);
     const attr = s => { const r = rest.match(new RegExp(s + '="([^"]*)"')); return r ? r[1] : null; };
     out.push({
       cls, left: num('left'), top: num('top'), width: num('width'), height: num('height'),
       fontSize: (() => { const r = ((nm && nm[0]) || '').match(/font-size:\s*([0-9.]+)px/); return r ? parseFloat(r[1]) : null; })(),
-      label: nm ? nm[1] : '', room: attr('data-room'), go: attr('data-go'),
+      label: nm ? nm[1].replace(/<wbr>/g, '') : '', room: attr('data-room'), go: attr('data-go'),
+      /* ★ P0-C C-2：名字现在**会换行**（spec §3.9 按码点数算 1/2/3 行），
+         所以「横向占多宽」不能再算 `字数 × 字号` 那一整条 ——
+         那是「全名排成一行」的宽度，而实际是折成两三行摆的。
+         真正的行宽是 ui.js 内联在 `.mn-name` 上的 `max-width`
+         （= 每行码点数 × 字号），这才是会压到邻格的那一维。 */
+      maxW: (() => { const r = ((nm && nm[0]) || '').match(/max-width:\s*([0-9.]+)px/); return r ? parseFloat(r[1]) : null; })(),
     });
   }
   return out;
@@ -260,20 +272,46 @@ engine.newGame({ name: '试侠', gender: 'male', birth: 'wuxue' });
   /* ---------- 场景：挑一个「房间较多 + 含 >4 字房名」的区域，
        把玩家放进去，另取一个非当前的长名房间作为「窄屏 6 字 vs 宽屏 4 字」的对照 ---------- */
   const m0 = engine.view().map;
-  const byReg = {};
-  m0.rooms.forEach(r => { (byReg[r.region] = byReg[r.region] || []).push(r); });
-  let bestReg = null;
-  Object.keys(byReg).forEach(reg => {
-    const list = byReg[reg];
-    if (list.length < 2) return;
-    if (!list.some(r => String(r.name || '').length > 4)) return;
-    if (!bestReg || list.length > byReg[bestReg].length) bestReg = reg;
+  const spanOf = list => {
+    const xs = list.map(r => r.x || 0), ys = list.map(r => r.y || 0);
+    return { w: Math.max(...xs) - Math.min(...xs) + 1, h: Math.max(...ys) - Math.min(...ys) + 1 };
+  };
+  /* ★ 2026-10-13 区域地图改成**只画本层**之后，场景挑选必须按「同一 (区域, 层) 分组」来挑，
+     而不是「同一个区域」。
+       两个后果，缺一不可：
+         ① 「长名对照房」必须与「当前房」同区域**同层**，否则一渲染就被筛掉（断不到短名）；
+         ② 画布大小由该组的**坐标跨度**决定，而 B14-b/B14-c 要断「触摸平移 / 开图居中」，
+            前提是画布比视口大 ⇒ 跨度得够（窄屏格距 52px、视口约 375px ⇒ 至少 7×8）。
+       只在「房最多的区域」里挑会漏掉真正够大的组（实测 jiangnan|0 是 7×10，
+       而房最多的 changan 最大只有 8×7 —— 恰好不够宽）。所以直接对**全库**分组挑。 */
+  const groups = {};
+  m0.rooms.forEach(r => { const k = r.region + '|' + (r.z || 0); (groups[k] = groups[k] || []).push(r); });
+  const MIN_W = 7, MIN_H = 8;
+  const candidates = Object.keys(groups).map(k => groups[k])
+    .filter(l => l.length >= 2 && spanOf(l).w >= MIN_W && spanOf(l).h >= MIN_H);
+  /* 优先「跨度够大」；若多组合格取面积最大的那组 */
+  candidates.sort((a, b) => {
+    const sa = spanOf(a), sb = spanOf(b);
+    return (sb.w * sb.h) - (sa.w * sa.h);
   });
-  const regRooms = byReg[bestReg] || m0.rooms;
-  const byLen = regRooms.slice().sort((a, b) => String(b.name || '').length - String(a.name || '').length);
+  let useRooms = candidates[0] || null;
+  if (!useRooms) {
+    /* 没有一组够大：退而求其次取跨度最大的组。
+       ⚠️ 此时 B14-b/B14-c 的平移断言**前提不成立**，那两条会假红 ——
+       记进 outOfRange，让下面两条按「前提不成立」跳过并显式报出来，别悄悄放过。 */
+    const all = Object.keys(groups).map(k => groups[k]).filter(l => l.length >= 2);
+    all.sort((a, b) => {
+      const sa = spanOf(a), sb = spanOf(b);
+      return (sb.w * sb.h) - (sa.w * sa.h);
+    });
+    useRooms = all[0] || m0.rooms.slice(0, 2);
+  }
+  const canPan = !!(candidates.length);
+  const byLen = useRooms.slice().sort((a, b) => String(b.name || '').length - String(a.name || '').length);
   const longSrc = byLen[0];
-  const curSrc = regRooms.find(r => r.id !== longSrc.id) || m0.rooms.find(r => r.id !== longSrc.id);
+  const curSrc = useRooms.find(r => r.id !== longSrc.id) || m0.rooms.find(r => r.id !== longSrc.id);
   engine.world.player.room = curSrc.id;
+  if (!canPan) console.log('\n  ⚠️ 全库没有跨度 ≥' + MIN_W + '×' + MIN_H + ' 的同层地图 —— 平移/居中那两条前提不成立，会标「跳过」');
 
   const view = engine.view();
   const hereRoom = view.map.rooms.find(r => r.current);
@@ -346,31 +384,34 @@ engine.newGame({ name: '试侠', gender: 'male', birth: 'wuxue' });
       illegal.length ? (illegal[0].room + ' 显示「' + illegal[0].label + '」，而全名是「' + illegal[0].full + '」')
         : '共 ' + named.length + ' 格，例：' + named.slice(0, 3).map(n => n.label).join('、'));
 
-    /* ★ 主人的核心诉求：**格子里的短名不许压到邻格**。
-       短名 ≤4 字、字号保持基准（窄屏 13px）⇒ 4×13=52px ≈ 一格（52px），
-       不越界。这条断言直接量「最宽的名字有没有超出一格」。 */
+    /* ★ 主人的核心诉求：**格子里的名字不许压到邻格**。
+       🔴 P0-C C-2：宽度模型变了。
+         旧模型：短名 ≤4 字一行摆完 ⇒ 宽 = 字数 × 字号，与格距比。
+         新模型：全名按 §3.9 折成 1/2/3 行 ⇒ **横向占的是「一行」的宽**，
+                 即 ui.js 内联在 `.mn-name` 上的 `max-width`（每行码点数 × 字号）。
+       继续用旧模型会假红：5 字的「江南城·南门」在 66px 窄屏格按 13.5px 算
+       是 67.5px「超了 1.5px」，可它实际折成两行、每行只占 41px。
+       ⇒ 判据换成 `max-width ≤ 格距`，这才是「会不会压到邻格」的那一维。 */
     const cw = nodes.length ? nodes[0].width : 0;
-    const overflow = named.filter(n => {
-      const len = [...String(n.label)].length;
-      return len * (n.fontSize || 0) > cw + 0.5;
-    });
+    const overflow = named.filter(n => (n.maxW != null ? n.maxW : 0) > cw + 0.5);
     ok('A-6b ★ 窄屏没有名字横向溢出格子（主人报的「压住旁边地块名」）',
-      cw > 0 && overflow.length === 0,
-      overflow.length ? (overflow[0].label + ' 宽 ' + ([...overflow[0].label].length * overflow[0].fontSize) + 'px > 格 ' + cw + 'px')
-        : '格宽 ' + cw + 'px，最宽名字 ' + named.reduce((a, n) => Math.max(a, [...String(n.label)].length * (n.fontSize || 0)), 0) + 'px');
+      cw > 0 && overflow.length === 0 && named.every(n => n.maxW != null),
+      overflow.length ? (overflow[0].label + ' 行宽 ' + overflow[0].maxW + 'px > 格 ' + cw + 'px')
+        : '格宽 ' + cw + 'px，最宽一行 ' + named.reduce((a, n) => Math.max(a, n.maxW || 0), 0) + 'px');
 
-    /* ★ 2026-10-13：长名房间的**短名**要出现（原来断「全名出现」，
-       现在格子里是短名 —— 按 mapLabel 规则算一遍期望值，对不上就是规则被改坏）。 */
-    const expShort = (() => {
-      const s = String(LONG_NAME);
-      if ([...s].length <= 4) return s;
-      const d = s.indexOf('·');
-      if (d > 0) { const t = [...s.slice(d + 1)]; if (t.length && t.length <= 4) return t.join(''); }
-      return [...s].slice(0, 4).join('');
-    })();
-    ok('A-7 ★ 长名房间在格子里显示短名「' + expShort + '」（原「' + LONG_NAME + '」）',
-      LONG_NAME.length > 4 && nodes.some(n => n.label === expShort),
-      '期望「' + expShort + '」，实际有：' + named.slice(0, 8).map(n => n.label).join('、'));
+    /* 🔴 P0-C C-2（spec §3.9）：**这条断言的口径整个反过来**。
+       旧契约：格子里必须是**短名**（`mapLabel()` 砍出来的 ≤4 字）；
+       新契约：格子里必须是**全名**，一个字都不许砍。
+       为什么推翻 2026-10-13 那条：`mapLabel()` 就是「江南城·长街 → 长街」的元凶，
+       spec §3.9 点名要**整段删除**它。主人报的「地块名看不全」正是它造成的。
+       新算法：格子放大到 52px + 「·」处插 `<wbr>` + 按码点数算 1/2/3 行
+       ⇒ 312/312 全覆盖零截断（本套 §9 的长名电池真压过 9 码点的最长名）。
+       ⇒ 断言从「短名出现」改为「**全名出现，且不带省略号 / 不被截断**」。 */
+    ok('A-7 ★ 长名房间在格子里显示**全名**「' + LONG_NAME + '」（C-2：不许砍字）',
+      LONG_NAME.length > 4 && nodes.some(n => n.label === LONG_NAME),
+      '期望「' + LONG_NAME + '」，实际有：' + named.slice(0, 8).map(n => n.label).join('、'));
+    ok('A-7b ★ 格子里没有「…」这类省略号（砍字的另一个常见形状）',
+      !named.some(n => String(n.label).indexOf('…') >= 0), '');
 
     /* ⚠️ 别假设「style 紧跟在 class 后面」——属性顺序是我这边可以随时调整的自由
        （重设计时在中间插了个 tabindex，这条就假红了一次）。
@@ -450,20 +491,34 @@ engine.newGame({ name: '试侠', gender: 'male', birth: 'wuxue' });
     ok('A-13 宽屏几何随格距自适应（格距 ≥ 30px）', badGeo.length === 0 && cell >= 30,
       badGeo.length ? JSON.stringify(badGeo[0]) : '格距 ' + cell + 'px');
 
-    /* ★ 主人报的「压字」在宽屏同样要守住（桌面 30px 格、4 字 8px = 32px，
-       靠 CSS 的 letter-spacing -.2px 与 max-width:100%;overflow:hidden 吃下）。 */
-    const over2 = named.filter(n => [...String(n.label)].length * (n.fontSize || 0) > cell + 0.5);
-    ok('A-14 ★ 宽屏也没有名字横向溢出格子（4 字 8px 略宽于 30px 格，由 CSS 收住）',
-      cell > 0 && over2.length === 0,
-      over2.length ? (over2[0].label + ' 宽 ' + ([...over2[0].label].length * over2[0].fontSize) + 'px > 格 ' + cell)
-        : '格 ' + cell + 'px，最宽 ' + named.reduce((a, n) => Math.max(a, [...String(n.label)].length * (n.fontSize || 0)), 0) + 'px');
+    /* ★ 主人报的「压字」在宽屏同样要守住。
+       🔴 P0-C C-2：宽度模型同 A-6b 一起换 —— 名字会换行，
+       所以比的是**一行**的宽（`max-width`）与格距，不是整条名字的宽。
+       （旧注释里写的「桌面 30px 格、4 字 8px = 32px」已经不成立了：
+         C-2 把格距抬到 52px、字号回到 11px，4 字一行只要 44px。） */
+    const over2 = named.filter(n => (n.maxW != null ? n.maxW : 0) > cell + 0.5);
+    ok('A-14 ★ 宽屏也没有名字横向溢出格子（一行 ≤ 格距，spec V-3）',
+      cell > 0 && over2.length === 0 && named.every(n => n.maxW != null),
+      over2.length ? (over2[0].label + ' 行宽 ' + over2[0].maxW + 'px > 格 ' + cell)
+        : '格 ' + cell + 'px，最宽一行 ' + named.reduce((a, n) => Math.max(a, n.maxW || 0), 0) + 'px');
     const cssSrc2 = fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'css', 'main.css'), 'utf8');
     const mnRule = (cssSrc2.match(/\.map-node \.mn-name\s*\{[^}]*\}/) || [''])[0];
-    ok('A-15 ★ .mn-name 声明了 overflow:hidden + max-width:100%（兜住任何漏网的长名）',
-      /overflow:\s*hidden/.test(mnRule) && /max-width:\s*100%/.test(mnRule),
-      mnRule.replace(/\s+/g, ' ').slice(0, 100) || 'NOT FOUND');
-    ok('A-16 ★ .mn-name 用了 nowrap（短名不再折行撑高格子）',
-      /white-space:\s*nowrap/.test(mnRule), mnRule.replace(/\s+/g, ' ').slice(0, 100));
+    /* 🔴 P0-C C-2（spec §4.3 第 9 条）：**这两条断言一起作废**。
+       旧契约：`.mn-name` 必须有 `overflow:hidden` + `nowrap` 兜住长名。
+       为什么不再成立：这两个属性就是**砍字的执行者**。
+       它们是 2026-10-13 为了压住「4 字名溢出 2px 压到邻格」加的，
+       但那时治的是**症状**——病根是格子只有 30px 却要塞 4 个字。
+       C-2 把格子抬到 52px、字号回到 11px，宽度够用了；留着这两个属性，
+       §3.9 算出来的多行全名会被 `overflow:hidden` 直接抹掉，等于白改。
+       ⇒ 新契约（spec §4.3 #9 / V-1）：**不得**有 nowrap 与 overflow:hidden，
+          必须 `inline-block`（否则 `max-width` 无效，行宽卡不住），
+          宽度由 ui.js 内联的「每行码点数 × 字号」卡住（≤ 格距）。 */
+    ok('A-15 ★ .mn-name **不再**有 overflow:hidden（C-2：它是砍字的执行者，必须撤）',
+      !/overflow:\s*hidden/.test(mnRule), mnRule.replace(/\s+/g, ' ').slice(0, 100));
+    ok('A-16 ★ .mn-name **不再**有 nowrap（允许按 §3.9 折 1/2/3 行）',
+      !/white-space:\s*nowrap/.test(mnRule), mnRule.replace(/\s+/g, ' ').slice(0, 100));
+    ok('A-16b ★ .mn-name 是 inline-block（不然 max-width 对纯 inline 无效，行宽卡不住）',
+      /display:\s*inline-block/.test(mnRule), mnRule.replace(/\s+/g, ' ').slice(0, 100));
   }
 
   /* ================================================================

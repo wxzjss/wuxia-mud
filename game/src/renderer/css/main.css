@@ -19,11 +19,15 @@
   --paper: #17140f;      /* 纸 → 夜墨 */
   --paper-2: #201c15;
   --paper-3: #2a251b;
-  --ink: #e4ded1;        /* 墨 → 暖白 */
-  --ink-1: #f2ede1;
-  --ink-2: #c6bfae;
-  --ink-3: #9c9482;
-  --ink-4: #746d5e;
+  /* 墨阶（design/78 §7.1 变体甲，主理人 2026-10-13 拍板，整簇一起换不许微调）：
+     五档按 CIE L* 等距排，相邻 ΔL* ∈ [7.5, 9.5]（守卫 78/T-V-1/3/4）。
+     🔴 这簇里有 --ink（正文主色）—— 全库用量最大的一个变量，
+        改完必须全量目视回归，这是选甲的代价。 */
+  --ink-1: #f2ede1;      /* 不动 */
+  --ink:   #dad5c8;
+  --ink-2: #c4bdac;
+  --ink-3: #aea593;
+  --ink-4: #988e7c;
   --line: #3a3327;
   --line-2: #2e281f;
   --red: #d05a4e;        /* 彩色一律提亮：暗底上原来的深红根本看不见 */
@@ -82,6 +86,61 @@
      收进变量并压到低透明度：连线只是「这两间是通的」的暗示，不该跟房间方块抢视线。 */
   --edge-dim: rgba(226, 218, 198, .20);
   --edge-known: rgba(191, 174, 138, .40);
+
+  /* ================= 江湖舆图 · 墨拓残卷（P0-C C-2，spec §4.1）=================
+     暗色 `:root`。⚠️ 浅色主题必须**成对**覆写（见下面 `html.theme-light`），
+     少一个变量 = 浅色下那一处掉回暗色值 = 亮纸上一块深斑。
+     取值全部来自 design/73-map-ui-visual-spec.md §4.1，不在这里自行调色 ——
+     颜色是美术总监定的，改色请去改那份文档，别在这儿单方面改。 */
+
+  /* —— 纸：三档 —— */
+  --map-void: #131009;                   /* L4 未摊开的那截，比页面还暗一档 */
+  --map-paper: #221d16;                  /* L3 摊开了没写字（= --card-2 同值） */
+  --map-paper-lit: #2b251a;              /* L2 写过字，墨把纸洇亮一档 */
+  --map-grain: rgba(216, 200, 162, .050);/* 帘纹·细（横） */
+  --map-grain-2: rgba(216, 200, 162, .028); /* 帘纹·粗（纵，稀） */
+  --map-grain-step: 7px;                 /* ⚠️ 绝不等于格距 —— 等于格距就是网格线 */
+  --map-edge-soft: 22px;                 /* 已探索区羽化宽度 */
+
+  /* —— L1 我在这里 —— */
+  --map-here-fill: #b8493c;              /* 朱砂印底（压暗一档托住白字） */
+  --map-here-ink: #f7f1e4;               /* 印上的阴刻字 */
+  --map-here-ring: rgba(207, 166, 74, .88); /* 金环 */
+  --map-here-glow: rgba(184, 73, 60, .26);  /* 外柔光 */
+  --map-here-name: var(--gold);          /* L1 名字色（保留主人的黄字裁决） */
+
+  /* —— L2 我从哪来 —— */
+  --map-ink-known: #ded6c2;              /* 浓墨（走过的地名） */
+  --map-ink-known-2: #a89c81;            /* 次墨（层标 ▲▼） */
+  --map-path-known: rgba(207, 166, 74, .62); /* 走过的连线：实线、金褐 */
+  --map-path-w: 2.2px;
+  --map-foot: rgba(207, 166, 74, .07);   /* 足迹洇开的淡金底 */
+
+  /* —— L3 我附近有什么 —— */
+  --map-near-ring: rgba(228, 222, 209, .52); /* 空心圈描边 */
+  --map-near-w: 1.4px;
+  --map-path-dim: rgba(226, 218, 198, .16);  /* 通往未知的连线：虚、极淡 */
+  --map-path-dim-w: 1.4px;
+
+  /* —— L4 远处与边界 —— */
+  --map-ink-far: rgba(228, 222, 209, .30);   /* 州域名 / 出口方向 */
+  --map-ink-far-2: rgba(228, 222, 209, .17); /* 未去过的州 */
+  --map-boundary: rgba(214, 198, 160, .10);  /* 州域边界一道虚线 */
+  --map-far-size: 15px;
+  --map-far-ls: .22em;
+
+  /* —— 牌 / 浮层 —— */
+  --map-tag-bg: #2e2820;
+  --map-tag-line: rgba(207, 166, 74, .30);
+  --map-tip-bg: #322b21;
+  --map-tip-bar: var(--red);
+
+  /* —— 尺寸（由断点覆写，见文件末尾 @media 段，与 ui.js 的 BP_* 常量同源） —— */
+  --map-cell: 52px;
+  --map-font: 11px;
+  --map-seal-ratio: .58;
+  --map-seal-min: 16px;
+  --map-seal-len: 30px;
   /* 彩色调底：绿（翠）/ 金 / 红 / 粉 / 紫。原来的浅色版在暗底上会糊成白块，
      所以这里用「同色相 + 低透明度」——底色还是深墨，只是透出一点那一路颜色。 */
   --tint-jade: rgba(95, 169, 138, .13);
@@ -94,12 +153,157 @@
   --line-red: rgba(208, 90, 78, .32);
   --line-pink: rgba(200, 110, 160, .32);
   --line-purple: rgba(169, 139, 192, .32);
+
+  /* —— 日志行杂色（原来写死在 .log-line.faint / .favor / .favor-pos / .like 上）——
+     第一阶段（已做）：把四个写死值收进变量。当时两个主题下是同一个值，
+     所以浅色这边**故意不覆写**，观感与改动前逐字节一致。
+     第二阶段（本轮，design/78 §2.3）：那个"两套主题共用一个值"的取舍
+     **在数学上不可能两边都达标** —— 暗色是默认主题，玩家一进游戏就撞上
+     faint 2.11 / favor 3.38。现在补成**成对**的四个值（暗色这边的取值见右）：
+        faint 2.11→4.33 · favor 3.38→5.39 · favor-pos 5.64→8.05 · like 6.89→8.94
+     浅色那边在 `html.theme-light` 里成对覆写（4.94 / 6.67 / 5.35 / 5.57）。 */
+  --log-faint: #7d7986;      /* 昏厥 / 失去意识那一行的提示 */
+  --log-favor: #d96a5c;      /* 好感下降 */
+  --log-favor-pos: #cfa64a;  /* 好感上升 */
+  --log-like: #e0aa7e;       /* 倾心 */
+
+  /* ── 三个「幽灵变量」转正（design/78 §1.3）───────────────────────────
+     原先写法是 `var(--x, 回落值)`，可 `--x` **在任何地方都没定义**，
+     于是永远走回落。看起来是"可换肤的钩子"，其实是假的：
+     后来者以为"改 `--warn` 就能改警告色"，改了没反应，白查半天。
+     ⇒ 在 :root 正式定义，值就取**原来那个回落值** ⇒ 外观零变化，钩子变真的。
+     ⚠️ 第四个 `--mr-c` **不在这里定义**：它由 JS 内联注入
+        （`ui.js:3417`：`style="--mr-c:' + r.color + '"`），不是幽灵。
+        design/78 §1.3 把它列进幽灵清单是**误判** —— 那一处只 grep 了 CSS 的
+        `:root`，没查 JS 注入（team §6.6 铁律：「搜不到先确认是不是拼出来的」）。
+        它现在的回落值 `var(--line-2)` 也是有意义的那一个（区域没配色时用）。 */
+  --warn: #c98a3a;                        /* 簇 8 原来缺的警告色，这下补上了 */
+  --ink-dim: var(--ink);                  /* 弱化正文：跟着 --ink 走，自动换肤 */
+  --gold-wash: rgba(184, 140, 62, .16);   /* 本地标记的底色（半透明金洗） */
+
+  /* ── 顶栏 `--tb-*` 一簇（design/78 §7.2）────────────────────────────
+     🔴 顶栏是一条**不可换肤**的硬编码暗色带：无论玩家切哪个主题，
+     它永远压在 #3a342c → #2b2721 这条深墨带上（`html.theme-light` 里
+     没有 `#topbar` 的覆写 —— 这是既成事实，不是缺陷，§1.2 已申明）。
+     ⇒ 所以顶栏内部**不许读任何会换肤的变量**。原来 `.tb-money` / `.tb-title`
+     用的是 `var(--gold)`，而 `--gold` 在浅色主题下会被换成给纸底准备的值
+     （#7a5f16），暗底压中金 = **2.04:1**，银两和称号直接看不见 ——
+     不报错，就是看不见。
+     ⇒ 收进 `--tb-*`，顶栏与主题变量彻底脱钩。
+     ⚠️ 勿在 `html.theme-light` 里覆写这一簇（守卫 78/T-V-6 会查）。 */
+  --tb-bg-1:  #3a342c;
+  --tb-bg-2:  #2b2721;
+  --tb-ink:   #ece5d6;
+  --tb-name:  #fbf6e9;
+  --tb-sect:  #c3b795;
+  --tb-sold:  #e6a8c0;
+  --tb-money: #cfa64a;
+  --tb-title: #cfa64a;
+  --tb-time:  #b0a78e;
+
+  /* ================= 战斗文本 · 写在纸上的血（design/76 §4.1）=================
+     ⚠️ 取值**全部来自设计文档**，不在这里自行调色（颜色是美术总监定的，改色去改文档）。
+     ⚠️ 浅色主题必须**成对覆写**（下面 `html.theme-light` 那份），少一个变量 =
+        浅色下那一处掉回暗色值 = 亮纸上一块深斑。
+     ⚠️ 分档语言只有三个维度：**杠宽 / 杠长（上下内缩）/ 杠色**。
+        **字号一律 14px，任何档位都不改 font-size / line-height / margin-bottom** ——
+        日志区是等宽文本流，跳字号就跳行高，整块战斗文本会跟着抖。 */
+
+  /* —— 程度层 5 档：色阶（淡赭 → 亮朱）——
+     ⚠️ 单调的是"红度/饱和度"，不是明度：伤越重血越**红**，不是越**亮**。
+        "重量"的单调由杠宽 + 杠长承担，不由明度承担。 */
+  --combat-s1: #9a8f7c;   /* 1 蹭了一下不算伤：淡赭灰（几乎就是叙述） */
+  --combat-s2: #c0a074;   /* 2 挂脏了：土黄褐 */
+  --combat-s3: #c8825c;   /* 3 见了血：赭红（血刚出来，还没盛） */
+  --combat-s4: #d4604a;   /* 4 伤到骨：朱（≈ --red 同一瓶朱砂） */
+  --combat-s5: #e8705a;   /* 5 站不住：亮朱 */
+
+  /* —— 字色：血是我的 = 全档；血是别人的 = 降一档 ——
+     "我的血永远比别人的血红一档"，玩家不需要知道规则，只要觉得
+     「打在我身上那几行更扎眼」就够了（design/76 §3.4 末条）。 */
+  --combat-hit-1:  var(--combat-s1);
+  --combat-hit-2:  var(--combat-s2);
+  --combat-hit-3:  var(--combat-s3);
+  --combat-hit-4:  var(--combat-s4);
+  --combat-hit-5:  var(--combat-s5);
+  --combat-deal-1: var(--ink-3);        /* 别人挨的"蹭一下"，就是一句普通叙述 */
+  --combat-deal-2: var(--combat-s1);
+  --combat-deal-3: var(--combat-s2);
+  --combat-deal-4: var(--combat-s3);
+  --combat-deal-5: var(--combat-s4);
+
+  /* —— 竖条几何：宽 + 上下内缩（内缩越小 = 杠越长 = 越重）—— */
+  --combat-bar-w-1: 2px;    --combat-bar-in-1: 32%;
+  --combat-bar-w-2: 3px;    --combat-bar-in-2: 24%;
+  --combat-bar-w-3: 4px;    --combat-bar-in-3: 15%;
+  --combat-bar-w-4: 5px;    --combat-bar-in-4: 7%;
+  --combat-bar-w-5: 6.5px;  --combat-bar-in-5: 0%;
+  --combat-pad:     15px;   /* ⚠️ 恒定，不随档位变 —— 见下面 §3.2 那条理由 */
+
+  /* —— 落空 / 被挡开：没打着就不该有血色 ——
+     ⚠️ --combat-miss **不挂** --ink-4：算下来只有 3.63:1（design/76 §4.5）。
+        它仍是全场最弱的一档，但要读得清 —— 给一个专用值。 */
+  --combat-miss:        #8a8271;
+  --combat-block:       var(--ink-3);
+  --combat-bar-block-w: 2px;
+  --combat-bar-block-in: 30%;
+
+  /* —— 暴击：竖条外柔光（不新增形状）—— */
+  --combat-crit-glow: rgba(232, 112, 90, .55);
+
+  /* —— 第 5 档分水岭：极淡底（实测吵就第一个砍它）—— */
+  --combat-s5-bg: rgba(232, 112, 90, .055);
+
+  /* —— 字重：系统衬线无真 bold，仅 4/5 档各用一次，可砍 ——
+     ⚠️ 500/600 在中文衬线上是**合成伪粗**。若真机难看，**第一个砍字重**
+        （这两个全改 400），分档由「杠宽 + 杠长 + 色 + 第 5 档极淡底」承担。
+        不要为保住字重去换字体或加载 webfont（项目有不引外部资源的规矩）。 */
+  --combat-w-4: 500;
+  --combat-w-5: 600;
+
+  /* —— 数值模式：句尾那个（-37）—— */
+  --combat-num:    #8a8271;
+  --combat-num-ls: .03em;
+
   /* `--card` = 悬停/选中那层**薄纱**（半透明是它的本意）；
      `--card-2` = **卡片正面**（输入框、出口按钮、任务卡、帮助卡…）。浅色主题里它是纯白 `#ffffff`，
      所以暗色这边也必须是实心 —— 否则「输入框背景」跟着页面一起透，字就糊了。 */
   --card: rgba(255, 255, 255, .055);
   --card-2: #241f18;
   --scrim: rgba(0, 0, 0, .62);
+
+  /* ---- 可交互名词 / 提示行（design/81 §3.1-§3.3 + §4；2026-10-14 落地）----
+     ⚠️ 颜色一律 var() 引现有色，唯二硬编码例外（81 §4 写明理由）：
+       · --noun-ink：墨阶甲落了 --ink-1 与 --ink 拉开到一整档，词色要的是"半档"，
+         墨阶上没有半档位置 → 取 --ink-1 与 --ink 的 L* 中点（§4.1，暗 #e6e1d4）。
+       · --tip-cmd：浅色侧 --gold-d 对 --paper-2 只有 4.28（<4.5）→ 另给 #7d6018。 */
+  --noun-dot:      var(--red);    /* 着重点：朱。暗 4.60 / 浅 6.67，两主题都 ≥3（81/N-V-3） */
+  --noun-ink:      #e6e1d4;       /* 词比正文浓半档：暗对 --ink 对比 1.122 / ΔL* 4.3，在 [1.10,1.25]/[4,7] 带内（81/N-V-4） */
+  --noun-dot-size: .40em;         /* 交给浏览器按字号算，不写 px */
+  --noun-fb-line:  var(--red);    /* @supports 兜底实线（族：实线 ≠ 出口虚线，81/N-V-7） */
+  --hl-hit-pad:    8px;           /* 触屏热区外扩（仅 ≤820px，81 §3.6） */
+  --tip-ink:       var(--ink-3);  /* 提示正文。甲后暗 6.24–7.52 / 浅 6.15–7.52，两主题都 ≥4.5（81/N-V-17） */
+  --tip-cmd:       #b98f34;       /* 指令色。暗 5.48–6.16 ✅（81/N-V-16）；浅色侧在 html.theme-light 覆写 */
+  --tip-font:      12.5px;        /* ⚠️ 这是 UI 旁白不是叙事：叙事行 14px 不动（79） */
+  --tip-line:      1.5;
+  --tip-gap:       3px;           /* 与 .log-line 的 margin-bottom 同值，不另起一套 */
+  --tip-indent-fb: 2em;           /* 量不到词位时的兜底缩进 */
+  --tip-cmd-min-h: 40px;          /* ≤820px 生效，与 .qb-btn 一致（81 §3.3） */
+  /* —— R4 痕迹句（design/79 §2.1 ③ / 85）：朱是我专用（76 总纲），点不是装饰是主判据 —— */
+  --room-trace:    var(--red);    /* 暗 4.60 / 浅 6.67，两主题 ≥3（79 §2.3 实测值）；亮侧成对覆写在 html.theme-light */
+  --room-indent-3: 22px;          /* 0 → 14 → 22：由外而内，「你」收在最里面 */
+  --room-dot:      5px;
+  --room-dot-left: 8px;
+  /* —— 7.5-bis 乙案：深彩实心底 + 白字（78 §7.5-ter 第二件，定稿值不许微调/84 纪律）——
+     白字压底的对比两主题同值：jade 6.26/5.31 · gold 5.05/5.27 · red 6.35/5.80（全部 ≥4.5）。 */
+  --solid-jade:    #2f6b55;
+  --solid-gold:    #8a6a1e;
+  --solid-red:     #a83a2e;   /* 暗值即主人钉死的 .map-room.here 底 */
+  --solid-ink:     #ffffff;   /* 乙案白字：字对与主题无关，两主题同值（成对覆写在亮侧同值） */
+  /* —— 7.5-bis 甲案：翠/金 hover 的字色开关（底走 --tint-*，字跟主题）——
+     暗侧字取提亮彩、亮侧取压深彩（78 §7.5-ter 第一件表），两主题各验 ≥4.5 已在 §7.5-bis 复核。 */
+  --jade-hover-ink: var(--jade-d);
+  --gold-hover-ink: var(--gold);
 }
 
 /* ---- 浅色主题（原样保留的那一套；设置里切过来就回到从前的手感）---- */
@@ -118,18 +322,24 @@ html.theme-light {
   --paper: #f4f1e8;
   --paper-2: #ebe6d9;
   --paper-3: #e2dbc9;
-  --ink: #2b2721;
-  --ink-1: #1f1c17;
-  --ink-2: #4a443a;
-  --ink-3: #6f675a;
-  --ink-4: #9a917f;
+  /* 亮色墨阶（design/78 §7.1 变体甲）：五档相邻 ΔL* ∈ [6.5, 8.5]（守卫 78/T-V-2） */
+  --ink-1: #1f1c17;      /* 不动 */
+  --ink:   #2f2b25;
+  --ink-2: #413b31;
+  --ink-3: #534c3f;
+  --ink-4: #655e4d;
   --line: #cfc6b0;
   --line-2: #ded6c2;
   --red: #9c2b25;
   --red-2: #c0413a;
-  --gold: #a8842c;
-  --gold-d: #8a6d1e;
-  --jade: #3f7a63;
+  /* 🔴 §2.4「亮色下的金 / 翠正文」34 条。原值在纸底上分别是
+     gold 3.10 / gold-d 4.34 / jade 4.45 —— 全部差一口气（jade 只差 0.05）。
+     压深后实测：gold #7a5f16 → 5.35（纸）/ 5.60（--tint-gold）；
+     gold-d #6f5714 → ~5.9；jade #356b56 → 5.49。34 条一起清。
+     ⚠️ 顶栏例外：见 :root 里 `--gold-night` 那条注释和下面的 `html.theme-light #topbar`。 */
+  --gold: #7a5f16;
+  --gold-d: #6f5714;
+  --jade: #356b56;
   --jade-d: #2c6b4d;
   --blue: #2f5f8a;
   --purple: #6b4a7a;
@@ -143,6 +353,19 @@ html.theme-light {
   --surface-3: #fffdf9;
   --surface-hi: #fffefb;
   --bar-track: #efe6cf;
+
+  /* 可交互名词 / 提示行——浅色成对覆写（design/81 §4.1，与 :root 成对，缺一半就是 78 的病） */
+  --noun-ink: #26221b;             /* 亮对 --ink 对比 1.125 / ΔL* 4.32，在 [1.10,1.25]/[4,7] 带内；L*≈13.4 贴 ink-1/ink 中点 14.1（81/N-V-4） */
+  --tip-cmd:  #7d6018;             /* 对 #f4f1e8 / #fffdf9 / #ebe6d9 = 5.23 / 5.81 / 4.74，全部 ≥4.5（81/N-V-16） */
+  --room-trace: var(--red);        /* R4 痕迹句成对覆写（dark-bg 铁律）；亮 --red 6.67 ≥3（79 §2.3），级联同值 */
+  /* —— 7.5-bis 乙案亮侧成对（浅纸上半档，78 §7.5-ter 第二件表）—— */
+  --solid-jade:    #35775e;
+  --solid-gold:    #87671c;
+  --solid-red:     #b0402f;
+  --solid-ink:     #ffffff;
+  /* —— 甲案亮侧字：压深彩（与暗侧提亮彩同一逻辑，字跟主题走）—— */
+  --jade-hover-ink: var(--jade);
+  --gold-hover-ink: var(--gold-d);
   --tint-jade: #f3f8f5;
   --tint-gold: #fdf6e3;
   --tint-red: #fdf6f4;
@@ -164,6 +387,68 @@ html.theme-light {
      所以浅色这套用**深一点的色 + 中等透明度**，观感与改动前基本一致。 */
   --edge-dim: rgba(150, 138, 106, .34);
   --edge-known: rgba(126, 108, 66, .58);
+
+  /* ===== 江湖舆图 · 墨拓残卷（浅色覆写，spec §4.2）=====
+     ⚠️ 必须与 `:root` 那份**成对**：颜色类变量一个都不能少，
+     少一个 = 那一处掉回暗色值 = 亮纸上一块深斑。
+     `--map-here-name` **故意不覆写**：浅色下继续 `var(--gold)`（#a8842c），
+     在 `#fffdf6` 上对比度约 4.6:1，满足大字/粗体标准（spec §4.2 尾部那句）。
+     尺寸类（--map-cell / --map-font / --map-seal-*）**不覆写**，它们由断点管。 */
+  --map-void: #ded6c2;
+  --map-paper: #fbf8f0;
+  --map-paper-lit: #fffdf6;
+  --map-grain: rgba(120, 106, 74, .055);
+  --map-grain-2: rgba(120, 106, 74, .030);
+  --map-here-fill: #9c2b25;
+  --map-here-ink: #fffdf6;
+  --map-here-ring: rgba(168, 132, 44, .90);
+  --map-here-glow: rgba(156, 43, 37, .20);
+  --map-ink-known: #332e26;
+  --map-ink-known-2: #6f675a;
+  --map-path-known: rgba(138, 109, 30, .62);
+  --map-foot: rgba(168, 132, 44, .08);
+  --map-near-ring: rgba(60, 54, 44, .48);
+  --map-path-dim: rgba(90, 82, 66, .22);
+  --map-ink-far: rgba(43, 39, 33, .34);
+  --map-ink-far-2: rgba(43, 39, 33, .20);
+  --map-boundary: rgba(120, 106, 74, .18);
+  --map-tag-bg: #fffdf9;
+  --map-tag-line: rgba(168, 132, 44, .40);
+  --map-tip-bg: #fffefb;
+
+  /* ===== 战斗文本 · 写在纸上的血（浅色覆写，design/76 §4.2）=====
+     ⚠️ 与 `:root` 那份**成对**：颜色类一个都不能少。
+     ⚠️ 浅色下 s1→s5 的明度是**单调下降**的（#6f675a → #b52a12），因为浅纸上
+        "更重"要靠"更深"；暗色下相反。**两套主题下"重量"都由杠宽杠长承担，
+        色只负责"是不是血"** —— 所以色可以两套各配，规矩不变。
+     ⚠️ --combat-hit-* / --combat-deal-* **不覆写**：它们依赖 --ink-3 / --combat-s*，
+        浅色下自动跟随，另写一份就是「两处各写一份」。
+     ⚠️ 几何类（--combat-bar-w-* / --combat-bar-in-* / --combat-pad）**不覆写**，
+        杠宽杠长在两个主题下是一样的。 */
+  --combat-s1: #6f675a;
+  --combat-s2: #7d6029;
+  --combat-s3: #9c4a2a;
+  --combat-s4: #a8321e;
+  --combat-s5: #b52a12;
+  --combat-crit-glow: rgba(181, 42, 18, .45);
+  --combat-s5-bg: rgba(181, 42, 18, .06);
+  --combat-num:  #6f675a;
+  /* ⚠️ 上一轮（design/76 §4.2）漏掉的成对项，design/78 §5.3 点名：
+     `--combat-miss` 当时只给了暗色值 #8a8271（暗底 4.82 ✅），浅色没跟上，
+     亮纸上实测只有 3.37 ✗。补 #6f675a → 4.94 ✅。 */
+
+  --combat-miss: #6f675a;
+
+  /* ===== 日志行杂色（浅色覆写，design/78 §2.3）=====
+     与 `:root` 那份成对。暗色是默认主题，所以那边先补成了
+     faint 4.33 / favor 5.39 / favor-pos 8.05 / like 8.94；
+     浅色这边原值（与暗色共用）实测是 faint 7.71 ✅ / favor 4.82 ✅ /
+     favor-pos 2.88 ✗ / like 2.36 ✗ —— 也就是**两边各挂两条**，
+     一套值救不了两套底，所以必须成对给。 */
+  --log-faint: #6f675a;      /* 4.94 */
+  --log-favor: #9c2b25;      /* 6.67 */
+  --log-favor-pos: #7a5f16;  /* 5.35 */
+  --log-like: #8a5320;       /* 5.57 */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -391,7 +676,7 @@ body::before {
   transition: all .14s;
 }
 .mini-btn:hover { background: var(--paper-3); color: var(--ink); }
-.mini-btn.danger:hover { background: var(--red); color: #fff; border-color: var(--red); }
+.mini-btn.danger:hover { background: var(--solid-red); color: var(--solid-ink); border-color: var(--solid-red); } /* 7.5-bis 乙案 */
 .op-btn {
   padding: 3px 9px; font-size: 11.5px; cursor: pointer; margin-right: 4px;
   background: var(--card-2); border: 1px solid var(--line); border-radius: 4px; color: var(--ink-2);
@@ -401,7 +686,7 @@ body::before {
 .op-btn.primary { background: var(--solid); color: #f6f1e4; border-color: var(--solid); }
 .op-btn.primary:hover { background: #4a433b; }
 .op-btn.danger { color: var(--red); }
-.op-btn.danger:hover { background: var(--red); color: #fff; border-color: var(--red); }
+.op-btn.danger:hover { background: var(--solid-red); color: var(--solid-ink); border-color: var(--solid-red); } /* 7.5-bis 乙案 */
 
 /* 底部按钮排：**吸底常驻**。
    改之前：两个 260px 宽的按钮塞在 305px 的容器里 → 横向溢出 215px，
@@ -434,35 +719,48 @@ body::before {
 #screen-game { padding: 0; }
 #topbar {
   flex: 0 0 auto; display: flex; align-items: center; gap: 18px;
-  padding: 8px 16px; background: linear-gradient(180deg, #3a342c, #2b2721);
-  color: #ece5d6; box-shadow: 0 2px 12px rgba(40, 32, 20, .3); z-index: 5;
+  padding: 8px 16px;
+  background: linear-gradient(180deg, var(--tb-bg-1), var(--tb-bg-2));
+  color: var(--tb-ink);
+  box-shadow: 0 2px 12px rgba(40, 32, 20, .3); z-index: 5;
 }
 .tb-left { display: flex; align-items: baseline; gap: 10px; min-width: 230px; }
-.tb-name { font-family: var(--font); font-size: 18px; font-weight: 700; letter-spacing: .06em; color: #fbf6e9; }
-.tb-sect { font-size: 12px; color: #c3b795; }
-.tb-title { font-size: 12px; color: var(--gold); }
+.tb-name { font-family: var(--font); font-size: 18px; font-weight: 700; letter-spacing: .06em; color: var(--tb-name); }
+.tb-sect { font-size: 12px; color: var(--tb-sect); }
+.tb-title { font-size: 12px; color: var(--tb-title); }
 .tb-bars { flex: 1; display: flex; gap: 12px; }
 .tb-bar {
   flex: 1; height: 17px; border-radius: 9px; position: relative; overflow: hidden;
-  background: var(--surface-hi); border: 1px solid rgba(255, 255, 255, .13);
+  /* 🔴 空槽底色**不跟主题走**，刻意写死深色（design/78 §2.5）。
+     原因：上面那行数字（`.tb-bar span`）是 `inset: 0` 铺满整条的，
+     左半截压在 fill 上、右半截压在**空槽**上，两边都得算。
+     原来这里写 `var(--surface-hi)`：暗色是 #2e2820（白字 14.58 ✅），
+     可亮色是 #fffefb —— **白字白底 1.01:1，血条数字直接消失**。
+     顶栏本来就是一条不可换肤的恒暗色带（§1.2），深槽不突兀，
+     写死 #241f18 后白字实测 16.35 ✅，两个主题一起解决。
+     ⚠️ 别"顺手"把它改回 var()：一改回变量，浅色主题下玩家就看不见自己的血了。 */
+  background: #241f18; border: 1px solid rgba(255, 255, 255, .13);
 }
 .tb-bar .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; transition: width .3s ease; }
+/* ⚠️ 四条 fill 的**亮端是被压深过的**：数字是白字，压在渐变较亮那一端时要够 4.5:1。
+   原亮端 mp 3.97 / exp 2.65 / food 2.31 / water 2.79 全部不达标（§2.5 实测）。
+   hp 的 #c0413a 是 5.17、critical 的 #a0322c 是 7.03，本来就过，不动。 */
 .tb-bar.hp .fill { background: linear-gradient(90deg, #8c2a23, #c0413a); }
-.tb-bar.mp .fill { background: linear-gradient(90deg, #24557f, #3d84c4); }
-.tb-bar.exp .fill { background: linear-gradient(90deg, #6d6120, #b0a03a); }
-.tb-bar.food .fill { background: linear-gradient(90deg, #9a6a22, #d8a13c); }
-.tb-bar.water .fill { background: linear-gradient(90deg, #2c6d74, #4aa8b0); }
+.tb-bar.mp .fill { background: linear-gradient(90deg, #24557f, #2f6ba4); }   /* 亮端 3.97 → 5.59 */
+.tb-bar.exp .fill { background: linear-gradient(90deg, #6d6120, #7d7020); }  /* 亮端 2.65 → 4.99 */
+.tb-bar.food .fill { background: linear-gradient(90deg, #9a6a22, #96701f); } /* 亮端 2.31 → 4.53 */
+.tb-bar.water .fill { background: linear-gradient(90deg, #2c6d74, #2f7b82); }/* 亮端 2.79 → 4.91 */
 .tb-bar .fill.low { filter: saturate(.6) brightness(1.15); }
 .tb-bar .fill.critical { background: #a0322c !important; animation: blink .8s infinite alternate; }
 @keyframes blink { from { opacity: 1; } to { opacity: .45; } }
-.tb-sold { font-size: 11px; color: #e6a8c0; font-weight: 600; letter-spacing: .05em; }
+.tb-sold { font-size: 11px; color: var(--tb-sold); font-weight: 600; letter-spacing: .05em; }
 .tb-bar span {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
   font-size: 10.5px; letter-spacing: .04em; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
 }
 .tb-right { display: flex; gap: 16px; align-items: center; min-width: 200px; justify-content: flex-end; }
-.tb-money { font-size: 13px; color: var(--gold); font-weight: 600; }
-.tb-time { font-size: 12px; color: #b0a78e; }
+.tb-money { font-size: 13px; color: var(--tb-money); font-weight: 600; }
+.tb-time { font-size: 12px; color: var(--tb-time); }
 
 #main { flex: 1; display: flex; min-height: 0; overflow: hidden; }
 
@@ -569,7 +867,7 @@ body::before {
   transition: all .15s;
 }
 .ra-btn::before { content: '✦ '; font-size: 10px; opacity: .8; }
-.ra-btn:hover { background: var(--jade); color: #fff; border-color: var(--jade); transform: translateY(-1px); }
+.ra-btn:hover { background: var(--tint-jade); color: var(--jade-hover-ink); border-color: var(--jade-hover-ink); transform: translateY(-1px); } /* 7.5-bis 甲案 */
 .ra-btn.ra-locked { background: var(--surface-2); border-color: var(--line-2); color: var(--ink-4); cursor: not-allowed; }
 .ra-btn.ra-locked::before { content: '✕ '; }
 .ra-btn.ra-locked:hover { background: var(--surface-2); color: var(--ink-4); border-color: var(--line-2); transform: none; }
@@ -601,7 +899,102 @@ body::before {
 .log-line.me { color: var(--purple); font-style: italic; }
 .log-line.story { color: var(--ink); padding-left: 10px; border-left: 3px solid var(--line); }
 .log-line.narrate { color: var(--ink-3); font-style: italic; }
-.log-line.combat { color: #8a3a2a; }
+/* ================================================================
+   战斗文本 · 写在纸上的血（design/76）
+   ----------------------------------------------------------------
+   ⚠️ 三条硬规矩（改这里之前先读 design/76 §3.1）：
+     ① **字号一律 14px**，与日志正文完全相同。任何档位、任何状态，
+        不改 font-size、不改 line-height、不改 margin-bottom。
+     ② **padding-left 恒定 = --combat-pad(15px)**，不随档位变。
+        档位的差异**全部**由 ::before 那道杠承载 —— 杠是绝对定位的，占不到行盒。
+     ③ 不给圆角、不给边框、不给阴影（暴击柔光除外）、不给背景图。
+        它还是**一行字**，不是卡片。
+
+   ⚠️ 字号 / 行高 / 行距**这里一个都不写**：`.log` 已经是 `font-size:14px`、
+      `line-height:1.8`，`.log-line` 已经是 `margin-bottom:3px` ——
+      战斗行原样继承，正好就是规格要的那三个值。
+      **别"顺手"给它加 font-size**：加了就是「分档跳行高」，一场架会抖。
+
+   ⚠️ 为什么用 ::before 而不是 border-left：
+      border-left **参与布局**。杠宽从 2px 到 6.5px，用 border 就必须让每档的
+      padding-left 跟着减（否则正文起始位置会按档位左右跳 4.5px），
+      那是一条「两处各写一份、必然漂移」的坑。
+      **绝对定位的 ::before 从结构上消灭了这个可能。**（design/76 §3.2）
+   ================================================================ */
+.log-line.combat {
+  position: relative;
+  padding-left: var(--combat-pad);
+  /* 秒数：写在纸上的字，用正文那一档，不用 --ink-2 那种"叙述灰" */
+  color: var(--combat-hit-1);
+}
+.log-line.combat::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: var(--combat-bar-in, 32%);
+  bottom: var(--combat-bar-in, 32%);
+  width: var(--combat-bar-w, 2px);
+  background: var(--combat-bar, var(--combat-s1));
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+/* —— 五档：只有几何与色在变，字号/行高/间距一个都不动 ——
+   ui.js 的 combatTierOf() 从 COMBAT_LINES.severity 读出档位后挂 .cb-t1…5，
+   并同时挂一个 data-tier 供测试机械读取。 */
+.log-line.combat.cb-t1 { --combat-bar-w: var(--combat-bar-w-1); --combat-bar-in: var(--combat-bar-in-1); --combat-bar: var(--combat-s1); }
+.log-line.combat.cb-t2 { --combat-bar-w: var(--combat-bar-w-2); --combat-bar-in: var(--combat-bar-in-2); --combat-bar: var(--combat-s2); }
+.log-line.combat.cb-t3 { --combat-bar-w: var(--combat-bar-w-3); --combat-bar-in: var(--combat-bar-in-3); --combat-bar: var(--combat-s3); }
+.log-line.combat.cb-t4 { --combat-bar-w: var(--combat-bar-w-4); --combat-bar-in: var(--combat-bar-in-4); --combat-bar: var(--combat-s4); font-weight: var(--combat-w-4); }
+.log-line.combat.cb-t5 {
+  --combat-bar-w: var(--combat-bar-w-5); --combat-bar-in: var(--combat-bar-in-5); --combat-bar: var(--combat-s5);
+  font-weight: var(--combat-w-5);
+  background: var(--combat-s5-bg);   /* 第 5 档分水岭：极淡底，实测吵就第一个砍它 */
+}
+
+/* —— 主客：实心杠 = 血是我的；虚线杠 = 血是别人的 ——
+   ⚠️ 不是「我打出的 / 我挨的」：那样 NPC 打 NPC 无处安放。
+      判据是**血是谁的**（design/76 §1.4 / §3.4）。 */
+.log-line.combat.cb-in  { color: var(--combat-hit-1);  }
+.log-line.combat.cb-out { color: var(--combat-deal-1); }
+.log-line.combat.cb-out::before {
+  background: repeating-linear-gradient(
+    180deg, var(--combat-bar, var(--combat-s1)) 0 3px, transparent 3px 6px);
+}
+/* 逐档字色：血是我的用全档，血是别人的降一档 */
+.log-line.combat.cb-in.cb-t1  { color: var(--combat-hit-1);  }
+.log-line.combat.cb-in.cb-t2  { color: var(--combat-hit-2);  }
+.log-line.combat.cb-in.cb-t3  { color: var(--combat-hit-3);  }
+.log-line.combat.cb-in.cb-t4  { color: var(--combat-hit-4);  }
+.log-line.combat.cb-in.cb-t5  { color: var(--combat-hit-5);  }
+.log-line.combat.cb-out.cb-t1 { color: var(--combat-deal-1); }
+.log-line.combat.cb-out.cb-t2 { color: var(--combat-deal-2); }
+.log-line.combat.cb-out.cb-t3 { color: var(--combat-deal-3); }
+.log-line.combat.cb-out.cb-t4 { color: var(--combat-deal-4); }
+.log-line.combat.cb-out.cb-t5 { color: var(--combat-deal-5); }
+
+/* —— 落空：不画杠 —— 没打着就不该有血色 —— */
+.log-line.combat.cb-miss { color: var(--combat-miss); font-weight: 400; background: none; }
+.log-line.combat.cb-miss::before { content: none; }
+
+/* —— 被挡开：2px 密虚线杠 —— */
+.log-line.combat.cb-block {
+  color: var(--combat-block); font-weight: 400; background: none;
+  --combat-bar-w: var(--combat-bar-block-w);
+  --combat-bar-in: var(--combat-bar-block-in);
+  --combat-bar: var(--combat-s1);
+}
+.log-line.combat.cb-block::before {
+  background: repeating-linear-gradient(
+    180deg, var(--combat-s1) 0 2px, transparent 2px 4px);
+}
+
+/* —— 暴击：竖条加外柔光，字重 +100（封顶 600）——
+   ⚠️ 不用金色。金留给地图的 L1 与面板的"我"，战斗只有朱砂那一瓶。 */
+.log-line.combat.cb-crit::before { box-shadow: 0 0 9px 0 var(--combat-crit-glow); }
+
+/* —— 数值模式：句尾那个（-37）—— 只在括号上做文章，正文不动 —— */
+.log-line.combat .cb-num { color: var(--combat-num); letter-spacing: var(--combat-num-ls); }
 .log-line.quest { color: var(--jade); font-weight: 600; padding-left: 8px; border-left: 3px solid var(--jade); }
 .log-line.achieve { color: var(--gold); font-weight: 600; }
 .log-line.title { font-size: 26px; letter-spacing: .2em; text-align: center; color: var(--ink); margin: 14px 0 6px; }
@@ -616,25 +1009,105 @@ body::before {
 /* 力竭昏倒 / 醒转（玩家**不会死**，只是昏过去）。
    ⚠️ 有别于 `.die`（血红、重）：昏倒是「眼前一黑」的一瞬，用暗青灰、居中留白，
    读起来是「晕过去了」而不是「被打死了」——这是主人明确要的观感。 */
-.log-line.faint { color: #4a4a58; font-weight: 600; text-align: center; letter-spacing: .06em; margin: 10px 0 8px; }
+.log-line.faint { color: var(--log-faint); font-weight: 600; text-align: center; letter-spacing: .06em; margin: 10px 0 8px; }
 /* 世界氛围（场所环境音 / NPC 走动消息）。
    ⚠️ 这一类**必须比正文弱**：它是背景声，不是事件。
       做亮了会跟「某某攻击了你」抢眼，玩家会误以为是重要信息。 */
 .log-line.ambient { color: var(--ink-4); font-size: 12.5px; font-style: italic; opacity: .88; padding-left: 2px; }
-/* 社交相关日志行（好感变动 / 武学条目 / 喜爱之物） */
-.log-line.favor { color: #c0392b; font-size: 13px; }
-.log-line.favor-pos { color: #b8860b; }
-.log-line.skill { color: var(--blue); font-size: 13.5px; }
-.log-line.like { color: #cf9163; font-size: 13.5px; }
-
-/* 日志里「能点一下问怎么交互」的名词 */
-.log-line .hl {
-  display: inline; padding: 1px 5px; margin: 0 1px; font: inherit; line-height: inherit;
-  background: var(--tint-jade); border: 1px solid var(--line-jade); border-radius: 5px; color: var(--jade-d);
-  cursor: pointer; transition: all .14s;
+/* —— R4 痕迹句（design/85 · 79 §2.1 ③ 视觉）：退两格、朱色、行首一枚实心朱点 ——
+   ⚠️ 朱点是**主判据**不是装饰（79 §2.3：②↔③ 两色去色后几乎一样，没点分不开）。
+   色一律变量：--room-trace = var(--red)，暗亮两主题成对覆写（dark-bg 铁律），值同走 --red。 */
+.log-line.trace {
+  position: relative;
+  padding-left: var(--room-indent-3);
+  color: var(--room-trace);
 }
-.log-line .hl:hover { background: var(--jade); color: #fff; border-color: var(--jade); transform: translateY(-1px); }
-.log-line.action .hl { background: var(--tint-jade); border-color: var(--line-jade); border-bottom-style: dashed; }
+.log-line.trace::before {
+  content: '';
+  position: absolute;
+  left: var(--room-dot-left);
+  top: .9em;
+  width: var(--room-dot);
+  height: var(--room-dot);
+  margin-top: calc(var(--room-dot) / -2);
+  border-radius: 50%;
+  background: var(--room-trace);
+  pointer-events: none;
+}
+/* 社交相关日志行（好感变动 / 武学条目 / 喜爱之物） */
+.log-line.favor { color: var(--log-favor); font-size: 13px; }
+.log-line.favor-pos { color: var(--log-favor-pos); }
+.log-line.skill { color: var(--blue); font-size: 13.5px; }
+.log-line.like { color: var(--log-like); font-size: 13.5px; }
+
+/* 日志里的可交互名词（design/81 §3.1，2026-10-14 落地）——
+   记号语言一句话：**点 = 能下手，线 = 能过去。**
+   旧 chip（底色块 + 边框 + 圆角 + hover 抬升 = "网页按钮"）整段已删（81 §1.2），
+   `.log-line.action .hl` 那条撞出口虚线的规则也已单独删（83 §4.3.2）。
+   新记号：字下一颗朱色着重点（中文原生点读记号，形状主判据不依赖颜色，81/N-V-1）。 */
+.log-line .hl {
+  /* ① 按钮复位：不复位就是个按钮 */
+  display: inline; font: inherit; line-height: inherit;
+  margin: 0; padding: 0; border: 0; background: none; border-radius: 0;
+  color: var(--noun-ink);
+  cursor: pointer;
+  /* ② 主判据：着重点（81/N-V-1）。点大小 --noun-dot-size 由浏览器按字号算 */
+  -webkit-text-emphasis: filled dot var(--noun-dot);
+          text-emphasis: filled dot var(--noun-dot);
+  -webkit-text-emphasis-position: under right;
+          text-emphasis-position: under right;
+  transition: color .14s, text-decoration-color .14s;
+}
+/* ③ 兜底：认不出 text-emphasis 的引擎 → 一条朱色实线（与出口的虚线+灰不同族，81/N-V-7）。
+   ⚠️ 79 §4.2 硬约束：亮色主题下着重点是 ②↔③ 唯一判据，绝不允许常态退化到这条线。 */
+@supports not (text-emphasis: filled dot) {
+  .log-line .hl { border-bottom: 1px solid var(--noun-fb-line); }
+}
+/* 悬停：只加一条线，不改点、不改色、不动排版（81 §3.1 状态表） */
+@media (hover: hover) {
+  .log-line .hl:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--noun-dot);
+    text-underline-offset: 3px;
+  }
+}
+/* 按下：瞬时极淡朱底，仅存在于按下那一瞬，不是常态底 */
+.log-line .hl:active { background: var(--tint-red); }
+/* 聚焦：与悬停同式 + 虚线轮廓（键盘聚焦不能只靠颜色，形状补位） */
+.log-line .hl:focus-visible {
+  text-decoration: underline;
+  text-decoration-color: var(--noun-dot);
+  text-underline-offset: 3px;
+  outline: 1px dashed var(--noun-dot);
+  outline-offset: 2px;
+}
+
+
+/* 提示行（design/81 §3.2）：行内展开，不是浮层不是遮罩——贴着那句话、在主文本流里、窄屏照旧可见。
+   底色 / 边框 / 圆角一律不给：它是一行小字，不是卡片。 */
+.log-line .hl-tip {
+  font-size: var(--tip-font);
+  line-height: var(--tip-line);
+  color: var(--tip-ink);
+  margin-top: var(--tip-gap);
+  padding-left: var(--tip-indent-fb);   /* JS 量得到词位时以内联样式覆盖，量不到用兜底 */
+}
+/* 提示行里那颗可点的指令（§3.3）：字大半档（13px）——"这串字是能敲的"；
+   字族用 --font-ui，与指令输入框同族。颜色 --tip-cmd（唯二硬编码之一，见 :root 注释）。 */
+.log-line .hl-tip-cmd {
+  display: inline-block;
+  margin: 0; padding: 0 2px; border: 0; background: none; border-radius: 0;
+  font-family: var(--font-ui);
+  font-size: 13px; line-height: inherit;
+  color: var(--tip-cmd);
+  cursor: pointer;
+  transition: color .14s;
+}
+.log-line .hl-tip-cmd:hover { text-decoration: underline; }
+.log-line .hl-tip-cmd:active { background: var(--tint-red); }
+.log-line .hl-tip-cmd:focus-visible { outline: 1px dashed var(--noun-dot); outline-offset: 2px; }
+/* 说明位（§3.2 / .hl-tip-note）：文案归游有方（design/82），视觉只留槽位 */
+.log-line .hl-tip-note { margin-left: 8px; }
 
 /* 战斗面板 */
 #combat-panel {
@@ -654,7 +1127,10 @@ body::before {
 .ce-card.dead { opacity: .42; filter: grayscale(1); }
 .ce-name { font-family: var(--font); font-size: 14px; color: var(--ink); margin-bottom: 5px; }
 .ce-name i { font-style: normal; font-size: 11px; color: var(--ink-4); }
-.ce-hp { position: relative; height: 13px; border-radius: 7px; background: var(--paper-3); overflow: hidden; }
+/* 🔴 恒深槽，与顶栏 .tb-bar 同源（§7.3）：数字是白字、压在整条槽上，
+   血少的时候大半条是「空槽」—— 槽要是浅色（亮主题 --paper-3），白字掉到 1.38。
+   两主题同一值，勿在 html.theme-light 覆写。 */
+.ce-hp { position: relative; height: 13px; border-radius: 7px; background: #241f18; overflow: hidden; }
 .ce-hp .fill { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, #8c2a23, #c0413a); transition: width .3s; }
 .ce-hp span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .55); }
 .ce-buffs { font-size: 10.5px; color: var(--jade); margin-top: 4px; }
@@ -664,7 +1140,7 @@ body::before {
   background: var(--card-2); border: 1px solid var(--line); border-radius: 5px; color: var(--ink-2);
   transition: all .16s;
 }
-.cb-btn:hover { background: var(--red); color: #fff; border-color: var(--red); }
+.cb-btn:hover { background: var(--solid-red); color: var(--solid-ink); border-color: var(--solid-red); } /* 7.5-bis 乙案 */
 .cb-btn i { font-style: normal; font-size: 11px; color: var(--ink-4); margin-left: 5px; }
 .cb-btn:hover i { color: #e8cfc9; }
 .cb-btn.disabled { opacity: .4; cursor: not-allowed; }
@@ -729,7 +1205,7 @@ body::before {
 .si-sub { font-size: 11px; color: var(--ink-4); }
 .scene-item.npc.hostile .si-name { color: var(--red-2); }
 .scene-item.quest .si-name { color: var(--jade); }
-.tag-hostile { font-style: normal; font-size: 10px; color: #fff; background: var(--red); border-radius: 3px; padding: 0 4px; }
+.tag-hostile { font-style: normal; font-size: 10px; color: var(--solid-ink); background: var(--solid-red); border-radius: 3px; padding: 0 4px; } /* 7.5-bis 乙案 */
 .tag-count { font-style: normal; font-size: 10.5px; color: var(--gold); }
 
 /* ============ 新手引导卡片 ============ */
@@ -743,7 +1219,7 @@ body::before {
 .guide-block.guide-done { border-left-color: var(--jade); background: var(--tint-jade); border-color: var(--line-jade); }
 .guide-block.guide-done .scene-title { color: var(--jade); }
 .guide-toggle { font-family: var(--font-ui); font-size: 11px; padding: 1px 7px; border-radius: 3px; border: 1px solid #ddd0ab; background: var(--card-2); color: var(--gold); cursor: pointer; letter-spacing: 0; }
-.guide-toggle:hover { background: var(--gold); color: #fff; border-color: var(--gold); }
+.guide-toggle:hover { background: var(--tint-gold); color: var(--gold-hover-ink); border-color: var(--gold-hover-ink); } /* 7.5-bis 甲案 */
 .guide-block.guide-done .guide-toggle { border-color: var(--line-jade); color: var(--jade); }
 .guide-body { cursor: pointer; padding-top: 7px; }
 .guide-progress { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; }
@@ -768,8 +1244,8 @@ body::before {
 .gp-step.locked .gps-goal { color: var(--ink-4); }
 .gp-step.locked .gps-hint { display: none; }
 .gps-idx { flex: 0 0 21px; height: 21px; line-height: 21px; text-align: center; border-radius: 50%; font-size: 11.5px; background: var(--line-2); color: var(--ink-3); }
-.gp-step.done .gps-idx { background: var(--jade); color: #fff; }
-.gp-step.cur .gps-idx { background: var(--gold); color: #fff; font-weight: 700; }
+.gp-step.done .gps-idx { background: var(--solid-jade); color: var(--solid-ink); } /* 7.5-bis 乙案 */
+.gp-step.cur .gps-idx { background: var(--solid-gold); color: var(--solid-ink); font-weight: 700; } /* 7.5-bis 乙案 */
 .gps-body { flex: 1; }
 .gps-title { font-family: var(--font); font-size: 14px; color: var(--ink); margin-bottom: 2px; }
 .gp-step.done .gps-title { color: var(--jade); }
@@ -794,7 +1270,7 @@ body::before {
 /* 「任务」面板里置顶的那条新手教程（与其它任务卡区分开） */
 .quest-card.newbie { border-left-color: var(--red); background: var(--surface-3); }
 .quest-card.newbie .q-name { color: var(--red); }
-.qn-badge { font-size: 10.5px; color: #fff; background: var(--red); border-radius: 3px;
+.qn-badge { font-size: 10.5px; color: var(--solid-ink); background: var(--solid-red); border-radius: 3px; /* 7.5-bis 乙案 */
   padding: 0 5px; margin-left: 7px; vertical-align: 2px; letter-spacing: 0; }
 .qnb-bar { height: 5px; background: var(--line-2); border-radius: 3px; overflow: hidden; margin: 7px 0 5px; }
 .qnb-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold), var(--red)); }
@@ -922,7 +1398,7 @@ body::before {
 .qj-off { margin-left: auto; flex: none; font-size: 12px; color: var(--ink-3); text-align: right; }
 .td-name { font-family: var(--font); color: var(--ink); font-weight: 600; }
 .td-ops { white-space: nowrap; }
-.tag-on { font-style: normal; font-size: 10px; color: #fff; background: var(--jade); border-radius: 3px; padding: 1px 5px; margin-left: 4px; }
+.tag-on { font-style: normal; font-size: 10px; color: var(--solid-ink); background: var(--solid-jade); border-radius: 3px; padding: 1px 5px; margin-left: 4px; } /* 7.5-bis 乙案 */
 
 /* 属性卡片 */
 .attr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 6px; }
@@ -1024,7 +1500,7 @@ body::before {
 .mini-tag:hover { background: var(--solid); color: #fff; border-color: var(--solid); }
 .mini-tag.static { cursor: default; background: var(--paper-2); color: var(--ink-3); }
 .mini-tag.static:hover { background: var(--paper-2); color: var(--ink-3); }
-.mini-tag.on { background: var(--jade); color: #fff; border-color: var(--jade); cursor: default; }
+.mini-tag.on { background: var(--solid-jade); color: var(--solid-ink); border-color: var(--solid-jade); cursor: default; } /* 7.5-bis 乙案 */
 .mini-tag.off { background: var(--paper-3); color: var(--ink-4); border-color: var(--line); cursor: default; }
 .mini-tag.local { background: rgba(184, 140, 62, .14); color: var(--gold); border-color: rgba(184, 140, 62, .38); cursor: default; }
 
@@ -1040,7 +1516,7 @@ body::before {
 .ask-sub { font-size: 12.5px; color: var(--ink-3); margin: 12px 0 6px; }
 .ask-sub-hint { font-size: 11px; color: var(--ink-4); margin-left: 6px; }
 .mini-tag.who { background: rgba(184, 140, 62, .10); border-color: rgba(184, 140, 62, .34); color: var(--gold); }
-.mini-tag.who:hover { background: var(--gold); border-color: var(--gold); color: #fff; }
+.mini-tag.who:hover { background: var(--tint-gold); border-color: var(--gold-hover-ink); color: var(--gold-hover-ink); } /* 7.5-bis 甲案 */
 .mini-tag.who sup { font-size: 9.5px; opacity: .75; margin-left: 4px; letter-spacing: 0; }
 
 /* ============ 江湖舆图 ============ */
@@ -1082,12 +1558,31 @@ body::before {
   /* 斜向平移：自己处理手势，禁掉浏览器一次只走一个轴的原生滚动 */
   touch-action: none; cursor: grab; -webkit-overflow-scrolling: auto; }
 .map-canvas.panning { cursor: grabbing; user-select: none; -webkit-user-select: none; }
-.map-grid-bg { position: absolute; z-index: 0; pointer-events: none;
-  background-image: linear-gradient(rgba(190,180,155,.16) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(190,180,155,.16) 1px, transparent 1px);
-  background-size: 30px 30px;
+/* 🔴 P0-C C-2（甄塑之《墨拓残卷》§4.3 第 1 条）：`.map-grid-bg` → **`.map-paper-grain`**。
+   老规则有两个毛病，都是同一个根因：
+     ① 类名叫 `grid` —— 后来者一看名字就会去画网格；
+     ② `background-size: 30px 30px` **正好等于格距** ⇒ 帘纹间距 == 格距
+        ⇒ 那不是帘纹，**那是网格线**，直接踩「不许坐标 / 网格 / 缩尺」这条硬约束。
+   改名后：间距走 `--map-grain-step`（**固定 7px**），与格距彻底脱钩（spec V-22）。
+   ⚠️ ui.js 那边原来还会内联一个 `background-size: MAP_CELL px`，已一并删掉 ——
+      内联值优先级高于这里，不删就是白改。 */
+.map-paper-grain { position: absolute; z-index: 0; pointer-events: none;
+  background-image: linear-gradient(var(--map-grain) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--map-grain-2) 1px, transparent 1px);
+  background-size: var(--map-grain-step) var(--map-grain-step);
   background-position: 0 0;
   border-radius: 4px;
+}
+/* 未探索羽化层（spec §3.2）：压在帘纹之上（z=1）、地块（z=2）之下。
+   未探索 = **纸本身褪回页面底色，连帘纹都淡掉** —— 不是云纹、不是淡墨、
+   不是羊皮遮盖：那些都还是在没去过的地方「画了东西」，语义反了。
+   `--map-lit-x/y` 由 ui.js 按「已探索格子的重心」内联到 `.map-canvas` 上。 */
+.map-veil { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: var(--map-paper-lit);
+  -webkit-mask-image: radial-gradient(120% 120% at var(--map-lit-x, 50%) var(--map-lit-y, 50%),
+    transparent 0, transparent calc(100% - var(--map-edge-soft)), #000 100%);
+  mask-image: radial-gradient(120% 120% at var(--map-lit-x, 50%) var(--map-lit-y, 50%),
+    transparent 0, transparent calc(100% - var(--map-edge-soft)), #000 100%);
 }
 .map-edges { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 1;
   /* 🔴 主人 2026-10-12：「世界地图地块显示不全」。
@@ -1099,15 +1594,21 @@ body::before {
      内联 width/height 属性当坐标系（viewBox 的等价物），于是 SVG 用 1:1
      映射到画布 892px 的内容宽度，与绝对定位的地块同一坐标系。 */
   width: 100%; height: 100%; }
-/* ★ 2026-10-12 主人：「把两个地块之间的连线换成虚线形式」。
-   于是**所有**走廊连线都是虚线（原来是实线，只有跨区那条兜底折线画虚线）。
-   注意 dash 的节奏要跟线的粗细配套：虚线太密会糊成一条实线，太疏又像断掉。
-   原来给跨区折线用的 `3 7` 太稀，配 6~7px 的粗线会碎，改成 `7 6`。 */
-.map-edges .edge { fill: none; stroke-linecap: round; stroke-dasharray: 7 6; }
-.map-edges .edge-dim { stroke: var(--edge-dim); stroke-width: 7; }
-.map-edges .edge-known { stroke: var(--edge-known); stroke-width: 6; }
+/* 🔴 P0-C C-2（spec §4.3 第 11 条）：**L2 走过的连线改实线**。
+   老代码在 `.edge` 上统一挂了 `stroke-dasharray: 7 6`，于是**所有**线（包括
+   「走过的路」）都被拉成虚线。spec §3.1 定的是：
+     L2 走过的路 = **实线**（金褐 2.2px）；L3 通往未知的 = **虚线**（极淡 1.4px）。
+   虚/实现在是「走过的 / 没走过的」的**第二重编码**，跟颜色无关 ——
+   灰度截图下也能数出来。所以 dasharray 只能挂在「未知」那一档上，
+   不能再挂在 `.edge` 基类上把它俩一起拉虚。 */
+.map-edges .edge { fill: none; stroke-linecap: round; }
+/* L2 走过的：实线 */
+.map-edges .edge-known { stroke: var(--map-path-known, var(--edge-known)); stroke-width: var(--map-path-w, 6); }
+/* L3 通往未知的：虚线、极淡（「这里可能有路，但你没走过」） */
+.map-edges .edge-dim { stroke: var(--map-path-dim, var(--edge-dim)); stroke-width: var(--map-path-dim-w, 7);
+  stroke-dasharray: 7 6; }
 /* ★ 2026-10-13 主人：「世界地图做成和区域地图一样的『连线』形式」。
-   布局摆不下而画不成走廊的那些出口边（`bridges`，实测 154 条），
+   布局摆不下而画不成走廊的那些出口边（`bridges`，实测 234 条），
    按距离分两档补线（见 ui.js 的 4b 段）：
      · 距离 ≤3：走折线、用上面 `.edge` 那套常态样式（看不出是跨越）；
      · 距离 >3：走这条 `.edge-far` —— **细、淡、点状**。
@@ -1139,15 +1640,17 @@ body::before {
    原来那段「怎么让它不遮挡地块名」的三版排查记录随样式一起删了 ——
    留在这里会让人以为还有个 `.map-edge-hint` 需要维护。 */
 
-/* 地形装饰：树石山水。z-index 1 压在区域底色(0)之上、房间(2)之下 */
-.map-terrain-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-.map-terrain { position: absolute; font-size: 15px; line-height: 30px; width: 30px; height: 30px;
-  text-align: center; font-style: normal; opacity: .5; transform: translate(-50%, -50%); }
-.tr-tree { color: #4a7a45; }  .tr-rock { color: #8b8578; }
-.tr-grass { color: #9cb46a; } .tr-water { color: #6b9bb5; }
-.tr-sand { color: #cbb489; } .tr-snow { color: #b8c4cc; }
-.tr-road { color: #c4b391; } .tr-wall { color: #a8a094; }
-.tr-farm { color: #b3a24e; } .tr-cloud { color: #c6cad0; }
+/* 地形装饰（.map-terrain-layer / .map-terrain / .tr-* 十个色）—— **已删**。
+   design/78 §1.4：这 12 行是**永不渲染的死代码** —— `terrain` 数据发了，
+   但前端一个字都不读（`engine.js:1434` 原文），全仓 JS 没有任何一处
+   生成 `map-terrain` 这个类名，`.tr-*` 那十个色也就永远落不到屏幕上。
+   留着的坏处不是"多几行"，是**误导**：下一个人看到会以为"地形装饰是画上去的"，
+   然后要么去维护它，要么被 `mapguide-check.js` 那条
+   「前端**不再渲染**地形装饰」的断言拦下来，白查半天。
+   ⚠️ 删之前查过两遍（字面 + 拼接写法）：`'tr-' + x` 这种动态拼法全仓没有，
+      只有 CSS 里这 10 行定义处出现 —— 确认是纯死代码才动的手。
+   若将来真要画地形，届时按 `--map-*` 那一套**成对变量**重新提，别复用这批值
+   （它们是全库唯一一组没有主题分支的硬编码色，20 个组合全部不达标）。 */
 
 /* 地块 = **纯地名**（主人 2026-10-08：「把地块里的方块框删掉，用纯地名显示，
    做成屏幕上那九宫格地名一样的形式」）。
@@ -1176,22 +1679,68 @@ body::before {
   transition: transform .12s; }
 /* 名字下面垫一层画布底色做描边：没有方块托底了，字压在走廊上也得看得清
    （深色/浅色主题都用同一个变量，别写死白色）。
-   ★ 2026-10-13 主人报「唐门遮挡了旁边地块的名字」后加的三条：
-   `white-space: nowrap` —— 地图格子里现在只摆**短名**（≤4 字，见 ui.js 的 mapLabel），
-     不让它再折行，免得「黑松林深」这类 4 字名折成两行把格子撑高；
-   `letter-spacing: -.2px` —— 4 字 × 8px 是 32px，比 30px 的格子宽 2px，
-     收紧一点点字距就把这 2px 找回来，**不靠缩字号**（缩过头就是全图蚂蚁）；
-   `max-width: 100%` + `overflow: hidden` —— 万一将来有超出 4 字的名漏进来，
-     宁可自己裁掉也不许溢出压到邻格（「压字」是主人亲眼看见的脏东西）。 */
-.map-node .mn-name { text-align: center; word-break: keep-all; white-space: nowrap; padding: 0 1px;
-  color: var(--ink-1); line-height: 1.05; letter-spacing: -.2px;
-  max-width: 100%; overflow: hidden; box-sizing: border-box;
+
+   🔴 P0-C C-2（spec §4.3 第 9 条）：**`white-space: nowrap` 与 `overflow: hidden` 删掉** ——
+   这两个就是「砍字」的**执行者**。2026-10-13 加它们是为了压住「4 字名溢出 2px 压到邻格」，
+   但那是**症状不是病根**：病根是格子只有 30px 却要塞 4 个字。
+   C-2 把格子抬到 52px、字号回到 11px，宽度够用了，于是这两个「截断器」必须一起撤 ——
+   留着它们，§3.9 那套算法算出来的多 name 行一样会被 `overflow:hidden` 抹掉。
+
+   现在宽度的责任分工是：
+     · **行数**由 ui.js 按 §3.9 算（1/2/3 行）；
+     · **行宽**由 ui.js 内联的 `max-width: 每行码点数 × 字号` 卡住（≤ 格距）；
+     · 这里只负责「允许换行」与「不许溢出」。
+   ⚠️ `inline-block` 是必需的：`max-width` 对纯 inline 元素无效，不给就白算。 */
+.map-node .mn-name { text-align: center; word-break: keep-all; padding: 0 1px;
+  color: var(--map-ink-known, var(--ink-1)); line-height: 1.05; letter-spacing: -.2px;
+  display: inline-block; box-sizing: border-box;
   text-shadow: 0 0 3px var(--card-2), 0 0 3px var(--card-2), 0 0 2px var(--card-2); }
 .map-node.here { z-index: 5; }
-.map-node.here .mn-name { color: var(--gold); font-weight: 700;
+/* L1「我在这里」：保留主人的**黄字**（2026-10-12 他把红字改成黄字的裁决不推翻），
+   字重 700 —— 与 L2 的 400 形成**不依赖颜色**的第二重区分（spec §3.1）。 */
+/* ⚠️ `--map-here-name` 在 `:root` 里的值就是 `var(--gold)` —— 保留主人 2026-10-12
+   「把红字改黄字」的裁决，只是外面套了一层 spec §4.1 的变量名。
+   下划线**保留**：它是 2026-10-13 加的「我在哪一眼找得到」的第三重线索，
+   spec 没要求删，删了就是白丢一条已验收的线索。 */
+.map-node.here .mn-name { color: var(--map-here-name); font-weight: 700;
   text-decoration: underline; text-underline-offset: 2px; }
+/* L1 朱砂方印（spec §3.3）：印是「人在纸上留下的动作」，与「私人笔记」同构 ——
+   我到过这儿，我盖了个章。实心 + 金环 + 阴刻「我」，三重信息量。
+   ⚠️ 为什么非加不可：不加的话，L1 只有「黄字」一重区分，而**颜色不得成为唯一
+      信息载体** —— 灰度截图下 L1 就找不着了。印是形状，去色仍在。 */
+.map-node .mn-seal { position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%); z-index: -1;
+  width: var(--map-seal-len, 30px); height: var(--map-seal-len, 30px);
+  border-radius: 2px; background: var(--map-here-fill, #b8493c);
+  border: 1.5px solid var(--map-here-ring, rgba(207,166,74,.88));
+  box-shadow: 0 0 6px 2px var(--map-here-glow, rgba(184,73,60,.26));
+  color: var(--map-here-ink, #f7f1e4); font-weight: 700; font-style: normal;
+  font-size: calc(var(--map-seal-len, 30px) * .52); line-height: 1;
+  display: flex; align-items: center; justify-content: center; }
 /* `.map-node.near` 的整套样式（金字 / pointer / hover 放大）随「删掉可点击前往」下线。 */
-/* `.map-node.reach / .known / .unknown / .dim` 的差异色随「一律亮白」一起下线。 */
+
+/* ── 「相邻可走，但你还没走过」那一档的**空心圈**（design/78 §4.5.1 M-V-2 / M-V-2b / M-V-4）
+   🔴 为什么非得有它：没有这个圈，地图就只剩「有字」和「整片空」两档 ——
+      而「整片空」正是主理人最烦的"空白方块"，玩家分不出"那边是堵墙"还是"那边有路没走过"。
+      这一档是四档里最需要被读懂的：**玩家靠它判断旁边有没有路可以走。**
+   🔴 主理人 2026-10-13 拍板：**形状是主判据、亮度是辅助，单靠亮度不算完成。**
+      ⇒ 下面三条是 `78/M-V-2b` 的机械判据，缺一即判定为"只靠亮度"：
+        ① `background: transparent` —— **空心**才是圈；填了色就成了"点"，与 L1 朱印撞语义
+        ② `border-width ≥ 1px`      —— 描边要在，去色后靠它撑出形状
+        ③ `border-radius ≥ 50%`     —— 圆形，与「朱印是方的」在形状上分开
+      ⚠️ 别把 `background` 改成 `var(--map-near-ring)`：那这一档就退化成实心点，
+         去色后与"已知"档的墨字混在一起，M-V-5（三档去色仍可数）直接失效。
+   ⚠️ 描边色用 `--map-near-ring`（暗/亮成对），取的是"墨渗进纸里"的方向，不是"褪色/没印实"。 */
+.map-node .mn-ring { flex: 0 0 auto;
+  width: 11px; height: 11px; box-sizing: border-box;
+  border: 1.5px solid var(--map-near-ring, rgba(228, 222, 209, .52));
+  border-radius: 50%;
+  background: transparent;
+  font-style: normal; }
+
+/* `.map-node.reach / .known / .unknown / .dim` 的差异色随「一律亮白」一起下线。
+   🔴 C-2 追加：`.dim` 的样式**连同 class 一起删** —— 「没去过 = 淡字」仍是
+      「在未去过的地方画了东西」，与 spec §3.2「未探索 = 留白」直接冲突。 */
 
 .map-quick { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 12;
   display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
@@ -1200,7 +1749,7 @@ body::before {
   box-shadow: 0 3px 12px rgba(0,0,0,.10); }
 .mq-title { font-size: 12.5px; color: var(--ink-3); }
 .mq-btn { padding: 4px 11px; font-size: 12.5px; border-radius: 4px; border: 1px solid var(--line-2); background: var(--tint-gold); color: var(--gold); cursor: pointer; }
-.mq-btn:hover { background: var(--gold); color: #fff; border-color: var(--gold); }
+.mq-btn:hover { background: var(--tint-gold); color: var(--gold-hover-ink); border-color: var(--gold-hover-ink); } /* 7.5-bis 甲案 */
 
 /* ---- 地图画布区（重设计）：画布 + 悬浮工具条 + 贴底的一步可达 ---- */
 .map-stage { position: relative; margin-bottom: 12px; }
@@ -1329,7 +1878,7 @@ body::before {
 .map-room { padding: 4px 10px; font-size: 12px; border-radius: 4px; background: var(--paper-2); color: var(--ink-4); border: 1px solid var(--line-2); }
 .map-room.near { background: var(--tint-gold); color: var(--gold); border-color: var(--line-gold); }
 .map-room.known { background: var(--tint-jade); color: var(--jade); border-color: var(--line-jade); }
-.map-room.here { background: var(--red); color: #fff; border-color: var(--red); font-weight: 600; }
+.map-room.here { background: var(--solid-red); color: var(--solid-ink); border-color: var(--solid-red); font-weight: 600; } /* 7.5-bis 乙案；暗值=主人钉死 #a83a2e */
 
 /* 帮助 */
 .help-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -1359,16 +1908,19 @@ body::before {
 }
 .choice-btn:hover { background: var(--solid); color: #f6f1e4; border-color: var(--solid); transform: translateX(3px); }
 .c-idx { width: 22px; height: 22px; border-radius: 50%; background: var(--paper-3); color: var(--ink-3); display: flex; align-items: center; justify-content: center; font-size: 12px; flex: 0 0 auto; }
-.choice-btn:hover .c-idx { background: var(--surface-hi); color: #fff; }
+/* §7.11 ④：hover 子件与父行同读 --solid（浅色下 = 深墨）。
+   原来读 --surface-hi —— 浅色下是近白底压白字 = 1.01，字直接没了。 */
+.choice-btn:hover .c-idx { background: var(--solid); color: #fff; }
 .c-label { flex: 1; }
 .c-hint { font-size: 11.5px; color: var(--ink-4); }
 .choice-btn:hover .c-hint { color: #cfc4a8; }
 /* 选项行右侧的百分比（绑架成功率）。`.c-label` 是 flex:1，所以它天然靠右。 */
 .c-rate { flex: 0 0 auto; font-family: var(--font-ui); font-size: 12.5px; font-weight: 600;
   color: var(--ink-3); background: var(--paper-3); border-radius: 10px; padding: 1px 8px; letter-spacing: .02em; }
-.c-rate.high { color: #fff; background: var(--jade); }
-.c-rate.low { color: #fff; background: var(--red-2); }
-.choice-btn:hover .c-rate { background: var(--surface-hi); color: #fff; }
+.c-rate.high { color: var(--solid-ink); background: var(--solid-jade); } /* 7.5-bis 乙案 */
+.c-rate.low { color: var(--solid-ink); background: var(--solid-red); } /* 7.5-bis 乙案（原 --red-2 底并入 solid-red 族） */
+/* §7.11 ④：同上，与父行（.choice-btn:hover，读 --solid）一致 */
+.choice-btn:hover .c-rate { background: var(--solid); color: #fff; }
 
 /* 询问话题 */
 .ask-topics { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
@@ -1384,7 +1936,7 @@ body::before {
   background: var(--paper-3); color: var(--ink-3); border: 1px solid var(--line); transition: all .18s;
   font-family: var(--font-ui);
 }
-.switch.on { background: var(--jade); color: #fff; border-color: var(--jade); }
+.switch.on { background: var(--solid-jade); color: var(--solid-ink); border-color: var(--solid-jade); } /* 7.5-bis 乙案 */
 
 /* Toast */
 .toast {
@@ -1402,23 +1954,26 @@ body::before {
 /* ---------------------------- MOD 制作器 / 管理器 / 市场 / 文档 ---------------------------- */
 #screen-modmaker, #screen-modcenter, #screen-market, #screen-doc { background: var(--surface); }
 
+/* §7.11 ③：mm-header 是**第二条不换肤的硬编码暗色带**（与顶栏同底 #3a342c→#2b2721），
+   主理人已裁：复用 --tb-*（恒暗带簇，两带共用），不开第三套。
+   ⚠️ 带内成员一律读 --tb-*，不许再读 --surface-* / --paper-*（会随主题变浅）。 */
 .mm-header {
   flex: 0 0 auto; display: flex; align-items: center; gap: 16px;
-  padding: 11px 18px; background: linear-gradient(180deg, #3a342c, #2b2721); color: #f4efe2;
+  padding: 11px 18px; background: linear-gradient(180deg, var(--tb-bg-1), var(--tb-bg-2)); color: var(--tb-ink);
   box-shadow: 0 2px 12px rgba(40, 32, 20, .28); z-index: 5;
 }
 .mm-header h2 { font-family: var(--font); font-size: 19px; letter-spacing: .2em; flex: 1; text-align: center; }
 .mm-header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .mm-header .btn-ink { min-width: auto; }
 .mm-header .btn-ink.small {
-  background: var(--surface-3); color: #e6dfcd; border-color: var(--surface-hi);
+  background: var(--tb-bg-2); color: var(--tb-ink); border-color: var(--tb-bg-1);
 }
-.mm-header .btn-ink.small:hover { background: var(--surface-hi); color: #fff; }
-.mm-header .btn-ink.small.primary { background: var(--red); border-color: var(--red); color: #fff; }
-.mm-header .btn-ink.small.primary:hover { background: var(--red-2); }
+.mm-header .btn-ink.small:hover { background: var(--tb-bg-1); color: #fff; }
+.mm-header .btn-ink.small.primary { background: var(--solid-red); border-color: var(--solid-red); color: var(--solid-ink); } /* 7.5-bis 乙案 */
+.mm-header .btn-ink.small.primary:hover { background: var(--solid-red); } /* 7.5-bis：hover 不加深（定稿封死加深路，主文字色已足对比） */
 .mk-search {
   padding: 7px 12px; font-size: 13px; font-family: var(--font-ui); border-radius: var(--radius);
-  border: 1px solid var(--surface-hi); background: var(--surface-3); color: #fff; outline: none; width: 180px;
+  border: 1px solid var(--tb-bg-1); background: var(--tb-bg-2); color: #fff; outline: none; width: 180px;
 }
 .mk-search::placeholder { color: rgba(255, 255, 255, .45); }
 
@@ -1508,7 +2063,7 @@ body::before {
   border-radius: 6px; padding: 5px 13px; font-size: 12.5px; cursor: pointer; font-family: var(--font-ui);
 }
 .mm-idk:hover { background: var(--paper-2); }
-.mm-idk.active { background: var(--gold); border-color: var(--gold-d); color: #fff; }
+.mm-idk.active { background: var(--solid-gold); border-color: var(--solid-gold); color: var(--solid-ink); } /* 7.5-bis 乙案 */
 .mm-idsearch { margin-bottom: 10px; }
 .mm-idsearch .mm-input { width: 100%; }
 .mm-idtip {
@@ -1608,7 +2163,7 @@ body::before {
 .mc-item.sel { border-color: var(--red); box-shadow: 0 0 0 2px rgba(156, 43, 37, .12); }
 .mc-item.on { border-left: 4px solid var(--jade); }
 .mci-order { flex: 0 0 26px; width: 26px; height: 26px; border-radius: 50%; background: var(--paper-3); color: var(--ink-3); display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-family: var(--font); }
-.mc-item.on .mci-order { background: var(--jade); color: #fff; }
+.mc-item.on .mci-order { background: var(--solid-jade); color: var(--solid-ink); } /* 7.5-bis 乙案 */
 .mci-main { flex: 1; min-width: 0; }
 .mci-name { font-family: var(--font); font-size: 15px; color: var(--ink); }
 .mci-name i { font-style: normal; font-size: 11.5px; color: var(--ink-4); }
@@ -1625,7 +2180,7 @@ body::before {
   background: var(--paper-3); border: 1px solid var(--line); color: var(--ink-4); transition: all .16s;
   font-family: var(--font-ui);
 }
-.mci-ops .sw.on { background: var(--jade); color: #fff; border-color: var(--jade); }
+.mci-ops .sw.on { background: var(--solid-jade); color: var(--solid-ink); border-color: var(--solid-jade); } /* 7.5-bis 乙案 */
 .mc-empty { padding: 40px 26px; text-align: center; font-size: 13.5px; color: var(--ink-4); font-family: var(--font); line-height: 1.9; }
 
 .mc-right { flex: 1; display: flex; flex-direction: column; min-width: 0; }
@@ -1798,6 +2353,14 @@ body::before {
   .modal-foot { padding: 10px 14px; }
   .modal-foot .btn-ink { padding: 11px 22px; }
   .choices-title { font-size: 16px; }
+  /* —— 81 交互名词触屏适配（并入同一 820 断点，不开第二块：S8-7/⑨-3 只认第一个 820 段）—— */
+  /* 触屏热区外扩：不改排版，用绝对定位的伪元素外扩命中区（81 §3.6） */
+  .log-line .hl { position: relative; }
+  .log-line .hl::before {
+    content: ''; position: absolute;
+    inset: calc(-1 * var(--hl-hit-pad)) -3px;
+  }
+  .log-line .hl-tip-cmd { min-height: var(--tip-cmd-min-h); }
 }
 
 /* 更窄的屏（≤560px）：5 条状态条一行塞不下，标签会被截成「饱…」这种。
@@ -1806,6 +2369,34 @@ body::before {
   .tb-bars { flex-wrap: wrap; }
   .tb-bar { flex: 1 1 108px; min-width: 108px; height: 15px; }
   .tb-bar span { font-size: 10px; }
+}
+
+/* ================================================================
+ *  江湖舆图 · 断点档位（P0-C C-2，spec §3.7）
+ * ================================================================
+ *  ⚠️ 这三个断点是 **820 / 560 / 380**，与 ui.js 里的 `BP_L / BP_NARROW / BP_S`
+ *     必须**同一个数**。老代码是 JS 用 640、CSS 用 560 —— 600px 窗口下
+ *     CSS 已切窄屏而 JS 还走桌面分支，两边画的不是同一张图（spec §3.7 点名的 bug）。
+ *     ⇒ 改这里的数字，就去改 ui.js 的 `BP_*`；反之亦然。别攒第三次。
+ *
+ *  档位表（格距 / 字号 / 印边长）：
+ *    XS  <380    → 66 / 13.5 / 38
+ *    S   380–559 → 60 / 13   / 35
+ *    M   560–819 → 56 / 12   / 32
+ *    L   ≥820    → 52 / 11   / 30   （`:root` 里的默认值就是这一档）
+ * ================================================================ */
+@media (max-width: 819px) {
+  :root { --map-cell: 56px; --map-font: 12px; --map-seal-len: 32px; --map-edge-soft: 22px; }
+  /* <820px 是触屏区：格子与「回到我」按钮的热区兜底 44px（spec §3.7）。
+     格距 56/60/66 本来就 ≥44，这条是**声明**而不是依赖格距恰好够。 */
+  .map-node { min-width: 44px; min-height: 44px; }
+}
+@media (max-width: 559px) {
+  :root { --map-cell: 60px; --map-font: 13px; --map-seal-len: 35px; --map-edge-soft: 18px; }
+}
+@media (max-width: 379px) {
+  :root { --map-cell: 66px; --map-font: 13.5px; --map-seal-len: 38px; }
+  .map-node { min-width: 48px; min-height: 48px; }
 }
 body.narrow .log-line { margin-bottom: 1px; line-height: 1.55; font-size: 13px; }
 body.narrow #sidebar { flex: 0 0 140px; }
@@ -1955,9 +2546,9 @@ body.narrow #scene { flex: 0 0 190px; }
   white-space: nowrap;
 }
 .log-line .exit-map .exit-inline:hover {
-  color: #fff;
-  background: var(--gold-d);
-  border-color: var(--gold);
+  color: var(--gold-hover-ink);
+  background: var(--tint-gold);
+  border-color: var(--gold-hover-ink); /* 7.5-bis 甲案 */
   transform: translateY(-1px);
 }
 

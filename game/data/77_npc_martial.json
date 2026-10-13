@@ -178,16 +178,6 @@
         "武器": "bamboo_stick"
       }
     },
-    "test_npc": {
-      "skills": {
-        "拳": "jh_fist"
-      },
-      "learned": {
-        "jh_fist": {
-          "level": 16
-        }
-      }
-    },
     "demo_swordman": {
       "skills": {
         "拳": "jh_fist"
@@ -225,6 +215,9 @@
         "basic_sword": {
           "level": 100
         }
+      },
+      "equipment": {
+        "武器": "iron_sword_basic"
       }
     },
     "npcv_288": {
@@ -254,6 +247,9 @@
         "basic_sword": {
           "level": 372
         }
+      },
+      "equipment": {
+        "武器": "iron_sword_basic"
       }
     }
   }

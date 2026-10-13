@@ -1,62 +1,114 @@
 {
   "rooms": {
-    "jiangnan_market": { "id": "jiangnan_market", "exits": { "nw": "wg_jiangnan" } },
-    "gusu_zhai_lane": { "id": "gusu_zhai_lane", "exits": { "n": "wg_gusu" } },
-    "luoyang_market": { "id": "luoyang_market", "exits": { "nw": "wg_luoyang" } },
-    "changan_market": { "id": "changan_market", "exits": { "nw": "wg_changan" } },
-    "chengdu_market": { "id": "chengdu_market", "exits": { "nw": "wg_chengdu" } },
-    "xiangyang_market": { "id": "xiangyang_market", "exits": { "nw": "wg_xiangyang" } },
-
+    "jiangnan_market": {
+      "id": "jiangnan_market",
+      "exits": {
+        "nw": "wg_jiangnan"
+      }
+    },
+    "gusu_zhai_lane": {
+      "id": "gusu_zhai_lane",
+      "exits": {
+        "n": "wg_gusu"
+      }
+    },
+    "luoyang_market": {
+      "id": "luoyang_market",
+      "exits": {
+        "nw": "wg_luoyang"
+      }
+    },
+    "changan_market": {
+      "id": "changan_market",
+      "exits": {
+        "nw": "wg_changan"
+      }
+    },
+    "chengdu_market": {
+      "id": "chengdu_market",
+      "exits": {
+        "nw": "wg_chengdu"
+      }
+    },
+    "xiangyang_market": {
+      "id": "xiangyang_market",
+      "exits": {
+        "nw": "wg_xiangyang"
+      }
+    },
     "wg_jiangnan": {
       "id": "wg_jiangnan",
       "name": "江南城·武馆",
       "region": "jiangnan",
       "desc": "三间打通的大屋，地上砸出两个浅坑，是几十年踩出来的。架上刀枪剑棍各一，都用得发亮。墙边一条长凳，坐过不知多少人。周教头坐在门口，看着院里的人打拳。",
-      "exits": { "se": "jiangnan_market" },
-      "npcs": ["wg_zhou"]
+      "exits": {
+        "se": "jiangnan_market"
+      },
+      "npcs": [
+        "wg_zhou"
+      ]
     },
     "wg_gusu": {
       "id": "wg_gusu",
       "name": "姑苏·武馆",
       "region": "gusu",
       "desc": "院子不大，一株老槐把天遮去一半。石锁、木桩、沙袋沿墙排开，沙袋上的补丁一层压一层。陆教头背着手站在廊下，看谁的马步先塌。",
-      "exits": { "s": "gusu_zhai_lane" },
-      "npcs": ["wg_lu"]
+      "exits": {
+        "s": "gusu_zhai_lane"
+      },
+      "npcs": [
+        "wg_lu"
+      ]
     },
     "wg_luoyang": {
       "id": "wg_luoyang",
       "name": "洛阳城·武馆",
       "region": "luoyang",
       "desc": "临街一溜五间，门板卸了下来靠墙立着。院里人不少，多是穿着短打的汉子，也有两三个读书人模样的在后头比划。裴教头手里一根藤条，谁手腕塌了，他拿藤条点一下。",
-      "exits": { "se": "luoyang_market" },
-      "npcs": ["wg_pei"]
+      "exits": {
+        "se": "luoyang_market"
+      },
+      "npcs": [
+        "wg_pei"
+      ]
     },
     "wg_changan": {
       "id": "wg_changan",
       "name": "长安城·武馆",
       "region": "changan",
       "desc": "京城里的武馆规矩大。进门先净手，兵器架擦得看不见灰。墙上挂着一块旧匾，字是前朝人写的，落款已经认不出了。马教头轻易不开口。",
-      "exits": { "se": "changan_market" },
-      "npcs": ["wg_ma"]
+      "exits": {
+        "se": "changan_market"
+      },
+      "npcs": [
+        "wg_ma"
+      ]
     },
     "wg_chengdu": {
       "id": "wg_chengdu",
       "name": "成都府·武馆",
       "region": "chengdu",
       "desc": "竹篱围出的一片空地，地上铺的是碎石子。练功的人赤着脚，踩得脚底板发亮。唐教头蹲在台阶上，一边剥豆子一边看。",
-      "exits": { "se": "chengdu_market" },
-      "npcs": ["wg_tang"]
+      "exits": {
+        "se": "chengdu_market"
+      },
+      "npcs": [
+        "wg_tang"
+      ]
     },
     "wg_xiangyang": {
       "id": "wg_xiangyang",
       "name": "襄阳城·武馆",
       "region": "xiangyang",
       "desc": "襄阳是兵家必争的地界，这座武馆里练的就不是花架子了。一排木枪靠在墙上，枪头都卸了。韩教头让人两两对打，自己踱着看，谁的脚下虚就停谁的。",
-      "exits": { "se": "xiangyang_market" },
-      "npcs": ["wg_han"]
+      "exits": {
+        "se": "xiangyang_market"
+      },
+      "npcs": [
+        "wg_han"
+      ]
     }
   },
-
   "npcs": {
     "wg_zhou": {
       "id": "wg_zhou",
@@ -79,18 +131,70 @@
       "hostile": false,
       "noWander": true,
       "personality": "haoshuang",
-      "likes": ["wine", "food"],
+      "likes": [
+        "wine",
+        "food"
+      ],
       "moneyToLearn": 100,
-      "skills": { "拳": "basic_fist", "内功": "basic_force", "轻功": "basic_dodge", "招架": "basic_parry" },
-      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing"],
+      "skills": {
+        "拳": "basic_fist",
+        "内功": "basic_force",
+        "轻功": "basic_dodge",
+        "招架": "basic_parry"
+      },
+      "teach": [
+        "basic_fist",
+        "basic_sword",
+        "basic_blade",
+        "basic_staff",
+        "basic_whip",
+        "basic_throw",
+        "basic_poison",
+        "basic_force",
+        "basic_dodge",
+        "basic_parry",
+        "basic_medicine",
+        "basic_sing"
+      ],
       "learned": {
-        "basic_fist": { "level": 160 }, "basic_sword": { "level": 120 }, "basic_blade": { "level": 120 },
-        "basic_staff": { "level": 110 }, "basic_whip": { "level": 90 }, "basic_throw": { "level": 90 },
-        "basic_poison": { "level": 70 }, "basic_force": { "level": 150 }, "basic_dodge": { "level": 130 },
-        "basic_parry": { "level": 140 }, "basic_medicine": { "level": 80 }, "basic_sing": { "level": 60 }
+        "basic_fist": {
+          "level": 160
+        },
+        "basic_sword": {
+          "level": 120
+        },
+        "basic_blade": {
+          "level": 120
+        },
+        "basic_staff": {
+          "level": 110
+        },
+        "basic_whip": {
+          "level": 90
+        },
+        "basic_throw": {
+          "level": 90
+        },
+        "basic_poison": {
+          "level": 70
+        },
+        "basic_force": {
+          "level": 150
+        },
+        "basic_dodge": {
+          "level": 130
+        },
+        "basic_parry": {
+          "level": 140
+        },
+        "basic_medicine": {
+          "level": 80
+        },
+        "basic_sing": {
+          "level": 60
+        }
       }
     },
-
     "wg_lu": {
       "id": "wg_lu",
       "name": "陆教头",
@@ -112,18 +216,69 @@
       "hostile": false,
       "noWander": true,
       "personality": "mune",
-      "likes": ["tea"],
+      "likes": [
+        "tea"
+      ],
       "moneyToLearn": 100,
-      "skills": { "拳": "basic_fist", "内功": "basic_force", "轻功": "basic_dodge", "招架": "basic_parry" },
-      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing"],
+      "skills": {
+        "拳": "basic_fist",
+        "内功": "basic_force",
+        "轻功": "basic_dodge",
+        "招架": "basic_parry"
+      },
+      "teach": [
+        "basic_fist",
+        "basic_sword",
+        "basic_blade",
+        "basic_staff",
+        "basic_whip",
+        "basic_throw",
+        "basic_poison",
+        "basic_force",
+        "basic_dodge",
+        "basic_parry",
+        "basic_medicine",
+        "basic_sing"
+      ],
       "learned": {
-        "basic_fist": { "level": 140 }, "basic_sword": { "level": 110 }, "basic_blade": { "level": 100 },
-        "basic_staff": { "level": 100 }, "basic_whip": { "level": 80 }, "basic_throw": { "level": 85 },
-        "basic_poison": { "level": 60 }, "basic_force": { "level": 140 }, "basic_dodge": { "level": 150 },
-        "basic_parry": { "level": 130 }, "basic_medicine": { "level": 70 }, "basic_sing": { "level": 55 }
+        "basic_fist": {
+          "level": 140
+        },
+        "basic_sword": {
+          "level": 110
+        },
+        "basic_blade": {
+          "level": 100
+        },
+        "basic_staff": {
+          "level": 100
+        },
+        "basic_whip": {
+          "level": 80
+        },
+        "basic_throw": {
+          "level": 85
+        },
+        "basic_poison": {
+          "level": 60
+        },
+        "basic_force": {
+          "level": 140
+        },
+        "basic_dodge": {
+          "level": 150
+        },
+        "basic_parry": {
+          "level": 130
+        },
+        "basic_medicine": {
+          "level": 70
+        },
+        "basic_sing": {
+          "level": 55
+        }
       }
     },
-
     "wg_pei": {
       "id": "wg_pei",
       "name": "裴教头",
@@ -145,19 +300,72 @@
       "hostile": false,
       "noWander": true,
       "personality": "youhua",
-      "likes": ["wine", "antique"],
+      "likes": [
+        "wine",
+        "antique"
+      ],
       "moneyToLearn": 100,
-      "skills": { "剑": "basic_sword", "内功": "basic_force", "招架": "basic_parry" },
-      "equipment": { "武器": "fine_sword" },
-      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing"],
+      "skills": {
+        "剑": "basic_sword",
+        "内功": "basic_force",
+        "招架": "basic_parry"
+      },
+      "equipment": {
+        "武器": "fine_sword"
+      },
+      "teach": [
+        "basic_fist",
+        "basic_sword",
+        "basic_blade",
+        "basic_staff",
+        "basic_whip",
+        "basic_throw",
+        "basic_poison",
+        "basic_force",
+        "basic_dodge",
+        "basic_parry",
+        "basic_medicine",
+        "basic_sing"
+      ],
       "learned": {
-        "basic_fist": { "level": 150 }, "basic_sword": { "level": 160 }, "basic_blade": { "level": 120 },
-        "basic_staff": { "level": 110 }, "basic_whip": { "level": 95 }, "basic_throw": { "level": 100 },
-        "basic_poison": { "level": 65 }, "basic_force": { "level": 160 }, "basic_dodge": { "level": 130 },
-        "basic_parry": { "level": 150 }, "basic_medicine": { "level": 85 }, "basic_sing": { "level": 70 }
+        "basic_fist": {
+          "level": 150
+        },
+        "basic_sword": {
+          "level": 160
+        },
+        "basic_blade": {
+          "level": 120
+        },
+        "basic_staff": {
+          "level": 110
+        },
+        "basic_whip": {
+          "level": 95
+        },
+        "basic_throw": {
+          "level": 100
+        },
+        "basic_poison": {
+          "level": 65
+        },
+        "basic_force": {
+          "level": 160
+        },
+        "basic_dodge": {
+          "level": 130
+        },
+        "basic_parry": {
+          "level": 150
+        },
+        "basic_medicine": {
+          "level": 85
+        },
+        "basic_sing": {
+          "level": 70
+        }
       }
     },
-
     "wg_ma": {
       "id": "wg_ma",
       "name": "马教头",
@@ -179,19 +387,71 @@
       "hostile": false,
       "noWander": true,
       "personality": "lengmo",
-      "likes": ["antique"],
+      "likes": [
+        "antique"
+      ],
       "moneyToLearn": 100,
-      "skills": { "棍": "basic_staff", "内功": "basic_force", "招架": "basic_parry" },
-      "equipment": { "武器": "wood_staff" },
-      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing"],
+      "skills": {
+        "棍": "basic_staff",
+        "内功": "basic_force",
+        "招架": "basic_parry"
+      },
+      "equipment": {
+        "武器": "wood_staff"
+      },
+      "teach": [
+        "basic_fist",
+        "basic_sword",
+        "basic_blade",
+        "basic_staff",
+        "basic_whip",
+        "basic_throw",
+        "basic_poison",
+        "basic_force",
+        "basic_dodge",
+        "basic_parry",
+        "basic_medicine",
+        "basic_sing"
+      ],
       "learned": {
-        "basic_fist": { "level": 150 }, "basic_sword": { "level": 130 }, "basic_blade": { "level": 170 },
-        "basic_staff": { "level": 180 }, "basic_whip": { "level": 100 }, "basic_throw": { "level": 110 },
-        "basic_poison": { "level": 70 }, "basic_force": { "level": 170 }, "basic_dodge": { "level": 130 },
-        "basic_parry": { "level": 170 }, "basic_medicine": { "level": 90 }, "basic_sing": { "level": 60 }
+        "basic_fist": {
+          "level": 150
+        },
+        "basic_sword": {
+          "level": 130
+        },
+        "basic_blade": {
+          "level": 170
+        },
+        "basic_staff": {
+          "level": 180
+        },
+        "basic_whip": {
+          "level": 100
+        },
+        "basic_throw": {
+          "level": 110
+        },
+        "basic_poison": {
+          "level": 70
+        },
+        "basic_force": {
+          "level": 170
+        },
+        "basic_dodge": {
+          "level": 130
+        },
+        "basic_parry": {
+          "level": 170
+        },
+        "basic_medicine": {
+          "level": 90
+        },
+        "basic_sing": {
+          "level": 60
+        }
       }
     },
-
     "wg_tang": {
       "id": "wg_tang",
       "name": "唐教头",
@@ -213,18 +473,70 @@
       "hostile": false,
       "noWander": true,
       "personality": "haoshuang",
-      "likes": ["food", "tea"],
+      "likes": [
+        "food",
+        "tea"
+      ],
       "moneyToLearn": 100,
-      "skills": { "拳": "basic_fist", "内功": "basic_force", "轻功": "basic_dodge", "招架": "basic_parry" },
-      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing"],
+      "skills": {
+        "拳": "basic_fist",
+        "内功": "basic_force",
+        "轻功": "basic_dodge",
+        "招架": "basic_parry"
+      },
+      "teach": [
+        "basic_fist",
+        "basic_sword",
+        "basic_blade",
+        "basic_staff",
+        "basic_whip",
+        "basic_throw",
+        "basic_poison",
+        "basic_force",
+        "basic_dodge",
+        "basic_parry",
+        "basic_medicine",
+        "basic_sing"
+      ],
       "learned": {
-        "basic_fist": { "level": 170 }, "basic_sword": { "level": 110 }, "basic_blade": { "level": 115 },
-        "basic_staff": { "level": 105 }, "basic_whip": { "level": 100 }, "basic_throw": { "level": 95 },
-        "basic_poison": { "level": 80 }, "basic_force": { "level": 145 }, "basic_dodge": { "level": 140 },
-        "basic_parry": { "level": 135 }, "basic_medicine": { "level": 95 }, "basic_sing": { "level": 60 }
+        "basic_fist": {
+          "level": 170
+        },
+        "basic_sword": {
+          "level": 110
+        },
+        "basic_blade": {
+          "level": 115
+        },
+        "basic_staff": {
+          "level": 105
+        },
+        "basic_whip": {
+          "level": 100
+        },
+        "basic_throw": {
+          "level": 95
+        },
+        "basic_poison": {
+          "level": 80
+        },
+        "basic_force": {
+          "level": 145
+        },
+        "basic_dodge": {
+          "level": 140
+        },
+        "basic_parry": {
+          "level": 135
+        },
+        "basic_medicine": {
+          "level": 95
+        },
+        "basic_sing": {
+          "level": 60
+        }
       }
     },
-
     "wg_han": {
       "id": "wg_han",
       "name": "韩教头",
@@ -246,16 +558,71 @@
       "hostile": false,
       "noWander": true,
       "personality": "baozhao",
-      "likes": ["wine", "weapon"],
+      "likes": [
+        "wine",
+        "weapon"
+      ],
       "moneyToLearn": 100,
-      "skills": { "刀": "basic_blade", "内功": "basic_force", "轻功": "basic_dodge", "招架": "basic_parry" },
-      "equipment": { "武器": "steel_blade" },
-      "teach": ["basic_fist", "basic_sword", "basic_blade", "basic_staff", "basic_whip", "basic_throw", "basic_poison", "basic_force", "basic_dodge", "basic_parry", "basic_medicine", "basic_sing"],
+      "skills": {
+        "刀": "basic_blade",
+        "内功": "basic_force",
+        "轻功": "basic_dodge",
+        "招架": "basic_parry"
+      },
+      "equipment": {
+        "武器": "steel_blade"
+      },
+      "teach": [
+        "basic_fist",
+        "basic_sword",
+        "basic_blade",
+        "basic_staff",
+        "basic_whip",
+        "basic_throw",
+        "basic_poison",
+        "basic_force",
+        "basic_dodge",
+        "basic_parry",
+        "basic_medicine",
+        "basic_sing"
+      ],
       "learned": {
-        "basic_fist": { "level": 160 }, "basic_sword": { "level": 140 }, "basic_blade": { "level": 190 },
-        "basic_staff": { "level": 120 }, "basic_whip": { "level": 105 }, "basic_throw": { "level": 115 },
-        "basic_poison": { "level": 75 }, "basic_force": { "level": 180 }, "basic_dodge": { "level": 140 },
-        "basic_parry": { "level": 175 }, "basic_medicine": { "level": 100 }, "basic_sing": { "level": 65 }
+        "basic_fist": {
+          "level": 160
+        },
+        "basic_sword": {
+          "level": 140
+        },
+        "basic_blade": {
+          "level": 190
+        },
+        "basic_staff": {
+          "level": 120
+        },
+        "basic_whip": {
+          "level": 105
+        },
+        "basic_throw": {
+          "level": 115
+        },
+        "basic_poison": {
+          "level": 75
+        },
+        "basic_force": {
+          "level": 180
+        },
+        "basic_dodge": {
+          "level": 140
+        },
+        "basic_parry": {
+          "level": 175
+        },
+        "basic_medicine": {
+          "level": 100
+        },
+        "basic_sing": {
+          "level": 65
+        }
       }
     }
   }

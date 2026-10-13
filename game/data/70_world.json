@@ -14,7 +14,9 @@
         "half": "风声说{where}出了人命，动手的好像是{who}。",
         "false": "你听说了吗？{who}在{where}连伤七条人命，那剑使得跟鬼似的！"
       },
-      "marks": ["血案"]
+      "marks": [
+        "血案"
+      ]
     },
     "rs_kill_civilian": {
       "id": "rs_kill_civilian",
@@ -30,7 +32,10 @@
         "half": "听说是{who}在{where}闹出了人命，死的似是个良民。",
         "false": "不得了！{who}在{where}屠了半条街，连妇孺都不放过！"
       },
-      "marks": ["血案", "草菅"]
+      "marks": [
+        "血案",
+        "草菅"
+      ]
     },
     "rs_theft_caught": {
       "id": "rs_theft_caught",
@@ -46,7 +51,9 @@
         "half": "风言{where}有个贼被拿了，好像是{who}。",
         "false": "{who}在{where}偷了金山银山，却没人敢声响！"
       },
-      "marks": ["盗窃"]
+      "marks": [
+        "盗窃"
+      ]
     },
     "rs_resist_arrest": {
       "id": "rs_resist_arrest",
@@ -62,7 +69,10 @@
         "half": "听说{where}有人跟官府动了手，传是{who}。",
         "false": "{who}在{where}反了天了，把衙门的人都撂倒了！"
       },
-      "marks": ["抗官", "血案"]
+      "marks": [
+        "抗官",
+        "血案"
+      ]
     },
     "rs_save_life": {
       "id": "rs_save_life",
@@ -78,7 +88,9 @@
         "half": "说是{who}在{where}搭救了个人，不知真假。",
         "false": "{who}在{where}单枪匹马退了十几个凶徒，神乎其技！"
       },
-      "marks": ["义举"]
+      "marks": [
+        "义举"
+      ]
     },
     "rs_alms": {
       "id": "rs_alms",
@@ -94,7 +106,9 @@
         "half": "好像{who}在{where}散了些银米，积了点德。",
         "false": "{who}在{where}开了三天流水席，穷人都当他是活菩萨！"
       },
-      "marks": ["善名"]
+      "marks": [
+        "善名"
+      ]
     },
     "rs_tournament_win": {
       "id": "rs_tournament_win",
@@ -110,7 +124,9 @@
         "half": "江湖传{where}比武出了个黑马，八成是{who}。",
         "false": "{who}在{where}以一敌百，把各派高手全挑落了马！"
       },
-      "marks": ["扬名"]
+      "marks": [
+        "扬名"
+      ]
     },
     "rs_sect_join": {
       "id": "rs_sect_join",
@@ -126,7 +142,9 @@
         "half": "听闻{who}拜进了{where}的门户，不知深浅。",
         "false": "{who}在{where}被破例收为亲传，风光得紧！"
       },
-      "marks": ["江湖"]
+      "marks": [
+        "江湖"
+      ]
     },
     "rs_sect_betray": {
       "id": "rs_sect_betray",
@@ -142,7 +160,9 @@
         "half": "风声{where}出了个叛徒，传是{who}。",
         "false": "{who}在{where}把师门掀了个底朝天，反出山门！"
       },
-      "marks": ["背叛"]
+      "marks": [
+        "背叛"
+      ]
     },
     "rs_deadbeat": {
       "id": "rs_deadbeat",
@@ -158,7 +178,9 @@
         "half": "说是{who}在{where}答应了什么，后来没了下文。",
         "false": "{who}在{where}把话说得满满当当，事却一件没办！"
       },
-      "marks": ["失信"]
+      "marks": [
+        "失信"
+      ]
     },
     "rs_break_marriage": {
       "id": "rs_break_marriage",
@@ -174,7 +196,9 @@
         "half": "闲话{where}有人悔了婚约，说的好像是{who}。",
         "false": "{who}在{where}休了三门亲事，成了街上的笑柄！"
       },
-      "marks": ["风评"]
+      "marks": [
+        "风评"
+      ]
     },
     "rs_secret_out": {
       "id": "rs_secret_out",
@@ -190,7 +214,9 @@
         "half": "风传{where}有人泄了底，八成是{who}干的。",
         "false": "{who}在{where}把惊天丑事捅破，牵连了一大片人！"
       },
-      "marks": ["秘辛"]
+      "marks": [
+        "秘辛"
+      ]
     },
     "rs_dungeon_clear": {
       "id": "rs_dungeon_clear",
@@ -206,7 +232,9 @@
         "half": "传闻{where}的凶地有人独闯，说的好像是{who}。",
         "false": "{who}在{where}的绝境里得了绝世奇缘，脱胎换骨！"
       },
-      "marks": ["奇遇"]
+      "marks": [
+        "奇遇"
+      ]
     },
     "rs_drunkard": {
       "id": "rs_drunkard",
@@ -222,7 +250,9 @@
         "half": "说是{where}有个醉鬼，大约是{who}。",
         "false": "{who}在{where}喝了三缸酒还不倒，酒量惊了半条街！"
       },
-      "marks": ["醉乡"]
+      "marks": [
+        "醉乡"
+      ]
     },
     "rs_bigspender": {
       "id": "rs_bigspender",
@@ -238,7 +268,9 @@
         "half": "风闻{where}来了个阔客，像极了{who}。",
         "false": "{who}在{where}把整座楼都包了下来，挥金如土！"
       },
-      "marks": ["豪奢"]
+      "marks": [
+        "豪奢"
+      ]
     },
     "rs_jailbreak": {
       "id": "rs_jailbreak",
@@ -254,7 +286,10 @@
         "half": "惊闻{where}走了个要犯，传是{who}干的。",
         "false": "{who}在{where}劫了天牢，把半个监城的囚犯都放了出来！"
       },
-      "marks": ["重案", "血案"]
+      "marks": [
+        "重案",
+        "血案"
+      ]
     },
     "rs_e_world_disaster": {
       "id": "rs_e_world_disaster",
@@ -328,7 +363,6 @@
         "官面"
       ]
     }
-
   },
   "worldEvents": {
     "onDayTick": [
@@ -352,7 +386,7 @@
         "effects": [
           {
             "type": "narrate",
-            "raw": "天边飞来一片黄云，落到地里才知是蝗虫——它们不叫，只响。"
+            "raw": "天边飞来一片黄云，落到地里才知是蝗虫。它们不叫，只响。"
           },
           "var:grain_price=3",
           "flag:famine_year",
@@ -633,8 +667,7 @@
           }
         ],
         "cooldownDays": 20
-      }
-    ,
+      },
       {
         "id": "w5_foe_ambush",
         "cat": "江湖恩怨",
@@ -811,7 +844,7 @@
         "effects": [
           {
             "type": "narrate",
-            "raw": "茶棚里的人一见你就不说话了。你走远了，背后才重新有声音——他们在说一件你没做过的事。"
+            "raw": "茶棚里的人一见你就不说话了。你走远了，背后才重新有声音。他们在说一件你没做过的事。"
           },
           "-rep:*:2"
         ],
@@ -939,7 +972,7 @@
         "effects": [
           {
             "type": "narrate",
-            "raw": "官道上设了卡，两个差役拿着一张图，一个一个看过去。你的脚步慢下来——图上那张脸，比本人瘦些。"
+            "raw": "官道上设了卡，两个差役拿着一张图，一个一个看过去。你的脚步慢下来。图上那张脸，比本人瘦些。"
           },
           {
             "type": "say",
@@ -1066,7 +1099,7 @@
         "effects": [
           {
             "type": "narrate",
-            "raw": "街口忽然静了。几个穿公服的从两头逼过来，走得不急，手都按在刀上——他们知道你跑不掉。"
+            "raw": "街口忽然静了。几个穿公服的从两头逼过来，走得不急，手都按在刀上。他们知道你跑不掉。"
           },
           "-rep:朝廷:10"
         ],
@@ -1196,7 +1229,7 @@
         "effects": [
           {
             "type": "narrate",
-            "raw": "你在崖下避雨，手扶着石壁，摸到一道缝——不像裂缝，像门。往里一推，是一间黑屋子，地上散着几柄断了口的剑。"
+            "raw": "你在崖下避雨，手扶着石壁，摸到一道缝。不像裂缝，像门。往里一推，是一间黑屋子，地上散着几柄断了口的剑。"
           },
           "flag:siguya_found"
         ],
@@ -1308,7 +1341,7 @@
         "effects": [
           {
             "type": "narrate",
-            "raw": "墓道口的封石被撬开过，撬痕是新的。里面的灯还亮着——有人在你之前点上的。"
+            "raw": "墓道口的封石被撬开过，撬痕是新的。里面的灯还亮着。有人在你之前点上的。"
           }
         ],
         "once": true
@@ -1843,7 +1876,7 @@
         "effects": [
           {
             "type": "narrate",
-            "raw": "雨下了一夜，船还停在原处。船家在舱里抽烟，说等雨小了再走——这话昨天也说过。"
+            "raw": "雨下了一夜，船还停在原处。船家在舱里抽烟，说等雨小了再走。这话昨天也说过。"
           }
         ],
         "cooldownDays": 10
@@ -1936,7 +1969,7 @@
         "effects": [
           {
             "type": "narrate",
-            "raw": "村里的墙上贴了红纸，写着一串名字，末尾几个是空的——空着的还得再填。"
+            "raw": "村里的墙上贴了红纸，写着一串名字，末尾几个是空的。空着的还得再填。"
           }
         ],
         "cooldownDays": 25
@@ -2347,7 +2380,7 @@
         "effects": [
           {
             "type": "narrate",
-            "raw": "少林与武当联名下帖，邀天下同道赴会——武林大会开了。"
+            "raw": "少林与武当联名下帖，邀天下同道赴会。武林大会开了。"
           },
           "flag:cycle_wulin"
         ]

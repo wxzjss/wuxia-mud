@@ -17,12 +17,11 @@
       "onEnter": [
         {
           "type": "say",
-          "raw": "门口站着的汉子上下打量了你一眼，没拦——进这屋的人，他都见过。"
+          "raw": "门口站着的汉子上下打量了你一眼，没拦。进这屋的人，他都见过。"
         }
       ]
     }
   },
-
   "npcs": {
     "gambler_boss": {
       "id": "gambler_boss",
@@ -41,10 +40,17 @@
       "speed": 22,
       "money": 1860,
       "hostile": false,
-      "likes": ["wine"],
+      "likes": [
+        "wine"
+      ],
       "favorBase": 0.9,
       "favorInit": -6,
-      "carry": { "money": 900, "items": ["wine_jar"] },
+      "carry": {
+        "money": 900,
+        "items": [
+          "wine_jar"
+        ]
+      },
       "talk": [
         "押大押小？一手三文，先看钱。",
         "赢了的你留不住，输了的你带不走。这行当就这样。",
@@ -75,10 +81,16 @@
       "money": 7,
       "hostile": false,
       "personality": "baozhao",
-      "likes": ["wine", "food"],
+      "likes": [
+        "wine",
+        "food"
+      ],
       "favorBase": 1.1,
       "favorInit": 0,
-      "carry": { "money": 3, "items": [] },
+      "carry": {
+        "money": 3,
+        "items": []
+      },
       "talk": [
         "这把不算！骰子有鬼！",
         "再来一把，再来一把就回本了。",
