@@ -253,7 +253,13 @@ function questChapter(world, p, qid) {
   const stage = ((qd.stages || [])[idx]) || {};
   const total = (qd.stages || []).length || 1;
   const lines = [];
-  if (qd.desc) lines.push({ kind: 'story', text: qd.desc });
+  /* 🔴 2026-10-16 主人真机：大框「文中描写全删」——
+     qd.desc（剧情引子/委托人话，kind 'story'）不再发进大框 lines。
+     它该在接取/推进时进**日志**演一遍（reconcile 那份不动）——
+     之前两边各发一份，就是主人看到的「上方大框与下方日志一样的环境描写」。
+     大框只留任务结构信息：抬头（arcLabel + 任务名）+ stage.desc + 金字 todo。
+     （口径：游有方 2026-10-16——stage.desc 是任务指令留，qd.desc 是叙事滤，
+      数据侧零改动，产地去重即可。前端 storyHtml 同步滤 kind 'story' 双保险。） */
   if (stage.desc) lines.push({ kind: 'plain', text: '　眼下这一步：' + stage.desc });
   return {
     arc: isMain ? 'main' : 'side',

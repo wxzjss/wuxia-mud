@@ -232,9 +232,12 @@ function boot(seed) {
     ok('抬头写的是后端给的 arcLabel', /主线 · 第 1 \/ 6 步/.test(h), h.slice(0, 60));
     ok('任务名进 HTML', /江湖路远/.test(h));
     /* 🔴 2026-10-15 主人真机：大框里的灰字（kind plain）隐藏 ——
-       「眼下这一步」与金字 story-todo 是同一句，藏而不删（藏=不进 HTML）。 */
-    ok('★ 灰字 plain 行**不**进 HTML（主人：大框隐藏灰色环境描写）',
-      /旁白一句/.test(h) && !/眼下这一步/.test(h), h.slice(0, 120));
+       「眼下这一步」与金字 story-todo 是同一句，藏而不删（藏=不进 HTML）。
+       🔴 2026-10-16 口径升级（主人：「大框文中描写全删」）：kind story
+       （qd.desc 剧情引子）也不进 HTML —— 产地 storybeat.questChapter 已不发
+       （reconcile 发日志那份不动），前端再滤一道双保险（老 view 缓存）。 */
+    ok('★ 叙事不进 HTML：plain 与 story 都滤（主人：大框只留任务信息）',
+      !/眼下这一步/.test(h) && !/旁白一句/.test(h), h.slice(0, 120));
     ok('「现在做什么」进 HTML（同一句由金字 todo 承担，零信息损失）',
       /现在做什么/.test(h) && /把功夫练起来/.test(h));
     ok('没有 undefined / NaN 漏进 HTML', !/undefined|NaN/.test(h), (h.match(/undefined|NaN/g) || []).join(','));

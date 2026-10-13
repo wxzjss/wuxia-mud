@@ -292,8 +292,11 @@
       /* 🔴 2026-10-15 主人真机：大框里的灰色环境描写隐藏 ——
          灰字（kind 'plain'，CSS .sl-plain）实测来源是 questChapter 的「眼下这一步」，
          与下方金字 story-todo（现在做什么）**完全同一句话**（都来自 stage.desc）。
-         藏而不删：数据不动、后端 story 组行不动，纯前端过滤。 */
-      if ((l.kind || '') === 'plain') return;
+         藏而不删：数据不动、后端 story 组行不动，纯前端过滤。
+         🔴 2026-10-16 口径升级（主人：「大框文中描写全删」）：kind 'story'
+         （qd.desc 剧情引子）也不进大框 —— 产地 storybeat.questChapter 已不发，
+         这里再滤一道是双保险（老存档/旧缓存的 view 里可能还带着）。 */
+      if ((l.kind || '') === 'plain' || (l.kind || '') === 'story') return;
       const t = String(l.text || '');
       if (!t) return;
       body += '<div class="sl sl-' + esc(l.kind || 'story') + '">' +
@@ -2816,6 +2819,13 @@
         h += '<div class="panel-note">手上还没有别人的事。江湖上那些差事，' +
           '都是跟人搭话、搭把手换来的 —— 见了面，问一句「有什么事」。</div>';
       }
+      /* 🔴 97 总纲 F9（2026-10-16，程序侧小改）：cy_pre_* 六件前置案
+         （游医的药垄/书坊的刻版/说书人的书/守墓人的碑/通事的抄本/狱卒的条子）
+         「quests 列表挂着但没有入口提示」—— 只能玩家开口「问」出来，
+         面板上从不露脸。这里补一行轻提示：不点人名不点案名
+         （点了就不叫「问出来」了），只把「多问」这个动作点破。 */
+      h += '<div class="panel-note">还有些没人张罗的细事，不挂在面上 —— ' +
+        '路上遇过的人，回头问一句「有什么事」，兴许就问出来了。</div>';
     }
     if (done.length) {
       h += '<div class="q-done-title">已完成（' + done.length + '）' +
