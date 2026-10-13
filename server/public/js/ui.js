@@ -289,6 +289,11 @@
       '<b class="sh-title">' + esc(s.title || '') + '</b></div>';
     let body = '';
     (s.lines || []).forEach(l => {
+      /* 🔴 2026-10-15 主人真机：大框里的灰色环境描写隐藏 ——
+         灰字（kind 'plain'，CSS .sl-plain）实测来源是 questChapter 的「眼下这一步」，
+         与下方金字 story-todo（现在做什么）**完全同一句话**（都来自 stage.desc）。
+         藏而不删：数据不动、后端 story 组行不动，纯前端过滤。 */
+      if ((l.kind || '') === 'plain') return;
       const t = String(l.text || '');
       if (!t) return;
       body += '<div class="sl sl-' + esc(l.kind || 'story') + '">' +
@@ -887,12 +892,13 @@
     const kdWhy = (n.kidnap && n.kidnap.why) ? n.kidnap.why : '';
 
     choices(n.name + (n.title ? ' · ' + n.title : ''), [
-      /* ⚠️ 第一项从「查看 (look)」换成「细看此人」——
+      /* ⚠️ 第一项从「查看 (look)」换成「细看」——
          主人要的是「点这个按钮弹出一个**新界面**，显示这个人各方面的详细信息，
          **包括人物背景故事**」。原来那个按钮只是往日志里打一段文本（look），
          翻过去就没了；现在开一个真正的详情面板（见 openNpcProfile）。
-         文本版的 `look` 仍从详情面板底部进得去，指令也照旧能用。 */
-      { label: '细看此人 (profile)', action: 'profile', hint: '来历、武学、关系、作息、背景故事' },
+         文本版的 `look` 仍从详情面板底部进得去，指令也照旧能用。
+         2026-10-15 主人定调菜单双词：「细看」(profile) 与「看」(look 文本流)。 */
+      { label: '细看 (profile)', action: 'profile', hint: '来历、武学、关系、作息、背景故事' },
       n.canTalk !== false ? { label: '交谈 (talk)', action: 'talk' } : null,
       { label: '询问 (ask)', action: 'ask' },
       { label: '看人物关系 (guanxi)', action: 'guanxi' },
@@ -2246,7 +2252,7 @@
     const list = (v && v.practice) || [];
     if (!list.length) {
       return '<div class="modal-text">你手上一门功夫都没有。<br><br>' +
-        '先去<b>拜师</b>：屋子里找个人，点「细看此人」→「拜 师」，' +
+        '先去<b>拜师</b>：屋子里找个人，点「细看」→「拜 师」，' +
         '成了师徒，再「请教」他的功夫。往后练功精进，都在这一面板上。</div>';
     }
     let h = '<div class="modal-text">挑一门点下去，人自己就练上了：<b>内力往里头耗</b>，耗干净为止。' +

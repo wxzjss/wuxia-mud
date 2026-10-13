@@ -403,6 +403,16 @@
       if (!b || b <= 0) return 0;
       return Math.max(0, Math.min(100, Math.round(a / b * 100)));
     },
+    /** 超长数字缩写显示（design/99 定案：天文经验曲线速率自洽、只是显示崩，
+       比换曲线便宜 —— 显示层缩写，真实数值不动）。
+       < 10000 原样；≥ 万 → 12.4万（一位小数，去尾零）；≥ 亿 → 1.2亿。 */
+    fmtBig(n) {
+      n = Math.floor(Number(n) || 0);
+      if (n < 10000) return String(n);
+      const trim = x => String(x).replace(/\.0$/, '');
+      if (n < 1e8) return trim(Math.round(n / 1000) / 10) + '万';
+      return trim(Math.round(n / 1e7) / 10) + '亿';
+    },
     /** 用分隔符拼接 */
     nl(arr) { return (arr || []).filter(Boolean).join('、'); },
     /** 简易节流 */

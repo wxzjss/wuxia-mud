@@ -273,6 +273,74 @@ section('⑪ 收徒系统（拜师/授艺/逐出）');
 }
 
 /* ============================================================ */
+section('⑩ 修炼扣潜能 trainCost（05 §3.2 / 99 §三.4，2026-10-15 落 P1）');
+{
+  const e = boot();
+  const w = e.world, p = w.player;
+  const sd = w.getSkill('basic_sword');
+  const lv = p.learned.basic_sword ? p.learned.basic_sword.level : 1;
+  const cost = p.trainCost(sd, lv);
+  ok('T-0 前提：trainCost 算得出正数（字段本来就有，只是没人扣）', cost > 0, String(cost));
+
+  /* ① 扣没扣：练一次，潜能恰减 cost（内力也照旧扣） */
+  p.potential = 100000; p.mp = p.maxMp;
+  const potBefore = p.potential, mpBefore = p.mp;
+  p.learnSkillByTrain('basic_sword');
+  ok('★ 练一次：潜能恰扣 trainCost（100000 - cost）', p.potential === potBefore - cost,
+    `${potBefore}→${p.potential}（cost=${cost}）`);
+  ok('　内力照旧扣（双资源节奏没被打乱）', p.mp < mpBefore, `${mpBefore}→${p.mp}`);
+
+  /* ② 扣多少：升一级后成本按公式上涨（1.09 增长轴 + 内功 1.4） */
+  p.learned.basic_sword.level = lv + 1;
+  const cost2 = p.trainCost(sd, lv + 1);
+  ok('　等级 +1 → trainCost 按公式上涨', cost2 > cost, `${cost}→${cost2}`);
+  ok('　内功 trainCost 带 1.4 系数（同 base 比外功贵）',
+    p.trainCost({ trainCost: 100, type: '内功' }, lv) === 140 && p.trainCost({ trainCost: 100, type: '外功' }, lv) === 100,
+    `${p.trainCost({ trainCost: 100, type: '内功' }, lv)} vs ${p.trainCost({ trainCost: 100, type: '外功' }, lv)}`);
+
+  /* ③ 潜能不足：拦截 + 明确回执（不许静默失败，不许扣到负） */
+  const expectCost = p.trainCost(sd, lv + 1);
+  p.potential = expectCost - 1;
+  const mpNow = p.mp;
+  const r = p.learnSkillByTrain('basic_sword');
+  ok('★ 潜能不足：被拒（ok=false）', r.ok === false, String(r.msg).slice(0, 40));
+  ok('★ 回执明说缺多少（拦截回执不是空话）', /潜能不足/.test(String(r.msg)) && String(r.msg).includes(String(expectCost)),
+    String(r.msg).slice(0, 60));
+  ok('★ 被拒时内力不扣、潜能不动（原子回退）', p.mp === mpNow && p.potential === expectCost - 1,
+    `mp=${p.mp}/${mpNow} pot=${p.potential}`);
+}
+
+/* ============================================================ */
+section('⑪ 经验超长缩写显示（design/99 定案）');
+{
+  const e = boot();
+  const p = e.world.player;
+  /* 大数字塞进 score 行：必须缩写、不得原样吐长串 */
+  p.exp = 123456; p.level = 20;
+  const t1 = (e.exec('score').lines || []).map(l => l.text || '').join('\n');
+  const expLine = t1.split('\n').find(x => /经验/.test(x)) || '';
+  ok('★ 经验 123456 → 缩写「12.3万」进 score 行', /12\.3万/.test(expLine), expLine.slice(0, 40));
+  ok('★ 原样长串不再出现（123456 不该裸奔）', !/123456/.test(expLine));
+  ok('　万以下不缩写（小数照原样）', (() => {
+    p.exp = 4321;
+    const l2 = (e.exec('score').lines || []).map(l => l.text || '').join('\n');
+    return /4321/.test(l2) && !/4321万/.test(l2);
+  })());
+  /* 亿级也走得通（别溢出出丑） */
+  p.exp = 250000000;
+  const t3 = (e.exec('score').lines || []).map(l => l.text || '').join('\n');
+  ok('★ 2.5 亿 →「2.5亿」', /2\.5亿/.test((t3.split('\n').find(x => /经验/.test(x)) || '')));
+  /* 前端 fmtBig 同口径（从 app.js 源码把函数体抠出来真跑，别手写一份抄） */
+  const APP = fs.readFileSync(path.join(ROOT, 'game/src/renderer/js/app.js'), 'utf8');
+  const m = APP.match(/fmtBig\(n\) \{([\s\S]*?)\n    \},/);
+  ok('能从 app.js 抠出 util.fmtBig', !!m);
+  const fmtBig = new Function('n', m[1]);
+  ok('★ 前端 fmtBig 与后端同口径（12.4万 / 2.5亿 / 千以下原样）',
+    fmtBig(123456) === '12.3万' && fmtBig(250000000) === '2.5亿' && fmtBig(4321) === '4321',
+    `${fmtBig(123456)} / ${fmtBig(250000000)} / ${fmtBig(4321)}`);
+}
+
+/* ============================================================ */
 console.log('\n============================================');
 console.log(`  通过 ${pass} 项，失败 ${fail} 项`);
 console.log('============================================');

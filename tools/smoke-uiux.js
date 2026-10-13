@@ -297,12 +297,12 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     const box = env.document.getElementById('scene-npcs');
     box.children.find(c => String(c.innerHTML || '').indexOf(SNAKE.name) >= 0).onclick();
     const lbox = env.document.getElementById('choices-list');
-    /* ⚠️ 第三轮起，NPC 菜单第一项由「查看 (look)」改成「细看此人 (profile)」
+    /* ⚠️ 第三轮起，NPC 菜单第一项由「查看 (look)」改成「细看 (profile)」
        （主人要求：点这个按钮要弹出**新界面**看详细资料，不是往日志里打一段文本）。
        文本版 look 仍能从详情面板底部进去，指令也没废。 */
-    const profBtn = lbox.children.find(c => /细看此人/.test(String(c.innerHTML || '')));
-    ok('S1-9 菜单里找到「细看此人」项（第三轮：第一项换成开详情界面）', !!profBtn);
-    ok('S1-9b 老文本版的「打量 (look)」不再占菜单首项（改从详情面板底部进）',
+    const profBtn = lbox.children.find(c => /细看/.test(String(c.innerHTML || '')));
+    ok('S1-9 菜单里找到「细看」项（第三轮：第一项换成开详情界面）', !!profBtn);
+    ok('S1-9b 老文本版的「看 (look)」不再占菜单首项（改从详情面板底部进）',
       !lbox.children.some(c => /查看 \(look\)/.test(String(c.innerHTML || ''))));
     /* 真派发在下一段独立 env 里验证（不与本段状态耦合） */
   }
@@ -314,12 +314,12 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     const box = env.document.getElementById('scene-npcs');
     box.children.find(c => String(c.innerHTML || '').indexOf(SNAKE.name) >= 0).onclick();
     const lbox2 = env.document.getElementById('choices-list');
-    const profBtn = lbox2.children.find(c => /细看此人/.test(String(c.innerHTML || '')));
+    const profBtn = lbox2.children.find(c => /细看/.test(String(c.innerHTML || '')));
     if (profBtn) { profBtn.onclick(); await settle(); await settle(); }
-    /* ★ 真派发：点「细看此人」必须**只**去拉那个人的画像（api.npcProfile），
+    /* ★ 真派发：点「细看」必须**只**去拉那个人的画像（api.npcProfile），
        且**不许**往日志里发 look 指令（那是旧行为）。
        profile 面板的正文另在 §11 里真渲染断言。 */
-    ok('S1-10 ★ 点「细看此人」去拉该 NPC 的画像（而不是打一段 look 文本）',
+    ok('S1-10 ★ 点「细看」去拉该 NPC 的画像（而不是打一段 look 文本）',
       rec.npc.length === 1 && rec.exec.length === 0,
       'npcProfile=' + JSON.stringify(rec.npc) + ' exec=' + (rec.exec.map(x => x.cmd).join(',') || '(空)'));
   }
@@ -822,7 +822,7 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
   }
 
   /* ================================================================
-   *  ⑪ 第三轮主人要求：NPC「细看此人」详情界面
+   *  ⑪ 第三轮主人要求：NPC「细看」详情界面
    *
    *  走的是**真实调用链**：真 engine + 真 spawnNpc + 真 scene 卡片 onclick
    *  → 真 choices 项 onclick → 真 api.npcProfile（喂真 engine.npcProfileOf）
@@ -833,7 +833,7 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
    *    `locked 条数 === np-slock 个数` 与 `np-stext 个数 === 解锁条数` 来卡，
    *    比在 HTML 里找某段中文更抗改（文案改了结构断言还立得住）。
    * ================================================================ */
-  section('⑪ 第三轮 · NPC 详情界面（细看此人 → 新界面 + 背景故事分层解锁）');
+  section('⑪ 第三轮 · NPC 详情界面（细看 → 新界面 + 背景故事分层解锁）');
   {
     const w2 = engine.world;
     /* 挑一个「画像完整」的：有来历/隐秘/恩怨（全库 42 位 A/B 层才齐） */
@@ -865,8 +865,8 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
         if (!card) return { env, rec, html: '', clicked: false, err: '场景栏没有他的卡片' };
         card.onclick();
         const pb = env.document.getElementById('choices-list').children
-          .find(c => /细看此人/.test(String(c.innerHTML || '')));
-        if (!pb) return { env, rec, html: '', clicked: false, err: '菜单里没有「细看此人」' };
+          .find(c => /细看/.test(String(c.innerHTML || '')));
+        if (!pb) return { env, rec, html: '', clicked: false, err: '菜单里没有「细看」' };
         pb.onclick();
         await settle(); await settle();
         return {
@@ -877,7 +877,7 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
 
       /* ---- ① trust=0：来历该给正文，其余该锁 ---- */
       const a = await render(0);
-      ok('S11-1 真点「细看此人」弹出了新界面（modal 有正文）',
+      ok('S11-1 真点「细看」弹出了新界面（modal 有正文）',
         a.clicked && a.html.length > 60, a.err || ('正文 ' + a.html.length + ' 字'));
       /* 按 data-sk 精确取每一块（不靠中文片段，文案改了断言还立得住） */
       const block = (html, k) => {
@@ -957,7 +957,7 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
 
   /* ================================================================
    *  ⑫ 第四轮主人亲报（前端侧）
-   *    · 日志里点 NPC 名 → 「细看此人」必须开面板（原来只打一段 look 文本）
+   *    · 日志里点 NPC 名 → 「细看」必须开面板（原来只打一段 look 文本）
    *    · 「送他东西」面板：含金钱、点击赠送、显示「已经送多少」
    * ================================================================ */
   section('⑫ 第四轮 · 日志里能开详情面板 / 送礼面板（物品+金钱+已送多少）');
@@ -971,14 +971,14 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
       /* 直接跑**真实派发函数**（openInteractMenu 内部调的就是它） */
       env.WXUI.runInteractAct({ act: 'profile', uid: SNAKE.id, cmd: 'look ' + SNAKE.name }, SNAKE.name);
       await settle(); await settle();
-      ok('⑫-1 ★ 日志菜单里的「细看此人」真去拉了该 NPC 的画像（不再打 look 文本流）',
+      ok('⑫-1 ★ 日志菜单里的「细看」真去拉了该 NPC 的画像（不再打 look 文本流）',
         rec.npc.length === 1 && rec.exec.length === 0,
         'npcProfile=' + JSON.stringify(rec.npc) + ' exec=' + (rec.exec.map(x => x.cmd).join(',') || '(空)'));
 
       /* 口径反转（主人插队件 · 真机点名）：没有 act 的项**不再**按 cmd 派发 ——
          提示链不替玩家执行，doCmd 这条路已从 runInteractAct 拆掉。 */
       const rec2 = stubApi(env, VIEW);
-      env.WXUI.runInteractAct({ label: '打量', cmd: 'look ' + SNAKE.name }, SNAKE.name);
+      env.WXUI.runInteractAct({ label: '看', cmd: 'look ' + SNAKE.name }, SNAKE.name);
       await settle();
       ok('⑫-1b（口径反转）没有 act 的项不派发：裸 cmd 不再替玩家执行',
         rec2.exec.length === 0 && rec2.npc.length === 0,
@@ -1501,7 +1501,7 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     ok('㉑-4 ★ 下一块面板不带第二排时它自动收起（不会挂一个点不动的「关闭」）',
       foot2El.classList.contains('hidden'));
 
-    /* 真实路径：走**真入口** —— 场景卡片 → NPC 菜单 → 「细看此人」→ 互动面板。
+    /* 真实路径：走**真入口** —— 场景卡片 → NPC 菜单 → 「细看」→ 互动面板。
        （`openNpcProfile` 是闭包内部函数，没有对外导出，所以照 smoke-uiux §1 的老路走。） */
     const nv = engine.view();
     const someone = (nv.npcs || [])[0];
@@ -1511,9 +1511,9 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
       const menu = openNpcMenuHtml(env, nv, someone.name);
       const profBtn = menu.found
         ? env.document.getElementById('choices-list').children
-          .find(c => /细看此人/.test(String(c.innerHTML || '')))
+          .find(c => /细看/.test(String(c.innerHTML || '')))
         : null;
-      ok('㉑-5a 前提：从场景卡片能点到「细看此人」', !!profBtn);
+      ok('㉑-5a 前提：从场景卡片能点到「细看」', !!profBtn);
       if (profBtn) {
         profBtn.click();
         await settle(); await settle();
@@ -1523,7 +1523,7 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
           /关 闭/.test(f2) && !/关 闭/.test(f1),
           '第一排=' + f1.slice(0, 70) + ' / 第二排=' + f2.slice(0, 40));
       } else {
-        ok('㉑-5 ★ 真开一次 NPC 面板：「关闭」在第二排、不在第一排', false, '没点到「细看此人」');
+        ok('㉑-5 ★ 真开一次 NPC 面板：「关闭」在第二排、不在第一排', false, '没点到「细看」');
       }
     } else {
       ok('㉑-5 ★ 真开一次 NPC 面板：「关闭」在第二排、不在第一排', false, '视野里没人可测');

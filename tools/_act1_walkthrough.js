@@ -147,8 +147,13 @@ sec('⑤ 双分支 + 散人线');
   ok('旧道口可走（sw→oldroad）', w.player.room === 'oldroad', w.player.room);
   const rs = run(e, '看垫石');
   ok('看垫石出 74 原文（右腿拖十九年）', /十九年/.test(txt(rs)), txt(rs).slice(0, 60));
+  /* 96 案 G3：旧道 nw 改常闭塌方折返，桥 = 上山唯一通路 */
   const rn2 = run(e, '西北');
-  ok('旧道走到头是山脚客栈', w.player.room === 'shanjiao_inn', w.player.room);
+  ok('旧道 nw 塌方折返（常闭门出戏 msg）', w.player.room === 'oldroad' && /塌方/.test(txt(rn2)), w.player.room + ' | ' + txt(rn2).slice(0, 60));
+  run(e, '东北');
+  ok('折返回村口', w.player.room === 'cunzhen_gate', w.player.room);
+  run(e, '西北');
+  ok('上山唯一通路是独木桥（cunzhen_gate nw→dumuqiao）', w.player.room === 'dumuqiao', w.player.room);
 }
 /* 分支乙 */
 {
@@ -202,6 +207,65 @@ sec('⑥ 卷界：act1_recognized 落后，jiangnan→luoyang closed→ready');
   const r1 = run(e, '行路 洛阳');
   ok('通航场景句（驿丞画圈）出得来且人到了洛阳', /画了个圈|洛阳/.test(txt(r1)) && w.player.room && w.data.rooms[w.player.room].region === 'luoyang',
     txt(r1).slice(0, 80) + ' room=' + w.player.room);
+}
+
+/* ============ ⑦ 锁区穷举（96 案验收段） ========= */
+sec('⑦ 锁区穷举：fresh 档可达集只在 act1 走廊');
+{
+  const e = boot(); const w = e.world, p = w.player;
+  const { evalCond } = require('../game/src/core/modapi.js');
+  const rooms = w.data.rooms;
+  const chk = (cond) => { try { return evalCond(cond, { player: p, world: w }); } catch (err) { return false; } };
+  const seen = new Set(['road_jiangnan_1']);
+  const queue = ['road_jiangnan_1'];
+  while (queue.length) {
+    const rid = queue.shift();
+    const r = rooms[rid]; if (!r) continue;
+    for (const ex of Object.values(r.exits || {})) {
+      const to = typeof ex === 'string' ? ex : ex.to;
+      if (!to) continue;
+      if (typeof ex === 'object' && ex.cond && !chk(ex.cond)) continue;
+      if (!seen.has(to)) { seen.add(to); queue.push(to); }
+    }
+  }
+  const ALLOWED = new Set(['cunzhen', 'huashan', 'wild']);
+  const leaks = [...seen].filter(rid => !(ALLOWED.has((rooms[rid] || {}).region) || rid === 'road_jiangnan_1'));
+  ok('锁区穷举：可达房全在走廊（cunzhen/huashan/wild+茶摊）', leaks.length === 0, leaks.join(','));
+  for (const must of ['jiangnan_gate', 'road_jiangnan_2', 'jiangnan_east_road', 'road_shaolin_1', 'huashan_library', 'jn_pawnshop'])
+    ok('不可达（锁区）：' + must, !seen.has(must));
+  for (const open of ['cunzhen_gate', 'dumuqiao', 'shanjiao_inn', 'road_huashan_1', 'huashan_shanxia', 'road_wild_1', 'wild_forest_1', 'cunzhen_inn', 'cunzhen_farm'])
+    ok('可达（走廊腹地）：' + open, seen.has(open));
+  ok('可达（认痕路径，思过崖 or 形认痕前自由）：huashan_siguoya', seen.has('huashan_siguoya'));
+  p.setFlag('act1_recognized', true);
+  ok('认痕后 G1/G2 放行', chk(rooms.road_jiangnan_1.exits.n.cond) && chk(rooms.road_jiangnan_1.exits.s.cond));
+  ok('认痕后 G4/G5/G6 放行', chk(rooms.road_huashan_1.exits.e.cond) && chk(rooms.road_huashan_1.exits.w.cond) && chk(rooms.road_huashan_1.exits.s.cond));
+  ok('旧道 nw 仍常闭（塌方折返不随认痕开）', !chk(rooms.oldroad.exits.nw.cond));
+}
+
+/* ============ ⑧ 看信迁移 + 追鸡轻功 + M1 散人主线 ========= */
+sec('⑧ 看信迁小铺 / 追鸡补轻功 / M1 散人主线');
+{
+  const e = boot(); const w = e.world, p = w.player;
+  ['伸手', '翻案底', '倒水', '撬', '垫', '挪缸'].forEach(c => run(e, c));
+  run(e, '问信');
+  const rj = run(e, '接信');
+  ok('接信出指路（青溪村小铺掌柜）', /小铺的掌柜/.test(txt(rj)), txt(rj).slice(0, 80));
+  w.movePlayerTo(p, 'cunzhen_inn');
+  const rp = run(e, '给掌柜看信');
+  ok('小铺看信→act1_pawn_done', p.hasFlag('act1_pawn_done'), txt(rp).slice(0, 60));
+  w.movePlayerTo(p, 'jn_pawnshop');
+  const r2 = run(e, '给掌柜看信');
+  ok('江南当铺已无此 action（不报错就是没迁干净）', !/act1_pawn_done|封皮/.test(txt(r2)) && /是什么指令|不懂|没有/.test(txt(r2)), txt(r2).slice(0, 50));
+  w.movePlayerTo(p, 'cunzhen_farm');
+  const r3 = run(e, '追鸡');
+  ok('追鸡学会基本轻功（卷一轻功断供补口）', !!(p.learned && p.learned.basic_dodge), JSON.stringify(Object.keys(p.learned || {})));
+  const r4 = run(e, '追鸡');
+  ok('追鸡 once 不重复出戏', !/轻了半分/.test(txt(r4)), txt(r4).slice(0, 40));
+  /* M1：散人（不入门派）认痕后总主线照走 */
+  const e2 = boot(); const p2 = e2.world.player;
+  p2.setFlag('act1_recognized', true);
+  run(e2, '看');
+  ok('M1：散人认痕后 q_main_jianghu 过 stage0', p2.questStage('q_main_jianghu') >= 1, 'stage=' + p2.questStage('q_main_jianghu'));
 }
 
 console.log('\n============================================');

@@ -120,8 +120,11 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
   const elderSays = (r) => kinds(r, 'say').filter(t => /老汉/.test(t));
 
   /* 走开之后：剧情**照旧留在大框里**（这是「常显」要证明的事），
-     而日志里依旧不许冒出剧情行。 */
-  const rMove = await e.exec('北');
+     而日志里依旧不许冒出剧情行。
+     ⚠️ 走「西」（road_wild_1 无门槛出口），不走北 —— 2026-10-15 游有方数据侧给
+        road_jiangnan_1 北/南两个出口加了 act1_recognized 门槛（卷界锁），
+        走北现在会被挡在原地（「城门口查得紧」）。 */
+  const rMove = await e.exec('西');
   ok('走出去了', p.room !== elderRoom, '现在在 ' + w.data.rooms[p.room].name);
   const rLook = await e.exec('look');
   ok('★ 走开之后大框里还是那一幕（不会因为离开就消失）',

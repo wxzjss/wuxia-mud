@@ -740,8 +740,9 @@ function buildCommands(world) {
              （实情：详情面板只挂在前端「场景栏卡片」那条入口上，日志高亮这条漏了。）
              现在第一项就是**开详情面板**：`act:'profile'` + `uid`（实例 id），
              前端认 act 开面板；cmd 留作兜底（老客户端 / 不认 act 时退回 look）。
-             文本流另给一项「打量」，两样都在，谁也不会丢。 */
-          { label: '细看此人', act: 'profile', uid: one && one.id, cmd: 'look ' + k, hint: '资料 · 来历 · 关系' },
+             2026-10-15 主人定调菜单双词：「细看」(profile) 与「看」(look 文本流)，
+             字眼与全站叫法对齐，不再用「打量」「细看此人」。 */
+          { label: '细看', act: 'profile', uid: one && one.id, cmd: '细看 ' + k, hint: '资料 · 来历 · 关系' },
           { label: '交谈', cmd: 'talk ' + k },
           { label: '询问', cmd: 'ask ' + k },
         ];
@@ -803,10 +804,10 @@ function buildCommands(world) {
            · ⚠️ 铁律 33：**绝不拿 n.hostile 当「不给攻击」的排除条件** ——
              它是模板常驻标记（山贼/野兽一出生 true、打输也不清）。这里只用它
              **排序**（优先给），不做任何「能不能打」的判定。 */
-        /* 文本流的「打量」压在最后 —— 但**必须排在「攻击」之前**：
+        /* 文本流的「看」压在最后 —— 但**必须排在「攻击」之前**：
            「攻击」要保持是**最后一项**（B10：避免手指从「交谈」一路滑到「攻击」），
-           把无害的「打量」垫在攻击前面，两头都安全。 */
-        actions.push({ label: '打量', cmd: 'look ' + k, hint: '看一段文字描述' });
+           把无害的「看」垫在攻击前面，两头都安全。 */
+        actions.push({ label: '看', cmd: 'look ' + k, hint: '看一段文字描述' });
         /* ★ 「绑架」统一入口（主人第四轮加）：
            晕着 → 直接装袋；站着 → 先打（真进战斗）。
            判据全用**显式状态**：`knockedOut`（晕没晕）+ 背包里有没有粗麻袋。
@@ -825,7 +826,7 @@ function buildCommands(world) {
            与「攻击」是两条完全不同的路：
              · 攻击 → 真打，会结仇、会通缉、能打死人；
              · 切磋 → 点到为止，谁都不死，输了留 1 滴血、原地缓过来，还落一点人情。
-           所以它是**无害项**，跟「交谈/送礼」排在一起，压在「打量/攻击」之前 ——
+           所以它是**无害项**，跟「交谈/送礼」排在一起，压在「看/攻击」之前 ——
            主人早就定过规矩：「攻击」必须是最后一项（B10：手指从「交谈」一路滑下来别开打），
            切磋是安全的，不用躲着它，但也不能把攻击从末位挤走。
            战斗中不给（正在打就别插一场），人躺着不给（等他缓过来）。 */
@@ -866,8 +867,8 @@ function buildCommands(world) {
         const dhl = downed.map(n => {
           const acts = [
             /* 倒地的也一样：第一项开详情面板（主人报过「日志里点名字不弹面板」） */
-            { label: '细看此人', act: 'profile', uid: n.id, cmd: 'look ' + n.name, hint: '资料 · 来历 · 关系' },
-            { label: '打量', cmd: 'look ' + n.name },
+            { label: '细看', act: 'profile', uid: n.id, cmd: '细看 ' + n.name, hint: '资料 · 来历 · 关系' },
+            { label: '看', cmd: 'look ' + n.name },
             { label: '补刀', cmd: 'kill ' + n.name, hint: '结果了他' },
             { label: '搜身', cmd: '搜身 ' + n.name, hint: '翻他身上的东西' },
           ];
@@ -904,7 +905,7 @@ function buildCommands(world) {
         return {
           text: nm, type: 'item',
           actions: [
-            { label: '看看', cmd: 'look ' + nm },
+            { label: '细看', cmd: '细看 ' + nm },
             { label: '捡起', cmd: 'get ' + nm },
           ],
         };
@@ -1223,7 +1224,16 @@ function buildCommands(world) {
        查清了：它唯一的消耗口是「研读秘籍」，而那个分支要求书声明 `teach` ——
        全库 9 本书一本都没写，所以这条路从来没通过；其余只有产出没有消耗。
        现在从玩家可见处与基础玩法里撤掉（字段本身保留，Mod 接口不动）。 */
-    lines.push({ kind: 'plain', text: `等级：${p.level}　经验：${p.exp}/${p.expNeed(p.level)}` });
+    /* design/99 定案：天文经验曲线速率自洽、只是显示崩 —— 超长数字缩写显示
+       （与前端 util.fmtBig 同一口径：< 万原样，≥ 万 → 12.4万，≥ 亿 → 1.2亿）。 */
+    const fmtBig = n => {
+      n = Math.floor(Number(n) || 0);
+      if (n < 10000) return String(n);
+      const trim = x => String(x).replace(/\.0$/, '');
+      if (n < 1e8) return trim(Math.round(n / 1000) / 10) + '万';
+      return trim(Math.round(n / 1e7) / 10) + '亿';
+    };
+    lines.push({ kind: 'plain', text: `等级：${p.level}　经验：${fmtBig(p.exp)}/${fmtBig(p.expNeed(p.level))}` });
     lines.push({ kind: 'bar', text: '气血', cur: p.hp, max: p.maxHp, color: 'hp' });
     lines.push({ kind: 'bar', text: '内力', cur: p.mp, max: p.maxMp, color: 'mp' });
     lines.push({ kind: 'bar', text: '饱食', cur: p.food, max: p.maxFood, color: 'food' });

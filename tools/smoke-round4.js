@@ -31,9 +31,9 @@ const boot = (seed) => {
 const txt = a => (a || []).map(x => String(x.text || '')).join(' | ');
 
 /* ================================================================
- * §P 日志里点 NPC → 第一项就是「细看此人（开面板）」
+ * §P 日志里点 NPC → 第一项就是「细看」（开面板）
  * ================================================================ */
-section('§P 日志高亮菜单：第一项必须是「细看此人」且带真实例 id');
+section('§P 日志高亮菜单：第一项必须是「细看」且带真实例 id');
 {
   const e = boot(21);
   const w = e.world, p = w.player;
@@ -49,8 +49,8 @@ section('§P 日志高亮菜单：第一项必须是「细看此人」且带真�
   ok('P-2 高亮项是 npc 类型且带 actions 表', !!(h && h.actions && h.actions.length), h ? h.actions.map(a => a.label).join('、') : '-');
 
   const first = h && h.actions[0];
-  ok('P-3 ★ 动作表**第一项**就是「细看此人」（主人点的那个按钮）',
-    !!(first && /细看此人/.test(first.label || '')), first ? first.label : '(空)');
+  ok('P-3 ★ 动作表**第一项**就是「细看」（菜单双词：看/细看，主人 2026-10-15 定调）',
+    !!(first && first.label === '细看'), first ? first.label : '(空)');
   ok('P-4 ★ 该项带 `act:"profile"`（前端靠它开面板，而不是退回 look 文本流）',
     !!(first && first.act === 'profile'), first ? JSON.stringify({ act: first.act, uid: first.uid }) : '-');
   ok('P-5 ★ 该项带**真实例 id**（不是文本名 —— 文本名会被重名/称谓坑）',
@@ -62,8 +62,8 @@ section('§P 日志高亮菜单：第一项必须是「细看此人」且带真�
     ok('P-6 ★ 用 hl 给的 uid 真能查到这个人（端到端，uid 错了立刻暴露）',
       !!(pr && pr.name === someone.name), pr ? pr.name : '(查不到)');
   }
-  ok('P-7 文本流的「打量」还在（两样都留，谁也不会丢）',
-    !!(h && h.actions.some(a => /打量/.test(a.label || '') && /^look /.test(a.cmd || ''))),
+  ok('P-7 文本流的「看」还在（菜单双词之一，look 文本流）',
+    !!(h && h.actions.some(a => a.label === '看' && /^look /.test(a.cmd || ''))),
     h ? h.actions.map(a => a.label).join('、') : '-');
 
   /* 倒地那张表同样处理 */
@@ -74,8 +74,8 @@ section('§P 日志高亮菜单：第一项必须是「细看此人」且带真�
     const l2 = e.exec('look');
     const dl = (l2.lines || []).find(l => l.kind === 'npcs' && /躺着/.test(l.text || ''));
     const dh = dl && dl.hl && dl.hl[0];
-    ok('P-8 ★ 倒在地上的人，动作表第一项也是「细看此人」+ 真 uid',
-      !!(dh && /细看此人/.test(dh.actions[0].label || '') && dh.actions[0].act === 'profile' && dh.actions[0].uid),
+    ok('P-8 ★ 倒在地上的人，动作表第一项也是「细看」+ 真 uid',
+      !!(dh && dh.actions[0].label === '细看' && dh.actions[0].act === 'profile' && dh.actions[0].uid),
       dh ? JSON.stringify(dh.actions.slice(0, 2).map(a => a.label)) : '(没找到倒地行)');
   }
 }

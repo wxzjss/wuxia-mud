@@ -560,6 +560,14 @@ class Character {
     const isNeigong = sd.type === '内功';
     const mpCost = Math.max(4, Math.floor((sd.trainMpCost || (isNeigong ? 14 : 7)) * Math.pow(1.05, cur.level - 1)));
     if (this.mp < mpCost) return { ok: false, msg: `内力不足（需 ${mpCost}，你余 ${Math.floor(this.mp)}），先「打坐」恢复内力再练。` };
+    /* design/05 §3.2 / 99 §三.4（P1 经济坏账，2026-10-15 落）：
+       修炼改扣 `trainCost` —— 原来 `trainCost()` 只算不扣（潜能只有读书一个出口，
+       形同虚设）。潜能从此是「练功燃料」，与内力（打坐恢复）形成双资源节奏。
+       ⚠️ 放在成功率掷骰**之前**扣：与内力同规 —— 练一次收一次的钱，练砸也算交学费。 */
+    const potCost = this.trainCost(sd, cur.level);
+    if ((this.potential || 0) < potCost) {
+      return { ok: false, msg: `潜能不足（需 ${potCost}，你余 ${Math.floor(this.potential || 0)}）——去做点长见识的事再来练。` };
+    }
     const apt = this.attrTotal('资质');
     const okRate = this.trainSuccessRate(sd, cur.level);
     // 习武奇才等特性：修炼经验倍率（NPC/玩家特性可叠加）
@@ -569,7 +577,8 @@ class Character {
     const eff = (this.world && typeof this.world.estateEffects === 'function') ? this.world.estateEffects() : null;
     if (eff && eff.trainMult) trainMult *= 1 + eff.trainMult;
     this.mp -= mpCost;
-    const lines = [];
+    this.potential = Math.max(0, (this.potential || 0) - potCost);
+    const lines = [`你潜心修习（潜能 -${potCost}）：`];
     if (this.world.rng.next() < okRate) {
       /* 内力上限加速（主人 2026-10-10：「内力上限越高，低等级武学练的提升速度越快」）：
          内力是修为的根 —— 根扎得深，学什么都快。1200 内力上限 = 速度翻倍，此后线性。 */
