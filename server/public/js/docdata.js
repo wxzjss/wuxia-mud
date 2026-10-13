@@ -117,14 +117,15 @@
 <tr><td><code>attr.悟性&gt;=20</code></td><td>悟性属性 ≥ 20</td></tr>
 <tr><td><code>skill.basic_sword&gt;=50</code></td><td>基础剑法 ≥ 50 级</td></tr>
 <tr><td><code>money&gt;=1000</code></td><td>身上钱 ≥ 1000 文</td></tr>
-<tr><td><code>hasitem:长剑</code></td><td>身上有长剑</td></tr>
+<tr><td><code>hasitem:长剑</code></td><td>身上有长剑（要两把写 <code>hasitem:长剑:2</code>）</td></tr>
 <tr><td><code>flag:got_letter</code></td><td>有某个剧情标记</td></tr>
 <tr><td><code>sect:华山派</code></td><td>属于某门派</td></tr>
 <tr><td><code>kills&gt;=100</code></td><td>杀敌数 ≥ 100</td></tr>
+<tr><td><code>{"rep":"华山派","&gt;=":50}</code></td><td>在华山派的声望 ≥ 50（声望要带门派名，用对象写法）</td></tr>
 <tr><td><code>chance:0.3</code></td><td>30% 概率通过</td></tr>
-<tr><td><code>and(realm&gt;=1, hasitem:长剑)</code></td><td>同时满足</td></tr>
-<tr><td><code>or(sect:华山派, sect:武当派)</code></td><td>满足其一</td></tr>
-<tr><td><code>not(flag:got_letter)</code></td><td>取反</td></tr>
+<tr><td><code>{"and":["realm&gt;=1","hasitem:长剑"]}</code></td><td>同时满足（组合用 JSON 数组写法）</td></tr>
+<tr><td><code>{"or":["sect:华山派","sect:武当派"]}</code></td><td>满足其一</td></tr>
+<tr><td><code>{"not":"got_letter"}</code></td><td>取反</td></tr>
 </table>
 
 <h3>🎯 五种 Mod 类型，各自怎么做</h3>

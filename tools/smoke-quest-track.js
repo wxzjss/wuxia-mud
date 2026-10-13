@@ -236,6 +236,44 @@ function boot(seed) {
     ok('没有 undefined / NaN 漏进 HTML', !/undefined|NaN/.test(h), (h.match(/undefined|NaN/g) || []).join(','));
   }
 
+  /* ---------- ⑨ 声望挂点双口径（2026-10-15 主人批准）----------
+     quest def 级 repGainOnQuest（按案精确）+ NPC def 级去重旗 repgain_<questId>
+     （同一案重复结算只加一次；不同案各结各的）。测试用运行时注入数据，不碰 game/data/。 */
+  sec('⑨ repGainOnQuest 双口径');
+  {
+    const e = boot(99);
+    const w = e.world, p = w.player;
+    /* 运行时造两案一 NPC（内存注入，不落库） */
+    w.data.quests.q_rep_t1 = { id: 'q_rep_t1', name: '声望试案一', type: '支线',
+      stages: [{ desc: '办了它', next: 99 }], repGainOnQuest: { '华山派': 5 } };
+    w.data.quests.q_rep_t2 = { id: 'q_rep_t2', name: '声望试案二', type: '支线',
+      stages: [{ desc: '也办了它', next: 99 }] };
+    w.data.npcs.npcv_rep = Object.assign({}, w.data.npcs[Object.keys(w.data.npcs)[0]], {
+      id: 'npcv_rep', name: '声望委托人', quests: ['q_rep_t1', 'q_rep_t2'],
+      repGainOnQuest: { '华山派': 30 },
+    });
+    p.quests.q_rep_t1 = 0; p.quests.q_rep_t2 = 0;
+
+    w.spawnNpc('npcv_rep', p.room, 1, true);
+    const before = p.reputation['华山派'] || 0;
+    e.exec('交任务');                        /* 结第一案（q_rep_t1：quest 级 +5，NPC 级 +30） */
+    const after1 = p.reputation['华山派'] || 0;
+    ok('★ 案一收口：quest 级 +5 与 NPC 级 +30 叠加（+35）', after1 - before === 35,
+      `${before}→${after1}`);
+    ok('★ 去重旗插上（repgain_q_rep_t1）', p.hasFlag('repgain_q_rep_t1'));
+    ok('　案二没被案一的旗吞（repgain_q_rep_t2 未插）', !p.hasFlag('repgain_q_rep_t2'));
+
+    e.exec('交任务');                        /* 结第二案（无 quest 级；NPC 级去重旗按案独立 → 再 +30） */
+    const after2 = p.reputation['华山派'] || 0;
+    ok('★ 案二收口：NPC 级按案各结一次（再 +30，不是 0 也不是 4×30）', after2 - after1 === 30,
+      `${after1}→${after2}`);
+
+    /* 真实路径防重：两案都已 st=99，reportable 直接跳过 → 再交零加成、不报错 */
+    const before3 = p.reputation['华山派'] || 0;
+    e.exec('交任务');
+    ok('★ 已交完的案（st=99）再交：零加成、不报错', (p.reputation['华山派'] || 0) - before3 === 0);
+  }
+
   console.log('\n==============================================');
   console.log('  任务追踪：' + pass + ' 通过 / ' + fail + ' 失败');
   if (fails.length) console.log('  失败项：' + fails.join('、'));

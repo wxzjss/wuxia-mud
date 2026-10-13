@@ -208,6 +208,31 @@ section('§G 效果 DSL 电池');
     return !!w.battle;
   })());
   ok('G-18 combatWith 对不在场的人明说（不静默）', /找不到/.test(line('combatWith:mc_nosuch_npc')));
+
+  /* ---- §G2 条件字符串简写别名（2026-10-15 教程盘点批）----
+     教程速查表教的写法原先全是静默失效：rep>=500 恒真、hasitem:/flag:/sect: 恒假。
+     引擎补了已知键的 key:value 映射，这里四条写法验真 + 验假（变异断言）。 */
+  p.money = 1000;
+  p.setFlag && p.setFlag('mc_letter', true);
+  ok('G2-1 hasitem 简写真生效（有→true，没有→false）',
+    modapi.evalCond('hasitem:mc_stone', { player: p, world: w }) === true
+    && modapi.evalCond('hasitem:mc_nosuch', { player: p, world: w }) === false);
+  ok('G2-2 hasitem:x:2 数量口径（只有 1 把 → false，给够 → true）',
+    modapi.evalCond('hasitem:mc_stone:2', { player: p, world: w }) === false
+    && (run('+item:mc_stone:1'), modapi.evalCond('hasitem:mc_stone:2', { player: p, world: w }) === true));
+  ok('G2-3 flag:x 简写（插过旗 true，没插 false）',
+    modapi.evalCond('flag:mc_letter', { player: p, world: w }) === true
+    && modapi.evalCond('flag:mc_nosuch', { player: p, world: w }) === false);
+  ok('G2-4 sect:x 简写（对象口径同判）',
+    modapi.evalCond('sect:华山派', { player: p, world: w }) === false
+    && (p.sect = '华山派', modapi.evalCond('sect:华山派', { player: p, world: w }) === true));
+  ok('G2-5 chance:x 简写（rng 归零=必过）',
+    (() => { const realNext = w.rng.next; w.rng.next = () => 0; const r = modapi.evalCond('chance:0.3', { player: p, world: w }); w.rng.next = realNext; return r === true; })());
+  ok('G2-6 对象写法回归不动（{rep,>=} 仍认）',
+    (() => { p.reputation.华山派 = 60; return modapi.evalCond({ rep: '华山派', '>=': 50 }, { player: p, world: w }) === true
+      && modapi.evalCond({ rep: '华山派', '>=': 500 }, { player: p, world: w }) === false; })());
+  ok('G2-7 组合写法（{and:[字符串…]} 数组元素逐条再求值）',
+    modapi.evalCond({ and: ['money>=100', 'hasitem:mc_stone'] }, { player: p, world: w }) === true);
 }
 
 console.log('\n结果：' + pass + ' 通过 / ' + fail + ' 失败');

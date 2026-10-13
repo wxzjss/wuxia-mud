@@ -149,6 +149,29 @@ function evalCond(cond, ctx) {
       if (n[1] === 'tuning') return evalCond({ notTuning: true }, ctx);
       return evalCond({ notFlag: n[1] }, ctx);
     }
+    /* 🔴 2026-10-15 主人批准（Mod 站教程盘点批）：
+       速查表里教的 `flag:x` / `hasitem:x` / `item:x` / `sect:x` 这类字符串简写，
+       原先全部落进兜底的 `{flag:'key:value'}` 分支 —— hasitem/sect 等一律**恒假**，
+       谁照文档写谁静默失效（实测：`rep>=500` 声望 60 也过、`hasitem:长剑` 身上有也 false）。
+       ⇒ 认一份已知键的 `key:value` 映射（数值键走上面的简写，不在这里）；
+         `hasitem:x:n` / `item:x:n` 第 三 段当 count。没列进表的键仍按老兜底走，不改变旧行为。 */
+    const kv = String(cs).match(/^([a-zA-Z_]+):(.+)$/);
+    if (kv) {
+      const [, kk, vv] = kv;
+      const segs = vv.split(':');
+      if (kk === 'flag') return evalCond({ flag: segs[0] }, ctx);
+      if (kk === 'hasitem' || kk === 'item') return evalCond({ item: segs[0], count: segs[1] !== undefined ? (parseFloat(segs[1]) || 1) : 1 }, ctx);
+      if (kk === 'sect') return evalCond({ sect: vv }, ctx);
+      if (kk === 'sectNot') return evalCond({ sectNot: vv }, ctx);
+      if (kk === 'gender') return evalCond({ gender: vv }, ctx);
+      if (kk === 'race') return evalCond({ race: vv }, ctx);
+      if (kk === 'region') return evalCond({ region: vv }, ctx);
+      if (kk === 'title') return evalCond({ title: vv }, ctx);
+      if (kk === 'perk') return evalCond({ hasPerk: vv }, ctx);
+      if (kk === 'quest') return evalCond({ quest: segs[0], stage: segs[1] !== undefined ? parseInt(segs[1], 10) : undefined }, ctx);
+      if (kk === 'questdone') return evalCond({ questDone: segs[0] }, ctx);
+      if (kk === 'chance') return evalCond({ chance: parseFloat(vv) || 0 }, ctx);
+    }
     return evalCond({ flag: cs }, ctx);
   }
   if (Array.isArray(cond)) return cond.every(c => evalCond(c, ctx));

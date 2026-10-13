@@ -128,7 +128,7 @@
           <ul>
             <li><b>姓名 / ID</b>：「白发渔翁」/ <code>fisher_old</code>。</li>
             <li><b>所在房间</b>：下拉选你刚建的房间。</li>
-            <li><b>等级 / 气血 / 攻击</b>：新手村的 NPC 建议 1~5 级、气血 60~150。</li>
+            <li><b>气血 / 攻击</b>：新手村的 NPC 建议气血 60~150、攻击个位数起步（引擎没有等级字段，强度看气血与攻击）。</li>
             <li><b>打招呼</b>：玩家输入 <code>talk 白发渔翁</code> 时他说的话，每行一句。</li>
           </ul>
           <p>勾选「可请教武学」，玩家就能 <code>learn 白发渔翁</code> 学武功；勾「是商人」，就能 <code>list</code> 看货 <code>buy</code> 买东西。</p>
@@ -267,19 +267,20 @@
       <table>
         <tr><th>写法</th><th>含义</th></tr>
         <tr><td><code>level&gt;=10</code></td><td>等级 ≥ 10</td></tr>
+        <tr><td><code>realm&gt;=2</code></td><td>境界 ≥ 小有所成（0 不通武艺 / 1 初窥门径 / 2 小有所成 / 3 登堂入室 / 4 炉火纯青 / 5 登峰造极）</td></tr>
         <tr><td><code>attr.悟性&gt;=20</code></td><td>悟性 ≥ 20</td></tr>
         <tr><td><code>skill.basic_sword&gt;=50</code></td><td>基础剑法 ≥ 50 级</td></tr>
         <tr><td><code>money&gt;=1000</code></td><td>身上钱 ≥ 1000 文</td></tr>
         <tr><td><code>kills&gt;=100</code></td><td>杀敌数 ≥ 100</td></tr>
-        <tr><td><code>rep&gt;=500</code></td><td>声望 ≥ 500</td></tr>
-        <tr><td><code>hasitem:长剑</code></td><td>身上有长剑</td></tr>
+        <tr><td><code>{"rep":"华山派","&gt;=":50}</code></td><td>在华山派的声望 ≥ 50（声望要带门派名，用对象写法）</td></tr>
+        <tr><td><code>hasitem:长剑</code></td><td>身上有长剑（要两把写 <code>hasitem:长剑:2</code>）</td></tr>
         <tr><td><code>flag:got_letter</code></td><td>有某剧情标记</td></tr>
         <tr><td><code>sect:华山派</code></td><td>属于某门派</td></tr>
         <tr><td><code>rank&gt;=3</code></td><td>门派职位 ≥ 3</td></tr>
         <tr><td><code>chance:0.3</code></td><td>30% 概率通过</td></tr>
-        <tr><td><code>and(level&gt;=10, hasitem:长剑)</code></td><td>同时满足</td></tr>
-        <tr><td><code>or(sect:华山派, sect:武当派)</code></td><td>满足其一</td></tr>
-        <tr><td><code>not(flag:got_letter)</code></td><td>取反</td></tr>
+        <tr><td><code>{"and":["level&gt;=10","hasitem:长剑"]}</code></td><td>同时满足（组合用 JSON 数组写法）</td></tr>
+        <tr><td><code>{"or":["sect:华山派","sect:武当派"]}</code></td><td>满足其一</td></tr>
+        <tr><td><code>{"not":"got_letter"}</code></td><td>取反</td></tr>
       </table>
 
       <h3 id="s10">五种 Mod 类型，各自怎么做</h3>
@@ -389,7 +390,7 @@
         <p>可以，但入口要认对：自定义的<b>条件/效果</b>写进 <code>mod.json</code> 的声明式
         <code>functions</code> 字段（条件体是表达式，不是任意 JS）；想写真正的逻辑脚本，在
         <code>mods/你的ID/</code> 里放 <code>script.js</code>——引擎在<b>沙箱</b>里执行它，能用的是
-        <code>wx</code> 对象暴露的 24 个接口。<b>沙箱里没有 <code>registerCond</code> /
+        <code>wx</code> 对象暴露的 25 个接口。<b>沙箱里没有 <code>registerCond</code> /
         <code>registerEffect</code> 这类注册函数</b>——教程早期说的「script.js 注册自定义条件/效果」口径有误，
         以本条为准。沙箱能防「脚本写挂拖垮游戏」，但它是软隔离（同进程），不防蓄意攻击。</p>
       </div>

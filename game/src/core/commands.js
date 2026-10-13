@@ -5848,7 +5848,25 @@ function questKeyword(ctx, cmd, args, rawFull) {
       /* 办事得来的长进（主人 2026-10-08：「给主支线任务…增加潜能获取途径」）。
          主线给得最多 —— 它是长线，玩家靠它撑过前中期。 */
       potential.grant(p, potential.questRewardOf(qd, true), lines, '这一趟没白跑');
-      if (def.repGainOnQuest) for (const k of Object.keys(def.repGainOnQuest)) p.reputation[k] = (p.reputation[k] || 0) + def.repGainOnQuest[k];
+      /* ---- 声望挂点（2026-10-15 主人批准的双口径）----
+         ① quest def 级 `repGainOnQuest`（推荐新写法）：挂在任务上，交这一案加这一案的
+            —— 每案只收口一次，天然按案精确（design/95 §三键位表口径回流处）。
+         ② NPC def 级 `repGainOnQuest`（旧写法，兼容保留）：原样挂在 NPC 上时，
+            同一 NPC 名下多案会**各自全量加成**（游有方第一批实测踩过）。
+            ⇒ 加 questId 去重旗：flag `repgain_<questId>` —— 同一案无论从哪条路
+               重复结算，都只加一次；不同案各结各的，互不吞。
+         ③ 两级同时声明 = **叠加**（quest 级按案 + NPC 级按去重旗），不搞静默覆盖。 */
+      const repFlag = 'repgain_' + q;
+      if (qd.repGainOnQuest) {
+        for (const k of Object.keys(qd.repGainOnQuest)) {
+          p.reputation[k] = (p.reputation[k] || 0) + qd.repGainOnQuest[k];
+          lines.push({ kind: 'sys', text: `你在${k}的声望提高了 ${qd.repGainOnQuest[k]}。` });
+        }
+      }
+      if (def.repGainOnQuest && !p.hasFlag(repFlag)) {
+        for (const k of Object.keys(def.repGainOnQuest)) p.reputation[k] = (p.reputation[k] || 0) + def.repGainOnQuest[k];
+        p.setFlag(repFlag, true);
+      }
     } else {
       p.setQuestStage(q, next);
       lines.push({ kind: 'quest', text: `【任务进展】${qd.name}` });
