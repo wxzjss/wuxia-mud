@@ -603,26 +603,32 @@
     const first = String(cmd || '').trim().split(/\s+/)[0] || '';
     return HL_RISKY_CMDS.indexOf(first) >= 0;
   }
-  /* 81/N-V-14：data-cmd 绝不能命中 PANEL_CMDS——整串精确命中会被前端拦成"开面板"，
-     后端根本收不到。命中就换写法：退回 `look <名词>`（无害、后端认、不可能是面板词）。 */
-  function safeTipCmd(a, fallbackName) {
+  /* 81/N-V-14（历史）：提示行不再携带 data-cmd，面板避让随之退场。
+     主人插队件（真机点名）：提示链两处改口径 ——
+     ① 按钮文案不再显示英文指令原文，改中文动词「看 卖茶的老汉」：
+        cmd 首词查 HL_TIP_VERBS；首词本身就是中文的（求医/问路/偷袭…）原样保留；
+        查不到的退回后端 label，再退回首词。
+     ② 旧口径「知道该敲什么=直接就做了」（81 §九）在真机上被推翻：
+        点 .hl、点提示条目都**只展开文字**，doCmd 这条路从提示链上彻底拆掉，
+        执行权 100% 留在玩家手上（玩家自己敲，或走场景栏按钮）。 */
+  const HL_TIP_VERBS = { look: '看', talk: '交谈', ask: '打听', give: '送', list: '看', follow: '跟随',
+    kill: '攻击', attack: '攻击', qingjiao: '请教', qiecuo: '切磋', guanxi: '看关系', favor: '送礼',
+    steal: '偷', drop: '放下', accept: '接', search: '搜', get: '捡', climb: '爬', push: '推',
+    pull: '拉', dig: '挖', drink: '喝', eat: '吃', wash: '洗', rest: '歇', ride: '骑', board: '上船' };
+  function hlTipText(a) {
     const cmd = String((a && a.cmd) || '').trim();
-    if (cmd && !panelForCmd(cmd)) return cmd;
-    return ('look ' + (fallbackName || '')).trim();
+    const sp = cmd.indexOf(' ');
+    const head = sp > 0 ? cmd.slice(0, sp) : cmd;
+    const rest = sp > 0 ? cmd.slice(sp + 1) : '';
+    const verb = HL_TIP_VERBS[head.toLowerCase()] || (a && a.label) || head;
+    return rest ? verb + ' ' + rest : verb;
   }
 
   function openInteractMenu(h, btnEl) {
     const name = h && h.text || '';
     const acts = (h && h.actions) || [];
     if (!acts.length) return;
-    const risky = acts.some(a => hlCmdRisky(a.cmd));
-    const hasAct = acts.some(a => a.act);
-    if (acts.length === 1 && !risky) {
-      /* 可逆单动作（含带 act 的）：直接执行。 */
-      runInteractAct(acts[0], name);
-      return;
-    }
-    /* 不可逆 / 多动作：展开行内提示行（N-V-21：点它之后不发 exec，指令点了才执行） */
+    /* 主人插队件：旧「可逆单动作直执」分支已拆 —— .hl 点击一律只展开文字提示行。 */
     toggleHlTip(btnEl, name, acts);
   }
 
@@ -649,20 +655,12 @@
       tip = document.createElement('div');
       tip.className = 'hl-tip';
       tip.id = id;
-      /* 指令按钮：显示的就是玩家该敲的那串字（data-cmd），点了直接执行（"知道该敲什么"
-         和"直接就做了"是同一条路——81 §九）。1–3 个全部并列，没有第四档。 */
-      tip.innerHTML = acts.map(a => {
-        const cmd = safeTipCmd(a, name);
-        return '<button class="hl-tip-cmd" data-cmd="' + esc(cmd) + '">' + esc(cmd) + '</button>';
-      }).join('');
-      const btns = tip.querySelectorAll('.hl-tip-cmd');
-      btns.forEach((cb, i) => {
-        cb.onclick = (ev) => {
-          ev.stopPropagation();
-          runInteractAct(acts[i], name);
-          closeHlTips();     /* ③ 点了提示行里的指令（执行 → 收） */
-        };
-      });
+      /* 主人插队件：条目是**纯文字提示**（中文动词 + 对象 + 一句说明），不是指令按钮 ——
+         没有点击行为，也就没有 doCmd。文案「看 卖茶的老汉 —— 看一段文字描述」。 */
+      tip.innerHTML = acts.map(a =>
+        '<div class="hl-tip-cmd">' + esc(hlTipText(a)) +
+        (a.hint ? '<span class="hl-tip-note"> —— ' + esc(a.hint) + '</span>' : '') + '</div>'
+      ).join('');
       line.appendChild(tip);
     }
     tip.hidden = false;
@@ -702,7 +700,8 @@
       openQuestPreview(a.qid, a.cmd);
       return;
     }
-    if (a.cmd) doCmd(a.cmd, { fromButton: true });
+    /* 主人插队件：末尾的 `if (a.cmd) doCmd(...)` 已拆 —— 提示链不再替玩家执行，
+       runInteractAct 只剩两个**开面板**职责（详情画像 / 任务预览），面板不是执行。 */
   }
 
   function clearLog() { logLines = []; paintLog(); }
@@ -5140,10 +5139,9 @@
     appendLog, paintLog, clearLog, doCmd, panel, panelForCmd, openSaves, openSettings, applySettings,
     quitGame, isQuitCmd,
     centerMapOnHere, fmt1,
-    /* 日志高亮菜单那一项的派发（认 `act`，否则退回 `cmd`）。
-       挂出来是为了能在测试里**直接跑真实派发** —— 日志里的 `.hl` 按钮是
-       `innerHTML` + `querySelectorAll` 造的，假 DOM 里拿不到 paintLog 绑的 onclick，
-       不挂出来就只能测「后端给了什么」，测不到「前端认不认」。 */
+    /* 日志高亮动作的**开面板**派发（act:'profile' / act:'acceptquest'）。
+       主人插队件后它不再吃裸 cmd（提示链不替玩家执行），只剩这两个面板职责。
+       挂出来是为了能在测试里**直接跑真实派发**。 */
     runInteractAct,
     /* 「接取任务」的任务详情弹窗（主人第四轮）—— 挂出来便于测试真派发 */
     openQuestPreview,

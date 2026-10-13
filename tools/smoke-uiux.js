@@ -965,13 +965,14 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
         rec.npc.length === 1 && rec.exec.length === 0,
         'npcProfile=' + JSON.stringify(rec.npc) + ' exec=' + (rec.exec.map(x => x.cmd).join(',') || '(空)'));
 
-      /* 退回路径：没有 act 的项仍按 cmd 走（老数据/别的类型的高亮不受影响） */
+      /* 口径反转（主人插队件 · 真机点名）：没有 act 的项**不再**按 cmd 派发 ——
+         提示链不替玩家执行，doCmd 这条路已从 runInteractAct 拆掉。 */
       const rec2 = stubApi(env, VIEW);
       env.WXUI.runInteractAct({ label: '打量', cmd: 'look ' + SNAKE.name }, SNAKE.name);
       await settle();
-      ok('⑫-1b 没有 act 的项仍按 cmd 派发（老数据不受影响）',
-        rec2.exec.length === 1 && rec2.exec[0].cmd === 'look ' + SNAKE.name,
-        rec2.exec.map(x => x.cmd).join(',') || '(空)');
+      ok('⑫-1b（口径反转）没有 act 的项不派发：裸 cmd 不再替玩家执行',
+        rec2.exec.length === 0 && rec2.npc.length === 0,
+        'exec=' + (rec2.exec.map(x => x.cmd).join(',') || '(空)'));
     }
 
     /* ---- ⑫-2 送礼面板：物品 + 金钱 + 往来 ---- */

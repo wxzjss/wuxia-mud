@@ -6,7 +6,12 @@
   "author": "武侠行官方",
   "category": "功法",
   "desc": "一门自创高阶剑法，配配套心法与秘籍。演示了连击、无视防御、吸血三类招式效果，以及学习门槛、属性加成、秘籍关联、NPC 挂武学的写法。⚠️ 武学的 type 必须写**中文槽位名**（拳/剑/刀/棍/鞭/暗器/内功/轻功/招架/身法），category 写**五大类**（外功/内功/奇门/旁门/魔功）—— 写英文（sword/force/dodge）会装不进任何槽位。",
-  "tags": ["功法", "剑法", "示例", "内功"],
+  "tags": [
+    "功法",
+    "剑法",
+    "示例",
+    "内功"
+  ],
   "gameVersion": "1.0.0",
   "skills": [
     {
@@ -24,9 +29,27 @@
       "require": "realm>=2",
       "trainCost": 12,
       "effects": [
-        { "type": "extraHit", "value": 0.35, "chance": 0.4, "turns": 1, "name": "剑影分光" },
-        { "type": "ignoreDef", "value": 0.4, "chance": 0.25, "turns": 1, "name": "无相" },
-        { "type": "drain", "value": 0.15, "chance": 0.3, "turns": 1, "name": "剑气回元" }
+        {
+          "type": "extraHit",
+          "value": 0.35,
+          "chance": 0.4,
+          "turns": 1,
+          "name": "剑影分光"
+        },
+        {
+          "type": "ignoreDef",
+          "value": 0.4,
+          "chance": 0.25,
+          "turns": 1,
+          "name": "无相"
+        },
+        {
+          "type": "drain",
+          "value": 0.15,
+          "chance": 0.3,
+          "turns": 1,
+          "name": "剑气回元"
+        }
       ]
     },
     {
@@ -42,7 +65,10 @@
       "mpBonus": 8,
       "desc": "太虚剑意的内功根基。修之可扩经脉、增内力，与太虚剑意相配，威力更增。",
       "require": "realm>=2",
-      "bonus": { "hp": 6, "mp": 10 },
+      "bonus": {
+        "hp": 6,
+        "mp": 10
+      },
       "effects": []
     },
     {
@@ -59,7 +85,9 @@
       "dodgeBonus": 10,
       "desc": "身形如烟，飘忽不定。修至深处，可于剑网之中来去自如。",
       "require": "realm>=1",
-      "bonus": { "dodge": 8 },
+      "bonus": {
+        "dodge": 8
+      },
       "effects": []
     }
   ],
@@ -109,16 +137,28 @@
         "（沉默良久）三十年了，还没人看懂。"
       ],
       "canTeach": true,
-      "teach": ["taixu_jianyi", "taixu_xinfa"],
+      "teach": [
+        "taixu_jianyi",
+        "taixu_xinfa"
+      ],
       "skills": {
         "剑": "taixu_jianyi",
         "内功": "taixu_xinfa",
         "轻功": "taixu_shenfa"
       },
       "learned": {
-        "taixu_jianyi": { "level": 180, "exp": 0 },
-        "taixu_xinfa": { "level": 200, "exp": 0 },
-        "taixu_shenfa": { "level": 160, "exp": 0 }
+        "taixu_jianyi": {
+          "level": 180,
+          "exp": 0
+        },
+        "taixu_xinfa": {
+          "level": 200,
+          "exp": 0
+        },
+        "taixu_shenfa": {
+          "level": 160,
+          "exp": 0
+        }
       },
       "ask": {
         "剑": "剑之要义，在「无」。有意则有形，有形则可破。",
@@ -127,14 +167,22 @@
         "思过崖": "此地清净，适合想事情。你若想不通，就在这儿站上三日。"
       },
       "askDefault": "（老者摇头）说不清，说不清。",
-      "loot": ["book_taixu"],
+      "loot": [
+        "book_taixu"
+      ],
       "actions": [
         {
           "cmd": "请教",
           "cond": "realm>=2",
-          "effects": ["say:（老者终于睁眼）你的根基，勉强够了。", "learn:taixu_xinfa"]
+          "effects": [
+            "say:（老者终于睁眼）你的根基，勉强够了。",
+            "learn:taixu_xinfa"
+          ]
         }
-      ]
+      ],
+      "equipment": {
+        "武器": "fine_sword"
+      }
     }
   ]
 }

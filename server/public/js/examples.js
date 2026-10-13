@@ -113,8 +113,8 @@
     func: {
       key: 'func', badge: '功能',
       title: '功能 Mod 示例 · 轻松江湖',
-      desc: '不改内容，只改规则：双倍潜能、双倍金钱、脱战自动回血、击杀额外潜能。适合想轻松体验剧情的玩家。',
-      tips: '要点：<code>kind</code> 是规则类型。<code>multiply</code> 是倍数调整，<code>target</code> 填字段名（pot / money），<code>value</code> 填倍数。<code>onEvent</code> 是事件触发，<code>target</code> 填事件名（onKill / onTick），<code>effect</code> 填要执行的效果。',
+      desc: '不改内容，只改规则：双倍经验、双倍金钱、脱战自动回血、击杀额外赏钱。适合想轻松体验剧情的玩家。',
+      tips: '要点：<code>kind</code> 是规则类型。<code>multiply</code> 是倍数调整，<code>target</code> 填字段名（exp / money），<code>value</code> 填倍数——<b>倍数字段名是 value，写成 mult 引擎不认</b>。<code>onEvent</code> 是事件触发，<code>target</code> 填事件名（onKill / onTick），<code>effect</code> 填要执行的效果。',
       json: {
         id: 'demo_func',
         name: '轻松江湖',
@@ -124,10 +124,10 @@
         desc: '降低肝度：双倍收益 + 自动回血。',
         tags: ['功能', '便利'],
         rules: [
-          { name: '双倍潜能', kind: 'multiply', target: 'pot', value: 2, cond: '', effect: '' },
+          { name: '双倍经验', kind: 'multiply', target: 'exp', value: 2, cond: '', effect: '' },
           { name: '双倍金钱', kind: 'multiply', target: 'money', value: 2, cond: '', effect: '' },
           { name: '脱战回血', kind: 'onEvent', target: 'onTick', value: 1, cond: '!combat', effect: '+hp:8' },
-          { name: '击杀额外潜能', kind: 'onEvent', target: 'onKill', value: 1, cond: '', effect: '+pot:15' }
+          { name: '击杀额外赏钱', kind: 'onEvent', target: 'onKill', value: 1, cond: '', effect: '+money:20' }
         ]
       }
     },

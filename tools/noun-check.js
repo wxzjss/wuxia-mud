@@ -106,8 +106,17 @@ t('N-V-12 ARIA 与可见一致：开/收都同步 aria-expanded',
 t('N-V-20 执行即收：doCmd 入口调 closeHlTips', /async function doCmd\(cmd, opts\) \{[\s\S]{0,400}closeHlTips\(\)/.test(uiNoCmt));
 t('N-V-21 不可逆清单在册（偷袭/attack/kill/绑架/偷/drop/叛门…）',
   /HL_RISKY_CMDS\s*=\s*\[[^\]]*'偷袭'[^∏]*'kill'[^∏]*'叛门'[^\]]*\]/.test(uiNoCmt));
-t('N-V-21 分流：可逆单动作直执、否则先展开提示行（不发 exec）',
-  /acts\.length === 1 && !risky[\s\S]{0,200}runInteractAct\(acts\[0\], name\);\s*\n\s*return;[\s\S]{0,200}toggleHlTip\(btnEl, name, acts\)/.test(uiNoCmt));
+t('N-V-21 分流（口径反转 · 主人真机点名）：.hl 点击一律只展开提示行，直执分支已拆',
+  !/runInteractAct\(acts\[/.test(uiNoCmt)
+  && /function openInteractMenu[\s\S]{0,300}toggleHlTip\(btnEl, name, acts\)/.test(uiNoCmt));
+t('N-V-27（主人插队件）提示行条目纯文字：hlTipText 中文动词映射在册、无 onclick 执行、无 data-cmd',
+  /HL_TIP_VERBS\s*=\s*\{[^}]*look:\s*'看'/.test(uiNoCmt)
+  && /hlTipText\(a\)/.test(uiNoCmt)
+  && !/\.hl-tip-cmd[\s\S]{0,200}onclick/.test(uiNoCmt)
+  && !/hl-tip-cmd" data-cmd=/.test(uiNoCmt));
+t('N-V-27b（主人插队件）runInteractAct 只剩开面板：函数体内无 doCmd',
+  /function runInteractAct\(a, fallbackName\) \{[\s\S]{0,900}?\n  \}(?!\})/.test(uiNoCmt)
+  && !/function runInteractAct[\s\S]{0,900}?doCmd\(/.test(uiNoCmt));
 
 console.log('[数据] N-V-14 PANEL_CMDS 避让（全库 action cmd 不得整串命中面板表）');
 const pm = uiNoCmt.match(/const PANEL_CMDS = \{[\s\S]*?\n  \};/);

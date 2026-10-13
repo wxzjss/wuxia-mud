@@ -1691,10 +1691,10 @@
    },
    "learned": {
     "basic_blade": {
-     "level": 40
+     "level": 11
     },
     "jh_blade": {
-     "level": 40,
+     "level": 11,
      "exp": 0
     }
    },
@@ -1744,10 +1744,10 @@
    },
    "learned": {
     "basic_blade": {
-     "level": 100
+     "level": 29
     },
     "hujia_daofa": {
-     "level": 100,
+     "level": 29,
      "exp": 0
     }
    },
@@ -1792,7 +1792,7 @@
    },
    "learned": {
     "basic_fist": {
-     "level": 50
+     "level": 7
     }
    },
    "hostile": true,
@@ -1835,7 +1835,7 @@
    },
    "learned": {
     "basic_fist": {
-     "level": 60
+     "level": 6
     }
    },
    "hostile": true,
@@ -1874,7 +1874,7 @@
    },
    "learned": {
     "basic_fist": {
-     "level": 70
+     "level": 15
     }
    },
    "hostile": true,
@@ -1915,7 +1915,7 @@
    },
    "learned": {
     "basic_fist": {
-     "level": 140
+     "level": 14
     }
    },
    "hostile": true,
@@ -1956,7 +1956,7 @@
    },
    "learned": {
     "basic_fist": {
-     "level": 220
+     "level": 20
     }
    },
    "hostile": true,
@@ -2047,14 +2047,14 @@
    },
    "learned": {
     "basic_staff": {
-     "level": 90
+     "level": 24
     },
     "jh_staff": {
-     "level": 90,
+     "level": 24,
      "exp": 0
     },
     "jh_parry": {
-     "level": 48,
+     "level": 13,
      "exp": 0
     }
    },
@@ -2090,16 +2090,16 @@
    "dodge": 110,
    "speed": 75,
    "skills": {
-    "暗器": "tangmen_anqi",
-    "轻功": "jh_dodge"
+    "轻功": "jh_dodge",
+    "刀": "jh_blade"
    },
    "learned": {
-    "tangmen_anqi": {
-     "level": 260
-    },
     "jh_dodge": {
-     "level": 29,
+     "level": 8,
      "exp": 0
+    },
+    "jh_blade": {
+     "level": 73
     }
    },
    "hostile": true,
@@ -2117,7 +2117,10 @@
     }
    ],
    "ai": "assassin",
-   "tier": "mob"
+   "tier": "mob",
+   "equipment": {
+    "武器": "butcher_knife"
+   }
   },
   "wen_jiangnan": {
    "id": "wen_jiangnan",
@@ -2184,14 +2187,14 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 45
+     "level": 5
     },
     "jh_staff": {
-     "level": 45,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 76,
+     "level": 6,
      "exp": 0
     }
    },
@@ -2278,22 +2281,22 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 170
+     "level": 36
     },
     "jh_sword": {
-     "level": 82,
+     "level": 17,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 56,
+     "level": 12,
      "exp": 0
     },
     "jh_parry": {
-     "level": 61,
+     "level": 13,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 66,
+     "level": 14,
      "exp": 0
     }
    },
@@ -2372,18 +2375,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 92
+     "level": 8
     },
     "jh_fist": {
-     "level": 92,
+     "level": 8,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 159,
+     "level": 14,
      "exp": 0
     },
     "jh_parry": {
-     "level": 164,
+     "level": 14,
      "exp": 0
     }
    },
@@ -2724,18 +2727,18 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 68
+     "level": 14
     },
     "jh_fist": {
-     "level": 68,
+     "level": 14,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 52,
+     "level": 11,
      "exp": 0
     },
     "jh_parry": {
-     "level": 57,
+     "level": 12,
      "exp": 0
     }
    },
@@ -2836,18 +2839,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 30
+     "level": 6
     },
     "jh_staff": {
-     "level": 31,
+     "level": 6,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 32,
+     "level": 6,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 12,
+     "level": 5,
      "exp": 0
     }
    },
@@ -2938,14 +2941,14 @@
    ],
    "learned": {
     "basic_sword": {
-     "level": 92
+     "level": 22
     },
     "jh_sword": {
-     "level": 92,
+     "level": 22,
      "exp": 0
     },
     "jh_parry": {
-     "level": 54,
+     "level": 13,
      "exp": 0
     }
    },
@@ -3006,22 +3009,22 @@
    },
    "learned": {
     "basic_sword": {
-     "level": 250
+     "level": 36
     },
     "jh_sword": {
-     "level": 250,
+     "level": 36,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 84,
+     "level": 12,
      "exp": 0
     },
     "jh_parry": {
-     "level": 89,
+     "level": 13,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 39,
+     "level": 6,
      "exp": 0
     }
    },
@@ -3192,22 +3195,22 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 980
+     "level": 100
     },
     "jh_fist": {
-     "level": 69,
+     "level": 7,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 43,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 48,
+     "level": 5,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 53,
+     "level": 5,
      "exp": 0
     }
    },
@@ -3311,14 +3314,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 118
+     "level": 14
     },
     "jh_fist": {
-     "level": 118,
+     "level": 14,
      "exp": 0
     },
     "jh_parry": {
-     "level": 31,
+     "level": 5,
      "exp": 0
     }
    },
@@ -3427,14 +3430,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 136
+     "level": 35
     },
     "jh_fist": {
-     "level": 136,
+     "level": 35,
      "exp": 0
     },
     "jh_parry": {
-     "level": 65,
+     "level": 17,
      "exp": 0
     }
    },
@@ -3527,7 +3530,7 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 120
+     "level": 30
     }
    },
    "skills": {
@@ -3603,14 +3606,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 284
+     "level": 53
     },
     "jh_fist": {
-     "level": 284,
+     "level": 53,
      "exp": 0
     },
     "jh_parry": {
-     "level": 52,
+     "level": 10,
      "exp": 0
     }
    },
@@ -3708,21 +3711,21 @@
    ],
    "learned": {
     "basic_blade": {
-     "level": 168
+     "level": 44
     },
     "basic_fist": {
-     "level": 168
+     "level": 44
     },
     "jh_blade": {
-     "level": 168,
+     "level": 44,
      "exp": 0
     },
     "jh_fist": {
-     "level": 168,
+     "level": 44,
      "exp": 0
     },
     "jh_parry": {
-     "level": 73,
+     "level": 19,
      "exp": 0
     }
    },
@@ -3819,18 +3822,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 167
+     "level": 25
     },
     "jh_fist": {
-     "level": 167,
+     "level": 25,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 39,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 44,
+     "level": 7,
      "exp": 0
     }
    },
@@ -3927,14 +3930,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 92
+     "level": 11
     },
     "jh_fist": {
-     "level": 92,
+     "level": 11,
      "exp": 0
     },
     "jh_parry": {
-     "level": 60,
+     "level": 7,
      "exp": 0
     }
    },
@@ -4031,17 +4034,17 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 124
+     "level": 31
     },
     "basic_fist": {
-     "level": 124
+     "level": 31
     },
     "jh_fist": {
-     "level": 124,
+     "level": 31,
      "exp": 0
     },
     "jh_parry": {
-     "level": 81,
+     "level": 20,
      "exp": 0
     }
    },
@@ -4131,14 +4134,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 172
+     "level": 23
     },
     "jh_fist": {
-     "level": 172,
+     "level": 23,
      "exp": 0
     },
     "jh_parry": {
-     "level": 47,
+     "level": 6,
      "exp": 0
     }
    },
@@ -4344,14 +4347,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 108
+     "level": 26
     },
     "jh_fist": {
-     "level": 108,
+     "level": 26,
      "exp": 0
     },
     "jh_parry": {
-     "level": 69,
+     "level": 17,
      "exp": 0
     }
    },
@@ -4553,17 +4556,17 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 192
+     "level": 25
     },
     "basic_staff": {
-     "level": 407
+     "level": 52
     },
     "jh_staff": {
-     "level": 407,
+     "level": 52,
      "exp": 0
     },
     "jh_parry": {
-     "level": 48,
+     "level": 6,
      "exp": 0
     }
    },
@@ -4653,10 +4656,10 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 24
+     "level": 6
     },
     "jh_fist": {
-     "level": 24,
+     "level": 6,
      "exp": 0
     }
    },
@@ -4745,26 +4748,26 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 372
-    },
-    "dagou_bangfa": {
-     "level": 132,
-     "exp": 0
+     "level": 79
     },
     "jh_dodge": {
-     "level": 171,
+     "level": 36,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 176,
+     "level": 37,
+     "exp": 0
+    },
+    "jh_staff": {
+     "level": 28,
      "exp": 0
     }
    },
    "skills": {
     "拳": "basic_fist",
-    "棍": "dagou_bangfa",
     "轻功": "jh_dodge",
-    "内功": "jh_neigong"
+    "内功": "jh_neigong",
+    "棍": "jh_staff"
    },
    "favorToLearn": 67,
    "age": 49,
@@ -4945,14 +4948,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 132
+     "level": 16
     },
     "jh_fist": {
-     "level": 132,
+     "level": 16,
      "exp": 0
     },
     "jh_parry": {
-     "level": 15,
+     "level": 5,
      "exp": 0
     }
    },
@@ -5065,18 +5068,18 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 69
+     "level": 7
     },
     "hujia_daofa": {
-     "level": 70,
+     "level": 7,
      "exp": 0
     },
     "jh_parry": {
-     "level": 77,
+     "level": 8,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 82,
+     "level": 8,
      "exp": 0
     }
    },
@@ -5169,23 +5172,23 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 286
+     "level": 46
     },
     "basic_blade": {
-     "level": 210
-    },
-    "kuangfeng_daofa": {
-     "level": 210,
-     "exp": 0
+     "level": 34
     },
     "jh_parry": {
-     "level": 56,
+     "level": 9,
+     "exp": 0
+    },
+    "jh_blade": {
+     "level": 34,
      "exp": 0
     }
    },
    "skills": {
     "招架": "jh_parry",
-    "刀": "kuangfeng_daofa"
+    "刀": "jh_blade"
    },
    "favorToLearn": 71,
    "moneyToLearn": 1820,
@@ -5282,25 +5285,25 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 97
-    },
-    "huashan_sword": {
-     "level": 80,
-     "exp": 0
+     "level": 13
     },
     "jh_neigong": {
-     "level": 35,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 40,
+     "level": 5,
+     "exp": 0
+    },
+    "jh_sword": {
+     "level": 11,
      "exp": 0
     }
    },
    "skills": {
     "内功": "jh_neigong",
-    "剑": "huashan_sword",
-    "招架": "jh_parry"
+    "招架": "jh_parry",
+    "剑": "jh_sword"
    },
    "favorToLearn": 58,
    "age": 54,
@@ -5383,14 +5386,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 50
+     "level": 6
     },
     "jh_fist": {
-     "level": 50,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 14,
+     "level": 5,
      "exp": 0
     }
    },
@@ -5483,14 +5486,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 290
+     "level": 30
     },
     "jh_fist": {
-     "level": 290,
+     "level": 30,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 33,
+     "level": 5,
      "exp": 0
     }
    },
@@ -5582,10 +5585,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 108
+     "level": 22
     },
     "jh_dodge": {
-     "level": 17,
+     "level": 5,
      "exp": 0
     }
    },
@@ -5680,14 +5683,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 268
+     "level": 31
     },
     "jh_fist": {
-     "level": 268,
+     "level": 31,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 23,
+     "level": 5,
      "exp": 0
     }
    },
@@ -5799,14 +5802,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 38
+     "level": 5
     },
     "jh_fist": {
-     "level": 38,
+     "level": 5,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 73,
+     "level": 6,
      "exp": 0
     }
    },
@@ -5891,10 +5894,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 132
+     "level": 14
     },
     "jh_dodge": {
-     "level": 36,
+     "level": 5,
      "exp": 0
     }
    },
@@ -5998,18 +6001,18 @@
    ],
    "learned": {
     "basic_sword": {
-     "level": 148
+     "level": 22
     },
     "xuantie_jianfa": {
-     "level": 148,
+     "level": 22,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 199,
+     "level": 29,
      "exp": 0
     },
     "jh_parry": {
-     "level": 94,
+     "level": 14,
      "exp": 0
     }
    },
@@ -6179,14 +6182,14 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 76
+     "level": 8
     },
     "jh_fist": {
-     "level": 61,
+     "level": 6,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 55,
+     "level": 6,
      "exp": 0
     }
    },
@@ -6275,14 +6278,14 @@
    ],
    "learned": {
     "basic_blade": {
-     "level": 164
+     "level": 43
     },
     "hujia_daofa": {
-     "level": 164,
+     "level": 43,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 47,
+     "level": 12,
      "exp": 0
     }
    },
@@ -6366,33 +6369,33 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 258
+     "level": 48
     },
     "basic_fist": {
-     "level": 326
-    },
-    "weituo_zhang": {
-     "level": 326,
-     "exp": 0
+     "level": 61
     },
     "jh_neigong": {
-     "level": 178,
+     "level": 33,
      "exp": 0
     },
     "jh_parry": {
-     "level": 183,
+     "level": 34,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 188,
+     "level": 35,
+     "exp": 0
+    },
+    "jh_fist": {
+     "level": 61,
      "exp": 0
     }
    },
    "skills": {
     "招架": "jh_parry",
-    "拳": "weituo_zhang",
     "内功": "jh_neigong",
-    "轻功": "jh_dodge"
+    "轻功": "jh_dodge",
+    "拳": "jh_fist"
    },
    "favorToLearn": 83,
    "home": "hm_npcv_027",
@@ -6577,21 +6580,21 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 176
+     "level": 47
     },
     "basic_fist": {
-     "level": 176
+     "level": 47
     },
     "jh_fist": {
-     "level": 176,
+     "level": 47,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 57,
+     "level": 15,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 62,
+     "level": 17,
      "exp": 0
     }
    },
@@ -6688,18 +6691,18 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 56
+     "level": 6
     },
     "jh_sword": {
-     "level": 109,
+     "level": 11,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 78,
+     "level": 8,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 83,
+     "level": 8,
      "exp": 0
     }
    },
@@ -6789,10 +6792,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 356
+     "level": 50
     },
     "jh_dodge": {
-     "level": 51,
+     "level": 7,
      "exp": 0
     }
    },
@@ -6875,18 +6878,18 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 60
+     "level": 5
     },
     "jh_staff": {
-     "level": 60,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 85,
+     "level": 6,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 35,
+     "level": 5,
      "exp": 0
     }
    },
@@ -6976,14 +6979,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 167
+     "level": 25
     },
     "jh_fist": {
-     "level": 167,
+     "level": 25,
      "exp": 0
     },
     "jh_parry": {
-     "level": 38,
+     "level": 6,
      "exp": 0
     }
    },
@@ -7083,14 +7086,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 116
+     "level": 12
     },
     "jh_fist": {
-     "level": 116,
+     "level": 12,
      "exp": 0
     },
     "jh_parry": {
-     "level": 14,
+     "level": 5,
      "exp": 0
     }
    },
@@ -7188,14 +7191,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 236
+     "level": 24
     },
     "jh_fist": {
-     "level": 236,
+     "level": 24,
      "exp": 0
     },
     "jh_parry": {
-     "level": 34,
+     "level": 5,
      "exp": 0
     }
    },
@@ -7290,14 +7293,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 212
+     "level": 29
     },
     "jh_fist": {
-     "level": 212,
+     "level": 29,
      "exp": 0
     },
     "jh_parry": {
-     "level": 56,
+     "level": 8,
      "exp": 0
     }
    },
@@ -7385,7 +7388,7 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 76
+     "level": 17
     }
    },
    "skills": {
@@ -7580,14 +7583,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 44
+     "level": 5
     },
     "hujia_daofa": {
-     "level": 214,
+     "level": 11,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 153,
+     "level": 8,
      "exp": 0
     }
    },
@@ -7729,10 +7732,10 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 192
+     "level": 52
     },
     "jh_parry": {
-     "level": 48,
+     "level": 13,
      "exp": 0
     }
    },
@@ -7811,18 +7814,18 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 242
+     "level": 44
     },
     "jh_fist": {
-     "level": 78,
+     "level": 14,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 82,
+     "level": 15,
      "exp": 0
     },
     "jh_parry": {
-     "level": 87,
+     "level": 16,
      "exp": 0
     }
    },
@@ -7923,21 +7926,21 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 260
+     "level": 36
     },
     "basic_fist": {
-     "level": 140
+     "level": 19
     },
     "jh_staff": {
-     "level": 260,
+     "level": 36,
      "exp": 0
     },
     "jh_fist": {
-     "level": 140,
+     "level": 19,
      "exp": 0
     },
     "jh_parry": {
-     "level": 61,
+     "level": 8,
      "exp": 0
     }
    },
@@ -8031,17 +8034,17 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 152
+     "level": 19
     },
     "basic_fist": {
-     "level": 317
+     "level": 40
     },
     "jh_fist": {
-     "level": 317,
+     "level": 40,
      "exp": 0
     },
     "jh_parry": {
-     "level": 82,
+     "level": 10,
      "exp": 0
     }
    },
@@ -8132,14 +8135,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 272
+     "level": 50
     },
     "jh_fist": {
-     "level": 272,
+     "level": 50,
      "exp": 0
     },
     "jh_parry": {
-     "level": 48,
+     "level": 9,
      "exp": 0
     }
    },
@@ -8225,14 +8228,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 80
+     "level": 12
     },
     "jh_fist": {
-     "level": 80,
+     "level": 12,
      "exp": 0
     },
     "jh_parry": {
-     "level": 69,
+     "level": 10,
      "exp": 0
     }
    },
@@ -8317,17 +8320,17 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 308
+     "level": 43
     },
     "basic_staff": {
-     "level": 272
+     "level": 38
     },
     "jh_staff": {
-     "level": 272,
+     "level": 38,
      "exp": 0
     },
     "jh_parry": {
-     "level": 87,
+     "level": 12,
      "exp": 0
     }
    },
@@ -8412,10 +8415,10 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 36
+     "level": 6
     },
     "jh_fist": {
-     "level": 36,
+     "level": 6,
      "exp": 0
     }
    },
@@ -8504,18 +8507,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 132
+     "level": 14
     },
     "jh_staff": {
-     "level": 30,
+     "level": 5,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 16,
+     "level": 5,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 21,
+     "level": 5,
      "exp": 0
     }
    },
@@ -8613,14 +8616,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 227
+     "level": 23
     },
     "jh_fist": {
-     "level": 227,
+     "level": 23,
      "exp": 0
     },
     "jh_parry": {
-     "level": 22,
+     "level": 5,
      "exp": 0
     }
    },
@@ -8726,21 +8729,21 @@
    ],
    "learned": {
     "basic_blade": {
-     "level": 212
+     "level": 38
     },
     "basic_dodge": {
-     "level": 180
+     "level": 32
     },
     "jh_blade": {
-     "level": 212,
+     "level": 38,
      "exp": 0
     },
     "jh_parry": {
-     "level": 58,
+     "level": 10,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 63,
+     "level": 11,
      "exp": 0
     }
    },
@@ -8836,23 +8839,23 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 335
+     "level": 54
     },
     "basic_blade": {
-     "level": 290
-    },
-    "kuangfeng_daofa": {
-     "level": 290,
-     "exp": 0
+     "level": 47
     },
     "jh_parry": {
-     "level": 79,
+     "level": 13,
+     "exp": 0
+    },
+    "jh_blade": {
+     "level": 47,
      "exp": 0
     }
    },
    "skills": {
     "招架": "jh_parry",
-    "刀": "kuangfeng_daofa"
+    "刀": "jh_blade"
    },
    "favorToLearn": 77,
    "moneyToLearn": 2110,
@@ -8936,25 +8939,25 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 254
-    },
-    "huashan_sword": {
-     "level": 80,
-     "exp": 0
+     "level": 31
     },
     "jh_neigong": {
-     "level": 52,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 57,
+     "level": 7,
+     "exp": 0
+    },
+    "jh_sword": {
+     "level": 10,
      "exp": 0
     }
    },
    "skills": {
     "内功": "jh_neigong",
-    "剑": "huashan_sword",
-    "招架": "jh_parry"
+    "招架": "jh_parry",
+    "剑": "jh_sword"
    },
    "favorToLearn": 78,
    "age": 42,
@@ -9040,14 +9043,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 380
+     "level": 45
     },
     "jh_fist": {
-     "level": 380,
+     "level": 45,
      "exp": 0
     },
     "jh_parry": {
-     "level": 13,
+     "level": 5,
      "exp": 0
     }
    },
@@ -9148,14 +9151,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 425
+     "level": 45
     },
     "jh_fist": {
-     "level": 425,
+     "level": 45,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 32,
+     "level": 5,
      "exp": 0
     }
    },
@@ -9247,10 +9250,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 170
+     "level": 30
     },
     "jh_dodge": {
-     "level": 26,
+     "level": 5,
      "exp": 0
     }
    },
@@ -9346,14 +9349,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 60
+     "level": 6
     },
     "jh_fist": {
-     "level": 60,
+     "level": 6,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 20,
+     "level": 5,
      "exp": 0
     }
    },
@@ -9460,14 +9463,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 284
+     "level": 53
     },
     "jh_fist": {
-     "level": 284,
+     "level": 53,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 57,
+     "level": 11,
      "exp": 0
     }
    },
@@ -9550,10 +9553,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 165
+     "level": 29
     },
     "jh_dodge": {
-     "level": 33,
+     "level": 6,
      "exp": 0
     }
    },
@@ -9661,22 +9664,22 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 100
+     "level": 24
     },
     "jh_sword": {
-     "level": 86,
+     "level": 21,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 70,
+     "level": 17,
      "exp": 0
     },
     "jh_parry": {
-     "level": 75,
+     "level": 18,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 80,
+     "level": 19,
      "exp": 0
     }
    },
@@ -9764,14 +9767,14 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 83
+     "level": 8
     },
     "jh_fist": {
-     "level": 85,
+     "level": 8,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 49,
+     "level": 5,
      "exp": 0
     }
    },
@@ -9862,14 +9865,14 @@
    ],
    "learned": {
     "basic_blade": {
-     "level": 68
+     "level": 6
     },
     "hujia_daofa": {
-     "level": 68,
+     "level": 6,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 83,
+     "level": 7,
      "exp": 0
     }
    },
@@ -9950,22 +9953,22 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 173
+     "level": 20
     },
     "jh_fist": {
-     "level": 96,
+     "level": 11,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 60,
+     "level": 7,
      "exp": 0
     },
     "jh_parry": {
-     "level": 65,
+     "level": 8,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 70,
+     "level": 8,
      "exp": 0
     }
    },
@@ -10049,21 +10052,21 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 144
+     "level": 20
     },
     "basic_fist": {
-     "level": 268
+     "level": 37
     },
     "jh_fist": {
-     "level": 268,
+     "level": 37,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 81,
+     "level": 11,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 86,
+     "level": 12,
      "exp": 0
     }
    },
@@ -10165,21 +10168,21 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 380
+     "level": 72
     },
     "basic_sword": {
-     "level": 220
+     "level": 42
     },
     "jh_sword": {
-     "level": 220,
+     "level": 42,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 183,
+     "level": 35,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 188,
+     "level": 36,
      "exp": 0
     }
    },
@@ -10343,10 +10346,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 192
+     "level": 52
     },
     "jh_dodge": {
-     "level": 39,
+     "level": 11,
      "exp": 0
     }
    },
@@ -10428,18 +10431,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 152
+     "level": 26
     },
     "jh_fist": {
-     "level": 152,
+     "level": 26,
      "exp": 0
     },
     "jh_parry": {
-     "level": 86,
+     "level": 15,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 36,
+     "level": 6,
      "exp": 0
     }
    },
@@ -10518,14 +10521,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 44
+     "level": 5
     },
     "jh_fist": {
-     "level": 44,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 52,
+     "level": 6,
      "exp": 0
     }
    },
@@ -10726,14 +10729,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 371
+     "level": 39
     },
     "jh_fist": {
-     "level": 371,
+     "level": 39,
      "exp": 0
     },
     "jh_parry": {
-     "level": 21,
+     "level": 5,
      "exp": 0
     }
    },
@@ -10829,14 +10832,14 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 202
+     "level": 26
     },
     "jh_staff": {
-     "level": 202,
+     "level": 26,
      "exp": 0
     },
     "jh_parry": {
-     "level": 27,
+     "level": 5,
      "exp": 0
     }
    },
@@ -10934,14 +10937,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 372
+     "level": 53
     },
     "jh_fist": {
-     "level": 372,
+     "level": 53,
      "exp": 0
     },
     "jh_parry": {
-     "level": 63,
+     "level": 9,
      "exp": 0
     }
    },
@@ -11033,7 +11036,7 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 196
+     "level": 26
     }
    },
    "skills": {
@@ -11110,14 +11113,14 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 227
+     "level": 28
     },
     "jh_staff": {
-     "level": 227,
+     "level": 28,
      "exp": 0
     },
     "jh_parry": {
-     "level": 70,
+     "level": 9,
      "exp": 0
     }
    },
@@ -11209,17 +11212,17 @@
    ],
    "learned": {
     "basic_blade": {
-     "level": 389
+     "level": 49
     },
     "basic_parry": {
-     "level": 225
+     "level": 28
     },
     "jh_blade": {
-     "level": 389,
+     "level": 49,
      "exp": 0
     },
     "jh_parry": {
-     "level": 49,
+     "level": 6,
      "exp": 0
     }
    },
@@ -11301,18 +11304,18 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 55
+     "level": 5
     },
     "jh_fist": {
-     "level": 93,
+     "level": 6,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 57,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 62,
+     "level": 5,
      "exp": 0
     }
    },
@@ -11412,14 +11415,14 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 279
+     "level": 67
     },
     "jh_staff": {
-     "level": 279,
+     "level": 67,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 91,
+     "level": 22,
      "exp": 0
     }
    },
@@ -11632,14 +11635,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 254
+     "level": 47
     },
     "jh_fist": {
-     "level": 254,
+     "level": 47,
      "exp": 0
     },
     "jh_parry": {
-     "level": 44,
+     "level": 8,
      "exp": 0
     }
    },
@@ -11843,14 +11846,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 44
+     "level": 5
     },
     "jh_fist": {
-     "level": 44,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 78,
+     "level": 6,
      "exp": 0
     }
    },
@@ -11942,14 +11945,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 38
+     "level": 5
     },
     "jh_fist": {
-     "level": 38,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 86,
+     "level": 6,
      "exp": 0
     }
    },
@@ -12033,10 +12036,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 191
+     "level": 23
     },
     "jh_parry": {
-     "level": 65,
+     "level": 8,
      "exp": 0
     }
    },
@@ -12124,10 +12127,10 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 44
+     "level": 6
     },
     "jh_fist": {
-     "level": 44,
+     "level": 6,
      "exp": 0
     }
    },
@@ -12212,18 +12215,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 332
+     "level": 39
     },
     "jh_staff": {
-     "level": 22,
+     "level": 5,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 33,
+     "level": 5,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 13,
+     "level": 5,
      "exp": 0
     }
    },
@@ -12319,14 +12322,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 116
+     "level": 24
     },
     "jh_fist": {
-     "level": 116,
+     "level": 24,
      "exp": 0
     },
     "jh_parry": {
-     "level": 31,
+     "level": 6,
      "exp": 0
     }
    },
@@ -12423,28 +12426,28 @@
    ],
    "learned": {
     "basic_blade": {
-     "level": 266
+     "level": 74
     },
     "basic_dodge": {
-     "level": 266
-    },
-    "kuangfeng_daofa": {
-     "level": 266,
-     "exp": 0
+     "level": 74
     },
     "jh_dodge": {
-     "level": 190,
+     "level": 53,
      "exp": 0
     },
     "jh_parry": {
-     "level": 195,
+     "level": 54,
+     "exp": 0
+    },
+    "jh_blade": {
+     "level": 74,
      "exp": 0
     }
    },
    "skills": {
-    "刀": "kuangfeng_daofa",
     "轻功": "jh_dodge",
-    "招架": "jh_parry"
+    "招架": "jh_parry",
+    "刀": "jh_blade"
    },
    "favorToLearn": 68,
    "moneyToLearn": 1700,
@@ -12630,14 +12633,14 @@
    ],
    "learned": {
     "basic_blade": {
-     "level": 76
+     "level": 17
     },
     "jh_blade": {
-     "level": 76,
+     "level": 17,
      "exp": 0
     },
     "jh_parry": {
-     "level": 46,
+     "level": 10,
      "exp": 0
     }
    },
@@ -12837,25 +12840,25 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 260
-    },
-    "huashan_sword": {
-     "level": 80,
-     "exp": 0
+     "level": 36
     },
     "jh_neigong": {
-     "level": 67,
+     "level": 9,
      "exp": 0
     },
     "jh_parry": {
-     "level": 72,
+     "level": 10,
+     "exp": 0
+    },
+    "jh_sword": {
+     "level": 11,
      "exp": 0
     }
    },
    "skills": {
     "内功": "jh_neigong",
-    "剑": "huashan_sword",
-    "招架": "jh_parry"
+    "招架": "jh_parry",
+    "剑": "jh_sword"
    },
    "favorToLearn": 79,
    "age": 45,
@@ -13058,14 +13061,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 88
+     "level": 17
     },
     "jh_fist": {
-     "level": 88,
+     "level": 17,
      "exp": 0
     },
     "jh_parry": {
-     "level": 30,
+     "level": 6,
      "exp": 0
     }
    },
@@ -13155,14 +13158,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 76
+     "level": 7
     },
     "jh_fist": {
-     "level": 76,
+     "level": 7,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 36,
+     "level": 5,
      "exp": 0
     }
    },
@@ -13258,10 +13261,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 356
+     "level": 42
     },
     "jh_dodge": {
-     "level": 17,
+     "level": 5,
      "exp": 0
     }
    },
@@ -13352,14 +13355,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 268
+     "level": 31
     },
     "jh_fist": {
-     "level": 268,
+     "level": 31,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 23,
+     "level": 5,
      "exp": 0
     }
    },
@@ -13470,14 +13473,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 244
+     "level": 34
     },
     "jh_fist": {
-     "level": 244,
+     "level": 34,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 56,
+     "level": 8,
      "exp": 0
     }
    },
@@ -13555,10 +13558,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 160
+     "level": 20
     },
     "jh_dodge": {
-     "level": 14,
+     "level": 5,
      "exp": 0
     }
    },
@@ -13667,22 +13670,22 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 164
+     "level": 19
     },
     "jh_sword": {
-     "level": 89,
+     "level": 10,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 43,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 48,
+     "level": 6,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 53,
+     "level": 6,
      "exp": 0
     }
    },
@@ -13886,14 +13889,14 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 92
+     "level": 11
     },
     "jh_fist": {
-     "level": 88,
+     "level": 11,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 77,
+     "level": 9,
      "exp": 0
     }
    },
@@ -14096,20 +14099,20 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 200
-    },
-    "kuangfeng_daofa": {
-     "level": 45,
-     "exp": 0
+     "level": 24
     },
     "jh_dodge": {
-     "level": 56,
+     "level": 7,
+     "exp": 0
+    },
+    "jh_blade": {
+     "level": 5,
      "exp": 0
     }
    },
    "skills": {
     "轻功": "jh_dodge",
-    "刀": "kuangfeng_daofa"
+    "刀": "jh_blade"
    },
    "favorToLearn": 60,
    "moneyToLearn": 1300,
@@ -14186,25 +14189,25 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 237
+     "level": 33
     },
     "basic_force": {
-     "level": 268
+     "level": 37
     },
     "jh_fist": {
-     "level": 86,
+     "level": 12,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 35,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 40,
+     "level": 6,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 45,
+     "level": 6,
      "exp": 0
     }
    },
@@ -14290,18 +14293,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 97
+     "level": 13
     },
     "jh_fist": {
-     "level": 97,
+     "level": 13,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 72,
+     "level": 10,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 77,
+     "level": 10,
      "exp": 0
     }
    },
@@ -14385,18 +14388,18 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 116
+     "level": 29
     },
     "jh_sword": {
-     "level": 92,
+     "level": 23,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 51,
+     "level": 13,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 56,
+     "level": 14,
      "exp": 0
     }
    },
@@ -14596,10 +14599,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 84
+     "level": 10
     },
     "jh_dodge": {
-     "level": 85,
+     "level": 10,
      "exp": 0
     }
    },
@@ -14685,18 +14688,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 104
+     "level": 17
     },
     "jh_fist": {
-     "level": 104,
+     "level": 17,
      "exp": 0
     },
     "jh_parry": {
-     "level": 64,
+     "level": 10,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 69,
+     "level": 11,
      "exp": 0
     }
    },
@@ -14781,14 +14784,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 65
+     "level": 11
     },
     "jh_fist": {
-     "level": 65,
+     "level": 11,
      "exp": 0
     },
     "jh_parry": {
-     "level": 40,
+     "level": 7,
      "exp": 0
     }
    },
@@ -14875,14 +14878,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 56
+     "level": 6
     },
     "jh_fist": {
-     "level": 56,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 36,
+     "level": 5,
      "exp": 0
     }
    },
@@ -14986,14 +14989,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 92
+     "level": 8
     },
     "jh_fist": {
-     "level": 92,
+     "level": 8,
      "exp": 0
     },
     "jh_parry": {
-     "level": 12,
+     "level": 5,
      "exp": 0
     }
    },
@@ -15087,14 +15090,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 167
+     "level": 25
     },
     "jh_fist": {
-     "level": 167,
+     "level": 25,
      "exp": 0
     },
     "jh_parry": {
-     "level": 64,
+     "level": 10,
      "exp": 0
     }
    },
@@ -15182,7 +15185,7 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 191
+     "level": 34
     }
    },
    "skills": {
@@ -15386,14 +15389,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 328
+     "level": 53
     },
     "jh_fist": {
-     "level": 328,
+     "level": 53,
      "exp": 0
     },
     "jh_parry": {
-     "level": 51,
+     "level": 8,
      "exp": 0
     }
    },
@@ -15477,10 +15480,10 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 86
+     "level": 13
     },
     "jh_parry": {
-     "level": 59,
+     "level": 9,
      "exp": 0
     }
    },
@@ -15568,21 +15571,21 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 190
+     "level": 24
     },
     "basic_fist": {
-     "level": 326
+     "level": 41
     },
     "jh_fist": {
-     "level": 326,
+     "level": 41,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 38,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 43,
+     "level": 5,
      "exp": 0
     }
    },
@@ -15663,14 +15666,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 104
+     "level": 25
     },
     "jh_fist": {
-     "level": 104,
+     "level": 25,
      "exp": 0
     },
     "jh_parry": {
-     "level": 46,
+     "level": 11,
      "exp": 0
     }
    },
@@ -15749,17 +15752,17 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 244
+     "level": 30
     },
     "basic_fist": {
-     "level": 308
+     "level": 38
     },
     "jh_fist": {
-     "level": 308,
+     "level": 38,
      "exp": 0
     },
     "jh_parry": {
-     "level": 80,
+     "level": 10,
      "exp": 0
     }
    },
@@ -15838,14 +15841,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 75
+     "level": 12
     },
     "jh_fist": {
-     "level": 75,
+     "level": 12,
      "exp": 0
     },
     "jh_parry": {
-     "level": 82,
+     "level": 13,
      "exp": 0
     }
    },
@@ -15926,14 +15929,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 44
+     "level": 5
     },
     "jh_fist": {
-     "level": 44,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 171,
+     "level": 7,
      "exp": 0
     }
    },
@@ -16128,14 +16131,14 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 130
+     "level": 26
     },
     "jh_staff": {
-     "level": 130,
+     "level": 26,
      "exp": 0
     },
     "jh_parry": {
-     "level": 39,
+     "level": 8,
      "exp": 0
     }
    },
@@ -16227,10 +16230,10 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 24
+     "level": 6
     },
     "jh_fist": {
-     "level": 24,
+     "level": 6,
      "exp": 0
     }
    },
@@ -16319,18 +16322,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 68
+     "level": 6
     },
     "jh_staff": {
-     "level": 28,
+     "level": 5,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 34,
+     "level": 5,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 14,
+     "level": 5,
      "exp": 0
     }
    },
@@ -16429,14 +16432,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 380
+     "level": 45
     },
     "jh_fist": {
-     "level": 380,
+     "level": 45,
      "exp": 0
     },
     "jh_parry": {
-     "level": 15,
+     "level": 5,
      "exp": 0
     }
    },
@@ -16531,21 +16534,21 @@
    ],
    "learned": {
     "basic_blade": {
-     "level": 195
+     "level": 27
     },
     "basic_parry": {
-     "level": 220
+     "level": 30
     },
     "hujia_daofa": {
-     "level": 195,
+     "level": 27,
      "exp": 0
     },
     "jh_parry": {
-     "level": 65,
+     "level": 9,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 70,
+     "level": 10,
      "exp": 0
     }
    },
@@ -16631,21 +16634,21 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 100
-    },
-    "kuangfeng_daofa": {
-     "level": 60,
-     "exp": 0
+     "level": 24
     },
     "jh_parry": {
-     "level": 86,
+     "level": 21,
+     "exp": 0
+    },
+    "jh_blade": {
+     "level": 14,
      "exp": 0
     }
    },
    "skills": {
     "拳": "basic_fist",
-    "刀": "kuangfeng_daofa",
-    "招架": "jh_parry"
+    "招架": "jh_parry",
+    "刀": "jh_blade"
    },
    "favorToLearn": 48,
    "moneyToLearn": 700,
@@ -16828,25 +16831,25 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 353
-    },
-    "huashan_sword": {
-     "level": 80,
-     "exp": 0
+     "level": 44
     },
     "jh_neigong": {
-     "level": 78,
+     "level": 10,
      "exp": 0
     },
     "jh_parry": {
-     "level": 83,
+     "level": 10,
+     "exp": 0
+    },
+    "jh_sword": {
+     "level": 10,
      "exp": 0
     }
    },
    "skills": {
     "内功": "jh_neigong",
-    "剑": "huashan_sword",
-    "招架": "jh_parry"
+    "招架": "jh_parry",
+    "剑": "jh_sword"
    },
    "favorToLearn": 90,
    "age": 49,
@@ -16929,14 +16932,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 110
+     "level": 15
     },
     "jh_fist": {
-     "level": 110,
+     "level": 15,
      "exp": 0
     },
     "jh_parry": {
-     "level": 16,
+     "level": 5,
      "exp": 0
     }
    },
@@ -17030,14 +17033,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 209
+     "level": 21
     },
     "jh_fist": {
-     "level": 209,
+     "level": 21,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 19,
+     "level": 5,
      "exp": 0
     }
    },
@@ -17125,10 +17128,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 380
+     "level": 40
     },
     "jh_dodge": {
-     "level": 25,
+     "level": 5,
      "exp": 0
     }
    },
@@ -17227,14 +17230,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 35
+     "level": 6
     },
     "jh_fist": {
-     "level": 35,
+     "level": 6,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 19,
+     "level": 5,
      "exp": 0
     }
    },
@@ -17337,14 +17340,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 168
+     "level": 44
     },
     "jh_fist": {
-     "level": 168,
+     "level": 44,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 46,
+     "level": 12,
      "exp": 0
     }
    },
@@ -17423,10 +17426,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 62
+     "level": 7
     },
     "jh_dodge": {
-     "level": 32,
+     "level": 5,
      "exp": 0
     }
    },
@@ -17522,25 +17525,25 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 206
+     "level": 37
     },
     "basic_sword": {
-     "level": 175
+     "level": 31
     },
     "jh_sword": {
-     "level": 175,
+     "level": 31,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 59,
+     "level": 11,
      "exp": 0
     },
     "jh_parry": {
-     "level": 64,
+     "level": 11,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 69,
+     "level": 12,
      "exp": 0
     }
    },
@@ -17624,20 +17627,20 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 100
-    },
-    "shaolin_bu": {
-     "level": 50,
-     "exp": 0
+     "level": 19
     },
     "jh_fist": {
-     "level": 100,
+     "level": 19,
+     "exp": 0
+    },
+    "jh_dodge": {
+     "level": 10,
      "exp": 0
     }
    },
    "skills": {
     "拳": "jh_fist",
-    "轻功": "shaolin_bu"
+    "轻功": "jh_dodge"
    },
    "favorToLearn": 48,
    "home": "house:npcv_124",
@@ -17727,20 +17730,20 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 272
-    },
-    "kuangfeng_daofa": {
-     "level": 45,
-     "exp": 0
+     "level": 50
     },
     "jh_dodge": {
-     "level": 72,
+     "level": 13,
+     "exp": 0
+    },
+    "jh_blade": {
+     "level": 8,
      "exp": 0
     }
    },
    "skills": {
     "轻功": "jh_dodge",
-    "刀": "kuangfeng_daofa"
+    "刀": "jh_blade"
    },
    "favorToLearn": 69,
    "moneyToLearn": 1730,
@@ -17830,22 +17833,22 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 100
+     "level": 12
     },
     "jh_fist": {
-     "level": 87,
+     "level": 10,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 51,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 56,
+     "level": 7,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 61,
+     "level": 7,
      "exp": 0
     }
    },
@@ -18055,18 +18058,18 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 124
+     "level": 31
     },
     "jh_fist": {
-     "level": 86,
+     "level": 22,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 85,
+     "level": 21,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 35,
+     "level": 9,
      "exp": 0
     }
    },
@@ -18160,18 +18163,18 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 188
+     "level": 25
     },
     "jh_sword": {
-     "level": 85,
+     "level": 11,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 64,
+     "level": 9,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 69,
+     "level": 9,
      "exp": 0
     }
    },
@@ -18269,10 +18272,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 130
+     "level": 26
     },
     "jh_dodge": {
-     "level": 43,
+     "level": 9,
      "exp": 0
     }
    },
@@ -18359,25 +18362,25 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 200
+     "level": 36
     },
     "basic_staff": {
-     "level": 140
+     "level": 25
     },
     "jh_fist": {
-     "level": 200,
+     "level": 36,
      "exp": 0
     },
     "jh_staff": {
-     "level": 140,
+     "level": 25,
      "exp": 0
     },
     "jh_parry": {
-     "level": 76,
+     "level": 14,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 81,
+     "level": 15,
      "exp": 0
     }
    },
@@ -18457,14 +18460,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 156
+     "level": 41
     },
     "jh_fist": {
-     "level": 156,
+     "level": 41,
      "exp": 0
     },
     "jh_parry": {
-     "level": 42,
+     "level": 11,
      "exp": 0
     }
    },
@@ -18549,14 +18552,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 148
+     "level": 32
     },
     "jh_fist": {
-     "level": 148,
+     "level": 32,
      "exp": 0
     },
     "jh_parry": {
-     "level": 15,
+     "level": 5,
      "exp": 0
     }
    },
@@ -18660,14 +18663,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 135
+     "level": 23
     },
     "jh_fist": {
-     "level": 135,
+     "level": 23,
      "exp": 0
     },
     "jh_parry": {
-     "level": 21,
+     "level": 5,
      "exp": 0
     }
    },
@@ -18768,14 +18771,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 115
+     "level": 23
     },
     "jh_fist": {
-     "level": 115,
+     "level": 23,
      "exp": 0
     },
     "jh_parry": {
-     "level": 47,
+     "level": 9,
      "exp": 0
     }
    },
@@ -18869,7 +18872,7 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 92
+     "level": 14
     }
    },
    "skills": {
@@ -18955,14 +18958,14 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 235
+     "level": 52
     },
     "jh_staff": {
-     "level": 235,
+     "level": 52,
      "exp": 0
     },
     "jh_parry": {
-     "level": 89,
+     "level": 20,
      "exp": 0
     }
    },
@@ -19050,17 +19053,17 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 172
+     "level": 38
     },
     "basic_blade": {
-     "level": 210
+     "level": 46
     },
     "jh_blade": {
-     "level": 210,
+     "level": 46,
      "exp": 0
     },
     "jh_parry": {
-     "level": 55,
+     "level": 12,
      "exp": 0
     }
    },
@@ -19152,18 +19155,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 371
+     "level": 47
     },
     "jh_fist": {
-     "level": 371,
+     "level": 47,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 73,
+     "level": 9,
      "exp": 0
     },
     "jh_parry": {
-     "level": 78,
+     "level": 10,
      "exp": 0
     }
    },
@@ -19246,14 +19249,14 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 164
+     "level": 19
     },
     "jh_staff": {
-     "level": 164,
+     "level": 19,
      "exp": 0
     },
     "jh_parry": {
-     "level": 39,
+     "level": 5,
      "exp": 0
     }
    },
@@ -19340,10 +19343,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 90
+     "level": 17
     },
     "jh_parry": {
-     "level": 59,
+     "level": 11,
      "exp": 0
     }
    },
@@ -19428,14 +19431,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 209
+     "level": 32
     },
     "jh_fist": {
-     "level": 209,
+     "level": 32,
      "exp": 0
     },
     "jh_parry": {
-     "level": 38,
+     "level": 6,
      "exp": 0
     }
    },
@@ -19526,14 +19529,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 425
+     "level": 54
     },
     "jh_fist": {
-     "level": 425,
+     "level": 54,
      "exp": 0
     },
     "jh_parry": {
-     "level": 46,
+     "level": 6,
      "exp": 0
     }
    },
@@ -19625,17 +19628,17 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 155
+     "level": 32
     },
     "basic_dodge": {
-     "level": 155
+     "level": 32
     },
     "jh_staff": {
-     "level": 155,
+     "level": 32,
      "exp": 0
     },
     "jh_parry": {
-     "level": 80,
+     "level": 17,
      "exp": 0
     }
    },
@@ -19720,10 +19723,10 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 32
+     "level": 6
     },
     "jh_fist": {
-     "level": 32,
+     "level": 6,
      "exp": 0
     }
    },
@@ -19804,18 +19807,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 100
+     "level": 16
     },
     "jh_staff": {
-     "level": 30,
+     "level": 5,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 21,
+     "level": 5,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 26,
+     "level": 5,
      "exp": 0
     }
    },
@@ -19909,14 +19912,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 148
+     "level": 16
     },
     "jh_fist": {
-     "level": 148,
+     "level": 16,
      "exp": 0
     },
     "jh_parry": {
-     "level": 14,
+     "level": 5,
      "exp": 0
     }
    },
@@ -20006,18 +20009,18 @@
    ],
    "learned": {
     "basic_blade": {
-     "level": 155
+     "level": 18
     },
     "hujia_daofa": {
-     "level": 155,
+     "level": 18,
      "exp": 0
     },
     "jh_parry": {
-     "level": 51,
+     "level": 6,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 56,
+     "level": 7,
      "exp": 0
     }
    },
@@ -20103,24 +20106,24 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 284
+     "level": 53
     },
     "basic_fist": {
-     "level": 196
-    },
-    "kuangfeng_daofa": {
-     "level": 60,
-     "exp": 0
+     "level": 37
     },
     "jh_parry": {
-     "level": 56,
+     "level": 10,
+     "exp": 0
+    },
+    "jh_blade": {
+     "level": 11,
      "exp": 0
     }
    },
    "skills": {
     "招架": "jh_parry",
     "拳": "basic_fist",
-    "刀": "kuangfeng_daofa"
+    "刀": "jh_blade"
    },
    "favorToLearn": 71,
    "moneyToLearn": 1800,
@@ -20202,16 +20205,16 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 314
+     "level": 76
     },
-    "huashan_sword": {
-     "level": 80,
+    "jh_sword": {
+     "level": 19,
      "exp": 0
     }
    },
    "skills": {
     "内功": "basic_force",
-    "剑": "huashan_sword"
+    "剑": "jh_sword"
    },
    "favorToLearn": 86,
    "age": 62,
@@ -20405,14 +20408,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 68
+     "level": 6
     },
     "jh_fist": {
-     "level": 68,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 17,
+     "level": 5,
      "exp": 0
     }
    },
@@ -20505,14 +20508,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 95
+     "level": 15
     },
     "jh_fist": {
-     "level": 95,
+     "level": 15,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 23,
+     "level": 5,
      "exp": 0
     }
    },
@@ -20603,10 +20606,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 223
+     "level": 29
     },
     "jh_dodge": {
-     "level": 30,
+     "level": 5,
      "exp": 0
     }
    },
@@ -20693,14 +20696,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 251
+     "level": 33
     },
     "jh_fist": {
-     "level": 251,
+     "level": 33,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 36,
+     "level": 5,
      "exp": 0
     }
    },
@@ -20804,14 +20807,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 324
+     "level": 46
     },
     "jh_fist": {
-     "level": 324,
+     "level": 46,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 49,
+     "level": 7,
      "exp": 0
     }
    },
@@ -21006,10 +21009,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 74
+     "level": 9
     },
     "jh_dodge": {
-     "level": 22,
+     "level": 5,
      "exp": 0
     }
    },
@@ -21099,22 +21102,22 @@
    ],
    "learned": {
     "basic_blade": {
-     "level": 100
+     "level": 19
     },
     "jh_sword": {
-     "level": 58,
+     "level": 11,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 62,
+     "level": 12,
      "exp": 0
     },
     "jh_parry": {
-     "level": 67,
+     "level": 13,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 72,
+     "level": 14,
      "exp": 0
     }
    },
@@ -21129,7 +21132,7 @@
    "moneyToLearn": 700,
    "age": 27,
    "equipment": {
-    "武器": "iron_sword_basic",
+    "武器": "steel_blade",
     "身体": "silk_robe"
    },
    "tier": "B",
@@ -21195,17 +21198,17 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 371
+     "level": 47
     },
     "basic_fist": {
-     "level": 332
+     "level": 42
     },
     "jh_fist": {
-     "level": 332,
+     "level": 42,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 83,
+     "level": 11,
      "exp": 0
     }
    },
@@ -21292,21 +21295,21 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 353
-    },
-    "kuangfeng_daofa": {
-     "level": 45,
-     "exp": 0
+     "level": 44
     },
     "jh_dodge": {
-     "level": 72,
+     "level": 9,
+     "exp": 0
+    },
+    "jh_blade": {
+     "level": 6,
      "exp": 0
     }
    },
    "skills": {
     "拳": "basic_fist",
-    "刀": "kuangfeng_daofa",
-    "轻功": "jh_dodge"
+    "轻功": "jh_dodge",
+    "刀": "jh_blade"
    },
    "favorToLearn": 79,
    "moneyToLearn": 2220,
@@ -21391,22 +21394,22 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 55
+     "level": 5
     },
     "jh_fist": {
-     "level": 109,
+     "level": 8,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 38,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 43,
+     "level": 5,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 48,
+     "level": 5,
      "exp": 0
     }
    },
@@ -21495,21 +21498,21 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 176
+     "level": 21
     },
     "basic_dodge": {
-     "level": 254
+     "level": 31
     },
     "jh_fist": {
-     "level": 65,
+     "level": 8,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 84,
+     "level": 10,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 89,
+     "level": 11,
      "exp": 0
     }
    },
@@ -21608,18 +21611,18 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 244
+     "level": 34
     },
     "jh_sword": {
-     "level": 64,
+     "level": 9,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 63,
+     "level": 9,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 68,
+     "level": 9,
      "exp": 0
     }
    },
@@ -21713,10 +21716,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 160
+     "level": 42
     },
     "jh_dodge": {
-     "level": 42,
+     "level": 11,
      "exp": 0
     }
    },
@@ -21811,25 +21814,25 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 372
+     "level": 47
     },
     "basic_fist": {
-     "level": 416
+     "level": 53
     },
     "jh_staff": {
-     "level": 372,
+     "level": 47,
      "exp": 0
     },
     "jh_fist": {
-     "level": 416,
+     "level": 53,
      "exp": 0
     },
     "jh_parry": {
-     "level": 76,
+     "level": 10,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 81,
+     "level": 10,
      "exp": 0
     }
    },
@@ -21911,14 +21914,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 55
+     "level": 6
     },
     "jh_fist": {
-     "level": 55,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 58,
+     "level": 6,
      "exp": 0
     }
    },
@@ -22112,14 +22115,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 290
+     "level": 30
     },
     "jh_fist": {
-     "level": 290,
+     "level": 30,
      "exp": 0
     },
     "jh_parry": {
-     "level": 34,
+     "level": 5,
      "exp": 0
     }
    },
@@ -22212,21 +22215,21 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 317
+     "level": 33
     },
     "basic_staff": {
-     "level": 152
+     "level": 16
     },
     "jh_fist": {
-     "level": 317,
+     "level": 33,
      "exp": 0
     },
     "jh_staff": {
-     "level": 152,
+     "level": 16,
      "exp": 0
     },
     "jh_parry": {
-     "level": 28,
+     "level": 5,
      "exp": 0
     }
    },
@@ -22316,14 +22319,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 128
+     "level": 22
     },
     "jh_fist": {
-     "level": 128,
+     "level": 22,
      "exp": 0
     },
     "jh_parry": {
-     "level": 50,
+     "level": 9,
      "exp": 0
     }
    },
@@ -22414,7 +22417,7 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 50
+     "level": 6
     }
    },
    "skills": {
@@ -22493,14 +22496,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 230
+     "level": 36
     },
     "jh_fist": {
-     "level": 230,
+     "level": 36,
      "exp": 0
     },
     "jh_parry": {
-     "level": 66,
+     "level": 10,
      "exp": 0
     }
    },
@@ -22579,10 +22582,10 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 182
+     "level": 22
     },
     "jh_parry": {
-     "level": 38,
+     "level": 5,
      "exp": 0
     }
    },
@@ -22664,18 +22667,18 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 48
+     "level": 5
     },
     "jh_fist": {
-     "level": 95,
+     "level": 8,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 59,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 64,
+     "level": 5,
      "exp": 0
     }
    },
@@ -22749,14 +22752,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 104
+     "level": 17
     },
     "jh_fist": {
-     "level": 104,
+     "level": 17,
      "exp": 0
     },
     "jh_parry": {
-     "level": 80,
+     "level": 13,
      "exp": 0
     }
    },
@@ -22836,17 +22839,17 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 160
+     "level": 29
     },
     "basic_fist": {
-     "level": 230
+     "level": 42
     },
     "jh_fist": {
-     "level": 230,
+     "level": 42,
      "exp": 0
     },
     "jh_parry": {
-     "level": 46,
+     "level": 8,
      "exp": 0
     }
    },
@@ -22935,14 +22938,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 111
+     "level": 16
     },
     "jh_fist": {
-     "level": 111,
+     "level": 16,
      "exp": 0
     },
     "jh_parry": {
-     "level": 67,
+     "level": 10,
      "exp": 0
     }
    },
@@ -23147,14 +23150,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 55
+     "level": 5
     },
     "jh_fist": {
-     "level": 55,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 88,
+     "level": 8,
      "exp": 0
     }
    },
@@ -23233,14 +23236,14 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 167
+     "level": 25
     },
     "jh_staff": {
-     "level": 167,
+     "level": 25,
      "exp": 0
     },
     "jh_parry": {
-     "level": 54,
+     "level": 8,
      "exp": 0
     }
    },
@@ -23322,10 +23325,10 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 47
+     "level": 6
     },
     "jh_fist": {
-     "level": 47,
+     "level": 6,
      "exp": 0
     }
    },
@@ -23423,18 +23426,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 164
+     "level": 18
     },
     "jh_staff": {
-     "level": 42,
+     "level": 5,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 23,
+     "level": 5,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 28,
+     "level": 5,
      "exp": 0
     }
    },
@@ -23627,14 +23630,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 134
+     "level": 19
     },
     "jh_fist": {
-     "level": 134,
+     "level": 19,
      "exp": 0
     },
     "jh_parry": {
-     "level": 29,
+     "level": 5,
      "exp": 0
     }
    },
@@ -23727,18 +23730,18 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 290
+     "level": 36
     },
     "hujia_daofa": {
-     "level": 70,
+     "level": 9,
      "exp": 0
     },
     "jh_parry": {
-     "level": 47,
+     "level": 6,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 52,
+     "level": 6,
      "exp": 0
     }
    },
@@ -23937,20 +23940,20 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 69
-    },
-    "kuangfeng_daofa": {
-     "level": 60,
-     "exp": 0
+     "level": 5
     },
     "jh_parry": {
-     "level": 191,
+     "level": 13,
+     "exp": 0
+    },
+    "jh_blade": {
+     "level": 5,
      "exp": 0
     }
    },
    "skills": {
     "招架": "jh_parry",
-    "刀": "kuangfeng_daofa"
+    "刀": "jh_blade"
    },
    "favorToLearn": 44,
    "moneyToLearn": 510,
@@ -24143,25 +24146,25 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 119
-    },
-    "huashan_sword": {
-     "level": 80,
-     "exp": 0
+     "level": 13
     },
     "jh_neigong": {
-     "level": 89,
+     "level": 10,
      "exp": 0
     },
     "jh_parry": {
-     "level": 39,
+     "level": 5,
+     "exp": 0
+    },
+    "jh_sword": {
+     "level": 9,
      "exp": 0
     }
    },
    "skills": {
     "内功": "jh_neigong",
-    "剑": "huashan_sword",
-    "招架": "jh_parry"
+    "招架": "jh_parry",
+    "剑": "jh_sword"
    },
    "favorToLearn": 61,
    "age": 43,
@@ -24240,14 +24243,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 124
+     "level": 13
     },
     "jh_fist": {
-     "level": 124,
+     "level": 13,
      "exp": 0
     },
     "jh_parry": {
-     "level": 25,
+     "level": 5,
      "exp": 0
     }
    },
@@ -24339,14 +24342,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 260
+     "level": 40
     },
     "jh_fist": {
-     "level": 260,
+     "level": 40,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 18,
+     "level": 5,
      "exp": 0
     }
    },
@@ -24438,10 +24441,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 281
+     "level": 29
     },
     "jh_dodge": {
-     "level": 12,
+     "level": 5,
      "exp": 0
     }
    },
@@ -24534,14 +24537,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 52
+     "level": 8
     },
     "jh_fist": {
-     "level": 52,
+     "level": 8,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 30,
+     "level": 5,
      "exp": 0
     }
    },
@@ -24746,14 +24749,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 52
+     "level": 10
     },
     "jh_fist": {
-     "level": 52,
+     "level": 10,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 42,
+     "level": 8,
      "exp": 0
     }
    },
@@ -24836,10 +24839,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 160
+     "level": 35
     },
     "jh_dodge": {
-     "level": 17,
+     "level": 5,
      "exp": 0
     }
    },
@@ -24935,22 +24938,22 @@
    ],
    "learned": {
     "basic_sword": {
-     "level": 60
+     "level": 8
     },
     "jh_sword": {
-     "level": 60,
+     "level": 8,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 84,
+     "level": 11,
      "exp": 0
     },
     "jh_parry": {
-     "level": 89,
+     "level": 12,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 39,
+     "level": 5,
      "exp": 0
     }
    },
@@ -25046,14 +25049,14 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 170
+     "level": 30
     },
     "jh_fist": {
-     "level": 60,
+     "level": 11,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 49,
+     "level": 9,
      "exp": 0
     }
    },
@@ -25142,14 +25145,14 @@
    ],
    "learned": {
     "basic_blade": {
-     "level": 170
+     "level": 30
     },
     "jh_blade": {
-     "level": 170,
+     "level": 30,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 70,
+     "level": 12,
      "exp": 0
     }
    },
@@ -25228,22 +25231,22 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 190
+     "level": 41
     },
     "jh_fist": {
-     "level": 190,
+     "level": 41,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 62,
+     "level": 13,
      "exp": 0
     },
     "jh_parry": {
-     "level": 67,
+     "level": 14,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 72,
+     "level": 16,
      "exp": 0
     }
    },
@@ -25344,18 +25347,18 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 44
+     "level": 5
     },
     "jh_fist": {
-     "level": 59,
+     "level": 5,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 83,
+     "level": 6,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 88,
+     "level": 6,
      "exp": 0
     }
    },
@@ -25440,18 +25443,18 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 100
+     "level": 19
     },
     "jh_sword": {
-     "level": 56,
+     "level": 11,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 75,
+     "level": 14,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 80,
+     "level": 15,
      "exp": 0
     }
    },
@@ -25542,10 +25545,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 108
+     "level": 26
     },
     "jh_dodge": {
-     "level": 41,
+     "level": 10,
      "exp": 0
     }
    },
@@ -25628,18 +25631,18 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 112
+     "level": 28
     },
     "jh_staff": {
-     "level": 112,
+     "level": 28,
      "exp": 0
     },
     "jh_parry": {
-     "level": 88,
+     "level": 22,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 38,
+     "level": 10,
      "exp": 0
     }
    },
@@ -25718,14 +25721,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 212
+     "level": 29
     },
     "jh_fist": {
-     "level": 212,
+     "level": 29,
      "exp": 0
     },
     "jh_parry": {
-     "level": 54,
+     "level": 7,
      "exp": 0
     }
    },
@@ -25813,14 +25816,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 188
+     "level": 28
     },
     "jh_fist": {
-     "level": 188,
+     "level": 28,
      "exp": 0
     },
     "jh_parry": {
-     "level": 33,
+     "level": 5,
      "exp": 0
     }
    },
@@ -25917,14 +25920,14 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 204
+     "level": 23
     },
     "jh_staff": {
-     "level": 204,
+     "level": 23,
      "exp": 0
     },
     "jh_parry": {
-     "level": 14,
+     "level": 5,
      "exp": 0
     }
    },
@@ -26027,14 +26030,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 116
+     "level": 19
     },
     "jh_fist": {
-     "level": 116,
+     "level": 19,
      "exp": 0
     },
     "jh_parry": {
-     "level": 74,
+     "level": 12,
      "exp": 0
     }
    },
@@ -26125,7 +26128,7 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 155
+     "level": 18
     }
    },
    "skills": {
@@ -26206,21 +26209,21 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 251
+     "level": 35
     },
     "basic_fist": {
-     "level": 284
+     "level": 40
     },
     "jh_staff": {
-     "level": 251,
+     "level": 35,
      "exp": 0
     },
     "jh_fist": {
-     "level": 284,
+     "level": 40,
      "exp": 0
     },
     "jh_parry": {
-     "level": 87,
+     "level": 12,
      "exp": 0
     }
    },
@@ -26308,17 +26311,17 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 145
+     "level": 30
     },
     "basic_fist": {
-     "level": 145
+     "level": 30
     },
     "jh_fist": {
-     "level": 145,
+     "level": 30,
      "exp": 0
     },
     "jh_parry": {
-     "level": 53,
+     "level": 11,
      "exp": 0
     }
    },
@@ -26406,18 +26409,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 218
+     "level": 40
     },
     "jh_fist": {
-     "level": 218,
+     "level": 40,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 74,
+     "level": 14,
      "exp": 0
     },
     "jh_parry": {
-     "level": 79,
+     "level": 14,
      "exp": 0
     }
    },
@@ -26498,14 +26501,14 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 105
+     "level": 20
     },
     "jh_staff": {
-     "level": 105,
+     "level": 20,
      "exp": 0
     },
     "jh_parry": {
-     "level": 40,
+     "level": 8,
      "exp": 0
     }
    },
@@ -26600,10 +26603,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 164
+     "level": 19
     },
     "jh_parry": {
-     "level": 61,
+     "level": 7,
      "exp": 0
     }
    },
@@ -26690,14 +26693,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 100
+     "level": 19
     },
     "jh_fist": {
-     "level": 100,
+     "level": 19,
      "exp": 0
     },
     "jh_parry": {
-     "level": 82,
+     "level": 16,
      "exp": 0
     }
    },
@@ -26782,14 +26785,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 62
+     "level": 8
     },
     "jh_fist": {
-     "level": 62,
+     "level": 8,
      "exp": 0
     },
     "jh_parry": {
-     "level": 48,
+     "level": 6,
      "exp": 0
     }
    },
@@ -26986,14 +26989,14 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 204
+     "level": 28
     },
     "jh_staff": {
-     "level": 204,
+     "level": 28,
      "exp": 0
     },
     "jh_parry": {
-     "level": 69,
+     "level": 9,
      "exp": 0
     }
    },
@@ -27091,10 +27094,10 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 26
+     "level": 6
     },
     "jh_fist": {
-     "level": 26,
+     "level": 6,
      "exp": 0
     }
    },
@@ -27183,18 +27186,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 111
+     "level": 13
     },
     "jh_staff": {
-     "level": 36,
+     "level": 5,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 17,
+     "level": 5,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 22,
+     "level": 5,
      "exp": 0
     }
    },
@@ -27292,14 +27295,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 50
+     "level": 6
     },
     "jh_fist": {
-     "level": 50,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 35,
+     "level": 5,
      "exp": 0
     }
    },
@@ -27396,18 +27399,18 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 52
+     "level": 5
     },
     "hujia_daofa": {
-     "level": 70,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 57,
+     "level": 5,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 62,
+     "level": 5,
      "exp": 0
     }
    },
@@ -27493,20 +27496,20 @@
    ],
    "learned": {
     "basic_blade": {
-     "level": 371
-    },
-    "kuangfeng_daofa": {
-     "level": 371,
-     "exp": 0
+     "level": 47
     },
     "jh_parry": {
-     "level": 36,
+     "level": 5,
+     "exp": 0
+    },
+    "jh_blade": {
+     "level": 47,
      "exp": 0
     }
    },
    "skills": {
-    "刀": "kuangfeng_daofa",
-    "招架": "jh_parry"
+    "招架": "jh_parry",
+    "刀": "jh_blade"
    },
    "favorToLearn": 81,
    "moneyToLearn": 2330,
@@ -27598,25 +27601,25 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 65
-    },
-    "huashan_sword": {
-     "level": 80,
-     "exp": 0
+     "level": 5
     },
     "jh_neigong": {
-     "level": 70,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 75,
+     "level": 6,
+     "exp": 0
+    },
+    "jh_sword": {
+     "level": 6,
      "exp": 0
     }
    },
    "skills": {
     "内功": "jh_neigong",
-    "剑": "huashan_sword",
-    "招架": "jh_parry"
+    "招架": "jh_parry",
+    "剑": "jh_sword"
    },
    "favorToLearn": 54,
    "age": 52,
@@ -27816,14 +27819,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 40
+     "level": 6
     },
     "jh_fist": {
-     "level": 40,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 36,
+     "level": 5,
      "exp": 0
     }
    },
@@ -27918,14 +27921,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 407
+     "level": 43
     },
     "jh_fist": {
-     "level": 407,
+     "level": 43,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 34,
+     "level": 5,
      "exp": 0
     }
    },
@@ -28014,10 +28017,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 224
+     "level": 34
     },
     "jh_dodge": {
-     "level": 21,
+     "level": 5,
      "exp": 0
     }
    },
@@ -28104,10 +28107,10 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 80
+     "level": 27
     },
     "jh_fist": {
-     "level": 80,
+     "level": 27,
      "exp": 0
     }
    },
@@ -28300,14 +28303,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 146
+     "level": 22
     },
     "jh_fist": {
-     "level": 146,
+     "level": 22,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 82,
+     "level": 12,
      "exp": 0
     }
    },
@@ -28387,10 +28390,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 266
+     "level": 41
     },
     "jh_dodge": {
-     "level": 20,
+     "level": 5,
      "exp": 0
     }
    },
@@ -28486,22 +28489,22 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 135
+     "level": 28
     },
     "jh_sword": {
-     "level": 100,
+     "level": 21,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 69,
+     "level": 14,
      "exp": 0
     },
     "jh_parry": {
-     "level": 74,
+     "level": 15,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 79,
+     "level": 16,
      "exp": 0
     }
    },
@@ -28583,14 +28586,14 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 104
+     "level": 14
     },
     "jh_fist": {
-     "level": 101,
+     "level": 14,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 35,
+     "level": 5,
      "exp": 0
     }
    },
@@ -28790,20 +28793,20 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 134
-    },
-    "kuangfeng_daofa": {
-     "level": 45,
-     "exp": 0
+     "level": 23
     },
     "jh_dodge": {
-     "level": 56,
+     "level": 10,
+     "exp": 0
+    },
+    "jh_blade": {
+     "level": 8,
      "exp": 0
     }
    },
    "skills": {
     "轻功": "jh_dodge",
-    "刀": "kuangfeng_daofa"
+    "刀": "jh_blade"
    },
    "favorToLearn": 52,
    "moneyToLearn": 900,
@@ -28885,22 +28888,22 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 60
+     "level": 5
     },
     "jh_fist": {
-     "level": 60,
+     "level": 5,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 77,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 82,
+     "level": 6,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 87,
+     "level": 6,
      "exp": 0
     }
    },
@@ -28994,18 +28997,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 251
+     "level": 40
     },
     "jh_fist": {
-     "level": 251,
+     "level": 40,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 43,
+     "level": 7,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 48,
+     "level": 8,
      "exp": 0
     }
    },
@@ -29098,18 +29101,18 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 139
+     "level": 20
     },
     "jh_sword": {
-     "level": 105,
+     "level": 15,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 64,
+     "level": 9,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 69,
+     "level": 10,
      "exp": 0
     }
    },
@@ -29192,10 +29195,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 209
+     "level": 32
     },
     "jh_dodge": {
-     "level": 79,
+     "level": 12,
      "exp": 0
     }
    },
@@ -29281,18 +29284,18 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 137
+     "level": 16
     },
     "jh_staff": {
-     "level": 137,
+     "level": 16,
      "exp": 0
     },
     "jh_parry": {
-     "level": 45,
+     "level": 5,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 50,
+     "level": 6,
      "exp": 0
     }
    },
@@ -29372,14 +29375,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 245
+     "level": 54
     },
     "jh_fist": {
-     "level": 245,
+     "level": 54,
      "exp": 0
     },
     "jh_parry": {
-     "level": 73,
+     "level": 16,
      "exp": 0
     }
    },
@@ -29461,14 +29464,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 52
+     "level": 6
     },
     "jh_fist": {
-     "level": 52,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 24,
+     "level": 5,
      "exp": 0
     }
    },
@@ -29560,14 +29563,14 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 47
+     "level": 6
     },
     "jh_staff": {
-     "level": 47,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 18,
+     "level": 5,
      "exp": 0
     }
    },
@@ -29669,14 +29672,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 268
+     "level": 37
     },
     "jh_fist": {
-     "level": 268,
+     "level": 37,
      "exp": 0
     },
     "jh_parry": {
-     "level": 65,
+     "level": 9,
      "exp": 0
     }
    },
@@ -29759,7 +29762,7 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 84
+     "level": 10
     }
    },
    "skills": {
@@ -29843,21 +29846,21 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 272
+     "level": 43
     },
     "basic_fist": {
-     "level": 314
+     "level": 50
     },
     "jh_staff": {
-     "level": 272,
+     "level": 43,
      "exp": 0
     },
     "jh_fist": {
-     "level": 314,
+     "level": 50,
      "exp": 0
     },
     "jh_parry": {
-     "level": 81,
+     "level": 13,
      "exp": 0
     }
    },
@@ -29937,10 +29940,10 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 196
+     "level": 53
     },
     "jh_parry": {
-     "level": 60,
+     "level": 16,
      "exp": 0
     }
    },
@@ -30021,18 +30024,18 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 307
+     "level": 49
     },
     "jh_fist": {
-     "level": 70,
+     "level": 11,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 39,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 44,
+     "level": 7,
      "exp": 0
     }
    },
@@ -30227,14 +30230,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 65
+     "level": 6
     },
     "jh_fist": {
-     "level": 65,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 70,
+     "level": 6,
      "exp": 0
     }
    },
@@ -30322,10 +30325,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 100
+     "level": 19
     },
     "jh_parry": {
-     "level": 49,
+     "level": 9,
      "exp": 0
     }
    },
@@ -30405,14 +30408,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 132
+     "level": 34
     },
     "jh_fist": {
-     "level": 132,
+     "level": 34,
      "exp": 0
     },
     "jh_parry": {
-     "level": 57,
+     "level": 15,
      "exp": 0
     }
    },
@@ -30615,14 +30618,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 65
+     "level": 5
     },
     "jh_fist": {
-     "level": 65,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 78,
+     "level": 6,
      "exp": 0
     }
    },
@@ -30817,10 +30820,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 128
+     "level": 22
     },
     "jh_parry": {
-     "level": 70,
+     "level": 12,
      "exp": 0
     }
    },
@@ -30903,10 +30906,10 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 44
+     "level": 6
     },
     "jh_fist": {
-     "level": 44,
+     "level": 6,
      "exp": 0
     }
    },
@@ -30995,18 +30998,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 95
+     "level": 15
     },
     "jh_staff": {
-     "level": 44,
+     "level": 7,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 15,
+     "level": 5,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 20,
+     "level": 5,
      "exp": 0
     }
    },
@@ -31105,14 +31108,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 84
+     "level": 16
     },
     "jh_fist": {
-     "level": 84,
+     "level": 16,
      "exp": 0
     },
     "jh_parry": {
-     "level": 21,
+     "level": 5,
      "exp": 0
     }
    },
@@ -31209,18 +31212,18 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 188
+     "level": 50
     },
     "hujia_daofa": {
-     "level": 70,
+     "level": 19,
      "exp": 0
     },
     "jh_parry": {
-     "level": 41,
+     "level": 11,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 46,
+     "level": 12,
      "exp": 0
     }
    },
@@ -31311,21 +31314,21 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 180
-    },
-    "kuangfeng_daofa": {
-     "level": 60,
-     "exp": 0
+     "level": 24
     },
     "jh_parry": {
-     "level": 62,
+     "level": 8,
+     "exp": 0
+    },
+    "jh_blade": {
+     "level": 8,
      "exp": 0
     }
    },
    "skills": {
     "拳": "basic_fist",
-    "刀": "kuangfeng_daofa",
-    "招架": "jh_parry"
+    "招架": "jh_parry",
+    "刀": "jh_blade"
    },
    "favorToLearn": 58,
    "moneyToLearn": 1180,
@@ -31403,25 +31406,25 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 364
-    },
-    "huashan_sword": {
-     "level": 80,
-     "exp": 0
+     "level": 52
     },
     "jh_neigong": {
-     "level": 54,
+     "level": 8,
      "exp": 0
     },
     "jh_parry": {
-     "level": 59,
+     "level": 8,
+     "exp": 0
+    },
+    "jh_sword": {
+     "level": 11,
      "exp": 0
     }
    },
    "skills": {
     "内功": "jh_neigong",
-    "剑": "huashan_sword",
-    "招架": "jh_parry"
+    "招架": "jh_parry",
+    "剑": "jh_sword"
    },
    "favorToLearn": 92,
    "age": 54,
@@ -31613,14 +31616,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 284
+     "level": 33
     },
     "jh_fist": {
-     "level": 284,
+     "level": 33,
      "exp": 0
     },
     "jh_parry": {
-     "level": 22,
+     "level": 5,
      "exp": 0
     }
    },
@@ -31719,14 +31722,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 97
+     "level": 11
     },
     "jh_fist": {
-     "level": 97,
+     "level": 11,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 13,
+     "level": 5,
      "exp": 0
     }
    },
@@ -31812,10 +31815,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 209
+     "level": 21
     },
     "jh_dodge": {
-     "level": 32,
+     "level": 5,
      "exp": 0
     }
    },
@@ -31908,14 +31911,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 55
+     "level": 7
     },
     "jh_fist": {
-     "level": 55,
+     "level": 7,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 25,
+     "level": 5,
      "exp": 0
     }
    },
@@ -32123,14 +32126,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 200
+     "level": 36
     },
     "jh_fist": {
-     "level": 200,
+     "level": 36,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 57,
+     "level": 10,
      "exp": 0
     }
    },
@@ -32204,10 +32207,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 172
+     "level": 38
     },
     "jh_dodge": {
-     "level": 12,
+     "level": 5,
      "exp": 0
     }
    },
@@ -32303,22 +32306,22 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 83
+     "level": 8
     },
     "jh_sword": {
-     "level": 50,
+     "level": 5,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 44,
+     "level": 5,
      "exp": 0
     },
     "jh_parry": {
-     "level": 49,
+     "level": 5,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 54,
+     "level": 5,
      "exp": 0
     }
    },
@@ -32401,14 +32404,14 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 290
+     "level": 36
     },
     "jh_fist": {
-     "level": 53,
+     "level": 7,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 52,
+     "level": 6,
      "exp": 0
     }
    },
@@ -32501,24 +32504,24 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 254
+     "level": 31
     },
     "basic_dodge": {
-     "level": 176
-    },
-    "kuangfeng_daofa": {
-     "level": 45,
-     "exp": 0
+     "level": 21
     },
     "jh_dodge": {
-     "level": 86,
+     "level": 10,
+     "exp": 0
+    },
+    "jh_blade": {
+     "level": 5,
      "exp": 0
     }
    },
    "skills": {
     "拳": "basic_fist",
     "轻功": "jh_dodge",
-    "刀": "kuangfeng_daofa"
+    "刀": "jh_blade"
    },
    "favorToLearn": 67,
    "moneyToLearn": 1620,
@@ -32593,22 +32596,22 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 332
+     "level": 47
     },
     "jh_fist": {
-     "level": 55,
+     "level": 8,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 39,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 44,
+     "level": 6,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 49,
+     "level": 7,
      "exp": 0
     }
    },
@@ -32697,18 +32700,18 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 194
+     "level": 35
     },
     "jh_fist": {
-     "level": 54,
+     "level": 10,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 73,
+     "level": 13,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 78,
+     "level": 14,
      "exp": 0
     }
    },
@@ -32803,18 +32806,18 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 96
+     "level": 23
     },
     "jh_sword": {
-     "level": 78,
+     "level": 19,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 82,
+     "level": 20,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 87,
+     "level": 21,
      "exp": 0
     }
    },
@@ -32899,10 +32902,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 176
+     "level": 47
     },
     "jh_dodge": {
-     "level": 48,
+     "level": 13,
      "exp": 0
     }
    },
@@ -32989,25 +32992,25 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 168
+     "level": 36
     },
     "basic_fist": {
-     "level": 205
+     "level": 44
     },
     "jh_staff": {
-     "level": 168,
+     "level": 36,
      "exp": 0
     },
     "jh_fist": {
-     "level": 205,
+     "level": 44,
      "exp": 0
     },
     "jh_parry": {
-     "level": 69,
+     "level": 15,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 74,
+     "level": 16,
      "exp": 0
     }
    },
@@ -33094,14 +33097,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 308
+     "level": 43
     },
     "jh_fist": {
-     "level": 308,
+     "level": 43,
      "exp": 0
     },
     "jh_parry": {
-     "level": 35,
+     "level": 5,
      "exp": 0
     }
    },
@@ -33188,14 +33191,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 168
+     "level": 37
     },
     "jh_fist": {
-     "level": 168,
+     "level": 37,
      "exp": 0
     },
     "jh_parry": {
-     "level": 30,
+     "level": 7,
      "exp": 0
     }
    },
@@ -33290,14 +33293,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 218
+     "level": 22
     },
     "jh_fist": {
-     "level": 218,
+     "level": 22,
      "exp": 0
     },
     "jh_parry": {
-     "level": 36,
+     "level": 5,
      "exp": 0
     }
    },
@@ -33391,14 +33394,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 84
+     "level": 19
     },
     "jh_fist": {
-     "level": 84,
+     "level": 19,
      "exp": 0
     },
     "jh_parry": {
-     "level": 40,
+     "level": 9,
      "exp": 0
     }
    },
@@ -33497,7 +33500,7 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 172
+     "level": 23
     }
    },
    "skills": {
@@ -33581,14 +33584,14 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 245
+     "level": 54
     },
     "jh_staff": {
-     "level": 245,
+     "level": 54,
      "exp": 0
     },
     "jh_parry": {
-     "level": 85,
+     "level": 19,
      "exp": 0
     }
    },
@@ -33680,17 +33683,17 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 144
+     "level": 37
     },
     "basic_fist": {
-     "level": 144
+     "level": 37
     },
     "jh_fist": {
-     "level": 144,
+     "level": 37,
      "exp": 0
     },
     "jh_parry": {
-     "level": 51,
+     "level": 13,
      "exp": 0
     }
    },
@@ -33775,18 +33778,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 112
+     "level": 28
     },
     "jh_fist": {
-     "level": 112,
+     "level": 28,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 37,
+     "level": 9,
      "exp": 0
     },
     "jh_parry": {
-     "level": 42,
+     "level": 10,
      "exp": 0
     }
    },
@@ -33881,21 +33884,21 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 299
+     "level": 37
     },
     "basic_staff": {
-     "level": 268
+     "level": 33
     },
     "jh_fist": {
-     "level": 299,
+     "level": 37,
      "exp": 0
     },
     "jh_staff": {
-     "level": 268,
+     "level": 33,
      "exp": 0
     },
     "jh_parry": {
-     "level": 71,
+     "level": 9,
      "exp": 0
     }
    },
@@ -33986,10 +33989,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 90
+     "level": 12
     },
     "jh_parry": {
-     "level": 50,
+     "level": 7,
      "exp": 0
     }
    },
@@ -34078,14 +34081,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 153
+     "level": 23
     },
     "jh_fist": {
-     "level": 153,
+     "level": 23,
      "exp": 0
     },
     "jh_parry": {
-     "level": 84,
+     "level": 13,
      "exp": 0
     }
    },
@@ -34166,14 +34169,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 104
+     "level": 14
     },
     "jh_fist": {
-     "level": 104,
+     "level": 14,
      "exp": 0
     },
     "jh_parry": {
-     "level": 63,
+     "level": 8,
      "exp": 0
     }
    },
@@ -34253,14 +34256,14 @@
    ],
    "learned": {
     "basic_staff": {
-     "level": 60
+     "level": 12
     },
     "jh_staff": {
-     "level": 60,
+     "level": 12,
      "exp": 0
     },
     "jh_parry": {
-     "level": 42,
+     "level": 8,
      "exp": 0
     }
    },
@@ -34353,10 +34356,10 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 29
+     "level": 6
     },
     "jh_fist": {
-     "level": 29,
+     "level": 6,
      "exp": 0
     }
    },
@@ -34446,18 +34449,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 136
+     "level": 29
     },
     "jh_staff": {
-     "level": 36,
+     "level": 8,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 17,
+     "level": 5,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 22,
+     "level": 5,
      "exp": 0
     }
    },
@@ -34552,14 +34555,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 200
+     "level": 45
     },
     "jh_fist": {
-     "level": 200,
+     "level": 45,
      "exp": 0
     },
     "jh_parry": {
-     "level": 32,
+     "level": 7,
      "exp": 0
     }
    },
@@ -34655,18 +34658,18 @@
    ],
    "learned": {
     "basic_parry": {
-     "level": 88
+     "level": 20
     },
     "hujia_daofa": {
-     "level": 70,
+     "level": 16,
      "exp": 0
     },
     "jh_parry": {
-     "level": 74,
+     "level": 17,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 79,
+     "level": 18,
      "exp": 0
     }
    },
@@ -34761,24 +34764,24 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 279
+     "level": 35
     },
     "basic_parry": {
-     "level": 353
-    },
-    "kuangfeng_daofa": {
-     "level": 60,
-     "exp": 0
+     "level": 44
     },
     "jh_parry": {
-     "level": 83,
+     "level": 10,
+     "exp": 0
+    },
+    "jh_blade": {
+     "level": 7,
      "exp": 0
     }
    },
    "skills": {
     "拳": "basic_fist",
     "招架": "jh_parry",
-    "刀": "kuangfeng_daofa"
+    "刀": "jh_blade"
    },
    "favorToLearn": 79,
    "moneyToLearn": 2220,
@@ -34858,25 +34861,25 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 272
-    },
-    "huashan_sword": {
-     "level": 80,
-     "exp": 0
+     "level": 34
     },
     "jh_neigong": {
-     "level": 49,
+     "level": 6,
      "exp": 0
     },
     "jh_parry": {
-     "level": 54,
+     "level": 7,
+     "exp": 0
+    },
+    "jh_sword": {
+     "level": 10,
      "exp": 0
     }
    },
    "skills": {
     "内功": "jh_neigong",
-    "剑": "huashan_sword",
-    "招架": "jh_parry"
+    "招架": "jh_parry",
+    "剑": "jh_sword"
    },
    "favorToLearn": 80,
    "age": 36,
@@ -34955,14 +34958,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 348
+     "level": 41
     },
     "jh_fist": {
-     "level": 348,
+     "level": 41,
      "exp": 0
     },
     "jh_parry": {
-     "level": 13,
+     "level": 5,
      "exp": 0
     }
    },
@@ -35057,14 +35060,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 230
+     "level": 30
     },
     "jh_fist": {
-     "level": 230,
+     "level": 30,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 19,
+     "level": 5,
      "exp": 0
     }
    },
@@ -35160,10 +35163,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 398
+     "level": 42
     },
     "jh_dodge": {
-     "level": 24,
+     "level": 5,
      "exp": 0
     }
    },
@@ -35251,14 +35254,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 172
+     "level": 38
     },
     "jh_fist": {
-     "level": 172,
+     "level": 38,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 30,
+     "level": 7,
      "exp": 0
     }
    },
@@ -35358,14 +35361,14 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 245
+     "level": 54
     },
     "jh_fist": {
-     "level": 245,
+     "level": 54,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 70,
+     "level": 15,
      "exp": 0
     }
    },
@@ -35441,10 +35444,10 @@
    ],
    "learned": {
     "basic_dodge": {
-     "level": 258
+     "level": 34
     },
     "jh_dodge": {
-     "level": 18,
+     "level": 5,
      "exp": 0
     }
    },
@@ -35540,22 +35543,22 @@
    ],
    "learned": {
     "basic_blade": {
-     "level": 372
+     "level": 53
     },
     "jh_sword": {
-     "level": 96,
+     "level": 14,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 80,
+     "level": 11,
      "exp": 0
     },
     "jh_parry": {
-     "level": 85,
+     "level": 12,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 35,
+     "level": 5,
      "exp": 0
     }
    },
@@ -35570,7 +35573,7 @@
    "moneyToLearn": 2330,
    "age": 33,
    "equipment": {
-    "武器": "iron_sword_basic",
+    "武器": "steel_blade",
     "身体": "silk_robe"
    },
    "tier": "B",
@@ -36016,18 +36019,18 @@
    ],
    "learned": {
     "basic_fist": {
-     "level": 90
+     "level": 27
     },
     "jh_sword": {
-     "level": 98,
+     "level": 29,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 72,
+     "level": 21,
      "exp": 0
     },
     "jh_parry": {
-     "level": 77,
+     "level": 23,
      "exp": 0
     }
    },
@@ -36144,11 +36147,11 @@
    "desc": "朱红甲胄，甲叶上还有昨夜落的露。他握枪的姿势不像在站岗，像在等谁来。",
    "learned": {
     "jh_staff": {
-     "level": 60,
+     "level": 50,
      "exp": 0
     },
     "jh_parry": {
-     "level": 39,
+     "level": 32,
      "exp": 0
     }
    },
@@ -36221,11 +36224,11 @@
    "desc": "皂衣，腰间挎着铁尺。他拦人的手法很熟，一只手横在门前，脚已经站稳了。",
    "learned": {
     "jh_blade": {
-     "level": 104,
+     "level": 31,
      "exp": 0
     },
     "jh_parry": {
-     "level": 88,
+     "level": 26,
      "exp": 0
     }
    },
@@ -36295,15 +36298,15 @@
    "desc": "灰布僧衣，手里捻着一串念珠。他合掌的动作很自然，眼神却一直落在你身上。",
    "learned": {
     "shaolin_changquan": {
-     "level": 96,
+     "level": 46,
      "exp": 0
     },
     "jh_neigong": {
-     "level": 35,
+     "level": 17,
      "exp": 0
     },
     "jh_parry": {
-     "level": 40,
+     "level": 19,
      "exp": 0
     }
    },
@@ -36365,11 +36368,11 @@
    "desc": "飞鱼服，绣春刀挂在左腰。他背对着你站。但你知道，他在听。",
    "learned": {
     "xunchun_blade_art": {
-     "level": 67,
+     "level": 51,
      "exp": 0
     },
     "jh_parry": {
-     "level": 76,
+     "level": 58,
      "exp": 0
     }
    },
@@ -36428,11 +36431,11 @@
    "desc": "青衫，背一柄长剑，剑没出鞘。他站在山道正中，不像拦人，倒像在数人头。",
    "learned": {
     "huashan_sword": {
-     "level": 56,
+     "level": 36,
      "exp": 0
     },
     "jh_dodge": {
-     "level": 50,
+     "level": 32,
      "exp": 0
     }
    },
@@ -36506,7 +36509,7 @@
    "desc": "六十来岁的老头，青衫洗得发白，手里捏着半卷书。他看你的眼神先落在你的鞋上。",
    "learned": {
     "jh_fist": {
-     "level": 56,
+     "level": 41,
      "exp": 0
     }
    },
@@ -36588,7 +36591,7 @@
    ],
    "learned": {
     "basic_force": {
-     "level": 150
+     "level": 42
     }
    },
    "skills": {

@@ -246,6 +246,20 @@
         "anran_xiaohunzhang",
         "yugu_nvxinjian"
       ],
+      "learned": {
+        "anran_xiaohunzhang": {
+          "level": 850,
+          "exp": 0
+        },
+        "yugu_nvxinjian": {
+          "level": 800,
+          "exp": 0
+        },
+        "jiuyin_zhenjing": {
+          "level": 780,
+          "exp": 0
+        }
+      },
       "schedule": {
         "day": "gumu_mu",
         "night": "gumu_mu"
@@ -313,6 +327,16 @@
         "yugu_nvxinjian",
         "jiuyin_zhenjing"
       ],
+      "learned": {
+        "yugu_nvxinjian": {
+          "level": 820,
+          "exp": 0
+        },
+        "jiuyin_zhenjing": {
+          "level": 800,
+          "exp": 0
+        }
+      },
       "schedule": {
         "day": "gumu_mu",
         "night": "gumu_mu"
@@ -380,6 +404,20 @@
         "yugu_nvxinjian",
         "jiuyin_baiguzhao"
       ],
+      "learned": {
+        "jiuyin_baiguzhao": {
+          "level": 800,
+          "exp": 0
+        },
+        "yugu_nvxinjian": {
+          "level": 780,
+          "exp": 0
+        },
+        "jiuyin_zhenjing": {
+          "level": 820,
+          "exp": 0
+        }
+      },
       "schedule": {
         "day": "gumu_shan",
         "night": "gumu_shan"
@@ -447,6 +485,16 @@
         "jiuyang_shengong",
         "emei_atk_1"
       ],
+      "learned": {
+        "jiuyang_shengong": {
+          "level": 700,
+          "exp": 0
+        },
+        "emei_atk_1": {
+          "level": 680,
+          "exp": 0
+        }
+      },
       "schedule": {
         "day": "emei_jinding",
         "night": "emei_jinding"
@@ -513,6 +561,16 @@
         "xianglong_zhang",
         "jiuyin_zhenjing"
       ],
+      "learned": {
+        "xianglong_zhang": {
+          "level": 850,
+          "exp": 0
+        },
+        "jiuyin_zhenjing": {
+          "level": 800,
+          "exp": 0
+        }
+      },
       "schedule": {
         "day": "xiangyang_gate",
         "night": "xiangyang_gate"
@@ -579,6 +637,16 @@
         "dagou_bangfa",
         "luoying_shenjianzhang"
       ],
+      "learned": {
+        "dagou_bangfa": {
+          "level": 780,
+          "exp": 0
+        },
+        "luoying_shenjianzhang": {
+          "level": 760,
+          "exp": 0
+        }
+      },
       "schedule": {
         "day": "xiangyang_street",
         "night": "xiangyang_street"
@@ -646,6 +714,24 @@
         "hamagong",
         "lingshe_quan"
       ],
+      "learned": {
+        "hamagong": {
+          "level": 860,
+          "exp": 0
+        },
+        "lingshe_quan": {
+          "level": 800,
+          "exp": 0
+        },
+        "baituo_atk_2": {
+          "level": 820,
+          "exp": 0
+        },
+        "baituo_force_3": {
+          "level": 850,
+          "exp": 0
+        }
+      },
       "schedule": {
         "day": "baituo_gate",
         "night": "baituo_gate"
@@ -713,6 +799,20 @@
         "kongming_quan",
         "jiuyin_zhenjing"
       ],
+      "learned": {
+        "jiuyin_zhenjing": {
+          "level": 840,
+          "exp": 0
+        },
+        "kongming_quan": {
+          "level": 820,
+          "exp": 0
+        },
+        "lingbo_weibu": {
+          "level": 800,
+          "exp": 0
+        }
+      },
       "schedule": {
         "day": "taohuadao_forest",
         "night": "taohuadao_forest"
@@ -780,6 +880,16 @@
         "xianglong_zhang",
         "shaolin_atk_1"
       ],
+      "learned": {
+        "xianglong_zhang": {
+          "level": 900,
+          "exp": 0
+        },
+        "shaolin_atk_1": {
+          "level": 820,
+          "exp": 0
+        }
+      },
       "schedule": {
         "day": "gaibang_po_miao",
         "night": "gaibang_po_miao"
@@ -847,6 +957,16 @@
         "liumai_shenjian",
         "lingbo_weibu"
       ],
+      "learned": {
+        "liumai_shenjian": {
+          "level": 880,
+          "exp": 0
+        },
+        "lingbo_weibu": {
+          "level": 840,
+          "exp": 0
+        }
+      },
       "schedule": {
         "day": "dali_wangfu",
         "night": "dali_wangfu"
@@ -914,6 +1034,20 @@
         "tianshan_liuyangzhang",
         "shaolin_atk_1"
       ],
+      "learned": {
+        "tianshan_liuyangzhang": {
+          "level": 820,
+          "exp": 0
+        },
+        "yijinjing": {
+          "level": 800,
+          "exp": 0
+        },
+        "shaolin_atk_1": {
+          "level": 780,
+          "exp": 0
+        }
+      },
       "schedule": {
         "day": "shaolin_daxiong",
         "night": "shaolin_daxiong"
@@ -1043,6 +1177,12 @@
       "teach": [
         "xixing_dafa"
       ],
+      "learned": {
+        "xixing_dafa": {
+          "level": 780,
+          "exp": 0
+        }
+      },
       "schedule": {
         "day": "mojiao_hall",
         "night": "mojiao_hall"
@@ -1109,6 +1249,16 @@
       "teach": [
         "dugu_jiujian"
       ],
+      "learned": {
+        "dugu_jiujian": {
+          "level": 900,
+          "exp": 0
+        },
+        "huashan_sword": {
+          "level": 650,
+          "exp": 0
+        }
+      },
       "schedule": {
         "day": "huashan_siguoya",
         "night": "huashan_siguoya"
@@ -1174,6 +1324,12 @@
       "teach": [
         "kuangfeng_daofa"
       ],
+      "learned": {
+        "kuangfeng_daofa": {
+          "level": 620,
+          "exp": 0
+        }
+      },
       "schedule": {
         "day": "changan_lane",
         "night": "changan_lane"
@@ -1240,6 +1396,16 @@
       "teach": [
         "pixie_jianfa"
       ],
+      "learned": {
+        "pixie_jianfa": {
+          "level": 800,
+          "exp": 0
+        },
+        "huashan_sword": {
+          "level": 650,
+          "exp": 0
+        }
+      },
       "schedule": {
         "day": "huashan_qingke",
         "night": "huashan_qingke"

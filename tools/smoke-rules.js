@@ -46,14 +46,22 @@ console.log('③ 功能 Mod 规则引擎（multiply / onEvent / additive）');
   const e = new GameEngine({ seed: 20261010 });
   e.boot(); e.reload();  // reload 加载所有 demo mod（含 demo_func）
   const w = e.world;
-  ok('activeRules 收集到 demo_func 规则', w.activeRules.some(r => r.target === 'pot'));
+  ok('activeRules 收集到 demo_func 规则', w.activeRules.some(r => r.target === 'exp'));
   e.newGame({ name: '试剑', gender: 'male' });
   const p = w.player;
 
-  // multiply pot（双倍潜能）
-  const pot0 = p.potential;
-  p.gainPotential(100);
-  ok('multiply pot 生效（+100 → +200）', p.potential - pot0 === 200, p.potential - pot0);
+  // multiply exp（双倍经验）—— 施工单 B：demo_func 改挂 exp ×2。
+  // gainExp 的溢出会被升级吃掉，所以行为断言用「差半级经验必升级」，
+  // 数值断言直接对 ruleMult（消费点 character.js gainExp）。
+  // ⚠️ ruleMult(exp) 是全部已启用 mod 的乘积（e2e_cross 还有 ×3），不能直接比 2 ——
+  //    按 __mod 归到 demo_func 头上算它自己的贡献
+  const demoExpMult = w.activeRules
+    .filter(r => r.target === 'exp' && r.__mod === 'demo_func')
+    .reduce((a, r) => a * (r.value || 1), 1);
+  ok('ruleMult(exp)：demo_func 贡献 ×2（双倍经验）', demoExpMult === 2, 'demo_func=' + demoExpMult + '，全局=' + w.ruleMult('exp'));
+  const lv0 = p.level;
+  p.gainExp(Math.ceil(p.expNeed(p.level) / 2));
+  ok('multiply exp 生效（差半级经验 → 升级）', p.level > lv0, 'level ' + lv0 + ' → ' + p.level);
 
   // multiply money（双倍金钱）—— 走 onNpcKilled 才触发，这里直接验证 ruleMult
   ok('ruleMult(money) = 2', w.ruleMult('money') === 2, w.ruleMult('money'));
@@ -63,10 +71,10 @@ console.log('③ 功能 Mod 规则引擎（multiply / onEvent / additive）');
   w.fireEvent('onTick', {});
   ok('onEvent onTick 脱战回血 +8', p.hp === 58, p.hp);
 
-  // onEvent onKill +pot（击杀额外潜能，被双倍潜能乘成 +30）
-  const pot1 = p.potential;
+  // onEvent onKill +money:20（击杀额外赏钱，施工单 D 换成玩家可见数值）
+  const m1 = p.money;
   w.fireEvent('onKill', { npc: { name: 'x' } });
-  ok('onEvent onKill 额外潜能生效', p.potential > pot1, p.potential - pot1);
+  ok('onEvent onKill 额外赏钱生效（+20）', p.money - m1 === 20, p.money - m1);
 
   // additive damageTaken（新手保护 realm<=1 减伤 5）
   ok('ruleAdd(damageTaken) 凡人 -5', w.ruleAdd('damageTaken') === -5, w.ruleAdd('damageTaken'));
@@ -98,8 +106,9 @@ console.log('⑤ 示例 Mod 修复');
   const q = w.data.quests['q_demo_bandit'];
   ok('demo_quest rewards 是数组形式', q && Array.isArray(q.rewards), q && JSON.stringify(q.rewards).slice(0, 60));
 
-  // demo_func：无双倍经验（exp），改为双倍潜能
-  ok('demo_func 无双倍经验规则', !w.activeRules.some(r => r.target === 'exp' && r.__mod === 'demo_func'));
+  // demo_func：双倍经验在册（施工单 B）；潜能规则已撤（施工单 D，潜能玩家不可见）
+  ok('demo_func 双倍经验规则在册', w.activeRules.some(r => r.target === 'exp' && r.__mod === 'demo_func'));
+  ok('demo_func 已无 pot 规则（潜能已废除，示例不再挂）', !w.activeRules.some(r => r.target === 'pot' && r.__mod === 'demo_func'));
 }
 
 console.log('⑥ 功能 Mod 宏指令（kind: macro —— 一条指令=多条）');

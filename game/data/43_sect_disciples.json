@@ -36,19 +36,19 @@
    "title": "副掌门",
    "learned": {
     "huashan_sword": {
-     "level": 73,
+     "level": 139,
      "exp": 0
     },
     "huashan_sword_art": {
-     "level": 89,
+     "level": 170,
      "exp": 0
     },
     "basic_force": {
-     "level": 66,
+     "level": 126,
      "exp": 0
     },
     "jh_parry": {
-     "level": 46,
+     "level": 88,
      "exp": 0
     }
    },
@@ -505,19 +505,19 @@
    "title": "长老",
    "learned": {
     "shaolin_changquan": {
-     "level": 73,
+     "level": 148,
      "exp": 0
     },
     "weituo_zhang": {
-     "level": 89,
+     "level": 180,
      "exp": 0
     },
     "basic_force": {
-     "level": 66,
+     "level": 133,
      "exp": 0
     },
     "jh_parry": {
-     "level": 46,
+     "level": 93,
      "exp": 0
     }
    },
@@ -980,19 +980,19 @@
    "title": "首座",
    "learned": {
     "wudang_taiji": {
-     "level": 73,
+     "level": 144,
      "exp": 0
     },
     "taiji_sword": {
-     "level": 89,
+     "level": 175,
      "exp": 0
     },
     "basic_force": {
-     "level": 66,
+     "level": 130,
      "exp": 0
     },
     "jh_parry": {
-     "level": 46,
+     "level": 90,
      "exp": 0
     }
    },
@@ -1455,19 +1455,19 @@
    "title": "首座",
    "learned": {
     "emei_sword": {
-     "level": 73,
+     "level": 135,
      "exp": 0
     },
     "emei_ci": {
-     "level": 89,
+     "level": 165,
      "exp": 0
     },
     "basic_force": {
-     "level": 66,
+     "level": 122,
      "exp": 0
     },
     "jh_parry": {
-     "level": 46,
+     "level": 85,
      "exp": 0
     }
    },
@@ -1924,19 +1924,19 @@
    "title": "九袋长老",
    "learned": {
     "dagou_bangfa": {
-     "level": 73,
+     "level": 152,
      "exp": 0
     },
     "xianglong_zhang": {
-     "level": 89,
+     "level": 185,
      "exp": 0
     },
     "basic_force": {
-     "level": 66,
+     "level": 137,
      "exp": 0
     },
     "jh_parry": {
-     "level": 46,
+     "level": 96,
      "exp": 0
     }
    },
@@ -2393,19 +2393,19 @@
    "title": "光明右使",
    "learned": {
     "heimu_zhang": {
-     "level": 68,
+     "level": 130,
      "exp": 0
     },
     "xixing_dafa": {
-     "level": 84,
+     "level": 160,
      "exp": 0
     },
     "basic_force": {
-     "level": 62,
+     "level": 118,
      "exp": 0
     },
     "jh_parry": {
-     "level": 43,
+     "level": 82,
      "exp": 0
     }
    },
@@ -2868,19 +2868,19 @@
    "title": "王子",
    "learned": {
     "yiyang_zhi": {
-     "level": 73,
+     "level": 156,
      "exp": 0
     },
     "liumai_shenjian": {
-     "level": 89,
+     "level": 190,
      "exp": 0
     },
     "basic_force": {
-     "level": 66,
+     "level": 141,
      "exp": 0
     },
     "jh_parry": {
-     "level": 46,
+     "level": 98,
      "exp": 0
     }
    },

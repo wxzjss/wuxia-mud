@@ -315,6 +315,17 @@ class World extends EventEmitter {
     // 功能 Mod 的「规则」（multiply / additive / onEvent / macro）
     if (json.rules) {
       for (const r of [].concat(json.rules)) {
+        /* 施工单 C · mult 字段名防呆：multiply 的倍数字段只认 `value`
+           （ruleMult 只读 r.value）。作者照直觉写 mult 等于没写 ——
+           按「不报错就是不生效」的纪律，进 modLog 明说这条规则不会生效，
+           不做静默转换（改字段名是作者的事，引擎替他猜会把坏习惯养大）。 */
+        if (r && r.kind === 'multiply' && r.mult !== undefined && r.value === undefined) {
+          this.modLog.push({
+            level: 'warn', mod: mod.id || mod.name,
+            msg: `规则「${r.name || r.target || '?'}」的倍数字段写的是 mult，引擎只认 value —— 这条规则不会生效，请把 mult 改成 value。`,
+          });
+          continue;
+        }
         if (r && r.kind) this.activeRules.push(Object.assign({}, r, { __mod: mod.id || mod.name }));
       }
     }

@@ -1100,14 +1100,12 @@ body::before {
   font-family: var(--font-ui);
   font-size: 13px; line-height: inherit;
   color: var(--tip-cmd);
-  cursor: pointer;
-  transition: color .14s;
+  /* 主人插队件：条目改纯文字提示（不再是指令按钮）—— 不可点，
+     cursor 收掉，hover/active/focus 三条交互态一并撤（原按钮态）。 */
+  cursor: default;
 }
-.log-line .hl-tip-cmd:hover { text-decoration: underline; }
-.log-line .hl-tip-cmd:active { background: var(--tint-red); }
-.log-line .hl-tip-cmd:focus-visible { outline: 1px dashed var(--noun-dot); outline-offset: 2px; }
 /* 说明位（§3.2 / .hl-tip-note）：文案归游有方（design/82），视觉只留槽位 */
-.log-line .hl-tip-note { margin-left: 8px; }
+.log-line .hl-tip-note { margin-left: 8px; color: var(--tip-ink); }
 
 /* 战斗面板 */
 #combat-panel {
