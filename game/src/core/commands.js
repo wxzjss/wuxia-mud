@@ -34,9 +34,8 @@ const tutorialMod = require('./tutorial');
 /* 阶段解析 / 目标判定的**唯一**实现（面板、自动检查、交任务三处共用一份） */
 const queststage = require('./queststage');
 const potential = require('./potential');
-/* 「飞往」的门槛与耗内力算法（2026-10-13 起不再要求「去过那个区域」）。 */
-const flight = require('./flight');
-/* 驿站渡口行路网络（design/89 §七·补）：行路的唯一判定与执行（flight 已下线空投语义） */
+/* 驿站渡口行路网络（design/89 §七·补）：行路的唯一判定与执行
+   （flight 已物理删除：空投语义下线 + 无任何调用点，见 engine.js 头注释） */
 const travel = require('./travel');
 
 /* 中文数字 → 阿拉伯 */
@@ -4933,7 +4932,7 @@ function buildCommands(world) {
 
   /* ---------------- 飞往（已下线 · 2026-10-14 主人改判） ----------------
      design/89 §七·补 裁 1：飞行**全删空投语义，不降级保留**——只要还有一条
-     绕开路网的快速通道，卷界锁就多一个要堵的口子。flight.js 文件保留作回归对照
+     绕开路网的快速通道，卷界锁就多一个要堵的口子。flight.js 已物理删除（零调用，见头注释），
      （canFlyTo 不再接任何玩家入口），这里把玩家的「飞往」改写成一句**世界内的
      回话** + 指路（89 §七·d 铁律 3：被挡的玩家永远知道该走哪条路），
      不做静默失效，也不留「飞不了」的系统报错腔。 */

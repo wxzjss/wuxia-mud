@@ -1,0 +1,9 @@
+# 行尾钉死（2026-10-13 窗口批·CRLF 根治）
+# 缘起：40_npcs.json / 50_map.json 曾被整文件写成 CRLF，portrait 三条
+# 「逐字节还原 / 确定性生成」判据全红，而且每次跨编辑器保存都可能再犯。
+# 在这里钉死：仓库与检出统一 LF，JSON 永远不再吃 \r。
+*.json text eol=lf
+*.md text eol=lf
+*.js text eol=lf
+*.css text eol=lf
+*.html text eol=lf

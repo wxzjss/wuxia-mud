@@ -103,6 +103,8 @@
 <tr><td><code>flag:got_letter</code></td><td>打上一个剧情标记</td></tr>
 <tr><td><code>quest:q_xxx:2</code></td><td>把某任务推进到第 2 阶段</td></tr>
 <tr><td><code>combat:mob_bandit</code></td><td>立刻开始战斗</td></tr>
+<tr><td><code>combatWith:mob_wolf</code></td><td>与场上某个 NPC 开打（没刷出来会明说，不静默）</td></tr>
+<tr><td><code>giveRandom:长剑:馒头:草鞋</code></td><td>随机给一件（随机池用 <code>:</code> 分隔）</td></tr>
 <tr><td><code>menu:要不要帮我?|要>flag:help_yes;;不要>say:那你走吧</code></td><td>弹一个选择框</td></tr>
 <tr><td><code>ending:结局名</code></td><td>触发结局</td></tr>
 </table>

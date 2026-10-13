@@ -17,8 +17,8 @@ const { fmtTime, shichen, stars, clamp, fuzzyFind, normalizeCmd } = require('./u
 const mapLayout = require('./maplayout');
 /* 「飞往」判定（2026-10-13 起：不要求「去过」，改看轻功 + 内力）
    ⚠️ 2026-10-14 主人改判：飞行空投语义**全删**（design/89 §七·补 裁 1）——
-   玩家入口已撤，flight.js 只作回归对照保留。行路网络的判定在 travel.js。 */
-const flight = require('./flight');
+   玩家入口已撤，flight.js 已物理删除（对照价值存于 git 历史）。
+   行路网络的判定在 travel.js；「飞往」只回一句世界内的指路话（commands.js）。 */
 const travelNet = require('./travel');
 const tutorial = require('./tutorial');
 const social = require('./social');

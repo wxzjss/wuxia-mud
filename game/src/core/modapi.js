@@ -45,7 +45,7 @@
  *     "menu:选单文本:optA>effA|optB>effB"   → 弹出选项
  *     "heal" "fullheal" "die" "ending:xxx"
  *     "log:记录内容"
- *     "giveRandom:itemA|itemB|itemC"
+ *     "giveRandom:itemA:itemB:itemC"   → 随机给一件（池子用 : 分隔）
  *   结构化对象：{ type:"...", ... }
  */
 
@@ -533,7 +533,10 @@ function evalEffect(eff, ctx) {
       out.push({ kind: 'sys', text: r.ok ? `你失去了 ${r.name}${n > 1 ? ' x' + n : ''}。` : `（你没有 ${id}）` });
       break;
     }
-    case 'randomitem': {
+    /* 随机给一件：`randomitem` 是引擎真名，`giveRandom` 是头注释/教程写法 ——
+       🔴 实测缺口（2026-10-13 mod 能力盘点）：作者照文档写 giveRandom 会静默落空
+       （unknown → customEffects 查不到 → 一行不出）。补成别名，两种写法等价。 */
+    case 'randomitem': case 'giveRandom': {
       const id = w.rng.pick(args.filter(Boolean));
       if (id) { const r = w.giveItem(p, id, 1); out.push({ kind: 'sys', text: `你得到了 ${r.name}。` }); }
       break;
@@ -636,8 +639,14 @@ function evalEffect(eff, ctx) {
     // 战斗
     case 'combat': case 'fight': w.startCombat(p, args[0]); break;
     case 'combatWith': {
-      // combatWith:room:npcId
-      const r = w.getRoom(args[0]); break;
+      /* 🔴 实测缺口（2026-10-13 mod 能力盘点）：原先这里是死代码
+         （`const r = w.getRoom(args[0]); break;`）—— 写了等于没写，一声不吭。
+         按字面语义补上：`combatWith:<npcId>` → 找场上活实例开打；
+         找不到人（没刷出来 / id 写错）要**说一声**，不许静默。 */
+      const npc = w.findLiveNpc(args[0]);
+      if (npc) { w.startCombat(p, npc.id); }
+      else out.push({ kind: 'warn', text: `（此地找不到「${args[0]}」，这一架没打成。）` });
+      break;
     }
     /* 玩家**不会死，只会力竭昏倒**（主人要求：昏倒 → 最近客栈醒转）。
        mod 里的 `die` 效果沿用同一口径：置昏倒标记 + 计数（走 world.playerDeath 唯一入口），

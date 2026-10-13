@@ -1,0 +1,23 @@
+{
+  "_mod": {
+    "id": "modcheck",
+    "name": "能力实测桩",
+    "version": "1.0.0",
+    "author": "qa",
+    "description": "smoke-mod-cap 专用夹具：内容/rules/functions/script.js 逐项实测",
+    "category": "功能"
+  },
+  "items": {
+    "mc_stone": { "name": "试金石", "desc": "能力实测用的石头。", "type": "misc", "price": 1 }
+  },
+  "rules": [
+    { "kind": "multiply", "target": "exp", "value": 2, "name": "双倍经验" },
+    { "kind": "additive", "target": "damageTaken", "value": -1, "name": "皮糙肉厚" },
+    { "kind": "onEvent", "target": "onKill", "cond": { "always": true }, "effects": ["say:（规则onKill）有人倒下了"], "name": "杀敌播报" },
+    { "kind": "macro", "target": "打卡", "effect": "score", "name": "打卡宏" }
+  ],
+  "functions": {
+    "mc_rich": { "type": "cond", "body": { "money": 100 } },
+    "mc_gift": { "type": "effect", "body": ["+money:7", "say:（fn）送你七文钱"] }
+  }
+}
