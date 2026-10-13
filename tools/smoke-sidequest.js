@@ -132,14 +132,18 @@ sec('① sidequest 指针 ⇒ quest 一一对上（**先红后绿**的对象）'
      与其每加一批就往这儿补一个文件名（补一次忘一次，忘了就红），
      不如**把所有 hk_ 的来源一起数**：数据文件里有多少，运行时就得有多少。 */
   const dataDir = path.join(ROOT, 'game', 'data');
-  let fromFiles = 0;
+  /* 2026-10-15 游有方：S3 改造批会把既有 hk_ 案在新分片里**整条重声明**（迁移落点/收口联动），
+     运行时按 id 深合并仍是同一条。计数口径从「声明条数」改成「跨文件按 id 去重」——
+     重声明不虚增，新增才计数，比原来更强。 */
+  const fileIds = new Set();
   for (const f of fs.readdirSync(dataDir)) {
     if (!/^\d+_.*\.json$/.test(f)) continue;
     let j = null;
     try { j = JSON.parse(fs.readFileSync(path.join(dataDir, f), 'utf8')); } catch (e) { continue; }
     const qs = (j && j.quests) || {};
-    fromFiles += Object.keys(qs).filter(k => k.startsWith('hk_')).length;
+    for (const k of Object.keys(qs)) if (k.startsWith('hk_')) fileIds.add(k);
   }
+  const fromFiles = fileIds.size;
   ok(`quests 表里 hk_* 与各数据文件之和一致`,
     hkIds.length === fromFiles, `数据 ${fromFiles} 条 / 运行时 ${hkIds.length} 条`);
   const noPortrait = hkIds.filter(k => {

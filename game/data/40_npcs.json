@@ -13842,7 +13842,7 @@
    "wickedness": 50,
    "greed": 73,
    "desc": "手上戴着副薄手套，耳朵后头有块小疤，笑起来没声音。",
-   "room": "jn_pawnshop",
+   "room": "jn_yamen_office",
    "level": 9,
    "hp": 186,
    "atk": 22,
@@ -22962,7 +22962,7 @@
    },
    "homeless": true,
    "job": "merchant",
-   "title": "行商",
+   "title": "管仓的老吏",
    "province": "江南东道",
    "neighbors": [
     "屈疏",

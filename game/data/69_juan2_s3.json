@@ -1,0 +1,496 @@
+{
+  "_note": "S3 卷二骨架·第一批（design/95 §一/§三，2026-10-15 游有方落库）：两案走通全链（接案→查访→收束，含门派咬合层与散人路径）+ 声望挂点第一批 + 卷二入口接引。改造自 61 池：hk_npcv_174（洛阳·仓里那三个月，迁官仓 ly_granary）、hk_npcv_091（衙门府·府衙那只箱子，樊过迁 jn_yamen_office）。quest/npc 按 id 深合并、rooms.exits 按键合并、actions 数组整段声明（承接 61 原有全部条目），不冲 50_map。 声望挂点说明：commands.js:5852 的 repGainOnQuest 挂在 NPC def 上，同一 NPC 多案会重复加成，故第一批以收口效果级 '+rep' 落（每案一次、逐案精确），95 §三键位表口径不变。",
+  "rooms": {
+    "ly_granary": {
+      "id": "ly_granary",
+      "name": "洛阳·官仓",
+      "region": "luoyang",
+      "desc": "官仓比街面上的粮行高出一截，仓顶苫着新草。门房坐在门槛上打盹，手里那杆秤挂在墙上，秤砣擦得发亮。仓册摊在案上，三个月的账页边角都翻卷了，卷边的地方有人用指甲掐过一道印。",
+      "exits": {
+        "nw": "luoyang_market"
+      }
+    },
+    "luoyang_market": {
+      "id": "luoyang_market",
+      "exits": {
+        "se": "ly_granary"
+      }
+    }
+  },
+  "npcs": {
+    "npcv_174": {
+      "id": "npcv_174",
+      "room": "ly_granary",
+      "actions": [
+        {
+          "cmd": "问仓",
+          "label": "问仓",
+          "keywords": [],
+          "desc": "仓里那三个月",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_174_tuntang"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "官仓亏空三个月，管仓的老吏拿自己的米填——填不满，也不想再填了。他说只要你去看一眼：账对不对得上。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_174_tuntang",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问开仓",
+          "label": "问开仓",
+          "keywords": [],
+          "desc": "掌心里那把米",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_174_zhangxin"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "蒋倦抓米搓手，搓了三十年。他说这动作是娘教的。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_174_zhangxin",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "亮腰牌",
+          "label": "亮腰牌",
+          "keywords": [
+            "腰牌",
+            "文书"
+          ],
+          "desc": "门里文书好办事（门派咬合）",
+          "cond": {
+            "hasSect": true,
+            "notFlag": "act2_ly_ledger"
+          },
+          "once": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你把腰牌亮给门房。他多看了两眼，进去了，出来时手里多了半页底账：「上头打过招呼的门里人，账房让抄。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "底账出仓那一栏，每页的骑缝章都按得端正，只有一页歪着。按那枚章的手，跟写进项的手不是同一只。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act2_ly_ledger"
+              ]
+            },
+            {
+              "type": "sys",
+              "raw": "你在门里的差事簿上记了一笔。"
+            }
+          ]
+        },
+        {
+          "cmd": "塞银子",
+          "label": "塞银子",
+          "keywords": [
+            "银子",
+            "买通"
+          ],
+          "desc": "没门没派，就花口舌和酒钱（散人路径）",
+          "cond": {
+            "noSect": true,
+            "notFlag": "act2_ly_ledger"
+          },
+          "once": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你请门房喝了顿酒。他收了银子，朝仓那边偏了偏头：「账册在案上，抄归抄，别弄出声。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "底账出仓那一栏，每页的骑缝章都按得端正，只有一页歪着。按那枚章的手，跟写进项的手不是同一只。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act2_ly_ledger"
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "门房把银子拢进袖子：「这话你别说出去。说了，我这差事就替别人做了。」"
+            }
+          ]
+        }
+      ]
+    },
+    "npcv_091": {
+      "id": "npcv_091",
+      "room": "jn_yamen_office",
+      "actions": [
+        {
+          "cmd": "搭话",
+          "label": "搭话",
+          "keywords": [],
+          "desc": "府衙那只箱子",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_091_xiangzi"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "衙门后院抬进一口箱子，樊过盯了三天。他说只要你去看一眼：那箱子什么时候出。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_091_xiangzi",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问棉袄",
+          "label": "问棉袄",
+          "keywords": [],
+          "desc": "两个小子的棉袄",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_091_mianao"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "两件没人来赎的旧棉袄跟着他进了差房，收在箱底。他每天收值前都要摸一遍。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_091_mianao",
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "问门里的差事",
+          "label": "问门里的差事",
+          "keywords": [
+            "差事"
+          ],
+          "desc": "门里的差事簿上有这一票（门派咬合）",
+          "cond": {
+            "hasSect": true,
+            "notFlag": "act2_ya_errand"
+          },
+          "once": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你在门里领过协理杂务的差事，差事簿上抄着后衙这箱东西的入库日子。你把日子念给他听。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他听完，从怀里摸出一张纸：「封条是后半夜换的。换封条的人，抬箱子的俩人都不认识。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act2_ya_errand"
+              ]
+            },
+            {
+              "type": "sys",
+              "raw": "你在门里的差事簿上记了一笔。"
+            }
+          ]
+        },
+        {
+          "cmd": "替他跑腿",
+          "label": "替他跑腿",
+          "keywords": [
+            "跑腿"
+          ],
+          "desc": "没门没派，就替他抄两页纸（散人路径）",
+          "cond": {
+            "noSect": true,
+            "notFlag": "act2_ya_errand"
+          },
+          "once": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你替差房抄了两页旧档。抄到一半，管笔墨的老吏念叨了一句：「这批入册的日子，跟后衙那口箱子是一天。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "樊过听完，从怀里摸出一张纸：「封条是后半夜换的。换封条的人，抬箱子的俩人都不认识。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act2_ya_errand"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "quests": {
+    "hk_npcv_174_tuntang": {
+      "id": "hk_npcv_174_tuntang",
+      "name": "仓里那三个月",
+      "type": "支线",
+      "npc": "npcv_174",
+      "giver": "npcv_174",
+      "level": 7,
+      "desc": "洛阳官仓亏空三个月。管仓的老吏蒋倦拿自己的米填，填不满，也不想再填了。他要看一眼：你替他把账对出来。",
+      "stages": [
+        {
+          "desc": "去洛阳·官仓，看那三个月的账对不对得上",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "ly_granary",
+              "count": 1,
+              "var": "hk_npcv_174_tuntang_go0",
+              "desc": "去洛阳·官仓，看那三个月的账对不对得上"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "仓角的米堆比别处浅一截，底下垫着细沙。仓册摊在案上，三个月的进项一栏比一栏薄，出仓那一栏的字迹倒是一次比一次工整。"
+            },
+            {
+              "type": "say",
+              "raw": "「掺过一遍的米，今晚就得多一碗饭，少一碗饭。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这笔账|替他把账做平>+karma:-20;+money:400;+exp:200;+pot:70;flag:hk_npcv_174_tuntang_mix;;报到官上>+rep:朝廷:25;+exp:240;favor:npcv_174:-50;incvar:favor_npcv_174:-50;flag:hk_npcv_174_tuntang_report"
+            },
+            {
+              "type": "narrate",
+              "raw": "临出仓你回头又看了一眼仓册。进项一栏的骑缝章缺了半个，缺的那半个印，弧口朝左。这种印你见过。"
+            },
+            {
+              "type": "+rep",
+              "args": [
+                "洛阳",
+                60
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "clue_luoyang"
+              ]
+            },
+            {
+              "type": "incvar",
+              "args": [
+                "clue_count",
+                1
+              ]
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "蒋倦把那袋米挪到仓角，填回一层整米进了门面。他说：「这几桩案子搁在一起看，少的东西是同一路人拿走的。」"
+        }
+      ]
+    },
+    "hk_npcv_174_zhangxin": {
+      "id": "hk_npcv_174_zhangxin",
+      "name": "掌心里那把米",
+      "type": "支线",
+      "npc": "npcv_174",
+      "giver": "npcv_174",
+      "level": 10,
+      "desc": "蒋倦抓米搓手，搓了三十年。他说这动作是娘教的。",
+      "require": {
+        "questDone": "hk_npcv_174_tuntang"
+      },
+      "stages": [
+        {
+          "desc": "在官仓看他开仓抓米",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "ly_granary",
+              "count": 1,
+              "var": "hk_npcv_174_zhangxin_go0",
+              "desc": "在官仓看他开仓抓米"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "他抓一把米，摊开，又攥上，指缝里漏下来的比留下的多。"
+            },
+            {
+              "type": "say",
+              "raw": "「我娘说，搓得出声的米才是好米。搓了三十年我才知道，她是骗我的。」"
+            },
+            {
+              "type": "menu",
+              "raw": "他搓的那把米|劝他改>+karma:10;+exp:200;favor:npcv_174:20;incvar:favor_npcv_174:20;flag:hk_npcv_174_zhangxin_grey;;接着合伙>+money:200;+exp:120;flag:hk_npcv_174_zhangxin_partner"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "蒋倦把掌心那把米倒回仓里，拍了拍手。"
+        }
+      ]
+    },
+    "hk_npcv_091_xiangzi": {
+      "id": "hk_npcv_091_xiangzi",
+      "name": "府衙那只箱子",
+      "type": "支线",
+      "npc": "npcv_091",
+      "giver": "npcv_091",
+      "level": 6,
+      "desc": "衙门后院抬进一口箱子，樊过盯了三天。他说只要你去看一眼：那箱子什么时候出。",
+      "stages": [
+        {
+          "desc": "去衙门·后衙，看那口箱子什么时候抬出去",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_yamen_back",
+              "count": 1,
+              "var": "hk_npcv_091_xiangzi_go0",
+              "desc": "去衙门·后衙，看那口箱子什么时候抬出去"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "箱子贴着封条，锁口是新的，抬进去的两个人一句话没说。"
+            },
+            {
+              "type": "say",
+              "raw": "「锁新，说明里头的旧东西急着走。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那只箱子|替他探明白>+karma:-5;+pot:60;+exp:200;flag:hk_npcv_091_xiangzi_open;;劝他收手>+karma:10;+exp:240;favor:npcv_091:30;incvar:favor_npcv_091:30;flag:hk_npcv_091_xiangzi_stop"
+            },
+            {
+              "type": "narrate",
+              "raw": "封条的角上盖着一枚印，印泥没按匀，弧口朝左。这个印你见过。门里库房的封条上，就是这一个。"
+            },
+            {
+              "type": "+rep",
+              "args": [
+                "衙门",
+                60
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "clue_yamen"
+              ]
+            },
+            {
+              "type": "incvar",
+              "args": [
+                "clue_count",
+                1
+              ]
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "樊过把那把新锁的样子画在纸上，折起来收好。他把纸又抽出来看了一眼：「这几桩案子搁在一起看，少的东西是同一路人拿走的。」"
+        }
+      ]
+    },
+    "hk_npcv_091_mianao": {
+      "id": "hk_npcv_091_mianao",
+      "name": "两个小子的棉袄",
+      "type": "支线",
+      "npc": "npcv_091",
+      "giver": "npcv_091",
+      "level": 8,
+      "desc": "樊过进衙门当差以后，两件没人来赎的旧棉袄也跟着收进了差房的箱底。他每天收值前都要摸一遍。",
+      "require": {
+        "questDone": "hk_npcv_091_xiangzi"
+      },
+      "stages": [
+        {
+          "desc": "去衙门·差房，看那两件棉袄还在不在",
+          "targets": [
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "jn_yamen_office",
+              "count": 1,
+              "var": "hk_npcv_091_mianao_go0",
+              "desc": "去衙门·差房，看那两件棉袄还在不在"
+            }
+          ],
+          "next": 99,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "差房箱底压着两件旧棉袄，叠得方方正正。袖口的补丁是两种蓝。"
+            },
+            {
+              "type": "say",
+              "raw": "「当铺三十文收的，冬天三十文能买一条命。没人来赎，我就当他们在别处过冬了。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那两件棉袄|替他送去>+karma:15;+exp:220;favor:npcv_091:40;incvar:favor_npcv_091:40;flag:hk_npcv_091_mianao_given;;留下作个念想>+exp:120;flag:hk_npcv_091_mianao_keep"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "say",
+          "raw": "樊过把箱盖合上，压了块镇纸。"
+        }
+      ]
+    }
+  }
+}
