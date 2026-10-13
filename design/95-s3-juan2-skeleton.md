@@ -103,3 +103,51 @@
 4. 思过崖门槛 cond + 乙分支名头来源 + 拒文案
 5. 声望键位写入挂接（六案收口 +rep 等，随案夹带）
 6. 全量回归 + lore/三关/朱雀 + 乙档走通验收
+
+---
+
+## 七、第一批落库记录（2026-10-15，游有方）
+
+**交付**：两案走通全链（接案→查访→收束，含门派咬合层与散人路径）+ 声望挂点第一批 + 卷二入口接引。验收脚本 `tools/_juan2_batch1.js`（30/0）。
+
+| 项 | 落点 | 改动 |
+|---|---|---|
+| 案 A 洛阳·仓里那三个月 | `69_juan2_s3.json` 重声明 hk_npcv_174_tuntang/zhangxin + 新房 ly_granary（洛阳·官仓，luoyang_market se 进、nw 回）+ 40_npcs npcv_174 room→ly_granary、title→管仓的老吏 | 目标房 jn_granary→ly_granary；收口加骑缝章联动段（弧口朝左）+ flag clue_luoyang + incvar clue_count；+60 洛阳 rep |
+| 案 B 衙门府·府衙那只箱子 | 同档重声明 hk_npcv_091_xiangzi/mianao + 40_npcs npcv_091 room→jn_yamen_office | 收口加封条印记联动段（门里库房封条同印）+ flag clue_yamen + incvar clue_count；+60 衙门 rep；mianao 目标随迁差房（desc 同步改写） |
+| 门派咬合层（L2 flag 过渡） | npcv_174/npcv_091 各加双通道 action | 门派：亮腰牌 / 问门里的差事（cond hasSect，once，flag act2_ly_ledger / act2_ya_errand）；散人：塞银子 / 替他跑腿（cond noSect，同 flag）——路径不同、线索同源 |
+| 声望挂点 | 收口效果级 `+rep` | ⚠️ 机制差异如实记：commands.js:5852 的 repGainOnQuest 挂 **NPC def**，同 NPC 多案会重复加成（蒋倦名下两案都走 tryReportQuest），故第一批落效果级 +rep（每案一次、逐案精确），键位表口径不变 |
+| 散人自查 | `_juan2_batch1.js` §⑤ | 散人档两案全链收口（clue×2 + rep×2），clue_count=2，var>=4 拼图门槛可达 |
+
+**我的 tools 判据改动**（已报备口径）：smoke-sidequest「hk_* 与各数据文件之和一致」从声明条数改为**跨文件按 id 去重**——S3 改造批在新分片整条重声明既有案是常态，重声明不虚增、新增才计数。
+
+**守卫终态**：20 套全绿（data-load 61/0、dangling 25/0、map-edge 34/0、sidequest 57/0 等）；69/40_npcs 均 LF、stringify 口径符合。
+
+**待办（第二批）**：长安/襄阳/成都/姑苏四案同款改造；拼图浮名 action（var>=4，方证/冲虚委托线）；思过崖门槛 cond + 乙分支名头来源；L2 contrib effect 等寇豆码。
+
+## 八、第二批落库记录（2026-10-16，游有方）
+
+**交付**：四案（长安/襄阳/成都/姑苏）照第一批范式走通全链 + 浮名收束件 + 乙分支名头补丁 + 思过崖门槛 + L2 contrib 逐案落。验收 `tools/_juan2_batch2.js`（51/0），第一批套件 30/0，全套 107 套守卫全绿。落库脚本 `tools/_apply_juan2_batch2.py`（幂等）。
+
+| 项 | 落点 | 改动 |
+|---|---|---|
+| 长安·那半张盐引 | 69 重声明 hk_npcv_215_yanyin | 目标 tangmen_hall→changan_market；收口弧口朝左骑缝印联动段；clue_changan；+rep 长安 60；npcv_215 room→changan_market |
+| 襄阳·江上那三条船 | 69 重声明 hk_npcv_208_feng | 目标 jn_harbor_wharf→xiangyang_market；船号铲痕/出仓单联动段；clue_xiangyang；+rep 襄阳 60；npcv_208 room→xiangyang_market、title→漕头 |
+| 成都·秤砣上那点尘 | 69 重声明 hk_npcv_237_cheng | 目标 jn_yizhuang→chengdu_lane；烙印缺角联动段（首段 narrate 随迁址改写）；clue_chengdu；+rep 成都 60；npcv_237 room→chengdu_market；次级案刀伤随迁 chengdu_market |
+| 姑苏·枫桥那个人贩子 | 69 重声明 hk_npcv_223_meimei | **零迁址**；对质收口加弯钩暗记联动段（不止走漕米，呼应东厂暗线不点破）；clue_gusu；+rep 姑苏 60；npcv_223 留燕子坞 |
+| 双通道咬合 | 四 NPC 全量 actions | 门派：验官文/亮漕帖/出示腰牌/调门里卷宗（hasSect+once+flag act2_ca/xy/cd/gs_ledger+**contrib 本门 40**）；散人：市上打听/帮船户搬货/替他出诊/陪他守夜（noSect，同 flag 无 contrib）——路径不同、线索同源 |
+| 第一批 contrib 补挂 | npcv_174 亮腰牌 / npcv_091 问门里的差事 | 各补 `{contrib:['本门',40]}`（寇豆码 effect 已可用，替换 95 §二 flag 过渡） |
+| 乙分支名头补丁 | 蒋倦处「请他作证」 | cond `and[act1_kept_silent, questDone tuntang, notFlag act2_witness_done]`；narrate×2（「仓里亏空那三个月，也没人信我」）+ flag + `+rep ['*',40]`——「第一次有人替他说话，是他自己挣的」 |
+| 浮名 action | shaolin_fangzheng / wudang_chongxu | cmd 问那路人的名头；cond `and[{var:clue_count>=4},{notFlag:act2_mole_named}]`；narrate×2（四样物证摆开→同一路人拿走的→名字写掌心）+ flag |
+| 思过崖门槛 | 69 huashan_qingke exits.w（gated exit：cond+say+msg+travel 四件套） | **or 形**：`{or:[{notFlag:act1_recognized},{and:[{skill:basic_sword>=30},{rep:*>=80}]}]}` |
+
+**裁决记档**：
+1. **思过崖 cond 改 or 形（95 §三草案修正）**：原 and 直落 `{and:[act1_recognized, skill, rep]}` 会锁死 act1 认痕——认痕发生在崖上，而崖的唯一入口就是青柯坪 w；认痕之前玩家没有 act1_recognized，会被自己的终点拦在门外。or 形语义：认痕前自由上崖（act1 流程不变），认痕后须名头（卷二起的门槛）。skill 键用 **basic_sword**（skill id），非「基本剑法」名——95 草案按名写，落库按 id 修正。
+2. **浮名门槛维持 var>=4（95 口径不上调）**：可攒线索共 6（第一批 2 + 第二批 4），4=「过半」门槛既有紧迫感又留容错（漏一案仍可收束）；上调 6 会把容错归零。工期兜底条款（砍四案 4→3）继续有效。
+3. **次级案重声明最小化**：四条次级案中仅 daoshang（刀伤）因迁址重声明；mengming/shaochuan/laoxiapo 目标未动，**不重声明**（69 不落无改动拷贝，避免日后 61 池改动被旧分片覆盖）。与第一批「全部重声明」的做法不同，特此记档。
+4. **收口暗句统一**：四案 rewards 追加同一句「这几桩案子搁在一起看，少的东西是同一路人拿走的。」——与第一批两案同句成回响，玩家跑满四案自然被推向方证/冲虚问名头。
+
+**测试教训（本批一病）**：验收桩里 `p.setFlag('act1_recognized')` 不带值——引擎 `setFlag(f,v)` 在 `v===undefined` 时是**删 flag**（modapi setFlag 陷阱同一族），门槛放行断言假绿。修正为 `setFlag(f, true)` 后 51/0。**报错不响的桩，比红的桩更危险**。
+
+**守卫终态**：107 套全绿（含 smoke-portrait-batch 376/0——40_npcs stringify 口径 indent=1 无尾换行，本批 patch 初版误写 indent=2，已修口径重写盘）。69 片 indent=2 尾换行 LF；40_npcs indent=1 无尾换行 LF。
+
+**待办移交**：追踪旁白双份 / 裸「细看」别名（寇豆码，挂账）；NPC 级 repGainOnQuest quest 级判据（寇豆码，挂账）。
