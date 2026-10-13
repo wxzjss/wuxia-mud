@@ -147,6 +147,20 @@ sec('② NPC 详细信息');
   }
 }
 
+/* ---------- ⑤ 裸词「细看」也是看（主人真机 2026-10-13）---------- */
+sec('⑤ 裸词「细看」并入 look 别名表');
+{
+  const e4 = boot(77);
+  const bare = txt(e4.exec('细看'));
+  ok('裸「细看」= 看房间（不报不是指令）', /【/.test(bare) && !/不懂|不是指令|没明白/.test(bare), bare.slice(0, 60));
+  const v4 = e4.view();
+  const someone = (v4.npcs || [])[0];
+  if (someone) {
+    const r = e4.exec('细看 ' + someone.name);
+    ok('「细看 <人名>」照常走人物详情', (r.lines || []).length > 0 && !/不懂|不是指令/.test(txt(r)), txt(r).slice(0, 60));
+  }
+}
+
 /* 拿一个确定存在的 key 备用（找不到就返回 undefined，不影响主流程） */
 
 console.log('\n' + '='.repeat(48));

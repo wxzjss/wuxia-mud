@@ -42,6 +42,34 @@
               ]
             }
           ]
+        },
+        {
+          "label": "看伤",
+          "cmd": "看伤",
+          "keywords": [
+            "膝盖",
+            "伤",
+            "卷裤腿"
+          ],
+          "desc": "看看膝盖那条口子",
+          "cond": {
+            "flag": "act1_knee_hurt",
+            "notFlag": "act1_knee_seen"
+          },
+          "once": true,
+          "failMsg": "你看过了。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你把裤腿卷起来看。膝盖肿了一圈，青的。第二天走路会疼。疼痛不扣数值——疼就是疼。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_knee_seen"
+              ]
+            }
+          ]
         }
       ]
     },

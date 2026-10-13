@@ -315,6 +315,22 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
       p2.track === null, String(p2.track));
   }
 
+  /* ================= 八、接取旁白双份（主人真机 2026-10-13）=================
+     🔴 「追踪 江湖路远」旁白讲了两遍。根因：exec 出口的 reconcile 跑在
+     **指令处理之后** —— 玩家开局第一下就点「追踪」时，记忆账 m.quests 还没记过
+     这条任务，trackCmd 的 takeHeld 把旁白讲掉、扣着的账也删了，随后 reconcile
+     一对账：first（记忆账没这条）且 !held（刚讲掉）→ 又讲一遍。
+     ⇒ 修法：takeHeld 交出旁白的同一刻把记忆账记平（storybeat.js）。
+        断言：**开局第一条指令就是追踪**，接取旁白在整条回包里只出现一次。 */
+  section('8 接取旁白不双份（开局第一下就追踪）');
+  {
+    const e3 = new GameEngine({ seed: 808, saveDir: require('./_test-save-dir') });
+    e3.boot(); e3.newGame({ name: '手快的' });
+    const r = e3.exec('追踪 q_main_jianghu');
+    const n = (allText(r).match(/【接取任务】/g) || []).length;
+    ok('★ 开局第一条指令就是「追踪 江湖路远」：接取旁白只出现一次', n === 1, '出现 ' + n + ' 次');
+  }
+
   console.log('\n结果：' + pass + ' 通过 / ' + fail + ' 失败');
   process.exit(fail ? 1 : 0);
 })().catch(err => { console.error(err); process.exit(1); });

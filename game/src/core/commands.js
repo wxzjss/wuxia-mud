@@ -1002,7 +1002,9 @@ function buildCommands(world) {
     return { lines, room };
   }
 
-  reg(['look', 'l', '看', '观察', '周围'], (ctx, args) => {
+  /* 「细看」并入（主人真机反馈：裸词「细看」报不是指令）——
+     带 X 走下面的物件/NPC 描写通路，裸词落 lookRoom。 */
+  reg(['look', 'l', '看', '观察', '细看', '周围'], (ctx, args) => {
     const p = ctx.player, w = ctx.world;
     const kw = args.join(' ');
     if (!kw) return lookRoom(ctx);

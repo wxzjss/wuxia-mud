@@ -107,6 +107,14 @@ function takeHeld(world, p, qid) {
   const m = memOf(p);
   if (!m.held[qid]) return [];
   delete m.held[qid];
+  /* 🔴 2026-10-13 主人真机：「追踪 江湖路远」接取旁白讲了两遍。
+     根因：指令出口（engine.js exec 末尾）的 reconcile 跑在**指令处理之后** ——
+     玩家开局第一下就点「追踪」时，记忆账 `m.quests` 还没记过这条任务，
+     trackCmd 里 takeHeld 把接取旁白讲掉、扣着的账也删了，
+     随后 reconcile 一对账：`first`（记忆账没这条）且 `!m.held[qid]`（刚被讲掉）
+     → 走了「第一次见到就讲接取旁白」的分支，又讲了一遍。
+     ⇒ takeHeld 讲掉旁白的同一刻，把记忆账记上 —— reconcile 见账平了就不出声。 */
+  if (p.quests && p.quests[qid] !== undefined) m.quests[qid] = p.quests[qid];
   const qd = (world && world.getQuest) ? world.getQuest(qid) : null;
   if (!qd || !qd.name) return [];
   const raw = p.questStage ? p.questStage(qid) : (p.quests || {})[qid];
