@@ -56,18 +56,30 @@ sec('§A 13 个身份，各指一家不同的势力');
   const births = Object.keys(w.data.meta.births);
   ok('A-1 身份数 ≥ 12（原 6 个，本批扩到 13）', births.length >= 12, births.length + ' 个');
 
+  /* 🔴 判据改约（2026-10-16，游有方，记档）：旧契约「首选势力互不相同、覆盖 13 家」
+     被新地图硬锁推翻——桃花岛/日月神教/血刀门/星宿派落在卷三、卷四硬锁区，
+     把新人的第一引荐指到进不去的山门（严苛玩家审出：道观道童→桃花岛、边地流人
+     →日月神教、逃卒→血刀门、血仇遗孤→星宿派，四处指路即死）。
+     新契约：**首选必须落在卷二可达区**（mojiao/taohuadao/palace/haitan/xiake/
+     beijiang/xiyu/xixia 为锁区）；锁区势力只允许出现在备选链非首选位。
+     「14 出身 14 家不撞车」的独特性让位给「指路即达」——撞车但可达，胜过独特但指死。 */
+  const LOCKED_REGIONS = new Set(['mojiao', 'taohuadao', 'palace', 'haitan', 'xiake', 'beijiang', 'xiyu', 'xixia']);
   const firsts = {};
   const bad = [];
   for (const b of births) {
     const chain = T.BIRTH_SECT[b];
     if (!chain || !chain.length) { bad.push(b + '(无映射)'); continue; }
-    if (firsts[chain[0]]) bad.push(b + ' 与 ' + firsts[chain[0]] + ' 撞车(' + chain[0] + ')');
     firsts[chain[0]] = b;
-    if (!w.getSect(chain[0])) bad.push(b + ' → 不存在的势力 ' + chain[0]);
+    if (!w.getSect(chain[0])) { bad.push(b + ' → 不存在的势力 ' + chain[0]); continue; }
+    const gateRoom = w.getRoom(T.SECT_GATE[chain[0]]);
+    if (gateRoom && LOCKED_REGIONS.has(gateRoom.region)) {
+      bad.push(b + ' 首选 ' + chain[0] + ' 落在锁区 ' + gateRoom.region);
+    }
+    /* 备选链非首选位允许锁区势力（那是「以后再去」的味），但首选位不行 */
   }
-  ok('A-2 ★ 每个身份都有映射，且首选势力**互不相同**', bad.length === 0, bad.join('；') || '全部唯一');
-  ok('A-3 ★ 覆盖了 13 家势力（14 家里只剩侠客岛，level≥30 属后期发现）',
-    Object.keys(firsts).length === births.length,
+  ok('A-2 ★ 每个身份都有映射，且首选势力落在卷二可达区（锁区只许在备选位）', bad.length === 0, bad.join('；') || '首选全可达');
+  ok('A-3 ★ 首选覆盖势力数 ≥ 8 家（独特感让位可达性后的底线）',
+    Object.keys(firsts).length >= 8,
     Object.keys(firsts).length + ' 家：' + Object.keys(firsts).join(','));
 
   /* 山门房必须真存在（写错一个字母 → 引路指到虚空，且不报错） */

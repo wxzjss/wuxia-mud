@@ -115,14 +115,16 @@ const STEPS = [
     id: 'sect',
     no: 6,
     title: '递信上山门',
-    goal: '拜进门派，学一身真本事',
+    goal: '拜进门派，学一身真本事；不走门墙的，把名字挣出来，路一样开',
     hint: '往 {gate} 去，在门口发「拜师 {sect}」（join）。有老汉那封信，山门会破例收你',
     todo: '往 {gate} 去，走到山门口发「拜师 {sect}」',
     story: '引荐信在你怀里，封皮上那个指印隔着布也摸得出来。',
     say: '老汉把信拍在你手心里：「{sect}。到了{gate}，把信递上去，说是城南茶摊的老汉给的。他们认这个指印。」',
     at: 'guide_teaman',
     requires: ['quest'],
-    test: (p) => !!p.sect,
+    /* 散人也得过这一关：不认任何山门的人，认痕（act1_recognized）之后
+       名字自己就立住了——这一步不能拿「拜师」把散人卡死在 6/8。 */
+    test: (p) => !!p.sect || (typeof p.hasFlag === 'function' && p.hasFlag('act1_recognized')),
   },
   /* 🔴 主人 2026-10-11：「玩家初始真的很弱谁都打不过，所以不要搞那种玩家一进来就要求
      玩家打怪的剧情，至少得在拜入宗门后学点武艺才行。」
@@ -247,11 +249,11 @@ const BIRTH_SECT = {
   scholar: ['wudang', 'taohua', 'tangmen'],             // 书香门第 → 武当派
   merchant: ['tangmen', 'taohua', 'gaibang'],           // 商贾之后 → 唐门
   monastic: ['shaolin', 'wudang', 'gaibang'],           // 山门弃婴 → 少林派
-  taoist_ward: ['taohua', 'wudang', 'tangmen'],         // 道观道童 → 桃花岛
+  taoist_ward: ['wudang', 'taohua', 'tangmen'],         // 道观道童 → 武当派（桃花岛是卷四的海，别把新人往那儿指）
   tomb_keep: ['gumu', 'miaojiang', 'wudang'],           // 守墓人之后 → 古墓派
-  deserter_child: ['xuedao', 'miaojiang', 'tangmen'],   // 逃卒之后 → 血刀门
-  grudge_orphan: ['xingxiu', 'miaojiang', 'xuedao'],    // 血仇遗孤 → 星宿派
-  border_drift: ['mojiao', 'miaojiang', 'xuedao'],      // 边地流人 → 日月神教
+  deserter_child: ['gaibang', 'xuedao', 'tangmen'],     // 逃卒之后 → 丐帮（血刀门在卷三锁区，留第二）
+  grudge_orphan: ['miaojiang', 'xingxiu', 'xuedao'],    // 血仇遗孤 → 苗疆五毒教（星宿海在卷三锁区，留第二）
+  border_drift: ['gaibang', 'mojiao', 'miaojiang'],     // 边地流人 → 丐帮（日月神教在卷四锁区，留第二）
   nun_ward: ['emei', 'gumu', 'wudang'],                 // 庵堂孤儿 → 峨眉派
   /* 楼里新来的（主人 2026-10-11）→ 合欢宗一脉。她本来就在最像合欢宗的地方，
      只不过走的是另一条门径（详见 INTRO_VARIANTS.brothel_sold）。 */
@@ -412,7 +414,7 @@ const INTRO_VARIANTS = {
       '<p class="intro-p">手里那半张符纸被汗攥湿了。符是师父画的，只画了一半，朱砂断在中间，像是什么话没说完。</p>'
       + '<p class="intro-p">道观在半山腰，一共三间屋、一个丹炉。师父教你认药性、画符、看星象，临了却什么也没交代。他走那天，炉里的火还烧着，是你自己把它灭的。</p>'
       + '<p class="intro-p">观里剩下的东西你都背了下来——几本手抄的方子、一沓黄符纸，还有师父写在墙上的八个字：东海有岛，问奇门。</p>'
-      + '<p class="intro-p">江南大路晒得人发晕，这里的道你不认得。北边二里就是江南城，城里有船。往东出了海，那个岛是不是真在那儿，你得自己去看一眼。</p>',
+      + '<p class="intro-p">那八个字你念了一路，越念越觉得远。远水解不了近渴。北边二里就是江南城，城里往南走得出官道——湖广的武当山，收的也是你这种看炉子出身的人。那半张符纸上的路数，到那儿兴许有人认得。</p>',
   },
 
   tomb_keep: {
@@ -430,7 +432,7 @@ const INTRO_VARIANTS = {
       '<p class="intro-p">背上那把刀有个缺口，是砍过铁的。缺口是那年过隘口留下的——爹拿它挡了一下官差的钩镰。</p>'
       + '<p class="intro-p">爹从军伍里逃出来那年你才六岁，带着你一路往南，走了整整八个月。半道上他把刀塞给你，说了句「往南，别回头」，就再没起来。</p>'
       + '<p class="intro-p">你一个人走了十年，什么活都干过。刀一直背着，宁可饿肚子也不肯当。有人出过三贯钱买它，你把人打了一顿。</p>'
-      + '<p class="intro-p">江南大路的两旁晒着别家的粮。你摸摸刀背，缺口还是那道缺口。再往北二里就是江南城——你要找的地方，八成不在正街上。</p>',
+      + '<p class="intro-p">江南大路的两旁晒着别家的粮。你摸摸刀背，缺口还是那道缺口。再往北二里就是江南城——你要找的地方，八成不在正街上。窝棚、桥洞、城门洞底下，没人问你从哪儿来，那种地方才留得住你。</p>',
   },
 
   grudge_orphan: {
