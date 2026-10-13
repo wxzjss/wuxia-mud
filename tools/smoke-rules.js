@@ -92,6 +92,32 @@ console.log('④ evalEffects 字符串效果（回归之前 primitive 赋值报�
   ok('+mp:50 生效', p.mp === Math.min(p.maxMp, mp0 + 50), p.mp - mp0);
 }
 
+console.log('④b contrib effect（design/95 §二 L2：门派贡献，正负都行）');
+{
+  const e = new GameEngine({ seed: 20261010 });
+  e.boot(); e.newGame({ name: '试剑', gender: 'male' });
+  const w = e.world, p = w.player;
+
+  /* 字符串式：+50 */
+  evalEffects('contrib:华山:50', { player: p, world: w });
+  ok('④b-1 contrib:华山:50 记入台账', p.sectContribution === 50, p.sectContribution);
+
+  /* 对象式 {type,args:[sect,n]}：负数扣，扣到 0 为止 */
+  evalEffects([{ type: 'contrib', args: ['华山', -20] }], { player: p, world: w });
+  ok('④b-2 对象式负数 −20（50→30）', p.sectContribution === 30, p.sectContribution);
+  evalEffects([{ type: 'contrib', args: ['华山', -99] }], { player: p, world: w });
+  ok('④b-3 扣到 0 为止（30−99→0，不为负）', p.sectContribution === 0, p.sectContribution);
+
+  /* -contrib 别名：正数写法即扣 */
+  evalEffects('contrib:华山:12', { player: p, world: w });
+  evalEffects('-contrib:华山:5', { player: p, world: w });
+  ok('④b-4 -contrib 别名（12−5=7）', p.sectContribution === 7, p.sectContribution);
+
+  /* 回执走 sys 文案（人看得见，不是静默改账） */
+  const logs = evalEffects('contrib:华山:3', { player: p, world: w });
+  ok('④b-5 有 sys 回执且带门派名', logs.some(l => l.kind === 'sys' && /华山/.test(l.text)), JSON.stringify(logs.map(l => l.text)));
+}
+
 console.log('⑤ 示例 Mod 修复');
 {
   const e = new GameEngine({ seed: 20261010 });

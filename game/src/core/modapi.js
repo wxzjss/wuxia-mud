@@ -500,6 +500,26 @@ function evalEffect(eff, ctx) {
     }
     case '+kill': p.kills += num(0, 1); break;
 
+    /* 门派贡献（design/95 §二 L2：卷二门派武学兑换线索用）。
+       写法：contrib:门派名:数值 —— 数值**正负都行**（负数=扣）。
+       记账走玩家唯一的 p.sectContribution 台账（与差事/拜师同一根轴），
+       args[0] 的门派名只用于回执文案与「是否本门」校验，不另开分支账本。
+       贡献不为负（扣到 0 为止），与 -money 同规。 */
+    case 'contrib': case '+contrib': case '-contrib': {
+      const sectName = args[0] || p.sect || '本门';
+      let delta = num(1, 0);
+      if (type === '-contrib' && delta > 0) delta = -delta;   // -contrib:门派:50 = 扣 50
+      if (delta < 0) {
+        const before = p.sectContribution || 0;
+        p.sectContribution = Math.max(0, before + delta);
+        out.push({ kind: 'sys', text: `你在${sectName}的贡献少了 ${before - p.sectContribution}（现 ${p.sectContribution}）。` });
+      } else {
+        p.sectContribution = (p.sectContribution || 0) + delta;
+        out.push({ kind: 'sys', text: `你在${sectName}的贡献 +${delta}（现 ${p.sectContribution}）。` });
+      }
+      break;
+    }
+
     // 物品
     case '+item': case 'item+': {
       const id = args[0]; const n = num(1, 1);
