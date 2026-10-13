@@ -300,10 +300,16 @@
           "cond": {
             "and": [
               {
-                "hasSect": true
+                "flag": "act1_recognized"
               },
               {
                 "notFlag": "jiuye_done"
+              },
+              {
+                "time": {
+                  "min": 1140,
+                  "max": 299
+                }
               }
             ]
           },

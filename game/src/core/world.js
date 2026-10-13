@@ -3453,7 +3453,11 @@ class World extends EventEmitter {
         if (h.once) this._evFired[h.id] = day;
       }
       /* fired 为空 = 条件看着满足、效果却什么都没产出（不该算「报了一件事」） */
-      if (fired.length && name === 'onDayTick') {
+      /* 限流只管「带 chance 的」市井事件（跑马灯病根在那批概率件）。
+         ⚠️ 2026-10-13 修：必然命中（没写 chance）的确定性事件**不占额度、不被截断**——
+         「每月初一集市开张」这类日历事件被限流压掉，玩家只觉得「这游戏没事发生」。
+         之前 6 条探针全带 always:true，跨日只放出 1-2 条，就是这条把额度吃光的。 */
+      if (fired.length && name === 'onDayTick' && h.chance !== undefined) {
         dayFired++;
         if (dayFired >= 2) { fired.forEach(l => this.emit('storyline', { line: l })); break; }
       }

@@ -68,6 +68,17 @@ function powerOf(world, ch) {
   try { return require('./sectlife').powerOf(world, ch); } catch (e) { return (ch.atk || 0) * 2 + (ch.maxHp || 0) * 0.12; }
 }
 
+/**
+ * 动手结账用的「账面武力」：只看 atk/maxHp 这两个**已被 recalc 揉平**的数。
+ * ⚠️ 不走 sectlife.powerOf —— 那份会把 learned 再叠一遍，于是「被 tune 成
+ * 弱鸡的练家子」（atk=1、hp=10）靠着一身功夫账面又被抬回 110，
+ * 出现「打不过就不硬撑」的假真（④ 靶踩过：weak hero 险胜假真）。
+ * 真打起来比的是拳头和气血，功法已经体现在这两个数里了，不该二次计费。
+ */
+function fightPower(world, ch) {
+  return (ch.atk || 0) * 2 + (ch.maxHp || 0) * 0.12;
+}
+
 /** 轻功等级（追不追得上就看它） */
 function qinggongOf(ch) {
   const sid = ch.equippedSkills && ch.equippedSkills['轻功'];
@@ -134,36 +145,28 @@ function pick(arr, seed) {
 
 /**
  * 匪类打量玩家之后干什么。
+ * ⚠️ 2026-10-13 主人改判：「山贼看钱袋不看拳头」—— 决策变量从 power 改 **wealth**：
+ *   · 穷鬼 → ignore（油水不够，懒得动手；带武力也不值当，穷鬼 posturing 反而吓退山贼）
+ *   · 肥羊 → rob（图财不惜命，武力不再免票；「溜」随旧锚退役）
+ *   · power 不再参与决策，只在 rob 的**执行**端决定「打晕搜刮还是真开打」
+ *     （弱肥羊打晕摸钱就行，强肥羊才值得真刀真枪——见 onPlayerEnter 的 rob 分支）。
  * @returns {{act:'flee'|'rob'|'mug'|'ignore', lines:Array, power:number, wealth:number}}
  */
 function assessPlayer(world, p, foe) {
   const mine = powerOf(world, foe);
   const his = powerOf(world, p);
   const wealth = wealthOf(world, p);
-  const ratio = his / Math.max(1, mine);
   const li = [];
 
   li.push({ kind: 'plain', text: `你身上有几道目光重了些。${foe.name}把身子从墙根挪直，拿眼把你从头量到脚——先看你手上的茧，再看你腰间的钱袋。` });
 
-  if (ratio > CFG.strong) {
-    li.push({ kind: 'story', text: `他量完了，脸上那点意思就散了。他把脸转回自己那边，装作看天。有些账不用算第二遍。` });
-    return { act: 'flee', lines: li, power: mine, wealth };
-  }
-  /* ⚠️ 判定顺序要紧：**先看有没有油水，再看弱不弱**。
-     第一版把「有油水」写成 `wealth > rich && ratio > weak`，于是「又弱又有钱」的玩家
-     两个条件都不满足，直接落到「不值得动手」——可那明明是最该抢的一个。
-     （weak 那道线是给「打晕搜刮」用的：身上没油水的人才只好搜身。） */
   if (wealth > CFG.rich) {
-    li.push({ kind: 'warn', text: `${foe.name}把刀从鞘里抽出半寸，又推回去，刀口对着光看了一眼。他在试刀有没有锈。` });
+    li.push({ kind: 'warn', text: `${foe.name}的目光在你腰间的钱袋上钉住了。他把刀从鞘里抽出半寸，又推回去，刀口对着光看了一眼。他在试刀有没有锈。` });
     li.push({ kind: 'story', text: `「路远。」他说，「留下买路的钱，你走你的道。」` });
     return { act: 'rob', lines: li, power: mine, wealth };
   }
-  if (ratio < CFG.weak) {
-    li.push({ kind: 'story', text: `${foe.name}看你走路的样子，看你袖口的磨痕，末了摇了下头——像在看一件不值钱的旧东西。` });
-    li.push({ kind: 'story', text: `「穷。」他同旁边的人说了一句，语气很平。` });
-    return { act: 'mug', lines: li, power: mine, wealth };
-  }
-  li.push({ kind: 'plain', text: `${foe.name}看了你一会儿，没看出什么值得动手的地方，把眼挪开了。` });
+  li.push({ kind: 'story', text: `${foe.name}看你袖口的磨痕，看你瘪瘪的钱袋，末了摇了下头——像在看一件不值钱的旧东西。` });
+  li.push({ kind: 'story', text: `「穷鬼。」他同旁边的人说了一句，语气很平，眼皮都懒得再抬。` });
   return { act: 'ignore', lines: li, power: mine, wealth };
 }
 
@@ -192,7 +195,7 @@ function stepIn(world, npc, foe) {
   }
   lines.push({ kind: 'plain', text: pick(STEP_LINES, seed).replace(/\{a\}/g, npc.name) });
 
-  const a = powerOf(world, npc), b = powerOf(world, foe);
+  const a = fightPower(world, npc), b = fightPower(world, foe);
   if (a >= b * 0.9) {
     /* 打赢：打晕 → 装袋 → 交衙门 */
     foe.hp = 0; foe.dead = true; foe.knockedOut = true;
@@ -221,7 +224,7 @@ function stepIn(world, npc, foe) {
 function chase(world, chaser, foe, fromRoom) {
   const lines = [];
   const a = qinggongOf(chaser), b = qinggongOf(foe);
-  const mine = powerOf(world, chaser), his = powerOf(world, foe);
+  const mine = fightPower(world, chaser), his = fightPower(world, foe);
   lines.push({ kind: 'story', text: `${foe.name}撒腿就往巷子口窜。${chaser.name}追了出去。` });
   /* 轻功差 + 实力差 —— 两项一起算 */
   const edge = (a - b) / 200 + (mine - his) / Math.max(1, his) * 0.3;
@@ -337,33 +340,23 @@ function onPlayerEnter(world, p, room, npcs) {
   out.push(...verdict.lines);
 
   if (verdict.act === 'rob') {
-    try { world.startCombat(p, foe); } catch (e) { /* 打不起来就只当威吓 */ }
-    return out;
-  }
-  if (verdict.act === 'mug') {
-    /* 打晕搜刮：玩家不会死，只会昏过去 —— 醒来时钱没了 */
-    const lost = Math.floor((p.money || 0) * 0.6);
-    p.money = Math.max(0, (p.money || 0) - lost);
-    out.push({ kind: 'warn', text: `你还没转身，后脑就挨了一下。` });
-    out.push({ kind: 'sys', text: `迷迷糊糊里有人在你身上摸索，翻走了 ${lost} 文钱。` });
-    out.push({ kind: 'story', text: `再睁眼时天已经黑了。你躺在道边，鞋还在，钱袋空了。` });
-    return out;
-  }
-  if (verdict.act === 'flee') {
-    /* 匪类溜 —— 但先看有没有练家子要追 */
-    const chaser = live.find(n => n !== foe && hasForce(world, n));
-    if (chaser && world.rng.next() < 0.6) {
-      const r = chase(world, chaser, foe, room.id);
-      out.push(...r.lines);
-      if (!r.caught) {
-        if (r.fledTo) foe.room = r.fledTo;
-        out.push(interceptPrompt(world, p, foe, chaser));
-      }
-      return out;
+    /* 「看钱袋不看拳头」的执行端（2026-10-13）：
+       弱肥羊 → 打晕搜刮（玩家不会死，只会昏过去——醒来钱没了）；
+       强肥羊 → 真开打（抢得动就抢，抢不动就动手，图财不惜命）。 */
+    const his = fightPower(world, p), theirs = fightPower(world, foe);
+    /* 「有把握才打晕」的线放宽到 CFG.strong：山贼是求财不是求战，肥羊只要不是
+       明显压他一头就值当摸一把（压锚后 zhuangyuan 这类文人身板 recalc 出来
+       账面也有 36，0.72 那道旧线把肥羊全漏进了开打，③ 靶踩过）。 */
+    if (theirs > 0 && his <= theirs * CFG.strong) {
+      const lost = Math.floor((p.money || 0) * 0.6);
+      p.money = Math.max(0, (p.money || 0) - lost);
+      out.push({ kind: 'warn', text: `你还没转身，后脑就挨了一下。` });
+      out.push({ kind: 'sys', text: `迷迷糊糊里有人在你身上摸索，翻走了 ${lost} 文钱。` });
+      out.push({ kind: 'story', text: `再睁眼时天已经黑了。你躺在道边，鞋还在，钱袋空了。` });
+    } else {
+      try { world.startCombat(p, foe); } catch (e) { /* 打不起来就只当威吓 */ }
     }
-    out.push({ kind: 'plain', text: `${foe.name}转身就走，走得很快，进巷子前回头看了一眼。` });
-    const dest = neighborOf(world, room.id, 1);
-    if (dest) foe.room = dest;
+    return out;
   }
   return out;
 }

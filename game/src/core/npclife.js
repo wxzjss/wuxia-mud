@@ -119,7 +119,12 @@ function decide(world, npc) {
   if (learned.length && maxMp > 0 && mp > maxMp * 0.5 && world.rng.next() < 0.5) return 'practice';
   /* 钱多肚子饿 → 吃点喝点 */
   if (money > CFG.poorLine * 4 && world.rng.next() < 0.5) return 'eat';
-  return null;
+  /* 闲着也是一天（2026-10-13 动词池扩覆盖）：旧版走到这儿一律 null——
+     「有钱、不会武」的路人整年无播报，市集里大半人一辈子没动静
+     （smoke-npclife ⑦ 实测：抽样 60 tick 只捞到一句打招呼）。
+     兜底：有钱的偶尔下馆子，其余找点活干。反正一人一天只动一次（_lifeDay）。 */
+  if (world.rng.next() < 0.3) return 'eat';
+  return 'work';
 }
 
 const WORK_LINE = {

@@ -221,7 +221,10 @@ function defaultWanderFor(world, def) {
   if (!room || room.private) return null;
   const place = placeOf(world, room);
   if (!place || !ROAM_PLACES.has(place)) return null;
-  return { chance: 0.05 };
+  /* 0.05→0.20（2026-10-13）：每 tick（游戏 30 分钟）5% 的溜达率，玩家站在市集里
+     六百个 tick 才见着两三条走动消息，「世界是活的」完全看不出来（newbie G-9 实测 3 条）。
+     提到 20%——一次 tick 顶多被 MAX_PER_TICK=3 压住，不会刷烂日志。 */
+  return { chance: 0.20 };
 }
 
 /* --------------------------------------------------------------------------
