@@ -708,8 +708,17 @@ function evalEffect(eff, ctx) {
       break;
     }
     case 'ending': {
+      /* 结局树三写过渡（design/89，S5 上线；2026-10-15 预留批）：
+         flag / var 是老口径（老前端/老 mod 可能还在读），保留不断；
+         p.ending = 新结构台账（achieved 集合 + final 指针），S5 前端切读它。 */
       p.setFlag('ending_' + args[0], true);
       p.setVar('ending', args[0]);
+      p.ending = p.ending || { achieved: {}, final: null };
+      p.ending.achieved = p.ending.achieved || {};
+      p.ending.achieved[args[0]] = true;
+      /* final 跟随**刚触发的这个结局 id**（与 setVar('ending', args[0]) 同口径）；
+         args[1] 只是展示标题，不进台账。 */
+      p.ending.final = args[0];
       out.push({ kind: 'ending', text: args[0], title: args[1] || args[0] });
       break;
     }

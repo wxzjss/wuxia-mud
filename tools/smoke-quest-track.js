@@ -274,6 +274,45 @@ function boot(seed) {
     ok('★ 已交完的案（st=99）再交：零加成、不报错', (p.reputation['华山派'] || 0) - before3 === 0);
   }
 
+  /* ---------- ⑩ design/82 声望禁令：交易路径零声望变动（2026-10-15 钉死）----------
+     「声望只随事件涨跌、不随交易变化。」全库 10 处写点已逐归因（8 事件 + 2 授权 DSL），
+     交易路径零写点 —— 这里钉成守卫：跑买卖全程，声望台账全键 diff 必须为零；
+     再放一条 +rep 变异对照，证明断言真的在量（不是恒真）。 */
+  sec('⑩ 声望禁令：交易不动声望');
+  {
+    const e = boot(98);
+    const w = e.world, p = w.player;
+    /* 运行时注入一个商贩（内存，不落库）：def.goods 走 buy/sell 的兜底货源 */
+    w.data.items.mc_herb = { id: 'mc_herb', name: '测试草药', type: 'misc', value: 10 };
+    w.data.npcs.npcv_shop = Object.assign({}, w.data.npcs[Object.keys(w.data.npcs)[0]], {
+      id: 'npcv_shop', name: '声望药商', sect: '华山派',
+      goods: [{ item: 'mc_herb', price: 15 }],
+    });
+    w.spawnNpc('npcv_shop', p.room, 1, true);
+    p.money = 10000;
+    w.giveItem(p, 'mc_herb', 3);
+
+    const snap = () => JSON.stringify(p.reputation || {});
+    const b1 = snap();
+    e.exec('buy 测试草药');                     /* 买 */
+    e.exec('buy 测试草药 x2');                  /* 连买 */
+    e.exec('sell 测试草药');                    /* 卖 */
+    e.exec('trade');                            /* 交易面板指令 */
+    const b2 = snap();
+    ok('★ buy×2 + sell + trade 全程：声望台账逐键为零变动', b1 === b2,
+      b1 === b2 ? '(diff=0)' : `before=${b1} after=${b2}`);
+
+    /* 变异对照：+rep 效果必须真的动台账 —— 证明上面那条不是恒真 */
+    p.reputation.华山派 = p.reputation.华山派 || 0;
+    const c1 = snap();
+    e.exec('buy 测试草药');
+    w.giveItem(p, 'mc_herb', 1);
+    require(path.join(ROOT, 'game/src/core/modapi.js'))
+      .evalEffects(['+rep:华山派:7'], { player: p, world: w });
+    const c2 = snap();
+    ok('　变异对照：+rep 效果动台账（断言在量）', c1 !== c2 && (JSON.parse(c2).华山派 - JSON.parse(c1).华山派) === 7);
+  }
+
   console.log('\n==============================================');
   console.log('  任务追踪：' + pass + ' 通过 / ' + fail + ' 失败');
   if (fails.length) console.log('  失败项：' + fails.join('、'));

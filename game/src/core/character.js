@@ -230,6 +230,12 @@ class Character {
     this.vars = def.vars || {};       // 任意变量（mod 自由使用）
     this.log = def.log || [];
 
+    // ---- 结局（design/89 §4 结局树，S5 上线；字段 2026-10-15 先预留）----
+    /* achieved：已触达的结局 id 集合（树分支可能路过多个）；final：最终收束指针。
+       ⚠️ 不用 enum：结局 id 由数据侧 S5 才定，现在锁枚举 = 埋存档迁移活。
+       serialize/deserialize 白名单已收编（world.js），老档缺字段自动兜底。 */
+    this.ending = def.ending || { achieved: {}, final: null };
+
     // ---- 战斗 ----
     this.inCombat = false;
     this.combatTarget = null;

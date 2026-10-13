@@ -3648,6 +3648,9 @@ class World extends EventEmitter {
         /* 追踪的任务（主人 2026-10-08 的任务追踪）——不随档走的话，
            读一次档大框就空了（玩家会以为「我的任务没了」）。 */
         track: p.track || null,
+        /* 结局树（design/89，S5 上线；字段 2026-10-15 预留）。
+           白名单序列化不加它 = 当场能用、读档即丢。 */
+        ending: p.ending || { achieved: {}, final: null },
         /* 奇经八脉 + 冲脉进度（2026-10-11）——**原来这两样都没存**，读档即清空：
            通了脉的人读一次档，maxHp/maxMp 会**掉回去**（recalc 从空经脉重算），
            而玩家只会看到「血上限怎么变少了」。静默的数据丢失。 */
@@ -3890,6 +3893,9 @@ class World extends EventEmitter {
       /* 老存档没有 mainline → 按出身补一条（别让读档的人变成「没有线」） */
       mainline: sd.mainline || require('./mainline').init(sd.birth || null, sd.gender || 'male', {}),
       insect: sd.insect || null, quests: sd.quests || {}, flags: sd.flags || {}, tutorialFlags: sd.tutorialFlags || [],
+      /* 结局树（design/89，S5 上线；字段 2026-10-15 预留）。
+         老档没有 ending → 兜底空结构（零迁移），S5 代码不会炸 undefined。 */
+      ending: sd.ending || { achieved: {}, final: null },
       /* 老存档没有 track：一律先当「还在追新手」——
          读档后 `syncTrack()`（view / exec 每次都会跑）会自动纠正成该追的那条
          （新手走完 → 挑主线）。这里**不能**直接调 pickAuto：这一行求值时

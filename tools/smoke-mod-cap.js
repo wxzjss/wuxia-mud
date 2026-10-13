@@ -235,6 +235,49 @@ section('§G 效果 DSL 电池');
     modapi.evalCond({ and: ['money>=100', 'hasitem:mc_stone'] }, { player: p, world: w }) === true);
 }
 
+/* ================================================================
+ * §H p.ending 字段预留（design/89 结局树，S5 上线；2026-10-15 预留批）
+ *    四条存档兼容断言
+ * ================================================================ */
+section('§H p.ending 预留与存档兼容');
+{
+  const e = boot(18);
+  const w = e.world, p = w.player;
+  ok('H-1 newGame 默认形状 {achieved:{}, final:null}',
+    !!p.ending && typeof p.ending === 'object'
+    && p.ending.achieved && Object.keys(p.ending.achieved).length === 0
+    && p.ending.final === null, JSON.stringify(p.ending));
+  const runH = effs => modapi.evalEffects([].concat(effs), { player: p, world: w });
+  runH('ending:hero_test');
+  ok('H-2 ending 效果三写（flag/var 留旧口径 + achieved/final 进新台账）',
+    p.hasFlag('ending_hero_test') && p.getVar('ending') === 'hero_test'
+    && p.ending.achieved.hero_test === true && p.ending.final === 'hero_test',
+    JSON.stringify(p.ending));
+  runH('ending:exile_test');
+  ok('H-3 多结局树：achieved 累积，final 跟随最新触发',
+    p.ending.achieved.hero_test === true && p.ending.achieved.exile_test === true
+    && p.ending.final === 'exile_test', JSON.stringify(p.ending));
+
+  /* 存档 round-trip：serialize → deserialize 后台账原样 */
+  const snap = JSON.parse(JSON.stringify(p.ending));
+  const save = w.serialize();
+  const e2 = boot(19);
+  e2.world.deserialize(save, []);
+  const p2 = e2.world.player;
+  ok('H-4 serialize→deserialize round-trip：ending 原样回来',
+    JSON.stringify(p2.ending) === JSON.stringify(snap), JSON.stringify(p2.ending));
+
+  /* 老档兜底：手工抹掉 ending 字段（模拟老档），读入自动补空结构不炸 */
+  const oldSave = JSON.parse(JSON.stringify(save));
+  delete oldSave.player.ending;
+  const e3 = boot(20);
+  e3.world.deserialize(oldSave, []);
+  const p3 = e3.world.player;
+  ok('H-5 老档无 ending 字段：读入自动兜底 {achieved:{},final:null}，不炸',
+    !!p3.ending && p3.ending.achieved && Object.keys(p3.ending.achieved).length === 0
+    && p3.ending.final === null, JSON.stringify(p3.ending));
+}
+
 console.log('\n结果：' + pass + ' 通过 / ' + fail + ' 失败');
 if (fails.length) console.log('失败项：\n  - ' + fails.join('\n  - '));
 process.exit(fail ? 1 : 0);
