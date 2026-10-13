@@ -44,3 +44,6 @@ tools/_head_snapshot/
 tools/_mod_baseline/
 .runall.sh
 .fullreg.sh
+
+# 数据目录内的施工备份不入库
+game/data/*_bak*.json
