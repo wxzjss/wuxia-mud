@@ -215,17 +215,35 @@ function stubApi(env, view) {
     const a = engine.askView(uid);
     return a ? { ok: true, ask: a } : { ok: false, error: '没有这个人。' };
   };
+  /* NPC 菜单懒加载（view.npcs 聚集分级瘦身）：**喂真数据**（真 engine.npcFullView）——
+     同房 >3 人时场景快照只带卡片级字段（slim），点开菜单先拉全量简报再重开。
+     不 stub 的话真 api 走 fetch 必挂，.catch 兜底跑 look，菜单直接没了。 */
+  env.WX.api.npcFull = async (uid) => {
+    rec.npcfull = rec.npcfull || [];
+    rec.npcfull.push(uid);
+    const f = engine.npcFullView(uid);
+    if (!f) return { ok: false, error: '这里没有这个人。' };
+    /* fixture 里手种过的字段算数（如 ⑫ 的送礼往来摘要）：
+       测试 view 是桩后端的「事实」，同名键以手种为准；
+       slim 旗必须剥掉，否则重开菜单又进懒加载死循环。 */
+    const seeded = ((view && view.npcs) || []).find(x => String(x.id) === String(uid));
+    if (seeded) { const { slim, ...rest } = seeded; Object.assign(f, rest); }
+    return { ok: true, npc: f };
+  };
   env.WX.S.busy = false;
   return rec;
 }
-/** 真渲染场景栏，点名字含 name 的卡片 → 返回 NPC 菜单的 HTML 与标题 */
-function openNpcMenuHtml(env, view, name) {
+/** 真渲染场景栏，点名字含 name 的卡片 → 返回 NPC 菜单的 HTML 与标题。
+ *  ⚠️ async：view.npcs 瘦身（聚集分级）后，slim 简报要经 api.npcFull 懒加载
+ *  才重开菜单 —— 点卡片后必须等一轮微任务再读 choices。 */
+async function openNpcMenuHtml(env, view, name) {
   env.WX.S.view = view;
   env.WXUI.renderScene(view);
   const box = env.document.getElementById('scene-npcs');
   const card = box.children.find(c => String(c.innerHTML || '').indexOf(name) >= 0);
   if (!card) return { html: '', title: '', found: false };
   card.onclick();
+  await settle();
   const list = env.document.getElementById('choices-list');
   return { html: list.innerHTML || '', title: env.document.getElementById('choices-title').textContent || '', found: true };
 }
@@ -275,17 +293,17 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     const env = loadUi(makeEnv({ innerWidth: 375 }));
     stubApi(env, VIEW);
 
-    const beast = openNpcMenuHtml(env, VIEW, SNAKE.name);
+    const beast = await openNpcMenuHtml(env, VIEW, SNAKE.name);
     ok('S1-1 点毒蛇卡片弹出了菜单', beast.found && beast.html.length > 0);
     ok('S1-2 ★ 兽的性别名词 ≠「男」（旧实现显示「男」，主人实测过）',
       beast.html.indexOf('男') < 0, '菜单头：' + (beast.html.match(/山中猛兽[^<]*/) || [''])[0]);
     ok('S1-3 ★ 兽的性别名词 =「不明」', beast.html.indexOf('不明') >= 0);
 
-    const fem = openNpcMenuHtml(env, VIEW, FEMALE.name);
+    const fem = await openNpcMenuHtml(env, VIEW, FEMALE.name);
     ok('S1-4 女 NPC → 「女」', fem.html.indexOf('女') >= 0, (fem.html.match(/<div class="modal-text"[^>]*>([^<]*)</) || [])[1] || '');
     ok('S1-5 女 NPC 菜单文案用「她」', /送她东西/.test(fem.html) && /给她银钱/.test(fem.html));
 
-    const mal = openNpcMenuHtml(env, VIEW, MALE.name);
+    const mal = await openNpcMenuHtml(env, VIEW, MALE.name);
     ok('S1-6 男 NPC → 「男」（老行为不坏）', mal.html.indexOf('男') >= 0);
     ok('S1-7 男 NPC 菜单文案仍用「他」', /送他东西/.test(mal.html) && /给他银钱/.test(mal.html));
     ok('S1-8 兽的菜单文案用中性「TA」（不为兽生造「它」）',
@@ -313,6 +331,7 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     env.WXUI.renderScene(VIEW);
     const box = env.document.getElementById('scene-npcs');
     box.children.find(c => String(c.innerHTML || '').indexOf(SNAKE.name) >= 0).onclick();
+    await settle(); /* VIEW 是真引擎视图，开局房 >3 人 → slim 懒加载后菜单才重开 */
     const lbox2 = env.document.getElementById('choices-list');
     const profBtn = lbox2.children.find(c => /细看/.test(String(c.innerHTML || '')));
     if (profBtn) { profBtn.onclick(); await settle(); await settle(); }
@@ -864,6 +883,9 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
         const card = box.children.find(c => String(c.innerHTML || '').indexOf(target.name) >= 0);
         if (!card) return { env, rec, html: '', clicked: false, err: '场景栏没有他的卡片' };
         card.onclick();
+        /* view.npcs 聚集分级：slim 简报要先经 api.npcFull 懒加载重开菜单，
+           微任务没跑完菜单还不存在 —— 等一轮再找「细看」。 */
+        await settle();
         const pb = env.document.getElementById('choices-list').children
           .find(c => /细看/.test(String(c.innerHTML || '')));
         if (!pb) return { env, rec, html: '', clicked: false, err: '菜单里没有「细看」' };
@@ -877,6 +899,18 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
 
       /* ---- ① trust=0：来历该给正文，其余该锁 ---- */
       const a = await render(0);
+      /* 聚集分级口径自洽：场景快照里他是 slim 简报 → 懒加载必须真调 api.npcFull；
+         不是 slim（同房 ≤3 人）→ 菜单直接开、不许多余调用。 */
+      const slimSelf = (a.env.WX.S.view.npcs || []).find(x => x.name === target.name);
+      if (slimSelf && slimSelf.slim) {
+        ok('S11-0c ★ slim 简报真走了懒加载（api.npcFull 被调且拉的是他）',
+          (a.rec.npcfull || []).some(u => String(u) === String(inst.id)),
+          'npcfull 调用：' + JSON.stringify(a.rec.npcfull || []));
+      } else {
+        ok('S11-0c 非 slim（同房 ≤3 人）菜单直接开，不做多余懒加载',
+          (a.rec.npcfull || []).length === 0,
+          'npcfull 调用：' + JSON.stringify(a.rec.npcfull || []));
+      }
       ok('S11-1 真点「细看」弹出了新界面（modal 有正文）',
         a.clicked && a.html.length > 60, a.err || ('正文 ' + a.html.length + ' 字'));
       /* 按 data-sk 精确取每一块（不靠中文片段，文案改了断言还立得住） */
@@ -1005,6 +1039,7 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
       const card = env.document.getElementById('scene-npcs').children
         .find(c => String(c.innerHTML || '').indexOf(gn.name) >= 0);
       card.onclick();
+      await settle(); /* slim 懒加载：菜单异步重开 */
       const giveBtn = env.document.getElementById('choices-list').children
         .find(c => /送.*东西/.test(String(c.innerHTML || '')));
       ok('⑫-2 菜单里有「送 他/她 东西」项', !!giveBtn, giveBtn ? giveBtn._label : '-');
@@ -1039,6 +1074,7 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
         env2.WXUI.renderScene(giftView);
         env2.document.getElementById('scene-npcs').children
           .find(c => String(c.innerHTML || '').indexOf(gn.name) >= 0).onclick();
+        await settle(); /* slim 懒加载：菜单异步重开 */
         env2.document.getElementById('choices-list').children
           .find(c => /送.*东西/.test(String(c.innerHTML || ''))).onclick();
         await settle();
@@ -1082,6 +1118,7 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
         .find(c => String(c.innerHTML || '').indexOf(name) >= 0);
       if (!card) return { rec, btn: null };
       card.onclick();
+      await settle(); /* slim 懒加载：菜单异步重开 */
       const btn = env.document.getElementById('choices-list').children
         .find(c => /绑架/.test(String(c.innerHTML || '')));
       if (btn) { btn.onclick(); await settle(); }
@@ -1230,6 +1267,7 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
       ok('⑮-1 场景栏造出他的卡片', !!card, inst.name);
       if (card) {
         card.onclick();
+        await settle(); /* slim 聚集分级：菜单可能经懒加载重开，等一轮 */
         const askBtn = env.document.getElementById('choices-list').children
           .find(c => /询问/.test(String(c.innerHTML || '')));
         ok('⑮-2 菜单里有「询问」', !!askBtn, askBtn ? askBtn._label : '-');
@@ -1508,7 +1546,7 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     if (someone) {
       const rec = stubApi(env, nv);
       rec;
-      const menu = openNpcMenuHtml(env, nv, someone.name);
+      const menu = await openNpcMenuHtml(env, nv, someone.name);
       const profBtn = menu.found
         ? env.document.getElementById('choices-list').children
           .find(c => /细看/.test(String(c.innerHTML || '')))

@@ -419,86 +419,59 @@ class GameEngine {
        真死的人实例已被 onNpcKilled 删掉，不会混进来。 */
     const downed = w.downedIn(p.room);
     const standing = w.npcsIn(p.room);
-    const npcs = w.npcsIncludingTemplates(p.room)
-      .concat(downed.filter(d => !standing.some(x => x.id === d.id)))
-      .map(n => ({
+    /* 每个在场 NPC 的**全量**简报（原 view.npcs 形态，原样保留 —— 现在挂在
+       /api/npcfull 懒加载通路上，见 npcFullView）。 */
+    const hereAll = w.npcsIncludingTemplates(p.room)
+      .concat(downed.filter(d => !standing.some(x => x.id === d.id)));
+
+
+    /* ---- view.npcs 瘦身 · 聚集分级（B2 裁决②，2026-10-15）----
+       同房 NPC ≤3 个：照旧发全量简报（面板/菜单零降级）；
+       >3 个（村口/聚集/游走扎堆）：只发**卡片级字段**（名字/称号/敌我/好感档/
+       身份标签……），菜单与社交面板需要的婚配·结拜·绑架·送礼·喜好等
+       全部走 `/api/npcfull {uid}` 懒加载（前端 openNpcMenu 认 slim 旗自动转拉）。
+       依据：卡片渲染只读卡片级字段（ui.js renderScene），聚集时那 30 来个
+       详情字段 × 每人一份就是几 KB 的纯重复。 */
+    const SLIM_THRESHOLD = 3;
+    /* 🔴 瘦身口径（主人 2026-10-16 定）：slim 卡**保留短交互字段**——
+       tag/tagName/likes/canQingjiao/canQiecuo/canSteal/homeName/kidnap 判定组。
+       这些是几十字节的**判定旗标**：菜单能不能出、按钮亮不亮全看它们，
+       少一个就是面板直接缺入口（kidnap-ui-check / smoke-social 两条红的教育）。
+       被裁的是**长文本与整包清单**（desc/talk 全文、婚配·结拜·送礼详情等，
+       点开 npcFull 再拉）。 */
+    const slimBrief = (n) => ({
       id: n.id, defId: n.defId, name: n.name, title: n.title,
-      level: n.level, hp: n.hp, maxHp: n.maxHp, hostile: n.hostile,
-      /* 被打倒（还没被补刀）→ NPC 菜单里才给「装进麻袋」入口 */
-      knockedOut: !!n.knockedOut,
-      /* 绑架成功率（view 瘦身：只发菜单要用的两个字段）。
-         ⚠️ 与真动手时那次掷骰子**同一个函数**（kidnap.assess）——
-            两边各算一套，迟早出现「写着 70% 却输十次」。
-         旧版整包下发 {chance,pct,why,knocked,reasons[]}：
-           · reasons 是 why 的原料（why = reasons.join('；')），纯重复；
-           · chance 是 pct/100，前端不读；
-           · knocked 与外层 knockedOut 同源。
-         每个在场 NPC 一份，房间人一多就是几十 KB 的纯重复 —— 只留 {pct, why}。 */
-      kidnap: (function () {
-        try {
-          const a = require('./kidnap').assess(w, p, n);
-          return a ? { pct: a.pct, why: a.why } : null;
-        } catch (e) { return null; }
-      })(),
-      hasQuest: !!(n.def && n.def.quests && n.def.quests.some(q => p.questStage(q) < 0)),
-      canReport: !!(n.def && n.def.quests && n.def.quests.some(q => p.questStage(q) >= 0 && p.questStage(q) < 99)),
-      shop: !!n.shop, canTeach: !!(n.def && n.def.teach),
-      /* ---- 社交扩展（第一批）---- */
+      level: n.level, hostile: !!n.hostile, knockedOut: !!n.knockedOut,
       favor: n.favor || 0,
-      /* 跟随玩家的 NPC（好感过 60 才能邀，奴册面板要显示） */
-      following: !!n.followPlayer,
       favorTier: social.favorTier(n.favor || 0).name,
       favorColor: social.favorTier(n.favor || 0).color,
       tag: (n.def && n.def.tag) || null,
       tagName: tagNameCN((n.def && n.def.tag) || null),
-      gender: n.gender,
+      gender: n.gender, following: !!n.followPlayer,
+      hasQuest: !!(n.def && n.def.quests && n.def.quests.some(q => p.questStage(q) < 0)),
+      canReport: !!(n.def && n.def.quests && n.def.quests.some(q => p.questStage(q) >= 0 && p.questStage(q) < 99)),
+      shop: !!n.shop,
+      /* ---- 短交互字段（菜单入口的开关，几十字节级）---- */
       canQingjiao: !!(n.def && n.def.teach && n.def.teach.length),
-      /* ---- 「请教」清单已改**懒加载**（view 瘦身）----
-         旧版把每个在场 NPC 的全部可教武学（含 can/why 判定）整包塞进场景快照，
-         武馆/门派房间一个房间就是几十条 —— 而玩家只有点开「请教武学」面板那一次
-         才用得上。面板本来就走 `/api/teach {uid}` 拉新鲜数据（teachView，
-         带潜能价与完整理由），场景里那份只是拉取失败时的兜底快照。
-         兜底改为「拉取失败也明确告知」，不再为 1% 的场景背 100% 的字节。 */
       canQiecuo: !n.dead && !/\b狼|虎|熊|蛇|豹|兽/.test(n.name),
       canSteal: !!(n.carry && ((n.carry.items || []).length || n.carry.money)),
       likes: ((n.def && n.def.likes) || []).map(x => {
         const lt = social.LIKE_TYPES.find(y => y.id === x);
         return lt ? { id: lt.id, name: lt.cn } : null;
       }).filter(Boolean),
-      /* ---- 送礼往来（主人要求：送礼面板要显示「已经送多少」）----
-         `pstate.gifts` 由 `noteGift()` 记（give / give_money 两处唯一入口），随档保存。
-         面板头部显示「已送 N 次 · 已给 X 文」，物品行还能看到「这件送过几次」。 */
-      gifts: (n.pstate && n.pstate.gifts) ? {
-        count: n.pstate.gifts.count || 0,
-        money: n.pstate.gifts.money || 0,
-        items: n.pstate.gifts.items || {},
-      } : { count: 0, money: 0, items: {} },
-      /* 虚拟住宅 house:<npcId> 也算有家（B/C 层私宅不在地图上，靠拜访进去） */
-      homeOf: (n.def && n.def.home) || null,
-      virtualHome: !!(n.def && String(n.def.home || '').startsWith('house:')),
-      hasHome: !!(n.def && n.def.home),
       homeName: (n.def && n.def.home && w.getRoom(n.def.home)) ? w.getRoom(n.def.home).name : null,
-      /* ---- 婚姻扩展（第二批）---- */
-      age: n.age || (n.def && n.def.age) || 0,
-      spouseName: n.spouse === 'player' ? (p.name || '你') : (n.spouse ? (n.spouseName || '已婚') : null),
-      taken: !!(n.spouse || (n.def && n.def.spouse)),
-      isConcubine: !!n.isConcubine,
-      bonded: !!n.bonded,
-      knowsPlayerOf: n.knows_player_of || null,
-      marriedToMe: n.spouse === 'player',
-      /* ---- 结拜扩展（第二批）----
-         kinLabel：他是我什么人（义父/义兄…）；
-         addressMe：他管我叫什么（义子/义弟…），对话里用。 */
-      kinLabel: (() => {
-        const kin = kinship.relationOf(w, n.id);
-        return kin ? (kin.label || kin.kind) : null;
+      /* 绑架入口判定组：与真动手同一个函数（kidnap.assess），只留 {pct, why} */
+      kidnap: (function () {
+        try {
+          const a = require('./kidnap').assess(w, p, n);
+          return a ? { pct: a.pct, why: a.why } : null;
+        } catch (e) { return null; }
       })(),
-      addressMe: kinship.addressMe(w, n),
-      canSwear: !kinship.alreadyKin(w, n.id) && !kinship.isMarriedTo(w, n.id),
-      /* 「询问」话题与「他认识的人」名单已改**懒加载**（view 瘦身）：
-         走 `/api/ask {uid}` 按需取（engine.askView），场景快照不再背这两份。
-         每个在场 NPC 各一份话题+人名，只有点「询问」那一次才用得上。 */
-    }));
+      slim: true,
+    });
+    const npcs = hereAll.length > SLIM_THRESHOLD
+      ? hereAll.map(slimBrief)
+      : hereAll.map(n => this._npcFullBrief(n));
 
     const groundItems = w.itemsIn(p.room).map(i => {
       const d = w.getItem(i.itemId);
@@ -702,6 +675,115 @@ class GameEngine {
       npc: { id: npc.defId || npc.id, name: npc.name },
       topics: this.askTopicsOf(npc),
       people: this.askPeopleOf(npc),
+    };
+  }
+
+  /**
+   * 单个在场 NPC 的**全量简报**（view.npcs 瘦身 · 聚集分级的懒加载通路）。
+   * 聚集场景（同房 >3 人）时 view.npcs 只发卡片级字段（slim:true），
+   * 前端 openNpcMenu 认 slim 旗来这里拉全量 —— 菜单/面板代码零改。
+   * 三路匹配与 askView 同款（实例 id / defId / 名字）。
+   */
+  npcFullView(uid) {
+    const w = this.world;
+    if (!w || !w.player) return null;
+    const downed = w.downedIn ? w.downedIn(w.player.room) : [];
+    const standing = w.npcsIn ? w.npcsIn(w.player.room) : [];
+    const hereAll = (w.npcsIncludingTemplates ? w.npcsIncludingTemplates(w.player.room) : [])
+      .concat(downed.filter(d => !standing.some(x => x.id === d.id)));
+    const hit = n => n && (n.id === uid || (n.defId || n.id) === uid || n.name === uid);
+    const npc = hereAll.find(hit) || null;
+    if (!npc) return null;
+    return this._npcFullBrief(npc);
+  }
+
+  /** view.npcs 全量简报的**唯一构造点**（view() 聚集分级与 /api/npcfull 共用）。 */
+  _npcFullBrief(n) {
+    const w = this.world, p = w.player;
+    const social = require('./social');
+    const kinship = require('./kinship');
+    const tagNameCN2 = (t) => {
+      try { return tagNameCN(t); } catch (e) { return null; }
+    };
+    return {
+
+      id: n.id, defId: n.defId, name: n.name, title: n.title,
+      level: n.level, hp: n.hp, maxHp: n.maxHp, hostile: n.hostile,
+      /* 被打倒（还没被补刀）→ NPC 菜单里才给「装进麻袋」入口 */
+      knockedOut: !!n.knockedOut,
+      /* 绑架成功率（view 瘦身：只发菜单要用的两个字段）。
+         ⚠️ 与真动手时那次掷骰子**同一个函数**（kidnap.assess）——
+            两边各算一套，迟早出现「写着 70% 却输十次」。
+         旧版整包下发 {chance,pct,why,knocked,reasons[]}：
+           · reasons 是 why 的原料（why = reasons.join('；')），纯重复；
+           · chance 是 pct/100，前端不读；
+           · knocked 与外层 knockedOut 同源。
+         每个在场 NPC 一份，房间人一多就是几十 KB 的纯重复 —— 只留 {pct, why}。 */
+      kidnap: (function () {
+        try {
+          const a = require('./kidnap').assess(w, p, n);
+          return a ? { pct: a.pct, why: a.why } : null;
+        } catch (e) { return null; }
+      })(),
+      hasQuest: !!(n.def && n.def.quests && n.def.quests.some(q => p.questStage(q) < 0)),
+      canReport: !!(n.def && n.def.quests && n.def.quests.some(q => p.questStage(q) >= 0 && p.questStage(q) < 99)),
+      shop: !!n.shop, canTeach: !!(n.def && n.def.teach),
+      /* ---- 社交扩展（第一批）---- */
+      favor: n.favor || 0,
+      /* 跟随玩家的 NPC（好感过 60 才能邀，奴册面板要显示） */
+      following: !!n.followPlayer,
+      favorTier: social.favorTier(n.favor || 0).name,
+      favorColor: social.favorTier(n.favor || 0).color,
+      tag: (n.def && n.def.tag) || null,
+      tagName: tagNameCN((n.def && n.def.tag) || null),
+      gender: n.gender,
+      canQingjiao: !!(n.def && n.def.teach && n.def.teach.length),
+      /* ---- 「请教」清单已改**懒加载**（view 瘦身）----
+         旧版把每个在场 NPC 的全部可教武学（含 can/why 判定）整包塞进场景快照，
+         武馆/门派房间一个房间就是几十条 —— 而玩家只有点开「请教武学」面板那一次
+         才用得上。面板本来就走 `/api/teach {uid}` 拉新鲜数据（teachView，
+         带潜能价与完整理由），场景里那份只是拉取失败时的兜底快照。
+         兜底改为「拉取失败也明确告知」，不再为 1% 的场景背 100% 的字节。 */
+      canQiecuo: !n.dead && !/\b狼|虎|熊|蛇|豹|兽/.test(n.name),
+      canSteal: !!(n.carry && ((n.carry.items || []).length || n.carry.money)),
+      likes: ((n.def && n.def.likes) || []).map(x => {
+        const lt = social.LIKE_TYPES.find(y => y.id === x);
+        return lt ? { id: lt.id, name: lt.cn } : null;
+      }).filter(Boolean),
+      /* ---- 送礼往来（主人要求：送礼面板要显示「已经送多少」）----
+         `pstate.gifts` 由 `noteGift()` 记（give / give_money 两处唯一入口），随档保存。
+         面板头部显示「已送 N 次 · 已给 X 文」，物品行还能看到「这件送过几次」。 */
+      gifts: (n.pstate && n.pstate.gifts) ? {
+        count: n.pstate.gifts.count || 0,
+        money: n.pstate.gifts.money || 0,
+        items: n.pstate.gifts.items || {},
+      } : { count: 0, money: 0, items: {} },
+      /* 虚拟住宅 house:<npcId> 也算有家（B/C 层私宅不在地图上，靠拜访进去） */
+      homeOf: (n.def && n.def.home) || null,
+      virtualHome: !!(n.def && String(n.def.home || '').startsWith('house:')),
+      hasHome: !!(n.def && n.def.home),
+      homeName: (n.def && n.def.home && w.getRoom(n.def.home)) ? w.getRoom(n.def.home).name : null,
+      /* ---- 婚姻扩展（第二批）---- */
+      age: n.age || (n.def && n.def.age) || 0,
+      spouseName: n.spouse === 'player' ? (p.name || '你') : (n.spouse ? (n.spouseName || '已婚') : null),
+      taken: !!(n.spouse || (n.def && n.def.spouse)),
+      isConcubine: !!n.isConcubine,
+      bonded: !!n.bonded,
+      knowsPlayerOf: n.knows_player_of || null,
+      marriedToMe: n.spouse === 'player',
+      /* ---- 结拜扩展（第二批）----
+         kinLabel：他是我什么人（义父/义兄…）；
+         addressMe：他管我叫什么（义子/义弟…），对话里用。 */
+      kinLabel: (() => {
+        const kin = kinship.relationOf(w, n.id);
+        return kin ? (kin.label || kin.kind) : null;
+      })(),
+      addressMe: kinship.addressMe(w, n),
+      canSwear: !kinship.alreadyKin(w, n.id) && !kinship.isMarriedTo(w, n.id),
+      /* 「询问」话题与「他认识的人」名单已改**懒加载**（view 瘦身）：
+         走 `/api/ask {uid}` 按需取（engine.askView），场景快照不再背这两份。
+         每个在场 NPC 各一份话题+人名，只有点「询问」那一次才用得上。 */
+
     };
   }
 

@@ -535,6 +535,16 @@ async function handleApi(engine, req, res, pn, query, preset) {
         return json(res, 200, { ok: true, npc });
       }
 
+      /* NPC 全量简报（view.npcs 瘦身 · 聚集分级的懒加载通路，2026-10-15）。
+         聚集场景 view.npcs 只发卡片级字段（slim:true），点开菜单时这里按 uid
+         拉全量（婚配/结拜/绑架/送礼/喜好……），形态与旧 view.npcs[] 完全一致。 */
+      case 'npcfull': {
+        const uid = (json_body && (json_body.uid || json_body.id || json_body.name)) || null;
+        const npc = uid == null ? null : engine.npcFullView(uid);
+        if (!npc) return json(res, 404, { ok: false, error: '这里没有这个人。' });
+        return json(res, 200, { ok: true, npc });
+      }
+
       /* 任务详情预览（「接取任务」先弹详情再决定接不接）。
          同 `npc`：`api.view(panel)` 传不了「看哪个任务」，单开一条。 */
       case 'quest': {

@@ -856,6 +856,17 @@
   }
 
   function openNpcMenu(n) {
+    /* 🔴 view.npcs 瘦身 · 聚集分级（2026-10-15）：同房 >3 人时场景快照只带
+       卡片级字段（n.slim === true）。菜单要的婚配/结拜/绑架/送礼/喜好等
+       详情在这里**懒加载**补齐 —— 拉到后原样重开；拉不到明确告知，不静默。 */
+    if (n && n.slim) {
+      api.npcFull(n.id).then(d => {
+        const full = d && d.npc;
+        if (full) openNpcMenu(Object.assign({}, full, { id: n.id, defId: n.defId || full.defId }));
+        else doCmd('look ' + n.name, { fromButton: true });
+      }).catch(() => doCmd('look ' + n.name, { fromButton: true }));
+      return;
+    }
     /* 头部带一行社交摘要：好感档 / 身份 / 是否可请教·切磋·偷窃 */
     const bits = [];
     if (n.favorTier) bits.push('<b style="color:' + esc(n.favorColor || '#6a6a6a') + '">' + esc(n.favorTier) +
@@ -2012,7 +2023,11 @@
       h += '<div class="panel-sec">此地可议</div><div class="love-row-wrap">';
       here.forEach(n => {
         const tags = [];
-        if (n.marriedToMe) tags.push('<b style="color:#c0306a">正室</b>');
+        if (n.slim) {
+          /* 聚集分级（view.npcs 瘦身）：slim 简报没有婚配/结拜字段 ——
+             不猜（猜了会把「已有婚配」标成「可提亲」），引导点开懒加载看真章。 */
+          tags.push('<i>点开细看</i>');
+        } else if (n.marriedToMe) tags.push('<b style="color:#c0306a">正室</b>');
         else if (n.kinLabel) tags.push('<b style="color:#8a5ac2">' + esc(n.kinLabel) + '</b>');
         else {
           if (n.taken) tags.push('<i>已有婚配</i>');

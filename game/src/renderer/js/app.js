@@ -229,6 +229,11 @@
       return await jfetch('/api/ask', { method: 'POST', body: JSON.stringify({ uid }) });
     },
 
+    /* 某个在场 NPC 的全量简报（view.npcs 瘦身 · 聚集分级：点开菜单时拉） */
+    async npcFull(uid) {
+      return await jfetch('/api/npcfull', { method: 'POST', body: JSON.stringify({ uid }) });
+    },
+
     /* 某个任务的详情（点「接取任务」时先弹详情页，玩家看过再决定接不接） */
     async questPreview(qid) {
       return await jfetch('/api/quest', { method: 'POST', body: JSON.stringify({ qid }) });
