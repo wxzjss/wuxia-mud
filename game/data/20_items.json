@@ -1695,6 +1695,21 @@
       "desc": "一片削得很薄的竹牌，正面烙着「玉真」两个小字。摸上去还带着桐油味，是新领的。",
       "name": "华山竹牌",
       "quality": "common"
+    },
+    "mu_piao": {
+      "id": "mu_piao",
+      "name": "木瓢",
+      "type": "tool",
+      "slot": "手持",
+      "desc": "舀水用的木瓢，瓢把上裂了道缝，缝里塞着一小块布。布是干的。",
+      "value": 5,
+      "maxDurability": 40,
+      "quality": "worn",
+      "tags": [
+        "tool"
+      ],
+      "stackable": false,
+      "stackMax": 1
     }
   },
   "recipes": {

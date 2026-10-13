@@ -69,9 +69,9 @@ function battleTally(id, rounds) {
 section('① 身份 → 功法 映射');
 {
   const withSkills = ids.filter(id => NPCS[id].skills && Object.keys(NPCS[id].skills).length);
-  /* 磁盘文件 330 条（2026-10-14 +jn_magistrate，跟着真实数据涨）；运行时 boot() 还会并入 mod 自带的 NPC（如 demo_swordman 等），故 ≥330 */
+  /* 磁盘文件 333 条（act1 三人 chen2/dianzhu/ji；zhou 并回既有 cy_pre_teaman——同一茶摊不该有两个摊主，perf B2 同因修）；运行时 boot() 还会并入 mod 自带的 NPC（如 demo_swordman 等），故 ≥333 */
   const fileNpcN = Object.keys(JSON.parse(fs.readFileSync(path.join(ROOT, 'game', 'data', '40_npcs.json'), 'utf8')).npcs).length;
-  eq('40_npcs.json 文件 NPC 数', fileNpcN, 330);
+  eq('40_npcs.json 文件 NPC 数', fileNpcN, 333);
   ok('运行时 NPC 数 ≥ 文件数（含 mod 并入）', ids.length >= fileNpcN, ids.length + ' 条');
   ok('绝大多数 NPC 都有武学槽', withSkills.length >= 324, withSkills.length + ' 条');
 

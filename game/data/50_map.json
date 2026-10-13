@@ -4,7 +4,7 @@
       "id": "jiangnan_gate",
       "name": "江南城·南门",
       "region": "jiangnan",
-      "desc": "青石砌成的城门高约三丈，门楣上「江南」二字已被风雨蚀得模糊。城门口人来人往，挑担的、赶车的、佩剑的，络绎不绝。",
+      "desc": "城门洞里比外头暖。墙上贴着几张告示，最上面那张让人撕掉一半，撕口是斜的，剩下半张上只有一个「缉」字和半个「访」字。门洞底下有一道石槽，槽里积着土和干草，是拉车的牲口踩出来的。出城的人排着队，队前坐着个收钱的，不穿号衣，棉袄袖口油得发亮，膝盖上搁一只粗瓷碗，碗里有小半碗铜钱。他手边压着一块木牌，牌上写着「肃政缉访司」五个字，木茬还白。",
       "exits": {
         "n": "jiangnan_street",
         "s": "road_jiangnan_1",
@@ -16,6 +16,44 @@
           "npc": "guard_city",
           "count": 1,
           "chance": 1
+        }
+      ],
+      "actions": [
+        {
+          "label": "路钱",
+          "cmd": "交路钱",
+          "keywords": [
+            "路钱",
+            "交钱",
+            "出城"
+          ],
+          "desc": "出城一人十文",
+          "cond": {
+            "money": ">=10"
+          },
+          "failMsg": "碗里的铜钱你数得出数。你的钱袋不行。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你给了十文。铜钱丢进碗里，在碗底转了一圈才停。"
+            },
+            {
+              "type": "narrate",
+              "raw": "「回来还要十文。」他说，「回来的时候我在城墙根底下坐，不在门洞里。」"
+            },
+            {
+              "type": "-money",
+              "args": [
+                10
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_toll_paid"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -360,7 +398,7 @@
       "id": "road_jiangnan_1",
       "name": "江南大路",
       "region": "jiangnan",
-      "desc": "宽阔的官道由南向北延伸，路面被车辙压出两道深沟。道旁一棵老槐树，树荫下有个卖茶的小摊。",
+      "desc": "土路让牛车碾出两道沟，沟底存着昨夜的雨水，结了一层薄冰，踩上去先响后塌。老槐树的根把路面顶起一块，过路的绕着走，绕出来的那道比路面低半寸，磨得发白。树荫下一个茶摊，一领芦席四根竹竿撑着，西边那根断过，接了一截，缠布条的接头旧得看不出本色。黄泥灶膛里剩着昨夜的炭，凉透了，落着一层白灰。案上一把缺嘴的壶，壶底的烟炱厚得能拿指甲刮下灰来。灶边一口水缸，半缸水，缸身一道旧裂纹，裂纹上抹过灰，灰鼓出来一道棱。",
       "exits": {
         "n": "jiangnan_gate",
         "s": "road_jiangnan_2",
@@ -375,71 +413,377 @@
       ],
       "actions": [
         {
-          "label": "缸",
+          "label": "信",
+          "cmd": "问信",
+          "keywords": [
+            "信",
+            "那封信"
+          ],
+          "desc": "老汉怀里那样东西是什么",
+          "cond": {
+            "flag": "act1_vat_moved",
+            "notFlag": "act1_letter_known"
+          },
+          "once": true,
+          "failMsg": "缸还没挪开，老汉没空搭理这个。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "他从怀里摸出一块粗布，布叠成四折，折痕的地方已经磨薄了。他把布摊在案上，布里包着一封信。"
+            },
+            {
+              "type": "narrate",
+              "raw": "信没有拆过。封口的浆糊干透了，干得发脆，有一角已经翘起来。封皮上按着一个印，印是红的，颜色发暗，边上洇开的地方像小虫子。"
+            },
+            {
+              "type": "narrate",
+              "raw": "「三年前腊月按的。」他说，「按的时候人还在。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "「华山。」他说，「山上有个姓令狐的。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "「我不认字。」他把信往你这边推了半寸，「我不认字，也不认得路。我这一辈子出过城南三次，最远的一次到过青溪村。」他说完把手在裤子上擦了两遍。「你识字么？」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_letter_known"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "接信",
+          "cmd": "接信",
+          "keywords": [
+            "接信",
+            "带信"
+          ],
+          "desc": "把信带上",
+          "cond": {
+            "flag": "act1_letter_known",
+            "notFlag": "act1_letter_taken"
+          },
+          "once": true,
+          "failMsg": "信还压在老汉的粗布里。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你把信收进怀里。布是粗的，信是轻的，轻得像没有东西。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_letter_taken"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "回话",
+          "cmd": "回茶摊",
+          "keywords": [
+            "回话",
+            "老汉",
+            "告诉"
+          ],
+          "desc": "当铺的事，说不说",
+          "cond": {
+            "flag": "act1_pawn_done",
+            "notFlag": "act1_choice_done"
+          },
+          "once": true,
+          "failMsg": "当铺的事还没个结果。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你回到茶摊的时候，天已经偏西。老汉在擦碗，碗还是那只豁口的碗。他看见你，抬了一下下巴。「送到了？」"
+            },
+            {
+              "type": "menu",
+              "raw": "把当铺掌柜的话学给他听，还是咽回去|告诉他>narrate:你把当铺掌柜的话学了一遍。说到「牢里没了」的时候，你停了一下。老汉擦完了那只碗，把它摞回原处，碗沿和碗沿对齐。「知道了。」他说。那天傍晚他给你添了三次水，三次都添到七分。;flag:act1_told_truth;flag:act1_choice_done;;不说>narrate:你把话咽回去了。「送到了。」你说。「哦。」他说。他给你添了水，添到七分停手。那天你们没再说别的。;flag:act1_kept_silent;flag:act1_choice_done"
+            }
+          ]
+        },
+        {
+          "label": "翻案底",
+          "cmd": "翻案底",
+          "keywords": [
+            "翻案底",
+            "案底"
+          ],
+          "desc": "茶摊案子底下堆着杂物。",
+          "cond": {
+            "notFlag": "act1_piao_taken"
+          },
+          "once": true,
+          "failMsg": "案底下翻过了，没别的了。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你蹲下去翻案底。箩筐、破草鞋、半捆干稻草。最里头有一只木瓢，瓢把上裂了道缝，缝里塞着一小块布。"
+            },
+            {
+              "type": "narrate",
+              "raw": "你把布抠出来，布是干的。瓢尚且能用。"
+            },
+            {
+              "type": "+item",
+              "args": [
+                "mu_piao",
+                1
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_piao_taken"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "伸手",
+          "cmd": "伸手",
+          "keywords": [
+            "伸手",
+            "摸缸"
+          ],
+          "desc": "缸身旧裂纹朝外。",
+          "cond": {
+            "notFlag": "act1_vat_look"
+          },
+          "failMsg": "你已把缸底摸清了。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你蹲下去，把手掌贴着缸沿底下往里插。指腹先碰到一层滑腻的东西，是青苔，长在缸脚背阴的那一面。"
+            },
+            {
+              "type": "narrate",
+              "raw": "再往里，指头碰到湿泥。泥是软的，缸陷在泥里约莫一寸。"
+            },
+            {
+              "type": "narrate",
+              "raw": "你把手抽出来，手背上沾了一道绿。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_vat_look"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "倒水",
+          "cmd": "倒水",
+          "keywords": [
+            "倒水",
+            "舀水"
+          ],
+          "desc": "缸里的水澄了半缸泥。",
+          "cond": {
+            "flag": "act1_vat_look",
+            "notFlag": "act1_vat_pour",
+            "item": "mu_piao"
+          },
+          "failMsg": "你用喝茶那只碗舀。舀了七碗，水面下去不到一指。第八碗你没端住，碗磕在缸沿上，豁口那边又崩掉一小片，崩下来的瓷碴掉进水里，转了两圈沉了。你的手先酸了。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你从案底下摸出那只木瓢，瓢把上裂了道缝，缝里塞着一小块布。"
+            },
+            {
+              "type": "narrate",
+              "raw": "你舀了十几下，水面下去一半。地上一片湿，湿到灶膛口，湿土的颜色变深，踩上去有点粘鞋。"
+            },
+            {
+              "type": "narrate",
+              "raw": "缸轻了。"
+            },
+            {
+              "type": "narrate",
+              "raw": "缸变滑了。你第二次伸手的时候，手掌在缸壁上打了个滑。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_vat_pour"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "撬",
+          "cmd": "撬",
+          "keywords": [
+            "撬"
+          ],
+          "desc": "柴堆边竖着一根扁担。",
+          "cond": {
+            "flag": "act1_vat_pour",
+            "notFlag": "act1_vat_pry"
+          },
+          "failMsg": "你把扁担插进缝里，压下去。缸歪了一下。你听见裂纹张开的声音，那声音很短，像指甲刮过窗纸，刮一下就没了。「松手！」老汉在那头喊了一声。你松了手。缸坐回泥里，砸出一个坑，坑里立刻渗出水。缸身那道裂纹比原来长了一寸。这一步可以重来。但裂纹不会再合上。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你把扁担抽出来。扁担两头包着铁，铁锈得厉害，一捏就掉渣。"
+            },
+            {
+              "type": "narrate",
+              "raw": "你把扁担插进缸底与地的缝里，一点一点往下压。"
+            },
+            {
+              "type": "narrate",
+              "raw": "缸离地半寸。泥发出一声闷响，声音是从地底下出来的，不是从缸上。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_vat_pry"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "垫",
+          "cmd": "垫",
+          "keywords": [
+            "垫"
+          ],
+          "desc": "柴堆下压着一块木板。",
+          "cond": {
+            "flag": "act1_vat_pry",
+            "notFlag": "act1_vat_wedge"
+          },
+          "failMsg": "缸底还没撬起来，垫不进去。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你从柴堆里抽出一块木板。板是湿的，一半埋在雪里，另一半冻硬了。"
+            },
+            {
+              "type": "narrate",
+              "raw": "你把板塞进缸底。板进去的时候吱了一声，是湿木头压在湿泥上的声音。"
+            },
+            {
+              "type": "narrate",
+              "raw": "老汉伸手在板上按了按：「这块行。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_vat_wedge"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "挪缸",
           "cmd": "挪缸",
-          "inDesc": true,
-          "desc": "三尺就够，多一寸老汉不要",
+          "keywords": [
+            "挪缸",
+            "挪"
+          ],
+          "desc": "缸就位了，就差最后一下。",
           "cond": {
-            "flag": "舀过水"
+            "flag": "act1_vat_pry",
+            "notFlag": "act1_vat_moved"
           },
-          "once": true,
-          "failMsg": "缸太沉，手指嵌进去一截，拔不出来。先倒掉些水会轻些。",
-          "next": "舀水",
-          "spentMsg": "缸已经离墙三尺。多一寸老汉不要。",
+          "failMsg": "你两手扣住缸沿，腰上使了劲。缸挪了半尺，就再也推不动。你松了手，坐在地上喘。手指头在抖，抖得拿不住东西。老汉说：「歇。歇够了再来。」",
           "effects": [
             {
               "type": "narrate",
-              "raw": "缸挪开了三尺，灰坑露了出来。"
+              "raw": "你两手扣住缸沿，脚往后蹬，腰上使了劲。"
+            },
+            {
+              "type": "narrate",
+              "raw": "缸动了。缸底那块木板跟着往前走，压出一道浅槽，槽里挤出来的泥堆在两边。"
+            },
+            {
+              "type": "narrate",
+              "raw": "你把它挪了三尺。"
+            },
+            {
+              "type": "narrate",
+              "raw": "缸离墙三尺。墙根留下一片湿印，湿印的边缘比中间深。"
             },
             {
               "type": "flag",
               "args": [
-                "挪过缸"
+                "act1_vat_moved"
               ]
             }
           ]
         },
         {
-          "label": "瓢",
-          "cmd": "舀水",
-          "inDesc": false,
-          "desc": "舀掉半缸水，缸就轻了",
-          "cond": {
-            "notFlag": "舀过水"
-          },
-          "once": true,
-          "failMsg": "缸已经轻了，再舀也是白舀。",
-          "next": "挪缸",
-          "spentMsg": "缸已经轻了，再舀也是白舀。",
-          "effects": [
-            {
-              "type": "narrate",
-              "raw": "你舀掉半缸水，缸身晃了晃，轻了。"
-            },
-            {
-              "type": "flag",
-              "args": [
-                "舀过水"
-              ]
-            }
-          ]
-        },
-        {
-          "label": "灶膛",
+          "label": "掏灰",
           "cmd": "掏灰",
-          "inDesc": false,
-          "desc": "老汉要掏里头的炭灰",
+          "keywords": [
+            "掏灰"
+          ],
+          "desc": "灰坑在灶后头。",
           "cond": {
-            "flag": "挪过缸"
+            "flag": "act1_vat_moved",
+            "notFlag": "act1_fist_taught"
           },
           "once": true,
-          "failMsg": "灰坑在缸后头，缸挡着，手伸不进去。",
-          "next": "挪缸",
-          "spentMsg": "灰已经掏干净了。老汉在灶门口坐着，手上是黑的。",
+          "failMsg": "老汉已经掏完灰了。",
           "effects": [
             {
               "type": "narrate",
-              "raw": "灰已经掏干净了。老汉在灶门口坐着，手上是黑的。"
+              "raw": "老汉侧着身子从缸和灶之间过去了。他过去得很顺，肩膀没碰到缸。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他掏完灰，站直了，拍了拍手上的土。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他看了缸一眼，又看了你一眼。"
+            },
+            {
+              "type": "narrate",
+              "raw": "他这才从怀里摸出一样东西。"
+            },
+            {
+              "type": "narrate",
+              "raw": "「你有力气。」他说，「力气不该白长着。我教你三手，防身用的，不好看，但摔不倒。」"
+            },
+            {
+              "type": "learnskill",
+              "args": [
+                "jh_fist"
+              ]
+            },
+            {
+              "type": "+skill",
+              "args": [
+                "jh_fist",
+                10
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "他把一把猎刀塞进你手里。刀鞘是旧的，磨得发亮。「路上不干净。」他说。"
+            },
+            {
+              "type": "+item",
+              "args": [
+                "hunting_knife",
+                1
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_fist_taught"
+              ]
             }
           ]
         }
@@ -712,7 +1056,9 @@
       "exits": {
         "w": "jiangnan_east_road",
         "n": "huashan_shanxia",
-        "e": "road_shaolin_1"
+        "e": "road_shaolin_1",
+        "s": "huashan_library",
+        "se": "shanjiao_inn"
       }
     },
     "huashan_shanxia": {
@@ -3047,7 +3393,7 @@
       "id": "jn_pawnshop",
       "name": "东市·当铺",
       "region": "market",
-      "desc": "高高的柜台后头是个戴眼镜的二掌柜，墙上写着一个大大的「當」字。这里什么都收，也什么都卖。",
+      "desc": "高高的柜台包着一道铜皮边，磨得发亮，亮的正是人肘子搁的那一截。柜台后头是个戴眼镜的二掌柜，墙上写着一个大大的「當」字。这里什么都收，也什么都卖。",
       "actions": [
         {
           "label": "当铺",
@@ -4314,7 +4660,7 @@
       "id": "cunzhen_gate",
       "name": "青溪村·村口",
       "region": "cunzhen",
-      "desc": "一株大槐树，树下几个老人在下棋。村口的石牌坊写着「青溪」二字，看得出有些年头了。",
+      "desc": "村子十七户人家，房子散在朝南的坡上，化雪的地方露出一片一片黑土。村口那口井冬天冻上了，井台的冰是浑的，中间让绳子勒出一道沟，深得能塞进一根手指。石牌坊上的「青溪」二字让风磨得只剩个轮廓，坊柱根上拴马的绳眼还新。往西出村是大路，往北进村道，村道上人脚印多，出村的车辙少。",
       "actions": [
         {
           "label": "槐树",
@@ -4325,11 +4671,43 @@
           ],
           "desc": "看看这棵老树",
           "say": "槐树"
+        },
+        {
+          "label": "口信",
+          "cmd": "带口信",
+          "keywords": [
+            "口信",
+            "带话",
+            "陈二"
+          ],
+          "desc": "替他捎一句话",
+          "cond": {
+            "notFlag": "act1_msg_carried"
+          },
+          "once": true,
+          "failMsg": "话已经带上了。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "「我姐嫁到山那头。三年了，没回来过，也没捎过信。」他把那句话说了两遍，两遍一字不差。说第二遍的时候他盯着自己的鞋看。"
+            },
+            {
+              "type": "narrate",
+              "raw": "「你就说一句：娘去年冬天没了，埋在后坡，坟头朝东。」他顿了顿。「你要是忘了，就别编。编的比不说还坏。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_msg_carried"
+              ]
+            }
+          ]
         }
       ],
       "exits": {
         "n": "cunzhen_street",
-        "w": "road_jiangnan_1"
+        "w": "road_jiangnan_1",
+        "nw": "dumuqiao"
       }
     },
     "cunzhen_street": {
@@ -6541,6 +6919,122 @@
       "exits": {
         "w": "secret_anxiang"
       }
+    },
+    "dumuqiao": {
+      "id": "dumuqiao",
+      "name": "荒野·独木桥",
+      "region": "cunzhen",
+      "desc": "涧上的独木桥是一根杉木搭的，皮没剥干净，皮上有几处鼓起来，鼓的地方是空的。桥面朝北那半边长着青苔，湿得发亮。涧里的水声比人声响，水声响的地方看不见水，只有一片黑。桥头土上有一道旧车辙，辙里积着雪水。",
+      "exits": {
+        "se": "cunzhen_gate",
+        "n": "shanjiao_inn"
+      },
+      "actions": [
+        {
+          "label": "桥",
+          "cmd": "探桥",
+          "keywords": [
+            "探",
+            "桥",
+            "杉木"
+          ],
+          "desc": "先用脚试试桥头的虚实",
+          "cond": {
+            "notFlag": "act1_bridge_probe"
+          },
+          "once": true,
+          "failMsg": "",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你先用脚在桥头试了试。杉木是湿的，湿的地方颜色发暗。"
+            },
+            {
+              "type": "narrate",
+              "raw": "你踩了三下。第一下是空的，第二下闷，第三下你听出底下是实的。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_bridge_probe"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "稳脚",
+          "cmd": "稳脚",
+          "keywords": [
+            "稳",
+            "蹭鞋"
+          ],
+          "desc": "把鞋底在干土上蹭干净",
+          "cond": {
+            "flag": "act1_bridge_probe",
+            "notFlag": "act1_bridge_steady"
+          },
+          "once": true,
+          "failMsg": "桥还没探过，你不知道哪儿实哪儿空。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你蹲下来，把鞋底在干土上蹭。蹭了七八下，蹭下来的泥掉在桥头，掉成一个小堆。"
+            },
+            {
+              "type": "narrate",
+              "raw": "你站起来的时候看着桥的那一头，没看脚下。走这种桥的人，看脚下多半过不去。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_bridge_steady"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "过桥",
+          "cmd": "过桥",
+          "keywords": [
+            "过",
+            "过桥"
+          ],
+          "desc": "过了这道涧，北边就是华山地界",
+          "cond": {
+            "flag": "act1_bridge_steady",
+            "notFlag": "act1_bridge_crossed"
+          },
+          "once": true,
+          "failMsg": "桥还没稳住脚。青苔湿着，你现在过去，多半要交代在涧里。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你走过去了。走到中间的时候桥往下弯了一点，弯的时候木头响了一声，声音很闷，像有人在底下咳嗽。"
+            },
+            {
+              "type": "narrate",
+              "raw": "你没停。停下来比走下去难。脚跟落地的时候你顺势蹲了一下，手撑到的土是干的。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_bridge_crossed"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "shanjiao_inn": {
+      "id": "shanjiao_inn",
+      "name": "华山道·山脚小店",
+      "region": "huashan",
+      "desc": "小店三间房，一间住人，一间堆柴，一间是灶房。灶房的门卸了下来，斜靠在墙上。烟囱冒着一点细烟，风一过就散。门口立着一条扁担，担钩锈成褐色。墙根码着一垛柴，一行比一行缩进去，像座塔。",
+      "exits": {
+        "s": "dumuqiao",
+        "nw": "road_huashan_1"
+      },
+      "actions": []
     }
   },
   "regions": {

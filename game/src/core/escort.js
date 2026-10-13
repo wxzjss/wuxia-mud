@@ -10,7 +10,7 @@
  *
  * 这个模块把「接镖 → 押镖 → 路上被劫 → 交镖结银」串起来：
  *   · 两家镖局的**山门**柜台接镖单（三种档：常镖 / 重镖 / 暗镖）。
- *   · 接单后进入**押镖态**（`p.escort`，随档走）：押镖期间**不许「飞往」**——
+ *   · 接单后进入**押镖态**（`p.escort`，随档走）：押镖期间**不许「行路」**——
  *     能飞就等于没有路，劫镖也就无从谈起。
  *   · 每走一格，按当前区域危险度掷一次**劫镖**；中了就掉一份镖物。
  *   · 到了讫城镖局交镖：按「还剩几分镖物」结镖银 + 镖局好感。
@@ -116,7 +116,7 @@ function deliver(world, p) {
   return { ok: true, done };
 }
 
-/** 押镖期间不许「飞往」 */
+/** 押镖期间不许「行路」 */
 function flyingBlocked(p) { return !!statusOf(p); }
 
 module.exports = { HOUSES, GRADES, houseHere, listFor, statusOf, accept, onMove, deliver, flyingBlocked, dangerOf };

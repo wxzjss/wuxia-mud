@@ -1826,10 +1826,12 @@
       title = '练武学';
       html = practiceHtml(v);
     } else if (name === 'fly') {
-      /* 飞行（主人 2026-10-12）：屏幕下方快捷键「飞行」开的就是这个。
-         列出去过的区域，点一下落到该区域入口 —— 实现在 flyHtml。 */
-      title = '飞行';
-      html = flyHtml(v);
+      /* 行路（design/89 §七·补 裁 2 · 2026-10-14 主人改判）：
+         飞行空投已下线，这个面板从「飞行」改成「行路」——
+         列出从当前区域出发的驿站渡口：官道直达免费走；跨区过门槛（渡资/路引/交情）；
+         不通航的给出驿丞船家的说法。实现已改写为 travelHtml（复用 .fly-* 视觉槽位）。 */
+      title = '行路';
+      html = travelHtml(v);
     } else if (name === 'auction') {
       title = '拍卖行';
       html = auctionHtml(v);
@@ -3512,40 +3514,32 @@
     /* --- 地名索引（★ 重设计：把原来**三块**重复的区域清单合成一块）---
        原来这里有：①「飞往」34 个按钮横排、②「区域总览」34 行、③图例里的颜色说明，
        三块都在讲「有哪些区域、去过多少」。现在合成一块「地名索引」：
-         · 一行一个区域：颜色点 + 名字 + 已探索数 + ↗（能飞的才带）
-         · **去过的排在前面**（能飞的是当下有用的），未去过的收进一个可折叠的「其余 N 处」
-       这样默认只占两三行，画布就能占满剩下的高度。 */
+         · 一行一个区域：颜色点 + 名字 + 已探索数
+         · **去过的排在前面**，未去过的收进一个可折叠的「其余 N 处」
+       ⚠️ 2026-10-14 主人改判（design/89 §七·补）：飞行下线 —— 按钮**不再带 ↗
+          也不再有 data-fly-region**（点地名只把视角平移过去看，不再替玩家赶路）；
+          出远门走「行路」面板（驿站渡口网络）。 */
     const regs = (m.regions || []).slice();
-    const canFly = regs.filter(r => r.canFly);
-    const rest = regs.filter(r => !r.canFly);
+    const visited = regs.filter(r => (r.visitedCount || 0) > 0);
+    const rest = regs.filter(r => !(r.visitedCount || 0));
     const regBtn = (r) => {
-      const can = !!r.canFly;
-      /* ⚠️ 2026-10-13：口径变了 —— 不再是「去过才准飞」，而是「脚下有轻功 + 内力够」。
-         所以压暗时的话术不能再说「没去过」（那是老规矩），直接说后端给的 `flyReason`。 */
-      const tip = can
-        ? ('飞往' + r.name + (r.entryName ? '（落在' + r.entryName + '）' : '')
-          + (r.flyCost ? '　耗内力 ' + r.flyCost + ' 点' : ''))
-        : (r.flyReason || ('飞不到' + r.name));
-      return '<button class="mrn-btn' + (r.id === curRegion ? ' cur' : '') + (can ? ' canfly' : ' nofly') + '"' +
-        (can ? ' data-fly-region="' + esc(r.name) + '"' : ' disabled') +
-        /* `--mr-c` = 该区域自己的颜色（`regions[].color`），给名字底下那条虚线下划线用。
-           色值来自数据、不是用户输入，但仍走一遍 esc 免得混进引号把样式顶开。 */
+      return '<button class="mrn-btn' + (r.id === curRegion ? ' cur' : '') + '"' +
         ' style="--mr-c:' + esc(r.color || '#999') + '"' +
-        ' title="' + esc(tip) + '">' +
+        ' title="' + esc(r.name + '（看一眼；出远门走「行路」）') + '">' +
         '<i class="mrn-dot" style="background:' + esc(r.color || '#999') + '"></i>' +
         '<span class="mrn-name">' + esc(r.name) + '</span>' +
         '<span class="mrn-num">' + (r.visitedCount || 0) + '/' + (r.count || 0) + '</span>' +
-        (can ? '<i class="mrn-fly">↗</i>' : '') + '</button>';
+        '</button>';
     };
-    h += '<div class="map-region-nav" title="练成轻功的地方，点一下人就直接过去">';
+    h += '<div class="map-region-nav" title="点地名看一眼位置；出远门走驿站渡口（行路）">';
     h += '<div class="mrn-head"><span class="mrn-title">地名索引</span>' +
-      '<span class="mrn-sub">去过 ' + regs.filter(r => (r.visitedCount || 0) > 0).length + '/' + regs.length +
-      ' 处　带 ↗ 的现在就能飞过去</span></div>';
-    if (canFly.length) h += '<div class="mrn-grid">' + canFly.map(regBtn).join('') + '</div>';
-    else h += '<div class="mrn-empty">还没学会轻功，脚底不沾风 —— 学一门轻功就能飞了。</div>';
+      '<span class="mrn-sub">去过 ' + visited.length + '/' + regs.length +
+      ' 处　出远门走「行路」</span></div>';
+    if (visited.length) h += '<div class="mrn-grid">' + visited.map(regBtn).join('') + '</div>';
+    else h += '<div class="mrn-empty">还没出过门 —— 天下之大，先从脚下走起。</div>';
     if (rest.length) {
-      h += '<details class="mrn-more"' + (canFly.length ? '' : ' open') + '>' +
-        '<summary>其余 ' + rest.length + ' 处（暂时飞不到）</summary>' +
+      h += '<details class="mrn-more"' + (visited.length ? '' : ' open') + '>' +
+        '<summary>其余 ' + rest.length + ' 处（还没去过）</summary>' +
         '<div class="mrn-grid">' + rest.map(regBtn).join('') + '</div></details>';
     }
     /* 服务端「区域总览」那份数据仍在（m.regions 的 visitedCount / hasCurrent 都用上了），
@@ -3570,49 +3564,57 @@
    *  发的是后端真指令 `飞往 <区域名>`，与地图面板那颗 ↗ 完全同一条路，
    *  后端照旧复核轻功与内力；前端只负责列出来。
    * ============================================================ */
-  function flyHtml(v) {
+  /* 行路面板（design/89 §七·补 · 2026-10-14 主人改判：飞行下线，驿站渡口行路）。
+     数据：v.map.regions[].travel = { state:'walk'|'ready'|'closed'|'nolink', cost, gateText, refusal }
+     （后端 mapView 算好下发，判定在 travel.js，与「行路」指令同源）。
+     三态呈现（89 §七·d 铁律：被挡的玩家永远知道差什么，说法由驿丞船家说出）：
+       walk  → 可点，直接动身（免费）；
+       ready → 可点，按钮带门槛展示（如「渡资 200 文」）；
+       closed→ 不可点，说法直接铺在按钮下方；
+       nolink→ 不可点，「没有连通两地的驿路」。
+     ⚠️ 视觉复用 .fly-* 槽位（主人的地图行路面板），类名不换、语义已换，见类名旁注释。 */
+  function travelHtml(v) {
     const m = (v && v.map) || {};
-    const here = (m.rooms || []).find(r => r.current) || null;
-    const curRegion = here ? here.region : null;
     const regs = (m.regions || []).slice();
-    const can = regs.filter(r => r.canFly);
-    const cant = regs.filter(r => !r.canFly);
-    /* 飞不动的原因分两类，给玩家看的话也不一样 */
-    const noQinggong = cant.filter(r => /轻功/.test(r.flyReason || ''));
-    const shortMp = cant.filter(r => !/轻功/.test(r.flyReason || ''));
-
-    let h = '<div class="fly-wrap">';
-    if (!can.length) {
-      /* 空态要说清楚「为什么空」和「怎么才有」——
-         只写「暂无」的话，玩家会以为这个按钮坏了。 */
-      h += '<div class="fly-empty">你还飞不动。脚下没轻功，纵有内力也起不了身。' +
-        '<br>江湖上飘着「梯云纵」「逍遥游」一类轻功；学会一门，再练上几层，整片江山就都在你脚下了。</div>';
-      h += '</div>';
-      return h;
-    }
-    h += '<div class="fly-tip">现在飞得过去 ' + can.length + ' 处。点一下，人就落在该处的入口（按路程耗内力）。</div>';
-    h += '<div class="fly-grid">';
-    can.forEach(r => {
-      const cur = r.id === curRegion;
-      const tip = '飞往' + r.name + (r.entryName ? '（落在' + r.entryName + '）' : '')
-        + (r.flyCost ? '　耗内力 ' + r.flyCost + ' 点' : '');
-      h += '<button class="fly-btn' + (cur ? ' cur' : '') + '"' +
-        ' data-fly-region="' + esc(r.name) + '"' +
+    const curRegion = (regs.find(r => r.hasCurrent) || {}).id;
+    const others = regs.filter(r => r.id !== curRegion);
+    const walk = others.filter(r => r.travel && r.travel.state === 'walk');
+    const ready = others.filter(r => r.travel && r.travel.state === 'ready');
+    const closed = others.filter(r => r.travel && r.travel.state === 'closed');
+    const nolink = others.filter(r => !r.travel || r.travel.state === 'nolink');
+    const btn = (r, cls) => {
+      const t = r.travel || {};
+      const tip = t.state === 'ready'
+        ? ('行路至' + r.name + (r.entryName ? '（落在' + r.entryName + '）' : '') + (t.gateText ? '　' + t.gateText : '') + (t.cost ? '，渡资 ' + t.cost + ' 文' : ''))
+        : ('行路至' + r.name);
+      return '<button class="fly-btn ' + (cls || '') + (curRegion === r.id ? ' cur' : '') + '"' +
+        (t.state === 'walk' || t.state === 'ready' ? ' data-travel-region="' + esc(r.name) + '"' : ' disabled') +
         ' title="' + esc(tip) + '">' +
-        '<span class="fly-name">' + esc(r.name) + (cur ? '　（你在这里）' : '') + '</span>' +
+        '<span class="fly-name">' + esc(r.name) + '</span>' +
         (r.entryName ? '<span class="fly-sub">落点：' + esc(r.entryName) + '</span>' : '') +
-        (r.flyCost ? '<span class="fly-sub">耗内力 ' + r.flyCost + ' 点</span>' : '') +
+        (t.state === 'ready' && t.gateText ? '<span class="fly-sub">' + esc(t.gateText) + (t.cost ? '　渡资 ' + t.cost + ' 文' : '') + '</span>' : '') +
         '</button>';
-    });
-    h += '</div>';
-    if (shortMp.length) {
-      /* 内力不够：**按钮还是能点的**（点了后端会给明确的话），所以这里说清楚差多少。 */
-      h += '<div class="fly-empty">另有 ' + shortMp.length + ' 处飞得到、但内力不够（' +
-        esc(shortMp.slice(0, 3).map(r => r.name + '差' + r.flyReason.replace(/^还差\s*/, '')).join('、')) +
-        (shortMp.length > 3 ? ' 等' : '') + '）—— 打坐养气，或找个客栈歇一晚。</div>';
+    };
+    let h = '<div class="fly-wrap">';
+    if (!others.length) return h + '<div class="fly-empty">此地孤悬，没有通到别处的驿路。</div></div>';
+    h += '<div class="fly-tip">出远门走驿站渡口。官道直达的免费走；跨区要过门槛（渡资 / 路引 / 船家交情）。</div>';
+    if (walk.length) {
+      h += '<div class="fly-grid">' + walk.map(r => btn(r, '')).join('') + '</div>';
     }
-    if (noQinggong.length) {
-      h += '<div class="fly-empty">另有 ' + noQinggong.length + ' 处去不得 —— 轻功再深些才够。</div>';
+    if (ready.length) {
+      h += '<div class="fly-grid">' + ready.map(r => btn(r, '')).join('') + '</div>';
+    }
+    if (!walk.length && !ready.length) {
+      h += '<div class="fly-empty">眼下没有一条能成行的驿路 —— 不是盘缠的事，是路没开。</div>';
+    }
+    if (closed.length) {
+      /* 不通航的说法**直接铺出来**（铁律 1：站在门前的人说，不出系统提示条） */
+      h += '<details class="mrn-more"' + (walk.length || ready.length ? '' : ' open') + '><summary>暂不通航 ' + closed.length + ' 处（驿丞船家的话）</summary>' +
+        closed.map(r => '<div class="fly-empty">【' + esc(r.name) + '】' + esc((r.travel && r.travel.refusal) || '此路暂不通。') + '</div>').join('') +
+        '</details>';
+    }
+    if (nolink.length) {
+      h += '<details class="mrn-more"><summary>没有驿路连通 ' + nolink.length + ' 处</summary><div class="fly-empty">这些地方不与本地通驿 —— 先走官道到别处的驿站再问。</div></details>';
     }
     h += '</div>';
     return h;
@@ -3880,12 +3882,15 @@
        ⚠️ 别把这段挪回 `name === 'map'` 里面 —— 挪回去，飞行面板的按钮就全成了哑巴
           （点了没反应），而且不报错。 */
     if (name === 'map' || name === 'fly') {
-      document.querySelectorAll('#modal-body [data-fly-region]').forEach(b => {
+      /* 行路面板的「动身」按钮（design/89 §七·补）：
+         点了发「行路 <地名>」走后端真指令 —— 门槛判定、渡资扣钱、
+         不通航的驿站说法全在后端（travel.js 同源），前端不自己判。 */
+      document.querySelectorAll('#modal-body [data-travel-region]').forEach(b => {
         b.onclick = () => {
-          const nm = b.getAttribute('data-fly-region');
+          const nm = b.getAttribute('data-travel-region');
           if (!nm) return;
           closeModal();
-          doCmd('飞往 ' + nm, { fromButton: true });
+          doCmd('行路 ' + nm, { fromButton: true });
         };
       });
     }
@@ -3961,7 +3966,11 @@
        ⚠️ 「飞往」也放进来是给**光敲两个字**的玩家一条路（面板替他列出能飞哪儿）；
          带参数的「飞往 华山」在 `panelForCmd` 里做的是**整串精确匹配**，匹配不上，
          照旧走后端真指令，不会被这里吃掉。 */
-    fly: 'fly', 飞行: 'fly', 飞往: 'fly', 飞行图: 'fly',
+    /* 行路（design/89 §七·补 · 2026-10-14 主人改判）：
+       「飞行」面板改成「行路」。面板键仍叫 fly（历史名，CSS/存储沿用）；
+       「飞往」「飞行」这两个旧词**保留**为别名 —— 敲下去打开的是行路面板，
+       不是一条死键（老玩家的肌肉记忆有地方落）。 */
+    fly: 'fly', 飞行: 'fly', 飞往: 'fly', 行路: 'fly', 驿站: 'fly', 渡口: 'fly',
     sectfounder: 'found', 创宗: 'found', 招贤: 'found', 逐出师门: 'found', 演武: 'found', 大比: 'found', 解散宗门: 'found',
     recruit: 'found', drill: 'found', contest: 'found', disciple: 'found', tutor: 'found', founded: 'found',
     宗门: 'found',
@@ -4595,10 +4604,9 @@
     { label: '打坐', cmd: 'meditate' },
     { label: '运功疗伤', cmd: 'heal' },
     { label: '地图', cmd: 'map' },
-    /* 飞行（主人 2026-10-12）：「在屏幕下方快捷界面增加一个『飞行』，点击即可打开一个面板，
-       面板上列出所有玩家去过的区域名称，点击即可去该区域的入口处。」
+    /* 行路（design/89 §七·补 · 2026-10-14 主人改判）：原「飞行」快捷键。
        放在「地图」后面 —— 一个是「看」，一个是「去」，挨着最顺。 */
-    { label: '飞行', cmd: 'fly' },
+    { label: '行路', cmd: 'fly' },
     { label: '任务', cmd: 'quests' },
     { label: '帮助', cmd: 'help' },
     /* 🔴 2026-10-12 主人「新手教程剧情全删」——

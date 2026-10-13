@@ -358,6 +358,41 @@ function expectLocated(tag, e, fname) {
       TMP.indexOf(path.join(ROOT, '.livetest')) === 0, TMP);
     const stillOk = fs.existsSync(path.join(DATA, '73_sects_place.json'));
     ok('　G2 game/data/73_sects_place.json 还在', stillOk);
+
+    /* ------------------------------------------------------------------
+       G3~G7 · 备份文件不许住在 game/data/（2026-10-12 实案）
+       5 个 `NN_xxx_bak_yyy.json` 备份带数字前缀，被 loadBaseData 当真数据
+       加载：50_map_bak 排序在 50_map 之后（'_'>'.'），把 rooms.X.actions
+       **整组替换**回旧快照；40_npcs 的 bak 走 byId 合并盖掉 B8 新值。
+       全程不报错——比坏 JSON 更隐蔽。这里从文件名层面堵死。 */
+    const BAD_NAME = /bak|backport|old/i;
+    /** 列出 dir 里文件名含备份字样的数据文件（守卫的判据本体，供变异验证） */
+    function badDataNames(dir) {
+      return dataload.listDataFiles(dir).filter(f => BAD_NAME.test(f));
+    }
+    const realBad = badDataNames(DATA);
+    ok('★ G3 真实数据目录无备份名文件（bak/backport/old 一个不许有）',
+      realBad.length === 0, realBad.join(', ') || '干净');
+    ok('　G4 真实数据目录能列出文件（判据不是在空目录上空转）',
+      dataload.listDataFiles(DATA).length >= 40, dataload.listDataFiles(DATA).length + ' 个');
+
+    /* 变异验证：往临时目录塞一个假 bak 名，判据必须红 —— 证明 G3 不是空断言 */
+    const dMut = tmpDir('g-bak-mut');
+    write(dMut, '40_npcs_bak_pre_xxx.json', '{"npcs":{}}');
+    write(dMut, '01_ok.json', '{"rooms":{"a":{"id":"a","name":"A"}}}');
+    const mutBad = badDataNames(dMut);
+    ok('★ G5 变异：塞进假 bak 名 → 判据当场抓到', mutBad.length === 1 && mutBad[0] === '40_npcs_bak_pre_xxx.json',
+      JSON.stringify(mutBad));
+    /* 误报对照：backport / old 大小写变体也必须抓 */
+    write(dMut, '02_thing_OLD.json', '{"npcs":{}}');
+    const mutBad2 = badDataNames(dMut);
+    ok('　G6 大小写变体（OLD）也抓到', mutBad2.length === 2, JSON.stringify(mutBad2));
+
+    /* 干净反向对照：正常命名不误伤 */
+    const dClean = tmpDir('g-bak-clean');
+    write(dClean, '01_ok.json', '{"rooms":{"a":{"id":"a","name":"A"}}}');
+    ok('★ G7 干净目录零误报', badDataNames(dClean).length === 0,
+      JSON.stringify(badDataNames(dClean)));
   }
 
   try { fs.rmSync(TMP, { recursive: true, force: true }); } catch (_) { /* 清不掉不碍事 */ }

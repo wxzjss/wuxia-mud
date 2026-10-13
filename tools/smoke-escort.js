@@ -47,11 +47,15 @@ const txt = r => (r && (r.lines || []).map(l => l.text).join('\n')) || '';
     ok('★ 手上押着镖时不能再接', /还押着/.test(txt(again)), txt(again).slice(0, 50));
   }
 
-  console.log('===== ③ 押镖时不许飞往 =====');
+  console.log('===== ③ 押镖时不许行路 / 飞往已下线 =====');
   {
-    const r = await e.exec('飞往 洛阳');
-    ok('★ 押镖时「飞往」被拦下', /飞不得/.test(txt(r)), txt(r).slice(0, 60));
+    const r = await e.exec('行路 洛阳');
+    ok('★ 押镖时「行路」被拦下', /飞不得/.test(txt(r)), txt(r).slice(0, 60));
     ok('人没被传送走', p.room === 'feihu_gate', p.room);
+    /* 2026-10-14 飞往空投语义整体下线：对所有人统一一句世界内拒绝（不特判押镖） */
+    const f = await e.exec('飞往 洛阳');
+    ok('「飞往」对所有人统一拒绝（空投语义下线）', /驿站渡口|行路/.test(txt(f)), txt(f).slice(0, 60));
+    ok('飞往后人仍在原地', p.room === 'feihu_gate', p.room);
   }
 
   console.log('===== ④ 路上被劫（固定随机源强制命中） =====');

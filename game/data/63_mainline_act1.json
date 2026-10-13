@@ -1,0 +1,89 @@
+{
+  "_note": "第一幕主线覆盖片（design/74 → 88 施工单 P2）。剧情零 onEnter（扣着不讲）。⚠ rooms.X.actions 是整组替换不是拼接——有存量 actions 的房（road_jiangnan_1/jn_pawnshop/cunzhen_gate）一律写在生效源文件，本片只落无存量 actions 的房。",
+  "rooms": {
+    "shanjiao_inn": {
+      "actions": [
+        {
+          "label": "交口信",
+          "cmd": "转交口信",
+          "keywords": [
+            "口信",
+            "转交",
+            "陈家"
+          ],
+          "desc": "把那句话说到",
+          "cond": {
+            "flag": "act1_msg_carried",
+            "notFlag": "act1_msg_delivered"
+          },
+          "once": true,
+          "failMsg": "你还没替陈二带话。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "第二天一早你见到了她。她三十来岁，手上全是口子，深的那几道用布条缠着。你把话说了。一字不差。"
+            },
+            {
+              "type": "narrate",
+              "raw": "她听完没有哭。她把手里的柴放下，放得很整齐，一根一根码在墙边。码完了她说：「知道了。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "她进屋，出来的时候手里拿着一样东西：一双鞋。鞋是新的，鞋底纳得很密，针脚一行一行，行距一样宽。「给我兄弟的。你路过的时候放下就成。别说是新做的，他不肯穿。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "你得到一双布鞋。旧物，不可出售。鞋底纳得很密，针脚行距一样宽。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_msg_delivered"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "huashan_siguoya": {
+      "actions": [
+        {
+          "label": "石壁",
+          "cmd": "认痕",
+          "keywords": [
+            "石壁",
+            "剑痕",
+            "认"
+          ],
+          "desc": "在壁前待一夜，认出本门前辈那一道",
+          "cond": {
+            "flag": "act1_letter_taken",
+            "notFlag": "act1_recognized"
+          },
+          "once": true,
+          "failMsg": "山下的事没了结，你坐不下来。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖上有面石壁，壁上有二十七道剑痕。你在壁前坐下。夜里的风从崖底往上灌，灌得灯火伏下去又立起来。"
+            },
+            {
+              "type": "narrate",
+              "raw": "天蒙蒙亮的时候你看出来了。第二十一道。别的那二十六道都是砸进石头里的，只有这一道是收着劲收尾的，痕尾往上挑了半分。砸进去容易，收住难。"
+            },
+            {
+              "type": "narrate",
+              "raw": "「第一夜就认出来了。」值守的弟子举着那盏烧出洞的灯，看了看你，「山上见。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_recognized"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

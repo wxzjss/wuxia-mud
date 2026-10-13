@@ -52,3 +52,22 @@ taixu_hermit（mods/demo_skill）配 fine_sword。量具 ✔ 标签里括号提�
 | A-2 | 经典角色补功法 15 人 + 王语嫣保留 | ✅ 落库，守卫全绿 |
 | A-3 | 本基准表 | ✅ 散人 315 人压完 + 例外 9 人，残余 18 处记录不动 |
 | 收口 | 守卫 | data-load 56/56 ✅ · dangling-ref 25/25 悬空0 ✅ · smoke-npc-skills 47/0 ✅ |
+
+## 五、P3 战力批实测补记（2026-10-13，act1 P3 落库同步）
+
+代表位实测（_b8_fight_test，β 配置）：
+
+| 位 | 数据锚（raw） | 视图（引擎生成） | 实测 |
+|---|---|---|---|
+| mob_wolf (lv3) | hp10 / atk2 / dodge8 / 力5 | hp~106 / atk8 | lv3+jh30+猎刀：**11 回合零伤胜** |
+| mob_bandit (lv5) | hp20 / atk2 / dodge12 / 力5 / learned basic_blade5+jh_blade5 | hp~124 / atk 视图 | lv5：**12 回合险胜（124→38）** |
+| 中段 | boar 180/17 · snake 110/16 · soldier 280/27 · chief 380/36 | — | 已落库，atk −15% 补丁值 |
+
+**引擎侧硬约束（影响全部 mob 锚点解读，γ 前必须知道）**：
+
+1. NPC 实例 hp = raw + ~96 基数（随 level 微变）——raw hp 只是「基数之上的差值」，视图 hp 被基数托底。mob raw 锚定的是**相对梯度**，不是绝对血量。
+2. species:'beast' 运行时注入 beast_pounce/rend/roar 60 级——beast 类怪物输出不看 learned。
+3. dodge 是命中率门槛（命中比 = 攻方命中 vs 守方 dodge），压 dodge 比压 atk 对「玩家能不能打中」更敏感。
+
+**单列发现升级**：§三「lv3 玩家 5 回合被 wolf 咬死」已在 P3 压锚解决（现为 11 回合零伤胜），
+但「3 回合分胜负」口径数据侧不可达，见 design/91 §九，γ 立项待裁。

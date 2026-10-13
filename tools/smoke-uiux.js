@@ -230,7 +230,9 @@ const engine = new GameEngine({ seed: SEED, saveDir: SAVE_DIR });
 engine.boot();
 engine.newGame({ name: '试侠', gender: 'male', birth: 'wuxue' });
 const w = engine.world, p = w.player;
-/* 出生房本来就有一女（范清）一男（游侠）；再放一条毒蛇（gender:'other' 的兽） */
+/* 范清（女）B8 后常驻 road_jiangnan_2 不在出生房了 → 显式拉来做性别断言；
+   再放一条毒蛇（gender:'other' 的兽） */
+w.spawnNpc('npcv_196', p.room, 1, true);
 w.spawnNpc('mob_snake', p.room, 1, true);
 const VIEW = engine.view();
 const SNAKE = VIEW.npcs.find(n => n.defId === 'mob_snake');
@@ -1403,26 +1405,26 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
   }
 
   /* ================================================================
-   *  ⑳ 飞行面板（主人 2026-10-12）
-   *     「在屏幕下方快捷界面增加一个『飞行』，点击即可打开一个面板，
-   *      面板上列出所有玩家去过的区域名称，点击即可去该区域的入口处。」
+   *  ⑳ 行路面板（design/89 §七·补 · 2026-10-14 主人改判：飞行下线）
+   *     飞行空投全删；本面板改「行路」——驿站渡口三态（walk/ready/closed/nolink），
+   *     可走的点了发后端真指令「行路 <地名>」，不通航的把驿丞船家的话铺出来。
    * ================================================================ */
-  section('⑳ 飞行面板：列出去过的区域，点一下真发「飞往」');
+  section('⑳ 行路面板：驿站渡口三态，点了发「行路」');
   {
     const env = loadUi(makeEnv({ innerWidth: 390 }));
-    /* 喂**真引擎**的地图视图（`regions[].canFly` 是后端按「去过没有」算好的）。 */
+    /* 喂**真引擎**的地图视图；行路三态是后端算好的（travel.js）。
+       这里给 regions 补 travel 字段造全三态场景 —— 前端不做判定，只按 state 画，
+       这么造不改变被测逻辑（真判定在 smoke-flyto.js ⑥ 对真 mapView 断言过）。 */
     const v = engine.view({ map: true });
     const regs = (v.map && v.map.regions) || [];
-    /* 全新角色可能一个区域都没去过 —— 那样面板是空态，测不到按钮。
-       这里把**当前区域**标成可飞，保证「有东西可点」的场景一定成立；
-       前端不做判定，只按 canFly 画，所以这么造不改变被测逻辑。 */
-    if (!regs.some(r => r.canFly)) {
-      const cur = (v.map.rooms || []).find(r => r.current);
-      const curReg = cur && regs.find(r => r.id === cur.region);
-      if (curReg) curReg.canFly = true;
-    }
-    const flyRegs = regs.filter(r => r.canFly);
-    ok('⑳-0 前提：视图里至少有 1 个「去过」的区域', flyRegs.length >= 1, flyRegs.length + ' 处');
+    const curReg = regs.find(r => r.hasCurrent);
+    const others = regs.filter(r => !r.hasCurrent);
+    ok('⑳-0 前提：视图里 regions 不再带 canFly（空投字段全撤）',
+      regs.every(r => !('canFly' in r)) && others.length >= 3,
+      others.length + ' 个其它区域');
+    if (others[0]) others[0].travel = { state: 'walk', cost: null, gateText: null, refusal: null };
+    if (others[1]) others[1].travel = { state: 'ready', cost: 200, gateText: '渡资 200 文', refusal: null };
+    if (others[2]) others[2].travel = { state: 'closed', cost: null, gateText: null, refusal: '驿丞拦在你马前：「北边在过兵。要走，等开春。」' };
 
     const rec = stubApi(env, v);
     closeMasks(env);
@@ -1432,38 +1434,40 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
 
     const mb = String(env.document.getElementById('modal-body').innerHTML || '');
     const mt = String(env.document.getElementById('modal-title').textContent || '');
-    ok('⑳-1 面板标题是「飞行」', mt.indexOf('飞行') >= 0, mt || '(空)');
-    ok('⑳-2 ★ 去过的区域都列成了按钮（带 data-fly-region）',
-      (mb.match(/data-fly-region="/g) || []).length === flyRegs.length,
-      (mb.match(/data-fly-region="/g) || []).length + ' / 应 ' + flyRegs.length);
-    ok('⑳-3 按钮上写的就是区域名（看得懂才敢点）',
-      flyRegs.every(r => mb.indexOf(r.name) >= 0),
-      flyRegs.map(r => r.name).join('、').slice(0, 60));
+    ok('⑳-1 面板标题是「行路」（不再是「飞行」）', mt.indexOf('行路') >= 0 && mt.indexOf('飞行') < 0, mt || '(空)');
+    const walkName = others[0] && others[0].name, readyName = others[1] && others[1].name, closedName = others[2] && others[2].name;
+    ok('⑳-2 ★ 可走的列成按钮（带 data-travel-region）',
+      (mb.match(/data-travel-region=/g) || []).length === 2,
+      (mb.match(/data-travel-region=/g) || []).length + ' / 应 2（walk+ready）');
+    ok('⑳-3 不通航的把驿丞的话直接铺出来（不出系统提示条）',
+      closedName && mb.indexOf(closedName) >= 0 && /等开春/.test(mb),
+      closedName || '(无)');
+    ok('⑳-4 ready 按钮带门槛展示（渡资 200 文）', readyName && mb.indexOf('渡资 200 文') >= 0, readyName || '(无)');
+    ok('⑳-5 旧按钮契约 data-fly-region 不再出现', !/data-fly-region/.test(mb));
 
-    /* 真点第一颗 → 必须发出后端真指令「飞往 <区域名>」 */
-    const btns = env.document.querySelectorAll('#modal-body [data-fly-region]');
-    const btn = btns[0];
-    ok('⑳-4 按钮真渲染出来了（不是只有 HTML 字符串）', !!btn);
+    /* 真点可走的按钮 → 必须发出后端真指令「行路 <区域名>」 */
+    const btn = env.document.querySelectorAll('#modal-body [data-travel-region]')[0];
+    ok('⑳-6 按钮真渲染出来了（不是只有 HTML 字符串）', !!btn);
     if (btn) {
       rec.exec.length = 0;
       btn.click();
       await settle();
-      const want = '飞往 ' + btn.getAttribute('data-fly-region');
-      ok('⑳-5 ★ 点一下真发出「' + want + '」（落到该区域入口由后端办）',
+      const want = '行路 ' + btn.getAttribute('data-travel-region');
+      ok('⑳-7 ★ 点一下真发出「' + want + '」（门槛判定/扣渡资由后端办）',
         rec.exec.some(x => x.cmd === want),
         JSON.stringify(rec.exec.map(x => x.cmd)));
     }
 
-    /* 面板指令要被前端拦成「开面板」而不是往后端发指令（铁律：PANEL_CMDS 那条线） */
-    ok('⑳-6 快捷键里真有「飞行」这一颗', /label: '飞行', cmd: 'fly'/.test(
+    /* 面板指令走本地拦截；旧词「飞往/飞行」保留为别名 —— 落在行路面板上，
+       不是死键（老玩家的肌肉记忆有地方落）。带参数的照旧走后端。 */
+    ok('⑳-8 快捷键里那颗已改名「行路」', /label: '行路', cmd: 'fly'/.test(
       fs.readFileSync(path.join(RJS, 'ui.js'), 'utf8')));
-    ok('⑳-7 「飞行」走的是本地拦截（panelForCmd 认得它）',
-      env.WXUI.panelForCmd('飞行') === 'fly' && env.WXUI.panelForCmd('fly') === 'fly',
-      env.WXUI.panelForCmd('飞往') || '(飞往 不在 PANEL_CMDS)');
-    /* ⚠️ 带参数的「飞往 华山」必须**不被吃掉**，否则玩家永远飞不了 */
-    ok('⑳-8 ★ 带参数的「飞往 华山」不被面板拦截（照旧走后端真指令）',
-      env.WXUI.panelForCmd('飞往 华山') === null,
-      String(env.WXUI.panelForCmd('飞往 华山')));
+    ok('⑳-9 「行路/飞往/飞行」都被 panelForCmd 拦成本地面板',
+      env.WXUI.panelForCmd('行路') === 'fly' && env.WXUI.panelForCmd('飞行') === 'fly' && env.WXUI.panelForCmd('飞往') === 'fly',
+      '行路→' + env.WXUI.panelForCmd('行路') + ' 飞往→' + env.WXUI.panelForCmd('飞往'));
+    ok('⑳-10 ★ 带参数的「行路 北疆」不被面板拦截（照旧走后端真指令）',
+      env.WXUI.panelForCmd('行路 北疆') === null,
+      String(env.WXUI.panelForCmd('行路 北疆')));
   }
 
   /* ================================================================

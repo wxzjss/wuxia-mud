@@ -360,11 +360,10 @@ section('7 · B25 sidequest 接线 + 求医/问路/搜身 真指令有反馈');
   const heal = texts(e.exec('求医 药婆婆').lines).join(' ');
   ok('7.2 求医真的回血', p.hp > Math.floor(p.maxHp / 3) || p.hp === p.maxHp, `hp=${p.hp}/${p.maxHp}`);
   ok('7.3 求医有明确反馈文本', heal.includes('诊金') || heal.includes('伤痛大减'), heal.slice(0, 120));
-  const e9 = boot(); const w9 = e9.world, p9 = w9.player; p9.room = 'road_jiangnan_1';
-  has('7.4 没有医者时求医给明确回绝（不是静默）', texts(e9.exec('求医').lines), '没有会看病的人');
+  const e9 = boot(); const w9 = e9.world, p9 = w9.player; p9.room = 'road_jiangnan_1';  has('7.4 没有医者时求医给明确回绝（不是静默）', texts(e9.exec('求医').lines), '没有会看病的人');
 
-  /* 问路 */
-  const e2 = boot(); const w2 = e2.world, p2 = w2.player; p2.room = 'road_jiangnan_1';
+  /* 问路（范清/船夫 B8 后常驻 road_jiangnan_2，识路人不在 _1 了） */
+  const e2 = boot(); const w2 = e2.world, p2 = w2.player; p2.room = 'road_jiangnan_2';
   const road = texts(e2.exec('问路').lines).join(' ');
   ok('7.5 问路给出去向与步数（真 BFS）', /往[东南西北].*步/.test(road) || road.includes('没什么好去处'), road.slice(0, 160));
   const e10 = boot(); const w10 = e10.world, p10 = w10.player;

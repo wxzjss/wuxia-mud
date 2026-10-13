@@ -36,6 +36,8 @@ const queststage = require('./queststage');
 const potential = require('./potential');
 /* 「飞往」的门槛与耗内力算法（2026-10-13 起不再要求「去过那个区域」）。 */
 const flight = require('./flight');
+/* 驿站渡口行路网络（design/89 §七·补）：行路的唯一判定与执行（flight 已下线空投语义） */
+const travel = require('./travel');
 
 /* 中文数字 → 阿拉伯 */
 const CN_NUM = { 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10, 壹: 1, 贰: 2, 叁: 3, 肆: 4, 伍: 5, 陆: 6, 柒: 7, 捌: 8, 玖: 9, 拾: 10 };
@@ -441,7 +443,13 @@ function buildCommands(world) {
     const ex = exits[usedDir];
     // 出口条件
     if (ex && ex.cond) {
-      if (!evalCond(ex.cond, ctx)) return { lines: [{ kind: 'warn', text: ex.msg || '那边似乎有什么阻挡着你。' }] };
+      if (!evalCond(ex.cond, ctx)) {
+        /* 卷界拦截（design/89 §七·d 铁律 1/3）：被挡的话由**站在门前的人**说出来
+           （ex.say，说话人写进文案，sectRefusal 范式），不出系统提示条；
+           数据没给 say 才退回老系统腔 ex.msg。 */
+        if (ex.say) return { lines: [{ kind: 'story', text: ex.say }] };
+        return { lines: [{ kind: 'warn', text: ex.msg || '那边似乎有什么阻挡着你。' }] };
+      }
     }
     if (ex && ex.exits && ex.exits.msg) { /* continue */ }
     // 移动消耗
@@ -4344,7 +4352,7 @@ function buildCommands(world) {
       return { lines: [
         { kind: 'title', text: `【在押】${st.grade} · ${st.from} → ${st.to}` },
         { kind: 'plain', text: `　镖物 ${st.pot - (st.lost || 0)}/${st.pot}　已走 ${st.steps || 0} 步` },
-        { kind: 'hint', text: `　押到${st.to}的山门柜台，「交镖」结账。押镖路上不许「飞往」。` },
+        { kind: 'hint', text: `　押到${st.to}的山门柜台，「交镖」结账。押镖路上不许「行路」。` },
       ] };
     }
     const list = E.listFor(w, p);
@@ -4356,7 +4364,7 @@ function buildCommands(world) {
       out.push({ kind: 'plain', text: `　${i + 1}. ${b.grade}（${b.fromCity} → ${b.toCity}）　镖银 ${b.pay} 文　路引 ${b.req}` });
       out.push({ kind: 'hint', text: `　　　${b.desc}` });
     });
-    out.push({ kind: 'hint', text: '（「接镖 1 / 2 / 3」接一趟。押镖路上**不许飞往** —— 走一趟才算数，路上有被劫的风险。）' });
+    out.push({ kind: 'hint', text: '（「接镖 1 / 2 / 3」接一趟。押镖路上**不许行路** —— 走一趟才算数，路上有被劫的风险。）' });
     return { lines: out };
   });
 
@@ -4921,76 +4929,80 @@ function buildCommands(world) {
     return { lines };
   });
 
-  /* ---------------- 飞往（练成轻功就能飞，远处费内力） ----------------
-     主人 2026-10-11 定的规矩是「去过的地方才准飞」；2026-10-13 改口径：
+  /* ---------------- 飞往（已下线 · 2026-10-14 主人改判） ----------------
+     design/89 §七·补 裁 1：飞行**全删空投语义，不降级保留**——只要还有一条
+     绕开路网的快速通道，卷界锁就多一个要堵的口子。flight.js 文件保留作回归对照
+     （canFlyTo 不再接任何玩家入口），这里把玩家的「飞往」改写成一句**世界内的
+     回话** + 指路（89 §七·d 铁律 3：被挡的玩家永远知道该走哪条路），
+     不做静默失效，也不留「飞不了」的系统报错腔。 */
+  reg(['飞往', '传送', '去往', '赶往', 'feiwang'], () => {
+    return { lines: [
+      { kind: 'story', text: '你纵身一跃，落地时自己都觉得没意思——江湖上哪有一跃千里的轻功？' },
+      { kind: 'story', text: '出远门得走驿站渡口：脚下顺着官道一步步走，跨州过府就到驿丞船家那里问「行路」。' },
+      { kind: 'hint', text: '（行路走驿站渡口网络：快捷栏「行路」或直接敲「行路」。）' },
+    ] };
+  });
 
-       > 「让飞行现在不限制必须先去到某个区域。」
-
-     所以「**去过没有**」这道闸拆了 —— 没去过华山也能飞到华山门口。
-     换成武侠里本来就有的两道：
-       · **脚下得有轻功**（`bestQinggong`）—— 不会轻功的人飞不起来；
-       · **内力要够**（`flightCost`）—— 远路费内力，落地要留余量，够不到就在半路落脚。
-     判定与耗力的算法全在 `flight.js`，`mapView` 下发的 `canFly` 也走它，
-     两处不各判一套（历史上「按钮亮着、后端说飞不了」就是这么来的）。
-
-     另外两条老限制不动：
-       · 战斗中不能飞；
-       · 收 60 分钟脚程（不是白给，但比一步步走便宜得多）。 */
-  reg(['飞往', '传送', '去往', '赶往', 'feiwang'], (ctx, args) => {
+  /* ---------------- 行路（驿站渡口网络 · design/89 §七·补 裁 2/3） ----------------
+     区域间的每一次移动都必须经过一个有人、有台词、有生意的节点。
+     数据在 `world.data.travel.links`（schema 见 travel.js 头注释，数据侧游有方供数）：
+       · walk  步行直达，免费走；
+       · cross 跨区门槛三形态（渡资 / 路引 / 船家交情）统一归一成 cond，
+         被挡时念**站在门前的人的说法**（sectRefusal 范式，不出系统提示条）。 */
+  reg(['行路', '赶路', 'travel'], (ctx, args) => {
     const p = ctx.player, w = ctx.world;
-    const lines = [];
-    if (w.battle) return { lines: [{ kind: 'warn', text: COMBAT_MOVE_HINT }] };
-    /* 押镖路上不许飞（design/67 §4）—— 能飞就等于没有路，劫镖也就无从谈起。 */
+    /* 押镖期间锁行路（原「押镖不许飞往」语义平移过来）：镖在肩上，一步一步走才算押镖 */
     if (require('./escort').flyingBlocked(p)) {
-      return { lines: [
-        { kind: 'warn', text: '你手上押着镖，飞不得 —— 镖车得一步步走，路引也得一城一城验。' },
-        { kind: 'hint', text: '（押到讫城的镖局柜台「交镖」之后，再飞不迟。）' },
-      ] };
+      return { lines: [{ kind: 'story', text: '镖在肩上，飞不得——押镖就得一步一步走，绕路也是押镖的一部分。' }] };
+    }
+    const here = (w.getRoom(p.room) || {}).region;
+    const links = travel.linksFrom(w, here);
+    if (!links.length) {
+      return { lines: [{ kind: 'hint', text: '此处没有通航的驿站渡口。出远门先走到官道沿线的驿站，再问「行路」。' }] };
     }
     const kw = (args || []).join('').trim();
-    if (!kw) return { lines: [{ kind: 'warn', text: '要飞往哪里？说个地名，或者在地图面板点地名。' }] };
-    const regs = Object.values(w.data.regions || {});
-    const hit = regs.find(r => r.name === kw || r.id === kw)
-      || regs.find(r => r.name && (r.name.includes(kw) || kw.includes(r.name)));
-    if (!hit) return { lines: [{ kind: 'warn', text: `江湖上没有叫「${kw}」的地方。` }] };
-    /* 入口：优先用区域自己写的 `entry`；没写就回落到本区第一个房间
-       （Mod 作者不会知道要补这个字段，别让新功能一到 Mod 就废）。 */
-    const entryId = hit.entry
-      || (Object.values(w.data.rooms).find(x => x.region === hit.id) || {}).id;
-
-    /* 门槛与耗内力：全部交给 flight.js，和 mapView 的 canFly 同源。 */
-    const chk = flight.canFlyTo(p, w, entryId);
+    const describe = (l) => {
+      const tgt = w.data.regions[l.to] || { name: l.to };
+      const chk = travel.checkLink(w, p, l);
+      const gate = l.kind === 'cross' ? (l.gateText || l.cond || '需过门槛') : '步行直达';
+      return `${tgt.name}（${gate}${l.cost ? '，渡资 ' + l.cost + ' 文' : ''}）—— ${chk.state === 'closed' ? '暂不通' : '可走'}`;
+    };
+    if (!kw) {
+      const lines = [{ kind: 'sys', text: '从这里出远门，能走的路有：' }];
+      links.forEach(l => lines.push({ kind: 'story', text: '　' + describe(l) }));
+      lines.push({ kind: 'hint', text: '（敲「行路 <地名>」动身。不通的路，驿站的人会告诉你差什么。）' });
+      return { lines };
+    }
+    const link = links.find(l => {
+      const r = w.data.regions[l.to] || {};
+      return r.name === kw || l.to === kw || (r.name || '').includes(kw) || kw.includes(r.name || '');
+    });
+    if (!link) return { lines: [{ kind: 'warn', text: `从这儿没有直通「${kw}」的驿路。能走的是：` + links.map(l => (w.data.regions[l.to] || {}).name || l.to).join('、') + '。' }] };
+    const chk = travel.checkLink(w, p, link);
+    const tgtRegion = w.data.regions[link.to] || {};
+    const entryId = tgtRegion.entry
+      || (Object.values(w.data.rooms).find(x => x.region === link.to) || {}).id;
     if (!chk.ok) {
-      const r = { lines: [{ kind: 'warn', text: chk.reason }] };
-      /* 轻功是玩家最该知道的一条路 —— 补一句怎么解决，别只说「飞不了」。 */
-      if (/轻功/.test(chk.reason)) {
-        r.lines.push({ kind: 'hint', text: '（江湖上飘着「梯云纵」「逍遥游」一类轻功；学会一门，再找处僻静地方练上几层，就能飞了。）' });
-      }
-      return r;
+      /* 铁律 1/3：说法由站在门前的人说出来，且带指路（文案数据侧写，含说话人）。 */
+      return { lines: [{ kind: 'story', text: chk.reason }] };
     }
-    if (!flight.canAfford(p, chk.cost)) {
-      return { lines: [
-        { kind: 'warn', text: `这一趟要 ${chk.cost} 点内力，你丹田里只剩 ${Math.floor(p.mp)} —— 硬飞过去怕是要栽在半路。` },
-        { kind: 'hint', text: '（「打坐」养气，或者找个客栈歇一晚。）' },
-      ] };
-    }
-
-    const tgt = w.getRoom(entryId);
-    p.mp = Math.max(0, p.mp - chk.cost);
-    p.room = entryId;
-    p.advanceTime(60);
-    if (!p.hasFlag('visited_' + entryId)) p.setFlag('visited_' + entryId, true);
-
-    const far = chk.steps > 20;
+    if (!entryId) return { lines: [{ kind: 'warn', text: '那段驿路还没修到头（目标区域没有入口）。' }] };
+    const paid = travel.payIfAny(p, link);
+    p.advanceTime(link.kind === 'cross' ? 60 : 30);
+    const r = w.movePlayerTo(p, entryId);
+    if (!r || !r.ok) return { lines: [{ kind: 'warn', text: '那段路眼下走不通。' }] };
+    const lines = [];
+    if (chk.state === 'ready' && link.say) lines.push({ kind: 'story', text: link.say });
     lines.push({
       kind: 'story',
-      text: far
-        ? `你运起${chk.qinggong.name}，脚下生风，一口气掠过了${chk.steps}里山路，衣袂上全是山草木叶的味道。`
-        : `不远，${chk.qinggong.name}轻轻一纵，${hit.name}就到了。`,
+      text: (link.kind === 'cross' ? `你上了路，车马劳顿，一路换了两次船，终于望见了${tgtRegion.name}的地界。`
+        : `你顺着官道步行，脚下不停，${tgtRegion.name}就近在眼前了。`)
+        + (paid ? `（渡资 ${paid} 文）` : ''),
     });
-    lines.push({ kind: 'sys', text: `内力耗去 ${chk.cost} 点。你来到了${tgt.name}。` });
+    lines.push({ kind: 'sys', text: '你来到了' + (w.getRoom(entryId) || {}).name + '。' });
     return { lines };
   });
+
 
   /* ---------------- 运功疗伤 ----------------
      主人报「快捷键『运功疗伤』用不了」——根因：快捷栏里写了 cmd:'heal'，

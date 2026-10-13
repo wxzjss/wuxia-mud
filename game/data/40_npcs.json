@@ -1675,26 +1675,26 @@
    "desc": "一个满脸横肉的山贼，手里提着一把卷了刃的刀。",
    "level": 5,
    "attr": {
-    "力量": 12,
+    "力量": 5,
     "根骨": 10,
     "身法": 8
    },
-   "hp": 130,
+   "hp": 20,
    "wickedness": 82,
    "greed": 70,
-   "atk": 16,
+   "atk": 2,
    "def": 6,
-   "dodge": 10,
+   "dodge": 12,
    "speed": 11,
    "skills": {
     "刀": "jh_blade"
    },
    "learned": {
     "basic_blade": {
-     "level": 11
+     "level": 5
     },
     "jh_blade": {
-     "level": 11,
+     "level": 5,
      "exp": 0
     }
    },
@@ -1735,7 +1735,7 @@
    "hp": 380,
    "wickedness": 90,
    "greed": 86,
-   "atk": 42,
+   "atk": 36,
    "def": 17,
    "dodge": 16,
    "speed": 17,
@@ -1778,14 +1778,14 @@
    "desc": "一头瘦骨嶙峋的灰狼，绿着眼睛死死盯着你。",
    "level": 3,
    "attr": {
-    "力量": 14,
+    "力量": 5,
     "根骨": 8,
     "身法": 16
    },
-   "hp": 90,
-   "atk": 12,
+   "hp": 10,
+   "atk": 2,
    "def": 3,
-   "dodge": 16,
+   "dodge": 8,
    "speed": 14,
    "skills": {
     "拳": "basic_fist"
@@ -1826,7 +1826,7 @@
     "根骨": 16
    },
    "hp": 180,
-   "atk": 20,
+   "atk": 17,
    "def": 11,
    "dodge": 5,
    "speed": 9,
@@ -1865,7 +1865,7 @@
     "身法": 22
    },
    "hp": 110,
-   "atk": 19,
+   "atk": 16,
    "def": 5,
    "dodge": 22,
    "speed": 19,
@@ -2037,7 +2037,7 @@
     "身法": 12
    },
    "hp": 280,
-   "atk": 32,
+   "atk": 27,
    "def": 18,
    "dodge": 12,
    "speed": 14,
@@ -25584,7 +25584,7 @@
    "gender": "female",
    "tag": "boatman",
    "desc": "手里握着根竹篙，篙头包着铁。腰身束得细，走路时裙摆几乎不动。天色一沉，她便仰头看云。",
-   "room": "road_jiangnan_1",
+   "room": "road_jiangnan_2",
    "home": "house:npcv_196",
    "level": 23,
    "hp": 382,
@@ -25612,8 +25612,8 @@
    ],
    "socialDone": true,
    "schedule": {
-    "day": "road_jiangnan_1",
-    "night": "road_jiangnan_1"
+    "day": "road_jiangnan_2",
+    "night": "road_jiangnan_2"
    },
    "rel": [
     {
@@ -36642,6 +36642,193 @@
    "tier": "B",
    "job": "official",
    "title": "县太爷",
+   "personality": "lengmo"
+  },
+  "act1_chen2": {
+   "id": "act1_chen2",
+   "name": "陈二",
+   "gender": "male",
+   "title": "青溪村村民",
+   "tag": "farmer",
+   "desc": "说话前先把手在裤子上擦两遍。蹲在井台边砸冰，砸两下停一停。",
+   "room": "cunzhen_gate",
+   "level": 9,
+   "hp": 198,
+   "atk": 9,
+   "def": 6.3,
+   "dodge": 9,
+   "speed": 9,
+   "money": 100,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "华山往北。走大路二十里，走小路近五里，小路上有座独木桥。",
+    "你要是走小路，能不能替我带句话？",
+    "你就说一句：娘去年冬天没了，埋在后坡，坟头朝东。",
+    "你要是忘了，就别编。编的比不说还坏。"
+   ],
+   "likes": [
+    "food"
+   ],
+   "favorBase": 0.7,
+   "favorInit": 0,
+   "age": 32,
+   "tier": "C",
+   "district": "jiangnan",
+   "province": "江湖",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "青溪村口砸冰的汉子，手上全是冻口子",
+    "origin": "生在村里，成亲后住在村西头。姐姐三年前嫁到山那头。",
+    "now": "娘去年冬天没了，他走不开，口信捎不出去。",
+    "want": "有人替他把那句话带到",
+    "fear": "怕捎话的人把话编圆了",
+    "voice": {
+     "tone": "怕说错话，每句出口前先擦手",
+     "catchphrase": "一字不差。"
+    },
+    "routine": [
+     {
+      "at": "day",
+      "act": "在井台边砸冰，砸两下停一停"
+     }
+    ],
+    "arc": {
+     "init": "他盯着自己的鞋说话。",
+     "warm": "话带到那天，他会把手擦干净了再跟你握手。"
+    },
+    "marks": [
+     "擦手",
+     "冻口子"
+    ]
+   },
+   "personality": "qienuo"
+  },
+  "act1_dianzhu": {
+   "id": "act1_dianzhu",
+   "name": "瘸腿店主",
+   "gender": "female",
+   "title": "山脚小店店主",
+   "tag": "vendor",
+   "desc": "左腿比右腿短一截，走路的时候肩先往左边沉一下，再迈步。说完话就去看灶，不看人的脸。",
+   "room": "shanjiao_inn",
+   "level": 11,
+   "hp": 242,
+   "atk": 11,
+   "def": 7.7,
+   "dodge": 11,
+   "speed": 11,
+   "money": 100,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "住一晚二十文，吃一顿十五文。",
+    "陈家的？嫁过来那个？",
+    "她男人去年没了。今年过年她一个人过。",
+    "你要找她，明早去。她天不亮就上山捡柴。"
+   ],
+   "likes": [
+    "food"
+   ],
+   "favorBase": 0.7,
+   "favorInit": 0,
+   "age": 38,
+   "tier": "C",
+   "district": "jiangnan",
+   "province": "江湖",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "华山道南边小店的女人，店里三间房，灶房的门卸下来靠在墙上",
+    "origin": "山那边嫁过来，腿是小时候从坡上摔的。",
+    "now": "一个人撑着店，记性好，谁家住哪儿她都知道。",
+    "want": "冬天过去，柴别再湿",
+    "fear": "怕夜里有人拍门",
+    "voice": {
+     "tone": "和气，报价像报天气，不加字",
+     "catchphrase": "自己看。"
+    },
+    "routine": [
+     {
+      "at": "day",
+      "act": "守着灶，汤锅里永远两块萝卜，一块先烂"
+     }
+    ],
+    "arc": {
+     "init": "她不看你的脸。",
+     "warm": "她会多给你一块没烂的萝卜。"
+    },
+    "marks": [
+     "瘸腿",
+     "看灶"
+    ]
+   },
+   "personality": "wenwan"
+  },
+  "act1_ji": {
+   "id": "act1_ji",
+   "name": "计掌柜",
+   "gender": "male",
+   "title": "当铺掌柜",
+   "tag": "vendor",
+   "desc": "柜台比人高，他只站在柜台后面。指尖很干净，接过什么都先翻过来看封皮。",
+   "room": "jn_pawnshop",
+   "level": 14,
+   "hp": 308,
+   "atk": 14,
+   "def": 9.8,
+   "dodge": 14,
+   "speed": 14,
+   "money": 100,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "这个印，三年前的腊月按的。按的时候人还在。",
+    "牢里没了。",
+    "你想看单子，我把单子找给你。那单子七个月前就卖了。",
+    "收废纸的。论斤。",
+    "你留着吧。这个印现在没人认得了。再过两年，连我也认不得。"
+   ],
+   "likes": [
+    "food"
+   ],
+   "favorBase": 0.7,
+   "favorInit": 0,
+   "age": 51,
+   "tier": "C",
+   "district": "jiangnan",
+   "province": "江湖",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "城东当铺的掌柜，柜台包了铜皮的边，磨得发亮",
+    "origin": "从父辈手里接的铺子，木格里一半的纸比他年纪大。",
+    "now": "七个月前把一批旧当票论斤卖给了收废纸的。",
+    "want": "铺子里的格子别再空下去",
+    "fear": "怕哪天有人拿着他认不得的东西进来",
+    "voice": {
+     "tone": "平平的，像念账",
+     "catchphrase": "论斤。"
+    },
+    "routine": [
+     {
+      "at": "day",
+      "act": "坐在柜台后头，用两根手指头推东西"
+     }
+    ],
+    "arc": {
+     "init": "他先看封皮，再看人。",
+     "warm": "他开始看人了，虽然还是不抬眼。"
+    },
+    "marks": [
+     "看封皮",
+     "死结腰带"
+    ]
+   },
    "personality": "lengmo"
   }
  }

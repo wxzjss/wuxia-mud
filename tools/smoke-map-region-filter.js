@@ -166,6 +166,8 @@ async function main() {
   const e = new GameEngine({ seed: 20261013 });
   await e.boot({});
   e.newGame({ name: '分批侠' });
+  /* 期望全集 = 全部房间 − private（engine.js mapView 同一谓词，数据侧独立复算） */
+  const WORLD_ROOMS = (() => { const R = e.world.data.rooms; return Object.keys(R).filter(id => !(R[id] && R[id].private)).length; })();
 
   console.log('');
   console.log('  \u250c\u2500 地图「分批 + 迷雾」守卫（P0-C C-1）──────────────');
@@ -175,7 +177,7 @@ async function main() {
   /* ================= §0 opt-in 契约 ================= */
   section('  \u00a70 opt-in 契约：不带参数 = P0-B 原样（这是全部其它断言的前提）');
   const base = e.view({ map: true }).map;
-  ok('§0-1 不带参数 ⇒ 仍是全世界房间', base.rooms.length === 512, 'rooms=' + base.rooms.length);
+  ok('§0-1 不带参数 ⇒ 仍是全世界房间', base.rooms.length === WORLD_ROOMS, 'rooms=' + base.rooms.length);
   ok('§0-2 不带参数 ⇒ explore.total === rooms.length（mapguide-check.js:42 的口径）',
     base.explore.total === base.rooms.length, JSON.stringify(base.explore));
   ok('§0-3 不带参数 ⇒ 房间字段齐全（name / exits 都在）',
@@ -251,7 +253,7 @@ async function main() {
   /* ================= §3 explore.total ================= */
   section('  \u00a73 探索度分母不许跟着分批缩水');
   ok('§3-1 ★ explore.total 仍是全世界房间数（= 不分批时的值）',
-    fg.explore.total === base.explore.total && fg.explore.total === 512,
+    fg.explore.total === base.explore.total && fg.explore.total === WORLD_ROOMS,
     JSON.stringify(fg.explore) + ' vs ' + JSON.stringify(base.explore));
   ok('§3-2 explore.visited 也是全局数（不是批内数）',
     fg.explore.visited === base.explore.visited, fg.explore.visited + ' vs ' + base.explore.visited);
@@ -299,7 +301,7 @@ async function main() {
   console.log('    仅本州+迷雾    ' + kb(rSolo.rawLen) + ' 原始 / ' + kb(rSolo.gzLen) + ' gzip');
 
   ok('§6-1 整包仍是 512 间（opt-in 契约在 HTTP 层也成立）',
-    rFull.json.view.map.rooms.length === 512, 'rooms=' + rFull.json.view.map.rooms.length);
+    rFull.json.view.map.rooms.length === WORLD_ROOMS, 'rooms=' + rFull.json.view.map.rooms.length);
   ok('§6-2 分批后回包明显小于整包', rBatch.rawLen < rFull.rawLen / 2,
     kb(rBatch.rawLen) + ' vs ' + kb(rFull.rawLen));
   /* 阈值留了余量：它守的是「不许偷偷把包体喂回去」，不是卡死在某个数字上。

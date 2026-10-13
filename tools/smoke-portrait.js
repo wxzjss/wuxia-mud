@@ -257,7 +257,15 @@ ok('无画像 NPC 不会多出 npcsact 行',
 section('⑥ 规格书 §0 的 4 个数据 Bug 已修');
 /* 用原始 JSON 自检（w.data.npcs 里还混着 mod 加的 NPC，不该算进来） */
 const N = JSON.parse(require('fs').readFileSync(path.join(__dirname, '..', 'game', 'data', '40_npcs.json'), 'utf8')).npcs;
-const rooms = JSON.parse(require('fs').readFileSync(path.join(__dirname, '..', 'game', 'data', '50_map.json'), 'utf8')).rooms;
+/* 房间索引走引擎同款深合并（分片叠加：后片补 exits 不冲前片 name/region；
+   50_map 单文件视角会把跨文件边误判成断边：road_huashan_1.s→huashan_library
+   的正主定义在 82_treasury_place，合并视图合法。2026-10-12 act1 P1 踩到，特改。 */
+const rooms = (() => {
+  const { World } = require(path.join(__dirname, '..', 'game', 'src', 'core', 'world.js'));
+  const w2 = new World({ dataDirs: [path.join(__dirname, '..', 'game', 'data')], seed: 1 });
+  w2.loadBaseData();
+  return w2.data.rooms;
+})();
 /* 基线只做「不许缩水」的下限断言：往库里加 NPC（新剧情/新 Mod）不该让这条红。
    精确数字改动会连带一片测试要跟着改，不如守住下限。 */
 ok('NPC 总数 ≥ 320', Object.keys(N).length >= 320, Object.keys(N).length + '');

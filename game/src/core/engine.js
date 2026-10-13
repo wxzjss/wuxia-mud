@@ -15,8 +15,11 @@ const { buildCommands, cnNum, normalizeAskList, npcKnownPeople } = commandsModul
 const { evalCond, evalEffects, evalTemplate } = require('./modapi');
 const { fmtTime, shichen, stars, clamp, fuzzyFind, normalizeCmd } = require('./utils');
 const mapLayout = require('./maplayout');
-/* 「飞往」判定（2026-10-13 起：不要求「去过」，改看轻功 + 内力） */
+/* 「飞往」判定（2026-10-13 起：不要求「去过」，改看轻功 + 内力）
+   ⚠️ 2026-10-14 主人改判：飞行空投语义**全删**（design/89 §七·补 裁 1）——
+   玩家入口已撤，flight.js 只作回归对照保留。行路网络的判定在 travel.js。 */
 const flight = require('./flight');
+const travelNet = require('./travel');
 const tutorial = require('./tutorial');
 const social = require('./social');
 const storybeat = require('./storybeat');
@@ -1354,40 +1357,41 @@ class GameEngine {
 
     const regions = Object.values(w.data.regions).map(r => {
       const inRegion = rooms.filter(x => x.region === r.id);
-      /* 「飞往」（主人 2026-10-13 改口径）：不再要求「去过那个入口」。
-         改成 —— 脚下有轻功 + 内力够（算法在 flight.js，和后端「飞往」同源）。
-         这里把判定与耗力算好交给前端，前端不自己猜（它拿不到 learned）。 */
-      /* ⚠️ 区域没写 `entry` 时**回落到本区第一个房间**，不要直接判定「不能飞」。
-         基础数据里 35 个区域都写了 entry，但官方那个「地图 Mod 示例」
-         （听雨山庄）没写 —— 玩家自制 Mod 更不会知道要补这个字段。
-         逼 Mod 作者写新字段 = 新功能一到 Mod 就废，所以这里给个合理的兜底。 */
+      /* 行路网络（design/89 §七·补 裁 2/3 · 2026-10-14 主人改判）：
+         飞行空投语义已全删，这里不再算 canFly —— 改发**行路三态**：
+           here   你就在这儿；
+           walk   官道直达，免费走；
+           ready  跨区门槛已过（渡资/路引/交情 cond），可走；
+           closed 被挡，带驿站渡口的世界内说法（sectRefusal 范式）；
+           nolink 没有连通两地的驿路（行路数据没写这条边）。
+         判定与数据 schema 全在 travel.js，与后端「行路」指令同源。 */
+      /* ⚠️ 区域没写 `entry` 时**回落到本区第一个房间**（Mod 作者不知道要补这个字段）。
+         基础数据里 35 个区域都写了 entry，但官方「地图 Mod 示例」没写。 */
       const entryId = r.entry || (inRegion[0] && inRegion[0].id) || null;
       const entryRoom = entryId ? allRooms[entryId] : null;
-      const fly = flight.canFlyTo(p, w, entryId);
+      const curRegion = (w.getRoom(p.room) || {}).region;
+      let travel = null;
+      if (r.id !== curRegion) {
+        const link = travelNet.linkBetween(w, curRegion, r.id);
+        const chk = travelNet.checkLink(w, p, link);
+        travel = {
+          state: chk.state,
+          cost: (link && link.cost) || null,
+          gateText: (link && (link.gateText || (link.kind === 'cross' ? link.cond : null))) || null,
+          refusal: chk.reason || null,
+        };
+      }
       return {
         id: r.id, name: r.name, color: r.color, desc: r.desc,
         count: inRegion.length,
         visitedCount: inRegion.filter(x => x.visited).length,
         hasCurrent: inRegion.some(x => x.current),
-        /* ⚠️ P0-B B-1（2026-10-13）：这里原来是 `rooms: inRegion` ——
-           与外层 `rooms` 是**同一批对象的第二次序列化**（`JSON.stringify` 不认引用，
-           同一份东西写两遍就是两遍字节）。实测 `regions[].rooms` 合计 **96.3 KB**，
-           占 mapView（300.6 KB）的三分之一，纯属白交的账。
-           改成只发 id：**7.9 KB**，省 88.4 KB，零语义损失。
-           要本区的房间内容，从外层 `map.rooms` 按 id 取即可（`roomIds` 就是给你查表用的）。
-           ⚠️ `count` / `visitedCount` / `hasCurrent` 三个**必须留着**：前端
-              「区域总览」（ui.js 的 `regionsHtml`）与飞行面板都只读这三个聚合值，
-              不该为拿一个数字去把整个区域的房间翻一遍。 */
+        /* ⚠️ P0-B B-1（2026-10-13）：regions[].rooms 只发 id（原两份序列化 96.3 KB 白交）。
+           count / visitedCount / hasCurrent 必须留着（区域总览只读这三个聚合值）。 */
         roomIds: inRegion.map(x => x.id),
         entry: entryId,
         entryName: entryRoom ? entryRoom.name : null,
-        canFly: fly.ok && flight.canAfford(p, fly.cost),
-        /* 飞不了/飞得起但内力不够，是两回事；前端据此给不同的话 */
-        flyReason: fly.ok
-          ? (flight.canAfford(p, fly.cost) ? null : `还差 ${fly.cost - Math.floor(p.mp)} 点内力`)
-          : fly.reason,
-        flyCost: fly.ok ? fly.cost : null,
-        flySteps: fly.ok ? fly.steps : null,
+        travel,
       };
     });
 

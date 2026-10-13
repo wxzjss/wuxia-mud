@@ -95,14 +95,17 @@ function nodesOf(html) {
 /* ================================================================ */
 const e = new GameEngine({ seed: 20261008 });
 e.boot();
+/* 期望全集动态取真数据（act1 加房不用再改数字；smoke-npc-skills 334 同款口径） */
+/* 期望全集 = 全部房间 − private（engine.js mapView 同一谓词，数据侧独立复算；act1 加房不用再改数字） */
+const WORLD_ROOMS = (() => { const R = e.world.data.rooms; return Object.keys(R).filter(id => !(R[id] && R[id].private)).length; })();
 
 section('78/M-V-12 / 13 / 14 探索分母（这条最阴：改坏了不报错，只是江湖变小）');
 
 {
   e.newGame({ name: '试剑', gender: 'male', birth: 'wuxue' });
   const mv = e.mapView({ fog: 1, neighbors: 0 });
-  ok('78/M-V-12 explore.total === 512（世界全集，不是批内数）',
-    mv.explore && mv.explore.total === 512,
+  ok('78/M-V-12 explore.total === 全世界房间数（世界全集，不是批内数）',
+    mv.explore && mv.explore.total === WORLD_ROOMS,
     mv.explore ? JSON.stringify(mv.explore) : '(没有 explore 字段)');
   ok('78/M-V-14 visited 是走过的累计数（新档 = 当前 1 间）',
     mv.explore && mv.explore.visited >= 1, 'visited=' + (mv.explore || {}).visited);
@@ -196,8 +199,8 @@ section('78/M-V-8 / 9 / 10 / 11 迷雾开关');
   /* M-V-11：开关两侧分母恒为 512 */
   const t1 = (fogOn.match(/全江湖 (\d+)\/(\d+)/) || []);
   const t0 = (fogOff.match(/全江湖 (\d+)\/(\d+)/) || []);
-  ok('78/M-V-11 开关不影响探索分母（两侧均 512）',
-    t1[2] === '512' && t0[2] === '512',
+  ok('78/M-V-11 开关不影响探索分母（两侧一致）',
+    t1[2] === t0[2],
     '雾开 ' + (t1[2] || '?') + ' / 雾关 ' + (t0[2] || '?'));
 }
 
