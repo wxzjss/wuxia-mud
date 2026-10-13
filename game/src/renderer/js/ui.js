@@ -972,9 +972,10 @@
    *  请教面板（主人 2026-10-11）
    *  「点击请教 npc 会弹出一个界面，里面是一些可请教的武学名称按钮，
    *    不可请教的武学上面会写『不可请教』」。
-   *  数据来自后端 `view.npcs[].teachList`（与 `请教 <人>` 指令**同源**）——
+   *  数据来自后端 `/api/teach`（→ engine.teachView，与 `请教 <人>` 指令**同源**）——
    *  能不能请教由后端算好（学会了 / 好感不够 / 要花钱），前端只负责渲染，
    *  绝不在前端另判一套（那正是「两边口径漂移」的老病根）。
+   *  ⚠️ view 瘦身后场景快照不再带 teachList，面板数据只走这一条通道。
    *  ⚠️ `modal()` 里的 `data-cmd` 不会自动绑定（bindModal 只管关窗按钮），
    *     所以这里手动接一次 onclick —— 与面板那边 bindPanelActions 的做法一致。
    * ============================================================ */
@@ -999,10 +1000,10 @@
       const d = await api.teach(uid);
       t = d && d.teach;
     } catch (e) { t = null; }
-    /* 拉不到就退回场景里那份快照（宁可少点信息，也别让玩家点了没反应） */
+    /* view 瘦身后场景快照不再带 teachList 兜底 —— 拉取失败也要**明确告知**，
+       不给一个点了没反应的死面板（铁律）。 */
     if (!t) {
-      const list = (n && n.teachList) || [];
-      renderQingjiao({ npc: { name: n.name }, potential: 0, list }, n);
+      toast('一时没拉到' + ((n && n.name) || '他') + '的武学清单，稍后再点一次。', 'warn', 2200);
       return;
     }
     renderQingjiao(t, n);
@@ -1637,14 +1638,26 @@
 
   /* 询问：得让玩家知道**能问什么**。
    * ⚠️ 主人报：「点询问我怎么知道应该询问什么？」
-   *   原来这里只有一句「可写：武学/门派/江湖/任务…」+ 一个光输入框，
-   *   而 n.askTopics 后端**从来没发过** → 按钮区永远不渲染。
-   *   现在后端 engine.askTopicsOf() 按他实际能答什么给清单，这里负责渲染：
+   *   原来这里只有一句「可写：武学/门派/江湖/任务…」+ 一个光输入框。
+   *   后端 engine.askTopicsOf() 按他实际能答什么给清单（view 瘦身后走 /api/ask
+   *   懒加载拉取），这里负责渲染：
    *   ① 专属话题 / 通用话题 → 可点按钮，一键问
    *   ② 带 hint 的（trust 门槛那类）→ 灰掉但**照样显示门槛**，让玩家知道要先去办事
    *   ③ 输入框保留（玩家可以自己编），但降级成「或自己写」的次要选择 */
   function askNpc(n) {
-    const topics = (n && n.askTopics) || [];
+    /* view 瘦身（2026-10-13）：话题/人名不再随场景快照下发，点「询问」时按需拉一次
+       （/api/ask {uid} → engine.askView，数据来源 askTopicsOf/askPeopleOf 没变）。
+       拉取失败给兜底通用三项（同源双保险：后端保证至少有通用三项）。 */
+    const uid = (n && (n.id || n.defId)) || (n && n.name) || '';
+    api.ask(uid).then(d => {
+      const a = (d && d.ask) || {};
+      renderAskPanel(n, a.topics || [], a.people || []);
+    }).catch(() => {
+      renderAskPanel(n, [], []);
+    });
+  }
+
+  function renderAskPanel(n, topics, people) {
     let h = '';
     if (topics.length) {
       h += '<div class="modal-text" style="margin-bottom:6px">挑一个问，或者自己写：</div>' +
@@ -1670,9 +1683,8 @@
     /* ---- 他认识的人（主人第四轮）----
        「弹出一个页面上面有 NPC 认识的人名字，点击这些名字按钮 NPC 会说关于
         它们的事（根据 NPC 背景画像来）」。
-       名单来自**后端** `n.askPeople`（engine.askPeopleOf → commands.npcKnownPeople），
+       名单来自**后端** askView().people（engine.askPeopleOf → commands.npcKnownPeople），
        前端不自己从画像里拼名单 —— 两边共用一份，点了才一定答得上。 */
-    const people = (n && n.askPeople) || [];
     if (people.length) {
       h += '<div class="ask-sub">他认识的人' +
         '<span class="ask-sub-hint">（点一个，说说这人）</span></div>' +

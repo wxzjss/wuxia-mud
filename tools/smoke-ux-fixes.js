@@ -452,7 +452,7 @@ t('attrHtml 会转义 HTML（属性名/数值不裸奔）', () => {
 
 /* ═══════ 5. 「询问」得让玩家知道能问什么 ═══════ */
 console.log('\n【5】「询问」面板可操作');
-t('view().npcs 每项都带 askTopics（原来压根没这个字段）', () => {
+t('view().npcs 不再背 askTopics（瘦身：改 /api/ask 懒加载）', () => {
   const w = freshWorld();
   let rid = null;
   for (const r of Object.keys(w.data.rooms)) { if (w.npcsIn(r).length) { rid = r; break; } }
@@ -460,8 +460,19 @@ t('view().npcs 每项都带 askTopics（原来压根没这个字段）', () => {
   const v = w._engine.view();
   ok(v.npcs && v.npcs.length, '场景里没有 NPC');
   for (const n of v.npcs) {
-    ok(Array.isArray(n.askTopics), n.name + ' 的 askTopics 不是数组');
-    ok(n.askTopics.length > 0, n.name + ' 的 askTopics 是空的 —— 点「询问」还是空框');
+    ok(!('askTopics' in n), n.name + ' 的场景快照还带着 askTopics（应已改懒加载）');
+  }
+});
+t('askView 懒加载：每个在场 NPC 都拿得到话题（与旧 view 契约等值）', () => {
+  const w = freshWorld();
+  let rid = null;
+  for (const r of Object.keys(w.data.rooms)) { if (w.npcsIn(r).length) { rid = r; break; } }
+  w.movePlayerTo(w.player, rid);
+  const v = w._engine.view();
+  for (const n of v.npcs) {
+    const a = w._engine.askView(n.defId || n.id || n.name);
+    ok(a && Array.isArray(a.topics) && a.topics.length > 0,
+      n.name + ' 经 askView 拿不到话题 —— 点「询问」会变空框');
   }
 });
 t('无 ask 数据的路人也有话题（通用三项兜底）', () => {
@@ -553,12 +564,12 @@ t('ask 缺话题参数时给提示（不是静默问了个空）', () => {
   const out = txt(run(w, 'ask ' + n.name));
   ok(/想问|什么/.test(out), '缺话题时无提示：' + out);
 });
-t('ui.js 的 askNpc 渲染了话题按钮区（不再只有一个输入框）', () => {
+t('ui.js 的 askNpc 走懒加载并渲染话题按钮区（view 瘦身：/api/ask 按需拉）', () => {
   const src = fs.readFileSync(path.join(RJS, 'ui.js'), 'utf8');
   const m = src.match(/function askNpc\(n\)\s*\{[\s\S]*?\n  \}/);
   ok(m, '抠不出 askNpc');
-  const body = m[0];
-  ok(/askTopics/.test(body), 'askNpc 没读 askTopics');
+  const body = m[0] + (src.match(/function renderAskPanel\(n, topics, people\)\s*\{[\s\S]*?\n  \}/) || [''])[0];
+  ok(/api\.ask/.test(body), 'askNpc 没走 /api/ask 懒加载');
   ok(/ask-topics/.test(body), 'askNpc 没渲染 ask-topics 按钮区');
   ok(/ask-input/.test(body), 'askNpc 丢了自填输入框');
   /* 从输入框升级成「次要选择」，得有一句引导 */

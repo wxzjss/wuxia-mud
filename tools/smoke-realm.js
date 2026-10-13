@@ -26,16 +26,20 @@ section('1. 凡人初始');
   ok('攻击极低', p.atk < 20, 'atk=' + p.atk);
 }
 
-/* ============ 2. 凡人打不过狼 ============ */
-section('2. 凡人连狼都打不过');
+/* ============ 2. 凡人与狼同量级（α 压锚后新口径，2026-10-13 team-lead 批） ============
+ * 旧断言「凡人连狼都打不过」随 87 §五 实测锚退役：α 压锚后 wolf raw hp10/atk2/力5，
+ * lv3 新手 11 回合可胜（design/91 §九）。新口径：狼与凡人同量级、互有胜负余地，
+ * 不再碾压也不再被碾压。 */
+section('2. 凡人与狼同量级（α 压锚口径）');
 {
   const e = new GameEngine({ seed: 20261010 });
   e.boot();
   e.newGame({ name: '凡人', gender: 'male' });
   const w = e.world, p = w.player;
   const wolf = w.spawnNpc('mob_wolf', 'road_jiangnan_1', 1, true);
-  ok('狼攻击远高于凡人', wolf.atk > p.atk * 2, '狼atk=' + wolf.atk + ' 凡人atk=' + p.atk);
-  ok('狼气血远高于凡人', wolf.maxHp > p.maxHp * 2, '狼hp=' + wolf.maxHp + ' 凡人hp=' + p.maxHp);
+  /* 狼不再是凡人的两倍：攻击与气血都落在同量级（±2 倍以内） */
+  ok('狼攻击与凡人同量级（不再碾压）', wolf.atk <= p.atk * 2 && wolf.atk * 2 >= p.atk, '狼atk=' + wolf.atk + ' 凡人atk=' + p.atk);
+  ok('狼气血与凡人同量级（不再碾压）', wolf.maxHp <= p.maxHp * 2 && wolf.maxHp >= p.maxHp / 2, '狼hp=' + wolf.maxHp + ' 凡人hp=' + p.maxHp);
 }
 
 /* ============ 3. 属性不随等级（level）变化 ============ */

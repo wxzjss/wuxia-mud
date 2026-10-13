@@ -515,6 +515,16 @@ async function handleApi(engine, req, res, pn, query, preset) {
         return json(res, 200, { ok: true, teach: t });
       }
 
+      /* 「询问」面板（view 瘦身的懒加载通道，2026-10-13）：
+         话题清单 + 认识人名单不再随场景快照下发（view.npcs[].askTopics/askPeople 已撤），
+         点「询问」时按需取一次。同 `teach`：单开 route 传「问谁」。 */
+      case 'ask': {
+        const uid = (json_body && (json_body.uid || json_body.id || json_body.name)) || null;
+        const a = uid == null ? null : engine.askView(uid);
+        if (!a) return json(res, 404, { ok: false, error: '这里没有这个人。' });
+        return json(res, 200, { ok: true, ask: a });
+      }
+
       /* NPC 详情画像（前端「细看此人」的新界面）。
          `api.view(panel)` 只吃一个 panel 名，传不了「看哪个人」，
          所以单开一个 route：POST { uid } → { ok, npc: profile }。 */

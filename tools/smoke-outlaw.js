@@ -50,12 +50,18 @@ console.log('===== ① 谁是匪类 / 谁有武力 =====');
 console.log('===== ② 山贼量完你之后怎么定 =====');
 {
   const { w, p, foe } = scene();
+  /* ⚠️ 2026-10-13 断言口径改靶（team-lead 裁「山贼看钱袋不看拳头」）：
+     α 压锚后 bandit 力5，旧的「量拳头」决策树全反。新口径断言的是
+     *设计要的决策*，引擎（assessPlayer）照这张靶改，改完转绿：
+       · 穷鬼 ignore（油水不够，懒得动手——穷鬼 posturing 反而吓退山贼）
+       · 有钱 rob（图财不惜命，武力不再免票）
+       · 「溜」退役（旧锚下才有「打不过就跑」，新锚下山贼本就不靠拳头吃饭） */
   const cases = [
-    ['又弱又穷 → 打晕搜刮', 10, 5, 20, 'mug'],
-    ['又强又富 → 溜', 5000, 300, 3000, 'flee'],
-    ['又弱又富 → 直接抢（最肥的羊）', 5000, 5, 20, 'rob'],
-    ['强但穷 → 溜', 10, 400, 4000, 'flee'],
-    ['中等偏上又有钱 → 抢', 5000, 60, 600, 'rob'],
+    ['又弱又穷 → ignore（油水不够，懒得动手）', 10, 5, 20, 'ignore'],
+    ['穷但带武力 → ignore（没钱不值当）', 10, 400, 4000, 'ignore'],
+    ['又弱又富 → rob（最肥的羊，看钱袋不看拳头）', 5000, 5, 20, 'rob'],
+    ['又强又富 → rob（图财不惜命）', 5000, 300, 3000, 'rob'],
+    ['中等偏上又有钱 → rob', 5000, 60, 600, 'rob'],
   ];
   for (const [label, money, atk, hp, want] of cases) {
     tune(p, money, atk, hp);
@@ -72,13 +78,13 @@ console.log('===== ② 山贼量完你之后怎么定 =====');
 console.log('===== ③ 打晕搜刮真的会掉钱 =====');
 {
   const { w, p, rid, foe } = scene();
-  /* ⚠️ 想测「打晕搜刮」就得给穷 —— 1000 文已经过了 rich(300) 那道线，
-     匪类会直接改成拦路抢劫（第一版就是这么测错的）。 */
-  tune(p, 10, 5, 20);
+  /* ⚠️ 2026-10-13 改靶（看钱袋不看拳头）：搜刮的对象是有钱的肥羊——
+     富羊被拦下，交不出/不给买路财才吃打晕，钱被搜走。穷鬼没事（ignore）。 */
+  tune(p, 5000, 5, 20);
   fool(w);
   const lines = O.onPlayerEnter(w, p, w.getRoom(rid), [foe]);
-  ok('触发了「打晕」', /后脑|挨了一下/.test(lines.map(l => l.text).join('')), lines.map(l => l.text).join('|').slice(0, 60));
-  ok('钱被搜走了', p.money < 10, '10 → ' + p.money);
+  ok('富羊被拦（触发拦路/打晕）', /买路|留下|后脑|挨了一下/.test(lines.map(l => l.text).join('')), lines.map(l => l.text).join('|').slice(0, 60));
+  ok('钱被搜走了', p.money < 5000, '5000 → ' + p.money);
   ok('玩家没死（只有昏过去）', p.hp > 0);
 }
 
@@ -98,6 +104,8 @@ console.log('===== ④ 旁人出手 =====');
   const weak = w2.spawnNpc(heroDef.id, r2, 1);
   weak.atk = 1; weak.hp = 10; weak.maxHp = 10;
   const r2b = O.stepIn(w2, weak, f2);
+  /* ⚠️ 压锚连带靶（2026-10-13）：bandit 力5 后弱英雄也打得倒它——这条的修法在
+     引擎战斗权衡（寇豆码照靶改，或确认弱英雄险胜为新现实后由设计改判据）。 */
   ok('打不过就不硬撑（没把匪类打倒）', r2b.won === false && !f2.knockedOut);
 }
 

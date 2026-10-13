@@ -426,11 +426,19 @@ class GameEngine {
       level: n.level, hp: n.hp, maxHp: n.maxHp, hostile: n.hostile,
       /* 被打倒（还没被补刀）→ NPC 菜单里才给「装进麻袋」入口 */
       knockedOut: !!n.knockedOut,
-      /* 绑架成功率（主人 2026-10-11：「『绑架』按钮右侧会显示成功率」）。
+      /* 绑架成功率（view 瘦身：只发菜单要用的两个字段）。
          ⚠️ 与真动手时那次掷骰子**同一个函数**（kidnap.assess）——
-            两边各算一套，迟早出现「写着 70% 却输十次」。 */
+            两边各算一套，迟早出现「写着 70% 却输十次」。
+         旧版整包下发 {chance,pct,why,knocked,reasons[]}：
+           · reasons 是 why 的原料（why = reasons.join('；')），纯重复；
+           · chance 是 pct/100，前端不读；
+           · knocked 与外层 knockedOut 同源。
+         每个在场 NPC 一份，房间人一多就是几十 KB 的纯重复 —— 只留 {pct, why}。 */
       kidnap: (function () {
-        try { return require('./kidnap').assess(w, p, n); } catch (e) { return null; }
+        try {
+          const a = require('./kidnap').assess(w, p, n);
+          return a ? { pct: a.pct, why: a.why } : null;
+        } catch (e) { return null; }
       })(),
       hasQuest: !!(n.def && n.def.quests && n.def.quests.some(q => p.questStage(q) < 0)),
       canReport: !!(n.def && n.def.quests && n.def.quests.some(q => p.questStage(q) >= 0 && p.questStage(q) < 99)),
@@ -445,28 +453,12 @@ class GameEngine {
       tagName: tagNameCN((n.def && n.def.tag) || null),
       gender: n.gender,
       canQingjiao: !!(n.def && n.def.teach && n.def.teach.length),
-      /* 「请教」面板要的清单（主人 2026-10-11）：
-         「点击请教 npc 会弹出一个界面，里面是一些可请教的武学名称按钮，
-           不可请教的武学上面会写『不可请教』」。
-         数据与 `请教 <人>` 指令**同一来源**（social.teachList），
-         只是这里多算一栏「这一门此刻能不能请教 / 不能是因为什么」——
-         前端照它渲染按钮或灰字，不在前端另判一套（否则又是两边口径漂移）。 */
-      teachList: (function () {
-        try {
-          const isMaster = !!(p.masters && p.masters[n.defId || n.id]);
-          return social.teachList(w, n).map(s => {
-            let can = true, why = '';
-            if (s.known) { can = false; why = '已学会'; }
-            else if (!isMaster && !((n.favor || 0) >= s.favorNeed) && !s.money) {
-              can = false; why = `好感需 ${s.favorNeed}`;
-            }
-            return {
-              id: s.id, name: s.name, type: s.type || '', quality: s.quality || '',
-              favorNeed: s.favorNeed, money: s.money, known: !!s.known, can, why,
-            };
-          });
-        } catch (e) { return []; }
-      })(),
+      /* ---- 「请教」清单已改**懒加载**（view 瘦身）----
+         旧版把每个在场 NPC 的全部可教武学（含 can/why 判定）整包塞进场景快照，
+         武馆/门派房间一个房间就是几十条 —— 而玩家只有点开「请教武学」面板那一次
+         才用得上。面板本来就走 `/api/teach {uid}` 拉新鲜数据（teachView，
+         带潜能价与完整理由），场景里那份只是拉取失败时的兜底快照。
+         兜底改为「拉取失败也明确告知」，不再为 1% 的场景背 100% 的字节。 */
       canQiecuo: !n.dead && !/\b狼|虎|熊|蛇|豹|兽/.test(n.name),
       canSteal: !!(n.carry && ((n.carry.items || []).length || n.carry.money)),
       likes: ((n.def && n.def.likes) || []).map(x => {
@@ -503,11 +495,9 @@ class GameEngine {
       })(),
       addressMe: kinship.addressMe(w, n),
       canSwear: !kinship.alreadyKin(w, n.id) && !kinship.isMarriedTo(w, n.id),
-      /* 「询问」按钮给的话题清单 —— 前端 askNpc() 直接渲染成可点按钮。
-         少了这个，玩家点「询问」只得到一个空输入框（主人报的问题）。 */
-      askTopics: this.askTopicsOf(n),
-      /* 「询问」面板里那份「他认识的人」名单（点一下就问那个人） */
-      askPeople: this.askPeopleOf(n),
+      /* 「询问」话题与「他认识的人」名单已改**懒加载**（view 瘦身）：
+         走 `/api/ask {uid}` 按需取（engine.askView），场景快照不再背这两份。
+         每个在场 NPC 各一份话题+人名，只有点「询问」那一次才用得上。 */
     }));
 
     const groundItems = w.itemsIn(p.room).map(i => {
@@ -619,7 +609,9 @@ class GameEngine {
       /* 拜师名册：玩家已拜的师父（NPC 面板据此显示「请教」而不是「拜师」）。 */
       masters: (this.world && this.world.player && this.world.player.masters) || {},
       kidnap: this.kidnapView(),
-      mods: this.modLoader.mods.map(m => ({ id: m.id, name: m.name, version: m.version, author: m.author, enabled: m.enabled, category: m.category, description: m.description, counts: m.counts })),
+      /* view 瘦身（2026-10-13）：mods 清单撤出场景快照 —— 前端无任何消费方
+         （Mod 面板走专属 /api/mods 拉全量，本地 Mod另有 localmods 通道），
+         每步 exec 白背 2.9KB 的 id/name/author/description/counts。 */
     };
   }
 
@@ -686,9 +678,35 @@ class GameEngine {
     };
   }
 
-  /** 拍卖行面板数据（design/40 §6.3）—— 未起局时返回 null，前端不当它是错误。 */
-  auctionView() {
+  /**
+   * 「询问」面板数据（view 瘦身的懒加载通道，2026-10-13）。
+   * 旧版把每个在场 NPC 的话题清单 + 认识人名单整包塞进场景快照
+   * （view.npcs[].askTopics / askPeople），只有点「询问」那一次才用得上。
+   * 现在改走 `/api/ask {uid}` 按需取，数据来源不变：
+   *   · topics ← askTopicsOf（专属/通用话题 + 门槛 hint）
+   *   · people ← askPeopleOf（他认识的人，与 commands.npcKnownPeople 同源）
+   * 实例查找与 teachView 同一套口径：活实例优先，含模板名单兜底。
+   */
+  askView(uid) {
     const w = this.world;
+    if (!w || !w.player) return null;
+    const live = (w.npcsIn ? w.npcsIn(w.player.room) : []) || [];
+    /* ⚠️ 三路匹配：实例 id / defId / 名字 —— 场景快照里的 n.id 是**实例 id**，
+       名人模板 spawn 出来的实例 id ≠ defId，只按 defId 找会扑空。 */
+    const hit = n => n && (n.id === uid || (n.defId || n.id) === uid || n.name === uid);
+    const npc = live.find(hit)
+      || (w.npcsIncludingTemplates ? w.npcsIncludingTemplates(w.player.room) : []).find(hit)
+      || null;
+    if (!npc) return null;
+    return {
+      npc: { id: npc.defId || npc.id, name: npc.name },
+      topics: this.askTopicsOf(npc),
+      people: this.askPeopleOf(npc),
+    };
+  }
+
+  /** 拍卖行面板数据（design/40 §6.3）—— 未起局时返回 null，前端不当它是错误。 */
+  auctionView() {    const w = this.world;
     if (!w.player) return null;
     try { return require('./auction').viewOf(w); } catch (e) { return null; }
   }
@@ -1374,12 +1392,16 @@ class GameEngine {
       if (r.id !== curRegion) {
         const link = travelNet.linkBetween(w, curRegion, r.id);
         const chk = travelNet.checkLink(w, p, link);
-        travel = {
-          state: chk.state,
-          cost: (link && link.cost) || null,
-          gateText: (link && (link.gateText || (link.kind === 'cross' ? link.cond : null))) || null,
-          refusal: chk.reason || null,
-        };
+        /* view 瘦身（2026-10-13）：state+cost 常发，gateText/refusal 按需 ——
+           walk 的 gateText/refusal 恒空、nolink 连 cost 都没有，
+           旧版给每个区域都背四个字段（大地图 30+ 区，全是 null 也占字节）。
+           前端 travelHtml 只在 ready 读 gateText、closed 读 refusal，语义不变。 */
+        travel = { state: chk.state, cost: (link && link.cost) || null };
+        if (chk.state === 'ready') {
+          travel.gateText = (link && (link.gateText || (link.kind === 'cross' ? link.cond : null))) || null;
+        } else if (chk.state === 'closed') {
+          travel.refusal = chk.reason || null;
+        }
       }
       return {
         id: r.id, name: r.name, color: r.color, desc: r.desc,

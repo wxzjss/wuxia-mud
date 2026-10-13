@@ -223,6 +223,12 @@
       return await jfetch('/api/teach', { method: 'POST', body: JSON.stringify({ uid }) });
     },
 
+
+    /* 某个 NPC 的「询问」数据（view 瘦身懒加载：话题 + 他认识的人，点「询问」时拉） */
+    async ask(uid) {
+      return await jfetch('/api/ask', { method: 'POST', body: JSON.stringify({ uid }) });
+    },
+
     /* 某个任务的详情（点「接取任务」时先弹详情页，玩家看过再决定接不接） */
     async questPreview(qid) {
       return await jfetch('/api/quest', { method: 'POST', body: JSON.stringify({ qid }) });

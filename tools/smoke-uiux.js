@@ -207,6 +207,14 @@ function stubApi(env, view) {
     const pr = engine.npcProfileOf(uid);
     return pr ? { ok: true, npc: pr } : { ok: false, error: '没有这个人。' };
   };
+  /* 「询问」懒加载（view 瘦身）：**喂真数据**（真 engine.askView）——
+     话题/人名不再随场景快照下发，点「询问」时按需拉这一份。 */
+  env.WX.api.ask = async (uid) => {
+    rec.ask = rec.ask || [];
+    rec.ask.push(uid);
+    const a = engine.askView(uid);
+    return a ? { ok: true, ask: a } : { ok: false, error: '没有这个人。' };
+  };
   env.WX.S.busy = false;
   return rec;
 }

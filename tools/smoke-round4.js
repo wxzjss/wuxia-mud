@@ -418,21 +418,27 @@ section('§S 「询问」→ 他认识的人：名单与回答同源');
     const inst = w.spawnNpc(defId, p.room, 1, true);
     const v = e.view();
     const n = (v.npcs || []).find(x => x.name === inst.name);
-    ok('S-1 ★ view 里带 askPeople 名单（前端就渲染这个）',
-      !!(n && Array.isArray(n.askPeople) && n.askPeople.length > 0),
-      n ? JSON.stringify((n.askPeople || []).slice(0, 3)) : '(没这个人)');
+    /* view 瘦身（2026-10-13）：askPeople 改懒加载（/api/ask → engine.askView），
+       场景快照不再背名单 —— 契约改为「快照不带 + askView 照常给」。 */
+    ok('S-1 ★ 场景快照不带 askPeople（已改懒加载）',
+      !!(n && !('askPeople' in n)),
+      n ? 'askPeople in npcs[i] = ' + ('askPeople' in n) : '(没这个人)');
+    const a = e.askView(inst.defId || inst.id || inst.name);
+    ok('S-1b ★ askView 懒加载照常给名单（前端渲染的就是它）',
+      !!(a && Array.isArray(a.people) && a.people.length > 0),
+      a ? JSON.stringify((a.people || []).slice(0, 3)) : '(askView 返空)');
     ok('S-2 名单项带 name / kind / rel（面板要显示关系）',
-      !!(n && n.askPeople.every(x => x.name && x.kind && x.rel)),
-      n ? JSON.stringify(n.askPeople[0] || {}) : '-');
+      !!(a && a.people.every(x => x.name && x.kind && x.rel)),
+      a ? JSON.stringify(a.people[0] || {}) : '-');
 
     /* ① 与后端同源 */
     const same = cmds.npcKnownPeople(w, inst).slice(0, 10);
     ok('S-3 ★ 前端名单 === 后端 npcKnownPeople（同一份，不各写一套）',
-      JSON.stringify(n.askPeople) === JSON.stringify(same),
-      'view=' + (n.askPeople || []).length + ' 后端=' + same.length);
+      JSON.stringify(a.people) === JSON.stringify(same),
+      'askView=' + (a ? a.people.length : 0) + ' 后端=' + same.length);
 
     /* ② 点名字真答得上，且答的是那个人 */
-    const first = n.askPeople[0];
+    const first = a.people[0];
     const r = e.exec('ask ' + inst.name + ' about ' + first.name);
     const t = txt(r.lines);
     ok('S-4 ★ 问名单上的人，真答得出（走「不知道」兜底就是没接通）',
@@ -458,7 +464,7 @@ section('§S 「询问」→ 他认识的人：名单与回答同源');
     /* ③ 单字名不该乱撞（防「江湖消息」被单字名截胡） */
     const r2 = e.exec('ask ' + inst.name + ' about 江湖消息');
     ok('S-7 ★ 通用话题不被名单截胡（「江湖消息」仍走通用兜底）',
-      !r2.lines.some(l => l.kind === 'say' && n.askPeople.some(x => x.name.length === 1 && l.text.includes(`${x.name}……`))),
+      !r2.lines.some(l => l.kind === 'say' && a.people.some(x => x.name.length === 1 && l.text.includes(`${x.name}……`))),
       txt(r2.lines).slice(0, 80));
   }
 }
