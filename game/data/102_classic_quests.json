@@ -13,35 +13,82 @@
         {
           "desc": "去襄阳城·北街，看一眼那批新到的箭",
           "targets": [
-            { "id": "go0", "kind": "room", "key": "xiangyang_street", "count": 1, "var": "sq_guo_jing_shoucheng_go0", "desc": "去襄阳城·北街，看一眼那批新到的箭" }
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "xiangyang_street",
+              "count": 1,
+              "var": "sq_guo_jing_shoucheng_go0",
+              "desc": "去襄阳城·北街，看一眼那批新到的箭"
+            }
           ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "箭捆码在墙根底下，捆绳上打着官库的印，印还是新的。解开一捆来数，箭头是铁的，箭杆是刚削的杨木，毛刺都没刮。杨木脆，一箭出去就折。这不叫箭。" },
-            { "type": "say", "raw": "守垛的老兵把捆绳拉紧，又系回去。「发这样的箭下去，是让人送命。」" }
+            {
+              "type": "narrate",
+              "raw": "箭捆码在墙根底下，捆绳上打着官库的印，印还是新的。解开一捆来数，箭头是铁的，箭杆是刚削的杨木，毛刺都没刮。杨木脆，一箭出去就折。这不叫箭。"
+            },
+            {
+              "type": "say",
+              "raw": "守垛的老兵把捆绳拉紧，又系回去。「发这样的箭下去，是让人送命。」"
+            }
           ]
         },
         {
           "desc": "回襄阳城·临汉门，把话跟郭大侠说开",
           "targets": [
-            { "id": "go1", "kind": "room", "key": "xiangyang_gate", "count": 1, "var": "sq_guo_jing_shoucheng_go1", "desc": "回襄阳城·临汉门，把话跟郭大侠说开" }
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "xiangyang_gate",
+              "count": 1,
+              "var": "sq_guo_jing_shoucheng_go1",
+              "desc": "回襄阳城·临汉门，把话跟郭大侠说开"
+            }
           ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "城头上风大。郭靖一手按着垛口听你说，不插话，听完还站在那儿。过了半晌才开口。" },
-            { "type": "say", "raw": "「这些箭我数过，数目不对，不是一天两天了。」他顿了顿，「我笨，琢磨得慢。可这里头有人过了手，这个我认得出来。」" },
-            { "type": "menu", "raw": "那批箭|往下查，看是谁经的手>flag:sq_guo_jing_shoucheng_cha;+exp:380;+rep:朝廷:30;+karma:15;favor:guo_jing:35;incvar:favor_guo_jing:35;;劝他先报上去，别自己担着>flag:sq_guo_jing_shoucheng_bao;+exp:240;+money:120;favor:guo_jing:20;incvar:favor_guo_jing:20" }
+            {
+              "type": "narrate",
+              "raw": "城头上风大。郭靖一手按着垛口听你说，不插话，听完还站在那儿。过了半晌才开口。"
+            },
+            {
+              "type": "say",
+              "raw": "「这些箭我数过，数目不对，不是一天两天了。」他顿了顿，「我笨，琢磨得慢。可这里头有人过了手，这个我认得出来。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那批箭|往下查，看是谁经的手>flag:sq_guo_jing_shoucheng_cha;+exp:380;+rep:朝廷:30;+karma:15;favor:guo_jing:35;incvar:favor_guo_jing:35;;劝他先报上去，别自己担着>flag:sq_guo_jing_shoucheng_bao;+exp:240;+money:120;favor:guo_jing:20;incvar:favor_guo_jing:20"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "+exp", "args": [500] },
-        { "type": "+money", "args": [200] },
-        { "type": "favor", "args": ["guo_jing", 20] },
-        { "type": "say", "raw": "他往城下走，走两步又回身：「你叫什么？我记一记。」" }
+        {
+          "type": "+exp",
+          "args": [
+            500
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            200
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "guo_jing",
+            20
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "他往城下走，走两步又回身：「你叫什么？我记一记。」"
+        }
       ]
     },
-
     "sq_yang_guo_muqian": {
       "id": "sq_yang_guo_muqian",
       "name": "墓前那坛酒",
@@ -54,35 +101,85 @@
         {
           "desc": "去终南山·活死人墓，看看墓前摆着什么",
           "targets": [
-            { "id": "go0", "kind": "room", "key": "gumu_mu", "count": 1, "var": "sq_yang_guo_muqian_go0", "desc": "去终南山·活死人墓，看看墓前摆着什么" }
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "gumu_mu",
+              "count": 1,
+              "var": "sq_yang_guo_muqian_go0",
+              "desc": "去终南山·活死人墓，看看墓前摆着什么"
+            }
           ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "石阶上摆着两样东西。一坛酒，封着。一柄断剑。剑断在护手那儿，断口很新，没生锈。摆得很正，是有人特意摆的。" },
-            { "type": "say", "raw": "「酒是敬她的。她自己不喝。」他看了眼那把剑，笑了一下，笑得没什么意思，「剑也不是我的。搁这儿的人，没打算让我知道是谁。」" }
+            {
+              "type": "narrate",
+              "raw": "石阶上摆着两样东西。一坛酒，封着。一柄断剑。剑断在护手那儿，断口很新，没生锈。摆得很正，是有人特意摆的。"
+            },
+            {
+              "type": "say",
+              "raw": "「酒是敬她的。她自己不喝。」他看了眼那把剑，笑了一下，笑得没什么意思，「剑也不是我的。搁这儿的人，没打算让我知道是谁。」"
+            }
           ]
         },
         {
           "desc": "去华山·思过崖，问一句那把断剑的来路",
           "targets": [
-            { "id": "go1", "kind": "room", "key": "huashan_siguoya", "count": 1, "var": "sq_yang_guo_muqian_go1", "desc": "去华山·思过崖，问一句那把断剑的来路" }
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "huashan_siguoya",
+              "count": 1,
+              "var": "sq_yang_guo_muqian_go1",
+              "desc": "去华山·思过崖，问一句那把断剑的来路"
+            }
           ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "崖上那位接过断剑，翻过来看了一眼就还了。他指甲长，捏着剑的时候手一点不抖。" },
-            { "type": "say", "raw": "「这剑的年纪，比你我跟起来都大。」他把手插进袖子里，「别问。也别去查。」" },
-            { "type": "menu", "raw": "那把断剑|把原话带回去给杨过>flag:sq_yang_guo_muqian_dai;+exp:420;+karma:15;favor:yang_guo:35;incvar:favor_yang_guo:35;;自己去查这条线>flag:sq_yang_guo_muqian_cha;+exp:360;+money:150;favor:yang_guo:-20;incvar:favor_yang_guo:-20" }
+            {
+              "type": "narrate",
+              "raw": "崖上那位接过断剑，翻过来看了一眼就还了。他指甲长，捏着剑的时候手一点不抖。"
+            },
+            {
+              "type": "say",
+              "raw": "「这剑的年纪，比你我跟起来都大。」他把手插进袖子里，「别问。也别去查。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那把断剑|把原话带回去给杨过>flag:sq_yang_guo_muqian_dai;+exp:420;+karma:15;favor:yang_guo:35;incvar:favor_yang_guo:35;;自己去查这条线>flag:sq_yang_guo_muqian_cha;+exp:360;+money:150;favor:yang_guo:-20;incvar:favor_yang_guo:-20"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "+exp", "args": [620] },
-        { "type": "+money", "args": [260] },
-        { "type": "favor", "args": ["yang_guo", 20] },
-        { "type": "say", "raw": "他把坛子拍开，酒没喝，全泼在阶上。坛子搁回原处。风一过，酒气就散了。" }
-      ]
+        {
+          "type": "+exp",
+          "args": [
+            620
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            260
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "yang_guo",
+            20
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "他把坛子拍开，酒没喝，全泼在阶上。坛子搁回原处。风一过，酒气就散了。"
+        }
+      ],
+      "require": {
+        "flag": "act1_recognized"
+      }
     },
-
     "sq_xiao_feng_shenshi": {
       "id": "sq_xiao_feng_shenshi",
       "name": "他到底姓什么",
@@ -95,36 +192,89 @@
         {
           "desc": "去丐帮·破庙，听那几个老叫花怎么说",
           "targets": [
-            { "id": "go0", "kind": "room", "key": "gaibang_po_miao", "count": 1, "var": "sq_xiao_feng_shenshi_go0", "desc": "去丐帮·破庙，听那几个老叫花怎么说" }
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "gaibang_po_miao",
+              "count": 1,
+              "var": "sq_xiao_feng_shenshi_go0",
+              "desc": "去丐帮·破庙，听那几个老叫花怎么说"
+            }
           ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "火堆快灭了。断了手的老叫花把碗放下，朝门口看了一眼，又端起来喝，喝得很慢。" },
-            { "type": "say", "raw": "「帮主的事，我们几个知道点。」他把碗底磕在石头上，「知道有什么用？知道的那几位，都死了。」" }
+            {
+              "type": "narrate",
+              "raw": "火堆快灭了。断了手的老叫花把碗放下，朝门口看了一眼，又端起来喝，喝得很慢。"
+            },
+            {
+              "type": "say",
+              "raw": "「帮主的事，我们几个知道点。」他把碗底磕在石头上，「知道有什么用？知道的那几位，都死了。」"
+            }
           ]
         },
         {
           "desc": "去少林·山门，看那一册记着旧事的簿子",
           "targets": [
-            { "id": "go1", "kind": "room", "key": "shaolin_shanmen", "count": 1, "var": "sq_xiao_feng_shenshi_go1", "desc": "去少林·山门，看那一册记着旧事的簿子" }
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "shaolin_shanmen",
+              "count": 1,
+              "var": "sq_xiao_feng_shenshi_go1",
+              "desc": "去少林·山门，看那一册记着旧事的簿子"
+            }
           ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "石亭里，知客僧捧出一册旧簿。纸发脆，翻页得用手掌托着。有两行字被人刮掉了，用指甲刮的，从下往上刮，刮得挺急。" },
-            { "type": "say", "raw": "「刮这两行的是个左撇子。」老僧把簿子合上，「这寺里左撇子的，就一位。」" },
-            { "type": "menu", "raw": "那册旧簿|把这两行照实告诉萧峰>flag:sq_xiao_feng_shenshi_gao;+exp:420;+karma:20;+rep:丐帮:20;favor:xiao_feng:40;incvar:favor_xiao_feng:40;;把簿子收走，瞒下来>flag:sq_xiao_feng_shenshi_shou;+exp:300;+money:200;+karma:-15;favor:xiao_feng:-25;incvar:favor_xiao_feng:-25" }
+            {
+              "type": "narrate",
+              "raw": "石亭里，知客僧捧出一册旧簿。纸发脆，翻页得用手掌托着。有两行字被人刮掉了，用指甲刮的，从下往上刮，刮得挺急。"
+            },
+            {
+              "type": "say",
+              "raw": "「刮这两行的是个左撇子。」老僧把簿子合上，「这寺里左撇子的，就一位。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那册旧簿|把这两行照实告诉萧峰>flag:sq_xiao_feng_shenshi_gao;+exp:420;+karma:20;+rep:丐帮:20;favor:xiao_feng:40;incvar:favor_xiao_feng:40;;把簿子收走，瞒下来>flag:sq_xiao_feng_shenshi_shou;+exp:300;+money:200;+karma:-15;favor:xiao_feng:-25;incvar:favor_xiao_feng:-25"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "+exp", "args": [560] },
-        { "type": "+money", "args": [220] },
-        { "type": "+rep", "args": ["gaibang", 15] },
-        { "type": "favor", "args": ["xiao_feng", 20] },
-        { "type": "say", "raw": "萧峰听着，一句话没接。听完把碗里的酒喝干，碗底磕在门槛上，当一声。「谢了。」" }
+        {
+          "type": "+exp",
+          "args": [
+            560
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            220
+          ]
+        },
+        {
+          "type": "+rep",
+          "args": [
+            "gaibang",
+            15
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "xiao_feng",
+            20
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "萧峰听着，一句话没接。听完把碗里的酒喝干，碗底磕在门槛上，当一声。「谢了。」"
+        }
       ]
     },
-
     "sq_feng_qingyang_shoujian": {
       "id": "sq_feng_qingyang_shoujian",
       "name": "崖上那把剑",
@@ -137,35 +287,85 @@
         {
           "desc": "去华山·思过崖，看看那把锈剑",
           "targets": [
-            { "id": "go0", "kind": "room", "key": "huashan_siguoya", "count": 1, "var": "sq_feng_qingyang_shoujian_go0", "desc": "去华山·思过崖，看看那把锈剑" }
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "huashan_siguoya",
+              "count": 1,
+              "var": "sq_feng_qingyang_shoujian_go0",
+              "desc": "去华山·思过崖，看看那把锈剑"
+            }
           ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "剑靠在岩壁上，剑身一层红锈。剑柄的缠绳倒是新的，缠得密，收口利索，是这两年才缠上去的。" },
-            { "type": "say", "raw": "「锈就锈了，剑又不会坏在这上头。」他把手翻过来给你看，指节上还留着缠绳勒的印，「绳是我自己缠的。手还使得动。就是不想使。」" }
+            {
+              "type": "narrate",
+              "raw": "剑靠在岩壁上，剑身一层红锈。剑柄的缠绳倒是新的，缠得密，收口利索，是这两年才缠上去的。"
+            },
+            {
+              "type": "say",
+              "raw": "「锈就锈了，剑又不会坏在这上头。」他把手翻过来给你看，指节上还留着缠绳勒的印，「绳是我自己缠的。手还使得动。就是不想使。」"
+            }
           ]
         },
         {
           "desc": "去华山·正气堂，替他把话带到掌门面前",
           "targets": [
-            { "id": "go1", "kind": "room", "key": "huashan_zhengqi", "count": 1, "var": "sq_feng_qingyang_shoujian_go1", "desc": "去华山·正气堂，替他把话带到掌门面前" }
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "huashan_zhengqi",
+              "count": 1,
+              "var": "sq_feng_qingyang_shoujian_go1",
+              "desc": "去华山·正气堂，替他把话带到掌门面前"
+            }
           ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "正气堂上那位听完，先笑了一下，笑到一半又收了。他问：「他……还提剑么？」" },
-            { "type": "say", "raw": "「你回去跟他说，山上的事，有我担着。」" },
-            { "type": "menu", "raw": "崖上那位的话|原话带回去>flag:sq_feng_qingyang_shoujian_dai;+exp:460;+karma:20;favor:feng_qingyang:35;incvar:favor_feng_qingyang:35;;略去那半句，只说一遍家常>flag:sq_feng_qingyang_shoujian_lue;+exp:320;+money:180;favor:feng_qingyang:15;incvar:favor_feng_qingyang:15" }
+            {
+              "type": "narrate",
+              "raw": "正气堂上那位听完，先笑了一下，笑到一半又收了。他问：「他……还提剑么？」"
+            },
+            {
+              "type": "say",
+              "raw": "「你回去跟他说，山上的事，有我担着。」"
+            },
+            {
+              "type": "menu",
+              "raw": "崖上那位的话|原话带回去>flag:sq_feng_qingyang_shoujian_dai;+exp:460;+karma:20;favor:feng_qingyang:35;incvar:favor_feng_qingyang:35;;略去那半句，只说一遍家常>flag:sq_feng_qingyang_shoujian_lue;+exp:320;+money:180;favor:feng_qingyang:15;incvar:favor_feng_qingyang:15"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "+exp", "args": [700] },
-        { "type": "+money", "args": [300] },
-        { "type": "favor", "args": ["feng_qingyang", 20] },
-        { "type": "say", "raw": "老人把剑拿起来，拿袖子把缠绳上的灰蹭掉，又靠回岩壁。「这句我记下了。」" }
-      ]
+        {
+          "type": "+exp",
+          "args": [
+            700
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            300
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "feng_qingyang",
+            20
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "老人把剑拿起来，拿袖子把缠绳上的灰蹭掉，又靠回岩壁。「这句我记下了。」"
+        }
+      ],
+      "require": {
+        "flag": "act1_recognized"
+      }
     },
-
     "sq_xiao_longnv_chumen": {
       "id": "sq_xiao_longnv_chumen",
       "name": "墓门开了",
@@ -178,41 +378,113 @@
         {
           "desc": "去终南山·活死人墓，问一句墓门为什么开",
           "targets": [
-            { "id": "go0", "kind": "room", "key": "gumu_mu", "count": 1, "var": "sq_xiao_longnv_chumen_go0", "desc": "去终南山·活死人墓，问一句墓门为什么开" }
+            {
+              "id": "go0",
+              "kind": "room",
+              "key": "gumu_mu",
+              "count": 1,
+              "var": "sq_xiao_longnv_chumen_go0",
+              "desc": "去终南山·活死人墓，问一句墓门为什么开"
+            }
           ],
           "next": 1,
           "effects": [
-            { "type": "narrate", "raw": "石门槛中间磨出一个浅坑，几十年走出来的。今年坑边上多了两道新印子，一深一浅。" },
-            { "type": "say", "raw": "「夜里来过人。」她蹲下看了看那两道印子，「走得比我熟。」" }
+            {
+              "type": "narrate",
+              "raw": "石门槛中间磨出一个浅坑，几十年走出来的。今年坑边上多了两道新印子，一深一浅。"
+            },
+            {
+              "type": "say",
+              "raw": "「夜里来过人。」她蹲下看了看那两道印子，「走得比我熟。」"
+            }
           ]
         },
         {
           "desc": "去终南山·全真教，看那本被翻动过的旧册",
           "targets": [
-            { "id": "go1", "kind": "room", "key": "gumu_quanzhen", "count": 1, "var": "sq_xiao_longnv_chumen_go1", "desc": "去终南山·全真教，看那本被翻动过的旧册" }
+            {
+              "id": "go1",
+              "kind": "room",
+              "key": "gumu_quanzhen",
+              "count": 1,
+              "var": "sq_xiao_longnv_chumen_go1",
+              "desc": "去终南山·全真教，看那本被翻动过的旧册"
+            }
           ],
           "next": 99,
           "effects": [
-            { "type": "narrate", "raw": "藏册架上一册书是插反的。抽出来看过，放回去的人没在意正反。里面记的，是两派早年的一桩旧约。" },
-            { "type": "say", "raw": "「他是想让人看见的。」她顿了一下，「不然不会插反。」" },
-            { "type": "menu", "raw": "那册旧约|把这件事告诉她>flag:sq_xiao_longnv_chumen_gao;+exp:400;+karma:15;favor:xiao_longnv:35;incvar:favor_xiao_longnv:35;;放回去，当没看见>flag:sq_xiao_longnv_chumen_fang;+exp:300;+money:150;favor:xiao_longnv:15;incvar:favor_xiao_longnv:15" }
+            {
+              "type": "narrate",
+              "raw": "藏册架上一册书是插反的。抽出来看过，放回去的人没在意正反。里面记的，是两派早年的一桩旧约。"
+            },
+            {
+              "type": "say",
+              "raw": "「他是想让人看见的。」她顿了一下，「不然不会插反。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那册旧约|把这件事告诉她>flag:sq_xiao_longnv_chumen_gao;+exp:400;+karma:15;favor:xiao_longnv:35;incvar:favor_xiao_longnv:35;;放回去，当没看见>flag:sq_xiao_longnv_chumen_fang;+exp:300;+money:150;favor:xiao_longnv:15;incvar:favor_xiao_longnv:15"
+            }
           ]
         }
       ],
       "rewards": [
-        { "type": "+exp", "args": [520] },
-        { "type": "+money", "args": [180] },
-        { "type": "favor", "args": ["xiao_longnv", 20] },
-        { "type": "say", "raw": "她在门口站了会儿，把门推开半扇，风灌进去，又合上。「算了。」" }
+        {
+          "type": "+exp",
+          "args": [
+            520
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "favor",
+          "args": [
+            "xiao_longnv",
+            20
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "她在门口站了会儿，把门推开半扇，风灌进去，又合上。「算了。」"
+        }
       ]
     }
   },
-
   "npcs": {
-    "guo_jing": { "id": "guo_jing", "quests": ["sq_guo_jing_shoucheng"] },
-    "yang_guo": { "id": "yang_guo", "quests": ["sq_yang_guo_muqian"] },
-    "xiao_feng": { "id": "xiao_feng", "quests": ["sq_xiao_feng_shenshi"] },
-    "feng_qingyang": { "id": "feng_qingyang", "quests": ["sq_feng_qingyang_shoujian"] },
-    "xiao_longnv": { "id": "xiao_longnv", "quests": ["sq_xiao_longnv_chumen"] }
+    "guo_jing": {
+      "id": "guo_jing",
+      "quests": [
+        "sq_guo_jing_shoucheng"
+      ]
+    },
+    "yang_guo": {
+      "id": "yang_guo",
+      "quests": [
+        "sq_yang_guo_muqian"
+      ]
+    },
+    "xiao_feng": {
+      "id": "xiao_feng",
+      "quests": [
+        "sq_xiao_feng_shenshi"
+      ]
+    },
+    "feng_qingyang": {
+      "id": "feng_qingyang",
+      "quests": [
+        "sq_feng_qingyang_shoujian"
+      ]
+    },
+    "xiao_longnv": {
+      "id": "xiao_longnv",
+      "quests": [
+        "sq_xiao_longnv_chumen"
+      ]
+    }
   }
 }

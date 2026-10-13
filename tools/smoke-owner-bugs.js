@@ -171,8 +171,12 @@ section('B5 · 交战中移动必须被拦');
   const e = boot(); const w = e.world, p = w.player;
   startFight(e);
   const before = p.room;
-  /* 找一个确实存在的、别的房间（主人原话是「走回客栈」） */
-  const target = w.data.rooms['jn_pharmacy'] ? 'jn_pharmacy' : Object.keys(w.data.rooms).find(r => r !== before);
+  /* 找一个确实存在的、别的房间（主人原话是「走回客栈」）
+     ⚠️ 96 案后：road_jiangnan_1 的北门是 G1 边检门——go 寻路第一跳撞 cond，
+     城门话会抢在「走不脱」前头（doMove 里 cond 检查在战斗拦截之前）。
+     改打东边青溪村小铺：第一跳 e 无边检，战斗拦截语义照验。 */
+  const target = w.data.rooms['cunzhen_inn'] ? 'cunzhen_inn'
+    : (w.data.rooms['jn_pharmacy'] ? 'jn_pharmacy' : Object.keys(w.data.rooms).find(r => r !== before));
   const r = e.exec('go ' + target);
   ok('B5-6 战斗中 go <房间名> 走不脱', p.room === before, `room=${p.room}`);
   ok('B5-6 提示明确（不是「找不到路」）', has(r, '走不脱'), texts(r).join('|').slice(0, 60));

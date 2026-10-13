@@ -18,9 +18,27 @@ const { GameEngine } = require(path.join(ROOT, 'game/src/core/engine.js'));
 const mapData = require(path.join(ROOT, 'game/data/50_map.json'));
 const npcData = require(path.join(ROOT, 'game/data/40_npcs.json'));
 const itemData = require(path.join(ROOT, 'game/data/20_items.json'));
-const rooms = mapData.rooms || {};
-const npcs = npcData.npcs || {};
-const items = itemData.items || {};
+/* ⚠️ 2026-10-16 96 案实测：门禁目标可能住在别的分片（huashan_library 在 82_treasury_place），
+ *    flag 生产者也可能在主线片（act1_recognized 由 63_mainline_act1 思过崖「认痕」置位）。
+ *    只扫 50_map 会把好门报成「不存在的房间」/「没有出处」——假红。
+ *    这里按文件名序做全分片合并视图；rooms.exits 按键合并（后载胜，与引擎口径一致）。 */
+const fs = require('fs');
+const ALL = { rooms: {}, npcs: {}, items: {} };
+for (const f of fs.readdirSync(path.join(ROOT, 'game/data')).filter(x => x.endsWith('.json')).sort()) {
+  const d = JSON.parse(fs.readFileSync(path.join(ROOT, 'game/data', f), 'utf8'));
+  for (const k of Object.keys(ALL)) {
+    for (const [id, v] of Object.entries(d[k] || {})) {
+      const cur = ALL[k][id];
+      if (!cur) { ALL[k][id] = v; continue; }
+      const merged = Object.assign({}, cur, v);
+      if (k === 'rooms' && (v.exits || cur.exits)) merged.exits = Object.assign({}, cur.exits, v.exits);
+      ALL[k][id] = merged;
+    }
+  }
+}
+const rooms = ALL.rooms;
+const npcs = ALL.npcs;
+const items = ALL.items;
 
 function freshWorld(seed) {
   const e = new GameEngine({ seed: seed || 20261010 });
@@ -119,9 +137,13 @@ t('每道门禁 cond 引用的 flag 都有出处（能在数据里被 setFlag）
     }
   };
   scan();
+  /* ⚠️ 2026-10-16 96 案 G3（design/96 §旧道）：oldroad.nw 的 act1_oldroad_reopened
+   *    是**永不被授予**的旗标——旧道通山顶这条边刻意永久常闭（塌方），独木桥才是
+   *    上山唯一通路。它没有出处是设计，不是漏，白名单放行。 */
+  const DEAD_FLAGS = new Set(['act1_oldroad_reopened']);
   for (const g of GATED) {
     const f = g.ex.cond && g.ex.cond.flag;
-    if (f) ok(settable.has(f), g.rid + '/' + g.d + ' 的 cond.flag「' + f + '」没有任何 action 能置位');
+    if (f && !DEAD_FLAGS.has(f)) ok(settable.has(f), g.rid + '/' + g.d + ' 的 cond.flag「' + f + '」没有任何 action 能置位');
   }
 });
 t('item 型门禁的钥匙有获取途径（守卫 talk / 登记 action / 商店）', () => {

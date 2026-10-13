@@ -154,8 +154,15 @@ function bfsDistance(rooms, startId, maxDepth) {
     const room = rooms[cur];
     if (!room || !room.exits) continue;
     for (const dir of Object.keys(room.exits)) {
-      const t = room.exits[dir];
-      if (!rooms[t] || dist[t] != null) continue;
+      /* 🔴 2026-10-15 收尾窗钉 3（map-fog M-V-2「相邻可走 0 格」）：
+         原来只认裸字符串出口 —— act1 六道门是对象形态 {to,cond,say,msg,travel}，
+         `rooms[{...}]` 查不到 → 门边在 BFS 图上断路，门边整片 dist 退化。
+         归因：game-design-director-2（monkey-patch 实测 near 0→5）。
+         语义依据：BFS 答「图上有没有这条路」（拓扑），不答「cond 过不过」（权限）
+         —— 门口有路就该画空心圈，走不走得过是 doMove 的事（design/78 本义）。 */
+      const v = room.exits[dir];
+      const t = typeof v === 'string' ? v : (v && v.to);
+      if (!t || !rooms[t] || dist[t] != null) continue;
       dist[t] = dist[cur] + 1;
       q.push(t);
     }
@@ -174,8 +181,10 @@ function findPath(rooms, fromId, toId) {
     const room = rooms[cur];
     if (!room || !room.exits) continue;
     for (const dir of Object.keys(room.exits)) {
-      const t = room.exits[dir];
-      if (!rooms[t] || prev[t] !== undefined) continue;
+      /* 同 bfsDistance：对象出口 {to,...} 取 .to（同钉 3，2026-10-15） */
+      const v = room.exits[dir];
+      const t = typeof v === 'string' ? v : (v && v.to);
+      if (!t || !rooms[t] || prev[t] !== undefined) continue;
       prev[t] = { from: cur, dir };
       if (t === toId) {
         // 回溯

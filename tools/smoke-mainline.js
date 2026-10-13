@@ -194,6 +194,12 @@ sec('⑤ 全流程模拟：能不能真走到 99');
     const stage = q.stages[i];
     /* 凑条件 */
     if (stage.cond) {
+      /* or 形条件（2026-10-16 M1：stage0 改 or[hasSect|act1_recognized]）：
+         把每个分支按其键凑齐——可满足性测试，or 任一分支真即过 */
+      for (const b of [].concat(stage.cond.or || [])) {
+        if (b.hasSect) { p.sect = '华山派'; p.setVar('hasSect', 1); }
+        if (b.flag) p.setFlag(b.flag, true);
+      }
       if (stage.cond.hasSect) { p.sect = '华山派'; p.setVar('hasSect', 1); }
       if (stage.cond.fn === 'anySkill100') {
         /* 武学重制：门派入门先授基础武学，弟子才练得动本门功夫

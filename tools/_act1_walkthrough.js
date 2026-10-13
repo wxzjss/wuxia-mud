@@ -60,10 +60,10 @@ sec('② 茶摊：六锚物全摸一遍 + 掏灰得 jh_fist + 看人提示');
   ok('「看 卖茶的老汉」中文提示正常（不是「是什么指令」）', !/是什么指令|不懂/.test(txt(rg)) && txt(rg).length > 10, txt(rg).slice(0, 60));
   run(e, '问信'); ok('问信→信露出 act1_letter_known', p.hasFlag('act1_letter_known'));
   run(e, '接信'); ok('接信→act1_letter_taken', p.hasFlag('act1_letter_taken'));
-  /* 当铺一环（act1_pawn_done 生产者） */
-  w.movePlayerTo(p, 'jn_pawnshop');
+  /* 看信一环（96 案：迁青溪村小铺，act1_pawn_done 生产者） */
+  w.movePlayerTo(p, 'cunzhen_inn');
   const rp = run(e, '给掌柜看信');
-  ok('当铺给掌柜看信→act1_pawn_done', p.hasFlag('act1_pawn_done'), txt(rp).slice(0, 60));
+  ok('小铺掌柜看信→act1_pawn_done', p.hasFlag('act1_pawn_done'), txt(rp).slice(0, 60));
   w.movePlayerTo(p, 'road_jiangnan_1');
 }
 
@@ -129,7 +129,7 @@ sec('⑤ 双分支 + 散人线');
   const e = boot();
   const w = e.world, p = w.player;
   ['伸手', '翻案底', '倒水', '撬', '垫', '挪缸', '掏灰', '问信', '接信'].forEach(c => run(e, c));
-  w.movePlayerTo(e.world.player, 'jn_pawnshop'); run(e, '给掌柜看信');
+  w.movePlayerTo(e.world.player, 'cunzhen_inn'); run(e, '给掌柜看信');
   w.movePlayerTo(e.world.player, 'road_jiangnan_1');
   const rc = run(e, '回茶摊');
   const menu = (rc.lines || []).find(l => l.kind === 'menu');
@@ -160,7 +160,7 @@ sec('⑤ 双分支 + 散人线');
   const e = boot();
   const w = e.world, p = w.player;
   ['伸手', '翻案底', '倒水', '撬', '垫', '挪缸', '掏灰', '问信', '接信'].forEach(c => run(e, c));
-  w.movePlayerTo(e.world.player, 'jn_pawnshop'); run(e, '给掌柜看信');
+  w.movePlayerTo(e.world.player, 'cunzhen_inn'); run(e, '给掌柜看信');
   w.movePlayerTo(e.world.player, 'road_jiangnan_1');
   const rc = run(e, '回茶摊');
   const menu = (rc.lines || []).find(l => l.kind === 'menu');
@@ -212,10 +212,19 @@ sec('⑥ 卷界：act1_recognized 落后，jiangnan→luoyang closed→ready');
 /* ============ ⑦ 锁区穷举（96 案验收段） ========= */
 sec('⑦ 锁区穷举：fresh 档可达集只在 act1 走廊');
 {
-  const e = boot(); const w = e.world, p = w.player;
+  /* 穷举专用 boot：modsDir 指空目录——engine 默认载 mods/demo_map（tingyu_* 听雨轩测试房），
+   * 那是 demo 数据不是地图漏锁，穷举必须排除，否则穷举账永远平不了。 */
+  const path = require('path');
+  const e = new GameEngine({ seed: SEED, modsDir: path.join(__dirname, '_empty_mods') });
+  e.boot(); e.newGame({ name: '试剑', gender: 'male', birth: 'wuxue' });
+  const w = e.world, p = w.player;
   const { evalCond } = require('../game/src/core/modapi.js');
   const rooms = w.data.rooms;
   const chk = (cond) => { try { return evalCond(cond, { player: p, world: w }); } catch (err) { return false; } };
+  /* 桥链=走廊一部分：先授予过桥链（旗标+竹牌）再穷举；**不授** act1_recognized（六门仍关）。
+   * huashan_shanxia.n 入清科坪需 huashan_pass+时辰窗（boot 初始 540 在卯-申窗内），思过崖在清科坪西。 */
+  p.setFlag('act1_bridge_crossed', true);
+  w.giveItem(p, 'huashan_pass', 1);
   const seen = new Set(['road_jiangnan_1']);
   const queue = ['road_jiangnan_1'];
   while (queue.length) {
@@ -261,11 +270,25 @@ sec('⑧ 看信迁小铺 / 追鸡补轻功 / M1 散人主线');
   ok('追鸡学会基本轻功（卷一轻功断供补口）', !!(p.learned && p.learned.basic_dodge), JSON.stringify(Object.keys(p.learned || {})));
   const r4 = run(e, '追鸡');
   ok('追鸡 once 不重复出戏', !/轻了半分/.test(txt(r4)), txt(r4).slice(0, 40));
-  /* M1：散人（不入门派）认痕后总主线照走 */
-  const e2 = boot(); const p2 = e2.world.player;
+  /* M1：散人主线，机制口径断言。q_main_jianghu giver=None（world 自动接），而 stage 推进
+   * 只发生在交任务 tryReportQuest（遍历 NPC def.quests 列表）——本任务不在任何 NPC 的
+   * quests 列表里，stage 永驻 0 是引擎正常行为，不能拿 stage 数字当验收。
+   * 改两级断言：① stage0 cond 数据为 or 形；② evalCond 三态实测（散人未认痕/散人认痕/入门派）。 */
+  const d60 = require('../game/data/60_quests.json');
+  const m1q = d60.quests.q_main_jianghu;
+  const m1cond = m1q && m1q.stages && m1q.stages[0] && m1q.stages[0].cond;
+  const orArr = m1cond && m1cond.or;
+  ok('M1：stage0 cond 为 or 形（hasSect|act1_recognized）', !!orArr && orArr.length === 2
+    && orArr.some(c => c.hasSect !== undefined) && orArr.some(c => c.flag === 'act1_recognized'), JSON.stringify(m1cond));
+  const { evalCond: ec2 } = require('../game/src/core/modapi.js');
+  const e2 = boot(); const w2 = e2.world, p2 = w2.player;
+  const env2 = { player: p2, world: w2 };
+  ok('M1：散人未认痕 stage0 cond 不过（锁住，不许白给）', ec2(m1cond, env2) === false);
   p2.setFlag('act1_recognized', true);
-  run(e2, '看');
-  ok('M1：散人认痕后 q_main_jianghu 过 stage0', p2.questStage('q_main_jianghu') >= 1, 'stage=' + p2.questStage('q_main_jianghu'));
+  ok('M1：散人认痕后 stage0 cond 通过（总主线照走）', ec2(m1cond, env2) === true);
+  const e3 = boot(); const p3 = e3.world.player;
+  p3.sect = 'huashan';   // 有门派侧：拜师即可过，认痕非必经
+  ok('M1：入门派未认痕 stage0 cond 亦通过（拜师路线不堵）', ec2(m1cond, { player: p3, world: e3.world }) === true);
 }
 
 console.log('\n============================================');

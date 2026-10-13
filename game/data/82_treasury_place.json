@@ -1523,7 +1523,15 @@
     "road_huashan_1": {
       "id": "road_huashan_1",
       "exits": {
-        "s": "huashan_library"
+        "s": {
+          "to": "huashan_library",
+          "cond": {
+            "flag": "act1_recognized"
+          },
+          "say": "守阁的弟子伸手拦住：「藏经阁是本门重地。你不是本门的人，这名头也还没挣到阁前。」",
+          "msg": "守阁的弟子拦在阁前。",
+          "travel": "你放轻脚步进了藏经阁。守阁弟子坐回门槛，接着晒他的太阳。"
+        }
       }
     },
     "road_shaolin_1": {

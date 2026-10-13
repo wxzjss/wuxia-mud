@@ -124,13 +124,17 @@ section('6. 卖身后活动范围限制');
   p.room = 'jiangnan_brothel';
   e.exec('卖身');
   // 先下楼到街道，再一路向南走，走出范围后应被拦
+  // ⚠️ 2026-10-16 96 案后：doMove 里出口 cond 检查在青楼 leash 之前——南行第一步出界
+  //    （road_jiangnan_2）现在先撞 G2 剪径门（say），老鸨那句被门话盖住。
+  //    两道墙都是墙：判据改成「有拦的话 + 人没走出去」。
   e.exec('d');
   let blocked = false;
   for (let i = 0; i < 8; i++) {
     const r = e.exec('s');
-    if ((r.lines || []).some(l => /不能擅离太远/.test(l.text || ''))) { blocked = true; break; }
+    const t = (r.lines || []).map(l => l.text || '').join(' ');
+    if (/不能擅离太远|让开了半条道|买路的先说说价钱/.test(t)) { blocked = true; break; }
   }
-  ok('卖身后离太远被拦', blocked);
+  ok('卖身后离太远被拦（leash 或 G2 剪径，两道墙都是墙）', blocked && p.room !== 'road_jiangnan_2', p.room);
 }
 
 section('7. 卖身后复活点改青楼');

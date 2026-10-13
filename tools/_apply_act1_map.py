@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """开工第一窗：act1 地理施工 + 主线修（design/96/98/97 M1/M2/M4/M7，2026-10-16 游有方）
-- G1/G2 茶摊 n/s 闸门（cond act1_recognized，93 口径 msg/say/travel）
+- G1/G2 茶摊 n/s 闸门（cond act1_recognized，93 口径：**say=被拦戏先出口，msg 兜底，travel=放行过场**——
+  寇豆码抓的初版装反已全六门+两处语义门对调）
 - G3 旧道 nw 常闭塌方折返（旧道房不删，看垫石保留）+ 旧道语义残留两处改
 - G4/G5/G6 华山道三漏补闸（穷举发现：少林道/回城/藏经阁）
-- α 狼 spawn 加挂 wild_forest_1
+- α 狼双保险：103 片 def.room 保底（懒生成不掷点）+ 50_map respawn 定岗（不游走）
 - 接信补指路（青溪村小铺掌柜）；回茶摊双分支文案 当铺→小铺 同步
 - 62_shops 摘除 jn_pawnshop「给掌柜看信」（当铺本体三件不动）
 - 新分片 103_act1_rework.json：cunzhen_inn 承接看信 + cunzhen_farm 追鸡轻功
 - M1 q_main_jianghu stage0 cond or 形；M2 主线指路两句；M4 q_huashan_spy 可达性修；
   M7 102 思过崖两案 require
+- 82 分片 road_huashan_1.exits.s 抄回 G6 全量门对象（后载覆盖修复，gen-treasury-place.js 同步钉挂点）
 幂等：重复执行不重复追加。
 """
 import json, copy
@@ -26,21 +28,26 @@ d62 = load('game/data/62_shops.json')
 d60 = load('game/data/60_quests.json')
 d65 = load('game/data/65_mainline_act3.json')
 d102 = load('game/data/102_classic_quests.json')
+d40 = load('game/data/40_npcs.json')
 rooms = d50['rooms']
 
 # ---------- 一、G1/G2 茶摊闸门 ----------
+# ⚠️ 93 口径（commands.js doMove）：cond 不过 → 先出 **say**（门前人说的话），
+#    say 缺了才退 msg。初版把放行句写进 say、拦人句写进 msg——被拦玩家看到的是
+#    「进去吧」，拦人句永远不出口（寇豆码 storybeat 还正口径时抓的）。
+#    对调：say=拦人戏，travel=放行过场，msg 退化为兜底（有 say 时永不出口）。
 G1 = {
     "to": "jiangnan_gate",
     "cond": {"flag": "act1_recognized"},
-    "msg": "「城门口查得紧。」守门的兵把枪杆横过来，「进城得有人认你的名。你这名号，城里没人听过。」",
-    "say": "那兵上下打量你，把枪收了：「进去吧。城里别惹事。惹了事，有人认得你。」",
+    "say": "「城门口查得紧。」守门的兵把枪杆横过来，「进城得有人认你的名。你这名号，城里没人听过。」",
+    "msg": "守门的兵把枪杆横过来，没让路。进城得有人认你的名。",
     "travel": "你从盘查的人堆里挤过去，进了南门。门洞里的人看了你一眼，没拦。",
 }
 G2 = {
     "to": "road_jiangnan_2",
     "cond": {"flag": "act1_recognized"},
-    "msg": "岔路口的老槐树底下蹲着两个汉子，斧子搁在膝盖上。站着的那个朝你努了努嘴：「南边这条道，买路的先说说价钱。」他看你两手空空，又把头低下去了，「没钱的，回去。」",
-    "say": "那两个汉子看了你一眼，起身让开了半条道。「这道上的规矩你懂了。走吧。」",
+    "say": "岔路口的老槐树底下蹲着两个汉子，斧子搁在膝盖上。站着的那个朝你努了努嘴：「南边这条道，买路的先说说价钱。」他看你两手空空，又把头低下去了，「没钱的，回去。」",
+    "msg": "老槐树底下那两个汉子拦着道，没松口。",
     "travel": "你从那半条让开的道里走过去。背后有人说了一句什么，两个人都笑了，没拦你。",
 }
 r1 = rooms['road_jiangnan_1']
@@ -51,22 +58,22 @@ r1['exits']['s'] = G2
 G4 = {
     "to": "road_shaolin_1",
     "cond": {"flag": "act1_recognized"},
-    "msg": "「往东是少室山的道。」路边歇脚的挑夫把扁担横过来，「这条道上的香客，都是有名帖的。你的名帖呢？」他看你答不上，摆摆手，「先把名头挣出来，再往东边去。」",
-    "say": "挑夫看了你一眼，把扁担竖回肩上：「这名头，够进香了。走吧，道上别惹寺里的火工。」",
+    "say": "「往东是少室山的道。」路边歇脚的挑夫把扁担横过来，「这条道上的香客，都是有名帖的。你的名帖呢？」他看你答不上，摆摆手，「先把名头挣出来，再往东边去。」",
+    "msg": "挑夫把扁担横过来，拦着东山道。",
     "travel": "你顺着东山道往下走。挑夫在背后又喊了一句：到了寺前，先看规矩再进门。",
 }
 G5 = {
     "to": "jiangnan_east_road",
     "cond": {"flag": "act1_recognized"},
-    "msg": "往西下到官道，远远看得见江南城的墙。守路的兵把册子一合：「进城登记。你这名号，册子上没有。」",
-    "say": "那兵翻了翻册子，把路让开：「册上有你了。进去吧。」",
+    "say": "往西下到官道，远远看得见江南城的墙。守路的兵把册子一合：「进城登记。你这名号，册子上没有。」",
+    "msg": "守路的兵合上册子，没让路。",
     "travel": "你顺着官道往城那边去。守路的兵低头接着写他的册子，没再看你。",
 }
 G6 = {
     "to": "huashan_library",
     "cond": {"flag": "act1_recognized"},
-    "msg": "守阁的弟子伸手拦住：「藏经阁是本门重地。你不是本门的人，这名头也还没挣到阁前。」",
-    "say": "守阁弟子看了你一眼，侧身：「江湖上知道你名字了。阁里一层可以看，别上二楼。」",
+    "say": "守阁的弟子伸手拦住：「藏经阁是本门重地。你不是本门的人，这名头也还没挣到阁前。」",
+    "msg": "守阁的弟子拦在阁前。",
     "travel": "你放轻脚步进了藏经阁。守阁弟子坐回门槛，接着晒他的太阳。",
 }
 rh = rooms['road_huashan_1']
@@ -93,12 +100,26 @@ for a in rooms['road_jiangnan_1']['actions']:
             if e.get('type') == 'narrate' and '从山后绕过去的旧道' in e.get('raw', ''):
                 e['raw'] = ("第二天早上你起身上路。地图的西南角多出一条细线：一条钻进山脚的旧道。那条道不在任何一张路引上，"
                             "断口让塌方埋死了，可前头那一段还能走。道旁有三处塌方，最险的那一处被人垫过，垫得不算平整，但能下脚。")
-# cunzhen_gate.sw 的 say「从山后绕过去」语义修正
+# cunzhen_gate.sw 的 say/msg 对调（同病）：say=被拦时道口的话，msg 兜底
+# （幂等守卫认得两代旧态：初版「从山后绕过去」/上轮改的「你认得这条道了」）
 cg = rooms['cunzhen_gate']['exits']['sw']
-if isinstance(cg, dict) and '从山后绕过去' in cg.get('say', ''):
-    cg['say'] = "你认得这条道了。道旁三处塌方，最险那处被人垫过。你踩着那两块石头往里走。道不长，断在山腰，可看的东西都在断口前。"
+if isinstance(cg, dict) and ('从山后绕过去' in cg.get('say', '') or '你认得这条道了' in cg.get('say', '')):
+    cg['say'] = "道口让塌方的碎石埋了大半，看着就是条走不得的野道。"
+    cg['msg'] = "道口让塌方的碎石埋了大半，走不得。"
+# shanjiao_inn.se 同病对调
+si = rooms['shanjiao_inn']['exits']['se']
+if isinstance(si, dict) and '见过那两块垫石的人才找得到它' in (si.get('say') or ''):
+    si['say'] = "山脚东南树影里隐约有条道口，草长到了人腰，没人走过似的。"
+    si['msg'] = "树影里那条道口看着走不得。"
 
-# ---------- 四、α 狼 spawn 加挂黑松林 ----------
+# ---------- 四、α 狼：def.room 保底 + respawn 定岗（双保险，各治各的病） ----------
+# ⚠️ 2026-10-16 两轮实测的教训（都在全套守卫里爆的）：
+#   · 只加 respawn：newGame tick 里 rng.chance 掷点平移全局 RNG 流（smoke-ux2 客人序列翻车）；
+#   · 只给 def.room：狼不再是「定岗」（isStationed 按 respawn 点名）——会游走离岗，
+#     溜达进 road_wild_1 撞进双修测试的空房（smoke-dualcultivate 实锤 90→88）。
+#   双保险的正确姿势：def.room 懒生成（不掷点、教学战狼必在）+ respawn 定岗（不游走、
+#   死后重生）。狼活着时 alive>=count 短路，respawn 的 rng.chance 根本不执行——
+#   种子流与无狼完全一致，两头的病一起断根。
 wf = rooms['wild_forest_1']
 wf.setdefault('respawn', [])
 if not any(s.get('npc') == 'mob_wolf' for s in wf['respawn']):
@@ -141,26 +162,34 @@ moved2['keywords'] = ['掌柜', '看信', '小铺']
 moved2['desc'] = '把信递给铺子里的掌柜'
 d103 = {
     "_note": ("act1 地理施工承接片（design/96/98，2026-10-16 游有方）：①「给掌柜看信」自 62_shops jn_pawnshop 迁入 "
-              "cunzhen_inn（江南城锁区后，看信一环落青溪村·村口小铺）；②cunzhen_farm「追鸡」场景补卷一轻功断供"
-              "（99 §4.2 定案：卷一末必须会一门轻功，武馆/书都在锁区，追出来的轻功落 act1 腹地）。"
-              "两房原无 actions，本片整段声明，无数组 replace 风险。"),
+              "cunzhen_inn（江南城锁区后，看信一环落青溪村·村口小铺；小铺无货摊实体，"
+              "list 类 action 摘除——actions-check A-2：真执行不许出「没有做买卖的人」）；"
+              "②cunzhen_farm「追鸡」场景补卷一轻功断供（99 §4.2 定案：卷一末必须会一门轻功，"
+              "武馆/书都在锁区，追出来的轻功落 act1 腹地），keywords 补「田地」对齐 81 批交互名词施工图；"
+              "③α 狼双保险：def.room=wild_forest_1（**只写差异字段**：world.js mergeEntry 对已存在 entry 走"
+              "deepMerge 字段级合并——40_npcs 全文 def 先载（文件名序 40<103），103 的 room/noWander 原语覆盖即可，"
+              "初版全量 deepcopy 是「防 replace 丢字段」的错判，mergeData 实证为深合并；懒生成不掷点、教学战必在）"
+              "+ 50_map respawn 定岗（不游走、死后重生；狼活着时 alive>=count 短路不掷点，种子流不偏）"
+              "+ noWander 钉住（野地默认 20% 游走率会漂出教学位）。两房原无 actions，本片整段声明，无数组 replace 风险。"),
+    "npcs": {
+        # noWander：α 狼是教学战怪，钉在黑松林等新手（defaultWanderFor 给野地默认 20%
+        # 游走率，会溜达进 road_wild_1——双修测试空房实锤过 90→88，设计上也不该漂）。
+        "mob_wolf": {"id": "mob_wolf", "room": "wild_forest_1", "noWander": True},
+    },
     "rooms": {
         "cunzhen_inn": {
             "id": "cunzhen_inn",
             "actions": [
                 moved2,
-                {
-                    "cmd": "list 掌柜", "label": "小铺", "keywords": ["小铺", "买", "烧饼"],
-                    "desc": "看看铺子里卖的什么", "say": "小铺",
-                },
             ],
         },
         "cunzhen_farm": {
             "id": "cunzhen_farm",
             "actions": [
                 {
-                    "cmd": "追鸡", "label": "追鸡", "keywords": ["追鸡", "芦花鸡", "逮鸡"],
+                    "cmd": "追鸡", "label": "追鸡", "keywords": ["追鸡", "芦花鸡", "逮鸡", "田地"],
                     "desc": "田里那只谁也逮不着的芦花鸡",
+                    "say": "追鸡",
                     "cond": {"notFlag": "act1_chicken_chased"},
                     "once": True,
                     "failMsg": "那只芦花鸡你今天已经追够了。",
@@ -196,6 +225,16 @@ d60['quests']['q_huashan_spy']['require']['flag'] = 'act3_done'
 for qid in ('sq_yang_guo_muqian', 'sq_feng_qingyang_shoujian'):
     d102['quests'][qid]['require'] = {"flag": "act1_recognized"}
 
+# ---------- 九、82 分片 road_huashan_1.exits.s 抄回 G6 门对象（穷举验收实锤的后载覆盖 bug） ----------
+# 82_treasury_place 按文件名排在 50_map 之后加载，exits 按键合并「后载胜」——
+# 82 里裸字符串 "s":"huashan_library" 会把 50_map 的 G6 门整个抹掉（fresh 档藏经阁可达）。
+# 新分片声明必须抄回全部旧条目（合并三陷阱铁律）；生成器 gen-treasury-place.js 已同步修。
+d82 = load('game/data/82_treasury_place.json')
+p82 = d82['rooms']['road_huashan_1']
+# 内容比对（不是只看有没有 cond）：say/msg 口径升级后旧版门对象也要跟着换新
+if p82['exits'].get('s') != G6:
+    p82['exits']['s'] = copy.deepcopy(G6)
+
 # ---------- 断言 ----------
 for g in (G1, G2, G3, G4, G5, G6):
     for k in ('msg', 'say', 'travel'):
@@ -203,12 +242,16 @@ for g in (G1, G2, G3, G4, G5, G6):
         check(g[k])
 assert rooms['road_jiangnan_1']['exits']['e'] == 'cunzhen_gate'
 assert rooms['road_jiangnan_1']['exits']['w'] == 'road_wild_1'
-assert any(s.get('npc') == 'mob_wolf' for s in rooms['wild_forest_1']['respawn'])
+assert any(s.get('npc') == 'mob_wolf' for s in rooms['wild_forest_1']['respawn']), '狼 respawn 缺失（定岗靠它）'
+assert d103['npcs']['mob_wolf']['room'] == 'wild_forest_1'
+assert d103['npcs']['mob_wolf']['noWander'] is True
+assert set(d103['npcs']['mob_wolf'].keys()) == {'id', 'room', 'noWander'}, '狼 def 只写差异字段（mergeEntry 深合并补全 40 全文；瘦的是分片体积，不是战斗数值）'
 assert 'act1_oldroad_reopened' == rooms['oldroad']['exits']['nw']['cond']['flag']
 assert not any(a.get('cmd') == '给掌柜看信' for a in d62['rooms']['jn_pawnshop']['actions'])
 assert d60['quests']['q_main_jianghu']['stages'][0]['cond'] == {"or": [{"hasSect": True}, {"flag": "act1_recognized"}]}
 assert d60['quests']['q_huashan_spy']['require'].get('flag') == 'act3_done'
 assert d102['quests']['sq_yang_guo_muqian']['require'] == {"flag": "act1_recognized"}
+assert d82['rooms']['road_huashan_1']['exits']['s'] == G6, '82 分片 s 必须是全量门对象（后载覆盖修复）'
 for st_txt in [moved2['effects'][1]['raw'], d103['rooms']['cunzhen_farm']['actions'][0]['effects'][0]['raw']]:
     check(st_txt)
 
@@ -223,10 +266,11 @@ save(d60, 'game/data/60_quests.json')
 save(d65, 'game/data/65_mainline_act3.json')
 save(d102, 'game/data/102_classic_quests.json')
 save(d103, 'game/data/103_act1_rework.json')
+save(d82, 'game/data/82_treasury_place.json')
 
 for p in ('game/data/50_map.json', 'game/data/62_shops.json', 'game/data/60_quests.json',
           'game/data/65_mainline_act3.json', 'game/data/102_classic_quests.json',
-          'game/data/103_act1_rework.json'):
+          'game/data/103_act1_rework.json', 'game/data/82_treasury_place.json'):
     raw = open(p, 'rb').read()
     assert b'\r' not in raw, p
     json.loads(raw.decode('utf-8'))

@@ -69,7 +69,7 @@ function setupDual(e) {
   ok('★ 且这一下真的开了背包（不是被拒绝）', /行囊/.test(t3), t3.split('\n').slice(3, 5).join(' / '));
   ok('退出后 view 里不再有 busy', busyOf(e1) === null, JSON.stringify(busyOf(e1)));
 
-  const r4 = e1.exec('n');
+  const r4 = e1.exec('e');   /* 96 案后 n 是 G1 边检门，金丝雀改走常开的东门 */
   ok('醒过来之后真能走（房间变了）', /【/.test(txt(r4)) || (r4.view && r4.view.room), txt(r4).slice(0, 24));
 
   /* 方向键走人这条路 —— 主人最在意的「不能一路走回客栈」的反面：
@@ -78,7 +78,7 @@ function setupDual(e) {
   e1b.world.player.hp = e1b.world.player.maxHp;
   e1b.exec('吐纳');
   const roomBefore = e1b.world.player.room;
-  const rb = e1b.exec('n');
+  const rb = e1b.exec('e');   /* 同上：东门 */
   ok('★ 吐纳中按方向键：先退出，再真的走过去',
     /已退出吐纳状态/.test(txt(rb)) && e1b.world.player.room !== roomBefore,
     `${roomBefore} → ${e1b.world.player.room}`);
@@ -131,7 +131,7 @@ function setupDual(e) {
   ok('四轮走完真的结算了（涨内力上限）', settled, '');
   ok('★ 结算后 view 里没有 busy（人能动）', busyOf(e3) === null, JSON.stringify(busyOf(e3)));
   const roomB3 = e3.world.player.room;
-  e3.exec('n');
+  e3.exec('e');   /* 同上：东门 */
   ok('★ 结束之后真的走得动（这就是主人问的「卡不卡」）',
     e3.world.player.room !== roomB3, `${roomB3} → ${e3.world.player.room}`);
 

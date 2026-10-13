@@ -151,8 +151,12 @@ function section(t) { console.log('\n── ' + t + ' ──'); }
     const after = w2.rumors.filter(r => r.seedId === 'rs_master_take').length;
     ok('★ 拜完师，传闻跟着出去了', after === before + 1, before + ' → ' + after);
 
-    /* 再走一步，看能不能听见闲话（doMove 真路径） */
-    const startRoom = p2.room;
+    /* 再走一步，看能不能听见闲话（doMove 真路径）
+       ⚠️ 96 案后：茶摊 n/s 是 act1 边检门（G1/G2），原测试蹭的城门守卫这步被门拦了。
+       把起点挪进城（jiangnan_street），往南出城门那步落进守着三个活人的城门房——
+       「屋里有人 + jiangnan 区有热度」两闸都在，闲话照出。 */
+    const startRoom = 'jiangnan_street';
+    w2.movePlayerTo(p2, startRoom);
     const dirsCn = { n: '北', s: '南', e: '东', w: '西', ne: '东北', nw: '西北', se: '东南', sw: '西南' };
     const exits = Object.keys(w2.getRoom(startRoom).exits || {});
     let heard = null;

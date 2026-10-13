@@ -121,11 +121,30 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
 
   /* 走开之后：剧情**照旧留在大框里**（这是「常显」要证明的事），
      而日志里依旧不许冒出剧情行。
-     ⚠️ 走「西」（road_wild_1 无门槛出口），不走北 —— 2026-10-15 游有方数据侧给
-        road_jiangnan_1 北/南两个出口加了 act1_recognized 门槛（卷界锁），
-        走北现在会被挡在原地（「城门口查得紧」）。 */
-  const rMove = await e.exec('西');
-  ok('走出去了', p.room !== elderRoom, '现在在 ' + w.data.rooms[p.room].name);
+     走「北」（road_jiangnan_1 → jiangnan_gate，G1 卷界门）。
+     2026-10-15 游有方 G1/G2 收笔：北/南出口带 act1_recognized 门槛 ——
+     顺手把这条门的两个面都钉进断言（未认痕被拦 / 认痕放行）。 */
+  {
+    /* ① 未认痕：走北被拦在原地。
+       🔴 doMove 拦截口径（design/89 铁律 3）：被挡时 **ex.say 优先**、msg 兜底 ——
+       本门数据 say 写的是「那兵上下打量你…」（守门兵的拦人戏），
+       msg（「城门口查得紧」）成了兜底不出口。断言按现实口径：人没动 + 守门兵在场。
+       ⚠️ 遗留：say 文案读着像放行句（「进去吧」），门开着时会跟 travel 句叠戏 ——
+       归数据侧措辞（游有方 G1 收笔项），引擎不动。 */
+    ok('前提：此时还没认痕（act1_recognized 未插旗）', !p.hasFlag('act1_recognized'));
+    const rBlocked = await e.exec('北');
+    const blockedText = (rBlocked.lines || []).map(l => l.text || '').join('\n');
+    ok('★ G1 未认痕走北：被守门兵拦住（人没出门）',
+      p.room === elderRoom && /那兵|枪/.test(blockedText),
+      blockedText.slice(0, 40));
+    /* ② 认痕后放行：补旗再走，门开了 */
+    p.setFlag('act1_recognized', true);
+    const rOpen = await e.exec('北');
+    ok('★ G1 认痕后走北：放行（人到了门外）', p.room === 'jiangnan_gate',
+      '现在在 ' + (w.data.rooms[p.room] || {}).name);
+  }
+  /* 门口回不来就回不来 —— 本节只证「剧情常显」，人在哪不影响断言；
+     下面 ③「走开后再 look」那段要的是「人不在老汉跟前」，站在门外正好。 */
   const rLook = await e.exec('look');
   ok('★ 走开之后大框里还是那一幕（不会因为离开就消失）',
     !!storyOf(rLook) && storyOf(rLook).arc === 'main' && /第 \d+ \/ \d+ 步/.test(storyOf(rLook).arcLabel || ''),

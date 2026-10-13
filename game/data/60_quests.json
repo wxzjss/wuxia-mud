@@ -341,7 +341,8 @@
       "desc": "岳掌门怀疑魔教在黑木崖有所图谋，要你前去探查。",
       "require": {
         "sect": "huashan",
-        "level": ">=20"
+        "level": ">=20",
+        "flag": "act3_done"
       },
       "stages": [
         {
@@ -1069,7 +1070,14 @@
         {
           "desc": "拿引荐信拜入一个门派（茶摊老汉给的那封）",
           "cond": {
-            "hasSect": true
+            "or": [
+              {
+                "hasSect": true
+              },
+              {
+                "flag": "act1_recognized"
+              }
+            ]
           },
           "targets": [
             {
@@ -1102,7 +1110,10 @@
           }
         },
         {
-          "lock": { "flag": "pre_a1_chuan", "quest": "sq_pre_a1_chuan" },
+          "lock": {
+            "flag": "pre_a1_chuan",
+            "quest": "sq_pre_a1_chuan"
+          },
           "desc": "在江湖上广结善缘，完成 5 桩支线差事（结交朋友、打探消息）",
           "cond": {
             "fn": "sideQuestsDone",
@@ -1126,7 +1137,10 @@
           }
         },
         {
-          "lock": { "flag": "pre_a1_shi", "quest": "sq_pre_a1_shi" },
+          "lock": {
+            "flag": "pre_a1_shi",
+            "quest": "sq_pre_a1_shi"
+          },
           "desc": "胜过一位成名高手（灭绝师太 / 太虚居士 / 神秘老僧）",
           "cond": {
             "and": [
@@ -1146,7 +1160,10 @@
           }
         },
         {
-          "lock": { "flag": "pre_a1_yao", "quest": "sq_pre_a1_yao" },
+          "lock": {
+            "flag": "pre_a1_yao",
+            "quest": "sq_pre_a1_yao"
+          },
           "desc": "习得一门绝顶内功（九阳神功 / 九阴真经 / 易筋经 / 葵花宝典）",
           "cond": {
             "flagsAny": [
@@ -6975,7 +6992,10 @@
           "next": 1
         },
         {
-          "lock": { "flag": "pre_a2_menfang", "quest": "sq_pre_a2_menfang" },
+          "lock": {
+            "flag": "pre_a2_menfang",
+            "quest": "sq_pre_a2_menfang"
+          },
           "desc": "查清铜牌的来路：江南衙门签押房经手过这份名单",
           "cond": {
             "flag": "clerk_met"
@@ -7068,6 +7088,10 @@
         {
           "type": "narrate",
           "raw": "江湖很大，大得容得下两把刀。你学会了往哪一边站，也学会了代价是什么。"
+        },
+        {
+          "type": "narrate",
+          "raw": "临别冲虚又补了一句：「要摸清这批东西的来路，先去洛阳当铺问一页旧账，再去成都书坊问一副旧版。路在这两处。」"
         }
       ]
     }

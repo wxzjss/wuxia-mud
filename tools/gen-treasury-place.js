@@ -48,6 +48,24 @@ const patch = {};
 
 const GUARD_BY_TIER = (TRE.guard && TRE.guard.byTier) || { 一流: 'A', 二流: 'B', 三流: 'C' };
 
+/* ⚠️ act1 锁区（design/96 G6，2026-10-16 游有方）：
+ * 82 按文件名排在 50_map 之后加载，exits 按键合并「后载胜」——host 出口若写裸字符串，
+ * 会把 50_map 里的门对象整个抹掉（2026-10-16 穷举验收实锤：fresh 档 huashan_library 可达）。
+ * 华山藏经阁的 host 边必须抄回全量门对象（新分片抄回旧条目铁律），挂点也钉死不动，
+ * 否则 attach 按「空闲方向」挑点会在 50_map 已占 s 之后漂移改拓扑。 */
+const PINNED_ATTACH = { huashan: { host: 'road_huashan_1', dir: 's' } };
+const HOST_GATED_EXIT = {
+  huashan: {
+    to: 'huashan_library',
+    cond: { flag: 'act1_recognized' },
+    /* 93 口径：say=被拦时守阁弟子说的话（先出口），msg=兜底（有 say 永不出口），
+       travel=放行过场。2026-10-16 对调过一轮，别再装反。 */
+    say: '守阁的弟子伸手拦住：「藏经阁是本门重地。你不是本门的人，这名头也还没挣到阁前。」',
+    msg: '守阁的弟子拦在阁前。',
+    travel: '你放轻脚步进了藏经阁。守阁弟子坐回门槛，接着晒他的太阳。',
+  },
+};
+
 /* ⚠️ 两条硬不变量（smoke-npc-skills 会钉）：
    ① 每个槽上的功法都必须在 `learned` 里有等级——否则战斗里 skillLevel 取 0，等于没学；
    ② 兵刃系招式必须配得上对应兵器，不然 weaponPenalty 给 ×0.45。
@@ -82,7 +100,12 @@ for (const [sid, s] of Object.entries(SECTS)) {
   /* ---- 藏经阁（三流门派没有，它们只配一间库房） ---- */
   if (!isSmall) {
     const libId = `${sid}_library`;
-    const at = attach(s.region, libId, ROOMS[hub] ? hub : null);
+    if (PINNED_ATTACH[sid]) {
+      (usedDirs[PINNED_ATTACH[sid].host] = usedDirs[PINNED_ATTACH[sid].host] || new Set()).add(PINNED_ATTACH[sid].dir);
+      var at = PINNED_ATTACH[sid];
+    } else {
+      var at = attach(s.region, libId, ROOMS[hub] ? hub : null);
+    }
     if (!at) continue;
     rooms[libId] = {
       id: libId, name: `${s.name}·藏经阁`, region: s.region,
@@ -92,7 +115,7 @@ for (const [sid, s] of Object.entries(SECTS)) {
       actions: [{ label: '翻看经卷', cmd: '藏经阁', keywords: ['藏经阁', '经卷', '看书'], desc: '按牌子进层' }],
     };
     patch[at.host] = patch[at.host] || { id: at.host, exits: {} };
-    patch[at.host].exits[at.dir] = libId;
+    patch[at.host].exits[at.dir] = HOST_GATED_EXIT[sid] || libId;
 
     const vId = `${sid}_vault`;
     rooms[vId] = {

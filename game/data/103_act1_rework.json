@@ -1,0 +1,101 @@
+{
+  "_note": "act1 地理施工承接片（design/96/98，2026-10-16 游有方）：①「给掌柜看信」自 62_shops jn_pawnshop 迁入 cunzhen_inn（江南城锁区后，看信一环落青溪村·村口小铺；小铺无货摊实体，list 类 action 摘除——actions-check A-2：真执行不许出「没有做买卖的人」）；②cunzhen_farm「追鸡」场景补卷一轻功断供（99 §4.2 定案：卷一末必须会一门轻功，武馆/书都在锁区，追出来的轻功落 act1 腹地），keywords 补「田地」对齐 81 批交互名词施工图；③α 狼双保险：def.room=wild_forest_1（**只写差异字段**：world.js mergeEntry 对已存在 entry 走deepMerge 字段级合并——40_npcs 全文 def 先载（文件名序 40<103），103 的 room/noWander 原语覆盖即可，初版全量 deepcopy 是「防 replace 丢字段」的错判，mergeData 实证为深合并；懒生成不掷点、教学战必在）+ 50_map respawn 定岗（不游走、死后重生；狼活着时 alive>=count 短路不掷点，种子流不偏）+ noWander 钉住（野地默认 20% 游走率会漂出教学位）。两房原无 actions，本片整段声明，无数组 replace 风险。",
+  "npcs": {
+    "mob_wolf": {
+      "id": "mob_wolf",
+      "room": "wild_forest_1",
+      "noWander": true
+    }
+  },
+  "rooms": {
+    "cunzhen_inn": {
+      "id": "cunzhen_inn",
+      "actions": [
+        {
+          "label": "掌柜",
+          "cmd": "给掌柜看信",
+          "keywords": [
+            "掌柜",
+            "看信",
+            "小铺"
+          ],
+          "desc": "把信递给铺子里的掌柜",
+          "cond": {
+            "flag": "act1_letter_taken",
+            "notFlag": "act1_pawn_done"
+          },
+          "once": true,
+          "failMsg": "你怀里没有信。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "他接过信，只把信翻过来，看封皮。指腹在封皮上蹭了一下。"
+            },
+            {
+              "type": "narrate",
+              "raw": "「这个印，」他把信往柜台上一放，「三年前的腊月按的。按的时候人还在。」你问现在人呢。「牢里没了。」他说得很平。"
+            },
+            {
+              "type": "narrate",
+              "raw": "「你想看单子，我把单子找给你。那单子七个月前就卖了。」你问他卖给谁了。「收废纸的。」他说，「论斤。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "他把信推回来。推的时候用两根手指，指尖很干净。「你留着吧。」他说，「这个印现在没人认得了。再过两年，连我也认不得。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_pawn_done"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "cunzhen_farm": {
+      "id": "cunzhen_farm",
+      "actions": [
+        {
+          "cmd": "追鸡",
+          "label": "追鸡",
+          "keywords": [
+            "追鸡",
+            "芦花鸡",
+            "逮鸡",
+            "田地"
+          ],
+          "desc": "田里那只谁也逮不着的芦花鸡",
+          "say": "追鸡",
+          "cond": {
+            "notFlag": "act1_chicken_chased"
+          },
+          "once": true,
+          "failMsg": "那只芦花鸡你今天已经追够了。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "田里的芦花鸡从秧苗里扑出来，你追了它三趟。头两趟它从你手边溜走，第三趟你踩着田埂跑，脚下忽然轻了半分，一把把它按在了稻草堆上。"
+            },
+            {
+              "type": "narrate",
+              "raw": "鸡在你手里扑腾，你自己倒愣住了。踩着田埂跑的那一段路，步子跟平常走路不是一回事。你把它放了，它咯咯叫着钻回秧苗里，像什么都没发生。"
+            },
+            {
+              "type": "learnskill",
+              "args": [
+                "basic_dodge"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act1_chicken_chased"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

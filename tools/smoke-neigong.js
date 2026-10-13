@@ -68,7 +68,7 @@ ok('吐纳结束状态清掉了', !NG.stateOf(p1));
 const e1x = boot(); const p1x = e1x.world.player;
 NG.start(e1x.world, p1x);
 const roomBefore1 = p1x.room;
-const mv1 = e1x.exec('go north');
+const mv1 = e1x.exec('go east');   /* 96 案后北门是 G1 边检，金丝雀改常开的东门 */
 ok('★ 吐纳中按方向键：先退出吐纳，再真的走过去',
   /已退出吐纳状态/.test(mv1.lines.map(l => l.text || '').join('')) && p1x.room !== roomBefore1 && !NG.stateOf(p1x),
   `${roomBefore1} → ${p1x.room}`);

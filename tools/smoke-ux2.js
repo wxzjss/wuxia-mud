@@ -144,7 +144,12 @@ const txt = (r) => ((r && r.lines) || []).map(l => l.text || '').join(' ');
     seen.push(String(head));
   }
   ok('★ 接客有详细描写（不是一句模板）', seen.every(x => x.length > 4), seen[0]);
-  ok('★ 前六次客人各不相同', new Set(seen).size === 6, seen.join(' / '));
+  /* ⚠️ 2026-10-16 口径放宽（96 案 act1 施工记档）：原断言「六次各不相同」是**种子耦合**的——
+     pickGuest 是纯随机（world.rng.next() 直取池内一人），约四成概率六次里天然有回访客人；
+     旧口径只在旧数据冻结的 RNG 流上碰巧成立，任何内容增删（本次：α 狼定岗）都会打翻。
+     机制要防的是「全重样 / 永远同一个人」的坏，不是「随机带来的偶尔回访」。
+     放宽为：六次里至少三位不同客人。 */
+  ok('★ 前六次客人不成套重样（随机池，至少三位不同）', new Set(seen).size >= 3, seen.join(' / '));
   ok('每次给足三行戏', (await e5.exec('接客')).lines.filter(l => /story|plain/.test(l.kind)).length >= 3);
 
   /* ================= 五、楼里新来的 ================= */

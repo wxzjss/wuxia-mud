@@ -41,9 +41,18 @@ function alone(e, npcId, opts) {
   }
   const room = Object.keys(w.data.rooms).find(id =>
     !(w.data.rooms[id].npcs || []).length && !npcRooms.has(id) && !(w.npcsIn(id) || []).length
+    /* ⚠️ respawn 房也要排除（2026-10-16）：respawn 刷的怪不占 def.room，光看 def 挑房
+       会选中一间「现在没人、tick 一响刷出一只」的房——四轮之间刷出个野怪，
+       「被人撞见 -6」直接盖过结算加成（α 狼挪窝后实锤）。 */
+    && !(([].concat(w.data.rooms[id].respawn || [])).length)
     && (opts.region ? w.data.rooms[id].region === opts.region : true));
   if (!room) throw new Error('找不到可用的空房间');
   w.movePlayerTo(p, room);
+  /* 🔒 封门（纯运行时，不碰数据）：四轮双修走真实时间，worldTick 里游走 NPC 会推门
+     进来，「被人撞见 -6」（dualcultivate.js 结算路径）能把 +12 的结算加成整个吃掉，
+     「对象好感涨了」就得看噪声脸色——96 案狼定岗换房后实锤过一回（90 → 88）。
+     留一个指向自己的 n 出口：走动类断言照常能按方向键。 */
+  w.data.rooms[room].exits = { n: room };
   for (const n of (w.npcsIn(room) || [])) n.room = '__away__';
   const npc = w.spawnNpc(npcId, room);
   /* ⚠️ 名人（A 层那批）是**全局唯一实例**：`spawnNpc` 见到世上已经有一个活的
