@@ -1,0 +1,385 @@
+回归入口：148 套 · 并发 4 · 单套超时 120s（perf 系 perf-step-check.js/perf-map-check.js 放宽到 240s）
+隔离目录：C:\Users\35453\AppData\Local\Temp\wx-reg-qmzFjA
+工作区改动计数（跑之前）：5 项
+
+准备步骤（串行）：mirror-sync.js
+  [ OK ] mirror-sync.js  0.3s
+
+[ OK ]   4/148  ambient-check.js  0.4s
+[ OK ]   3/148  ai-flavor-check.js  0.6s
+[ OK ]   1/148  account-check.js  0.9s
+[ OK ]   6/148  buttons-check.js  0.6s
+[FAIL]   2/148  actions-check.js  1.6s  ← 退出码 1
+[ OK ]   7/148  combat-fields-check.js  0.8s
+[ OK ]   8/148  combat-lines-check.js  0.5s
+[ OK ]   5/148  autosave-throttle-check.js  1.6s
+[ OK ]  11/148  dark-bg-check.js  0.4s
+[ OK ]  12/148  data-dup-check.js  0.5s
+[ OK ]  10/148  dangling-ref-check.js  0.9s
+[ OK ]  15/148  dom-page-check.js  0.5s
+[ OK ]  14/148  demo-mods-check.js  0.9s
+[ OK ]  16/148  game-ui-check.js  0.4s
+[ OK ]  17/148  git-revert-guard-check.js  0.9s
+[ OK ]   9/148  combat-round-check.js  2.9s
+[ OK ]  18/148  identity-belonging-check.js  1.1s
+[ OK ]  19/148  identity-check.js  1.5s
+[ OK ]  13/148  data-load-check.js  4.6s
+[ OK ]  20/148  input-guard-check.js  2.5s
+[ OK ]  22/148  look-detail-check.js  1.2s
+[ OK ]  23/148  lore-consistency-check.js  0.7s
+[ OK ]  26/148  map-fog-check.js  1.0s
+[ OK ]  25/148  map-edge-check.js  1.3s
+[ OK ]  24/148  map-check.js  1.5s
+[ OK ]  21/148  kidnap-ui-check.js  4.1s
+[ OK ]  30/148  mirror-check.js  0.4s
+[ OK ]  27/148  map-redesign-check.js  1.0s
+[ OK ]  28/148  mapguide-check.js  1.1s
+[ OK ]  32/148  noun-check.js  0.5s
+[ OK ]  29/148  martial-ui-check.js  1.5s
+[ OK ]  31/148  modmaker-roundtrip-check.js  2.2s
+[ OK ]  33/148  perf-map-check.js  2.9s
+[ OK ]  36/148  portrait-fit-check.js  0.6s
+[ OK ]  35/148  persona-portrait-check.js  0.7s
+[ OK ]  37/148  room-batch-plan-check.js  0.8s
+[ OK ]  38/148  roomnotes-check.js  0.6s
+[FAIL]  39/148  say-hint-check.js  0.9s  ← 退出码 1
+[ OK ]  41/148  smoke-actlimit.js  0.8s
+[ OK ]  40/148  smoke-act2.js  3.9s
+[ OK ]  42/148  smoke-arts.js  3.1s
+[ OK ]  45/148  smoke-balance.js  2.1s
+[ OK ]  46/148  smoke-batch4.js  1.6s
+[ OK ]  47/148  smoke-boss.js  2.7s
+[ OK ]  48/148  smoke-brothel-guest.js  1.8s
+[FAIL]  34/148  perf-step-check.js  13.8s  ← 退出码 1
+[ OK ]  50/148  smoke-city.js  0.7s
+[ OK ]  51/148  smoke-combat.js  3.1s
+[FAIL]  49/148  smoke-busy-exit.js  5.5s  ← 退出码 1
+[ OK ]  52/148  smoke-combined-link.js  2.0s
+[ OK ]  53/148  smoke-creation.js  1.8s
+[ OK ]  54/148  smoke-culture-quests.js  1.6s
+[ OK ]  56/148  smoke-discipleship.js  1.6s
+[ OK ]  44/148  smoke-b9-intro.js  20.5s
+[ OK ]  57/148  smoke-dualcultivate.js  3.2s
+[ OK ]  58/148  smoke-duel.js  2.4s
+[ OK ]  55/148  smoke-culture.js  10.0s
+[ OK ]  59/148  smoke-dungeon.js  4.7s
+[ OK ]  60/148  smoke-ecology.js  3.2s
+[ OK ]  61/148  smoke-escort.js  1.0s
+[ OK ]  64/148  smoke-exits.js  1.1s
+[ OK ]  63/148  smoke-events.js  1.9s
+[ OK ]  62/148  smoke-estate.js  3.1s
+[ OK ]  66/148  smoke-flyto.js  1.4s
+[ OK ]  65/148  smoke-faction.js  2.2s
+[ OK ]  69/148  smoke-hook-trigger.js  0.6s
+[ OK ]  67/148  smoke-gather.js  2.3s
+[ OK ]  68/148  smoke-guards.js  2.8s
+[ OK ]  71/148  smoke-kinsman-witness.js  3.1s
+[ OK ]  73/148  smoke-mainline-branch.js  2.9s
+[ OK ]  72/148  smoke-live-restore.js  6.4s
+[ OK ]  74/148  smoke-mainline-causal.js  1.2s
+[ OK ]  70/148  smoke-kidnap.js  9.6s
+[ OK ]  76/148  smoke-mainline.js  2.5s
+[ OK ]  75/148  smoke-mainline-expansion.js  3.9s
+[ OK ]  78/148  smoke-map-layer-filter.js  1.3s
+[ OK ]  79/148  smoke-map-level.js  1.3s
+[ OK ]  80/148  smoke-map-link.js  1.3s
+[ OK ]  82/148  smoke-map-region-filter.js  2.3s
+[ OK ]  77/148  smoke-mainline35.js  6.2s
+[ OK ]  84/148  smoke-marry.js  1.3s
+[ OK ]  81/148  smoke-map-migrate.js  4.5s
+[ OK ]  86/148  smoke-masterbond.js  0.9s
+[ OK ]  83/148  smoke-mapui.js  3.9s
+[FAIL]  85/148  smoke-martial.js  2.6s  ← 退出码 1
+[ OK ]  89/148  smoke-mod-ids.js  1.0s
+[ OK ]  87/148  smoke-medicine.js  2.6s
+[ OK ]  91/148  smoke-modmaker-fields.js  0.4s
+[ OK ]  88/148  smoke-mod-account.js  2.5s
+[ OK ]  90/148  smoke-mod-trace.js  1.8s
+[ OK ]  93/148  smoke-moves.js  1.5s
+[ OK ]  94/148  smoke-neigong.js  1.8s
+[ OK ]  92/148  smoke-modscript.js  4.1s
+[ OK ]  96/148  smoke-npc-dup.js  1.8s
+[ OK ]  97/148  smoke-npc-skills.js  1.0s
+[FAIL]  98/148  smoke-npclife.js  1.0s  ← 退出码 1
+[ OK ]  99/148  smoke-observe.js  0.9s
+[FAIL]  95/148  smoke-newbie.js  5.0s  ← 退出码 1
+[ OK ] 102/148  smoke-patrol.js  0.9s
+[FAIL] 100/148  smoke-outlaw.js  2.9s  ← 退出码 1
+[ OK ] 103/148  smoke-persona-master.js  1.2s
+[ OK ] 105/148  smoke-portrait-bc.js  0.9s
+[FAIL] 104/148  smoke-portrait-batch.js  2.0s  ← 退出码 1
+[ OK ] 106/148  smoke-portrait-hooks.js  1.6s
+[ OK ]  43/148  smoke-auction.js  66.9s
+[ OK ] 107/148  smoke-portrait.js  2.1s
+[ OK ] 108/148  smoke-potential.js  1.7s
+[ OK ] 109/148  smoke-quest-data.js  1.2s
+[ OK ] 110/148  smoke-quest-sanity.js  1.1s
+[FAIL] 113/148  smoke-realm.js  1.3s  ← 退出码 1
+[ OK ] 112/148  smoke-quit.js  1.7s
+[ OK ] 114/148  smoke-respawn-inn.js  1.3s
+[ OK ] 115/148  smoke-round2-map.js  1.3s
+[ OK ] 111/148  smoke-quest-track.js  3.3s
+[ OK ] 116/148  smoke-round3.js  1.6s
+[ OK ] 118/148  smoke-rules.js  2.2s
+[ OK ] 119/148  smoke-rumor.js  2.0s
+[ OK ] 120/148  smoke-rumorfeed.js  1.3s
+[ OK ] 101/148  smoke-owner-bugs.js  14.2s
+[ OK ] 121/148  smoke-saveload.js  0.9s
+[ OK ] 117/148  smoke-round4.js  4.8s
+[ OK ] 123/148  smoke-sect.js  1.3s
+[ OK ] 124/148  smoke-sectlife.js  1.4s
+[ OK ] 122/148  smoke-sect-guards.js  2.8s
+[ OK ] 125/148  smoke-sects.js  1.7s
+[ OK ] 126/148  smoke-server-guard.js  1.5s
+[ OK ] 129/148  smoke-social.js  1.2s
+[ OK ] 130/148  smoke-stories.js  1.3s
+[ OK ] 128/148  smoke-skill-gate.js  1.5s
+[ OK ] 133/148  smoke-survival.js  2.5s
+[ OK ] 132/148  smoke-support-moves.js  2.7s
+[ OK ] 134/148  smoke-talents.js  0.8s
+[ OK ] 131/148  smoke-storybeat.js  3.8s
+[ OK ] 135/148  smoke-test.js  1.6s
+[ OK ] 136/148  smoke-tuna-auto.js  2.0s
+[ OK ] 137/148  smoke-tutorial.js  3.4s
+[ OK ] 138/148  smoke-uiux.js  4.6s
+[ OK ] 140/148  smoke-ux2.js  2.0s
+[ OK ] 141/148  smoke-vision.js  0.8s
+[ OK ] 127/148  smoke-sidequest.js  13.1s
+[ OK ] 142/148  smoke-visit-house.js  2.4s
+[FAIL] 143/148  smoke-world-events.js  2.0s  ← 退出码 1
+[ OK ] 146/148  ui-audit-check.js  0.3s
+[ OK ] 145/148  smoke-wuguan.js  1.0s
+[ OK ] 147/148  ui-bind-check.js  0.5s
+[ OK ] 148/148  v6b-check.js  0.4s
+[ OK ] 139/148  smoke-ux-fixes.js  7.5s
+[ OK ] 144/148  smoke-world-interact.js  5.9s
+
+==================================================================
+通过 137 / 失败 11 / 共 148 套 · 耗时 111.1s
+
+失败清单：
+  - actions-check.js  退出码 1
+  - perf-step-check.js  退出码 1
+  - say-hint-check.js  退出码 1
+  - smoke-busy-exit.js  退出码 1
+  - smoke-martial.js  退出码 1
+  - smoke-newbie.js  退出码 1
+  - smoke-npclife.js  退出码 1
+  - smoke-outlaw.js  退出码 1
+  - smoke-portrait-batch.js  退出码 1
+  - smoke-realm.js  退出码 1
+  - smoke-world-events.js  退出码 1
+
+失败套次的末尾输出（每套最多 20 行）：
+---- actions-check.js ----
+  § 真执行：320 房 · 每条「此地可做」都要真的做得了
+    ✔ A-1 扫到房间 action（不是空跑）  311 条 / 538 房
+    ✘ A-2 ★ 每条 action 真执行后都没有「目标不存在」类回执（报一处查全部）  << 东市·当铺[计掌柜]`给掌柜看信`→「给掌柜看信」是什么指令？你可以在心中默念「help」看看都会些什么。
+    ✔ B-1 ★ 每条 action 都能算出**显示名**（label → cmd → keywords 首个 → 房间名）  全部有可显示的名字
+    ✔ C 回春堂「老郎中」能真的搭上话  陈济仁柔声道：「这药柜里三百二十七个抽屉，哪个装什么，我闭着眼也摸得着。」 　（闲谈几句，陈济仁对你多了三分熟络。）
+    ✔ C 回春堂「药柜」能真的看货  【 陈济仁的货摊 】 金创药　45 文 当归　20 文 灵芝　120 文 小还丹　85 文 用「买 <物品名>」购买，「
+    ✔ C 铁匠铺「炉火」能真的打工  你在铁匠铺·炉房里拉风箱，忙前忙后，好一阵操劳。 东家结算工钱，你赚了 18 文钱（饱食 -14，饮水 -10）。 （闯
+    ✔ C 碾房「石磨」能真的打工  你在青溪村·碾房里推碾，忙前忙后，好一阵操劳。 东家结算工钱，你赚了 13 文钱（饱食 -13，饮水 -9）。 （闯练，
+    ✔ C 醉春楼「灶台」能真的打工  你在醉春楼·后厨里帮厨，忙前忙后，好一阵操劳。 东家结算工钱，你赚了 14 文钱（饱食 -12，饮水 -9）。 （闯练，
+    ✔ C 参合庄「查阅秘录」有实际内容  案上摊着一卷没写完的册子，纸已经脆了。前几页是各家兵器的图谱，笔画工整；越往后越潦草，最后几页只剩下反复涂改的一个字：「
+  
+  ================================================
+    房间动作守卫：8 通过 / 1 失败
+    失败项：A-2 ★ 每条 action 真执行后都没有「目标不存在」类回执（报一处查全部）
+  ================================================
+---- perf-step-check.js ----
+      单步下行 p95 25.6 KB / 8.9 KB · max 32.9 KB / 11.1 KB
+    ✔ B1 单步服务端 p95 ≤ 8 ms  4.33 ms
+    ✔ B1 单步服务端 max ≤ 25 ms  9.22 ms
+    ✔ B1 单步服务端 p50 ≤ 6 ms（硬判）  3.54 ms
+    ✔ B1 比值 p50 ≤ 修前 × 1.5（_perf_baseline.json）  3.54 ms vs 修前 3.89 ms
+    ✘ B2 /api/exec 回包 ≤ 32.0 KB  « max 32.8 KB
+    ✔ B2 /api/exec 回包 gzip ≤ 12.0 KB  max 11.0 KB
+    ✔ B3 单步下行总量 ≤ 40.0 KB  max 32.9 KB
+    ✔ B3 单步下行 gzip ≤ 15.0 KB  max 11.1 KB
+    ✔ B4 /api/save 回包 ≤ 2.0 KB  max 0.1 KB
+    ✔ 前提 900 步全程角色在线  0 步 noPlayer
+  
+    §4 内存
+      heapUsed 27.7 MB · rss 98.4 MB · heapTotal 55.3 MB
+    ✔ B9 heapUsed ≤ 120 MB  27.7 MB
+    ✔ B9 rss ≤ 200 MB  98.4 MB
+  
+    ── 汇总 ──  通过 11 · 失败 1
+    失败项：
+      - B2 /api/exec 回包 ≤ 32.0 KB
+---- say-hint-check.js ----
+  
+  §5 next 守卫（§8.2.3 两条断言）
+    ✘ ★ 甲档三件的 next 已落库（§8.2.3：甲档必填）  « 当前 0 条 next —— 没落够 3 条，红着 = 整改没落地
+    ✔ 18 ★ next 指得到、且不指回自己（守 0 条）  当前 0 条 next —— 落库后这条才真正开查
+  
+  §6 failMsg / cond 守卫
+    ✔ 19 ★ failMsg 不许手打「心里默念」外壳（扫 77 条）  77 条 0 命中
+      ─ 软断言（黄，人工看一眼，不计红）：0 条
+    ✔ 20 ★ cond 的中文否定不许写字符串（扫 79 条）  79 条 0 命中
+  
+  §8 待补 keyword 自结（团队长硬约束：待办必须能自己结束）
+    ✔ ★ 自结账本对得上（施工图 18 条 = 已落 18 + 待补 0）  全部有下落
+      待补 keyword 0 条（已落库自动转正常绿/红判定 18 条）
+    ✔ ★ 待办会自结（若全部落库 ⇒ 本节待补归 0，不许永远挂着）  已全部落库，待办清零
+  
+  ====================================================
+    say/提示守卫：14 通过 / 1 失败
+    失败项：
+      - ★ 甲档三件的 next 已落库（§8.2.3：甲档必填）
+  ====================================================
+---- smoke-busy-exit.js ----
+    ✔ ★ 结算后 view 里没有 busy（人能动）  null
+    ✔ ★ 结束之后真的走得动（这就是主人问的「卡不卡」）  road_jiangnan_1 → jiangnan_gate
+  
+  ④ 退出时的伴侣反应不重样
+    ✔ ★ 反复中途抽身，听到的话不重样（≥3 种）  实际 4 种：卖茶的老汉看了你很久，忽然笑了一下，那笑没到眼睛里：「我当你今晚是不走的。」
+    ✔ 关系未定的人抽身，说的话与情人不同  卖茶的老汉怔了一下，随即把衣裳理好，淡淡道：「是我会错意了。」
+  
+  ⑤ 采补中途退出（另一套文本）
+    ✔ 采补能起手  卖茶的老汉喝多了，靠在榻上哼了两声就不动了。你把灯挪远了些。
+  （此刻起你脱不开身。再点一
+    ✔ ★ 采补中点别的按钮也退出，且写明「已退出采补状态」  你收回手，替他把被子掖好。屋里静下来，像什么都没发生过。
+  已退出采补状态 —— 这一趟没
+    ✔ 采补退出后状态已清  null
+  
+  ⑥ 继续类指令不被自动退出误伤
+    ✔ 「吐纳」不进自动退出分支  气息又沉下去一层。丹田空了一分，指尖发凉（第 1 轮
+    ✔ 「行功」不进自动退出分支  气息又沉下去一层。丹田空了一分，指尖发凉（第 2 轮
+    ✔ 「调息」不进自动退出分支  气息又沉下去一层。丹田空了一分，指尖发凉（第 3 轮
+  
+  结果：30 通过 / 1 失败
+---- smoke-martial.js ----
+  ⑪ 收徒系统（拜师/授艺/逐出）
+    ✘ 收徒成功  disciples=0
+    ✘ 收徒返回系统消息  ["这里没有「范清」。"]
+    ✘ 弟子记作实例且记有师父  npc=null
+  C:\Users\35453\WorkBuddy\2026-10-08-00-02-57\jinyong-mud\tools\smoke-martial.js:260
+    ok('授艺后弟子习得该武学', npc.learned['basic_sword'] && npc.learned['basic_sword'].level >= 1, 'lv=' + (npc.learned['basic_sword'] || {}).level);
+                         ^
+  
+  TypeError: Cannot read properties of null (reading 'learned')
+      at Object.<anonymous> (C:\Users\35453\WorkBuddy\2026-10-08-00-02-57\jinyong-mud\tools\smoke-martial.js:260:24)
+      at Module._compile (node:internal/modules/cjs/loader:1705:14)
+      at Object..js (node:internal/modules/cjs/loader:1838:10)
+      at Module.load (node:internal/modules/cjs/loader:1441:32)
+      at Function._load (node:internal/modules/cjs/loader:1263:12)
+      at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+      at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)
+      at node:internal/main/run_main_module:36:49
+  
+  Node.js v22.22.2
+---- smoke-newbie.js ----
+  
+  § §G NPC 游走：默认生效、三类消息、限量、只走八向
+    ✔ G-1 ★ 默认游走真的生效（数据里原本只有山贼 1 个会动）  13 / 19 个实例会走
+    ✔ G-2 ★ 有铺子的 NPC 不走（摊主一走，「看看货物」就点不着了）
+    ✔ G-3 ★ 发引荐信的老汉被数据钉住（noWander），不会走开
+    ✔ G-4 ★ 「离开」那条出得来  张掌柜朝这边拱了拱手，便往南去了。
+    ✔ G-5 ★ 「走进来」那条出得来  卖茶的老汉在江南城·市集门口跺了跺脚上的泥，才慢慢进来。
+    ✔ G-6 ★ 「打身边经过」那条出得来（两边都在隔壁、不进玩家的屋）  卖茶的老汉停也没停，从你眼前径直往别处去了。
+    ✔ G-7 ★ 一次**最多 3 条**（不然整城几百号人会把日志刷烂）  3 条（输入有 19 个不同的人）
+    ✔ G-7b 常量 MAX_PER_TICK 就是 3（与上面那条字面量对齐）  3
+    ✔ G-7c 测例非平凡：输入确实有 4 个以上不同的人可播（否则限量断言空转）  19 人
+    ✔ G-8 同一个人在一条里只播一次
+    ✘ G-9 ★ 连续推进时间，世界里真的会自然冒出走动消息  << 3 条
+    ✔ G-10 ★ 而且不重样（句子池够大）  3 种 / 3 条
+    ✔ G-11 ★ 不会播「往上去 / 往里去了」这种（只走平面八向）  (没有)
+  
+  ================================================
+    入江湖 + 世界氛围 专项：56 通过 / 1 失败
+    失败项：G-9 ★ 连续推进时间，世界里真的会自然冒出走动消息
+  ================================================
+---- smoke-npclife.js ----
+  ===== ① 家底 =====
+  ===== ② 日常（该干什么看他自己的状态） =====
+  ===== ③ 社交（合不合得来按性格） =====
+  ===== ④ 讲价（老板的性子说了算） =====
+  ===== ⑤ 拍卖行竞价 =====
+  ===== ⑥ 宗门大比台词 =====
+  ===== ⑦ 世界自己会转（onTick 出播报） =====
+    ✘ 播报里带人名  "老周闷闷地打了个招呼。"
+  
+  ===== smoke-npclife: 36 通过 / 1 失败 =====
+---- smoke-outlaw.js ----
+  ===== ① 谁是匪类 / 谁有武力 =====
+  ===== ② 山贼量完你之后怎么定 =====
+    ✘ 又弱又穷 → 打晕搜刮  实得 ignore
+    ✘ 中等偏上又有钱 → 抢  实得 flee
+  ===== ③ 打晕搜刮真的会掉钱 =====
+    ✘ 触发了「打晕」  你身上有几道目光重了些。山贼把身子从墙根挪直，拿眼把你从头量到脚——先看你手上的茧，再看你腰间的钱袋。|山贼看了你一会儿
+    ✘ 钱被搜走了  10 → 10
+  ===== ④ 旁人出手 =====
+    ✘ 打不过就不硬撑（没把匪类打倒）
+  ===== ⑤ 追逐（看轻功） =====
+  ===== ⑥ 拦不拦 =====
+  ===== ⑦ 频率与姿态 =====
+  
+  ===== smoke-outlaw: 34 通过 / 5 失败 =====
+---- smoke-portrait-batch.js ----
+     portrait-drop-ask      → 改 commands.js 的 `if (!found && npc.portrait)`      →  1.L2 origin/want/fear 应变红
+    ✔ 6.1 变异对应表已登记（配套 tools/mutate.js 三 case）
+    ✔ 5.0 真 ui.js 载入成功（app.js + ui.js）
+    ✔ 5.1 真渲染 look 里看到 穆逢 的 routine  「坐在前厅的账台后头拨算珠，眼睛扫着每一个…」
+    ✔ 5.2 真渲染 ask 来历里看到 穆逢 的画像  「她自己就是被卖进来的，十四岁那年被人牙子…」
+     · 穆逢（npcv_154）：look→routine 可见｜ask→origin 可见｜tone=泼
+    ✔ 5.1 真渲染 look 里看到 和放 的 routine  「坐在南巷铺子的太师椅上，看进来看出去的每…」
+    ✔ 5.2 真渲染 ask 来历里看到 和放 的画像  「祖上开当铺，到他手里只剩一间。他年轻时替…」
+     · 和放（npcv_241）：look→routine 可见｜ask→origin 可见｜tone=冷
+    ✔ 5.1 真渲染 look 里看到 阮听 的 routine  「在市集口等活，站着不动，像随时要走…」
+    ✔ 5.2 真渲染 ask 来历里看到 阮听 的画像  「他年轻时是个正经游侠，替人押货、替人打抱…」
+     · 阮听（npcv_090）：look→routine 可见｜ask→origin 可见｜tone=冷
+  
+  ================================================
+    通过 373 项，失败 3 项
+    失败清单：
+     ✘ 0.5 40_npcs.json 可被 JSON.stringify(.,null,1) 逐字节还原（写入格式稳定）
+     ✘ 3.4 再跑后字节与磁盘完全一致
+     ✘ 3.7 从零生成的结果 == 磁盘上的 40_npcs.json（确定性）
+  ================================================
+---- smoke-realm.js ----
+  
+  == 2. 凡人连狼都打不过 ==
+  ✘ 狼攻击远高于凡人  → 狼atk=9 凡人atk=14
+  ✘ 狼气血远高于凡人  → 狼hp=106 凡人hp=89
+  
+  == 3. 等级不再加属性 ==
+  ✔ 等级拉满不加攻击
+  ✔ 等级拉满不加气血
+  ✔ 等级拉满不加防御
+  
+  == 4. 练武功法变强 ==
+  ✔ 练剑法加攻击
+  ✔ 境界随武学等级提升
+  
+  == 5. 内功加气血内力 ==
+  ✔ 存在基本内功
+    （basic_force 有前置，跳过内功气血断言）
+  
+  ==========================================
+  ❌ 失败 2 项
+---- smoke-world-events.js ----
+    ✔ ★ 一天的边界只结算一次（1510 分钟 ≙ 1 天）  行数 9
+  
+  ④ 一天最多报两件（68 条带 chance，不限流会刷屏）
+    ✘ ★ 六条必然命中，跨日只放了 2 条  放了 1 条
+  
+  ⑤ cooldownDays 与 once 真的拦得住
+    ✔ ★ 冷却生效：相邻两次之间隔够 30 天  报了 2 次，间隔 30（共 40 天）
+    ✔ ★ 40 天里只出现 1 次（once 生效）  出现 1 次
+  
+  ⑥ p.vars.rumor_heat_* / wanted：事件读的东西必须真有人写
+    ✔ （前提）传闻真的生了出来（房间里有目击者）  heat0=85
+    ✔ ★ 传闻热度被写进 p.vars.rumor_heat_max  值=85
+    ✔ ★ 坏事另有 p.vars.rumor_heat_bad_max（行善不该被追杀）  值=85
+    ✔ ★ 恶名同步进 p.vars.wanted（「大赦」那条事件读它）  值=57
+  
+  ⑦ 真实事件库：连跑一个月，看看节奏
+    ✔ ★ 一个月里世界确实在动（有事件发生）  16 行
+    ✔ ★ 但一天最多两条（30 天上限 60）  16 行
+  
+  ===== smoke-world-events: 18 通过 / 1 失败 =====
+工作区改动计数（跑之后）：7 项（不比跑之前少）
+==================================================================

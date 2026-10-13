@@ -247,6 +247,7 @@ section('⑩ 炼丹 / 炼器 / 符文阵法（SPRINT2-B）');
 section('⑪ 收徒系统（拜师/授艺/逐出）');
 {
   const e = boot(); const w = e.world, p = e.world.player;
+  p.room = 'road_jiangnan_2';   // 范清（船夫）B8 后常驻此处，不在出生房了
   // 玩家先习得一门武学才能收徒
   p.learned['basic_sword'] = { exp: 0, level: 8 };
   const r0 = e.exec('收徒 范清');
