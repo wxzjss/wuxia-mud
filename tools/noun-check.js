@@ -109,14 +109,14 @@ t('N-V-21 不可逆清单在册（偷袭/attack/kill/绑架/偷/drop/叛门…�
 t('N-V-21 分流（口径反转 · 主人真机点名）：.hl 点击一律只展开提示行，直执分支已拆',
   !/runInteractAct\(acts\[/.test(uiNoCmt)
   && /function openInteractMenu[\s\S]{0,300}toggleHlTip\(btnEl, name, acts\)/.test(uiNoCmt));
-t('N-V-27（2026-10-17 口径修订）提示行分两类：cmd 条目仍纯文字（无 onclick 执行、无 data-cmd）',
+t('N-V-27（2026-10-17 二次定调：细看提示撤可点 + 全部居左）提示行一律纯文字：无 hl-tip-act、不接 runInteractAct、无动态缩进',
   /HL_TIP_VERBS\s*=\s*\{[^}]*look:\s*'看'/.test(uiNoCmt)
   && /hlTipText\(a\)/.test(uiNoCmt)
+  && !/hl-tip-act/.test(uiNoCmt)
+  && !/runInteractAct\(a, name\)/.test(uiNoCmt)
+  && !/function toggleHlTip[\s\S]{0,700}offsetLeft/.test(uiNoCmt)
   && !/\.hl-tip-cmd[\s\S]{0,200}onclick/.test(uiNoCmt)
   && !/hl-tip-cmd" data-cmd=/.test(uiNoCmt));
-t('N-V-27c（主人真机 2026-10-17「细看回滚」）开面板类条目恢复可点：hl-tip-act 在册、toggleHlTip 里接 runInteractAct',
-  /hl-tip-cmd hl-tip-act/.test(uiNoCmt)
-  && /function toggleHlTip[\s\S]{0,2200}runInteractAct\(/.test(uiNoCmt));
 t('N-V-28（主人真机 2026-10-17 练拳/打坐点了没反应）bindPanelActions 也接 mini-btn/prac-btn 的 data-cmd',
   /function bindPanelActions[\s\S]{0,1200}\.mini-btn\[data-cmd\], #modal-body \.prac-btn\[data-cmd\]/.test(uiNoCmt));
 t('N-V-27b（主人插队件）runInteractAct 只剩开面板：函数体内无 doCmd',

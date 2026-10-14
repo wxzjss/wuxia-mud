@@ -561,26 +561,33 @@
 
   /* 日志文本渲染：
      - l.hl = [{text, type, actions:[{label, cmd, hint}]}] → 名词高亮，点击弹菜单
+       （同名多实例瘦身：重复条目只带 {text,type,sameAs:首条下标}，解析时指回全量）
      - l.exitMap = {dir:{dir,to,name}} → 出口 ASCII 方位图（可点击前往）
      - l.exits = [dir,...] → 把「北/南…」方向文字变成可点按钮（保底）
      reg 是 hl 注册表（传进来，好让测试能独立调用） */
   function renderLogText(l, reg) {
     let raw = esc(l.text || '');
 
-    /* ① 可交互名词 */
+    /* ① 可交互名词
+       2026-10-17 主人「任何 NPC 都不合并」配套：同文条目**逐处替换**——
+       旧 indexOf 只点亮第一个，逐实例拆行后第二个「山贼」会点不到。
+       同名多实例共享同一注册项（actions 按名寻址，本就同路）。 */
     const hls = l.hl;
     if (hls && hls.length) {
       hls.forEach(h => {
         if (!h.text) return;
         const needle = esc(h.text);
-        const idx = raw.indexOf(needle);
-        if (idx < 0) return;
+        if (raw.indexOf(needle) < 0) return;
+        /* 载荷瘦身（perf B2 退回 2026-10-17）：同名实例的重复条目只带
+           sameAs（指回首条下标），解析时换成首条的**全量注册项**——
+           菜单按名寻址本就同路，注册表里存的始终是带 actions 的那条。 */
+        const ref = (h.sameAs != null && hls[h.sameAs] && hls[h.sameAs].actions) ? hls[h.sameAs] : h;
         const hi = reg ? reg.length : 0;
-        if (reg) reg.push(h);
+        if (reg) reg.push(ref);
         /* 81/N-V-26（L1 一个字都不说）：屏幕上不许有 hover 冒泡提示，
            title= 已删；无障碍信息走 aria-label（读屏念，屏幕不显示）。 */
         const tag = '<button class="hl" data-hl="' + hi + '" aria-label="' + esc(esc(h.text) + '（可交互）') + '">' + needle + '</button>';
-        raw = raw.slice(0, idx) + tag + raw.slice(idx + needle.length);
+        raw = raw.split(needle).join(tag);
       });
     }
 
@@ -669,37 +676,24 @@
       tip = document.createElement('div');
       tip.className = 'hl-tip';
       tip.id = id;
-      /* 主人插队件：条目是**纯文字提示**（中文动词 + 对象 + 一句说明），不是指令按钮 ——
-         没有点击行为，也就没有 doCmd。文案「看 卖茶的老汉 —— 看一段文字描述」。
-         ── 2026-10-17 主人真机反馈「细看回滚」：开面板类动作**恢复可点** ——
-         act:'profile'（细看）点开就是原来那个带按钮的互动界面（资料面板），
-         act:'acceptquest'（接任务）照旧先弹任务预览。分界：
-           · 带 act 的条目 → hl-tip-act，点了走 runInteractAct（面板不是执行）；
-           · 带 cmd 的条目 → 仍纯文字，提示链依旧不替玩家执行指令（doCmd 没回来）。 */
-      tip.innerHTML = acts.map((a, i) => {
-        const txt = esc(hlTipText(a)) +
-          (a.hint ? '<span class="hl-tip-note"> —— ' + esc(a.hint) + '</span>' : '');
-        return a.act
-          ? '<div class="hl-tip-cmd hl-tip-act" data-act-i="' + i + '" role="button" tabindex="0">' + txt + '</div>'
-          : '<div class="hl-tip-cmd">' + txt + '</div>';
-      }).join('');
+      /* 条目一律**纯文字提示**（中文动词 + 对象 + 一句说明），没有点击行为。
+         ── 2026-10-17 主人真机二次定调：上一轮给开面板类（act:'profile' 细看等）
+         恢复的可点击**撤掉**——「细看这些提示我自己手输」。执行权与输入权
+         100% 在玩家手上。带按钮的资料面板保留，入口：NPC 菜单「细看 (profile)」
+         按钮 / 手输指令（「细看 <人名>」走人物详情文本流，2026-10-13 并入口径）。
+         （本函数内经历过「act 条目可点 → 又撤」一个来回，别再接回去——
+         runInteractAct 仍挂导出，仅供测试真跑派发。） */
+      tip.innerHTML = acts.map(a =>
+        '<div class="hl-tip-cmd">' + esc(hlTipText(a)) +
+        (a.hint ? '<span class="hl-tip-note"> —— ' + esc(a.hint) + '</span>' : '') + '</div>'
+      ).join('');
       line.appendChild(tip);
-      /* 可点条目绑开面板派发：按序号从闭包里取回原始动作对象（uid / qid 都在原件上） */
-      tip.querySelectorAll('.hl-tip-act').forEach(el => {
-        el.addEventListener('click', () => {
-          const a = acts[Number(el.getAttribute('data-act-i')) || 0];
-          closeHlTips();
-          runInteractAct(a, name);
-        });
-      });
     }
     tip.hidden = false;
     btn.setAttribute('aria-expanded', 'true');   /* ARIA 与可见一致（N-V-12） */
-    /* 缩进：视觉上挂在那颗点下面。量得到词位就按 offsetLeft，量不到走 --tip-indent-fb 兜底 */
-    try {
-      const off = btn.offsetLeft;
-      tip.style.paddingLeft = (off && off > 0) ? off + 'px' : '';
-    } catch (e) { /* 量不到就保持 CSS 兜底 2em */ }
+    /* 缩进撤除（2026-10-17 主人：「指令提示能不能全部水平居左」）：
+       原来按点击词的 offsetLeft 动态缩进——点在句中的词，整块提示被推到半中间，
+       真机看着就像「居中」。现在一律顶格居左（CSS 的 2em 兜底同步撤）。 */
   }
 
   /* 点日志空白处 → 收起提示行（§3.2 收起时机 ④）。Esc 走全局 bindHotkeys。

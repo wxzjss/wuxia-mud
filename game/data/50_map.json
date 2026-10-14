@@ -1302,7 +1302,7 @@
       "respawn": [
         {
           "npc": "guard_huashan",
-          "count": 2
+          "count": 1
         }
       ]
     },
@@ -3684,14 +3684,19 @@
       "id": "jm_underground",
       "name": "东市·地下黑市",
       "region": "market",
-      "desc": "当铺后院的柴房掀开一块木板，露出往下的石阶。底下点着几盏油灯，墙上挂着绳索和镣铐。两个寻常护卫抱着刀蹲在门口，见人下来才抬眼。",
+      "desc": "当铺后院的柴房掀开一块木板，露出往下的石阶。底下点着几盏油灯，墙上挂着绳索和镣铐。门口立着一个身材魁梧的汉子，手按在刀上，另一个抱刀的蹲在石阶边，见人下来才抬眼。",
       "exits": {
         "u": "jn_pawnshop"
       },
       "respawn": [
         {
           "npc": "mob_bandit",
-          "count": 2,
+          "count": 1,
+          "chance": 1
+        },
+        {
+          "npc": "mob_bandit_chief",
+          "count": 1,
           "chance": 1
         }
       ],
@@ -4706,7 +4711,7 @@
       "respawn": [
         {
           "npc": "guard_palace",
-          "count": 2
+          "count": 1
         }
       ]
     },
@@ -4747,7 +4752,7 @@
       "respawn": [
         {
           "npc": "guard_palace",
-          "count": 2
+          "count": 1
         }
       ]
     },
@@ -4936,6 +4941,10 @@
           "once": true,
           "failMsg": "话已经带上了。",
           "effects": [
+            {
+              "type": "narrate",
+              "raw": "陈二朝你挪了半步，声音压下来。"
+            },
             {
               "type": "narrate",
               "raw": "「我姐嫁到山那头。三年了，没回来过，也没捎过信。」他把那句话说了两遍，两遍一字不差。说第二遍的时候他盯着自己的鞋看。"

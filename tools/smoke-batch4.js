@@ -224,6 +224,35 @@ section('B12 · 倒地实例保留（补刀/搜身/装袋不受影响）');
   ok('B12-6 倒地实例仍挂在该房间', downed.room === target && downed.knockedOut === true);
 }
 
+/* ================================================================
+ * B12-bis · 任何 NPC 都不合并（主人钦定 2026-10-17）
+ *   「山贼×2 也拆成两行（山贼、山贼各占一行）」——旧口径「同名 xN 并一行」撤。
+ *   断言：同房两个同名实例 → look 的「这里有：」行无 xN 计数、
+ *   名字出现两次（两个实例各占一个 hl，逐处可点）。
+ * ================================================================ */
+{
+  const e = boot();
+  const w = e.world, p = w.player;
+  /* 找一个可重复 spawn 的普通 def（非名人 unique/tierA、非 noWander），连开两个实例放同房 */
+  const defId = Object.keys(w.data.npcs).find(id => {
+    const d = w.data.npcs[id];
+    return d && d.unique !== true && d.tier !== 'A' && !d.noWander && d.name && !d.hostile;
+  });
+  w.spawnNpc(defId, p.room, 1, true);
+  w.spawnNpc(defId, p.room, 1, true);
+  const nm = w.data.npcs[defId].name;
+  const r = e.exec('look');
+  const line = (r.lines || []).find(l => l.kind === 'npcs' && l.text && l.text.indexOf('这里有：') === 0);
+  ok('B12-bis 「这里有：」行存在', !!line);
+  if (line) {
+    ok('B12-bis 不出现 xN 合并计数', !/ x\d+/.test(line.text), line.text);
+    const cnt = line.text.split(nm).length - 1;
+    ok('B12-bis 同名实例逐个列出（名字出现两次）', cnt >= 2, `「${nm}」出现 ${cnt} 次：` + line.text);
+    ok('B12-bis hl 逐实例可点（同名条目每处都注册）',
+      line.hl && line.hl.filter(h => (h.text || '').indexOf(nm) === 0).length >= 2);
+  }
+}
+
 /* ================================================================ */
 console.log('\n———————————————————————————————');
 console.log(`  批次4 回归：${pass} 通过 / ${fail} 失败`);

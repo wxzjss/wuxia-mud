@@ -108,6 +108,83 @@ console.log('  结缘知晓人数 前'+before.bondKnows+' → 后'+bondKnowsAfte
     e4.world.player.maxHpBase === midBase && e4.world.player.maxHp === midMax,
     `base=${e4.world.player.maxHpBase}/${midBase} maxHp=${e4.world.player.maxHp}/${midMax}`);
 }
+/* ---- 老档残留清剿（主人 2026-10-17 真机：出生点仍见山贼×2/游侠×2）----
+   漂移期老档手工构造（**在活世界真 spawn 再序列化**，字段结构与真档同构；
+   demo 孤儿用真实实例改 defId 造——手工裸对象会被 reviveInstances 的 recalc 打穿）：
+   demo 孤儿 + 漂移山贼 + 在岗山贼 + 漂移教头 + 在宅常驻，
+   读档两刀（def 孤儿删 / noWander 离岗删）后：两族清零、正常实例分毫不动。 */
+{
+  const dPost = w.spawnNpc('mob_bandit', 'jm_underground', 1, true);   // 在岗
+  w.spawnNpc('mob_bandit', 'road_jiangnan_1', 1, true);                // 漂移到出生点官道
+  w.spawnNpc('wg_zhou', 'road_jiangnan_1', 1, true);                   // 教头离岗（无 respawn 岗族）
+  const resDef = Object.values(w.data.npcs).find(d => d.room && !d.wander && !d.noWander);
+  w.spawnNpc(resDef.id, resDef.room, 1, true);                          // 本房常驻（不能误删）
+  const save = JSON.parse(JSON.stringify(w.serialize()));
+  /* demo 孤儿：拿一个真实实例结构改 defId——demo mod 默认关后的残留同构 */
+  const anyUid = Object.keys(save.instances.npcs).find(k => save.instances.npcs[k] && save.instances.npcs[k].defId !== 'mob_bandit');
+  save.instances.npcs['mod_demo_youxia_1'] = Object.assign({}, save.instances.npcs[anyUid], {
+    id: 'mod_demo_youxia_1', defId: 'demo_youxia', name: '游侠',
+  });
+
+  const e5 = new GameEngine({ seed: 20261010, saveDir: TEST_SAVE_DIR });
+  e5.boot();
+  e5.world.deserialize(save, []);
+  const inst = e5.world.instances.npcs;
+  const byDef = id => Object.values(inst).filter(n => n && n.defId === id);
+  ok('★ 刀① demo 孤儿实例清零（游侠×1 不再见）', byDef('demo_youxia').length === 0);
+  ok('★ 刀② 漂移山贼清掉（出生点官道的山贼不见了）',
+    !Object.values(inst).some(n => n && n.defId === 'mob_bandit' && n.room === 'road_jiangnan_1'));
+  ok('★ 在岗山贼保留（jm_underground 的不动）',
+    Object.values(inst).some(n => n && n.defId === 'mob_bandit' && n.room === 'jm_underground'));
+  ok('★ 刀② 漂移教头清掉（离岗 noWander 无 respawn 岗族）',
+    !Object.values(inst).some(n => n && n.defId === 'wg_zhou' && n.room !== 'wg_jiangnan'));
+  ok('★ 正常常驻实例保留（本房商贩分毫不动）',
+    Object.values(inst).some(n => n && n.defId === resDef.id && n.room === resDef.room));
+  /* 幂等：再存再读一轮，干净档 no-op，正常实例不二次受创 */
+  const save2 = JSON.parse(JSON.stringify(e5.world.serialize()));
+  const e6 = new GameEngine({ seed: 20261010, saveDir: TEST_SAVE_DIR });
+  e6.boot();
+  e6.world.deserialize(save2, []);
+  const inst2 = e6.world.instances.npcs;
+  ok('★ 二轮读档幂等（在岗山贼/常驻商贩仍在）',
+    Object.values(inst2).some(n => n && n.defId === 'mob_bandit' && n.room === 'jm_underground') &&
+    Object.values(inst2).some(n => n && n.defId === resDef.id && n.room === resDef.room));
+}
+/* ---- 剧情动态实例豁免（主人 2026-10-17 退回裁定：剧情生成的人不能被存档维护误删）----
+   亲属记仇 witness：运行时注入 def + 动态 spawn。serialize 白名单不存 data，
+   读档后 def 必然缺失（刀① 口中的「孤儿」）；又 noWander 且人不在 def.room
+   （刀② 口中的「离岗」）——两刀都必须豁免，hostile / favor / avengers 原样。 */
+{
+  const VIC2 = '__sl_victim', WIT2 = '__sl_witness';
+  w.data.npcs[VIC2] = { id: VIC2, name: '苦主', gender: 'female', room: 'road_jiangnan_1', level: 1, hp: 100, mp: 50, sect: 'huashan', leavesCorpse: false };
+  w.data.npcs[WIT2] = { id: WIT2, name: '记仇人', gender: 'male', room: 'road_jiangnan_1', level: 1, hp: 100, mp: 50, sect: 'huashan', noWander: true, leavesCorpse: false, rel: [{ id: VIC2, kind: '亲' }] };
+  const v2 = w.spawnNpc(VIC2, p.room, 1, true);
+  const wi0 = w.spawnNpc(WIT2, p.room, 1, true);
+  w.witnessReaction(v2);
+  ok('★ 前置：witness 已记仇（avengers 收录 + hostile 翻红 + favor 暴跌）',
+    wi0.pstate.avengers && wi0.pstate.avengers.indexOf(VIC2) >= 0 &&
+    wi0.hostile === true && (wi0.favor || 0) <= -90,
+    'favor=' + wi0.favor);
+  const saveW = JSON.parse(JSON.stringify(w.serialize()));
+  delete w.data.npcs[VIC2]; delete w.data.npcs[WIT2];   // 还原数据面（serialize 本就不存 data）
+  const e7 = new GameEngine({ seed: 20261010, saveDir: TEST_SAVE_DIR });
+  e7.boot();
+  e7.world.deserialize(saveW, []);
+  const wi2 = Object.values(e7.world.instances.npcs).find(n => n && n.defId === WIT2);
+  ok('★ 记仇人读档存活（def 缺失 + noWander 离岗双险都不删）', !!wi2);
+  ok('★ 记仇人 hostile / favor / avengers 原样',
+    wi2 && wi2.hostile === true && (wi2.favor || 0) <= -90 &&
+    wi2.pstate && Array.isArray(wi2.pstate.avengers) && wi2.pstate.avengers.indexOf(VIC2) >= 0);
+  /* 刀② 豁免反例：离岗但带交情（favor≠0 = 运行时个人化状态）→ 不删 */
+  const dr = w.spawnNpc('wg_zhou', 'road_jiangnan_1', 1, true);
+  dr.favor = 50;
+  const saveF = JSON.parse(JSON.stringify(w.serialize()));
+  const e8 = new GameEngine({ seed: 20261010, saveDir: TEST_SAVE_DIR });
+  e8.boot();
+  e8.world.deserialize(saveF, []);
+  ok('★ 刀② 豁免：带交情（favor≠0）的离岗 NPC 保留',
+    Object.values(e8.world.instances.npcs).some(n => n && n.defId === 'wg_zhou' && n.favor === 50));
+}
 console.log('\n' + '='.repeat(40));
 console.log('  通过 ' + pass + ' 项，失败 ' + fail + ' 项');
 console.log('='.repeat(40));

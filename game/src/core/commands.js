@@ -741,24 +741,36 @@ function buildCommands(world) {
     // NPC
     const npcs = w.npcsIncludingTemplates(p.room);
     if (npcs.length) {
-      const cls = {};
-      for (const n of npcs) {
-        const k = n.name;
-        cls[k] = (cls[k] || 0) + 1;
-      }
       /* 名字后带身份（复用 npcIdentity：门派职位 / 捕快 / 郎中 / 寻常百姓…），
          跟 lookNpc / guanxi / favor 用的是同一套推断，不会两处口径打架。
-         同名多人时只标一次身份（x2 分支不重复），且身份用第一个遇到的。 */
+         身份按名缓存（同名同身份，只省一次推断）。 */
       const idOf = {};
       for (const n of npcs) { if (!idOf[n.name]) idOf[n.name] = npcIdentity(w, n); }
       const labelOf = k => {
         const id0 = idOf[k];
         return id0 ? `${k}（${id0}）` : k;
       };
-      const out = Object.keys(cls).map(k => cls[k] > 1 ? `${labelOf(k)} x${cls[k]}` : labelOf(k));
-      // hl：把每个 NPC 名标成可点，点击弹出「对它做什么」的中文菜单
-      const hl = Object.keys(cls).map(k => {
-        const one = npcs.find(n => n.name === k);
+      /* 🔴 2026-10-17 主人钦定：**任何 NPC 都不合并**——每个实例独立一项
+         （山贼×2 也拆成「山贼、山贼」两行；有名字的照旧按名分行）。
+         旧口径「同名 xN 并一行 + hl 只给第一实例」撤除：归组让绑架/攻击/细看
+         永远只够到第一实例，且与 view.npcs / 此间人物面板的逐实例口径相左。 */
+      const out = npcs.map(n => labelOf(n.name));
+      // hl：把每个 NPC 名标成可点，点击弹出「对它做什么」的中文菜单（**逐实例**，uid 指到本人）
+      /* 载荷瘦身（perf B2 退回 2026-10-17）：逐实例**行**保留（主人钦定不合并），
+         但同名实例的**动作清单按名共享一份**——重复实例只带
+         {text, type, sameAs:首条下标}，前端 renderLogText 解析时指回全量注册项。
+         依据：动作 cmd 全部按**名字**寻址（fuzzyFind 认名），同名实例本就同路；
+         菜单 2026-10-17 起是纯文字提示，只消费 label/cmd/hint，
+         uid/act/qid 等实例字段在提示链上已是死重。人多房（练武场十来个弟子）
+         从「每人一份全量动作」降回「每名一份」，B2 回门，显示层一行不少。 */
+      const actsByName = {};
+      const hl = npcs.map((n, idx) => {
+        const k = n.name;
+        const one = n;
+        if (actsByName[k] !== undefined) {
+          return { text: labelOf(k), type: 'npc', sameAs: actsByName[k] };
+        }
+        actsByName[k] = idx;
         const pron = pronounOf(one);   // B11：兽→它 / 女→她 / 男→他（单一入口）
         const def = (one && one.def) || {};
         const actions = [

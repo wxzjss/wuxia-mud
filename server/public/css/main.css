@@ -287,7 +287,8 @@
   --tip-font:      12.5px;        /* ⚠️ 这是 UI 旁白不是叙事：叙事行 14px 不动（79） */
   --tip-line:      1.5;
   --tip-gap:       3px;           /* 与 .log-line 的 margin-bottom 同值，不另起一套 */
-  --tip-indent-fb: 2em;           /* 量不到词位时的兜底缩进 */
+  /* --tip-indent-fb 撤（2026-10-17 主人「指令提示全部水平居左」）：
+     动态缩进 + 兜底 2em 一并退场，提示行一律顶格居左。 */
   --tip-cmd-min-h: 40px;          /* ≤820px 生效，与 .qb-btn 一致（81 §3.3） */
   /* —— R4 痕迹句（design/79 §2.1 ③ / 85）：朱是我专用（76 总纲），点不是装饰是主判据 —— */
   --room-trace:    var(--red);    /* 暗 4.60 / 浅 6.67，两主题 ≥3（79 §2.3 实测值）；亮侧成对覆写在 html.theme-light */
@@ -1088,13 +1089,14 @@ body::before {
 
 
 /* 提示行（design/81 §3.2）：行内展开，不是浮层不是遮罩——贴着那句话、在主文本流里、窄屏照旧可见。
-   底色 / 边框 / 圆角一律不给：它是一行小字，不是卡片。 */
+   底色 / 边框 / 圆角一律不给：它是一行小字，不是卡片。
+   2026-10-17 主人「指令提示全部水平居左」：一律顶格居左（原来的点击词位动态缩进撤除）。 */
 .log-line .hl-tip {
   font-size: var(--tip-font);
   line-height: var(--tip-line);
   color: var(--tip-ink);
   margin-top: var(--tip-gap);
-  padding-left: var(--tip-indent-fb);   /* JS 量得到词位时以内联样式覆盖，量不到用兜底 */
+  text-align: left;
 }
 /* 提示行里那颗可点的指令（§3.3）：字大半档（13px）——"这串字是能敲的"；
    字族用 --font-ui，与指令输入框同族。颜色 --tip-cmd（唯二硬编码之一，见 :root 注释）。 */
@@ -1113,19 +1115,6 @@ body::before {
 }
 /* 说明位（§3.2 / .hl-tip-note）：文案归游有方（design/82），视觉只留槽位 */
 .log-line .hl-tip-note { margin-left: 8px; color: var(--tip-ink); }
-/* 可点条目（2026-10-17 主人「细看回滚」）：开面板类动作（细看/接任务）恢复可点。
-   与 .hl 同一套点得起的暗示：指针 + 悬停虚线下划线；纯文字条目不受影响。 */
-.log-line .hl-tip-cmd.hl-tip-act { cursor: pointer; }
-.log-line .hl-tip-cmd.hl-tip-act:hover {
-  text-decoration: underline;
-  text-decoration-style: dashed;
-  text-decoration-color: var(--noun-dot);
-  text-underline-offset: 3px;
-}
-.log-line .hl-tip-cmd.hl-tip-act:focus-visible {
-  outline: 1px dashed var(--noun-dot);
-  outline-offset: 2px;
-}
 
 /* 战斗面板 */
 #combat-panel {

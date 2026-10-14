@@ -1160,6 +1160,82 @@ class World extends EventEmitter {
     return res;
   }
 
+  /** 老档残留清剿（主人 2026-10-17 真机：出生点仍见山贼×2 / 游侠×2；幂等，干净档 no-op）。
+   *
+   * 背景：山贼 `noWander` 钉住、demo mod 默认关，这两刀**修的都是「不再漂/不再来」**
+   *   —— 但修之前漂进出生点的山贼、demo mod 的游侠**已经实例化存进主人的老档**，
+   *   源头堵了存量还在：读档把 instances 原样救回来，人自然还站在那儿。
+   *
+   * 两刀：
+ *   ① **def 孤儿**：实例的 defId 在当前数据 + 已启用 mod 里找不到（demo mod 关闭后
+   *      其 NPC 实例、数据改档删掉的 def）→ 删实例。
+   *   ② **noWander 漂移**：def 钉了 noWander 的实例不在岗 → 删实例。
+   *      定岗房 = room.respawn 点名它的房间（mob_bandit→jm_underground、α狼→wild_forest_1 等）；
+   *      无 respawn 点名的 noWander（六教头/铁器摊主）以 def.room 为岗。
+   *      删了怎么回来：定岗族由 respawn 按岗补回；def.room 族在 `_npcsByRoom`
+   *      懒生成池里，玩家一回本房 npcsIncludingTemplates 就补上——**都无需存档迁移**。
+   *
+   * 安全边界（不删的）：
+   *   · dead / knockedOut 实例（死亡与击倒态另账，别动）；
+   *   · 跟随玩家的实例（p.followers——跟随者人在玩家身边，room≠岗位是**对的**）；
+   *   · squads（分队不进本函数口径）；
+   *   · 带运行时个人化状态的剧情实例（pstate.avengers / 运行期翻红 hostile /
+   *     非零 favor——主人 2026-10-17 退回裁定：**剧情生成的人不能被存档维护误删**）。
+   * @returns {{removed:number, orphanDef:number, drifted:number, defIds:string[]}}
+   */
+  pruneOrphanInstances() {
+    const res = { removed: 0, orphanDef: 0, drifted: 0, defIds: [] };
+    const inst = this.instances && this.instances.npcs;
+    if (!inst) return res;
+    /* 定岗房缓存：defId -> Set(点名它的房间)——respawn 表全库扫一遍 */
+    const posts = {};
+    for (const rid of Object.keys(this.data.rooms || {})) {
+      for (const x of [].concat(this.data.rooms[rid].respawn || [])) {
+        if (x && x.npc) (posts[x.npc] = posts[x.npc] || new Set()).add(rid);
+      }
+    }
+    const following = new Set((this.player && this.player.followers) || []);
+    for (const uid of Object.keys(inst)) {
+      const n = inst[uid];
+      if (!n || n.dead || n.knockedOut) continue;
+      if (following.has(uid)) continue;
+      const defId = n.defId;
+      const def = defId ? this.data.npcs[defId] : null;
+      /* 剧情豁免（主人 2026-10-17 退回裁定：剧情生成的人不能被存档维护误删）。
+         判据读**实例自带**的运行时个人化状态——def 可能已经不在（动态 def 不随档、
+         mod 关闭即消失），所以两刀都必须先看实例：
+         · pstate.avengers 非空 —— 亲属记仇独占标记（witnessKinsmanReaction 落），
+           刀① 刀② 全豁免；
+         · hostile 运行期翻红（实例 true 而 def 非敌）—— 只在刀② 能比对 def，
+           豁免；天生 hostiled 的山贼 def.hostile 本就是 true，不会被误豁免；
+         · favor 非零（玩家处处出来的交情）—— 只在刀② 豁免；刀① 的孤儿是 mod
+           卸载残留，内容已不在，交情救不回一个无名游魂，不放。 */
+      const avenged = !!(n.pstate && Array.isArray(n.pstate.avengers) && n.pstate.avengers.length);
+      if (avenged ||
+          (def && ((n.hostile === true && !def.hostile) ||
+                   (typeof n.favor === 'number' && n.favor !== 0)))) continue;
+      /* 刀①：def 找不到（mod 关闭后的 demo NPC 实例 / 数据删档孤儿） */
+      if (!def) {
+        delete inst[uid];
+        res.removed++; res.orphanDef++;
+        if (res.defIds.indexOf(defId) < 0) res.defIds.push(defId);
+        continue;
+      }
+      /* 刀②：noWander 定岗 NPC 不在岗（老档漂移实例） */
+      if (def.noWander) {
+        const home = posts[defId];
+        const offPost = home ? !home.has(n.room)
+          : (def.room ? n.room !== def.room : false);
+        if (offPost) {
+          delete inst[uid];
+          res.removed++; res.drifted++;
+          if (res.defIds.indexOf(defId) < 0) res.defIds.push(defId);
+        }
+      }
+    }
+    return res;
+  }
+
   /** 全图「活着的」NPC 实例（按 defId 去重，取一个代表）。
    *  「拜访」要找不在场的人，所以不能用 npcsIn(房间)。
    *  ⚠️ 名人/常驻 NPC 同一 defId 可能有多实例（会走动、respawn），
@@ -3997,6 +4073,11 @@ class World extends EventEmitter {
        ⚠️ 放在 reviveInstances 之后（要先有实例才能去重）、hydrateCharacter 之前都行，
           但**不能因为修复失败就拦住读档** —— 兜住异常，最坏也就是副本留着。 */
     try { this.dedupeNpcInstances(); } catch (e) { /* 自愈失败不拦读档 */ }
+    /* 老档残留清剿（主人 2026-10-17 真机：出生点仍见山贼×2/游侠×2）。
+       根因：noWander 钉住与 demo mod 默认关**修的是「不再漂/不再来」**，
+       但漂进来时已经实例化**存进老档**的实例没人清——修源头不洗存量。
+       两刀见 pruneOrphanInstances；幂等，干净档是 no-op。 */
+    try { this.pruneOrphanInstances(); } catch (e) { /* 清剿失败不拦读档 */ }
     /* 玩家走的是 `new Character()` 重建（不经过 cleanInstance），本来就是真 Character。
        这里只做一次核实 + 兜底，不假设 —— 万一将来有人把玩家也塞进 instances，
        这一行会救场；正常情况下它是 no-op。 */
