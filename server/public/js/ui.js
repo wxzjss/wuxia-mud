@@ -654,6 +654,20 @@
     const acts = (h && h.actions) || [];
     if (!acts.length) return;
     if (h.type !== 'npc') { toggleHlTip(btnEl, name, acts); return; }
+    /* 诊断锚（2026-10-18 主人报「日志里名字还在，看却说这里没有」）：
+       日志是 append-only 历史，早前会话/别的房间的「这里有：山贼、游侠」
+       不会追溯消失；人点的是**历史行**，后端 look 只认**当前房间**，
+       自然回「这里没有」——系统腔看着像闹鬼。这里用**当前视图的 npc 名单**
+       先判一次：名字已不在场 → 不打服务器、不弹失效动作的提示（那些动作
+       点下去只会连环报错），本地落一句归因，主人一眼看懂「这是历史，不是
+       现在」。同腔调先例：recoverLostPlayer 的「（接上了。江湖还在原处等你。）」。 */
+    /* ⚠️ hl.text 带称谓尾巴（「卖茶的老汉（茶摊老汉）」「山贼（倒在地上）」），
+       不能与 view.npcs[].name 精确相等——用**前缀**判（渲染时就是 name 打头）。 */
+    const onScene = ((S.view && S.view.npcs) || []).some(n => n && n.name && name.indexOf(n.name) === 0);
+    if (!onScene) {
+      appendLog([{ type: 'sys', text: `（${name}已不在此处——这是早前的记录，不是现在。）` }]);
+      return;
+    }
     /* 主人 2026-10-18 终裁：点 NPC 名字 = 弹指令提示**同时自动看一眼**——
        「看 xxx」的功能由点击承担，提示条目里的「看/细看」已撤。
        🔴 2026-10-18 真机「点 NPC 不出指令提示」修因：doCmd 在第一个 await 之前

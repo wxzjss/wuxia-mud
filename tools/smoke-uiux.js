@@ -17,6 +17,7 @@
  *   §6  长日志流：日志上限 + 自动滚到底（真读 innerHTML）
  *   §7  窄屏 ☰ 菜单 ⊇ 侧栏全部入口（防「加了面板忘了加 ☰」复发；真点每一项）
  *   §8  中栏统一成一列（房间卡/日志/输入栏/快捷条 同一条 --col-w；D2 · CSS 契约）
+ *   §9  诊断锚：历史日志行点已不在场的 NPC 名 → 归因句，不打服务器（2026-10-18）
  *
  * ⚠️ DOM stub 三坑（照抄 smoke-mapui.js）：
  *   ① querySelectorAll 必须按 (选择器, innerHTML) 缓存；② innerHTML setter 必须清 children；
@@ -1686,6 +1687,41 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     const blob = JSON.stringify(p3.serialize ? p3.serialize() : p3);
     ok('㉒-12 ★ seen_intro 写进存档（随档走，回档不会重演）',
       /seen_intro/.test(blob));
+  }
+
+  /* ---------- §9 诊断锚：历史日志行点「已不在场」的 NPC 名 ---------- */
+  section('§9 诊断锚：历史行点已不在场的 NPC → 归因句（不再「这里没有」）');
+  {
+    const env = loadUi(makeEnv({}));
+    const rec = stubApi(env, VIEW);
+    /* 预置当前视图：在场名单里只有「卖茶的老汉」，没有「山贼」——
+       模拟主人现场：旧日志行写着山贼，山贼实体早已不在（清剿/走远）。
+       日志是 append-only 历史，那行「这里有：山贼」不会追溯消失。 */
+    env.WX.S.view = { npcs: [{ name: '卖茶的老汉' }] };
+    env.WXUI.appendLog([
+      { type: 'plain', text: '卖茶的老汉（茶摊老汉）冲你笑笑。', hl: [{ text: '卖茶的老汉（茶摊老汉）', type: 'npc', actions: [{ label: '交谈', cmd: 'talk 卖茶的老汉' }] }] },
+      { type: 'plain', text: '山贼（倒在地上）横在路上。', hl: [{ text: '山贼（倒在地上）', type: 'npc', actions: [{ label: '绑架', cmd: 'kill 山贼' }] }] },
+    ]);
+    const log9 = env.document._els['log'];
+    const btns9 = log9.querySelectorAll('.hl');
+    ok('S9-0 前提：两颗 hl 都渲染出来', btns9.length === 2, String(btns9.length));
+
+    /* ① 不在场的名字：本地归因句，不打服务器（否则后端回系统腔「这里没有」） */
+    const before9 = rec.exec.length;
+    btns9[1].onclick();
+    await settle(); await settle();
+    ok('S9-1 ★ 点已不在场的名字 → 不打服务器（回执不再「这里没有」）',
+      rec.exec.length === before9, JSON.stringify(rec.exec.map(x => x.cmd)));
+    ok('S9-2 ★ 归因句落地（一眼看懂「是历史不是现在」）',
+      /已不在此处——这是早前的记录，不是现在/.test(log9._html));
+    ok('S9-3 不弹失效动作的提示行（那些动作点下去只会连环报错）',
+      !/hl-tip-cmd/.test(log9._html.slice(log9._html.indexOf('已不在此处') - 200 > 0 ? log9._html.indexOf('已不在此处') - 200 : 0)));
+
+    /* ② 在场的名字：照旧自动 look（诊断锚不许误伤正常点击） */
+    btns9[0].onclick();
+    await settle(); await settle();
+    ok('S9-4 ★ 在场的名字照旧自动 look（锚不误伤）',
+      rec.exec.some(x => /^look 卖茶的老汉/.test(x.cmd)), JSON.stringify(rec.exec.map(x => x.cmd)));
   }
 
   console.log('\n———————————————————————————————');

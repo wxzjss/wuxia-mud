@@ -166,10 +166,10 @@ console.log('[N-V-30] 点 NPC 出指令提示（主人真机 2026-10-18「点 NP
    提示行挂进 detached 旧 .log-line 永远不可见。修法：look 回包落地后在新 DOM
    按 data-hl 找回同一颗按钮再展开。本守卫钉「时序修复在位」： */
 t('N-V-30a NPC 分支走 doCmd().then() 重锚（不许再「先 doCmd 后同步展开」）',
-  /function openInteractMenu[\s\S]{0,400}doCmd\('look ' \+ name[\s\S]{0,200}\.then\(/.test(uiNoCmt)
-  && /function openInteractMenu[\s\S]{0,800}querySelector\('\.hl\[data-hl="' \+ hi \+ '"\]'\)/.test(uiNoCmt));
+  /function openInteractMenu[\s\S]{0,800}doCmd\('look ' \+ name[\s\S]{0,200}\.then\(/.test(uiNoCmt)
+  && /function openInteractMenu[\s\S]{0,1200}querySelector\('\.hl\[data-hl="' \+ hi \+ '"\]'\)/.test(uiNoCmt));
 t('N-V-30b 自动 look 保留（主人没点名撤的功能不许卷掉）',
-  /function openInteractMenu[\s\S]{0,400}doCmd\('look ' \+ name, \{ fromButton: true \}\)/.test(uiNoCmt));
+  /function openInteractMenu[\s\S]{0,800}doCmd\('look ' \+ name, \{ fromButton: true \}\)/.test(uiNoCmt));
 t('N-V-30c 非 NPC 高亮仍同步展开（不受重锚影响）',
   /if \(h\.type !== 'npc'\) \{ toggleHlTip\(btnEl, name, acts\); return; \}/.test(uiNoCmt));
 t('N-V-30d 双副本逐字节一致（game/src/renderer ↔ server/public）',
