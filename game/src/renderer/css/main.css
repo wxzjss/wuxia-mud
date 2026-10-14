@@ -2371,6 +2371,15 @@ body::before {
     inset: calc(-1 * var(--hl-hit-pad)) -3px;
   }
   .log-line .hl-tip-cmd { min-height: var(--tip-cmd-min-h); }
+  /* —— MOD 管理器（手机）—— 原来桌面两列原样落到窄屏：左列 ~200px 里
+     再被序号圆点（26px+gap）和右侧操作按钮瓜分，名字区只剩几个像素，
+     mod 名一字一行竖着排（主人真机 2026-10-14）。窄屏改上下堆叠：
+     列表满宽在上、详情在下；名字行拿到整行宽度，长名正常横排折行。 */
+  .mc-body { flex-direction: column; }
+  .mc-left { border-right: none; border-bottom: 1px solid var(--line); }
+  .mc-item { gap: 9px; padding: 10px 11px; }
+  .mci-ops { flex: 0 0 auto; }
+  .mci-name { overflow-wrap: anywhere; line-height: 1.45; }
 }
 
 /* 更窄的屏（≤560px）：5 条状态条一行塞不下，标签会被截成「饱…」这种。
