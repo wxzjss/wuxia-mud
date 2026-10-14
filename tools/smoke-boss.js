@@ -243,7 +243,9 @@ sec('⑦ 战斗结束 / 读档后状态复位');
   /* 读档：伪造一个带着半截阶段的存档 */
   const e2 = boot(99);
   const w2 = e2.world;
-  const b2 = w2.spawnNpc(DFB, w2.player.room, 1, true);
+  /* 刀③（def.room 静态定岗族）连带：boss 是定岗 NPC，fixture 必须刷在**本岗**——
+     刷在玩家房就是漂移形态，load 会被清剿删掉（那正是第三刀的本职）。 */
+  const b2 = w2.spawnNpc(DFB, (w2.data.npcs[DFB] && w2.data.npcs[DFB].room) || w2.player.room, 1, true);
   b2.bossPhaseIdx = 2;
   b2.bossSkill = 'pixie_jianfa';
   b2.addBuff({ name: 'x', turns: 5, mods: { atk: 99 }, tag: 'bossphase' });

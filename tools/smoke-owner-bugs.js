@@ -1930,6 +1930,89 @@ section('B8 · ×N 家族根治：常驻 NPC 挪出本房后回房不补新副�
   ok('respawn 族照刷（山贼不误伤）', !!bandit);
 }
 
+section('B31 · 清剿第三刀：def.room 静态定岗族离岗清理（老周站出生点）');
+{
+  const e = boot(); const w = e.world;
+  /* 纯净矩阵：直接摆实例、直呼清剿（绕开 boot 噪音）。
+     病根（主人新档 2026-10-18）：老周 def.room=jiangnan_street 但**没有 noWander**
+     ——刀② 只管 noWander 族；且 spawnNpc 的出身亲和给初始 favor=8（pstate.met=false
+     根本没见过面），favor≠0 豁免闸反而把漂移实例永久护住。 */
+  w.instances.npcs = {
+    z1: { defId: 'cy_pre_teaman', room: 'road_jiangnan_1', isNpc: true, hp: 10, maxHp: 10, favor: 8, pstate: { met: false } },
+    z2: { defId: 'cy_pre_teaman', room: 'jn_teahouse', isNpc: true, hp: 10, maxHp: 10, favor: 30, pstate: { met: true } },
+    z3: { defId: 'cy_pre_teaman', room: 'jiangnan_street', isNpc: true, hp: 10, maxHp: 10, favor: 0, pstate: { met: false } },
+    b1: { defId: 'mob_bandit', room: 'road_jiangnan_1', isNpc: true, hp: 10, maxHp: 10, hostile: true, pstate: { met: false } },
+    b2: { defId: 'mob_bandit', room: 'wild_forest_1', isNpc: true, hp: 10, maxHp: 10, hostile: true, favor: 25, pstate: { met: true } },
+    b3: { defId: 'mob_bandit', room: 'jm_underground', isNpc: true, hp: 10, maxHp: 10, hostile: true, pstate: { met: false } },
+    v1: { defId: 'disciple_huashan_0', room: 'jn_market_s', isNpc: true, hp: 10, maxHp: 10, pstate: { met: false } },
+  };
+  w.pruneOrphanInstances();
+  const left = Object.keys(w.instances.npcs);
+  ok('B31-1 ★ 没见过面的离岗定岗（老周@出生点）删', !left.includes('z1'));
+  ok('B31-2 ★ 真见过面的离岗定岗豁免（pstate.met=玩家交情凭据）', left.includes('z2'));
+  ok('B31-3 在岗定岗不咬', left.includes('z3'));
+  ok('B31-4 刀② 仍咬离岗山贼（favor=0）', !left.includes('b1'));
+  ok('B31-5 刀② 交情豁免仍在（favor≠0，#90 口径不回退）', left.includes('b2'));
+  ok('B31-6 在岗山贼不咬', left.includes('b3'));
+  ok('B31-7 游走族离岗不咬（带 wander=设计内行为，165 个）', left.includes('v1'));
+
+  /* 端到端：修复前形态老档 → 现行 load 即净 + 回城懒生成补回 */
+  const e2 = boot(); const w2 = e2.world;
+  const zhou = w2.spawnNpc('cy_pre_teaman', 'jiangnan_street', 1, true); zhou.room = 'road_jiangnan_1';
+  const bOff = w2.spawnNpc('mob_bandit', 'road_jiangnan_1', 1, true);
+  const bPost = w2.spawnNpc('mob_bandit', 'jm_underground', 1, true);
+  const snap = JSON.parse(JSON.stringify(w2.serialize()));
+  const e3 = boot(); 
+  e3.world.deserialize(snap, e3.modLoader.getEnabledModList());
+  const left3 = Object.values(e3.world.instances.npcs).filter(n => n && ['cy_pre_teaman', 'mob_bandit'].includes(n.defId));
+  ok('B31-8 ★ 老档 load 即净：老周不再站出生点',
+    !left3.some(n => n.defId === 'cy_pre_teaman' && n.room === 'road_jiangnan_1'));
+  ok('B31-9 ★ 老档 load 即净：离岗山贼清掉、在岗山贼保留',
+    !left3.some(n => n.defId === 'mob_bandit' && n.room !== 'jm_underground')
+    && left3.some(n => n.defId === 'mob_bandit' && n.room === 'jm_underground'));
+  e3.world.player.room = 'jiangnan_street';
+  const back = e3.world.npcsIncludingTemplates('jiangnan_street').filter(n => n.defId === 'cy_pre_teaman');
+  ok('B31-10 ★ 玩家回城，老周由懒生成池补回（删了自己回来，零迁移）', back.length >= 1, '补回 ' + back.length);
+}
+
+section('B32 · 野怪离场生态：encounter 野怪人走茶凉（山贼×4 滚雪球根治）');
+{
+  const e = boot(); const w = e.world; const p = w.player;
+  /* wuxue 出生房 = road_jiangnan_1；wild_forest_1 是真邻房（BFS 可达） */
+  const wild = w.spawnNpc('mob_bandit', p.room, 1, true); wild._encWild = true;
+  const post = w.spawnNpc('mob_bandit', 'jm_underground', 1, true);   // 定岗不带标记
+  const moved = w.movePlayerTo(p, 'wild_forest_1');
+  ok('B32-1 前提：真挪窝成功（movePlayerTo 收敛点打离场戳）', moved.ok && p.room !== 'road_jiangnan_1');
+  ok('B32-2 ★ 玩家离开后野怪开始倒数（_encWildLeaveTick 落戳）', wild._encWildLeaveTick != null);
+  ok('B32-3 定岗实例不打戳（不受生态影响）', post._encWildLeaveTick == null);
+  w.worldTick();
+  const after1 = !!w.instances.npcs[wild.id];
+  w.worldTick();
+  const after2 = !!w.instances.npcs[wild.id];
+  ok('B32-4 ★ 两轮 worldTick 内还在（宽限窗）', after1 === true);
+  ok('B32-5 ★ 两轮 worldTick 后消散（人走茶凉）', after2 === false);
+  ok('B32-6 ★ 定岗山贼照旧常驻（respawn/剧情 NPC 不消散）', !!w.instances.npcs[post.id]);
+  /* 连续离场才倒数：离场→回屋（清戳续命）→多轮 tick 不消散→再离场两轮→消散。
+     ⚠️ wild2 必须生在 road_jiangnan_1（出生房），挪去 wild_forest_1 才是真离场——
+     生在目的地的话全程「同房挪动」，双保险（在场不消散）会正确地拦住一切。 */
+  const wild2 = w.spawnNpc('mob_bandit', 'road_jiangnan_1', 1, true); wild2._encWild = true;
+  w.movePlayerTo(p, 'road_jiangnan_1');        // 回出生房（与 wild2 同房）
+  w.movePlayerTo(p, 'wild_forest_1');          // 离场 → 打戳
+  w.movePlayerTo(p, 'road_jiangnan_1');        // 回屋 → 清戳续命
+  w.worldTick(); w.worldTick(); w.worldTick();
+  const back = !!w.instances.npcs[wild2.id];
+  w.movePlayerTo(p, 'wild_forest_1');          // 再离场 → 重新打戳
+  w.worldTick(); w.worldTick();
+  ok('B32-7 ★ 回屋续命（宽限期内回来不凭空蒸发，在场永远不消散）', back);
+  ok('B32-8 ★ 再次连续离场两轮，照旧消散（续命不是免死金牌）', !w.instances.npcs[wild2.id]);
+  /* 记仇豁免（剧情生成的人不能被生态维护误删，#90 同源口径） */
+  const wild3 = w.spawnNpc('mob_bandit', p.room, 1, true);
+  wild3._encWild = true; wild3.pstate = { avengers: ['someone'] };
+  w.movePlayerTo(p, 'wild_forest_1');
+  w.worldTick(); w.worldTick();
+  ok('B32-9 ★ 记仇（avengers）野怪豁免消散', !!w.instances.npcs[wild3.id]);
+}
+
   /* 汇总 */
   console.log('\n==============================================');
   console.log(`  主人 bug 专项 smoke：${pass} 通过 / ${fail} 失败`);

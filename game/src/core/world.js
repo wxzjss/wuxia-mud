@@ -69,6 +69,9 @@ const HORIZ_DIRS = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
    模板不随档变，deserialize 时按 defId 从 data 反查挂回即可。
    ⚠️ 注意 defFinal（防御力数值）**不能丢** —— 它是运行期算出来的，必须随档走。 */
 const INSTANCE_DROP = new Set(['world', '_events', '_eventsCount', 'bus', 'engine', 'cmds', 'def', 'portrait']);
+/* 野怪离场宽限（worldTick 轮数）：玩家离开房间后，encounter 刷的野怪再留两轮
+   （≈60 游戏分钟）消散——给「回屋取忘掉的战利品」留个短窗，又不至于重新滚雪球。 */
+const WILD_DESPAWN_TICKS = 2;
 function cleanInstance(v, depth) {
   depth = depth || 0;
   if (v === null || v === undefined) return v;
@@ -1179,14 +1182,17 @@ class World extends EventEmitter {
    *   —— 但修之前漂进出生点的山贼、demo mod 的游侠**已经实例化存进主人的老档**，
    *   源头堵了存量还在：读档把 instances 原样救回来，人自然还站在那儿。
    *
-   * 两刀：
+ * 两刀：
  *   ① **def 孤儿**：实例的 defId 在当前数据 + 已启用 mod 里找不到（demo mod 关闭后
-   *      其 NPC 实例、数据改档删掉的 def）→ 删实例。
-   *   ② **noWander 漂移**：def 钉了 noWander 的实例不在岗 → 删实例。
-   *      定岗房 = room.respawn 点名它的房间（mob_bandit→jm_underground、α狼→wild_forest_1 等）；
-   *      无 respawn 点名的 noWander（六教头/铁器摊主）以 def.room 为岗。
-   *      删了怎么回来：定岗族由 respawn 按岗补回；def.room 族在 `_npcsByRoom`
-   *      懒生成池里，玩家一回本房 npcsIncludingTemplates 就补上——**都无需存档迁移**。
+ *      其 NPC 实例、数据改档删掉的 def）→ 删实例。
+ *   ② **noWander 漂移**：def 钉了 noWander 的实例不在岗 → 删实例。
+ *      定岗房 = room.respawn 点名它的房间（mob_bandit→jm_underground、α狼→wild_forest_1 等）；
+ *      无 respawn 点名的 noWander（六教头/铁器摊主）以 def.room 为岗。
+ *      删了怎么回来：定岗族由 respawn 按岗补回；def.room 族在 `_npcsByRoom`
+ *      懒生成池里，玩家一回本房 npcsIncludingTemplates 就补上——**都无需存档迁移**。
+ *   ③ **def.room 静态定岗漂移**（2026-10-18 主人新档「老周还站在出生点」加刀）：
+ *      def.room 有值且**无 wander 习性**的常驻 NPC（老周/名人族），实例离岗 → 删，
+ *      回 def.room 懒生成补回。带 wander 的是游走族（离家是设计内行为），不归这刀。
    *
  * 安全边界（不删的）：
  *   · 有真 def 的 dead / knockedOut 实例（死亡与击倒态另账，别动——
@@ -1229,17 +1235,19 @@ class World extends EventEmitter {
       const def = (rawDef && rawDef.name) ? rawDef : null;
       /* 剧情豁免（主人 2026-10-17 退回裁定：剧情生成的人不能被存档维护误删）。
          判据读**实例自带**的运行时个人化状态——def 可能已经不在（动态 def 不随档、
-         mod 关闭即消失），所以两刀都必须先看实例：
+         mod 关闭即消失），所以各刀都必须先看实例：
          · pstate.avengers 非空 —— 亲属记仇独占标记（witnessKinsmanReaction 落），
-           刀① 刀② 全豁免；
-         · hostile 运行期翻红（实例 true 而 def 非敌）—— 只在刀② 能比对 def，
-           豁免；天生 hostiled 的山贼 def.hostile 本就是 true，不会被误豁免；
-         · favor 非零（玩家处处出来的交情）—— 只在刀② 豁免；刀① 的孤儿是 mod
-           卸载残留，内容已不在，交情救不回一个无名游魂，不放。 */
+           刀①②③ 全豁免；
+         · hostile 运行期翻红（实例 true 而 def 非敌）—— 公共闸豁免（刀②③ 都认）；
+           天生敌对的山贼 def.hostile 本就是 true，不会被误豁免；
+         · favor 非零 —— **只刀②豁免**（在刀② 判，不在公共闸）：
+           spawnNpc 的出身亲和会给初始 favor（老周一落地就 favor=8、pstate.met=false
+           根本没见过面）——那不是玩家处出来的交情。刀③ 若认它，「老周站出生点」
+           这类漂移定岗实例就被自家亲和永久豁免了（2026-10-18 主人新档实测）。 */
       const avenged = !!(n.pstate && Array.isArray(n.pstate.avengers) && n.pstate.avengers.length);
       /* 倒地/真尸（dead+knockedOut）：只走刀①——真 def 已不在的倒地孤儿
          就是「幽灵 NPC」本尊（view 列得出、look 查无人），照删；
-         有真 def 的倒地者是正常玩法（补刀/搜身），刀② 不碰（见函数头注释②）。 */
+         有真 def 的倒地者是正常玩法（补刀/搜身），刀②③ 不碰（见函数头注释②）。 */
       if (n.dead || n.knockedOut) {
         if (!def && !avenged) {
           delete inst[uid];
@@ -1248,9 +1256,7 @@ class World extends EventEmitter {
         }
         continue;
       }
-      if (avenged ||
-          (def && ((n.hostile === true && !def.hostile) ||
-                   (typeof n.favor === 'number' && n.favor !== 0)))) continue;
+      if (avenged || (def && n.hostile === true && !def.hostile)) continue;
       /* 刀①：def 找不到（mod 关闭后的 demo NPC 实例 / 数据删档孤儿） */
       if (!def) {
         delete inst[uid];
@@ -1258,12 +1264,33 @@ class World extends EventEmitter {
         if (res.defIds.indexOf(defId) < 0) res.defIds.push(defId);
         continue;
       }
-      /* 刀②：noWander 定岗 NPC 不在岗（老档漂移实例） */
+      /* 刀②：noWander 定岗 NPC 不在岗（老档漂移实例）。
+         favor 非零豁免独占在这一刀（#90 口径：玩家处出来的交情不删）。 */
       if (def.noWander) {
+        if (typeof n.favor === 'number' && n.favor !== 0) continue;
         const home = posts[defId];
         const offPost = home ? !home.has(n.room)
           : (def.room ? n.room !== def.room : false);
         if (offPost) {
+          delete inst[uid];
+          res.removed++; res.drifted++;
+          if (res.defIds.indexOf(defId) < 0) res.defIds.push(defId);
+          continue;   /* 已删，别落到刀③ 再计一遍 */
+        }
+      }
+      /* 刀③（2026-10-18 主人新档「老周还站在出生点」）：def.room 静态定岗族离岗清理。
+         老周（cy_pre_teaman）def.room=jiangnan_street 但**没有 noWander**——
+         刀② 的「noWander 才管离岗」管不着他，老档里漂在出生点的实例就一直站着。
+         静态定岗判据：def.room 有值且 def **无 wander 习性**（带 wander 的是游走族，
+         离家是设计内行为，全库 165 个，不归清剿管；无 wander 的 def.room 族 653 个，
+         全是老周这样的钉子户/名人）。离岗实例删除，玩家一回 def.room 由懒生成池
+         补回——与刀①② 同一套「删了自己回来」，无需存档迁移。
+         豁免口径：公共闸（avenged/翻红）照旧；favor 在这里收窄成 **pstate.met**
+         （真见过面才算玩家交情——出身亲和 favor≠0 + 没见过面 = 漂移的定岗实例，
+         照删，正是主人新档老周的形态）。 */
+      if (def.room && !def.wander && n.room !== def.room) {
+        const met = !!(n.pstate && n.pstate.met);
+        if (!met) {
           delete inst[uid];
           res.removed++; res.drifted++;
           if (res.defIds.indexOf(defId) < 0) res.defIds.push(defId);
@@ -2625,6 +2652,17 @@ class World extends EventEmitter {
           后者被家园/主宅/宗门占用，一刀切会删掉玩家自己的房。 */
     if (old && old._privateHost && old.id !== roomId) this.leaveHouse(old.id);
     ch.room = roomId;
+    /* 野怪离场计时（2026-10-18「山贼×4」）：玩家挪窝后，原房间里 encounter
+       刷的野怪（_encWild）开始倒数（消散扫描在 worldTick）；宽限期内回屋
+       则清戳重新计时——「连续离场两轮才消散」，回屋续命不凭空蒸发。
+       所有位移——方向键 / go / 传送 / 剧情推人——都收敛到这一处，不会漏。 */
+    if (ch.isPlayer && old) {
+      for (const n of Object.values(this.instances.npcs)) {
+        if (!n || !n._encWild) continue;
+        if (n.room === old.id) { if (n._encWildLeaveTick == null) n._encWildLeaveTick = this._tickNo || 0; }
+        else if (n.room === roomId) n._encWildLeaveTick = null;   /* 人回来了，重新计时 */
+      }
+    }
     this.emit('roomchange', { ch, from: old ? old.id : null, to: roomId });
     this.fireEvent('onEnter', { roomId, ch });
     /* NPC 是懒实例化的：不先把这一带「活化」出来，刚踏进空屋子时
@@ -2735,6 +2773,10 @@ class World extends EventEmitter {
         const existing = this.npcsIn(ch.room).find(n => n.defId === nid) || null;
         const npc = existing || this.spawnNpc(nid, ch.room, 1);
         if (npc) {
+          /* 野怪标记（2026-10-18 主人新档「山贼×4」）：encounter 刷的野怪带
+             _encWild——玩家离开后两轮 worldTick 消散（见 worldTick 扫描）。
+             复用的在岗实例（respawn 定岗那只）不带标记，照旧常驻。 */
+          if (!existing) { npc._encWild = true; }
           npc.hostile = true;
           lines.push({ kind: 'warn', text: `【遭遇】${npc.name}拦住去路！` });
           /* ★ 批次 2 返工（BLK-1）：这里原来只有 `this.startCombat(ch, npc);` ——
@@ -3301,6 +3343,23 @@ class World extends EventEmitter {
   }
 
   worldTick() {
+    /* ---- 野怪离场（2026-10-18 主人新档「四个山贼」）----
+       encounter 进屋掷骰刷的野怪（_encWild）只在被打死时清——打输/逃走/绕路，
+       原地那只就永远站着，走一路留一只，全图越积越多（滚雪球）。
+       北大侠客行的正常野怪生态：**人走茶凉**——玩家离开房间两轮 worldTick
+       后野怪消散（尸体一并：搜身/补刀都得趁人在场）。
+       定岗/剧情 NPC 不带 _encWild 标记，不受影响；记仇（avengers）的
+       个人化实例照旧豁免——剧情生成的人不能被生态维护误删（#90 同源口径）。 */
+    this._tickNo = (this._tickNo || 0) + 1;
+    for (const wid of Object.keys(this.instances.npcs)) {
+      const wn = this.instances.npcs[wid];
+      if (!wn || !wn._encWild || wn._encWildLeaveTick == null) continue;
+      if (this._tickNo - wn._encWildLeaveTick < WILD_DESPAWN_TICKS) continue;
+      /* 双保险：人在场的一律不删（回屋续命，见 movePlayerTo 的清戳） */
+      if (this.player && wn.room === this.player.room) continue;
+      if (wn.pstate && Array.isArray(wn.pstate.avengers) && wn.pstate.avengers.length) continue;
+      delete this.instances.npcs[wid];
+    }
     /* NPC 游走。
        ⚠️ 两处非做不可的前置：
          ① NPC 是**懒实例化**的（boot 完只有 3 个实例，其余是模板），
