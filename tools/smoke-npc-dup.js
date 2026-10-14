@@ -192,6 +192,53 @@ sec('⑤ 定岗者不漫游（isStationed 豁免）：本岗永不被 respawn �
   }
 }
 
+sec('⑥ 幽灵 NPC 清剿（主人 2026-10-18 真机「列表有名、看无此人」）');
+{
+  /* 两处病根（见 world.pruneOrphanInstances 函数头注释 2026-10-18 加严）：
+     ① 77/86/87/91 辅助表以 npc id 为键、顶层键同为 npcs，把**无名残片**揉进
+        data.npcs —— demo mod 关掉后其 defId 仍「查得到」，刀① 被骗过；
+     ② demo 时期被打倒没补刀的 mod NPC（dead+knockedOut）原先被「dead/ko 一律
+        跳过」永久豁免——view 靠 downedIn 列得出、look 查无此人 = 幽灵本尊。
+     本段在旧代码下必红：站着与倒地的 demo 孤儿都会活着穿过读档清剿。 */
+  const e = new GameEngine({ seed: 20261018 });
+  e.modLoader.mods.find(m => m.id === 'demo_npc').enabled = true;   /* 模拟旧沙箱 demo 开着 */
+  e.boot();
+  e.newGame({ name: '探针侠', gender: 'male', birth: 'orphan' });
+  const w = e.world, p = w.player;
+  const GHOST_DEF = 'fisher_old';                                   /* demo_npc 的白发渔翁 */
+  ok('前置：demo_npc 已开、def 在表上', !!(w.data.npcs[GHOST_DEF] || {}).name, String(w.data.npcs[GHOST_DEF] && w.data.npcs[GHOST_DEF].name));
+  p.room = 'jiangnan_qiao';
+  w.spawnNpc(GHOST_DEF, p.room, 1, true);                           /* 站着的 */
+  const down = w.spawnNpc(GHOST_DEF, p.room, 1, true);              /* 倒地的（mod 时期打过没补刀） */
+  down.knockedOut = true; down.dead = true; down.hp = 0;
+  const save = w.serialize();
+
+  /* 新包口径读档（demo 关，即主人现在的世界） */
+  const e2 = new GameEngine({ seed: 20261018 });
+  e2.boot();
+  e2.world.deserialize(save, e2.modLoader.getEnabledModList());
+  const w2 = e2.world;
+  const left = Object.values(w2.instances.npcs).filter(n => n && n.defId === GHOST_DEF);
+  ok('★ demo 关闭后读档：站着的孤儿实例被清剿收掉', !left.some(n => !n.dead), left.length + ' 只残留');
+  ok('★ 倒地的孤儿实例同样收掉（幽灵本尊，不再「列表有名、看无此人」）',
+    !left.some(n => n.dead || n.knockedOut), left.map(n => n.dead ? 'dead' : 'alive').join(','));
+
+  /* 反向对照：有真 def 的倒地者一个都不许动，而且 look 必须找得到（口径对齐） */
+  const e3 = new GameEngine({ seed: 20261018 });
+  e3.boot();
+  e3.newGame({ name: '探针侠', gender: 'male', birth: 'orphan' });
+  const w3 = e3.world, p3 = w3.player;
+  const foe = w3.spawnNpc('mob_bandit', p3.room, 1, true);
+  foe.hp = 1;
+  w3.onNpcDown(foe, null);
+  const listed = (e3.view().npcs || []).some(n => n.id === foe.id || n.knockedOut);
+  ok('  前置：倒地者确实列在 view.npcs（这是正常玩法，不许清）', listed);
+  const r = e3.exec('看 ' + foe.name);
+  const lookTxt = (r.lines || []).map(l => l.text || '').join('|');
+  ok('★ 列表里看得见的倒地者，「看」必须找得到（旧代码报「这里没有」）',
+    lookTxt.indexOf('这里没有') < 0, lookTxt.slice(0, 60));
+}
+
 console.log('\n================================================');
 console.log(`  NPC 副本守卫：${pass} 通过 / ${fail} 失败`);
 console.log('================================================');

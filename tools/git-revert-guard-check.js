@@ -194,7 +194,10 @@ async function main() {
     let ignored = false, line = '';
     try {
       const lines = fs.readFileSync(gi, 'utf8').split(/\r?\n/);
-      lines.forEach((l) => { if (l.trim() && l.indexOf('mods/test_mod') >= 0) { ignored = true; line = l.trim(); } });
+        /* ⚠️ 只认**生效的忽略规则行**（2026-10-18 修正）：b3d1746 把该文件从
+         .gitignore 摘除后，规则行没了、只剩注释里还提这个名字——
+         连注释一起匹配会把「已纳管」误报成「仍被忽略」。 */
+      lines.forEach((l) => { const t = l.trim(); if (t && t[0] !== '#' && t.indexOf('mods/test_mod') >= 0) { ignored = true; line = t; } });
     } catch (e) { /* 没有 .gitignore 就当没忽略，不影响判定 */ }
     console.log('  · 归因提示：' + MOD_REL + (ignored
       ? ' 被 .gitignore 忽略（' + line + '）⇒ **git 不可能还原它**，别再往 git 身上赖'
@@ -247,17 +250,22 @@ async function main() {
       + '\n      （若这次改动是新的、有意为之，请先跟团队长确认，再更新基线：cp ' + MOD_REL + ' tools/_mod_baseline/test_mod.mod.json）');
   }
 
-  /* ④ 辅助：git HEAD 比对（拿不到就明说跳过；注意本文件不在 HEAD 里，属正常跳过） */
+  /* ④ 辅助：git HEAD 比对。
+     ⚠️ 2026-10-18 口径反转（b3d1746 之后）：mod.json 已被纳管（从 .gitignore 摘除），
+     已批准的墓碑版**就在 HEAD 里**（md5 7bf8c0e2…）——工作区与 HEAD **一致 = 健康**；
+     **不一致**才是「有人动过」（真凶仍是 smoke-test.js 的 writeMod，产物 md5 cb711aec…）。
+     旧口径「一致 ⇒ 被 git checkout 还原」只适用于该文件不在 HEAD 里的年代，已作废；
+     主判据仍是 ③ 基线比对，本条与它现在同向，互为印证。 */
   const h = await hPromise;
   if (!h.buf) {
     out.push('  ⏭ ④ 跳过「与 git HEAD 比对」：' + h.why);
     out.push('      本条**不依赖 git** —— 拿不到 HEAD 时它降级为上面的基线比对，不会假红。');
   } else {
     const cur = fs.readFileSync(MOD);
-    ok('④ ' + MOD_REL + ' 与 git HEAD 版本不一致（不一致才是「改过」）',
-      !bytesEqual(cur, h.buf),
-      '与 git HEAD 逐字节一致 ⇒ 这次「改回」是 git 干的。本文件已批准的删除被撤销。\n'
-      + '      修复：node tools/prune-test-npc.js');
+    ok('④ ' + MOD_REL + ' 与 git HEAD 逐字节一致（已纳管：一致才是干净）',
+      bytesEqual(cur, h.buf),
+      '与 git HEAD 不一致 ⇒ 有人动了这个文件（基线比对 ③ 应同时变红）。\n'
+      + '      真凶已知：tools/smoke-test.js 的 writeMod。修复：node tools/prune-test-npc.js');
   }
 
   console.log(out.join('\n'));

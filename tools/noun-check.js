@@ -160,6 +160,21 @@ t('N-V-29a 构造点恰好 esc 一次：无 esc(esc( 双重转义',
   }
 }
 
+console.log('[N-V-30] 点 NPC 出指令提示（主人真机 2026-10-18「点 NPC 不显示指令提示」）');
+/* 根因：openInteractMenu 里「先 doCmd 再 toggleHlTip」——doCmd 在第一个 await 前
+   同步 appendLog('> look …') → paintLog() 整段重建 #log，btnEl 成游离节点，
+   提示行挂进 detached 旧 .log-line 永远不可见。修法：look 回包落地后在新 DOM
+   按 data-hl 找回同一颗按钮再展开。本守卫钉「时序修复在位」： */
+t('N-V-30a NPC 分支走 doCmd().then() 重锚（不许再「先 doCmd 后同步展开」）',
+  /function openInteractMenu[\s\S]{0,400}doCmd\('look ' \+ name[\s\S]{0,200}\.then\(/.test(uiNoCmt)
+  && /function openInteractMenu[\s\S]{0,800}querySelector\('\.hl\[data-hl="' \+ hi \+ '"\]'\)/.test(uiNoCmt));
+t('N-V-30b 自动 look 保留（主人没点名撤的功能不许卷掉）',
+  /function openInteractMenu[\s\S]{0,400}doCmd\('look ' \+ name, \{ fromButton: true \}\)/.test(uiNoCmt));
+t('N-V-30c 非 NPC 高亮仍同步展开（不受重锚影响）',
+  /if \(h\.type !== 'npc'\) \{ toggleHlTip\(btnEl, name, acts\); return; \}/.test(uiNoCmt));
+t('N-V-30d 双副本逐字节一致（game/src/renderer ↔ server/public）',
+  fs.readFileSync(path.join(__dirname, '..', 'server', 'public', 'js', 'ui.js'), 'utf8') === ui);
+
 console.log('[数据] N-V-14 PANEL_CMDS 避让（全库 action cmd 不得整串命中面板表）');
 const pm = uiNoCmt.match(/const PANEL_CMDS = \{[\s\S]*?\n  \};/);
 const panelKeys = new Set();

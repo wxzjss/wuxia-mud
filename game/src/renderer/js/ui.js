@@ -653,12 +653,25 @@
     const name = h && h.text || '';
     const acts = (h && h.actions) || [];
     if (!acts.length) return;
+    if (h.type !== 'npc') { toggleHlTip(btnEl, name, acts); return; }
     /* 主人 2026-10-18 终裁：点 NPC 名字 = 弹指令提示**同时自动看一眼**——
        「看 xxx」的功能由点击承担，提示条目里的「看/细看」已撤。
-       自动 look 在提示展开**之前**发起：doCmd 开头的「执行即收」（N-V-20）
-       只收比它先开的提示，这里的展开在它后面，不会被自己这条 look 收掉。 */
-    if (h.type === 'npc') doCmd('look ' + name, { fromButton: true });
-    toggleHlTip(btnEl, name, acts);
+       🔴 2026-10-18 真机「点 NPC 不出指令提示」修因：doCmd 在第一个 await 之前
+       同步走 appendLog('> look …') → paintLog() **整段重建 #log 的 innerHTML**，
+       此刻 btnEl 已是游离节点——原先「先 doCmd 再 toggleHlTip」的顺序，
+       提示行被挂进 detached 的旧 .log-line 里，永远不可见（物件高亮不走
+       doCmd 所以没事，与主人只报 NPC 吻合）。
+       修法：等 look 回包落地（afterAction→paintLog 跑完）再在**新 DOM**里按
+       data-hl 找回同一颗高亮按钮展开——旧行的 registry 序号在重绘后不变
+       （logLines 只追加、_hlRegistry 按行序重建）；行被 MAX_LOG 挤掉找不到时
+       就放弃，自动看一眼的正文已在日志里，提示不算丢。互斥/ARIA 仍由
+       toggleHlTip 自己兜（N-V-11 / N-V-12）。 */
+    const hi = btnEl.getAttribute('data-hl');
+    doCmd('look ' + name, { fromButton: true }).then(() => {
+      const log = $('log');
+      const fresh = log && log.querySelector('.hl[data-hl="' + hi + '"]');
+      if (fresh) toggleHlTip(fresh, name, acts);
+    });
   }
 
   /* 收起 #log 里所有展开的提示行（互斥 N-V-11：同一时刻只允许一张展开） */

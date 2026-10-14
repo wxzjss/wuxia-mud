@@ -1079,7 +1079,14 @@ function buildCommands(world) {
        这正是「不报错、只是静默走错路」那一族（smoke-portrait-batch 的 1.L0b 抓到）。
        判据：**参数能命中本房间的 NPC 时，关键词不当场接管**；
        `a.cmd === kw`（按钮发的是 a.cmd）与「action 自己就是 look 系」仍然优先。 */
-    const npcsHere = w.npcsIncludingTemplates(p.room);
+    /* 🔴 口径对齐（2026-10-18 主人真机「幽灵 NPC：列表有名、看无此人」）：
+       view.npcs 与 lookRoom 的倒地行都含**倒地者**（downedIn），这里原先只查
+       npcsIncludingTemplates（npcsIn 滤掉 dead）——列表里看得见的人，
+       「看」却报「这里没有」，还会跌进下面的房间名兜底给出驴唇不对马嘴的
+       输出（实测「看 岳不群」返回了「岳不群的家」的房间描写）。
+       倒地者都在 downedIn（dead+knockedOut），与活名单天然无交集，直接拼接。 */
+    const npcsHere = w.npcsIncludingTemplates(p.room)
+      .concat(w.downedIn ? w.downedIn(p.room) : []);
     const npcPre = fuzzyFind(npcsHere, kw, n => n.name);
     for (const a of (roomNow && roomNow.actions) || []) {
       const ac = (a.cmd || '').trim();

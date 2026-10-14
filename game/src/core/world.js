@@ -1188,12 +1188,23 @@ class World extends EventEmitter {
    *      删了怎么回来：定岗族由 respawn 按岗补回；def.room 族在 `_npcsByRoom`
    *      懒生成池里，玩家一回本房 npcsIncludingTemplates 就补上——**都无需存档迁移**。
    *
-   * 安全边界（不删的）：
-   *   · dead / knockedOut 实例（死亡与击倒态另账，别动）；
-   *   · 跟随玩家的实例（p.followers——跟随者人在玩家身边，room≠岗位是**对的**）；
-   *   · squads（分队不进本函数口径）；
-   *   · 带运行时个人化状态的剧情实例（pstate.avengers / 运行期翻红 hostile /
-   *     非零 favor——主人 2026-10-17 退回裁定：**剧情生成的人不能被存档维护误删**）。
+ * 安全边界（不删的）：
+ *   · 有真 def 的 dead / knockedOut 实例（死亡与击倒态另账，别动——
+ *     倒地者是「补刀/搜身/装袋」的正常玩法对象）；
+ *   · 跟随玩家的实例（p.followers——跟随者人在玩家身边，room≠岗位是**对的**）；
+ *   · squads（分队不进本函数口径）；
+ *   · 带运行时个人化状态的剧情实例（pstate.avengers / 运行期翻红 hostile /
+ *     非零 favor——主人 2026-10-17 退回裁定：**剧情生成的人不能被存档维护误删**）。
+ * ⚠️ 2026-10-18 两处加严（主人真机「幽灵 NPC：列表有名、看无此人」）：
+ *   ① **真 def 判据**：77/86/87/91 辅助表（武学/内力/画像/生活）以 npc id 为键、
+ *      顶层键同为 npcs，mergeData 会把这些**无名残片**揉进 data.npcs——
+ *      demo mod 关掉后其 defId 在这里仍「查得到」，刀① 被骗过，残留实例
+ *      永久存活。真 def 必须带 name（40_npcs / mod / 动态生成的都有；
+ *      残片只有 skills/equipment/mp 这类补充字段）。
+ *   ② **倒地孤儿也收**：demo 时期被打倒没补刀的 mod NPC 实例（dead+knockedOut
+ *      且真 def 已随 mod 消失）原先被「dead/ko 一律跳过」永久豁免——
+ *      它们正是幽灵本尊：view 靠 downedIn 列得出、look 的活名单查无此人。
+ *      有真 def 的倒地者照旧不碰。
    * @returns {{removed:number, orphanDef:number, drifted:number, defIds:string[]}}
    */
   pruneOrphanInstances() {
@@ -1210,10 +1221,12 @@ class World extends EventEmitter {
     const following = new Set((this.player && this.player.followers) || []);
     for (const uid of Object.keys(inst)) {
       const n = inst[uid];
-      if (!n || n.dead || n.knockedOut) continue;
+      if (!n) continue;
       if (following.has(uid)) continue;
       const defId = n.defId;
-      const def = defId ? this.data.npcs[defId] : null;
+      const rawDef = defId ? this.data.npcs[defId] : null;
+      /* 真 def 判据（见函数头注释①）：无名残片不算 def。 */
+      const def = (rawDef && rawDef.name) ? rawDef : null;
       /* 剧情豁免（主人 2026-10-17 退回裁定：剧情生成的人不能被存档维护误删）。
          判据读**实例自带**的运行时个人化状态——def 可能已经不在（动态 def 不随档、
          mod 关闭即消失），所以两刀都必须先看实例：
@@ -1224,6 +1237,17 @@ class World extends EventEmitter {
          · favor 非零（玩家处处出来的交情）—— 只在刀② 豁免；刀① 的孤儿是 mod
            卸载残留，内容已不在，交情救不回一个无名游魂，不放。 */
       const avenged = !!(n.pstate && Array.isArray(n.pstate.avengers) && n.pstate.avengers.length);
+      /* 倒地/真尸（dead+knockedOut）：只走刀①——真 def 已不在的倒地孤儿
+         就是「幽灵 NPC」本尊（view 列得出、look 查无人），照删；
+         有真 def 的倒地者是正常玩法（补刀/搜身），刀② 不碰（见函数头注释②）。 */
+      if (n.dead || n.knockedOut) {
+        if (!def && !avenged) {
+          delete inst[uid];
+          res.removed++; res.orphanDef++;
+          if (res.defIds.indexOf(defId) < 0) res.defIds.push(defId);
+        }
+        continue;
+      }
       if (avenged ||
           (def && ((n.hostile === true && !def.hostile) ||
                    (typeof n.favor === 'number' && n.favor !== 0)))) continue;
