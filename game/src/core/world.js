@@ -1096,16 +1096,29 @@ class World extends EventEmitter {
   npcsIncludingTemplates(roomId) {
     const out = this.npcsIn(roomId).slice();
     const have = new Set(out.map(n => n.defId));
+    /* 🔴 全局活体闸（×N 家族根治，主人真机 2026-10-18）：
+       _npcsByRoom 收录的是「常驻本房」的人，每个 defId 全局只该有**一个**活实例
+       （dedupeNpcInstances 的成文规则）。但常驻者会被 defaultWanderFor 的默认游走
+       挪出本房——旧口径只查**本房**有没有，人一走开，玩家每回本房就再 spawn 一只，
+       副本越滚越多（实测 300 步滚出 9 只卖茶老汉，探针里 43 只）。
+       修法与 ambience.ensureNearbyNpcs 的全局 alive 集合同一口径：
+       全局已有一只活着的（人在哪间房都算活着），就绝不再 spawn——
+       他此刻在别处，「这里有：」本就不该列出他，再造一只才是 ×N 的病根。
+       ⚠️ 活体判据用 !dead：倒地（knockedOut+dead）的不算活着，
+          原口径「倒地躺在地上、活的照刷」的行为保持不变。 */
+    const aliveDefs = new Set();
+    for (const inst of Object.values(this.instances.npcs)) {
+      if (inst && inst.defId && !inst.dead) aliveDefs.add(inst.defId);
+    }
     for (const id of (this._npcsByRoom[roomId] || [])) {
-      if (!have.has(id)) {
-        const npc = this.spawnNpc(id, roomId, 1, true);
-        /* ⚠️ spawnNpc 对名人会「已有就返回那位」，而他可能人在别的房间
-           （名人会走动）。这里只收真正落在本房间的，否则同一个人会被
-           列两遍 —— 主人在客栈见过「岳不群 ×3」，就是这么来的。 */
-        if (npc && npc.room === roomId && !have.has(npc.defId)) {
-          have.add(npc.defId);
-          out.push(npc);
-        }
+      if (aliveDefs.has(id)) continue;
+      const npc = this.spawnNpc(id, roomId, 1, true);
+      /* ⚠️ spawnNpc 对名人会「已有就返回那位」，而他可能人在别的房间
+         （名人会走动）。这里只收真正落在本房间的，否则同一个人会被
+         列两遍 —— 主人在客栈见过「岳不群 ×3」，就是这么来的。 */
+      if (npc && npc.room === roomId && !have.has(npc.defId)) {
+        have.add(npc.defId);
+        out.push(npc);
       }
     }
     return out;

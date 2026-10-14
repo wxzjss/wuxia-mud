@@ -774,15 +774,13 @@ function buildCommands(world) {
         const pron = pronounOf(one);   // B11：兽→它 / 女→她 / 男→他（单一入口）
         const def = (one && one.def) || {};
         const actions = [
-          /* ⚠️ 第一项原来是 `{label:'看看', cmd:'look …'}` —— 只是一段文本流水。
-             主人在**日志里点 NPC 名**弹出这个菜单，点「看看」却只多打了几行字，
-             于是问「我要的看 NPC 会显示信息面板的功能呢？为什么点『看看』却不弹面板？」
-             （实情：详情面板只挂在前端「场景栏卡片」那条入口上，日志高亮这条漏了。）
-             现在第一项就是**开详情面板**：`act:'profile'` + `uid`（实例 id），
-             前端认 act 开面板；cmd 留作兜底（老客户端 / 不认 act 时退回 look）。
-             2026-10-15 主人定调菜单双词：「细看」(profile) 与「看」(look 文本流)，
-             字眼与全站叫法对齐，不再用「打量」「细看此人」。 */
-          { label: '细看', act: 'profile', uid: one && one.id, cmd: '细看 ' + k, hint: '资料 · 来历 · 关系' },
+          /* ⚠️ 菜单演变史（别再做回头的两套）：
+             · 第一版首项「看看」只落文本流水（主人问「为什么点『看看』却不弹面板」）；
+             · 2026-10-15 首项改「细看」(profile) +「看」(look 文本流) 双词；
+             · 2026-10-18 主人终裁：点 NPC 名字 = 弹提示**同时自动看一眼**（look 的
+               功能由点击承担），提示里的「看」「细看」两条目**都撤**——
+               细看面板的唯一入口是**手输「细看 <人名>」**（后端回 profile 开面板）。
+             菜单从「交谈」起头。 */
           { label: '交谈', cmd: 'talk ' + k },
           { label: '询问', cmd: 'ask ' + k },
         ];
@@ -844,10 +842,9 @@ function buildCommands(world) {
            · ⚠️ 铁律 33：**绝不拿 n.hostile 当「不给攻击」的排除条件** ——
              它是模板常驻标记（山贼/野兽一出生 true、打输也不清）。这里只用它
              **排序**（优先给），不做任何「能不能打」的判定。 */
-        /* 文本流的「看」压在最后 —— 但**必须排在「攻击」之前**：
-           「攻击」要保持是**最后一项**（B10：避免手指从「交谈」一路滑到「攻击」），
-           把无害的「看」垫在攻击前面，两头都安全。 */
-        actions.push({ label: '看', cmd: 'look ' + k, hint: '看一段文字描述' });
+        /* 「看」条目已撤（2026-10-18 主人终裁）：文本流「看」的功能由
+           **点击 NPC 名字自动 look** 承担（前端 openInteractMenu），
+           提示里不再列「看 xxx」。 */
         /* ★ 「绑架」统一入口（主人第四轮加）：
            晕着 → 直接装袋；站着 → 先打（真进战斗）。
            判据全用**显式状态**：`knockedOut`（晕没晕）+ 背包里有没有粗麻袋。
@@ -906,9 +903,8 @@ function buildCommands(world) {
         const hasSack = p.countItem(kidnapMod.SACK_ID) >= 1;
         const dhl = downed.map(n => {
           const acts = [
-            /* 倒地的也一样：第一项开详情面板（主人报过「日志里点名字不弹面板」） */
-            { label: '细看', act: 'profile', uid: n.id, cmd: '细看 ' + n.name, hint: '资料 · 来历 · 关系' },
-            { label: '看', cmd: 'look ' + n.name },
+            /* 「细看/看」条目已撤（2026-10-18 主人终裁，与站着的人同口径）：
+               点名字自动 look，细看面板走手输「细看 <人名>」。 */
             { label: '补刀', cmd: 'kill ' + n.name, hint: '结果了他' },
             { label: '搜身', cmd: '搜身 ' + n.name, hint: '翻他身上的东西' },
           ];
@@ -1058,8 +1054,13 @@ function buildCommands(world) {
   }
 
   /* 「细看」并入（主人真机反馈：裸词「细看」报不是指令）——
-     带 X 走下面的物件/NPC 描写通路，裸词落 lookRoom。 */
-  reg(['look', 'l', '看', '观察', '细看', '周围'], (ctx, args) => {
+     带 X 走下面的物件/NPC 描写通路，裸词落 lookRoom。
+     ⚠️ 2026-10-18 主人再定调：「细看 <人名>」**不再走文本流**，
+     改弹**细看交互面板**（带按钮那个，与场景栏卡片/NPC 菜单同路）——
+     后端回 `{profile:{uid,name}}`，前端 afterAction 认它调 openNpcProfile。
+     带按钮面板是**唯一**的细看形态；物件/出口/房间的「细看」仍走描写文本
+     （面板只认人）。两动词一套实现（lookAtCmd 的 asProfile 分叉），别做两套。 */
+  function lookAtCmd(ctx, args, asProfile) {
     const p = ctx.player, w = ctx.world;
     const kw = args.join(' ');
     if (!kw) return lookRoom(ctx);
@@ -1098,10 +1099,13 @@ function buildCommands(world) {
       }
       return { lines: (writeRoomNote(ctx, a), evalEffects(a.effects || [], ctx)) };
     }
-    // NPC
+    // NPC（asProfile：细看改弹面板——回结构化 profile 指令给前端，不再落描写文本）
     const npcs = npcsHere;
     const npc = fuzzyFind(npcs, kw, n => n.name);
-    if (npc) return { lines: lookNpc(ctx, npc) };
+    if (npc) {
+      if (asProfile) return { ok: true, profile: { uid: npc.id, name: npc.name } };
+      return { lines: lookNpc(ctx, npc) };
+    }
     // 物品（地面/背包/装备）
     const pool = [];
     for (const i of p.inventory || []) pool.push({ kind: 'inv', it: i });
@@ -1123,7 +1127,9 @@ function buildCommands(world) {
     const gh = fuzzyFind(Object.values(w.data.rooms), kw, r => r.name);
     if (gh) return { lines: [{ kind: 'plain', text: `【${gh.name}】${gh.desc || ''}` }] };
     return { lines: [{ kind: 'warn', text: `这里没有「${kw}」。` }] };
-  });
+  }
+  reg(['look', 'l', '看', '观察', '周围'], (ctx, args) => lookAtCmd(ctx, args, false));
+  reg(['细看'], (ctx, args) => lookAtCmd(ctx, args, true));
 
   function lookNpc(ctx, npc) {
     const w = ctx.world;

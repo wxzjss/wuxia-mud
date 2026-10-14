@@ -147,8 +147,13 @@ sec('② NPC 详细信息');
   }
 }
 
-/* ---------- ⑤ 裸词「细看」也是看（主人真机 2026-10-13）---------- */
-sec('⑤ 裸词「细看」并入 look 别名表');
+/* ---------- ⑤ 细看路由（口径反转 · 主人 2026-10-18 终裁）----------
+   旧口径：「细看」并入 look 别名表、<人名> 走人物详情文本流（2026-10-13）。
+   新口径：**带按钮的交互面板是唯一的细看形态**——
+     · 「细看 <人名>」后端回 {profile:{uid,name}}，前端 afterAction 开面板；
+     · 描写文本流（lookNpc）只属于「看」与点击自动 look；
+     · 裸「细看」仍 = 看房间；物件/出口/房间的「细看」仍走描写文本。 */
+sec('⑤ 细看路由反转：<人名> 回 profile 开面板，不再落描写文本');
 {
   const e4 = boot(77);
   const bare = txt(e4.exec('细看'));
@@ -157,8 +162,23 @@ sec('⑤ 裸词「细看」并入 look 别名表');
   const someone = (v4.npcs || [])[0];
   if (someone) {
     const r = e4.exec('细看 ' + someone.name);
-    ok('「细看 <人名>」照常走人物详情', (r.lines || []).length > 0 && !/不懂|不是指令/.test(txt(r)), txt(r).slice(0, 60));
+    ok('「细看 <人名>」回 profile 结构（uid+name，前端凭它开面板）',
+      r.profile && r.profile.uid && r.profile.name === someone.name, JSON.stringify(r.profile));
+    ok('「细看 <人名>」不再落描写文本流（无 subtitle/desc 行）',
+      !(r.lines || []).some(l => l.kind === 'subtitle' || l.kind === 'desc'),
+      txt(r).slice(0, 60));
+    /* 「看」仍走描写文本流（点击自动 look 与手输看共路） */
+    const r2 = e4.exec('看 ' + someone.name);
+    ok('「看 <人名>」仍走描写文本流（口径不变）',
+      (r2.lines || []).some(l => l.kind === 'subtitle'), txt(r2).slice(0, 60));
   }
+  /* 物件「细看」仍走描写文本（面板只认人） */
+  const e5 = boot(78);
+  const w5 = e5.world, p5 = e5.world.player;
+  w5.giveItem(p5, 'mu_piao', 1);
+  const r3 = e5.exec('细看 木瓢');
+  ok('「细看 <物品>」仍走描写文本（面板只认人）',
+    (r3.lines || []).length > 0 && !r3.profile, txt(r3).slice(0, 60));
 }
 
 /* 拿一个确定存在的 key 备用（找不到就返回 undefined，不影响主流程） */

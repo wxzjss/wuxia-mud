@@ -1888,6 +1888,48 @@ section('B7 · 木瓢两病（装备位展示 + equip 条件键）');
   ok(evalCond2({ equip: 'mu_piao' }, { player: p, world: w }) === true, '再装备，equip 键回真（数据侧 or[item,equip] 两态都通）');
 }
 
+/* ================================================================
+ * B8 · ×N 家族根治（主人真机 2026-10-18：新档仍见 ×N 叠加）
+ *   病根：npcsIncludingTemplates 只查**本房**有没有——_npcsByRoom 常驻
+ *   NPC 被 defaultWanderFor 的默认游走挪出本房后，玩家每回本房就再
+ *   spawn 一只，副本越滚越多（实测 300 步滚出 9 只卖茶老汉）。
+ *   修法：全局活体闸（与 ambience.ensureNearbyNpcs 同口径）——
+ *   全局已有一只活着的（人在哪间房都算），绝不再 spawn。
+ *   断言打真实路径：把常驻 NPC 手工挪到别房，反复走「回本房→列人」，
+ *   全图该 defId 活实例必须恒为 1；respawn 族（山贼）不误伤。
+ *   ================================================================ */
+section('B8 · ×N 家族根治：常驻 NPC 挪出本房后回房不补新副本');
+{
+  const e = boot(); const w = e.world;
+  /* 找一个 _npcsByRoom 收录的常驻 def（def.room 静态定岗族） */
+  const roomId = Object.keys(w._npcsByRoom).find(rid => (w._npcsByRoom[rid] || []).length > 0);
+  const defId = w._npcsByRoom[roomId][0];
+  ok('前置：找到常驻定岗 def', !!defId && !!w.data.npcs[defId], defId + ' @ ' + roomId);
+  /* 先确保他真的活着（走一次真实列人路径） */
+  w.npcsIncludingTemplates(roomId);
+  const countLive = () => Object.values(w.instances.npcs).filter(n => n && n.defId === defId && !n.dead).length;
+  eq('列一次人后全图恰 1 只', countLive(), 1);
+  /* 模拟默认游走：把他挪到邻房（游走改的是实例.room） */
+  const inst = Object.values(w.instances.npcs).find(n => n && n.defId === defId && !n.dead);
+  const exits = Object.keys((w.getRoom(roomId) || {}).exits || {});
+  const toRoom = exits.length ? (typeof (w.getRoom(roomId).exits[exits[0]]) === 'string'
+    ? w.getRoom(roomId).exits[exits[0]] : w.getRoom(roomId).exits[exits[0]].to) : null;
+  ok('前置：本房有出口可挪', !!toRoom, String(toRoom));
+  inst.room = toRoom;
+  /* 旧病：人走开后，玩家每回本房列一次人就多一只副本。反复 20 次 */
+  for (let i = 0; i < 20; i++) w.npcsIncludingTemplates(roomId);
+  eq('人被挪走后回房 20 次，全图仍恰 1 只（×N 不复发）', countLive(), 1);
+  /* 本房列人不再出现他（人在别处本来就不该列） */
+  eq('本房「这里有」不再列出他', w.npcsIncludingTemplates(roomId).some(n => n.defId === defId), false);
+  /* 倒地族不误伤：把唯一实例打晕（knockedOut+dead），回房照样补活的 */
+  inst.knockedOut = true; inst.dead = true;
+  w.npcsIncludingTemplates(roomId);
+  ok('倒地不算活体：回房照常补活的（倒地玩法不受影响）', countLive() === 1);
+  /* respawn 族不误伤：山贼 def 不在 _npcsByRoom，respawn 仍能刷 */
+  const bandit = w.spawnNpc('mob_bandit', 'jm_underground', 1, true);
+  ok('respawn 族照刷（山贼不误伤）', !!bandit);
+}
+
   /* 汇总 */
   console.log('\n==============================================');
   console.log(`  主人 bug 专项 smoke：${pass} 通过 / ${fail} 失败`);

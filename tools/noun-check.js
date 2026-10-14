@@ -123,6 +123,43 @@ t('N-V-27b（主人插队件）runInteractAct 只剩开面板：函数体内无 
   /function runInteractAct\(a, fallbackName\) \{[\s\S]{0,900}?\n  \}(?!\})/.test(uiNoCmt)
   && !/function runInteractAct[\s\S]{0,900}?doCmd\(/.test(uiNoCmt));
 
+console.log('[N-V-29] hl 标签转义恰一次（主人真机 2026-10-18「(可交互)\">」属性泄漏）');
+/* 双重转义 esc(esc(…)) 会把名字里的引号渲染成 &amp;quot;（读屏念「amp quot」）；
+   转义不足则属性提前闭合裸出 ">。判据两层：静态（构造点恰好单次 esc）
+   + 行为（真 esc 对敌意输入的产物无双引号泄漏、无双重转义失真）。 */
+t('N-V-29a 构造点恰好 esc 一次：无 esc(esc( 双重转义',
+  !/esc\(esc\(/.test(uiNoCmt)
+  && /aria-label="' \+ esc\(h\.text\) \+ '（可交互）">'/.test(uiNoCmt));
+{
+  /* 行为断言：取 app.js 的**真 esc**（vm 求值 util 对象字面量），按 589 行的
+     构造式拼标签，敌意输入（引号/单引号/尖括号/实体/常规名）逐个过：
+     ① aria-label 属性值内不得出现未转义的 "（属性提前闭合 = 真机 "> 形态）
+     ② 不得出现 &amp;quot; / &amp;lt; 等双重转义失真
+     ③ 可见文本 needle 转义后不改变判读（无 < > 裸出） */
+  const appSrc = fs.readFileSync(path.join(__dirname, '..', 'game', 'src', 'renderer', 'js', 'app.js'), 'utf8');
+  const m = appSrc.match(/const util = \{[\s\S]*?\n  \};/);
+  const esc = m ? new Function('return ' + m[0].replace('const util =', '').replace(/\};\s*$/, '}') + '.esc;')() : null;
+  t('N-V-29b 前置：app.js util.esc 能提取且转义引号',
+    !!esc && esc('a"b') === 'a&quot;b' && esc("a'b") === 'a&#39;b' && esc('<x>') === '&lt;x&gt;');
+  if (esc) {
+    const HOSTILE = ['山贼', '带"引号"的人', "带'单引号", '<script>alert(1)</script>', '含&amp;实体', 'x&quot;y', '正常（身份）'];
+    let leaked = 0, garbled = 0;
+    for (const nm of HOSTILE) {
+      const tag = '<button class="hl" data-hl="0" aria-label="' + esc(nm) + '（可交互）">' + esc(nm) + '</button>';
+      const v = tag.match(/aria-label="([^"]*)"/);
+      const val = v ? v[1] : tag;   // 匹配失败 = 属性被裸引号提前闭合 → 本身就是泄漏
+      if (!v || /["<>]/.test(val)) leaked++;
+      /* 双重转义的签名：输入是**裸**引号/尖括号，产物却出现 &amp;quot; 类
+         （先转义成实体、又被当普通 & 再转一次）。
+         输入本来就写着 &quot; 字面量的，转成 &amp;quot; 是正确的首次转义，不算。 */
+      const hasRawQuote = /["'<>&]/.test(nm.replace(/&(amp|quot|lt|gt|#39);/g, ''));
+      if (/&amp;(quot|lt|gt|#39);/.test(val) && hasRawQuote && !/&(quot|lt|gt|#39);/.test(nm.replace(/&amp;/g, '&'))) garbled++;
+    }
+    t('N-V-29b 敌意名 7 例：aria-label 属性值零泄漏（无裸 " < >）', leaked === 0, leaked + ' 例泄漏');
+    t('N-V-29b 敌意名 7 例：零双重转义失真（裸引号不得产出 &amp;quot; 类）', garbled === 0, garbled + ' 例失真');
+  }
+}
+
 console.log('[数据] N-V-14 PANEL_CMDS 避让（全库 action cmd 不得整串命中面板表）');
 const pm = uiNoCmt.match(/const PANEL_CMDS = \{[\s\S]*?\n  \};/);
 const panelKeys = new Set();

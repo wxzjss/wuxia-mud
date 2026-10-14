@@ -31,9 +31,14 @@ const boot = (seed) => {
 const txt = a => (a || []).map(x => String(x.text || '')).join(' | ');
 
 /* ================================================================
- * §P 日志里点 NPC → 第一项就是「细看」（开面板）
+ * §P 日志高亮菜单：撤看/细看词位（2026-10-18 终裁）
+ *   演变史：2026-10-15 菜单双词（第一项=细看+act:profile+真uid）→
+ *   2026-10-18 主人终裁反转：点击 NPC 名字=弹提示+自动 look（纯前端），
+ *   菜单**撤**「看」「细看」条目；细看的唯一形态是手输「细看 <人名>」→
+ *   后端回 {profile:{uid,name}} → 资料面板（面板形态与端到端 uid 由
+ *   look-detail-check §⑤ 钉）。这里钉「菜单里真的没有」，防撤词回潮。
  * ================================================================ */
-section('§P 日志高亮菜单：第一项必须是「细看」且带真实例 id');
+section('§P 日志高亮菜单：已撤看/细看词位，剩余动作健全');
 {
   const e = boot(21);
   const w = e.world, p = w.player;
@@ -48,23 +53,33 @@ section('§P 日志高亮菜单：第一项必须是「细看」且带真实例 
   const h = npcLine && npcLine.hl.find(x => x.type === 'npc');
   ok('P-2 高亮项是 npc 类型且带 actions 表', !!(h && h.actions && h.actions.length), h ? h.actions.map(a => a.label).join('、') : '-');
 
-  const first = h && h.actions[0];
-  ok('P-3 ★ 动作表**第一项**就是「细看」（菜单双词：看/细看，主人 2026-10-15 定调）',
-    !!(first && first.label === '细看'), first ? first.label : '(空)');
-  ok('P-4 ★ 该项带 `act:"profile"`（前端靠它开面板，而不是退回 look 文本流）',
-    !!(first && first.act === 'profile'), first ? JSON.stringify({ act: first.act, uid: first.uid }) : '-');
-  ok('P-5 ★ 该项带**真实例 id**（不是文本名 —— 文本名会被重名/称谓坑）',
-    !!(first && first.uid && /^npc_/.test(first.uid)), first ? String(first.uid) : '-');
-
-  /* 端到端：拿 hl 给的 uid 去查画像，必须查到同一个人 */
-  if (first && first.uid) {
-    const pr = e.npcProfileOf(first.uid);
-    ok('P-6 ★ 用 hl 给的 uid 真能查到这个人（端到端，uid 错了立刻暴露）',
-      !!(pr && pr.name === someone.name), pr ? pr.name : '(查不到)');
-  }
-  ok('P-7 文本流的「看」还在（菜单双词之一，look 文本流）',
-    !!(h && h.actions.some(a => a.label === '看' && /^look /.test(a.cmd || ''))),
+  ok('P-3 ★ 菜单已撤「细看」条目（2026-10-18 终裁：细看只走手输→面板，不占菜单位）',
+    !!h && h.actions.every(a => a.label !== '细看'),
     h ? h.actions.map(a => a.label).join('、') : '-');
+  ok('P-4 ★ 菜单已撤「看」词（点击名字自动 look 是前端行为；「查看关系」这类复合词不算）',
+    !!h && h.actions.every(a => a.label !== '看'),
+    h ? h.actions.map(a => a.label).join('、') : '-');
+  ok('P-5 撤词后动作表仍有真功能（不是撤成空表）',
+    !!h && h.actions.length > 0, h ? h.actions.map(a => a.label).join('、') : '-');
+
+  /* 端到端：手输「细看 <名>」回 {profile}，uid 真能查到同一个人 */
+  {
+    const rP = e.exec('细看 ' + someone.name);
+    const uid = rP && rP.profile && rP.profile.uid;
+    ok('P-6 ★ 手输「细看 <名>」回 {profile} 且带真实例 id（uid 错了立刻暴露）',
+      !!uid && /^npc_/.test(uid),
+      rP ? JSON.stringify(rP.profile || (rP.lines || []).map(l => l.text).join('|').slice(0, 60)) : '(空回包)');
+    if (uid) {
+      const pr = e.npcProfileOf(uid);
+      ok('P-6b ★ 用 profile.uid 真能查到这个人（端到端）',
+        !!(pr && pr.name === someone.name), pr ? pr.name : '(查不到)');
+    }
+  }
+  ok('P-7 手输「看 <人名>」仍是文本流（看词撤出菜单但指令健在）',
+    (() => {
+      const r = e.exec('看 ' + someone.name);
+      return !r.profile && (r.lines || []).some(l => (l.text || '').length > 0);
+    })(), '');
 
   /* 倒地那张表同样处理 */
   {
@@ -74,9 +89,9 @@ section('§P 日志高亮菜单：第一项必须是「细看」且带真实例 
     const l2 = e.exec('look');
     const dl = (l2.lines || []).find(l => l.kind === 'npcs' && /躺着/.test(l.text || ''));
     const dh = dl && dl.hl && dl.hl[0];
-    ok('P-8 ★ 倒在地上的人，动作表第一项也是「细看」+ 真 uid',
-      !!(dh && dh.actions[0].label === '细看' && dh.actions[0].act === 'profile' && dh.actions[0].uid),
-      dh ? JSON.stringify(dh.actions.slice(0, 2).map(a => a.label)) : '(没找到倒地行)');
+    ok('P-8 ★ 倒地动作表同样撤看/细看，且仍有真动作（绑架/补刀族健在）',
+      !!dh && dh.actions.length > 0 && dh.actions.every(a => a.label !== '细看' && a.label !== '看'),
+      dh ? dh.actions.map(a => a.label).join('、') : '(没找到倒地行)');
   }
 }
 

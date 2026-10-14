@@ -69,6 +69,10 @@ class ModLoader {
         this.state = Object.assign(this.state, JSON.parse(fs.readFileSync(this.statePath, 'utf8')));
       }
     } catch (e) { /* ignore */ }
+    /* 盘上快照：reconcileState 只清算**从盘上读来的** enabled 条目——
+       构造之后内存里新塞的手动启用（测试预 boot 开 mod、未来 UI 预热路径）
+       不算「过期状态」，boot 不得没收（smoke-rules enableModsInMem 判据连带）。 */
+    this._diskEnabled = Object.assign({}, this.state.enabled);
   }
   saveState() {
     try { fs.writeFileSync(this.statePath, JSON.stringify(this.state, null, 2), 'utf8'); } catch (e) { /* ignore */ }
@@ -102,7 +106,38 @@ class ModLoader {
     }
     // 应用顺序
     this.applyOrder();
+    /* state 清算（boot 时）——见 reconcileState 注释 */
+    this.reconcileState();
     return this.mods;
+  }
+
+  /* ------------------------------------------------------------------ *
+   * state 清算（主人真机 2026-10-18：新档仍见游侠×4）
+   * ------------------------------------------------------------------ */
+  /**
+   * 过期 enabled 状态清算。根治发布沙箱复用带来的脏 mods-state.json：
+   * 早期发布上传过一份 demo 开着的状态，沙箱是同一个（复用），服务端 boot
+   * 每次都把它读回来 → demo mod 无中生有地开着 → 主人新档见游侠×4。
+   * 口径（主人 2026-10-18 定）：mod.json 现为 enabledByDefault:false 的 mod，
+   * state.enabled 里的条目**一律丢弃**（含手动开出来的 true）——
+   * 手动启用只在**本会话**内有效（运行时 m.enabled），过期状态不复活 demo。
+   * 幂等：干净 state 重跑是 no-op。@returns {string[]} 丢弃的 mod id
+   */
+  reconcileState() {
+    const dropped = [];
+    const disk = this._diskEnabled || {};
+    for (const m of this.mods) {
+      if (m.broken || m.defaultEnabled) continue;
+      /* 只清盘上来的条目（脏 mods-state.json 的来路）；本会话内存里
+         新加的启用不在快照里，不受清算——见 loadState 的快照注释。 */
+      if (this.state.enabled[m.id] !== undefined && disk[m.id] !== undefined) {
+        dropped.push(m.id);
+        delete this.state.enabled[m.id];
+        m.enabled = m.defaultEnabled;   // 回出厂默认（false）
+      }
+    }
+    if (dropped.length) this.saveState();   // 清算结果落盘，脏条目不再回来
+    return dropped;
   }
 
   readModDir(dir) {
@@ -165,6 +200,9 @@ class ModLoader {
       size: this.dirSize(dir),
       mtime: stat.mtimeMs,
       broken: false,
+      /* mod.json 的**出厂默认开关**（enabledByDefault，缺省=开）。
+         reconcileState 要用它清算过期 state——单独存一份，别跟 m.enabled 混。 */
+      defaultEnabled: ((meta.enabledByDefault !== undefined ? meta.enabledByDefault : json.enabledByDefault) !== false),
       enabled: this.state.enabled[id] !== undefined
         ? !!this.state.enabled[id]
         : ((meta.enabledByDefault !== undefined ? meta.enabledByDefault : json.enabledByDefault) !== false),

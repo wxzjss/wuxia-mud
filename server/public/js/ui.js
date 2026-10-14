@@ -585,8 +585,12 @@
         const hi = reg ? reg.length : 0;
         if (reg) reg.push(ref);
         /* 81/N-V-26（L1 一个字都不说）：屏幕上不许有 hover 冒泡提示，
-           title= 已删；无障碍信息走 aria-label（读屏念，屏幕不显示）。 */
-        const tag = '<button class="hl" data-hl="' + hi + '" aria-label="' + esc(esc(h.text) + '（可交互）') + '">' + needle + '</button>';
+           title= 已删；无障碍信息走 aria-label（读屏念，屏幕不显示）。
+           ⚠️ esc 恰好一次（N-V-29）：双重转义会把名字里的引号显示成
+           &amp;quot;（读屏念「amp quot」）；单次转义后属性值里的 "
+           已是 &quot;，属性不会提前闭合——真机上「(可交互)\">」那种
+           裸标签尾巴，就是旧前端 esc 版本不齐时的属性泄漏形态。 */
+        const tag = '<button class="hl" data-hl="' + hi + '" aria-label="' + esc(h.text) + '（可交互）">' + needle + '</button>';
         raw = raw.split(needle).join(tag);
       });
     }
@@ -649,7 +653,11 @@
     const name = h && h.text || '';
     const acts = (h && h.actions) || [];
     if (!acts.length) return;
-    /* 主人插队件：旧「可逆单动作直执」分支已拆 —— .hl 点击一律只展开文字提示行。 */
+    /* 主人 2026-10-18 终裁：点 NPC 名字 = 弹指令提示**同时自动看一眼**——
+       「看 xxx」的功能由点击承担，提示条目里的「看/细看」已撤。
+       自动 look 在提示展开**之前**发起：doCmd 开头的「执行即收」（N-V-20）
+       只收比它先开的提示，这里的展开在它后面，不会被自己这条 look 收掉。 */
+    if (h.type === 'npc') doCmd('look ' + name, { fromButton: true });
     toggleHlTip(btnEl, name, acts);
   }
 
@@ -4449,6 +4457,9 @@
     /* 新的一批日志 */
     if (d.log && d.log.length) appendLog(d.log);
     else if (d.lines && d.lines.length) appendLog(d.lines);
+
+    /* 细看：后端回 {profile} → 开资料面板（2026-10-18 主人终裁，细看唯一形态） */
+    if (d.profile) openNpcProfile(d.profile);
 
     /* 视图（走统一入口，别自己赋值）
        ⚠️ 指令回包**故意不带整张地图**（它是 247 KB，占回包的 88%，
