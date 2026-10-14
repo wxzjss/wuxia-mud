@@ -36,7 +36,8 @@
       if (info.warnings && info.warnings.length) {
         setTimeout(() => U.toast('Mod 加载提示：' + info.warnings.join('；'), 'warn', 5000), 900);
       }
-      /* 本地有存档就亮出「继续游戏」 */
+      /* 一次性迁移桥（老档搬进本地），然后「本地有档就亮继续游戏」 */
+      await migrateLegacySaves();
       await probeSaves();
     } catch (e) {
       $('start-stats').innerHTML = '<span style="color:#9c2b25">' + esc('本地服务未启动：' + e.message) + '</span>';
@@ -44,6 +45,39 @@
     }
   }
 
+
+  /* ============================================================
+   *  迁移桥（存档本地化 2026-10-18）：老档一次性从服务器搬进本地
+   *  触发条件（三者同时）：① 本地一份档都没有；② 没插过迁移旗；
+   *  ③ 服务器只读桥通着、且有老档。
+   *  幂等：put 同名档整键覆盖；旗在**整批跑完**后插（单份失败不插旗的部分
+   *  下个启动重试——宁可重导覆盖同名，也不让主人的档静默消失）。
+   *  语义变化不用在这里解释给玩家听以外的话：导完 toast 一句就够。
+   * ============================================================ */
+  async function migrateLegacySaves() {
+    if (!global.WXSAVE || global.WXSAVE.migrated()) return;
+    if (global.WXSAVE.hasAny()) { global.WXSAVE.markMigrated(); return; }
+    try {
+      const d = await api.legacySaves();
+      if (!d || !d.ok) return;                     /* 桥没通：不插旗，下个启动再试 */
+      const saves = d.saves || [];
+      let n = 0;
+      for (const s of saves) {
+        try {
+          const r = await api.legacyRead(s.id);
+          if (r && r.ok && r.data) {
+            const w = global.WXSAVE.put({
+              id: s.id, name: s.name, level: s.level, savedAt: s.savedAt,
+              time: s.time, room: s.room, mods: s.mods, imported: true,
+            }, r.data);
+            if (w && w.ok) n++;
+          }
+        } catch (e) { /* 单份失败不拖累整批 */ }
+      }
+      global.WXSAVE.markMigrated();
+      if (n) U.toast('已从服务器找回 ' + n + ' 份旧档（以后各设备各存各的，不再同步）', 'ok', 6000);
+    } catch (e) { /* 网络不通：不插旗，下个启动再试 */ }
+  }
 
   /* ============================================================
    *  继续游戏：本地有存档时显示

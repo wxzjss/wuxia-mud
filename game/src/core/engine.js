@@ -2436,10 +2436,32 @@ class GameEngine {
     }
   }
 
-  loadSave(id) {
-    const s = this.readSave(id);
-    if (!s) return { ok: false, msg: '存档不存在。' };
-    this.world.deserialize(s, this.modLoader.getEnabledModList());
+  /**
+   * 快照（存档本地化 2026-10-18，主人定调：存档读写全部走浏览器本地）：
+   * **纯序列化，不碰磁盘**。存档的唯一权威副本从此住浏览器 localStorage
+   * （js/savestore.js），服务端不再替玩家写 saves/ —— `/api/save` 路由改走这里。
+   * id 语义与 save() 一致（缺省 save_<时间戳>），但不落盘也不加测试标记
+   * （测试标记是磁盘档防混入玩家列表用的；本地档的隔离由前端存档组件管）。
+   */
+  snapshot(id) {
+    const w = this.world;
+    if (!w.player) return { ok: false, msg: '没有可保存的存档。' };
+    const sid = id || ('save_' + new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19));
+    return { ok: true, id: sid, msg: '快照已生成。', data: w.serialize() };
+  }
+
+  /**
+   * 从一份存档正文恢复世界（本地化的读路径：正文由客户端从 localStorage
+   * 送回来）。收尾与 loadSave 完全同一套（重建指令表 / 教程别名 / 剧情补账），
+   * 只是正文来源不同——别在两处各养一份收尾。
+   */
+  restoreFrom(data) {
+    if (!data || typeof data !== 'object') return { ok: false, msg: '存档数据无效。' };
+    try {
+      this.world.deserialize(data, this.modLoader.getEnabledModList());
+    } catch (e) {
+      return { ok: false, msg: '存档无法读取：' + (e && e.message || e) };
+    }
     registerBuiltinFns(this.world);
     this.cmds = buildCommands(this.world);
     /* ⚠️ 这里原来**漏了** `_wireTutorialAliases()` —— loadSave 会重建 cmds，
@@ -2451,6 +2473,12 @@ class GameEngine {
        读档＝「这些早讲过了」，补一笔账最省事也最不打扰。 */
     try { storybeat.markSeen(this.world, this.world.player); } catch (e) { /* ignore */ }
     return { ok: true, msg: '读档成功。', view: this.view({ map: false }) };
+  }
+
+  loadSave(id) {
+    const s = this.readSave(id);
+    if (!s) return { ok: false, msg: '存档不存在。' };
+    return this.restoreFrom(s);
   }
 
   deleteSave(id) {

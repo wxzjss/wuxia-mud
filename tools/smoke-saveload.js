@@ -185,6 +185,107 @@ console.log('  结缘知晓人数 前'+before.bondKnows+' → 后'+bondKnowsAfte
   ok('★ 刀② 豁免：带交情（favor≠0）的离岗 NPC 保留',
     Object.values(e8.world.instances.npcs).some(n => n && n.defId === 'wg_zhou' && n.favor === 50));
 }
+
+/* ================================================================
+ * ⑧ 存档本地化（2026-10-18 主人定调：只保留本地存档功能）
+ *    服务端 /api/save 只出快照正文（不写盘）、/api/restore 收正文恢复；
+ *    权威副本住浏览器 localStorage（renderer/js/savestore.js）；
+ *    老档走只读迁移桥一次性导入。这里钉三件：
+ *    A 引擎快照/恢复闭环  B WXSAVE 本地组件闭环（vm 真跑）  C 路由/桥的静态判据
+ * ================================================================ */
+console.log('\n⑧ 存档本地化（快照/恢复 + 本地存档组件 + 迁移桥）');
+const fs = require('fs'), path = require('path'), vm = require('vm');
+{
+  /* ---- A. 引擎快照/恢复闭环（不落盘） ---- */
+  const snap = e.snapshot('loc_a');
+  ok('⑧A1 snapshot 出正文且不落盘（saves/ 不新增文件）',
+    snap.ok && !!snap.data && snap.data.player && snap.data.player.name === '试剑'
+    && !fs.existsSync(path.join(TEST_SAVE_DIR, 'loc_a.json')));
+  ok('⑧A2 snapshot 正文带 savedAt / clockMinutes（列表元信息靠它）',
+    typeof snap.data.savedAt === 'number' && typeof snap.data.clockMinutes === 'number');
+  const moneyBefore = w.player.money;
+  p.money = 123;
+  const rBack = e.restoreFrom(JSON.parse(JSON.stringify(snap.data)));
+  ok('⑧A3 restoreFrom 把世界拨回快照（读档＝回当时）', rBack.ok && w.player.money === moneyBefore);
+  ok('⑧A4 restoreFrom 回 view 带 player、不带地图（recoverLostPlayer 判据）',
+    !!(rBack.view && rBack.view.player) && rBack.view.map === undefined);
+  const rBad = e.restoreFrom(null);
+  ok('⑧A5 坏正文明确拒绝（不炸世界）', rBad.ok === false && !!rBad.msg);
+  ok('⑧A6 loadSave 与 restoreFrom 同一套收口（正文来源不同、收尾只有一份）',
+    /loadSave\(id\) \{[\s\S]{0,200}return this\.restoreFrom\(s\);/.test(fs.readFileSync(path.join(__dirname, '..', 'game', 'src', 'core', 'engine.js'), 'utf8')));
+
+  /* ---- B. WXSAVE 本地组件（vm 真跑，localStorage 用内存桩） ---- */
+  const mkLs = () => { const d = {}; return { getItem: k => (k in d ? d[k] : null), setItem: (k, v) => { d[k] = String(v); }, removeItem: k => { delete d[k]; }, _d: d }; };
+  const loadSaveStore = (lsStub) => {
+    const env = { window: { localStorage: lsStub } };
+    vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'game', 'src', 'renderer', 'js', 'savestore.js'), 'utf8'),
+      vm.createContext({ window: env.window, localStorage: lsStub }), { filename: 'savestore.js' });
+    return env.window.WXSAVE;
+  };
+  const ls1 = mkLs();
+  const S1 = loadSaveStore(ls1);
+  const blob1 = JSON.parse(JSON.stringify(snap.data));
+  ok('⑧B1 put→list 闭环（元信息进索引）',
+    S1.put({ id: 's_a', name: '甲', savedAt: 100 }, blob1).ok
+    && S1.put({ id: 's_b', name: '乙', savedAt: 200 }, blob1).ok
+    && S1.list().length === 2 && S1.list()[0].id === 's_b');
+  ok('⑧B2 get 取回正文与写入一致', JSON.stringify(S1.get('s_a')) === JSON.stringify(blob1));
+  ok('⑧B3 put 同 id 覆盖（单键+覆盖纪律，不增条目）',
+    S1.put({ id: 's_a', name: '甲二', savedAt: 300 }, blob1).ok && S1.list().length === 2
+    && S1.list()[0].id === 's_a' && S1.list()[0].name === '甲二');
+  ok('⑧B4 remove 连正文带索引一起走', (S1.remove('s_b'), S1.list().length === 1 && S1.get('s_b') === null));
+  ok('⑧B5 「刷新不丢」：新组件实例读同一 localStorage 看得见同一批档',
+    loadSaveStore(ls1).list().length === 1);
+  ok('⑧B6 软上限 12 份：超限明确拒绝（不许静默吞档）',
+    (function () {
+      const S2 = loadSaveStore(mkLs());
+      for (let i = 0; i < S2.KEYS.MAX_SAVES; i++) S2.put({ id: 'k' + i, savedAt: i }, blob1);
+      const r = S2.put({ id: 'overflow', savedAt: 999 }, blob1);
+      return r.ok === false && /本地最多留/.test(r.msg);
+    })());
+  ok('⑧B7 quota 爆掉给人话（不抛异常）',
+    (function () {
+      const bad = mkLs(); bad.setItem = () => { throw new Error('QuotaExceededError'); };
+      const S3 = loadSaveStore(bad);
+      const r = S3.put({ id: 'q1', savedAt: 1 }, blob1);
+      return r.ok === false && /本地空间不足/.test(r.msg);
+    })());
+  ok('⑧B8 索引坏档当「没有」处理（启动不被脏数据炸）',
+    (function () {
+      const lsX = mkLs(); lsX.setItem('wx_saves_index', '{oops');
+      return loadSaveStore(lsX).list().length === 0;
+    })());
+  ok('⑧B9 迁移旗语义：默认未迁 / 插旗后不再触发',
+    S1.migrated() === false && (S1.markMigrated(), S1.migrated() === true));
+
+  /* ---- C. 路由/桥/接线的静态判据 ---- */
+  const APP = fs.readFileSync(path.join(__dirname, '..', 'game/src/renderer/js/app.js'), 'utf8');
+  const UI = fs.readFileSync(path.join(__dirname, '..', 'game/src/renderer/js/ui.js'), 'utf8');
+  const START = fs.readFileSync(path.join(__dirname, '..', 'game/src/renderer/js/start.js'), 'utf8');
+  const SRV = fs.readFileSync(path.join(__dirname, '..', 'server/game-server.js'), 'utf8');
+  ok('⑧C1 服务端 /api/save 走 snapshot（不替玩家写盘）',
+    /case 'save': \{[\s\S]{0,120}engine\.snapshot\(/.test(SRV));
+  ok('⑧C2 服务端 /api/restore 在位（客户端送正文恢复世界）',
+    /case 'restore': \{[\s\S]{0,200}engine\.restoreFrom\(json_body && json_body\.data\)/.test(SRV));
+  ok('⑧C3 玩家档路由已摘：不再有 case \'load\' / \'deletesave\'',
+    !/case 'load':/.test(SRV) && !/case 'deletesave':/.test(SRV));
+  ok('⑧C4 只读迁移桥在位（saves + legacy/read，不写世界）',
+    /case 'legacy\/read': \{[\s\S]{0,160}engine\.readSave\(/.test(SRV));
+  ok('⑧C5 api.save = 快照 + WXSAVE.put（权威副本落本地）',
+    /async save\(id\) \{[\s\S]{0,400}api\/save[\s\S]{0,400}WXSAVE\.put\(/.test(APP));
+  ok('⑧C6 api.load = 本地正文优先 → /api/restore（老签名不变）',
+    /async load\(id\) \{[\s\S]{0,200}WXSAVE\.get\(id\)[\s\S]{0,600}api\/restore/.test(APP));
+  ok('⑧C7 api.load 本地没档退只读桥领回（主人档一个不静默消失）',
+    /async load\(id\) \{[\s\S]{0,400}legacy\/read[\s\S]{0,400}WXSAVE\.put\(/.test(APP));
+  ok('⑧C8 迁移桥触发条件：未迁旗 + 本地无档才跑，跑完插旗',
+    /function migrateLegacySaves\(\) \{[\s\S]{0,200}migrated\(\)[\s\S]{0,200}hasAny\(\)[\s\S]{0,600}markMigrated\(\)/.test(START)
+    && /await migrateLegacySaves\(\);\s*\n\s*await probeSaves\(\);/.test(START));
+  ok('⑧C9 关页「最后一口气」= 同步 XHR 拿快照 + 同步落本地（sendBeacon 已拆）',
+    /beforeunload[\s\S]{0,1400}new XMLHttpRequest\(\)[\s\S]{0,600}WXSAVE\.put\(/.test(UI)
+    && !/navigator\.sendBeacon|sendBeacon\(/.test(UI));
+  ok('⑧C10 savestore 已挂 index.html（9 处戳同源）',
+    /<script src="js\/savestore\.js\?v=/.test(fs.readFileSync(path.join(__dirname, '..', 'game/src/renderer/index.html'), 'utf8')));
+}
 console.log('\n' + '='.repeat(40));
 console.log('  通过 ' + pass + ' 项，失败 ' + fail + ' 项');
 console.log('='.repeat(40));

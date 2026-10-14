@@ -4654,10 +4654,11 @@
     /* ⚠️ 关标签页 / 刷新：直接走 `beforeunload` **立即存**。
        为什么非加不可：改成「静止 30 s 才存」之后，玩家走完最后一步**不到 30 秒**就把标签页关掉，
        这一步就永远丢了 —— 这是防抖唯一的真实代价，必须补回来。
-       为什么用 `sendBeacon` 而不是 `api.save`：`beforeunload` 里页面随时会被回收，
-       `fetch` 很可能发不出去就随页面一起没了；`sendBeacon` 是浏览器专门给这种
-       「最后一口气」准备的，交给浏览器去发，页面死活不影响它。
-       没有 `sendBeacon`（老浏览器）就退回 `api.save`，尽力而为。
+       本地化后（2026-10-18）这条路改了走法：快照正文在 `/api/save` 的**回包**里，
+       老 `sendBeacon` 读不到回包、等于白发——已拆。改用**同步 XHR** 拿快照 +
+       **同步** localStorage 落盘（beforeunload 里页面不等异步，两步都必须同步才作数；
+       同步 XHR 已废弃但恰恰是这里唯一能用的形态）。XHR 拿不到（服务端没了/测试桩）
+       就放弃这一口气，用最后一份本地档兜底——最多丢静止期内那 ≤30 秒。
        ⚠️ 不 return 值 —— 返回非空会在某些浏览器上触发「确定要离开吗」的系统弹窗，
           那是把「保存」做成了「骚扰」。 */
     if (_autosaveUnloadBound) return;
@@ -4668,15 +4669,21 @@
           if (!S.settings.autosave) return;
           if (!S.view || !S.view.player) return;
           const key = autosaveId();
-          if (navigator && typeof navigator.sendBeacon === 'function') {
-            /* sendBeacon 只能发 Blob/FormData，而且读不到响应 ——
-               正好，这个请求我们只关心「发出去了」，不关心回包。
-               ⚠️ body 的形状必须跟 `api.save` 一致（同样只发 `{id}`），
-                  否则服务端拿不到 id 就存到默认槽位去了。 */
-            const blob = new Blob([JSON.stringify({ id: key })], { type: 'application/json' });
-            navigator.sendBeacon('/api/save', blob);
-          } else {
-            api.save(key).catch(() => { /* 最后一口气，失败也无所谓了 */ });
+          let snap = null;
+          try {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/api/save', false);   /* 同步：页面不留时间等异步 */
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({ id: key }));
+            if (xhr.status === 200) snap = JSON.parse(xhr.responseText);
+          } catch (e) { /* 拿不到就用最后一份本地档，不阻塞关页 */ }
+          if (snap && snap.ok && snap.data) {
+            const p = S.view.player || {};
+            global.WXSAVE.put({
+              id: snap.id || key, name: p.name || '?', level: p.level || 1,
+              savedAt: snap.data.savedAt, time: snap.data.clockMinutes,
+              room: p.room || '', mods: (snap.data.mods || []).length,
+            }, snap.data);
           }
         } catch (e) { /* 关页面的路上不许再抛异常打扰玩家 */ }
       });

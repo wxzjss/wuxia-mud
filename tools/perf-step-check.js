@@ -25,8 +25,8 @@
  *                            ⇒ 读 B1 之前**先看输出里那行「三轮 p95 极差」**：
  *                              极差小 = 读数可信；极差大 = 本机负载不稳，这只是趋势。
  *    B2 /api/exec 回包     ≤ 32 KB 原始 / ≤ 12 KB gzip
- *    B3 单步下行总量       ≤ 40 KB 原始 / ≤ 15 KB gzip（exec + save 两次回包相加）
- *    B4 /api/save 回包     ≤ 2 KB
+ *    B3 单步下行总量       ≤ 40 KB 原始 / ≤ 15 KB gzip（本地化后 = exec 单包；存档移出每步路径）
+ *    B4 /api/save 回包     ≤ 400 KB（本地化后 = 快照交付物本体，客户端要落 localStorage）
  *    B9 boot+newGame+300 步后 heapUsed ≤ 120 MB、rss ≤ 200 MB
  *    B1-p50 单步 p50       ≤ 6 ms 硬判 + ≤ 修前 × 1.5（2026-10-13 新增，见 LIMIT 注）
  *
@@ -75,7 +75,12 @@ const LIMIT = {
   execGzip: 12 * KB,
   stepDownRaw: 40 * KB,
   stepDownGzip: 15 * KB,
-  saveRaw: 2 * KB,
+  /* B4（存档本地化 2026-10-18 重口径）：/api/save 回包 = 整份世界快照正文，
+     是要交给客户端落 localStorage 的**交付物**（修前 2 KB 门是「磁盘写、回轻包」
+     时代的产物，随本地化作废）。门定 400 KB：早期档实测 ~120 KB，
+     后期大档（含 mods/任务/关系网，参照老 saves/ 档 254 KB）也须留足余量，
+     同时防「快照把地图/日志整段塞进来」那种失控膨胀。 */
+  saveRaw: 400 * KB,
   newLoadRaw: 40 * KB,
   heapUsed: 120 * 1024 * 1024,
   rss: 200 * 1024 * 1024,
@@ -235,8 +240,11 @@ async function main() {
         saveTimes.push(Number(t4 - t3) / 1e6);
         saveRaw.push(rSave.rawLen); saveGz.push(rSave.gzLen);
 
-        downRaw.push(rExec.rawLen + rSave.rawLen);
-        downGz.push(rExec.gzLen + rSave.gzLen);
+        /* 本地化后（2026-10-18）存档移出「每步下行」：快照由客户端按 30 s 防抖
+           +关键节点节流去取（频率归 autosave-throttle-check 管、体积归 B4 管），
+           单步下行只算 exec。快照回包不再是每步的负担，而是按需取的交付物。 */
+        downRaw.push(rExec.rawLen);
+        downGz.push(rExec.gzLen);
       }
 
       /* 找稳态里最慢那一步的下标 —— 报「max」不报「是第几步」等于没法查：

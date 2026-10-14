@@ -239,11 +239,56 @@
       return await jfetch('/api/quest', { method: 'POST', body: JSON.stringify({ qid }) });
     },
 
-    /* 存档 */
-    async saves() { return await jfetch('/api/saves'); },
-    async save(id) { const d = await jfetch('/api/save', { method: 'POST', body: JSON.stringify({ id }) }); return d; },
-    async load(id) { const d = await jfetch('/api/load', { method: 'POST', body: JSON.stringify({ id }) }); keepView(d); return d; },
-    async delSave(id) { return await jfetch('/api/deletesave', { method: 'POST', body: JSON.stringify({ id }) }); },
+    /* ============================================================
+     * 存档（本地化 2026-10-18，主人定调：只保留本地存档功能）
+     * 权威副本住 localStorage（WXSAVE，物理键名收口在 savestore.js），
+     * 服务端只做两件事：`/api/save` 出纯快照正文、`/api/restore` 收正文
+     * 恢复世界。列表/删除全在本地，不再有服务端玩家档路由。
+     * 四个老签名（saves/save/load/delSave）**保持不变** —— ui.js/start.js
+     * 的调用点一个不用动，守卫的静态判据也不用跟着搬家。
+     * ============================================================ */
+    async saves() { return { ok: true, saves: global.WXSAVE.list() }; },
+
+    async save(id) {
+      /* 服务端出快照正文（不落盘）；客户端写 localStorage。两步缺一不可：
+         没正文就没得存，写不进就如实报（quota / 软上限都有人话）。 */
+      const d = await jfetch('/api/save', { method: 'POST', body: JSON.stringify({ id }) });
+      if (!d || !d.ok || !d.data) return d;
+      const p = (S.view && S.view.player) || (d.data && d.data.player) || {};
+      const w = global.WXSAVE.put({
+        id: d.id, name: p.name || '?', level: p.level || 1,
+        savedAt: d.data.savedAt, time: d.data.clockMinutes,
+        room: p.room || '', mods: (d.data.mods || []).length,
+      }, d.data);
+      if (!w.ok) return { ok: false, msg: w.msg, lines: [{ kind: 'warn', text: w.msg }] };
+      return d;
+    },
+
+    async load(id) {
+      /* 正文优先本地；本地没有（如断线后首开新版还没走到迁移桥）就退一手
+         服务器只读桥把这份档领回来再恢复——主人的档一个都不能静默消失。 */
+      let blob = global.WXSAVE.get(id);
+      if (!blob) {
+        try {
+          const legacy = await jfetch('/api/legacy/read', { method: 'POST', body: JSON.stringify({ id }) });
+          if (legacy && legacy.ok && legacy.data) {
+            blob = legacy.data;
+            global.WXSAVE.put({ id: id, name: legacy.data.player && legacy.data.player.name,
+              savedAt: legacy.data.savedAt, imported: true }, legacy.data);
+          }
+        } catch (e) { /* 桥也不通就照下面走「不存在」的口径 */ }
+      }
+      if (!blob) return { ok: false, msg: '存档不存在。', lines: [{ kind: 'warn', text: '存档不存在。' }] };
+      const d = await jfetch('/api/restore', { method: 'POST', body: JSON.stringify({ data: blob }) });
+      keepView(d);
+      return d;
+    },
+
+    async delSave(id) { global.WXSAVE.remove(id); return { ok: true }; },
+
+    /* 迁移桥（只读）：老档还在服务器时的首启一次性导入 */
+    async legacySaves() { return await jfetch('/api/saves'); },
+    async legacyRead(id) { return await jfetch('/api/legacy/read', { method: 'POST', body: JSON.stringify({ id }) }); },
 
     /* Mod 管理 */
     async mods() {

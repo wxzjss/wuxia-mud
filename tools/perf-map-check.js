@@ -58,7 +58,9 @@ const KB = 1024;
 /* --- 现行绝对门（与 perf-step-check 同数，一处放宽两头都松，别单独动这里） --- */
 const LIMIT = {
   newLoadRaw: 40 * KB,
-  saveRaw: 2 * KB,
+  /* 本地化（2026-10-18）：/api/save 回包 = 快照交付物本体（客户端落 localStorage），
+     2 KB 门作废；口径同 perf-step-check B4（400 KB，防失控膨胀）。 */
+  saveRaw: 400 * KB,
 };
 /* --- 比值门：从基线读修前快照；读不到基线就明说跳过，不装没这回事 --- */
 let BASE = null;
@@ -158,19 +160,24 @@ async function main() {
       !!BASE && saveMaxRaw <= BASE.pre.saveMaxKB * 1024 * RATIO,
       kb(saveMaxRaw) + ' vs 修前 ' + (BASE ? BASE.pre.saveMaxKB.toFixed(1) : '?') + ' KB');
 
-    /* ---------------- M2 /api/load ---------------- */
-    console.log('\n  \u00a74 读档 /api/load');
-    const rLoad = await request(port, 'POST', '/api/load', { id: 'perfmap_slot' });
-    ok('M2 /api/load 回包 \u2264 ' + kb(LIMIT.newLoadRaw), rLoad.rawLen <= LIMIT.newLoadRaw, kb(rLoad.rawLen));
-    ok('M2 /api/load 不下发地图（view.map undefined）',
-      !!(rLoad.json && rLoad.json.view && rLoad.json.view.map === undefined),
-      rLoad.json && rLoad.json.view ? String(typeof rLoad.json.view.map) : 'no view');
-    ok('M2 /api/load 必须带 view.player（recoverLostPlayer 靠它接人）',
-      !!(rLoad.json && rLoad.json.view && rLoad.json.view.player),
-      rLoad.json && rLoad.json.view && rLoad.json.view.player ? 'player ok' : '\u2605 无 player \u2192 断线重连会坏');
-    ok('M5 /api/load \u2264 修前 \u00d7 1.0（load 修前就不带地图、32.7 KB，门是不许涨过修前水平）',
-      !!BASE && rLoad.rawLen <= BASE.pre.loadRawKB * 1024,
-      kb(rLoad.rawLen) + ' vs 修前 ' + (BASE ? BASE.pre.loadRawKB.toFixed(1) : '?') + ' KB');
+    /* ---------------- M2 读档（本地化后 = /api/restore：正文由客户端送回） ---------------- */
+    console.log('\n  \u00a74 读档 /api/restore');
+    const rSnap = await request(port, 'POST', '/api/save', { id: 'perfmap_slot' });
+    if (!(rSnap.json && rSnap.json.ok && rSnap.json.data)) {
+      ok('M2 前提：能拿到快照正文', false, JSON.stringify(rSnap.json && rSnap.json.msg));
+    } else {
+      const rLoad = await request(port, 'POST', '/api/restore', { data: rSnap.json.data });
+      ok('M2 /api/restore 回包 \u2264 ' + kb(LIMIT.newLoadRaw), rLoad.rawLen <= LIMIT.newLoadRaw, kb(rLoad.rawLen));
+      ok('M2 /api/restore 不下发地图（view.map undefined）',
+        !!(rLoad.json && rLoad.json.view && rLoad.json.view.map === undefined),
+        rLoad.json && rLoad.json.view ? String(typeof rLoad.json.view.map) : 'no view');
+      ok('M2 /api/restore 必须带 view.player（recoverLostPlayer 靠它接人）',
+        !!(rLoad.json && rLoad.json.view && rLoad.json.view.player),
+        rLoad.json && rLoad.json.view && rLoad.json.view.player ? 'player ok' : '\u2605 无 player \u2192 断线重连会坏');
+      ok('M5 /api/restore \u2264 修前 load \u00d7 1.0（load 修前就不带地图、32.7 KB，门是不许涨过修前水平）',
+        !!BASE && rLoad.rawLen <= BASE.pre.loadRawKB * 1024,
+        kb(rLoad.rawLen) + ' vs 修前 ' + (BASE ? BASE.pre.loadRawKB.toFixed(1) : '?') + ' KB');
+    }
   } finally {
     try { if (server.closeAllConnections) server.closeAllConnections(); } catch (e) { /* ignore */ }
     await new Promise(r => { try { server.close(r); } catch (e) { r(); } });

@@ -300,15 +300,16 @@ function ok(name, cond, extra) {
       ok('删除本地 Mod', r.code === 200 && r.json && r.json.ok !== false);
     }
 
-    /* 存档 */
+    /* 存档（本地化 2026-10-18：服务端只出快照/收正文，列表删除在客户端本地；
+       /api/save 不再写盘 → /api/saves 列表只服务只读迁移桥，不再含新存的档） */
     r = await req('POST', G + '/api/save', { id: 'e2e_slot' });
-    ok('保存存档', r.code === 200 && r.json && r.json.ok !== false);
+    ok('保存存档（快照正文随回包下发、服务端不落盘）', r.code === 200 && r.json && r.json.ok !== false && !!r.json.data);
+    r = await req('POST', G + '/api/restore', { data: r.json.data });
+    ok('用快照正文恢复世界（/api/restore）', r.code === 200 && r.json && r.json.ok !== false);
     r = await req('GET', G + '/api/saves');
-    ok('存档列表', r.code === 200 && r.json && (r.json.saves || []).some(s => s.id === 'e2e_slot'));
-    r = await req('POST', G + '/api/load', { id: 'e2e_slot' });
-    ok('读取存档', r.code === 200 && r.json && r.json.ok !== false);
-    r = await req('POST', G + '/api/deletesave', { id: 'e2e_slot' });
-    ok('删除存档', r.code === 200);
+    ok('旧档只读桥（/api/saves 仍可读，供首启迁移）', r.code === 200 && r.json && r.json.ok !== false);
+    r = await req('POST', G + '/api/legacy/read', { id: 'e2e_slot' });
+    ok('legacy/read：没落盘的档查不到（404）', r.code === 404);
 
     /* 网站配置 */
     r = await req('GET', G + '/api/site/config');

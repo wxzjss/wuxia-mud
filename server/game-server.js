@@ -554,42 +554,39 @@ async function handleApi(engine, req, res, pn, query, preset) {
         return json(res, 200, { ok: true, quest });
       }
 
-      /* --- 存读档 --- */
+      /* --- 存读档（本地化 2026-10-18，主人定调：只保留本地存档功能）---
+         存档的唯一权威副本住浏览器 localStorage（js/savestore.js），服务端
+         **不再替玩家写 saves/**。四条路由的新分工：
+           · `save`    → 纯快照：正文随回包下发，客户端自己落盘（不写文件）；
+           · `restore` → 收客户端送回的正文恢复世界（读档/接人共用）；
+           · `saves` / `legacy/read` → **只读迁移桥**：老档还在服务器时供前端
+             首启一次性导入，不写任何文件、不改世界。
+         玩家档的「列表 / 删除」全在前端本地完成，不再有服务端路由。
+         （服务端自己的 `_live` 会话抢救与此正交，照旧。） */
       case 'saves': return json(res, 200, { ok: true, saves: engine.listSaves() });
       case 'save': {
-        const r = engine.save(json_body && json_body.id);
-        /* ⚠️ P0（2026-10-12）：这里**只回轻量字段**，不要再塞 view / data。
-            · 原来是 `Object.assign({lines, view: engine.view()}, r)` ——
-              `view` 带整张地图（247 KB），而 `r` 里还带着 `engine.save()` 返回的
-              **整个世界序列化**（`data`）。实测这一个回包 **530 KB**，
-              而浏览器每走一步都无条件存一次档 ⇒ 每一步都白下一张地图，
-              这正是主人报的「点按钮卡半秒」的真身（worldTick 只占 1.5–2 ms，不是瓶颈）。
-            · 四个调用点 `ui.js` 的自动存档 / 退出存档 / 读档面板的「覆盖」「新建」
-              **没有一处读回包的 `d.view` 或 `d.data`**（逐个 grep 复核过），可以安全去掉。
-            · 这个接口的价值是它的**副作用**（把存档写到磁盘），不是它的返回值。 */
+        const r = engine.snapshot(json_body && json_body.id);
         return json(res, 200, {
-          ok: r.ok, id: r.id, msg: r.msg,
+          ok: r.ok, id: r.id, msg: r.msg, data: r.data,
           lines: [{ kind: r.ok ? 'sys' : 'warn', text: r.msg }],
         });
       }
-      /* ⚠️ `save/write` 已随云存档一并删除（2026-10-11 主人：「把游戏里的云存档
-         相关功能全部删除」）。它原本唯一的作用是「把云端拉回来的存档写进本地」，
-         没有云存档就没有调用方。前端 `api.saveWrite` 也一并拿掉了。 */
-      case 'load': {
-        const r = engine.loadSave(json_body && json_body.id);
-        /* ⚠️ P0（2026-10-12）：这里同样不带地图（原先是 `engine.view()`，带全图）。
-           ⚠️ 反向约束：`view` **必须留着**，而且里面有 `player`
-           —— `ui.js` 的 `recoverLostPlayer()` 靠 `d.view.player` 判定「人接回来了没有」，
-              `app.js` 的 `keepView()` 也靠它决定要不要覆盖 `S.view`。
-              把它删了 ⇒ 断线重连永远判定「没接上」，直接把玩家踢回主菜单。
-              所以这里是「去地图」不是「去 view」，两件事别混为一谈。 */
-        const v = engine.view({ map: false });
+      case 'restore': {
+        const r = engine.restoreFrom(json_body && json_body.data);
+        /* view 与老 /api/load 同一口径：带 player、不带地图 ——
+           ui.js 的 recoverLostPlayer() 靠 `d.view.player` 判定「人接回来了没有」。 */
+        const v = (r.view !== undefined) ? r.view : engine.view({ map: false });
         return json(res, 200, Object.assign({ lines: [{ kind: r.ok ? 'sys' : 'warn', text: r.msg }] }, r, { view: v }));
       }
-      case 'deletesave': {
-        const r = engine.deleteSave(json_body && json_body.id);
-        return json(res, 200, { ok: r.ok, saves: engine.listSaves() });
+      case 'legacy/read': {
+        const data = engine.readSave(json_body && json_body.id);
+        if (!data) return json(res, 404, { ok: false, error: '没有这份旧档。' });
+        return json(res, 200, { ok: true, id: json_body && json_body.id, data });
       }
+      /* ⚠️ `load` / `deletesave` 两条路由已随存档本地化一并摘除（2026-10-18）：
+         读档正文由客户端从 localStorage 送 `/api/restore`，列表与删除全在本地。
+         服务端不再有「按 id 读盘读档」「删玩家档」的入口。
+         （迁移期老档正文走只读的 `legacy/read`，只取不改。） */
 
       /* --- Mod 管理 --- */
       case 'mods': {
