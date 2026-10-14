@@ -282,6 +282,27 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     const vers = [...html.matchAll(/\?v=(20\d{6}[a-z])/g)].map(x => x[1]);
     ok('FE 版本戳 ≥7 处且完全一致（改前端必须顺推）',
       vers.length >= 7 && new Set(vers).size === 1, `${vers.length} 处 / ${[...new Set(vers)].join(',')}`);
+
+    /* build 版本戳（2026-10-18 主人催办）：顶栏角落的戳与 ?v= 同源。
+       运行期 ui.js buildStamp() 从 <script src> 自取 ?v= —— 天然不存在第二处
+       手写版本号可漂移；这里钉 wiring 没烂 + 同款正则对 index.html 模拟提取
+       与文件戳同值（主人报「还是有」时看这枚戳即可判缓存新旧）。 */
+    ok('FE index.html 有 tb-build 戳位（顶栏 tb-right）',
+      /<span id="tb-build" class="tb-build"/.test(html));
+    const uiSrc = fs.readFileSync(path.join(RJS, 'ui.js'), 'utf8');
+    ok('FE ui.js 有 buildStamp 自取 ?v= 并落 tb-build（无第二处手写版本号）',
+      /function buildStamp/.test(uiSrc)
+        && uiSrc.indexOf("(?:\\?|&)v=([\\w.-]+)") !== -1
+        && /getElementById\('tb-build'\)/.test(uiSrc)
+        && /build ' \+ buildStamp\(\)/.test(uiSrc));
+    {
+      const picked = [...html.matchAll(/<script src="([^"]+)"/g)]
+        .map(m => { const mm = /(?:\?|&)v=([\w.-]+)/.exec(m[1]); return mm && mm[1]; })
+        .filter(Boolean);
+      ok('FE build 戳与 index.html ?v= 同值（同款正则模拟提取）',
+        picked.length >= 7 && new Set(picked).size === 1 && picked[0] === vers[0],
+        `提取 ${picked[0] || '无'} vs 戳 ${(vers[0]) || '无'}`);
+    }
   }
 
   /* ---------- §1 B15 前端性别硬编码 ---------- */

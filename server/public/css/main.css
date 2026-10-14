@@ -762,6 +762,8 @@ body::before {
 .tb-right { display: flex; gap: 16px; align-items: center; min-width: 200px; justify-content: flex-end; }
 .tb-money { font-size: 13px; color: var(--tb-money); font-weight: 600; }
 .tb-time { font-size: 12px; color: var(--tb-time); }
+/* 构建版本戳：?v= 运行期自取（ui.js buildStamp），不碍眼但一眼可验「跑的是哪版」 */
+.tb-build { font-size: 10px; opacity: .45; letter-spacing: .02em; user-select: text; }
 
 #main { flex: 1; display: flex; min-height: 0; overflow: hidden; }
 
@@ -2349,6 +2351,7 @@ body::before {
   .tb-name { font-size: 16px; }
   .tb-money { font-size: 12px; }
   .tb-time { font-size: 11px; }
+  .tb-build { display: none; }   /* 手机顶栏寸土寸金，版本戳桌面侧看即可 */
   /* ☰ 菜单在手机上显形（侧栏隐藏后它是唯一入口） */
   .qb-menu { display: inline-block; }
   /* 快捷条按钮也是触屏目标：原来只有 29px 高，手指点不准。

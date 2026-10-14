@@ -5157,6 +5157,27 @@
      它绑的 `#guide-detail` / `#guide-block` 两个节点已经从 index.html 摘掉，
      留着只会是两行永远取不到元素的死绑定。 */
 
+  /* ============================================================
+   *  构建版本戳（2026-10-18 主人催办：线上「还是有」全靠猜缓存，太蠢）
+   *  显示的就是浏览器**实际加载**脚本用的 ?v= —— 从 <script src> 自取，
+   *  与 index.html 天然同源，不存在第二处手写版本号可漂移。
+   *  主人报「还是有」时先看这枚戳：戳旧 = 缓存旧前端，强刷即解。
+   * ============================================================ */
+  function buildStamp() {
+    try {
+      let v = '';
+      document.querySelectorAll('script[src]').forEach(s => {
+        const m = /(?:\?|&)v=([\w.-]+)/.exec(s.getAttribute('src') || '');
+        if (m && (!v || m[1] > v)) v = m[1];   /* 戳按日期序，取最大即最新 */
+      });
+      return v || 'dev';
+    } catch (e) { return 'dev'; }
+  }
+  try {
+    const _bb = document.getElementById('tb-build');
+    if (_bb) _bb.textContent = 'build ' + buildStamp();
+  } catch (e) { /* 无 DOM 环境（测试 vm）忽略 */ }
+
   /* 侧栏「动作」按钮的统一处理（左侧栏与手机 ☰ 菜单共用一处，别写两份） */
   function doSidebarAct(a) {
     if (a === 'save') return openSaves('save');
@@ -5247,6 +5268,7 @@
     /* 「接取任务」的任务详情弹窗（主人第四轮）—— 挂出来便于测试真派发 */
     openQuestPreview,
     bindInput, bindHotkeys, bindSidebar,
+    buildStamp,
     showModCenter, showModMaker, showMarket,
     /* `autoSaveNow` 挂出来：一是 `start.js` 的「继续游戏」读档后要立刻落盘，
        二是测试要能**真的跑到这条路径**上断言「关键节点确实写了、普通步确实没写」。 */

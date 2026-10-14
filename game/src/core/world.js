@@ -3335,6 +3335,11 @@ class World extends EventEmitter {
     for (const id of Object.keys(this.instances.npcs)) {
       const n = this.instances.npcs[id];
       if (!n.wander) continue;
+      /* 定岗 NPC（respawn 点名的守卫/掌柜）不漫游 —— 与上面作息块/饭点块的
+         isStationed 豁免同一口径。否则人漫游离岗后，respawn（只数「在本岗的
+         alive」）会把岗位当空位补出第二个实例，滚到 hardCap 为止；两个漫游
+         再撞进同一房，玩家就看到「华山弟子 ×2」（主人真机 2026-10-18 复测发现）。 */
+      if (isStationed(this, n.defId)) continue;
       if (this.rng.chance(n.wander.chance || 0.05)) {
         const room = this.data.rooms[n.room];
         if (!room || !room.exits) continue;

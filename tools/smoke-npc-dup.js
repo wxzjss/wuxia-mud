@@ -153,6 +153,45 @@ sec('④ 房间行不再出现「x7 / x6」这种副本计数');
     !/\sx[2-9]\b/.test(m ? m[0] : ''), m ? m[0] : '(没这行)');
 }
 
+sec('⑤ 定岗者不漫游（isStationed 豁免）：本岗永不被 respawn 补出第二个实例');
+{
+  /* 2026-10-18 复测发现的同族病：respawn 点名的常驻者（guard_huashan）被
+     defaultWanderFor 发了 20% 漫游率，漫游块漏了 isStationed 豁免（作息块/
+     饭点块都有）→ 人漫游离岗 → respawn 只数「在本岗的 alive」=0 → 当空位
+     补刷第二个 → 两个漫游撞进同一房，玩家看到「华山弟子 ×2」。
+     修法：漫游块补 isStationed continue（与作息/饭点块同口径）。
+     本段守卫：就算实例被强行塞了 {chance:1} 的漫游率、岗位 respawn 也被
+     内存态提到 chance=1（只改 world.data 运行期对象，不碰 game/data/ 落盘），
+     12 个 tick 后定岗者也必须钉在岗位、全图仍只有 1 个实例。
+     （旧代码第一 tick 就离岗，同一 tick 内 respawn 以 100% 概率补岗，
+       12 tick 后滚到 hardCap 3 —— 本段在旧代码下必红。） */
+  const e = boot(4242);
+  const w = e.world;
+  const POST = 'huashan_shanxia', DEF = 'guard_huashan';
+  ok('前置：guard_huashan 被 huashan_shanxia 的 respawn 点名（确是定岗者）',
+    !!(w.data.rooms[POST] || {}).respawn && w.data.rooms[POST].respawn.some(x => x && x.npc === DEF));
+  w.spawnNpc(DEF, POST, 1, true);
+  const npc = w.findLiveNpc(DEF);
+  ok('前置：已在岗位 spawn 出实例', !!npc && npc.room === POST, npc ? npc.room : '(没实例)');
+  if (npc) {
+    npc.wander = { chance: 1 };                       /* 强塞漫游率：定岗也必须被豁免 */
+    for (const x of w.data.rooms[POST].respawn) {     /* 内存态把补岗概率提到 1 */
+      if (x && x.npc === DEF) x.chance = 1;
+    }
+    for (let i = 0; i < 12; i++) w.worldTick();
+    ok('★ 12 tick 后全图仍只有 1 个实例（旧代码会离岗→补刷滚到 2+）',
+      liveOf(w, DEF) === 1, liveOf(w, DEF));
+    ok('★ 实例钉在岗位上没被漫游挪走', npc.room === POST, npc.room);
+
+    /* 存档往返也不多不少：读档 dedupeNpcInstances 收口后仍是 1 */
+    const save = w.serialize();
+    const e2 = new GameEngine({ seed: 4242 });
+    e2.boot();
+    e2.world.deserialize(save, e2.modLoader.getEnabledModList());
+    ok('★ 存档往返后仍是 1 个', liveOf(e2.world, DEF) === 1, liveOf(e2.world, DEF));
+  }
+}
+
 console.log('\n================================================');
 console.log(`  NPC 副本守卫：${pass} 通过 / ${fail} 失败`);
 console.log('================================================');
