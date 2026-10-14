@@ -1,0 +1,78 @@
+{
+  "_mod": {
+    "id": "test_mod",
+    "name": "测试模组",
+    "version": "1.0.0",
+    "author": "匿名侠客",
+    "description": "测试用（仅本地开发；默认关，线上不得启用）",
+    "category": "综合",
+    "tags": [],
+    "dependencies": [],
+    "conflicts": [],
+    "arrays": "replace",
+    "priority": 0
+  },
+  "enabledByDefault": false,
+  "quests": {
+    "test_quest": {
+      "id": "test_quest",
+      "name": "测试任务",
+      "type": "支线",
+      "level": 1,
+      "desc": "一个测试任务",
+      "stages": [
+        {
+          "desc": "第一步",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            100
+          ]
+        }
+      ]
+    }
+  },
+  "rooms": {
+    "test_room": {
+      "id": "test_room",
+      "name": "测试房间",
+      "region": "wild",
+      "desc": "一间测试房。",
+      "exits": {
+        "s": "jiangnan_street"
+      }
+    }
+  },
+  "skills": {
+    "test_skill": {
+      "id": "test_skill",
+      "name": "测试剑法",
+      "type": "剑",
+      "maxLevel": 300,
+      "difficulty": 1.2,
+      "desc": "",
+      "damageMult": 1.5,
+      "accuracy": 90,
+      "mpCost": 0,
+      "trainCost": 150
+    }
+  },
+  "items": {
+    "test_item": {
+      "id": "test_item",
+      "name": "测试剑",
+      "type": "weapon",
+      "slot": "武器",
+      "desc": "",
+      "value": 100,
+      "stats": {
+        "atk": 20
+      }
+    }
+  },
+  "npcs": {}
+}

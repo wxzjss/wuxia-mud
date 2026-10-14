@@ -1,0 +1,15 @@
+{
+  "id": "e2e_cross",
+  "name": "跨服测试",
+  "category": "功能",
+  "desc": "联调（仅本地开发；默认关，线上不得启用）",
+  "enabledByDefault": false,
+  "rules": [
+    {
+      "name": "r",
+      "kind": "multiply",
+      "target": "exp",
+      "value": 3
+    }
+  ]
+}

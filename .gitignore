@@ -13,9 +13,12 @@ tools/_bak/
 # 测试/运行期产物
 .mod-trash/
 mods-state.json
-mods/e2e_cross/
-# tools/smoke-test.js 跑完落下的遗留，不是真 Mod
-mods/test_mod/
+# 🔴 mods/test_mod 与 mods/e2e_cross 故意【不】ignore（2026-10-14）：
+#   这两个目录在仓库里放的是「默认关的墓碑 mod.json」，必须随发布上传，
+#   用来覆盖发布沙箱里残留下来的旧副本（沙箱文件同步只增不删）——
+#   旧副本没有 enabledByDefault:false，曾被过期 mods-state 启用，
+#   导致新档注入测试内容（主人真机：开局 4 山贼 4 游侠）。把它们加回 ignore 等于复发。
+# tools/smoke-test.js 的运行期产物已迁到 .livetest/，勿再往这两个目录写东西。
 # NPC 数据核对用的临时表
 _tmp_npc_table.txt
 
