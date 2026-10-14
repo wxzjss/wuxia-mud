@@ -2364,6 +2364,18 @@ class World extends EventEmitter {
     }[t] || null;
   }
 
+  /* 装备位展示清单（木瓢案 · 主人 2026-10-17）：
+     equipItem 认任意 `def.slot`（数据写「手持」就装进 equipment['手持']），
+     但展示侧（engine.equipmentList / commands 装备面板）原来各写一份**固定十位表**，
+     没有「手持」——结果装备成功、界面看不见（铁律 29 同族：不报错，只是没有）。
+     ⇒ 固定表 + 动态并集：p.equipment 里实际出现、固定表没有的槽位追加在后。
+        两个消费点共用这一份，别再各写各的。 */
+  equipSlots(ch) {
+    const fixed = ['头部', '颈部', '身体', '披风', '手部', '脚部', '武器', '副手', '戒指', '饰品'];
+    const extra = Object.keys((ch && ch.equipment) || {}).filter(s => s && !fixed.includes(s));
+    return fixed.concat(extra);
+  }
+
   /** 使用物品 */
   useItem(ch, uidOrId) {
     const it = (ch.inventory || []).find(i => i.uid === uidOrId) || (ch.inventory || []).find(i => i.id === uidOrId);

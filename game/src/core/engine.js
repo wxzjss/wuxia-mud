@@ -12,7 +12,7 @@ const { World } = require('./world');
 const { ModLoader } = require('./modloader');
 const commandsModule = require('./commands');
 const { buildCommands, cnNum, normalizeAskList, npcKnownPeople } = commandsModule;
-const { evalCond, evalEffects, evalTemplate } = require('./modapi');
+const { evalCond, evalEffects, evalTemplate, stripChanceCond, onceHidden } = require('./modapi');
 const { fmtTime, shichen, stars, clamp, fuzzyFind, normalizeCmd } = require('./utils');
 const mapLayout = require('./maplayout');
 /* 「飞往」判定（2026-10-13 起：不要求「去过」，改看轻功 + 内力）
@@ -911,6 +911,10 @@ class GameEngine {
     if (!room || !Array.isArray(room.actions) || !room.actions.length) return [];
     const out = [];
     for (const a of room.actions) {
+      /* 79 续（主人原话口径）：once 族的两种（已完成/前置未过）在此同样不进面板
+         （onceHidden 共享谓词，与日志「此地可做」行同口径）；重复族不因 cond 消失，
+         cond 现在不过的照旧 ok:false + reason（入口不藏给指引）。 */
+      if (onceHidden(a, { player: p, world: w })) continue;
       const kws = a.keywords || [];
       /* 显示名**优先 label**，其次 cmd，再退 keywords / 房间名。
          ⚠️ 别把它改成「优先 cmd」：`cmd` 是内部指令（`list 陈济仁`、`work 打铁`），
@@ -925,7 +929,12 @@ class GameEngine {
       let ok = true, reason = '';
       if (a.cond) {
         try {
-          if (!evalCond(a.cond, { player: p, world: w })) {
+          /* 79 件（2026-10-17）：这里评的必须是**剥掉 chance** 的条件（stripChanceCond）——
+             chance 是「做了才掷」的成败门不是前置，原样评会每次 view() 偷吃 rng 流、
+             还让「钓鱼」这类概率动作在场景栏随机 ok:false 闪现。
+             cond false 的仍返回 ok:false + reason（此面板是保底路径，「入口不藏给指引」，
+             与日志「此地可做」行的不列口径分工不同）。 */
+          if (!evalCond(stripChanceCond(a.cond), { player: p, world: w })) {
             ok = false;
             reason = a.failMsg || this.condText(a.cond);
           }
@@ -1171,8 +1180,9 @@ class GameEngine {
   }
 
   equipmentList() {    const p = this.world.player, w = this.world;
-    const slots = ['头部', '颈部', '身体', '披风', '手部', '脚部', '武器', '副手', '戒指', '饰品'];
-    return slots.map(s => {
+    /* 木瓢案（2026-10-17）：槽位表走 w.equipSlots（固定 + 动态并集）——
+       「手持」这类自定义槽位装备后也要看得见，原来固定十位表漏了它。 */
+    return w.equipSlots(p).map(s => {
       const id = p.equipment[s];
       const d = id ? w.getItem(id) : null;
       return { slot: s, itemId: id, name: d ? d.name : null, stats: d ? d.stats : null };
@@ -2756,7 +2766,10 @@ class GameEngine {
       skillTypes: ['拳', '剑', '刀', '棍', '鞭', '暗器', '内功', '轻功', '招架', '身法'],
       skillCategories: ['外功', '内功', '奇门', '旁门', '魔功'],
       itemTypes: ['weapon', 'armor', 'helmet', 'boots', 'gloves', 'necklace', 'ring', 'cloak', 'shield', 'accessory', 'consumable', 'food', 'herb', 'material', 'book', 'tool', 'container', 'treasure', 'quest', 'misc'],
-      slots: ['头部', '颈部', '身体', '披风', '手部', '脚部', '武器', '副手', '戒指', '饰品'],
+      /* 「手持」在册（木瓢案 2026-10-17）：tool 类物品可配自定义槽位（如木瓢的
+         slot:'手持'），equipItem 认任意 def.slot——参考表漏了它，mod 作者
+         照表填写会以为 tool 不能装备。展示侧走 w.equipSlots 动态并集。 */
+      slots: ['头部', '颈部', '身体', '披风', '手部', '脚部', '武器', '副手', '戒指', '饰品', '手持'],
       stats: ['atk', 'def', 'dodge', 'parry', 'speed', 'maxHp', 'maxMp', 'critRate', 'lifesteal', 'reflect', 'armorPen'],
       effectTypes: [
         'say', 'me', 'narrate', 'log', 'hint', 'warn',

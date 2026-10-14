@@ -19,6 +19,7 @@ const vm = require('vm');
 const ROOT = path.join(__dirname, '..');
 const { GameEngine } = require(path.join(ROOT, 'game/src/core/engine.js'));
 const cmdMod = require(path.join(ROOT, 'game/src/core/commands.js'));
+const { evalCond: evalCondApi, flagGateCond, onceHidden: onceHiddenApi } = require(path.join(ROOT, 'game/src/core/modapi.js'));
 const RJS = path.join(ROOT, 'game', 'src', 'renderer', 'js');
 
 /* ---------- 最小 DOM（抄 game-ui-check.js 的 makeEl，字段名/方法名必须一模一样） ---------- */
@@ -743,6 +744,119 @@ t('server/public/css/main.css 与 game/src/renderer/css/main.css 一致', () => 
       for (const h of hidden) {
         ok(line && line.text.indexOf(h) < 0, `hint:false 的「${h}」还在行里：` + (line && line.text));
       }
+    });
+    t('★ 真数据全库：onceHidden 判藏的 action 不落进行（动态收紧，重复族豁免）', () => {
+      const w2 = freshWorld();
+      const r = w2._engine.exec('look');
+      const line = r.lines.find(l => l.kind === 'action');
+      const room = w2.getRoom(w2.player.room);
+      const ctx = { player: w2.player, world: w2 };
+      for (const a of (room.actions || [])) {
+        if (!a || a.hint === false) continue;
+        const nm = a.label || a.cmd;
+        if (onceHiddenApi(a, ctx)) {
+          ok(line && line.text.indexOf(nm) < 0, `onceHidden 判藏的「${nm}」还在行里：` + (line && line.text));
+        } else {
+          ok(line && line.text.indexOf(nm) >= 0, `重复族/旗标已过「${nm}」反而不在行里：` + (line && line.text));
+        }
+      }
+    });
+    /* ---- 79 续（主人原话口径二次收窄）：重复动作一律显示，不被 cond 干掉；
+       隐藏只限 once 族（once:true 或带 hideWhenFlag）的两种：
+       ①once 已完成（hideWhenFlag 置位）②once 前置未满足（信等挪缸）。
+       once 族内部仍只认旗标键（资源门不参与隐藏）；chance 照旧不评。 */
+    w.data.rooms.q8_cond_room = {
+      id: 'q8_cond_room', name: '试门房', region: 'jiangnan',
+      desc: '一口水缸立在墙角。', exits: { n: 'road_jiangnan_1' },
+      actions: [
+        { label: '问信', cmd: '问信', keywords: ['信'], desc: '问一句信的事' },
+        { label: '挪缸', cmd: '挪缸', keywords: ['挪缸'], desc: '把缸挪开',
+          once: true, hideWhenFlag: 'q8_vat_moved',
+          cond: { notFlag: 'q8_vat_moved' }, failMsg: '缸还没挪。' },
+        { label: '问下文', cmd: '问下文', keywords: ['下文'], desc: '信的事有了下文',
+          once: true, hideWhenFlag: 'q8_xiawen_done',
+          cond: { flag: 'q8_vat_moved' } },
+        { label: '出海', cmd: '出海', keywords: ['出海'], desc: '船钱一百文',
+          cond: { money: '>=100' } },
+        { label: '敲门', cmd: '敲门', keywords: ['敲'], desc: '门还没开',
+          once: true, hideWhenFlag: 'q8_knock_done', cond: 'flag:q8_vat_moved' },
+        { label: '讨赏', cmd: '讨赏', keywords: ['讨'], desc: '讨个彩头',
+          cond: 'money>=50' },
+        { label: '门房闲话', cmd: '门房闲话', keywords: ['闲话'], desc: '听门房唠两句',
+          cond: { flag: 'q8_never' } },
+      ],
+    };
+    w.player.room = 'q8_cond_room';
+    const o3 = run(w, 'look');
+    const line3 = o3.find(l => l.kind === 'action');
+    t('★ 重复族 cond 不干掉（钱门/旗标门/无标记 flag 门全照列）；once 族前置未过才藏', () => {
+      ok(line3, '没有此地可做行（fixture 断了）');
+      ok(/问信/.test(line3.text) && /挪缸/.test(line3.text),
+        '无条件/once 族条件已过的照列：' + line3.text);
+      ok(!/问下文/.test(line3.text) && !/敲门/.test(line3.text),
+        'once 族前置未过（对象/字符串简写）不该列：' + line3.text);
+      ok(/出海/.test(line3.text) && /讨赏/.test(line3.text),
+        '重复族资源门（对象/字符串简写）照列：' + line3.text);
+      ok(/门房闲话/.test(line3.text),
+        '★ 无 once 标记的 flag 门也不藏（重复族 cond 不参与列行）：' + line3.text);
+    });
+    t('★ 挪完缸自动出现：flag 置位后下次 look，「问下文」进列、「挪缸」退场', () => {
+      w.player.setFlag('q8_vat_moved', true);
+      const o4 = run(w, 'look');
+      const line4 = o4.find(l => l.kind === 'action');
+      ok(line4 && /问下文/.test(line4.text), 'flag 过了该自动出现：' + (line4 && line4.text));
+      ok(line4 && !/挪缸/.test(line4.text), 'once 已完成（hideWhenFlag 置位）退场：' + (line4 && line4.text));
+      ok(line4 && /敲门/.test(line4.text), '字符串简写 flag: 同口径进列：' + (line4 && line4.text));
+      ok(line4 && /出海/.test(line4.text) && /讨赏/.test(line4.text) && /门房闲话/.test(line4.text),
+        '重复族自始至终照列：' + (line4 && line4.text));
+    });
+    t('★ 混合条件旗标部分主导（once 族）：item 缺不影响「该藏还是该列」', () => {
+      const w2 = freshWorld(11);
+      w2.data.rooms.q8_mix = {
+        id: 'q8_mix', name: '混合房', region: 'jiangnan', desc: '缸、瓢各一。', exits: {},
+        actions: [{ label: '舀水', cmd: '舀水', keywords: ['舀'], desc: '得有瓢',
+          once: true, hideWhenFlag: 'q8_mix_done',
+          cond: { flag: 'q8_mix_open', item: 'mu_piao' } }],
+      };
+      w2.player.room = 'q8_mix';
+      const l1 = run(w2, 'look').find(l => l.kind === 'action');
+      ok(!l1 || !/舀水/.test(l1.text), '旗标未到（item 缺不改变判定）该藏——唯一动作藏了行可整行不渲染：' + (l1 && l1.text));
+      w2.player.setFlag('q8_mix_open', true);
+      const l2 = run(w2, 'look').find(l => l.kind === 'action');
+      ok(l2 && /舀水/.test(l2.text), '旗标过即列（item 仍缺——漏脸交执行期 failMsg）：' + (l2 && l2.text));
+    });
+    t('★ chance 不算前置：概率门动作照列（不闪现）', () => {
+      const w2 = freshWorld(7);
+      w2.data.rooms.q8_rng = {
+        id: 'q8_rng', name: '试运房', region: 'jiangnan', desc: '一池静水。', exits: {},
+        actions: [{ label: '钓鱼', cmd: '钓鱼', keywords: ['钓'], desc: '碰碰运气', cond: { chance: 0.4 } }],
+      };
+      w2.player.room = 'q8_rng';
+      /* 连看三眼都该列——若 chance 参与列行评估，0.4³≈6% 才全列，常态必红 */
+      for (let i = 0; i < 3; i++) {
+        const ln = run(w2, 'look').find(l => l.kind === 'action');
+        ok(ln && /钓鱼/.test(ln.text), `第 ${i + 1} 眼钓鱼不在列：` + (ln && ln.text));
+      }
+    });
+    t('★ 列行不偷吃 rng（无 action 房 vs chance 房，每次 look 的 rng 抽取次数应相等）', () => {
+      const wc = freshWorld(99);
+      wc.data.rooms.q8_norng = { id: 'q8_norng', name: '静室', region: 'jiangnan', desc: '四壁皆白。', exits: {}, actions: [] };
+      wc.data.rooms.q8_rng2 = {
+        id: 'q8_rng2', name: '试运房', region: 'jiangnan', desc: '一池静水。', exits: {},
+        actions: [{ label: '钓鱼', cmd: '钓鱼', keywords: ['钓'], desc: '碰碰运气', cond: { chance: 0.4 } }],
+      };
+      const lookCount = (room) => {
+        wc.player.room = room;
+        let n = 0;
+        const orig = wc.rng.next;
+        wc.rng.next = function () { n++; return orig.call(wc.rng); };
+        try { run(wc, 'look'); } finally { wc.rng.next = orig; }
+        return n;
+      };
+      const a1 = lookCount('q8_norng'), a2 = lookCount('q8_norng');
+      const b1 = lookCount('q8_rng2'), b2 = lookCount('q8_rng2');
+      ok(a1 === b1 && a2 === b2,
+        `无action房 look 抽 ${a1}/${a2} 次，chance房抽 ${b1}/${b2} 次 —— chance 在列行时被评估了`);
     });
   }
 

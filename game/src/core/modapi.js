@@ -161,6 +161,8 @@ function evalCond(cond, ctx) {
       const segs = vv.split(':');
       if (kk === 'flag') return evalCond({ flag: segs[0] }, ctx);
       if (kk === 'hasitem' || kk === 'item') return evalCond({ item: segs[0], count: segs[1] !== undefined ? (parseFloat(segs[1]) || 1) : 1 }, ctx);
+      /* equip:x —— 装备位上有某物品（木瓢案，字符串简写与对象键同口径） */
+      if (kk === 'equip') return evalCond({ equip: segs[0] }, ctx);
       if (kk === 'sect') return evalCond({ sect: vv }, ctx);
       if (kk === 'sectNot') return evalCond({ sectNot: vv }, ctx);
       if (kk === 'gender') return evalCond({ gender: vv }, ctx);
@@ -292,6 +294,17 @@ function evalCond(cond, ctx) {
   }
   if (cond.equipped !== undefined) { if (!p.equipped[cond.equipped]) return false; }
   if (cond.noItem !== undefined) { if (p.countItem(cond.noItem) > 0) return false; }
+  /* 装备位上有某物品（木瓢案 · 主人 2026-10-17）：{equip:"mu_piao"} ——
+     ch.equipment / p.equipped 任一槽挂着这件物品即算。
+     与 cond.item（查背包）分工：装备中的东西**已离开背包**，item 查不到它——
+     「装备了木瓢去倒水」之前恒吃 failMsg 就是这个缝。
+     ⚠️ cond.equipped 按槽位名查（{equipped:'手持'}），本键按物品 id 查，别混。 */
+  if (cond.equip !== undefined) {
+    const eq = p.equipment || {}, eqd = p.equipped || {};
+    const on = Object.values(eq).some(v => v === cond.equip) ||
+               Object.values(eqd).some(v => v === cond.equip);
+    if (!on) return false;
+  }
 
   // 身份
   if (cond.gender !== undefined && p.gender !== cond.gender) return false;
@@ -387,6 +400,111 @@ function evalCond(cond, ctx) {
   }
 
   return true;
+}
+
+/**
+ * 把条件里的 chance 键**递归剥掉**（拷贝上做，不改原数据）。
+ * 字符串简写 `chance:0.4` 也认——剥完没条件了，等价 {always:true}。
+ *
+ * 为什么需要它（79 件 · 主人真机 2026-10-17「此地可做前置隐藏」）：
+ *   cond 评估 false 的 action 不进「此地可做」行，但 **chance 不是前置** ——
+ *   概率门是「做了才掷」的成败门。列行/视图时评它有两个害处：
+ *     ① evalCond 的 chance 分支走 w.rng.next() —— 每次 look/view 都偷吃 rng 流，
+ *        seed 回放、测试确定性全乱；
+ *     ② 随掷骰结果闪现闪没（这眼「钓鱼」在列、下一眼没了）。
+ *   混合条件（flag + chance）里 flag 部分仍是真前置（没挪缸就该藏），
+ *   所以剥键而不是整条跳过。执行期照旧评全量 cond，chance 在点下去那一刻掷。
+ * 消费点：engine.roomActionsView（场景栏保底）。
+ */
+function stripChanceCond(c) {
+  if (typeof c === 'string') {
+    return /^chance\s*:/.test(c.trim()) ? { always: true } : c;
+  }
+  if (Array.isArray(c)) return c.map(stripChanceCond);
+  if (c && typeof c === 'object') {
+    const o = {};
+    for (const k of Object.keys(c)) {
+      if (k === 'chance') continue;
+      o[k] = stripChanceCond(c[k]);
+    }
+    return o;
+  }
+  return c;
+}
+
+/**
+ * 只留**进度旗标**部分的门（79 件收窄口径，游有方 2026-10-17 裁）：
+ *   主人原话盖的是「只能做一次且做过的事情不再显示」——旗标族（序列噪声）；
+ *   「够不着的不显示」是我方推测，不加戏。于是「此地可做」行的 cond 隐藏
+ *   **只认旗标键**，资源/资格/概率门（钱/物/技能/时辰/性别/chance）一律剥掉
+ *   —— 露脸本身在教玩家「目标存在」（愿望梯不是噪声源），那句 failMsg
+ *   就是设计好的「还差多少」显示；钱会流动、技能会涨、时辰会转，门自然解除。
+ *
+ * 保留（旗标族 + 逻辑容器，容器**递归**处理子件）：
+ *   flag / notFlag / flagsAll / flagsAny / flagsNone /
+ *   quest / questDone / questNotDone（进度族与 flag 同源：questdone_x 旗标）
+ * 剥掉（其余一切键：money / item / count / chance / skill / attr / rep / var /
+ *   time / dayMin / dayMax / gender / race / sect / …——白名单外全剥，前向兼容）。
+ * 字符串简写同口径：`flag:x` / `!x` / 裸名（evalCond 兜底当 flag）→ 保留；
+ *   `chance:x` / `money>=100` / `hasitem:x` / `sect:x` / `gender:x` 等 → 剥成
+ *   {always:true}。剥完为空 → 恒真（列）。
+ *
+ * 消费点：commands.lookRoom（日志「此地可做」行的 cond 隐藏）。
+ * ⚠️ 与 stripChanceCond 分工：那函数只防偷 rng（roomActionsView 仍要评资源门
+ *   出 ok:false+reason），本函数是「该不该藏」的裁剪——不要互相替代。
+ */
+const FLAG_KEYS = { flag: 1, notFlag: 1, flagsAll: 1, flagsAny: 1, flagsNone: 1,
+  quest: 1, questDone: 1, questNotDone: 1 };
+const CONTAINER_KEYS = { and: 1, or: 1, not: 1 };
+function flagGateCond(c) {
+  if (typeof c === 'string') {
+    const s = c.trim();
+    /* 保留：!flag 简写 / flag:x 简写 / quest(:done) 简写 / 裸名（evalCond 兜底当 flag） */
+    if (/^!/.test(s) || /^(flag|questdone|quest)\s*:/i.test(s)) return c;
+    /* 数值比较简写（money>=10）与已知资源/资格键简写 → 剥 */
+    if (/^([a-zA-Z_]+)\s*(>=|<=|==|!=|>|<)/.test(s)) return { always: true };
+    if (/^(hasitem|item|chance|sect|sectNot|gender|race|region|title|perk|equip)\s*:/i.test(s)) return { always: true };
+    return c;   /* 裸字符串名：evalCond 会当 flag 用 → 旗标，保留 */
+  }
+  if (Array.isArray(c)) return c.map(flagGateCond);
+  if (c && typeof c === 'object') {
+    const o = {};
+    for (const k of Object.keys(c)) {
+      if (CONTAINER_KEYS[k]) { o[k] = flagGateCond(c[k]); continue; }
+      if (FLAG_KEYS[k]) { o[k] = c[k]; continue; }
+      /* 白名单外（money/item/chance/skill/…）一律剥 */
+    }
+    return o;
+  }
+  return c;
+}
+
+/**
+ * 「此地可做」行的**隐藏裁决**（79 续 · 主人原话口径，2026-10-17 二次收窄）：
+ *   · **重复动作一律显示**，cond 不参与列行（不被 cond 干掉）；
+ *   · 隐藏只限 **once 族**（`once:true` 或带 `hideWhenFlag` 的动作）：
+ *       ① once 已完成（hideWhenFlag 旗标已置）→ 藏；
+ *       ② once 前置未满足（cond 的旗标部分没过，如「信」等挪缸）→ 藏。
+ *   once 族内部 cond 仍走 flagGateCond（只认旗标键，资源门不参与隐藏）。
+ *
+ * 重复族豁免的含义：钓鱼/采药/打坐/看日出这类 repeatable 动作，
+ * 就算 cond 现在不过（钱不够/时辰不对/chance），也**照列**——
+ * 愿望梯不是噪声源；chance 本来就不许在列行评（偷 rng），这里整个 cond
+ * 都不评，性质自然保住。执行期照旧评全量 cond 吃 failMsg。
+ *
+ * 判「once 族」看两个标记：`once:true`（数据侧显式声明）或
+ * `hideWhenFlag`（完成即退场，游有方六步链批落的字段）——二者有其一即算。
+ * ctx = { player, world }。
+ * 消费点：commands.lookRoom（日志行）+ engine.roomActionsView（场景栏保底）。
+ */
+function onceHidden(a, ctx) {
+  if (!a) return false;
+  const onceFam = a.once === true || !!a.hideWhenFlag;
+  if (!onceFam) return false;                       /* 重复族：永不因 cond 藏 */
+  const p = ctx && ctx.player;
+  if (a.hideWhenFlag && p && p.hasFlag && p.hasFlag(a.hideWhenFlag)) return true;
+  if (a.cond) return !evalCond(flagGateCond(a.cond), ctx || {});
+  return false;
 }
 
 /* ------------------------------------------------------------------ *
@@ -822,4 +940,4 @@ function isValidEffectString(s) {
   return !!t && /^[+\-a-zA-Z_][a-zA-Z0-9_+\-]*$/.test(t);
 }
 
-module.exports = { evalCond, evalEffect, evalEffects, evalTemplate, isValidEffectString, cmp, parseCmp };
+module.exports = { evalCond, evalEffect, evalEffects, evalTemplate, isValidEffectString, cmp, parseCmp, stripChanceCond, flagGateCond, onceHidden };

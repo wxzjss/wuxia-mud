@@ -478,7 +478,8 @@
               ]
             }
           ],
-          "hint": true
+          "hint": true,
+          "hideWhenFlag": "act1_letter_known"
         },
         {
           "label": "接信",
@@ -510,7 +511,8 @@
               ]
             }
           ],
-          "hint": true
+          "hint": true,
+          "hideWhenFlag": "act1_letter_taken"
         },
         {
           "label": "回话",
@@ -537,7 +539,8 @@
               "raw": "把小铺掌柜的话学给他听，还是咽回去|告诉他>narrate:你把小铺掌柜的话学了一遍。说到「牢里没了」的时候，你停了一下。老汉擦完了那只碗，把它摞回原处，碗沿和碗沿对齐。「知道了。」他说。那天傍晚他给你添了三次水，三次都添到七分。;flag:act1_told_truth;flag:act1_choice_done;;不说>narrate:你把话咽回去了。「送到了。」你说。「哦。」他说。他给你添了水，添到七分停手。那天你们没再说别的。;flag:act1_kept_silent;flag:act1_choice_done"
             }
           ],
-          "hint": true
+          "hint": true,
+          "hideWhenFlag": "act1_choice_done"
         },
         {
           "label": "翻案底",
@@ -576,7 +579,8 @@
               ]
             }
           ],
-          "hint": true
+          "hint": true,
+          "hideWhenFlag": "act1_piao_taken"
         },
         {
           "label": "伸手",
@@ -610,7 +614,8 @@
               ]
             }
           ],
-          "hint": true
+          "hint": true,
+          "hideWhenFlag": "act1_vat_look"
         },
         {
           "label": "倒水",
@@ -623,14 +628,35 @@
           "cond": {
             "flag": "act1_vat_look",
             "notFlag": "act1_vat_pour",
-            "item": "mu_piao"
+            "or": [
+              {
+                "item": "mu_piao"
+              },
+              {
+                "equip": "mu_piao"
+              }
+            ]
           },
           "failMsg": "你用喝茶那只碗舀。舀了七碗，水面下去不到一指。第八碗你没端住，碗磕在缸沿上，豁口那边又崩掉一小片，崩下来的瓷碴掉进水里，转了两圈沉了。你的手先酸了。",
           "next": "翻案底",
           "effects": [
             {
-              "type": "narrate",
-              "raw": "你从案底下摸出那只木瓢，瓢把上裂了道缝，缝里塞着一小块布。"
+              "type": "cond",
+              "if": {
+                "item": "mu_piao"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "你从案底下摸出那只木瓢，瓢把上裂了道缝，缝里塞着一小块布。"
+                }
+              ],
+              "else": [
+                {
+                  "type": "narrate",
+                  "raw": "你抬手把木瓢抄在手里。瓢把上裂了道缝，缝里塞着一小块布。"
+                }
+              ]
             },
             {
               "type": "narrate",
@@ -651,7 +677,8 @@
               ]
             }
           ],
-          "hint": true
+          "hint": true,
+          "hideWhenFlag": "act1_vat_pour"
         },
         {
           "label": "撬",
@@ -686,7 +713,8 @@
               ]
             }
           ],
-          "hint": true
+          "hint": true,
+          "hideWhenFlag": "act1_vat_pry"
         },
         {
           "label": "垫",
@@ -721,7 +749,8 @@
               ]
             }
           ],
-          "hint": true
+          "hint": true,
+          "hideWhenFlag": "act1_vat_wedge"
         },
         {
           "label": "挪缸",
@@ -761,7 +790,8 @@
               ]
             }
           ],
-          "hint": true
+          "hint": true,
+          "hideWhenFlag": "act1_vat_moved"
         },
         {
           "label": "掏灰",
@@ -828,7 +858,8 @@
               ]
             }
           ],
-          "hint": false
+          "hint": false,
+          "hideWhenFlag": "act1_fist_taught"
         },
         {
           "label": "动身",
@@ -861,7 +892,8 @@
               ]
             }
           ],
-          "hint": true
+          "hint": true,
+          "hideWhenFlag": "act1_oldroad_seen"
         },
         {
           "label": "绕回茶摊",
@@ -902,7 +934,8 @@
               ]
             }
           ],
-          "hint": false
+          "hint": false,
+          "hideWhenFlag": "act1_silent_seen"
         }
       ]
     },
@@ -4917,7 +4950,8 @@
                 "act1_msg_carried"
               ]
             }
-          ]
+          ],
+          "hideWhenFlag": "act1_msg_carried"
         }
       ],
       "exits": {
@@ -7171,7 +7205,8 @@
           },
           "say": "守桥的老汉在桥头补渔网，头也不抬：「涧对面的事，得过桥才作数。桥在那儿，你自己的腿也在。」",
           "travel": "你踩着那根杉木过了涧。走到中间桥往下弯了一点，木头闷闷地响了一声，像有人在底下咳嗽。",
-          "msg": "守桥的老汉把渔网一撂，横在桥头：「这桥让你踩塌过一回。腿利索了再来，别拿自己的膝盖试木头。」"
+          "msg": "守桥的老汉把渔网一撂，横在桥头：「这桥让你踩塌过一回。腿利索了再来，别拿自己的膝盖试木头。」",
+          "introHidden": "act1_letter_taken"
         }
       },
       "actions": [
@@ -7267,116 +7302,6 @@
               ]
             }
           ]
-        },
-        {
-          "label": "抢桥",
-          "cmd": "抢过",
-          "keywords": [
-            "抢",
-            "直接过",
-            "不试"
-          ],
-          "desc": "不试了，直接上桥",
-          "cond": {
-            "notFlag": "act1_bridge_probe"
-          },
-          "once": true,
-          "failMsg": "你试过了。",
-          "effects": [
-            {
-              "type": "narrate",
-              "raw": "你一脚踩上去，脚底下一滑。你整个人往前扑，手撑在桥面上，撑住的地方正好是青苔。青苔被你蹭掉一块，露出底下的白木。你退回桥头。两只鞋底全是绿的。"
-            },
-            {
-              "type": "flag",
-              "args": [
-                "act1_bridge_probe"
-              ]
-            }
-          ]
-        },
-        {
-          "label": "负重",
-          "cmd": "背东西过",
-          "keywords": [
-            "背着",
-            "带着",
-            "负重"
-          ],
-          "desc": "背着包袱上桥",
-          "cond": {
-            "flag": "act1_bridge_probe",
-            "notFlag": "act1_bridge_steady"
-          },
-          "once": true,
-          "failMsg": "你稳过了。",
-          "effects": [
-            {
-              "type": "narrate",
-              "raw": "你急着过，跨出第一步就晃。晃的时候你伸手去抓，抓了个空。你肩上的包袱滑下来，掉在桥这头。包袱里的东西滚出一件，滚到桥头边上停住。你捡回它，重新蹭了鞋底，看着桥的那一头，一步步走了过来。"
-            },
-            {
-              "type": "flag",
-              "args": [
-                "act1_bridge_steady"
-              ]
-            }
-          ]
-        },
-        {
-          "label": "硬闯",
-          "cmd": "硬闯",
-          "keywords": [
-            "闯",
-            "不让",
-            "硬过"
-          ],
-          "desc": "走到一半不相让",
-          "cond": {
-            "flag": "act1_bridge_steady",
-            "notFlag": "act1_bridge_crossed"
-          },
-          "once": true,
-          "failMsg": "你过过了。",
-          "effects": [
-            {
-              "type": "narrate",
-              "raw": "走到一半，对面来了一头驮货的驴。赶驴的人在后面推，驴不肯退，人也不肯退。你退了。往回走的这七步，比过来的那七步难走。你数着的，一步都没敢看底下。再过桥的时候天已经黑了，青苔在暗里发亮。"
-            },
-            {
-              "type": "flag",
-              "args": [
-                "act1_bridge_crossed"
-              ]
-            }
-          ]
-        },
-        {
-          "label": "落地",
-          "cmd": "跳下去",
-          "keywords": [
-            "跳",
-            "落地"
-          ],
-          "desc": "从桥上跳下来",
-          "cond": {
-            "flag": "act1_bridge_crossed",
-            "notFlag": "act1_knee_hurt"
-          },
-          "once": true,
-          "failMsg": "你落地了。",
-          "effects": [
-            {
-              "type": "narrate",
-              "raw": "你跳下来的时候踩在一块松动的石头上。石头滚了，你跟着滑了半丈。膝盖磕破了。血渗出来，把裤子上那块补丁浸成深色。你坐着缓了一会儿才站起来。站起来以后走路有点拐。"
-            },
-            {
-              "type": "flag",
-              "args": [
-                "act1_knee_hurt"
-              ]
-            }
-          ]
         }
       ]
     },
@@ -7397,37 +7322,7 @@
           "travel": "你摸到旧道口，顺着塌方间的细线往山后走。",
           "msg": "树影里那条道口看着走不得。"
         }
-      },
-      "actions": [
-        {
-          "label": "看伤",
-          "cmd": "看伤",
-          "keywords": [
-            "膝盖",
-            "伤",
-            "卷裤腿"
-          ],
-          "desc": "看看膝盖那条口子",
-          "cond": {
-            "flag": "act1_knee_hurt",
-            "notFlag": "act1_knee_seen"
-          },
-          "once": true,
-          "failMsg": "你看过了。",
-          "effects": [
-            {
-              "type": "narrate",
-              "raw": "你把裤腿卷起来看。膝盖肿了一圈，青的。第二天走路会疼。疼痛不扣数值——疼就是疼。"
-            },
-            {
-              "type": "flag",
-              "args": [
-                "act1_knee_seen"
-              ]
-            }
-          ]
-        }
-      ]
+      }
     },
     "oldroad": {
       "id": "oldroad",

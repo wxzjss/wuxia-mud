@@ -670,12 +670,28 @@
       tip.className = 'hl-tip';
       tip.id = id;
       /* 主人插队件：条目是**纯文字提示**（中文动词 + 对象 + 一句说明），不是指令按钮 ——
-         没有点击行为，也就没有 doCmd。文案「看 卖茶的老汉 —— 看一段文字描述」。 */
-      tip.innerHTML = acts.map(a =>
-        '<div class="hl-tip-cmd">' + esc(hlTipText(a)) +
-        (a.hint ? '<span class="hl-tip-note"> —— ' + esc(a.hint) + '</span>' : '') + '</div>'
-      ).join('');
+         没有点击行为，也就没有 doCmd。文案「看 卖茶的老汉 —— 看一段文字描述」。
+         ── 2026-10-17 主人真机反馈「细看回滚」：开面板类动作**恢复可点** ——
+         act:'profile'（细看）点开就是原来那个带按钮的互动界面（资料面板），
+         act:'acceptquest'（接任务）照旧先弹任务预览。分界：
+           · 带 act 的条目 → hl-tip-act，点了走 runInteractAct（面板不是执行）；
+           · 带 cmd 的条目 → 仍纯文字，提示链依旧不替玩家执行指令（doCmd 没回来）。 */
+      tip.innerHTML = acts.map((a, i) => {
+        const txt = esc(hlTipText(a)) +
+          (a.hint ? '<span class="hl-tip-note"> —— ' + esc(a.hint) + '</span>' : '');
+        return a.act
+          ? '<div class="hl-tip-cmd hl-tip-act" data-act-i="' + i + '" role="button" tabindex="0">' + txt + '</div>'
+          : '<div class="hl-tip-cmd">' + txt + '</div>';
+      }).join('');
       line.appendChild(tip);
+      /* 可点条目绑开面板派发：按序号从闭包里取回原始动作对象（uid / qid 都在原件上） */
+      tip.querySelectorAll('.hl-tip-act').forEach(el => {
+        el.addEventListener('click', () => {
+          const a = acts[Number(el.getAttribute('data-act-i')) || 0];
+          closeHlTips();
+          runInteractAct(a, name);
+        });
+      });
     }
     tip.hidden = false;
     btn.setAttribute('aria-expanded', 'true');   /* ARIA 与可见一致（N-V-12） */
@@ -2870,7 +2886,7 @@
 
   /* 物品的「有什么用」——主人要求行囊里能直接看见描述与效果。
      ⚠️ 后端 inventoryList 给的字段是 **`equippable`**（双 p），
-        旧代码写的是 `it.equipable`（单 p）—— 于是「穿戴 / 持械」两个按钮**从来不显示**。
+        旧代码写的是 `it.equipable`（单 p）—— 于是「装备」按钮**从来不显示**。
         （这就是铁律 29：字段名对不上，不报错、只是没有。） */
   const ITEM_STAT_CN = { atk: '攻击', def: '防御', dodge: '身法', parry: '招架', speed: '速度', critRate: '暴击', maxHp: '气血上限', maxMp: '内力上限', hp: '气血', mp: '内力' };
   const ITEM_TYPE_CN = { weapon: '兵器', armor: '护具', food: '吃食', consumable: '丹药', herb: '草药', book: '书册', material: '材料', tool: '家什', misc: '杂物' };
@@ -2898,8 +2914,10 @@
         + (eff.length ? '<div class="inv-eff">' + esc(eff.join('　')) + '</div>' : '')
         + '<div class="inv-ops">'
         + (it.usable ? '<button class="op-btn" data-cmd="use ' + esc(it.name) + '">使用</button>' : '')
-        + (it.equippable ? '<button class="op-btn" data-cmd="wear ' + esc(it.name) + '">穿戴</button>' : '')
-        + (it.equippable ? '<button class="op-btn" data-cmd="wield ' + esc(it.name) + '">持械</button>' : '')
+        /* 装备唯一通道（主人 2026-10-17）：「穿戴 / 持械」双按钮时代结束——
+           后端 wear/wield/equip 本就是同一个处理器，前端只留一颗「装备」，
+           发「装备上 <名>」（后端别名在册）；兵器护具不在此分流。 */
+        + (it.equippable ? '<button class="op-btn" data-cmd="装备上 ' + esc(it.name) + '">装备</button>' : '')
         + '<button class="op-btn" data-cmd="look ' + esc(it.name) + '">细看</button>'
         + '<button class="op-btn" data-cmd="drop ' + esc(it.name) + '">丢弃</button>'
         + '</div></div>';
@@ -3824,6 +3842,21 @@
   function bindPanelActions(name) {
     /* 表格里的操作按钮 -> 执行指令 */
     document.querySelectorAll('#modal-body .op-btn').forEach(b => {
+      b.onclick = () => {
+        const c = b.getAttribute('data-cmd');
+        closeModal();
+        if (c) doCmd(c, { fromButton: true });
+      };
+    });
+
+    /* 练拳 / 打坐 / 激活（主人真机 2026-10-17「点了没反应」）：
+       practiceBtn 生成的「修习」列按钮（打坐 data-cmd="meditate"、练拳
+       data-cmd="练武学 X"）与 skillsHtml 的「激活」「练武学」主按钮
+       都是 mini-btn / prac-btn，**不是** op-btn —— 上面的绑定只认 .op-btn，
+       这批按钮从来没人接事件（点了没反应的根因；PANEL_CMDS 排查过没吃名：
+       panelForCmd 是整串精确匹配，带参数的「练武学 X」不会被 '练武学' 键截胡）。
+       行为与 op-btn 同一套：关面板 → 执行 data-cmd。 */
+    document.querySelectorAll('#modal-body .mini-btn[data-cmd], #modal-body .prac-btn[data-cmd]').forEach(b => {
       b.onclick = () => {
         const c = b.getAttribute('data-cmd');
         closeModal();

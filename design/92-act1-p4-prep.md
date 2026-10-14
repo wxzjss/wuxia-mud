@@ -122,6 +122,8 @@ dumuqiao 的 n 出口不查 act1_bridge_crossed，玩家可绕过 T-C 直接去�
 
 不新建房、不新建 NPC、不新建 item。flag 新增 4 个：act1_silent_seen / act1_oldroad_seen / act1_knee_hurt / act1_knee_seen，落库后跑 dangling-ref 确认零悬空。
 
+> ⚠ **2026-10-15 主人钦定回撤**：上表「独木桥失败链 ×4」与「看伤回响」整体删除（`tools/_apply_bridge_polish.py`）——失败链只留探/稳/过桥主链；act1_knee_hurt / act1_knee_seen 两 flag 随链退役（数据分片零残留）。MUD 的语言里玩家认自己选的失败（82 §替代范式）不假，但四段失败演出的实际体验是「玩家误以为这是必经解法」——主人真机反馈为准。同批：dumuqiao.n 出口未接信前挂 introHidden（101 单一路径，藏按钮不锁路）；出生点山贼 noWander 钉死终获生效（104 补 wander:null，world.js:1250/ambience.js:213 的 def.wander 短路判序归寇豆码知会）。
+
 ## 七、落库顺序（窗口关闭后）
 
 1. 50_map：dumuqiao 四失败 action（同房集中改，一次 round-trip 保真验证）

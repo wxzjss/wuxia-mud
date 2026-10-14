@@ -3,7 +3,8 @@
   "npcs": {
     "mob_bandit": {
       "id": "mob_bandit",
-      "noWander": true
+      "noWander": true,
+      "wander": null
     },
     "guide_teaman": {
       "id": "guide_teaman",

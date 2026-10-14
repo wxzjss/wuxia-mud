@@ -8,7 +8,7 @@
 'use strict';
 
 const { tokenize, fuzzyFind, clamp, fmtTime, shichen, stars } = require('./utils');
-const { evalCond, evalEffects, evalTemplate } = require('./modapi');
+const { evalCond, evalEffects, evalTemplate, flagGateCond, onceHidden } = require('./modapi');
 /* 武学重制（R2）：激活绑定的槽位→基础武学对照表，与角色侧的 effectiveMax 同一套口径 */
 const { SLOT_ROOT, STANDALONE_MAX } = require('./character');
 const social = require('./social');
@@ -946,8 +946,17 @@ function buildCommands(world) {
        —— 收进 desc 锚物（anchor 内嵌高亮）与输词体系，照常可触发。
        缺省 true：存量房未标 hint 的照旧全列，不红。
        「整列默认收起」的读法：数据侧 101 落完后，出生点整列只剩主线件
-       （开局恰 1 条「问信」），不再一股脑 12 条糊一行。 */
-    const shown = acts.filter(a => a && a.hint !== false);
+       （开局恰 1 条「问信」），不再一股脑 12 条糊一行。
+       ── 2026-10-17 主人真机反馈（第 79 件）：**前置 cond 评估 false 的也不列**
+       （「信」要等缸挪开才出现——挪完缸，下次 look 自动冒出来）。
+       ── 同日二次收窄（主人原话口径）：**重复动作一律显示，不被 cond 干掉**；
+       隐藏只限 **once 族**（once:true 或带 hideWhenFlag）的两种：
+       ① once 已完成（hideWhenFlag 置位）②once 前置未满足（信等挪缸）。
+       裁决统一收在 modapi.onceHidden（共享谓词，roomActionsView 同口径）；
+       once 族内部仍走 flagGateCond（只认旗标键，资源门不参与隐藏）。
+       chance 的「列行不偷 rng」随之更彻底：重复族整个 cond 都不评了。
+       执行期（runActionAction）照旧评全量 cond，钱/骰在点下去那一刻结算。 */
+    const shown = acts.filter(a => a && a.hint !== false && !onceHidden(a, ctx));
     if (shown.length) {
       const names = shown.map(a => a.label || (a.keywords || [])[0] || a.cmd).filter(Boolean);
       if (names.length) {
@@ -1403,8 +1412,9 @@ function buildCommands(world) {
   reg(['equipment', 'eq', '装备'], (ctx) => {
     const p = ctx.player, w = ctx.world;
     const lines = [{ kind: 'title', text: '【 装备 】' }];
-    const slots = ['头部', '颈部', '身体', '披风', '手部', '脚部', '武器', '副手', '戒指', '饰品'];
-    for (const s of slots) {
+    /* 木瓢案（2026-10-17）：槽位表走 w.equipSlots（固定 + 动态并集），
+       「手持」这类自定义槽位也要看得见——与 equipmentList 同一份真相。 */
+    for (const s of w.equipSlots(p)) {
       const id = p.equipment[s];
       const d = id ? w.getItem(id) : null;
       lines.push({ kind: 'plain', text: `${s}：${d ? d.name : '（空）'}` });

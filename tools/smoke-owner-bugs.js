@@ -1855,6 +1855,39 @@ section('B3 · 毒蛇使用蛇类专属招式，不再只有基本拳脚');
   }
 }
 
+/* ================================================================
+ *  B7 · 木瓢两病（主人真机 2026-10-17）
+ *     ① 装备后「装备」界面不显示 —— 槽位表（固定十位）漏了「手持」
+ *     ② 装备木瓢输入「倒水」仍用碗 —— cond item 只查背包，
+ *        装备中的东西已离开背包，永远吃 failMsg
+ *   ================================================================ */
+section('B7 · 木瓢两病（装备位展示 + equip 条件键）');
+{
+  const { evalCond: evalCond2 } = require('../game/src/core/modapi.js');
+  const e = boot(); const w = e.world, p = w.player;
+  w.giveItem(p, 'mu_piao', 1);
+
+  section('B7-1 装备木瓢 → 「装备」界面看得见「手持」');
+  const r1 = e.exec('装备上 木瓢');
+  ok(has(r1, '装备上了') || has(r1, '装备上'), '装备动作成功：' + texts(r1).join('|').slice(0, 60));
+  ok(p.equipment['手持'] === 'mu_piao', '手持槽挂上木瓢：' + JSON.stringify(p.equipment['手持']));
+  const eqList = e.equipmentList();
+  const sh = eqList.find(s => s.slot === '手持');
+  ok(!!sh && sh.name === '木瓢', 'equipmentList 含「手持：木瓢」（动态并集）：' + JSON.stringify(sh));
+  const rPanel = e.exec('装备');
+  ok(has(rPanel, '手持：木瓢'), '「装备」面板列出手持：木瓢：' + texts(rPanel).join('|').slice(0, 120));
+
+  section('B7-2 cond equip 键：装备中算「有」，卸下不算；item 只查背包（缝的存证）');
+  ok(evalCond2({ equip: 'mu_piao' }, { player: p, world: w }) === true, '装备中 {equip:mu_piao} 应真');
+  ok(evalCond2({ item: 'mu_piao' }, { player: p, world: w }) === false, '装备中 {item:mu_piao} 假（背包没有——正是倒水吃 failMsg 的缝）');
+  const r2 = e.exec('卸下 木瓢');
+  ok(has(r2, '卸下了'), '卸下成功：' + texts(r2).join('|').slice(0, 40));
+  ok(evalCond2({ equip: 'mu_piao' }, { player: p, world: w }) === false, '卸下后 {equip:mu_piao} 假');
+  ok(evalCond2({ item: 'mu_piao' }, { player: p, world: w }) === true, '卸下后回到背包 {item:mu_piao} 真');
+  const r3 = e.exec('装备上 木瓢');
+  ok(evalCond2({ equip: 'mu_piao' }, { player: p, world: w }) === true, '再装备，equip 键回真（数据侧 or[item,equip] 两态都通）');
+}
+
   /* 汇总 */
   console.log('\n==============================================');
   console.log(`  主人 bug 专项 smoke：${pass} 通过 / ${fail} 失败`);

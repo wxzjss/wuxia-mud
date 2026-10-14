@@ -1099,7 +1099,10 @@ body::before {
 /* 提示行里那颗可点的指令（§3.3）：字大半档（13px）——"这串字是能敲的"；
    字族用 --font-ui，与指令输入框同族。颜色 --tip-cmd（唯二硬编码之一，见 :root 注释）。 */
 .log-line .hl-tip-cmd {
-  display: inline-block;
+  /* 2026-10-17 主人真机反馈：NPC 词条展开的条目「送/看关系/看」「打听/接」横向挤一行。
+     inline-block 是按钮时代的遗形（凑热区）——条目改纯文字后它让相邻项横排。
+     改 block：每个菜单项独占一行（竖排）。 */
+  display: block;
   margin: 0; padding: 0 2px; border: 0; background: none; border-radius: 0;
   font-family: var(--font-ui);
   font-size: 13px; line-height: inherit;
@@ -1110,6 +1113,19 @@ body::before {
 }
 /* 说明位（§3.2 / .hl-tip-note）：文案归游有方（design/82），视觉只留槽位 */
 .log-line .hl-tip-note { margin-left: 8px; color: var(--tip-ink); }
+/* 可点条目（2026-10-17 主人「细看回滚」）：开面板类动作（细看/接任务）恢复可点。
+   与 .hl 同一套点得起的暗示：指针 + 悬停虚线下划线；纯文字条目不受影响。 */
+.log-line .hl-tip-cmd.hl-tip-act { cursor: pointer; }
+.log-line .hl-tip-cmd.hl-tip-act:hover {
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: var(--noun-dot);
+  text-underline-offset: 3px;
+}
+.log-line .hl-tip-cmd.hl-tip-act:focus-visible {
+  outline: 1px dashed var(--noun-dot);
+  outline-offset: 2px;
+}
 
 /* 战斗面板 */
 #combat-panel {

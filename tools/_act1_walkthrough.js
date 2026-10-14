@@ -97,7 +97,9 @@ function fight(e, w, defId, name) {
 }
 
 /* ============ ④ 独木桥 ============ */
-sec('④ 独木桥：门禁出戏→失败链（膝盖旧伤）→过桥');
+sec('④ 独木桥：门禁出戏→主链（探/稳/过）→过桥');
+/* ⚠ 2026-10-15 主人钦定：失败链四动作（抢过/背东西过/硬闯/跳下去）整体删除，
+   失败链只剩主链；连带收掉「看伤」（knee 链孤儿）。判据同步收。 */
 {
   const e = boot();
   const w = e.world, p = w.player;
@@ -105,18 +107,13 @@ sec('④ 独木桥：门禁出戏→失败链（膝盖旧伤）→过桥');
   const rb = run(e, '北');
   ok('未过桥前 n 被拦', w.player.room === 'dumuqiao');
   ok('被拦出守桥老汉的话（msg）', /守桥的老汉/.test(txt(rb)), txt(rb).slice(0, 80));
-  run(e, '抢过');
-  ok('抢过置探桥 flag', p.hasFlag('act1_bridge_probe'));
-  run(e, '背东西过');
-  run(e, '硬闯');
-  run(e, '跳下去');
-  ok('失败链走到膝盖旧伤 act1_knee_hurt', p.hasFlag('act1_knee_hurt'),
-    'probe=' + p.hasFlag('act1_bridge_probe') + ' steady=' + p.hasFlag('act1_bridge_steady') + ' knee=' + p.hasFlag('act1_knee_hurt'));
-  w.movePlayerTo(p, 'shanjiao_inn');
-  const rz = run(e, '看伤');
-  ok('看伤 act1_knee_seen', p.hasFlag('act1_knee_seen'), txt(rz).slice(0, 60));
-  w.movePlayerTo(p, 'dumuqiao');
-  run(e, '探桥'); run(e, '稳脚'); const rc = run(e, '过桥');
+  ok('桥 n 出口挂 introHidden（接信前藏按钮不锁路）',
+    (w.data.rooms.dumuqiao.exits.n || {}).introHidden === 'act1_letter_taken');
+  ok('失败链四动作已删（桥上只剩主链）',
+    (w.data.rooms.dumuqiao.actions || []).every(a => ['探桥', '稳脚', '过桥'].includes(a.cmd)));
+  run(e, '探桥'); ok('探桥置 flag', p.hasFlag('act1_bridge_probe'));
+  run(e, '稳脚'); ok('稳脚置 flag', p.hasFlag('act1_bridge_steady'));
+  const rc = run(e, '过桥');
   ok('act1_bridge_crossed 落', p.hasFlag('act1_bridge_crossed'), txt(rc).slice(0, 60));
   const rn = run(e, '北');
   ok('过桥后 n 通（到山脚客栈）', w.player.room === 'shanjiao_inn', w.player.room);
