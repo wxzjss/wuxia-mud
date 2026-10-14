@@ -31531,25 +31531,6 @@
       },
       "seed": "她要一个人替她把那张假账从卷宗里抽出来，抽得干净，无人察觉。",
       "rewardHint": "三年前那一笔，抽走是一说，留着让常拂复职是另一说。"
-     },
-     {
-      "id": "hk_npcv_248_changfu",
-      "title": "关外那个孩子",
-      "type": "reveal",
-      "trigger": {
-       "and": [
-        {
-         "flag": "hk_npcv_248_changfu_clear"
-        },
-        {
-         "var": "trust_npcv_248",
-         "op": ">=",
-         "value": 70
-        }
-       ]
-      },
-      "seed": "常拂还在关外，还在查同一件事。她比谁都清楚。",
-      "rewardHint": "关外那个孩子说清楚了，常拂的清白就能讨回。"
      }
     ],
     "marks": [

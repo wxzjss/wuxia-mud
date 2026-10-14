@@ -77,5 +77,6 @@
       "quest": true,
       "stackable": false
     }
-  ]
+  ],
+  "enabledByDefault": false
 }

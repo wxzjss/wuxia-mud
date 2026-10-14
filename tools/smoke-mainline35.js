@@ -11,8 +11,9 @@
  *   ② id / flag 写错一个字母 → 条件永远 false → 全线失效且不报错。
  *      ⇒ 每个 action 引用的房间/物品/NPC 必须真实存在；
  *      ⇒ 每个 cond 读的 flag，必须**真有地方能置位**（否则永远不满足）。
- *   ③ 主线依赖的 NPC 必须真的存在（`taixu_hermit` 只活在官方示例 mod 里，
- *      一关 mod 主线文案就变成"去找一个不存在的人"）。
+ *   ③ 主线依赖的 NPC 必须真的存在（`taixu_hermit` 曾只活在官方示例 mod 里，
+ *      一关 mod 主线文案就变成"去找一个不存在的人"——2026-10-17 批2 已修：
+ *      引擎 LEGEND_IDS 换基础数据的 `li_mochou`，此断言从此守住「名单只认基础数据」）。
  *
  * run: node tools/smoke-mainline35.js */
 'use strict';
@@ -298,7 +299,7 @@ sec('⑩ ★ 主线依赖的 NPC 全部真实存在（防 mod 依赖悄悄断）
   const missing = ids.filter(id => !w.data.npcs[id]);
   ok(`★「击败名宿」名单里的人全都在世界里（${ids.join('/')}）`, missing.length === 0,
     '查无此人：' + missing.join(',') +
-    '（注意：taixu_hermit 来自官方示例 mod mods/demo_skill，关掉 mod 他就没了）');
+    '（2026-10-17 批2 已把 taixu_hermit 换成基础数据的 li_mochou；名单只认基础数据 NPC，不认 mod 里的）');
   ok('  名单里没有主线 Boss / 委托人（别逼玩家打自己的委托人）',
     !ids.some(id => Object.values(NEW_QUESTS).some(s => s.giver === id)));
 }
@@ -342,6 +343,40 @@ sec('⑬ 所有新增 cond / effects 引擎都认（喂假 ctx 不抛错）');
     }
   }
   ok('★ 全部 action 的 cond 可解析', threw.length === 0, threw.slice(0, 5).join(' ; '));
+}
+
+/* 102 §四 喂主线：snow_evidence_xixia（俞初西夏案取证）进 q_main_snow 证据判定。
+ * 接法（2026-10-17 寇豆码，按血刀/星宿两线现成判式）：stage3「取私藏的半卷抄本」
+ * 的 cond 由单 flag 改 or[xuedao_copy, snow_evidence_xixia] —— 西夏对账件与后寨
+ * 半卷抄本同为「指向同一只手」的实证（血刀线 xuedao_copy 存量路径一字不动；
+ * stage4 血刀老祖照旧卡 Boss，西夏证据不构成任何绕场）。
+ * 判定消费点 = 交差（tryReportQuest 读 stage.cond），这里按同一通路真走。 */
+sec('⑭ ★ 案3喂主线：snow_evidence_xixia 进 q_main_snow stage3 证据判定（or 组三态）');
+{
+  const qd = w.getQuest('q_main_snow');
+  const s3 = qd && qd.stages && qd.stages[3];
+  const cond = JSON.stringify((s3 && s3.cond) || {});
+  ok('stage3 cond 为 or 组且两线都在（xuedao_copy / snow_evidence_xixia）',
+    cond.includes('"or"') && cond.includes('xuedao_copy') && cond.includes('snow_evidence_xixia'), cond);
+  /* flag 出处：西夏线 flag 由 61 的俞初案 s3 收口置位（hk_npcv_248_jiushui） */
+  const jiushui = w.getQuest('hk_npcv_248_jiushui');
+  ok('snow_evidence_xixia 有出处（61 俞初案 s3 收口 effects）',
+    JSON.stringify(jiushui || {}).includes('snow_evidence_xixia'));
+  /* 交差通路三态（真走 tryReportQuest：giver 方证大师房） */
+  const boot2 = (flags, stage) => {
+    const e2 = new GameEngine({ seed: 20261011 });
+    e2.boot(); e2.newGame({ name: '验甲', gender: 'male' });
+    const p2 = e2.world.player;
+    p2.setFlag('act2_done', true);
+    for (const f of flags) p2.setFlag(f, true);
+    p2.setQuestStage('q_main_snow', stage);
+    p2.room = 'shaolin_daxiong';
+    e2.exec('看'); e2.exec('交差');
+    return p2.questStage('q_main_snow');
+  };
+  ok('★ 血刀线存量路径不红（stage3 + xuedao_copy 交差 → 4）', boot2(['xuedao_copy'], 3) === 4);
+  ok('★ 西夏线接入（stage3 + snow_evidence_xixia 交差 → 4）', boot2(['snow_evidence_xixia'], 3) === 4);
+  ok('★ 双无不误放（stage3 交差仍停 3）', boot2([], 3) === 3);
 }
 
 console.log('\n================================================');

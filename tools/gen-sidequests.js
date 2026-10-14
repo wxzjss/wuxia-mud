@@ -500,25 +500,9 @@ const QUESTS = [
     },
     reward: '俞初把那页卷宗折起，塞回袖子里，拢了拢领口。',
   },
-  {
-    id: 'hk_npcv_248_changfu', npc: 'npcv_248', cmd: '找常拂', title: '关外那个孩子', level: 11,
-    require: { questDone: 'hk_npcv_248_jiushui' },
-    desc: '捕快常拂跟俞初同住一间驿舍。一个知道全部，一个什么都不知道。',
-    goals: [{ room: 'road_xixia_1', desc: '在西夏官道找常拂，听她说当年那桩事' }],
-    back: '回俞初处，把常拂的话转给她',
-    reveal: [
-      { t: 'say', raw: '常拂：「那年我查出一笔账，第二天就被革了。我一直没弄明白是谁。」' },
-      { t: 'narrate', raw: '俞初就在隔一道墙的地方，捏着茶碗，没出声。' },
-    ],
-    menu: {
-      title: '关外那个孩子',
-      opts: [
-        { label: '替她讨回清白', eff: ['+karma:15', '+exp:240', 'favor:npcv_049:40', 'flag:hk_npcv_248_changfu_clear'] },
-        { label: '不插手', eff: ['+exp:100', 'favor:npcv_248:10'] },
-      ],
-    },
-    reward: '俞初隔墙听完了，起身给常拂续了一碗茶。',
-  },
+  /* 2026-10-15 删：hk_npcv_248_changfu（关外那个孩子）——已并入俞初 jiushui s3
+     抉择（design/102 案 3），独立案与画像 hook 均删（见 _apply_act3_cases.py）。
+     画像 hook 数 52 → 51，smoke-sidequest 计数改用 HOOKS.length。 */
 
   /* ===== V13 闵春晓 ===== */
   {

@@ -114,7 +114,14 @@
         {
           "desc": "血刀寨·后寨，取私藏的半卷抄本",
           "cond": {
-            "flag": "xuedao_copy"
+            "or": [
+              {
+                "flag": "xuedao_copy"
+              },
+              {
+                "flag": "snow_evidence_xixia"
+              }
+            ]
           },
           "next": 4
         },
@@ -974,6 +981,10 @@
               "args": [
                 "zhengju_yanchang"
               ]
+            },
+            {
+              "type": "narrate",
+              "raw": "他把册子往前推了推，又想起来一桩：「账上还有一笔捐银，年年往南边一座楼里送。户头是个盐号，捐给谁，账房不肯写。」"
             }
           ]
         }

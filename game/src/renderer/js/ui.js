@@ -314,9 +314,15 @@
     if (!box) return;
     const hasBody = !!(story && ((story.lines || []).length || story.title));
     if (!hasBody) {
-      box.classList.add('hidden');
-      box.innerHTML = '';
-      if (desc) desc.classList.remove('hidden');
+      /* 🔴 2026-10-16 主人真机重击批：无追踪态**不再把房间描述放回大框** ——
+         原来这一支会把 desc 解除隐藏，开局默认不追任何任务，
+         主人第一眼看到的大框就是整段环境描写，与下方日志「看」的那份一模一样。
+         口径：大框任何状态下零环境描写，只留追踪提示或引导语；
+         「此地如何」永远只在日志里（想看敲「查看四周」）。 */
+      if (desc) desc.classList.add('hidden');
+      box.classList.remove('hidden');
+      box.innerHTML = '<div class="story-idle">眼下没有追着的事。' +
+        '见了要办的差事，点「追踪」，它就一直挂在这屏上。</div>';
       return;
     }
     box.classList.remove('hidden');
@@ -5027,16 +5033,22 @@
     const send = $('cmd-send');
     if (!inp) return;
 
-    const submit = () => {
+    /* 🔴 2026-10-16 主人真机重击批：点「发送」后输入框**不再弹回** ——
+       老写法 submit 不分来源一律 doCmd(v)，doCmd 收尾 `inp.focus()` 把焦点
+       抢回输入框 → 手机软键盘再弹起来，正好挡住刚刷新的内容。
+       分流：点「发送」按钮 = fromButton（doCmd 开头 blur 断链、结尾不抢焦点，
+       键盘收起，玩家再点输入框才唤起）；输入框里敲回车 = 照旧（打字的人
+       焦点本来就在这儿，桌面端连续敲指令不受影响）。 */
+    const submit = (fromButton) => {
       const v = inp.value.trim();
       if (!v) return;
       inp.value = '';
-      doCmd(v);
+      doCmd(v, { fromButton: !!fromButton });
     };
-    if (send) send.onclick = submit;
+    if (send) send.onclick = () => submit(true);
 
     inp.onkeydown = e => {
-      if (e.key === 'Enter') { e.preventDefault(); submit(); return; }
+      if (e.key === 'Enter') { e.preventDefault(); submit(false); return; }
       if (e.key === 'ArrowUp') {
         e.preventDefault();
         if (histIdx > 0) { histIdx--; inp.value = cmdHistory[histIdx] || ''; }

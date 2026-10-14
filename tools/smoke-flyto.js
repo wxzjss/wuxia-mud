@@ -98,6 +98,13 @@ console.log('\n④ 行路 · 首道卷界（江南北门驿 · 不通航 cond + 
 console.log('\n⑤ 出口拦截 · ex.say 驿丞说法（sectRefusal 范式挂点）');
 {
   /* 数据侧游有方会把卷界出口写成 cond + say；这里注入一条实测拦截 */
+  /* ⚠ 测试隔离（2026-10-15 发布窗扫尾）：④ 的行路落点 mojiao_shanmen 挂着
+     40% 埋伏池（mob_mo_disciple / mob_assassin，50_map encounter 字段）——
+     上游 RNG 消耗一漂移（NPC 生成/游走/boot 侧数据调整），seed 4242 也会
+     真掷中埋伏，w.battle 一路带进 ⑤，把「驿丞 say」判据打成战斗 warn
+     （发布窗实发一次：1 红后 23 连绿，非稳定红）。
+     本段测的是**出口 say 拦截范式**，不是遭遇战——先把战斗态清干净。 */
+  if (w.battle) w.battle = null;
   const room = w.getRoom(START);
   const savedExits = room.exits;
   room.exits = { n: { to: 'huashan_gate', cond: 'act1_done', msg: '路被挡住了。', say: '驿丞拦在你马前：「北边在过兵，驿马都征走了。要走，等开春。」' } };

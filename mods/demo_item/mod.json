@@ -6,7 +6,12 @@
   "author": "武侠行官方",
   "category": "物品",
   "desc": "一批实用丹药与过渡装备：回血回内的消耗品、一把趁手软剑、一件轻便长袍，还有一本便宜的基础剑谱。物品 Mod 的各类写法都在这里。",
-  "tags": ["物品", "示例", "丹药", "装备"],
+  "tags": [
+    "物品",
+    "示例",
+    "丹药",
+    "装备"
+  ],
   "gameVersion": "1.0.0",
   "items": [
     {
@@ -94,7 +99,15 @@
       "id": "shop_baihuo",
       "name": "百宝货栈",
       "keeper": "wen_jiangnan",
-      "items": ["qingxin_dan", "huxin_dan", "wugou_jian", "qingyun_pao", "qingyun_boots", "book_basic_sword_cheap"]
+      "items": [
+        "qingxin_dan",
+        "huxin_dan",
+        "wugou_jian",
+        "qingyun_pao",
+        "qingyun_boots",
+        "book_basic_sword_cheap"
+      ]
     }
-  ]
+  ],
+  "enabledByDefault": false
 }

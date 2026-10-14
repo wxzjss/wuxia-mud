@@ -58,11 +58,21 @@ function boot(seed) {
     ok('★ 面板据此画「没在追」的样子（view.track 为 null）', v.track === null, JSON.stringify(v.track));
     ok('★ 但新手剧情**照样在**（只是没显示）：随时能追起来',
       !!p && p.questStage('q_main_jianghu') !== undefined);
-    /* 主人：「主线剧情依旧是开局就接这个不变，但**不会在屏幕下方显示**」 */
+    /* 主人：「主线剧情依旧是开局就接这个不变，但**不会在屏幕下方显示」 */
+    /* ⚠️ 2026-10-17 判据连带（101 §三 楔子播报，寇豆码落地）：newGame 首包现在
+       **前置楔子四段 story 拍**（intro.prologue，flag act1_intro_done 一次性）。
+       「不占屏幕下方」管的是**任务/主线剧情行**（qd.desc 那一族）；楔子是
+       101 钦定的开局戏，不算违规。判据收紧为：开局 story 行 = 楔子段本身
+       （条数与文本逐段对上 intro.prologue，一条不多），say/subtitle 照旧为 0。 */
     const v0 = e.newGame({ name: '重开' });
-    const storyLines = (v0.lines || []).filter(l => ['story', 'say', 'subtitle'].indexOf(l.kind) >= 0);
-    ok('★ 主线不占屏幕下方（开局日志里没有剧情行）', storyLines.length === 0,
-      storyLines.map(l => l.kind).join(',') || '干净');
+    const introArr = (e.world.data.intro && e.world.data.intro.prologue) || [];
+    const storyLines = (v0.lines || []).filter(l => l.kind === 'story');
+    const saySubLines = (v0.lines || []).filter(l => ['say', 'subtitle'].indexOf(l.kind) >= 0);
+    ok('★ 主线不占屏幕下方（开局 story 行只有 101 楔子段，一条不多）',
+      storyLines.length === introArr.length && storyLines.every((l, i) => l.text === introArr[i]),
+      storyLines.length + ' 段 story vs intro ' + introArr.length + ' 段');
+    ok('★ 开局日志无 say/subtitle 剧情行（楔子之外的戏一行不进）',
+      saySubLines.length === 0, saySubLines.map(l => l.kind).join(',') || '干净');
     ok('★ 主线**照旧开局就接**（主人明确要求不变）', p.questStage('q_main_jianghu') !== undefined,
       'stage=' + p.questStage('q_main_jianghu'));
     /* 🔴 2026-10-12 口径再改（新手教程剧情全删）：主线**从第 0 步「拜入一个门派」起步**。
@@ -241,6 +251,24 @@ function boot(seed) {
     ok('「现在做什么」进 HTML（同一句由金字 todo 承担，零信息损失）',
       /现在做什么/.test(h) && /把功夫练起来/.test(h));
     ok('没有 undefined / NaN 漏进 HTML', !/undefined|NaN/.test(h), (h.match(/undefined|NaN/g) || []).join(','));
+
+    /* ---- ⑧-b 无追踪态：大框零环境描写（主人真机重击批 2026-10-16）----
+       原来无剧情时把 #room-desc 放回大框 —— 开局默认不追，主人第一眼
+       看到的就是整段环境描写，与日志重复。抠 renderStory 函数体断言：
+       ① 无剧情分支 room-desc 也 hidden（不再 remove）；
+       ② 大框给一句引导语（story-idle），不空屏；
+       ③ 整个函数体里不再有 desc.classList.remove('hidden')。 */
+    const rsSrc = (UISRC.match(/function renderStory\(story\)[\s\S]*?\n  \}/) || [''])[0];
+    ok('⑧-b0 能抠出 renderStory 函数体', rsSrc.length > 100);
+    const noStoryBranch = (rsSrc.match(/if \(!hasBody\) \{[\s\S]*?\n\s+return;/) || [''])[0];
+    ok('⑧-b1 ★ 无追踪态 room-desc 仍收起（大框零环境描写）',
+      noStoryBranch.includes("desc.classList.add('hidden')") &&
+      !noStoryBranch.includes("desc.classList.remove('hidden')"),
+      noStoryBranch.slice(0, 100));
+    ok('⑧-b2 无追踪态大框给引导语（story-idle，不空屏）',
+      /story-idle/.test(noStoryBranch) && /眼下没有追着的事/.test(noStoryBranch));
+    ok('⑧-b3 ★ renderStory 全函数无「描述放回」（任何状态下大框都不再装房间描写）',
+      !rsSrc.includes("desc.classList.remove('hidden')"));
   }
 
   /* ---------- ⑨ 声望挂点双口径（2026-10-15 主人批准）----------

@@ -30,8 +30,29 @@ function ok(n, c, e) {
   else { fail++; fails.push(n); console.log('  ✘ ' + n + (e ? '  << ' + e : '')); }
 }
 function section(t) { console.log('\n' + t); }
-const boot = (seed) => {
-  const e = new GameEngine({ seed: seed || 20261011, saveDir: SAVE_DIR });
+/* ⚠️ 2026-10-17 M68 判据连带：官方示例 mod 默认关（enabledByDefault:false，玩家侧
+   默认干净）。要验示例 mod 本身的段（M-2 族）在测试环境**显式开**对应 mod——
+   只改 modLoader 内存态（state.enabled + m.enabled）。
+   ⚠️ 污染案根因补充（同日）：boot() 末尾 resolveLoadOrder() 会**无条件 saveState()**，
+   「只改内存态」也会被写进工作目录 mods-state.json（今晨根目录残留即此来路，
+   连带 demo-mods-check ④ 假红）——isolatedEngine 构造后 no-op saveState，零写盘，
+   玩家侧默认关口径不变（mainline35 §⑩ 同族口径）。 */
+const isolatedEngine = (opts) => {
+  const e = new GameEngine(opts);
+  e.modLoader.saveState = function () {};
+  return e;
+};
+const enableModsInMem = (e, ids) => {
+  for (const id of ids) {
+    e.modLoader.state.enabled[id] = true;
+    const m = e.modLoader.mods.find(x => x.id === id);
+    if (m) m.enabled = true;
+  }
+  return e;
+};
+const boot = (seed, mods) => {
+  const e = isolatedEngine({ seed: seed || 20261011, saveDir: SAVE_DIR });
+  if (mods && mods.length) enableModsInMem(e, mods);
   e.boot(); e.newGame({ name: '试侠', gender: 'male', birth: 'wuxue' });
   return e;
 };
@@ -164,9 +185,11 @@ section('§M mod 字段口径：加载归一化 / 官方示例 / 制作器 / 站
       npc ? npc.id + ' skills=' + JSON.stringify(npcSlots) : '(无 NPC)');
   }
 
-  /* ---- M-2 加载后：示例 mod 的武学真能装进槽位（真 enable）---- */
+  /* ---- M-2 加载后：示例 mod 的武学真能装进槽位（真 enable）----
+     本段验示例 mod 本身 → 测试环境显式开 demo_skill（M68 默认关的判据连带，
+     enableModsInMem：内存态开启，玩家侧默认关不变） */
   {
-    const e = boot(7); const w = e.world, p = w.player;
+    const e = boot(7, ['demo_skill']); const w = e.world, p = w.player;
     const s = w.getSkill('taixu_jianyi');
     ok('M-2 示例 mod 的武学加载后 type 是「剑」、category 是「外功」',
       !!s && s.type === '剑' && s.category === '外功', s ? s.type + '/' + s.category : '未加载');

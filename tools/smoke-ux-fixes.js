@@ -477,11 +477,13 @@ t('askView 懒加载：每个在场 NPC 都拿得到话题（与旧 view 契约�
 });
 t('无 ask 数据的路人也有话题（通用三项兜底）', () => {
   const w = freshWorld();
-  let rid = null;
-  for (const r of Object.keys(w.data.rooms)) { if (w.npcsIn(r).length) { rid = r; break; } }
-  w.movePlayerTo(w.player, rid);
-  const n = w.npcsIn(rid).find(x => !(x.def && x.def.ask));
-  ok(n, '找不到没有 ask 数据的 NPC（测试前提失效）');
+  /* 🔴 2026-10-16 前提稳态化（二修）：数据侧已给全库 NPC 配了 ask（「询问」批），
+     「碰运气找路人」永远找不到无 ask 的了。改成运行时注入：spawn 一只怪、
+     剥掉它的 ask —— 测的是**引擎兜底**（askTopicsOf 的通用三项），不依赖数据运气。 */
+  const n = w.spawnNpc('mob_bandit', w.player.room, 1, true);
+  n.def = Object.assign({}, n.def || {});
+  delete n.def.ask;
+  ok(n, 'spawn 失败（环境断了）');
   const tp = w._engine.askTopicsOf(n);
   ok(tp.length >= 3, '路人 NPC 话题少于 3 条：' + JSON.stringify(tp));
   const names = tp.map(x => x.topic);
@@ -602,12 +604,155 @@ t('server/public/css/main.css 与 game/src/renderer/css/main.css 一致', () => 
   ok(a === b, '两份 main.css 不一致');
 });
 
-/* ---- 工具 ---- */
-console.log('\n============================================');
-console.log(`  体验修复 smoke: ${pass} 通过 / ${fail} 失败`);
-console.log('============================================');
-if (fail) {
-  console.log('\n失败明细：');
-  for (const f of fails) console.log('  - ' + f);
-  process.exit(1);
-}
+/* ═══════ 7. 点「发送」后输入框不再弹回（主人真机 2026-10-16 手机键盘遮挡）═══════
+   根因：submit 不分来源一律 doCmd(v)（不带 fromButton），doCmd 收尾
+   `inp.focus()` 把焦点抢回 → 手机软键盘再弹起来挡住刚刷新的内容。
+   修法：点「发送」按钮 = fromButton:true（开头 blur 断链、结尾不抢焦点）；
+         输入框敲回车 = 照旧（打字的人焦点本来就在，桌面连打不受影响）。
+   ⚠️ 本段是异步（doCmd 收尾在微任务里），单独 IIFE 跑完再出汇总。 */
+(async () => {
+  console.log('\n【7】点「发送」后输入框不弹回（手机键盘遮挡）');
+  const env = makeEnv();
+  env._sent = [];
+  env.WX = { S: {}, bus: { on() {}, emit() {} }, jfetch: () => Promise.resolve({}) };
+  vm.createContext(env);
+  vm.runInContext(fs.readFileSync(path.join(RJS, 'app.js'), 'utf8'), env, { filename: 'app.js', timeout: 8000 });
+  vm.runInContext(fs.readFileSync(path.join(RJS, 'ui.js'), 'utf8'), env, { filename: 'ui.js', timeout: 8000 });
+  /* ⚠️ 桩必须**载完再补**：app.js 载入时会重建 window.WX（真 api 走 jfetch），
+     载入前塞的 api 桩会被顶掉（smoke-uiux stubApi 的正确顺序同款）。 */
+  env.WX.api.exec = async (cmd, opt) => { env._sent.push({ cmd, opt: opt || null }); return { ok: true, lines: [] }; };
+  env.WX.api.view = async () => ({ ok: true, view: {} });
+  env.WX.S.busy = false;
+  const settle = () => new Promise(r => setImmediate(r));
+  try {
+    env.WXUI.bindInput();
+    const inp = env.document.getElementById('cmd-input');
+    const send = env.document.getElementById('cmd-send');
+    ok(typeof send.onclick === 'function' && typeof inp.onkeydown === 'function', 'bindInput 没绑上（环境断了）');
+  /* 记录 focus/blur 调用（makeEl 的桩是空函数，包一层才知道谁被调过） */
+  const fb = [];
+  let fbAtExec = null;   /* api.exec 派发那一刻的 focus/blur 快照（判 fromButton 通路的顺序证据） */
+  inp.focus = () => fb.push('focus');
+  inp.blur = () => fb.push('blur');
+  const rawExec = env.WX.api.exec;
+  env.WX.api.exec = async (cmd, opt) => { fbAtExec = fb.slice(); return rawExec(cmd, opt); };
+
+  /* ① 点「发送」按钮：fromButton 通路 —— blur 断链、结尾不抢焦点 */
+  inp.value = '说 你好';
+  send.onclick();
+  await settle(); await settle();
+  t('点「发送」按钮真派发指令', () => {
+    ok(env._sent.length === 1 && env._sent[0].cmd === '说 你好', 'exec 记录：' + JSON.stringify(env._sent));
+  });
+  t('★ 发送按钮走 fromButton 通路（派发前输入框已 blur 断链）', () => {
+    /* fromButton 是 UI 内部旗（设计上不传后端），行为级证据 = 派发时 blur 已发生 */
+    ok(fbAtExec && fbAtExec.indexOf('blur') >= 0, '派发时 blur 未发生：' + JSON.stringify(fbAtExec));
+  });
+    t('★ doCmd 结尾不抢焦点（键盘不再弹回挡视线）', () => {
+      ok(fb.indexOf('focus') < 0, 'focus 被调了：' + JSON.stringify(fb));
+    });
+    t('发送时先 blur（断掉「点击即激活」的隐式链）', () => {
+      ok(fb.indexOf('blur') >= 0, 'blur 没被调：' + JSON.stringify(fb));
+    });
+
+    /* ② 输入框敲回车：老行为不坏 —— 焦点还给输入框（桌面连打） */
+    fb.length = 0; env._sent.length = 0; env.WX.S.busy = false;
+    inp.disabled = false;
+    inp.value = '说 你好';
+    inp.onkeydown({ key: 'Enter', preventDefault() {} });
+    await settle(); await settle();
+    t('回车路径照旧派发', () => {
+      ok(env._sent.length === 1 && env._sent[0].cmd === '说 你好', 'exec 记录：' + JSON.stringify(env._sent));
+    });
+    t('★ 回车路径焦点还给输入框（桌面连打不受影响）', () => {
+      ok(fb.indexOf('focus') >= 0, 'focus 没被调：' + JSON.stringify(fb));
+    });
+  } catch (e) {
+    fail++; fails.push('【7】环境 :: ' + e.message);
+    console.log('  ✘ 【7】环境 :: ' + e.message);
+  }
+
+  /* ═══════ 8. 「此地可做」整列改造（重击批第 4 件，B 案 + 101 口径 A）═══════
+     主人：「这玩意不应该做进剧情里把那些可互动物件下面标点提示吗，
+     怎么直接一股脑全列出来」。落地：
+     · hint:false 的 action 不进「此地可做」行（数据在途按 101 标，缺省 true 存量不红）；
+     · desc 描写内嵌锚物高亮（action 配 anchor 词 → 描写里该词带 .hl 可点，
+       点开出该锚物挂的全部动作，hint:false 也收 —— 全靠这里露脸）；
+     · 不扫词推定（B8 BLK-2）：锚物必须显式配 anchor，不配的房零变化。 */
+  console.log('\n【8】「此地可做」整列改造（hint 收敛 + 锚物内嵌）');
+  {
+    const w = freshWorld();
+    /* 运行时注入 fixture 房（不碰 game/data/） */
+    w.data.rooms.q8_anchor_room = {
+      id: 'q8_anchor_room', name: '试锚房', region: 'jiangnan',
+      desc: '灶边一口水缸，半缸水。案上一把缺嘴的壶。', exits: { n: 'road_jiangnan_1' },
+      actions: [
+        { label: '问信', cmd: '问信', keywords: ['信'], hint: true, desc: '问一句信的事' },
+        { label: '挪缸', cmd: '挪缸', keywords: ['挪缸'], hint: false, desc: '把缸挪开', anchor: '水缸' },
+        { label: '倒水', cmd: '倒水', keywords: ['倒水'], hint: false, desc: '舀一瓢', anchor: '壶' },
+      ],
+    };
+    w.player.room = 'q8_anchor_room';
+    const out = run(w, 'look');
+    const all = txt(out);
+    const actionLine = out.find(l => l.kind === 'action');
+    const descLine = out.find(l => l.kind === 'desc');
+    t('hint:false 不进「此地可做」行（101 口径 A）', () => {
+      ok(actionLine, '没有此地可做行（fixture 断了）');
+      ok(/问信/.test(actionLine.text), 'hint:true 的该在：' + actionLine.text);
+      ok(!/挪缸/.test(actionLine.text) && !/倒水/.test(actionLine.text),
+        'hint:false 的不该进行：' + actionLine.text);
+    });
+    t('★ hint:false 照常输词触发（收进行不等于锁动作）', () => {
+      const r2 = w._engine.exec('挪缸');
+      ok(!/这里没有|什么也没有|没有这个/.test(txt(r2.lines)), '输词被拒：' + txt(r2.lines).slice(0, 80));
+    });
+    t('★ desc 内嵌锚物高亮（描写里「水缸」「壶」带可点 hl）', () => {
+      ok(descLine && descLine.hl && descLine.hl.length >= 2,
+        'desc 行没带锚物 hl：' + JSON.stringify(descLine && descLine.hl));
+      const words = (descLine.hl || []).map(h => h.text);
+      ok(words.indexOf('水缸') >= 0 && words.indexOf('壶') >= 0, '锚物词缺：' + JSON.stringify(words));
+      const gang = descLine.hl.find(h => h.text === '水缸');
+      ok(gang.actions.length === 1 && gang.actions[0].cmd === '挪缸', '缸的锚物没挂上动作');
+    });
+    t('★ 锚物把 hint:false 的动作也收进提示（false 全靠锚物露脸）', () => {
+      const hu = descLine.hl.find(h => h.text === '壶');
+      ok(hu && hu.actions[0] && hu.actions[0].cmd === '倒水', '壶的锚物没挂上倒水');
+    });
+    t('不配 anchor 的房零变化（前向兼容，同 room.hl N-V-18 先例）', () => {
+      w.data.rooms.q8_plain = {
+        id: 'q8_plain', name: '素房', region: 'jiangnan',
+        desc: '一间空房，什么也没有。', exits: {},
+        actions: [{ label: '打坐', cmd: '打坐', keywords: ['打坐'] }],
+      };
+      w.player.room = 'q8_plain';
+      const o2 = run(w, 'look');
+      const d2 = o2.find(l => l.kind === 'desc');
+      ok(d2 && !d2.hl, '没配 anchor 却带了 hl：' + JSON.stringify(d2 && d2.hl));
+      ok(/此地可做：打坐。/.test(txt(o2)), '没标 hint 的存量 action 照旧全列');
+    });
+    /* 真数据出生房：动态口径 —— 数据里标了 false 的，行里就不能出现
+       （数据侧 101 在途逐条标，本断言跟着数据自动收紧，不赌具体条数） */
+    t('★ 真数据出生房：hint:false 的不落进行（跟着数据自动收紧）', () => {
+      const w2 = freshWorld();
+      const r = w2._engine.exec('look');
+      const line = r.lines.find(l => l.kind === 'action');
+      const room = w2.getRoom(w2.player.room);
+      const hidden = (room.actions || []).filter(a => a && a.hint === false)
+        .map(a => a.label || a.cmd).filter(Boolean);
+      for (const h of hidden) {
+        ok(line && line.text.indexOf(h) < 0, `hint:false 的「${h}」还在行里：` + (line && line.text));
+      }
+    });
+  }
+
+  /* ---- 工具 ---- */
+  console.log('\n============================================');
+  console.log(`  体验修复 smoke: ${pass} 通过 / ${fail} 失败`);
+  console.log('============================================');
+  if (fail) {
+    console.log('\n失败明细：');
+    for (const f of fails) console.log('  - ' + f);
+    process.exit(1);
+  }
+})();

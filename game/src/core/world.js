@@ -3638,6 +3638,13 @@ class World extends EventEmitter {
       player: {
         name: p.name, gender: p.gender, race: p.race, level: p.level, exp: p.exp,
         potential: p.potential, hp: p.hp, mp: p.mp, food: p.food, water: p.water,
+        /* 🔴 血量翻倍老 bug（主人真机 2026-10-16）：血底/内力底**必须随档**。
+           maxHpBase 建号时来自 meta.startHp（40），而内功修为（neigong.js）
+           运行期还会往上加 —— 这两样不存的话，读档重建 Character 时
+           构造器拿不到 def.hp，落 `|| 100` 兜底：武学出身 40 → 100，
+           主人看到的就是「退出再进血量翻倍」。
+           recalc() 每次都从 maxHpBase 起算 —— 底子错了，后面全错。 */
+        maxHpBase: p.maxHpBase, maxMpBase: p.maxMpBase,
         money: p.money, karma: p.karma, kills: p.kills, reputation: p.reputation,
         attr: p.attr, baseAttr: p.baseAttr, learned: p.learned, equippedSkills: p.equippedSkills,
         inventory: p.inventory, equipment: p.equipment, equipmentUid: p.equipmentUid,
@@ -3880,6 +3887,15 @@ class World extends EventEmitter {
     const p = new Character(this, {
       name: sd.name, gender: sd.gender, race: sd.race, level: sd.level,
       attr: sd.baseAttr, money: sd.money,
+      /* 🔴 血量翻倍老 bug（主人真机 2026-10-16）：血底/内力底必须在这里喂回去。
+         原来不传 → 构造器落 `def.hp || 100` 兜底，出身血底全丢（40 → 100）。
+         · 新档：直接用存档里的 maxHpBase/maxMpBase（serialize 白名单已收编）；
+         · 老档（没这两个字段）：回落 meta.startHp/startMp —— 建号口径，
+           比硬落 100 兜底准；老档内功修为加过的血底无法追回，记迁移注释即可。 */
+      hp: sd.maxHpBase !== undefined ? sd.maxHpBase
+        : ((this.data.meta && this.data.meta.startHp) || 100),
+      mp: sd.maxMpBase !== undefined ? sd.maxMpBase
+        : ((this.data.meta && this.data.meta.startMp) || 50),
     });
     Object.assign(p, {
       isPlayer: true, isNpc: false,

@@ -100,8 +100,12 @@ const allText = (r) => ((r && r.lines) || []).map(l => l.text || '').join('\n');
     const UI = require('fs').readFileSync(RJS, 'utf8');
     ok('★ 前端把 view.story 画进大框（renderStory）',
       /renderStory\(v\.story/.test(UI) && /function renderStory\(/.test(UI));
-    ok('★ 有剧情时房间描述让位、没剧情时放回来',
-      /desc\.classList\.add\('hidden'\)/.test(UI) && /desc\.classList\.remove\('hidden'\)/.test(UI));
+    /* 🔴 2026-10-16 主人真机重击批口径反转：大框**任何状态下零环境描写**——
+       有剧情 → 描述让位；没剧情 → 描述也收起（原来放回来那份与日志重复，
+       主人第一眼看到的就是它）。全函数不再有「描述解除隐藏」。 */
+    ok('★ 有剧情时房间描述让位、没剧情时也**不放回**（大框零环境描写）',
+      /desc\.classList\.add\('hidden'\)/.test(UI) &&
+      !/desc\.classList\.remove\('hidden'\)/.test(UI));
     const START = require('fs').readFileSync(path.join(ROOT, 'game/src/renderer/js/start.js'), 'utf8');
     ok('★ 创建角色后把开局场面落进日志（房间描写那些）',
       /const head = \(d\.view && d\.view\.lines\)/.test(START) && /appendLog\(head\)/.test(START));

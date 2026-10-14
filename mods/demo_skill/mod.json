@@ -184,5 +184,6 @@
         "武器": "fine_sword"
       }
     }
-  ]
+  ],
+  "enabledByDefault": false
 }

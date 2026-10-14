@@ -797,11 +797,24 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
        而 ui.js 里另有**两处**局部 `const CN = {…ne: '东北'…}`（出口九宫格用的），
        把 DIR_CN 里那行删掉，源码 grep 依然命中 → 变异测下来**恒绿**。
        所以改成走真渲染：打开地图，读 `.map-now` 那一行的文本。 */
+    /* ---- ⑩-2c 出口行的方向名（**真渲染**，不许 grep 源码当断言）----
+       ⚠️ 这里踩过一回：第一版写的是 `/ne:\s*'东北'/.test(源码)` ——
+       而 ui.js 里另有**两处**局部 `const CN = {…ne: '东北'…}`（出口九宫格用的），
+       把 DIR_CN 里那行删掉，源码 grep 依然命中 → 变异测下来**恒绿**。
+       所以改成走真渲染：打开地图，读 `.map-now` 那一行的文本。
+       🔴 2026-10-16 数据演进改约：act1 走廊重做后出生房（茶摊）是四正出口
+       （90 案楔子房「山庄门口」撤场，97 §六.7 已记档）—— 本条测的是
+       「方向名中文化」，不绑死出生房：临时挪到岔路口（有 sw 斜向出口）
+       拍一份快照再挪回，后续断言全用这份。 */
+    const _roomBack = p.room;
+    p.room = 'road_jiangnan_2';
+    const VIEW_DIAG = engine.view();
+    p.room = _roomBack;
     const envM = loadUi(makeEnv({ innerWidth: 375 }));
-    stubApi(envM, VIEW);
+    stubApi(envM, VIEW_DIAG);
     closeMasks(envM);
-    const diagExit = (VIEW.exits || []).filter(x => String(x.dir).length === 2);
-    ok('⑩-2c-0 前提：出生房确有斜向出口（否则本条测不到方向名）',
+    const diagExit = (VIEW_DIAG.exits || []).filter(x => String(x.dir).length === 2);
+    ok('⑩-2c-0 前提：测试房确有斜向出口（否则本条测不到方向名）',
       diagExit.length > 0, '斜向出口=' + diagExit.map(x => x.dir + '→' + x.toName).join(',') || '(无)');
     await envM.WXUI.panel('map');
     await settle();

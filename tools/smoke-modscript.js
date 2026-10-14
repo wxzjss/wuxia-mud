@@ -22,6 +22,16 @@ const ok = (name, cond, extra) => {
   else { fail++; console.log('  ✘ ' + name + (extra !== undefined ? '  [' + extra + ']' : '')); }
 };
 
+/* ⚠️ 2026-10-17 污染案根因补充：boot() 末尾 resolveLoadOrder() 会**无条件
+   saveState()**——「只改内存态」也会被这条隐式路径写进工作目录的 mods-state.json
+   （今晨根目录残留四 demo=true 即此来路，连带 demo-mods-check ④ 假红）。
+   统一隔离工厂：构造后 no-op saveState，本测试从头到尾零写盘。 */
+const isolatedEngine = (opts) => {
+  const e = new GameEngine(opts);
+  e.modLoader.saveState = function () {};
+  return e;
+};
+
 /* ------------------------------------------------------------------ *
  * 造一批测试 mod（每次都重写，保证内容确定）
  * ------------------------------------------------------------------ */
@@ -102,7 +112,7 @@ try {
 /* ------------------------------------------------------------------ *
  * 启动（只带这些测试 mod，不带官方示例 —— 判定要干净）
  * ------------------------------------------------------------------ */
-const e = new GameEngine({ seed: 20261012, modsDir: MODS, saveDir: SAVES });
+const e = isolatedEngine({ seed: 20261012, modsDir: MODS, saveDir: SAVES });
 let bootErr = '';
 try { e.boot(); } catch (err) { bootErr = String((err && err.message) || err); }
 ok('带 script.js 的 mod 启动不报错', !bootErr, bootErr);
@@ -209,7 +219,15 @@ console.log('\n⑧ 派发超时会被中断，多次之后自动停用（防「�
 
 console.log('\n⑨ 官方示例 demo_script（作者照着抄的那份）');
 {
-  const e2 = new GameEngine({ seed: 20261012, saveDir: SAVES });
+  const e2 = isolatedEngine({ seed: 20261012, saveDir: SAVES });
+  /* ⚠️ 2026-10-17 M68 判据连带：官方示例 mod 默认关（enabledByDefault:false，玩家侧
+     默认干净）。本段验的是示例本身的脚本质量，测试环境**显式开** demo_script——
+     只改 modLoader 内存态（state.enabled + m.enabled），配合 isolatedEngine 的
+     saveState no-op（boot→resolveLoadOrder 会无条件落盘，见顶部注释），零写盘、
+     玩家侧默认关口径不变（mainline35 §⑩ 同族口径）。 */
+  e2.modLoader.state.enabled['demo_script'] = true;
+  const dm = e2.modLoader.mods.find(x => x.id === 'demo_script');
+  if (dm) dm.enabled = true;
   e2.boot(); e2.newGame({ name: '试剑', gender: 'male' });
   const w2 = e2.world;
   const s = (w2._scripts || []).find(x => x.id === 'demo_script');

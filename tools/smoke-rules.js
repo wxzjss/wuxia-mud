@@ -10,9 +10,31 @@ const ok = (name, cond, extra) => {
   else { fail++; console.log('  ✘ ' + name + (extra !== undefined ? '  [' + extra + ']' : '')); }
 };
 
+/* ⚠️ 2026-10-17 M68 判据连带：官方示例 mod 默认关（enabledByDefault:false，玩家侧默认
+   干净）。③⑤⑥ 三段验的是示例 mod 本身（demo_func 规则 / demo_skill 门槛 / demo_quest
+   rewards）——测试环境**显式开**对应 mod：只改 modLoader 内存态（state.enabled +
+   m.enabled）。
+   ⚠️ 污染案根因补充（同日）：boot()/reload() 会经 resolveLoadOrder() **无条件
+   saveState()**，「只改内存态」也会被写进工作目录 mods-state.json（今晨根目录残留
+   即此来路，连带 demo-mods-check ④ 假红）——isolatedEngine 构造后 no-op saveState，
+   零写盘，玩家侧默认关口径不变（mainline35 §⑩ / smoke-round3 M-2 同族口径）。 */
+const isolatedEngine = (opts) => {
+  const e = new GameEngine(opts);
+  e.modLoader.saveState = function () {};
+  return e;
+};
+const enableModsInMem = (e, ids) => {
+  for (const id of ids) {
+    e.modLoader.state.enabled[id] = true;
+    const m = e.modLoader.mods.find(x => x.id === id);
+    if (m) m.enabled = true;
+  }
+  return e;
+};
+
 console.log('① realm 条件（删等级后衡量进度）');
 {
-  const e = new GameEngine({ seed: 20261010 });
+  const e = isolatedEngine({ seed: 20261010 });
   e.boot(); e.newGame({ name: '试剑', gender: 'male' });
   const w = e.world, p = w.player;
   ok('凡人 realm>=0 通过', evalCond('realm>=0', { player: p, world: w }));
@@ -31,7 +53,7 @@ console.log('① realm 条件（删等级后衡量进度）');
 
 console.log('② 战斗状态条件');
 {
-  const e = new GameEngine({ seed: 20261010 });
+  const e = isolatedEngine({ seed: 20261010 });
   e.boot(); e.newGame({ name: '试剑', gender: 'male' });
   const w = e.world, p = w.player;
   w.battle = null;
@@ -43,8 +65,9 @@ console.log('② 战斗状态条件');
 
 console.log('③ 功能 Mod 规则引擎（multiply / onEvent / additive）');
 {
-  const e = new GameEngine({ seed: 20261010 });
-  e.boot(); e.reload();  // reload 加载所有 demo mod（含 demo_func）
+  const e = isolatedEngine({ seed: 20261010 });
+  enableModsInMem(e, ['demo_func']);
+  e.boot(); e.reload();  // 测试侧显式开 demo_func（M68 默认关的判据连带）
   const w = e.world;
   ok('activeRules 收集到 demo_func 规则', w.activeRules.some(r => r.target === 'exp'));
   e.newGame({ name: '试剑', gender: 'male' });
@@ -82,7 +105,7 @@ console.log('③ 功能 Mod 规则引擎（multiply / onEvent / additive）');
 
 console.log('④ evalEffects 字符串效果（回归之前 primitive 赋值报错）');
 {
-  const e = new GameEngine({ seed: 20261010 });
+  const e = isolatedEngine({ seed: 20261010 });
   e.boot(); e.newGame({ name: '试剑', gender: 'male' });
   const w = e.world, p = w.player;
   const mp0 = p.mp;
@@ -94,7 +117,7 @@ console.log('④ evalEffects 字符串效果（回归之前 primitive 赋值报�
 
 console.log('④b contrib effect（design/95 §二 L2：门派贡献，正负都行）');
 {
-  const e = new GameEngine({ seed: 20261010 });
+  const e = isolatedEngine({ seed: 20261010 });
   e.boot(); e.newGame({ name: '试剑', gender: 'male' });
   const w = e.world, p = w.player;
 
@@ -120,7 +143,8 @@ console.log('④b contrib effect（design/95 §二 L2：门派贡献，正负都
 
 console.log('⑤ 示例 Mod 修复');
 {
-  const e = new GameEngine({ seed: 20261010 });
+  const e = isolatedEngine({ seed: 20261010 });
+  enableModsInMem(e, ['demo_skill', 'demo_quest', 'demo_func']);  // 三件示例都要在（测试侧显式开）
   e.boot(); e.reload();
   const w = e.world;
 
@@ -139,7 +163,8 @@ console.log('⑤ 示例 Mod 修复');
 
 console.log('⑥ 功能 Mod 宏指令（kind: macro —— 一条指令=多条）');
 {
-  const e = new GameEngine({ seed: 20261010 });
+  const e = isolatedEngine({ seed: 20261010 });
+  enableModsInMem(e, ['demo_func']);                             // 测试侧显式开 demo_func（M68 判据连带）
   e.boot(); e.reload();                       // reload 后才有 demo_func 的规则
   e.newGame({ name: '试剑', gender: 'male' });
   const w = e.world, p = w.player;
@@ -212,7 +237,7 @@ console.log('⑥ 功能 Mod 宏指令（kind: macro —— 一条指令=多条�
 
 console.log('⑦ room.items / room.npcs 条件（以前不在白名单 ⇒ 恒为真）');
 {
-  const e = new GameEngine({ seed: 20261010 });
+  const e = isolatedEngine({ seed: 20261010 });
   e.boot(); e.newGame({ name: '试剑', gender: 'male' });
   const w = e.world, p = w.player;
   w.instances.items = {};

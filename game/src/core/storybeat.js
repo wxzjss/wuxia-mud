@@ -331,7 +331,35 @@ function currentStory(world, p) {
   try { return questChapter(world, p, p.track); } catch (e) { return null; }
 }
 
+/* ---------------- 101 §三 楔子播报（newGame 首包前置） ---------------- */
+
+/**
+ * 新号第一分钟的楔子（74 卯时四段：棉袄半块饼 / 炭字「等天下太平了再来找」 /
+ * 土地庙醒来 / 老槐树茶摊落地）—— 以 story 拍前置进 newGame 首包 lines。
+ *
+ * 数据侧：`intro { flag:'act1_intro_done', prologue:[4 段] }`（104_birth_polish，
+ * 游有方落；first-minute-check T0 守数据在位）。
+ * 机制（101 施工项 5，寇豆码）：
+ *   · 只在 newGame 首包前置 —— 老档读入不走 newGame，天然不重播；
+ *   · flag 置后不重播（数据侧口径原话），这里再兜一层判定；
+ *   · kind 'story' 行按 2026-10-16 口径进**日志**（story 标签拍），
+ *     大框 storyHtml 有过滤双保险不收（与本模块顶部「剧情屏」口径一致）。
+ * 返回要前置的 lines（没数据/已播过 → 空数组，调用方零负担）。
+ */
+function prologue(world, p) {
+  const out = [];
+  const intro = world && world.data && world.data.intro;
+  if (!intro || !Array.isArray(intro.prologue) || !intro.prologue.length) return out;
+  const flag = intro.flag || 'act1_intro_done';
+  if (p && typeof p.hasFlag === 'function' && p.hasFlag(flag)) return out;
+  for (const par of intro.prologue) {
+    if (par) out.push({ kind: 'story', text: String(par) });
+  }
+  if (p && typeof p.setFlag === 'function' && out.length) p.setFlag(flag, true);
+  return out;
+}
+
 module.exports = {
   reconcile, present, beats, markSeen, currentStory, NEWBIE, syncTrack, pickAuto, MEMO,
-  hold, takeHeld, isHeld,
+  hold, takeHeld, isHeld, prologue,
 };

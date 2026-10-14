@@ -677,7 +677,35 @@ function buildCommands(world) {
     lines.push({ kind: 'roomname', text: `【${room.name}】` });
     const region = w.getRegion(room.region);
     if (region) lines.push({ kind: 'plain', text: `(${region.name || room.region} · ${shichen(p.timeMinutes)} · 天色${w.weather})` });
-    lines.push({ kind: 'desc', text: evalTemplate(room.desc || '', ctx) });
+    const descText = evalTemplate(room.desc || '', ctx);
+    /* ---- 🔴 B 案锚物内嵌（重击批第 4 件，主人：「做进剧情里，物件下面标点提示」，
+       2026-10-16 team-lead 裁 B + 101 口径 A）----
+       room action 可配 `anchor`（字符串或数组）：锚物词（缸/壶/灶/案/槐树…）。
+       描写文本里出现的锚物词高亮成可点名词（现成 .hl 虚线下划线），
+       点开出该锚物挂的**全部**动作（hint:true/false 都收 ——
+       hint:false 的不进「此地可做」行，全靠这里露脸）。
+       ⚠️ 不扫词推定（B8 BLK-2 铁律）：锚物必须显式配，不配的房零变化
+       （前向兼容，数据侧按 101 分批落，同 room.hl N-V-18 的先例）。 */
+    const anchorHl = [];
+    {
+      const byWord = new Map();
+      for (const a of (room.actions || [])) {
+        const words = (a && a.anchor) ? (Array.isArray(a.anchor) ? a.anchor : [a.anchor]) : [];
+        for (const word of words) {
+          if (!word || descText.indexOf(word) < 0) continue;
+          if (!byWord.has(word)) byWord.set(word, []);
+          byWord.get(word).push({ label: a.label || a.cmd, cmd: a.cmd || '', hint: a.desc || '' });
+        }
+      }
+      for (const [word, acts] of byWord) {
+        anchorHl.push({ text: word, type: 'action', actions: acts });
+      }
+    }
+    if (anchorHl.length) {
+      lines.push({ kind: 'desc', text: descText, hl: anchorHl });
+    } else {
+      lines.push({ kind: 'desc', text: descText });
+    }
 
     /* ---- 动态句（design/77 §2.0.3）：取句逻辑在 ambientLine()，句子同 desc 一套 evalTemplate 口径 ---- */
     {
@@ -914,10 +942,16 @@ function buildCommands(world) {
     }
     // 房间可交互物件（打铁 / 采药 / 钓鱼…）
     const acts = room.actions || [];
-    if (acts.length) {
-      const names = acts.map(a => a.label || (a.keywords || [])[0] || a.cmd).filter(Boolean);
+    /* 🔴 101 口径 A（重击批第 4 件）：`hint:false` 的 action 不进「此地可做」行
+       —— 收进 desc 锚物（anchor 内嵌高亮）与输词体系，照常可触发。
+       缺省 true：存量房未标 hint 的照旧全列，不红。
+       「整列默认收起」的读法：数据侧 101 落完后，出生点整列只剩主线件
+       （开局恰 1 条「问信」），不再一股脑 12 条糊一行。 */
+    const shown = acts.filter(a => a && a.hint !== false);
+    if (shown.length) {
+      const names = shown.map(a => a.label || (a.keywords || [])[0] || a.cmd).filter(Boolean);
       if (names.length) {
-        const hl = acts.map(a => {
+        const hl = shown.map(a => {
           const nm = a.label || (a.keywords || [])[0] || a.cmd;
           return {
             text: nm, type: 'action',

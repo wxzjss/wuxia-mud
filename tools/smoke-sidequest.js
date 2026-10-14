@@ -72,12 +72,15 @@ function grantRequire(cond, p) {
 }
 
 /* 走完整条 quest：每个 stage 先到它的目标房间（真实 postProcess 记 room target），
-   再回 giver 交任务；返回全部交任务输出行。多腿（Q13）由 stage 顺序自动分段。 */
+   再回 giver 交任务；返回全部交任务输出行。多腿（Q13）由 stage 顺序自动分段。
+   ⚠ 2026-10-15 扫尾口径：stage.lock（queststage.js 原生前置锁，know_zhenyi 收束件
+   语义）不是数据病——测试走到锁段前先把锁 flag 抬上（player 视角=前置已达成）。 */
 function runQuestToFinish(e, q) {
   const w = e.world, p = w.player;
   const giverRoom = w.data.npcs[q.npc].room;
   const all = [];
   for (const st of (q.stages || [])) {
+    if (st.lock && st.lock.flag) p.setFlag(st.lock.flag, true);
     const hasTargets = !!(st.targets && st.targets.length);
     if (!hasTargets) continue;
     for (const t of st.targets) {
@@ -109,8 +112,10 @@ sec('① sidequest 指针 ⇒ quest 一一对上（**先红后绿**的对象）'
   ok('每条 hk_* quest 的 npc 字段都指回挂牌那一位', mismatch.length === 0, mismatch.slice(0, 5).join('; '));
 
   const missing = HOOKS.filter(h => !w.getQuest(h.id));
-  ok('52 条画像 hook 全部有对应 quest', missing.length === 0,
+  ok('画像 hook 全部有对应 quest', missing.length === 0,
     '缺 ' + missing.length + (missing.length ? '：' + missing.slice(0, 6).map(x => x.id).join(', ') : ''));
+  /* 2026-10-15：hk_npcv_248_changfu 的 hook 已随案并入俞初 jiushui 删净（design/102 案 3），
+     计数 52 → 51；断言改用 HOOKS.length（画像源文件为准，不写死）。 */
 
   /* 发出==读取：quest.name 必须与画像 hook.title 逐字相同，否则 accept <name> 找不到 */
   const nameBad = [];
@@ -164,7 +169,7 @@ sec('① sidequest 指针 ⇒ quest 一一对上（**先红后绿**的对象）'
 }
 
 /* ============================================================ */
-sec('② 52 条：accept → 走腿 → 交任务 完成');
+sec('② 画像 hook 全量：accept → 走腿 → 交任务 完成（stage.lock 口径：锁 flag 先抬上）');
 {
   let accOK = 0, doneOK = 0, menuOK = 0;
   const bad = [];
@@ -189,9 +194,9 @@ sec('② 52 条：accept → 走腿 → 交任务 完成');
       bad.push(h.id + '(无 menu 或选项<2)');
     }
   }
-  ok('52 条全部能 accept', accOK === 52, accOK + '/52');
-  ok('52 条全部能推进到完成（stage 99）', doneOK === 52, doneOK + '/52' + (bad.length ? ' 问题：' + bad.slice(0, 5).join(', ') : ''));
-  ok('52 条交任务时都弹出抉择 menu', menuOK === 52, menuOK + '/52');
+  ok(`画像 hook 全部能 accept`, accOK === HOOKS.length, accOK + '/' + HOOKS.length);
+  ok(`画像 hook 全部能推进到完成（stage 99）`, doneOK === HOOKS.length, doneOK + '/' + HOOKS.length + (bad.length ? ' 问题：' + bad.slice(0, 5).join(', ') : ''));
+  ok(`画像 hook 交任务时都弹出抉择 menu`, menuOK === HOOKS.length, menuOK + '/' + HOOKS.length);
 }
 
 /* ============================================================ */

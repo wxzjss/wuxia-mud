@@ -68,5 +68,6 @@
         "ne": "tingyu_gate"
       }
     }
-  ]
+  ],
+  "enabledByDefault": false
 }

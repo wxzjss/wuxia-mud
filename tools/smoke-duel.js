@@ -182,21 +182,25 @@ console.log('\n⑤ 旁观者会点评，但不帮任何一方');
 
 console.log('\n⑥ NPC 之间也会切磋');
 {
+  /* ⚠️ 2026-10-17 改隔离场景：出生点清理后（demo 默认关 + 山贼挪走）世界自然分布
+     已经凑不出「武人扎堆」的屋子，赌分布赌不到。照 smoke-ux-fixes 先例：spawn
+     两个非兽 NPC 进同一房做隔离场景，maybeNpcDuel 跑隔离房——测 duel 机制本身，
+     不赌 RNG。 */
   const e = fresh(5);
   const w = e.world, p = w.player;
+  const rid = p.room;
+  const a = w.spawnNpc('disciple_huashan_0', rid, 1);
+  const b = w.spawnNpc('disciple_huashan_1', rid, 1);
+  ok('⑥ 隔离场景就位（两位非兽 NPC 同屋）', !!a && !!b && w.npcsIn(rid).filter(n => !n.isPlayer).length >= 2,
+    '屋内 ' + w.npcsIn(rid).length + ' 人');
   let found = '';
-  for (const r of Object.values(w.data.rooms)) {
-    p.room = r.id;
-    const ns = w.npcsIn(p.room).filter(n => !/狼|虎|熊|蛇|豹|兽|野猪|蟒|鹰|鳄|童子|孩童/.test(n.name || ''));
-    if (ns.length < 2) continue;
-    for (let i = 0; i < 60; i++) {
-      const l = duelMod.maybeNpcDuel(w);
-      if (l.length) { found = l.map(x => x.text).join(''); break; }
-    }
-    if (found) break;
+  for (let i = 0; i < 200 && !found; i++) {
+    const l = duelMod.maybeNpcDuel(w);
+    if (l.length) found = l.map(x => x.text).join('');
   }
   ok('★ 武人扎堆的地方能撞见 NPC 互相比试', !!found, found.slice(0, 64) || '（没撞上，检查筛人条件）');
-  ok('★ 互相比试不碰玩家的战斗态', true);
+  /* maybeNpcDuel 只产出戏，从不 startCombat —— 钉住「不碰玩家战斗态」 */
+  ok('★ 互相比试不碰玩家的战斗态', !w.battle, 'battle=' + (w.battle ? '在' : '无'));
 }
 
 console.log(`\n===== smoke-duel: ${pass} 通过 / ${fail} 失败 =====`);

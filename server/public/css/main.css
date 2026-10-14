@@ -845,6 +845,10 @@ body::before {
 .story-todo { font-size: 12.5px; color: var(--gold-d); border-left: 2px solid var(--line-gold);
   padding-left: 8px; line-height: 1.7; }
 .story-todo i { font-style: normal; color: var(--gold); }
+/* 无追踪态的引导语（主人真机 2026-10-16：大框零环境描写，只留引导）——
+   压暗一档、不带金边：它是「这里可以挂东西」的空位提示，不是行动项。 */
+.story-idle { font-family: var(--font); font-size: 12px; color: var(--ink-3);
+  line-height: 1.7; opacity: .8; }
 .exits { display: flex; flex-wrap: wrap; gap: 7px; }
 .exit-btn {
   padding: 5px 13px; font-size: 13px; font-family: var(--font); cursor: pointer;

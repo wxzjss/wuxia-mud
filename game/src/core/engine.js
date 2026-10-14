@@ -35,8 +35,18 @@ const queststage = require('./queststage');
  *   `shaolin_fangzheng`（第三幕委托人）/ `nv_huang`（第五幕委托人）—— 后果是
  *   ① 玩家可能**在第一幕就把第四幕的 Boss 打倒**，后面再打一次；
  *   ② 或者反过来**打自己的委托人**（蓝图 §0 专门规避过的缺陷）。
- *   现在这三位（灭绝师太 / 太虚居士 / 神秘老僧）都是**不在任何主线节点上**的成名人物。 */
-const LEGEND_IDS = ['emei_miejue', 'taixu_hermit', 'shenni'];
+ *   现在这三位（灭绝师太 / 李莫愁 / 神秘老僧）都是**不在任何主线节点上**的成名人物。
+ *
+ * ⚠️ 2026-10-17 批2 修「mod 依赖」老坑（design/31/32/33/39 轮反复记档、round 39 特加
+ *   smoke-mainline35 §⑩ 硬断言逼修）：原名单里的 `taixu_hermit`（太虚居士）只活在
+ *   官方示例 mod `mods/demo_skill`（M68 enabledByDefault:false）—— 关掉 mod，主线
+ *   stage3「击败名宿」文案就指向一个不存在的人。换基础数据里的 `li_mochou`
+ *   （李莫愁，40_npcs，lv72，古墓山脚 gumu_shan 直连官道 road_nan_1）：
+ *   ① 任何 quest 的 giver/引用都不占（实测全库零引用）；② `killed_<id>` 任何 NPC
+ *   被打倒都记（world.onNpcDown，名单一改不伤机制）；③ 等级梯度 75/72/120 合理。
+ *   60_quests q_main_jianghu stage3 desc 里点名的「太虚居士」同步改「李莫愁」——
+ *   归游有方 data lane（数据冻结期）。 */
+const LEGEND_IDS = ['emei_miejue', 'li_mochou', 'shenni'];
 const marriage = require('./marriage');
 const kinship = require('./kinship');
 const homeMod = require('./home');
@@ -291,6 +301,14 @@ class GameEngine {
        （`(d.view && d.view.lines) || d.log`）、app.js 的 `keepView` 都吃它。 */
     const v = this.view({ map: false });
     try { v.story = storybeat.currentStory(this.world, p); } catch (e) { /* 不算也不挡开局 */ }
+    /* 101 §三 楔子播报（施工项 5，寇豆码）：首包 lines 前置四段 story 拍
+       （数据在 104 的 intro 结构，flag act1_intro_done 一次性）。老档读入不走
+       newGame 天然不重播；storybeat.prologue 里 flag 判定再兜一层。
+       没数据 → 空数组，老存档/异常路径零负担。 */
+    try {
+      const pro = storybeat.prologue(this.world, p);
+      if (pro.length) v.lines = pro.concat(v.lines || []);
+    } catch (e) { /* 楔子播不出不挡开局 */ }
     return v;
   }
 

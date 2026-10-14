@@ -45,3 +45,55 @@
 | 1 | 同窗拉长工期 | 4 案全是池件深改造（S3 范式零新人设），与地图 9 项机械活并行不冲突；宁可晚三天，不可门后真空（97 §九.6） |
 | 2 | F6 entry 改挂牵动 travel 判据 | mapguide-check/map-edge-check 同步改，记档 |
 | 3 | 闸门文案 6+ 处批量产出撞 AI 腔 | 交案过朱雀 ≤10；93 口径 say 保戏、msg 兜底，白名单口径只认设计性复用 |
+
+## 五、批 2 data 侧落盘记（2026-10-14，游有方）
+
+**_apply_act3_map.py 两连跑幂等全绿；tools/_act3_map_check.js 引擎合并层终验 26/0。**
+
+落盘内容：F5 六闸门（cond act2_done，93 口径三件套）/ F6-a luoyang↔beijiang 边改挂 / F6-b 双向行路边（老船工，93 §二复用）/ F6-c regions.entry beijiang→road_beijiang_1 / F7 废边双侧删净 / 12 间地标房（北疆 4+西域 4+西夏 4，朱雀 composite 0-1）/ 回边（kunlun_gate 等非 50_map 房落 104 深合并）。
+
+**施工单外逮出三个存量窟窿，同批修掉（判据连带记档）**：
+
+| 补项 | 病灶 | 修法 |
+|---|---|---|
+| F7-n | 废边只删了 s 侧，`mojiao_shanmen.n→jiangnan_east_road` 对向残留=下山捷径绕开山道；adjacency B 断头线 1 条 | n 侧同删；黑木崖出入=行路（mojiao↔changan, act3_done）+88 山道。B 断头线 1→0 |
+| F8 | `road_xiyu_1.s→road_xixia_1` 有去无回：从西夏官道走不到西域官道，荒原双闸（many_1 两向）整簇锁死在不可达侧 | 补 `road_xixia_1.sw→road_xiyu_1`。⚠ 方向键 nw/ne 被 73_sects_place 门锚点（baituo/kunlun）后载覆盖动不得，四正向也全占，用 sw。首版误写 nw 已幂等清理 |
+| F9 | `xiyu_shule.s→xiyu_oasis` 有去无回，疏勒=死区——60_quests「去西域·疏勒镇找着欠债的丁春秋」与 65_mainline_act3 疏勒 stage 一直踩不进 | 补绿洲 sw↔疏勒 ne 对边（legacy s 边不动）；疏勒巴扎随之可达 |
+
+⚠ 分片序坑（「不报错就是不生效」族新证）：**regions.entry 全库只声明在 50_map.json 的 regions 块**（不在 70_world——引擎三处消费：engine.js:1470 大地图回落 / commands.js:4994 行路落点 / maplayout.js:345 布局起点）；exits 同名键**后载分片胜**（73/82 覆盖 50），改边先查全分片占键。
+
+守卫复验（2026-10-14 当日）：data-load 61/0 · actions 9/0 · say-hint 15/0 · act1 走通 77/0 · 第一分钟 21/0 · smoke-act2 143/0 · demo-mods 9/0 · mapguide 89/0 · 朱雀 per-asset 全量 0 超线（12 新房 composite 0-1）· smoke-mainline35 135/1（唯一红=taixu_hermit 已知绊线，M68 示例 mod 默认关的连带，脚本头注释在案，归寇豆码/lead 处置，非批 2 引入）。
+
+### §五-bis 扫尾④：F8/F9 撤销 + 七回边对称自愈（2026-10-15，游有方）
+
+**发布窗 map-check 7 项非严格反向归因：不是「缺回边」，是首版 BACK_LINKS 无条件赋值（`if ex.get(d) != to: ex[d] = to`）把 git 原版四处对边压掉了**——F8/F9 两针全是在给自己挖的坑上打的补丁。逐项：
+
+| 红项 | 病根 | 修法 |
+|---|---|---|
+| road_xiyu_1.s↔road_xixia_1.n | `road_xixia_1.n` 原指 road_xiyu_1，被我写成 xixia_market | 原边恢复（n/s 双向与 HEAD 逐字一致）；集市改配 **road_xixia_1.se↔market.nw** |
+| xixia_ice.n↔road_xixia_1.s | 同上（s 原指 xixia_ice，被我写成 xixia_post） | 原边恢复；驿馆改配 **road_xixia_1.sw↔post.ne** |
+| xiyu_shule.s↔xiyu_oasis.n | `oasis.n` 原指 shule，被我写成 xiyu_well；F9 sw/ne 补丁连带多余 | 原边恢复（n）；井改配 **oasis.nw↔well.se**；F9 sw+ne 死键删净 |
+| beijiang_houzhai.w↔xuedao.e | `xuedao.e` 原指 houzhai，被我写成 beijiang_market | 原边恢复（e）；冻市改配 **xuedao.w↔market.e** |
+| road_many_1.e↔road_beijiang_1.w | `road_beijiang_1.w` 原指 road_many_1，被我写成 beijiang_yizhan | **升级为第七处闸门**：出北疆进荒原保头戏（93 口径三件套，road_many_1.e 的严格反向） |
+| yizhan 首配 se↔nw | 82_treasury 后载占 `road_beijiang_1.nw`（xuedao_library），我的 nw 被盖 | 避让改配 **road_beijiang_1.se↔yizhan.nw**（分片序坑又一例） |
+| xixia_pass.w↔kunlun_gate.e | 回边落在 104 深合并，map-check 合并清单看不见 | map-check.js 合并清单补 `104_birth_polish.json` |
+
+**规则沉淀**：新房回边一律配「对向空闲方向对」（查全分片占键，不只看 50_map），绝不占既有房的原向键；BACK_LINKS 语义从「无条件赋值」收紧为「仅在对向空闲方向上落」。`_apply_act3_map.py` 已按终态重写（GATES 七处 / LANDMARKS+BACK_LINKS 方向重配 / RESTORE+REPAIR_OWN+DEAD_KEYS 三段），两连跑幂等；`_act3_map_check.js` 28/0（含保头闸配对断言）。
+
+复验：map-check 6481/0（7→0）· smoke-sidequest 57/0 · smoke-mainline 47/0 · smoke-mainline35 141/0 · lore 17/0 · ai-flavor 0/0 · 四案 check 27/25/22/22。
+
+## 六、批 2 引擎 lane 验收记（2026-10-17，寇豆码）
+
+**两红裁决 + 真跑验收全绿，地图步引擎侧收口。**
+
+| # | 项 | 落法 |
+|---|---|---|
+| 1 | smoke-guards「flag 都有出处」假红（road_gaibang_1/e 的 act2_done 只认房内 action effects） | 出处扫描口径扩至 quest 的 stages[].effects + rewards（act2_done 真实出处=60_quests q_main_sect rewards）；targets kind:'flag' 是监听不是置位、不进集合。32/0 |
+| 2 | smoke-mainline35 taixu_hermit 红（名宿只在 demo_skill mod，M68 默认关） | 裁决=不给判据开口子，引擎换人：LEGEND_IDS taixu_hermit→**li_mochou**（40_npcs lv72，gumu_shan 直连官道；全库零 quest 引用、不撞主线 Boss/委托人；onNpcDown 任何 NPC 打倒都记 killed_，换人不伤机制；梯度 75/72/120）。136/0。**连带**：60_quests:1144 stage3 desc「太虚居士」待游有方改「李莫愁」——smoke-mainline 46/1 就等这一行（engine.js 注释在案） |
+| 3 | 六闸门真跑 | 24/0：未置 act2_done 六向全拦（输出含 say 拦人戏、无 msg 兜底，93 口径实测）；置位后六向全放；bfsDistance/findPath 对门对象出口取 .to（钉 3）六对全可达、首跳方向全对 |
+| 4 | F6-b 行路三态 | luoyang↔beijiang 双向 cross（cond act2_done）：未置=closed（refusal 老船工）、置位=ready；regions.entry beijiang=road_beijiang_1 落点房间在 |
+| 5 | F7 判据连带 | jiangnan_east_road 无 s / mojiao_shanmen 无 n 双侧删净（山门现存 u=上崖路、s=hm_mojiao_dongfang 家园边，合法）；tools/design 判据零残留（引用全是房 id 级非边级） |
+
+守卫终态（26 件全绿 + 1 待数据）：round4 75 · uiux 184 · quest-track 58 · noun 19 · storybeat 53 · social 82 · act2 143 · map-fog 19 · saveload 17 · martial 65 · mod-cap 51 · kidnap-ui 110 · ux-fixes 56 · mirror 11 · map-edge 34 · say-hint 15 · mapguide 89 · guards 32 · mainline35 136 · data-load 61+76 · actions 9 · act1 走通 77 · 第一分钟 21 · demo-mods 9 · quest-data 34 ——全 0 失败；smoke-mainline 46/1（唯一红=上述 60_quests 一行文案，data lane）。
+改动件 md5：engine.js 73473e159b2e031d1755afb16afcad88 · smoke-guards.js 9b7d181fe7189c8faf03cc77657ca2e1 · smoke-mainline35.js 9d20a23ca470e88c0e051d14f4e92271（未 commit，铁律照报）。
+

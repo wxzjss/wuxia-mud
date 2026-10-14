@@ -17,7 +17,21 @@ const P = require(path.join(ROOT, 'game/src/core/personality.js'));
 let pass = 0, fail = 0;
 const ok = (n, c, extra) => { if (c) pass++; else { fail++; console.log('  ✘ ' + n + (extra !== undefined ? '\n      ' + extra : '')); } };
 
-const engine = new GameEngine({ seed: 1 });
+/* ⚠️ 2026-10-17 隔离（今晨 mods-state.json 三份污染案）：ModLoader 构造时会
+ * loadState 读工作目录旁的 mods-state.json——测试残留（哪怕别的流程落的）会把
+ * demo 当已启用 → ④「默认全部关闭」假红；而 boot() 末尾 resolveLoadOrder() 又会
+ * **无条件 saveState()** 把内存态写盘（只改内存也会被这条隐式路径落盘）。
+ * 两头都堵：①state 清零后重扫（enabled 只认 mod.json 的 enabledByDefault）
+ * ②saveState no-op（本测试零写盘）。玩家/服务器侧状态文件不受任何影响。 */
+const isolatedEngine = (opts) => {
+  const e = new GameEngine(opts);
+  e.modLoader.state = { enabled: {}, order: [], installedFromWeb: {} };
+  e.modLoader.scan();
+  e.modLoader.saveState = function () {};
+  return e;
+};
+
+const engine = isolatedEngine({ seed: 1 });
 engine.boot();
 const w = engine.world;
 const hasRoom = id => !!w.getRoom(id);
@@ -69,8 +83,13 @@ console.log('\n===== ② 引用完整性 =====');
     }
     for (const n of (j.npcs || [])) {
       if (n.room && !there(n.room)) miss.push(`${name}/${n.id} 站在不存在的房间 ${n.room}`);
-      for (const sid of [].concat(n.teach || [])) if (sid && !hasSkill(sid)) miss.push(`${name}/${n.id} 要教不存在的武学 ${sid}`);
-      for (const sid of Object.keys(n.learned || {})) if (!hasSkill(sid)) miss.push(`${name}/${n.id} 会一门不存在的武学 ${sid}`);
+      /* ⚠ 2026-10-13 修存量口径：teach/learned 早年查 hasSkill（合并后世界），
+         行 59-68 的房/物早就是 there（own+世界）——同一节两种口径。
+         demo mods 默认关（enabledByDefault:false，重击批：官方示例是给 Mod 作者
+         参考的，不该默认注入玩家主世界）之后，mod 自带的武学不再合并进世界，
+         hasSkill 抓不到 own 里的定义 → 假红。统一走 there。 */
+      for (const sid of [].concat(n.teach || [])) if (sid && !there(sid)) miss.push(`${name}/${n.id} 要教不存在的武学 ${sid}`);
+      for (const sid of Object.keys(n.learned || {})) if (!there(sid)) miss.push(`${name}/${n.id} 会一门不存在的武学 ${sid}`);
     }
     for (const q of (j.quests || [])) {
       const g = q.giver && (typeof q.giver === 'string' ? q.giver : q.giver.id);
@@ -109,13 +128,16 @@ console.log('\n===== ④ 加载后真的进得来（不报错） =====');
   /* 全部示例 mod 一起启用，boot 一遍 —— 有冲突 / 坏字段会在这一步炸出来 */
   let err = '';
   try {
-    const e2 = new GameEngine({ seed: 1 });
+    const e2 = isolatedEngine({ seed: 1 });   /* 同隔离：清零重扫 + no-op 写回 */
     e2.boot();
     const mods = e2.modLoader && e2.modLoader.mods ? e2.modLoader.mods.filter(m => /^demo_/.test(m.id)) : [];
     ok('示例 mod 被加载器认出来了', mods.length >= 5, mods.length + ' 个');
-    /* 认出来的应当都是 enabled（示例默认开） */
-    const off = mods.filter(m => !m.enabled);
-    ok('示例 mod 默认是启用的', off.length === 0, off.map(m => m.id).join('、'));
+    /* 2026-10-13 口径反转（重击批）：官方示例 mod 默认**关闭**——示例是给 Mod
+       作者参考的，默认注入玩家主世界会把示例 NPC/怪放进新手动线（主人真机
+       实锤：出生点挤着示例游侠+漂来的山贼）。玩家想看示例可手动开。
+       判据改为：全部 demo_ 默认关 + mod.json 显式写了 enabledByDefault:false。 */
+    const off = mods.filter(m => m.enabled);
+    ok('示例 mod 默认全部关闭（enabledByDefault:false，可手动开）', off.length === 0, off.map(m => m.id).join('、'));
   } catch (e) { err = String(e && e.message || e); }
   ok('带示例 mod 启动不报错', !err, err);
 }

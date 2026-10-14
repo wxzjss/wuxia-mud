@@ -23,7 +23,7 @@ const itemData = require(path.join(ROOT, 'game/data/20_items.json'));
  *    只扫 50_map 会把好门报成「不存在的房间」/「没有出处」——假红。
  *    这里按文件名序做全分片合并视图；rooms.exits 按键合并（后载胜，与引擎口径一致）。 */
 const fs = require('fs');
-const ALL = { rooms: {}, npcs: {}, items: {} };
+const ALL = { rooms: {}, npcs: {}, items: {}, quests: {} };
 for (const f of fs.readdirSync(path.join(ROOT, 'game/data')).filter(x => x.endsWith('.json')).sort()) {
   const d = JSON.parse(fs.readFileSync(path.join(ROOT, 'game/data', f), 'utf8'));
   for (const k of Object.keys(ALL)) {
@@ -39,6 +39,7 @@ for (const f of fs.readdirSync(path.join(ROOT, 'game/data')).filter(x => x.endsW
 const rooms = ALL.rooms;
 const npcs = ALL.npcs;
 const items = ALL.items;
+const quests = ALL.quests;
 
 function freshWorld(seed) {
   const e = new GameEngine({ seed: seed || 20261010 });
@@ -123,9 +124,13 @@ t('每道门禁 cond 引用的 item 都存在', () => {
   }
 });
 t('每道门禁 cond 引用的 flag 都有出处（能在数据里被 setFlag）', () => {
-  /* flag 型门禁必须在某个 action 的 effects 里能置位，否则玩家永远进不去 */
+  /* flag 型门禁必须有出处，否则玩家永远进不去。
+   * ⚠️ 2026-10-17 批2 口径修正：出处不只在房内 action effects —— 主线交卷走
+   *    quest 的 rewards / stages[].effects（act2_done 由 q_main_sect 的 rewards
+   *    置位，60_quests）。只扫房内 action 会把好门报成「没有出处」——假红。
+   *    targets 的 kind:'flag' 是「监听」不是「置位」，不进 settable。 */
   const settable = new Set();
-  const scan = (obj) => {
+  const scan = () => {
     for (const rid of Object.keys(rooms)) {
       for (const a of (rooms[rid].actions || [])) {
         for (const e2 of [].concat(a.effects || [])) {
@@ -133,6 +138,17 @@ t('每道门禁 cond 引用的 flag 都有出处（能在数据里被 setFlag）
           if (typeof e2 === 'string' && /^\s*flag[:：]/.test(e2)) settable.add(e2.replace(/^\s*flag[:：]\s*/, ''));
           else if (e2.type === 'flag' && e2.args && e2.args[0]) settable.add(e2.args[0]);
         }
+      }
+    }
+    for (const qid of Object.keys(quests)) {
+      const q = quests[qid] || {};
+      for (const st of (q.stages || [])) {
+        for (const e2 of [].concat(st.effects || [])) {
+          if (e2 && e2.type === 'flag' && e2.args && e2.args[0]) settable.add(e2.args[0]);
+        }
+      }
+      for (const e2 of [].concat(q.rewards || [])) {
+        if (e2 && e2.type === 'flag' && e2.args && e2.args[0]) settable.add(e2.args[0]);
       }
     }
   };

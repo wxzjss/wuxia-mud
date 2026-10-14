@@ -66,6 +66,48 @@ const bondKnowsAfter = Object.values(w2.data.npcs).filter(d=>d.knows_player_of).
 ok('NPC 模板 knows_player_of 传播恢复', bondKnowsAfter > 0, bondKnowsAfter+' 人');
 ok('义父 NPC 模板 kin 打回', (w2.data.npcs[before.kinFather[0]].kin||[]).some(x=>x.id==='player'));
 console.log('  结缘知晓人数 前'+before.bondKnows+' → 后'+bondKnowsAfter);
+
+/* ---- 血量翻倍老 bug（主人真机 2026-10-16：退出→继续游戏 maxHp 变）----
+   根因：deserialize 重建 Character 时不传 hp/mp，构造器落 `def.hp||100`
+   兜底 —— 出身血底（meta.startHp=40）全丢，内功修为加过的血底也丢。
+   修法：serialize 白名单收编 maxHpBase/maxMpBase，deserialize 喂回；
+         老档（无这两字段）回落 meta.startHp/startMp（建号口径）。 */
+{
+  /* ① 出身血底 + 内功抬过的血底，读档后分毫不变 */
+  const raised = p.maxHpBase + 30;              /* 模拟 neigong.js 的运行期加成 */
+  p.maxHpBase = raised; p.maxHpBase && (p.recalc ? p.recalc() : null);
+  p.hp = p.maxHp;                               /* 满血存档 */
+  const s3 = JSON.parse(JSON.stringify(w.serialize()));
+  const e3 = new GameEngine({ seed: 20261010, saveDir: TEST_SAVE_DIR });
+  e3.boot();
+  e3.world.deserialize(s3, []);
+  const p3 = e3.world.player;
+  ok('★ 血底随档（内功抬过 30 后读档仍准）',
+    p3.maxHpBase === raised && p3.maxHp === p.maxHp && p3.hp === p.maxHp,
+    `前 base=${raised} maxHp=${p.maxHp} → 后 base=${p3.maxHpBase} maxHp=${p3.maxHp}`);
+  ok('★ 内力底随档（读档不变）',
+    p3.maxMpBase === p.maxMpBase && p3.maxMp === p.maxMp,
+    `前 ${p.maxMp} → 后 ${p3.maxMp}`);
+  /* ② 存档真带这两个字段（防白名单被误删） */
+  ok('★ 存档白名单含 maxHpBase/maxMpBase',
+    s3.player.maxHpBase === raised && s3.player.maxMpBase === p.maxMpBase);
+  /* ③ 老档兼容：剥掉两字段，回落 meta.startHp（40），不是 100 兜底 */
+  const s4 = JSON.parse(JSON.stringify(s3));
+  delete s4.player.maxHpBase; delete s4.player.maxMpBase;
+  const e4 = new GameEngine({ seed: 20261010, saveDir: TEST_SAVE_DIR });
+  e4.boot();
+  e4.world.deserialize(s4, []);
+  ok('★ 老档回落建号口径（meta.startHp=40，不是 100）',
+    e4.world.player.maxHpBase === w.data.meta.startHp,
+    `回落=${e4.world.player.maxHpBase} 期望=${w.data.meta.startHp}`);
+  /* ④ 再存再读一轮：二次读档不漂移（幂等）——基线是**回落后的第一轮**，
+     不是 ① 里抬过底的 p3（老档回落本来就是另一条血线）。 */
+  const midBase = e4.world.player.maxHpBase, midMax = e4.world.player.maxHp;
+  const r1 = e4.save(); e4.loadSave(r1.id); const r2 = e4.save(); e4.loadSave(r2.id);
+  ok('★ 二轮存读不漂移（退出再进血量分毫不变）',
+    e4.world.player.maxHpBase === midBase && e4.world.player.maxHp === midMax,
+    `base=${e4.world.player.maxHpBase}/${midBase} maxHp=${e4.world.player.maxHp}/${midMax}`);
+}
 console.log('\n' + '='.repeat(40));
 console.log('  通过 ' + pass + ' 项，失败 ' + fail + ' 项');
 console.log('='.repeat(40));

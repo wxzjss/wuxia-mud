@@ -33,8 +33,10 @@ const NPCS = npcs.npcs || npcs;
 
 /* ⚠️ 增量数据里的房间必须并进来，否则这张检查表只看得见 50_map.json ——
    新加的 56 间门派房会完全逃过「出口双向 / 区域有效 / 名字唯一」这些断言（假绿）。
-   exits 是对象、按键合并；其余字段后者覆盖前者。 */
-for (const f of ['73_sects_place.json', '80_culture_place.json', '82_treasury_place.json', '99_city_npcs.json', '88_mountain_paths.json']) {
+   exits 是对象、按键合并；其余字段后者覆盖前者。
+   2026-10-15 扫尾④：补 104_birth_polish.json（kunlun_gate 的 e 回边落在 104，
+   不并进来 map-check 看不见 → xixia_pass↔kunlun_gate 假红）。 */
+for (const f of ['73_sects_place.json', '80_culture_place.json', '82_treasury_place.json', '99_city_npcs.json', '88_mountain_paths.json', '104_birth_polish.json']) {
   try {
     const j = JSON.parse(fs.readFileSync(path.join(ROOT, 'game', 'data', f), 'utf8'));
     for (const [id, r] of Object.entries(j.rooms || {})) {

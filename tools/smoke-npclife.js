@@ -159,7 +159,12 @@ console.log('===== ⑦ 世界自己会转（onTick 出播报） =====');
   }
   ok('跑一阵子总会出点什么', lines.length > 0, lines.length + ' 行');
   ok('播报是玩家看得懂的人话', lines.every(l => l.kind && l.text && /[\u4e00-\u9fa5]/.test(l.text)));
-  ok('播报里带人名', lines.some(l => /\S{2,4}(要了|挣了|讨到|打了一遍|盘腿坐下|说)/.test(l.text)), JSON.stringify(lines[0] && lines[0].text));
+  /* ⚠️ 2026-10-17 判据与 npclife 现行文案池对齐：actWork 的 WORK_LINE 按行业分句，
+     尾动词一族是「挣了/得了/讨到/得」（vendor=得了、hunter=得了、waiter=得），
+     原断言漏了「得了/得」→「卖茶的老汉…得了 38 文」假红。逐项对齐：
+     要了=actEat · 挣了/得了/讨到/得=actWork · 打了一遍=actPractice ·
+     盘腿坐下=actMeditate · 说=社交族（GREET/QUARREL/tourneySay）。 */
+  ok('播报里带人名', lines.some(l => /\S{2,4}(要了|挣了|得了|得|讨到|打了一遍|盘腿坐下|说)/.test(l.text)), JSON.stringify(lines[0] && lines[0].text));
   ok('播报里没有 AI 腔', !lines.some(l => /命运的齿轮|这一刻|不禁/.test(l.text)));
 }
 
