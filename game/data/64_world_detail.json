@@ -69,7 +69,7 @@
       "gender": "male",
       "tag": "gambler",
       "title": "赌客",
-      "desc": "头发乱得像鸡窝，袖口磨破了，手一直在抖，眼睛死死盯着桌上那副牌九，旁人碰他一下都要回头瞪。",
+      "desc": "头发乱得像鸡窝，袖口磨破了，手一直在抖，眼睛钉在桌上那副牌九上，旁人碰他一下都要回头瞪。",
       "room": "jn_gambling_house",
       "home": "house:gambler_loser",
       "level": 12,

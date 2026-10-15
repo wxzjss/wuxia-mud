@@ -353,13 +353,15 @@ sec('⑥ require 不是恒真：不满足→接不到，满足→接得到');
   /* 正面：假前置 flag 未被设时，accept 必须失败 */
   const neg = [
     { id: 'hk_npcv_241_guancai', need: { questDone: 'hk_npcv_241_yinzi' } },   // 未完成前一 hook
-    { id: 'hk_npcv_180_beibian', need: { not: { flag: 'know_zhenyi' } } },      // 需 know_zhenyi **未**设
+    /* 2026-10-16 批4（design/97 §九.4 #4）连带：beibian 改 require
+       and[jiuye_done, not know_zhenyi]（卷界前置+卷三过期不候）。 */
+    { id: 'hk_npcv_180_beibian', need: { and: [{ flag: 'jiuye_done' }, { not: { flag: 'know_zhenyi' } }] } },
   ];
   for (const c of neg) {
     const e = boot(); const w = e.world, p = w.player;
     const q = w.getQuest(c.id);
     if (!q) { ok('require 反面：' + c.id, false, '无 quest'); continue; }
-    if (c.id === 'hk_npcv_180_beibian') p.setFlag('know_zhenyi', true);      // 破坏前置
+    if (c.id === 'hk_npcv_180_beibian') p.setFlag('jiuye_done', false);      // 破坏前置（卷界未进）
     const before = p.questStage(c.id);
     e.exec('accept ' + q.name);
     const blocked = p.questStage(c.id) < 0 && before < 0;
@@ -367,11 +369,13 @@ sec('⑥ require 不是恒真：不满足→接不到，满足→接得到');
     /* 破坏后（questDone 补上 / know_zhenyi 清掉）必须能接 */
     if (c.need.questDone) { p.quests[c.need.questDone] = 99; p.setFlag('questdone_' + c.need.questDone, true); }
     if (c.need.not) p.setFlag(c.need.not.flag, false);
+    if (c.id === 'hk_npcv_180_beibian') p.setFlag('jiuye_done', true);       // 正面：进卷二
     e.exec('accept ' + q.name);
     ok('require 正面：满足后 ' + c.id + ' 接得到', p.questStage(c.id) === 0, 'stage=' + p.questStage(c.id));
   }
   /* 无 require 的 quest 必须能直接接（证明 require 不是「一律拦住」） */
   const e2 = boot(); const p2 = e2.world.player;
+  p2.setFlag('jiuye_done', true);   // 批4 连带：yinzi 现带卷界前置，本断言测「前置满足即可接」
   e2.exec('accept 绸缎庄的窟窿');
   ok('无前置的支线可直接接（require 非空条件拦）', p2.questStage('hk_npcv_241_yinzi') === 0);
 }
@@ -419,6 +423,7 @@ sec('⑨ 前置闸门端到端：first 进行中 → second 不可接；first �
   /* 与 world-interact 的 §6.13/§6.14 交叉验证：它在**菜单渲染**路径上钉，
      这里在**任务面板 + accept**路径上钉，两边互为独立证据。 */
   const e = boot(); const w = e.world, p = w.player;
+  p.setFlag('jiuye_done', true);    // 批4 连带：first(yinzi) 现带卷界前置，世界取「卷二进行中」
   const FIRST = 'hk_npcv_241_yinzi', SECOND = 'hk_npcv_241_guancai';
   const q1 = w.getQuest(FIRST), q2 = w.getQuest(SECOND);
   const giverRoom = w.data.npcs['npcv_241'].room;

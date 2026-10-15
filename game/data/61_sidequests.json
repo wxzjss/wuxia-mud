@@ -21,7 +21,7 @@
               "desc": "去东市·绸缎庄，问掌柜的那笔亏空断在哪一段"
             }
           ],
-          "next": 99,
+          "next": 1,
           "effects": [
             {
               "type": "+item",
@@ -43,6 +43,95 @@
               "raw": "这一笔，怎么处理|替他把账做平>flag:hk_npcv_241_yinzi_hide;+karma:-15;+money:300;+exp:150;+pot:40;favor:npcv_241:15;incvar:favor_npcv_241:15;;留一份底，原样交官府>flag:hk_npcv_241_yinzi_report;+rep:朝廷:20;+exp:120;+pot:40;favor:npcv_241:-30;incvar:favor_npcv_241:-30"
             }
           ]
+        },
+        {
+          "desc": "去东市·西巷，翻米行的流水找同一笔进项",
+          "targets": [
+            {
+              "id": "hk_npcv_241_yinzi_go1",
+              "kind": "room",
+              "key": "jn_market_west",
+              "count": 1,
+              "var": "hk_npcv_241_yinzi_go1",
+              "desc": "去西巷翻米行流水"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "米行的流水抄得密。翻到三年前那页，一行进项跳出来：绸缎庄赊出去的那批货，银子进的却是米行的户头。"
+            },
+            {
+              "type": "say",
+              "raw": "掌柜的把流水按住：「这行字不是写给我们看的。是写给往后查账的人看的。」"
+            },
+            {
+              "type": "menu",
+              "raw": "流水怎么翻|请行会掌柜吃茶，借全本账册>-money:80;+exp:140;+pot:30;flag:j2b_yinzi_ledger;;只抄这一页，不多看>+exp:120;+karma:5;flag:j2b_yinzi_ledger"
+            }
+          ]
+        },
+        {
+          "desc": "去衙门·架阁库，查绸缎庄东家跑路前销掉的那笔账",
+          "targets": [
+            {
+              "id": "hk_npcv_241_yinzi_go2",
+              "kind": "room",
+              "key": "jn_yamen_arch",
+              "count": 1,
+              "var": "hk_npcv_241_yinzi_go2",
+              "desc": "去架阁库查旧档"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "架阁库的旧档按年分捆。绸缎庄那一卷抽出来，中间缺了一页，断口齐整，像照着一把尺裁的。"
+            },
+            {
+              "type": "say",
+              "raw": "看库的老吏头也不抬：「销账要盖印。那页的印，盖了两次。」"
+            },
+            {
+              "type": "menu",
+              "raw": "缺的那页|照原样抄一份底>+exp:130;flag:j2b_yinzi_page;;记在脑子里，不落纸>+pot:50;flag:j2b_yinzi_page"
+            }
+          ]
+        },
+        {
+          "desc": "回东市·南巷，把断好的账还给和放",
+          "targets": [
+            {
+              "id": "hk_npcv_241_yinzi_go3",
+              "kind": "room",
+              "key": "jn_market_south",
+              "count": 1,
+              "var": "hk_npcv_241_yinzi_go3",
+              "desc": "回南巷对账"
+            }
+          ],
+          "next": 99,
+          "lock": {
+            "flag": "jiuye_done",
+            "name": "卷二·风起",
+            "msg": "这桩事还没到能见底的时候。东边的路没开，话就还没处说。"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "和放把三样东西并排摊开：柜上的窟窿、米行的进项、架阁库缺页的印。三处的日子，对上了。"
+            },
+            {
+              "type": "say",
+              "raw": "「东家跑得不冤。」他把算盘一推，「这笔账，看你怎么记。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这笔账|断到东家头上，行会存档>+rep:朝廷:15;+exp:160;favor:npcv_241:20;incvar:favor_npcv_241:20;flag:j2b_yinzi_done;;只告诉和放一个人>+money:100;+exp:120;favor:npcv_241:35;incvar:favor_npcv_241:35;flag:j2b_yinzi_done"
+            }
+          ]
         }
       ],
       "rewards": [
@@ -50,7 +139,10 @@
           "type": "say",
           "raw": "和放合上账本，没再抬眼看你。"
         }
-      ]
+      ],
+      "require": {
+        "flag": "jiuye_done"
+      }
     },
     "hk_npcv_241_guancai": {
       "id": "hk_npcv_241_guancai",
@@ -121,7 +213,7 @@
               "desc": "去醉仙楼一楼，看看那间房和那只妆匣"
             }
           ],
-          "next": 99,
+          "next": 1,
           "effects": [
             {
               "type": "+item",
@@ -143,6 +235,95 @@
               "raw": "这张纸，怎么办|还那姑娘>-item:deed_girl;+karma:15;+exp:180;+pot:50;favor:npcv_154:-40;incvar:favor_npcv_154:-40;flag:hk_npcv_154_maishen_free;;交回穆逢>+money:200;+karma:-10;+exp:120;favor:npcv_154:20;incvar:favor_npcv_154:20;flag:hk_npcv_154_maishen_crush"
             }
           ]
+        },
+        {
+          "desc": "去东市·老茶馆，向柳三弦打听三年前进楼的那船姑娘",
+          "targets": [
+            {
+              "id": "hk_npcv_154_maishen_go1",
+              "kind": "room",
+              "key": "jn_teahouse",
+              "count": 1,
+              "var": "hk_npcv_154_maishen_go1",
+              "desc": "去老茶馆打听旧事"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "柳三弦把三弦搁在膝上，醒木没动。「三年前水路上来一船姑娘，十二个，牙行领走的。绝食那位，是船尾的。」"
+            },
+            {
+              "type": "say",
+              "raw": "「船尾的命最贱，也最硬。她上船前咬过人。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这段旧事|点他一段词，慢慢听>-money:50;+exp:150;+pot:30;flag:j2b_maishen_boat;;开门见山，只问保人>+karma:5;+exp:120;flag:j2b_maishen_boat"
+            }
+          ]
+        },
+        {
+          "desc": "去衙门·刑房，翻那船人的旧卷找牙行保人",
+          "targets": [
+            {
+              "id": "hk_npcv_154_maishen_go2",
+              "kind": "room",
+              "key": "jn_yamen_wt",
+              "count": 1,
+              "var": "hk_npcv_154_maishen_go2",
+              "desc": "去刑房翻旧卷"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "刑房的旧卷按年码放。三年前水路那一卷里，保人的画押潦草，名字却清楚：保一船，抽三成。"
+            },
+            {
+              "type": "say",
+              "raw": "当值的书吏把卷宗收回去一半：「牙行的保人换得勤。这一个，去年就换掉了。」"
+            },
+            {
+              "type": "menu",
+              "raw": "保人的名字|抄下来，往后对人证用得上>+exp:130;flag:j2b_maishen_name;;多塞二十文，问细一点>-money:20;+pot:40;flag:j2b_maishen_name"
+            }
+          ]
+        },
+        {
+          "desc": "上醉仙楼·二楼雅间，把那张纸的去向定下来",
+          "targets": [
+            {
+              "id": "hk_npcv_154_maishen_go3",
+              "kind": "room",
+              "key": "jn_wine_room",
+              "count": 1,
+              "var": "hk_npcv_154_maishen_go3",
+              "desc": "上二楼雅间回话"
+            }
+          ],
+          "next": 99,
+          "lock": {
+            "flag": "jiuye_done",
+            "name": "卷二·风起",
+            "msg": "这桩事还没到能见底的时候。东边的路没开，话就还没处说。"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "穆逢的妆匣开着，那张纸压在最底下。船尾的姑娘在楼下，绝食第四天。"
+            },
+            {
+              "type": "say",
+              "raw": "穆逢笑着报价：「纸是楼里的，人也是楼里的。」笑意到一半，收了。"
+            },
+            {
+              "type": "menu",
+              "raw": "那张纸|当着穆逢的面烧了，人算楼里白养三年>+karma:15;+exp:180;favor:npcv_154:-25;incvar:favor_npcv_154:-25;flag:j2b_maishen_done;;押着契，换姑娘的赎身钱>+money:150;+karma:-10;+exp:140;flag:j2b_maishen_done"
+            }
+          ]
         }
       ],
       "rewards": [
@@ -150,7 +331,10 @@
           "type": "say",
           "raw": "穆逢把算盘拨了一串，得数和你说的两样。"
         }
-      ]
+      ],
+      "require": {
+        "flag": "jiuye_done"
+      }
     },
     "hk_npcv_154_suoyin": {
       "id": "hk_npcv_154_suoyin",
@@ -261,7 +445,14 @@
       "level": 8,
       "desc": "屈疏的儿子被府学门房拦了三回。这个靠粮价吃人的东家，头一回问人「该怎么办」。",
       "require": {
-        "questDone": "hk_npcv_010_haosun"
+        "and": [
+          {
+            "questDone": "hk_npcv_010_haosun"
+          },
+          {
+            "flag": "jiuye_done"
+          }
+        ]
       },
       "stages": [
         {
@@ -276,7 +467,7 @@
               "desc": "去白鹿书院门口，找门房问个明白"
             }
           ],
-          "next": 99,
+          "next": 1,
           "effects": [
             {
               "type": "narrate",
@@ -289,6 +480,95 @@
             {
               "type": "menu",
               "raw": "这道门|使钱>-money:80;+karma:8;+exp:140;favor:npcv_010:30;incvar:favor_npcv_010:30;flag:hk_npcv_010_fuxue_money;;凭他的名声去说>+karma:8;+exp:180;favor:npcv_010:30;incvar:favor_npcv_010:30;flag:hk_npcv_010_fuxue_fame;;不管>+exp:60;favor:npcv_010:-20;incvar:favor_npcv_010:-20;flag:hk_npcv_010_fuxue_none"
+            }
+          ]
+        },
+        {
+          "desc": "去翰墨斋·后堂，问闵守府学的名额让给了谁",
+          "targets": [
+            {
+              "id": "hk_npcv_010_fuxue_go1",
+              "kind": "room",
+              "key": "jn_study_1",
+              "count": 1,
+              "var": "hk_npcv_010_fuxue_go1",
+              "desc": "去翰墨斋后堂找闵守"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "闵守抄书的手没停。「寒文名额三年一放，放的都是交得起炭敬的人家。我家那一份，让了。」"
+            },
+            {
+              "type": "say",
+              "raw": "「炭敬不伤人。伤人的是，你让了，也没人记得你让过。」"
+            },
+            {
+              "type": "menu",
+              "raw": "名额的账|替他抄一沓书，换一句实话>+exp:140;favor:npcv_102:10;incvar:favor_npcv_102:10;flag:j2b_fuxue_list;;问炭敬的数目，自己掂量>-money:50;+pot:40;flag:j2b_fuxue_list"
+            }
+          ]
+        },
+        {
+          "desc": "回白鹿书院·讲堂，从门房嘴里掏名额的真规矩",
+          "targets": [
+            {
+              "id": "hk_npcv_010_fuxue_go2",
+              "kind": "room",
+              "key": "jn_school",
+              "count": 1,
+              "var": "hk_npcv_010_fuxue_go2",
+              "desc": "回书院找门房"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "门房这回没说名额满了。他往讲堂里努了努嘴：「名额在教谕手里。帖子递得进去，门就开。」"
+            },
+            {
+              "type": "say",
+              "raw": "「名帖上写谁的名字不要紧。要紧的是，帖子上得有一句教谕想听的话。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这道门|花八十文备一份像样的名帖>-money:80;+karma:5;+exp:130;flag:j2b_fuxue_gate;;让孩子自己再考一回，凭卷子>+exp:160;+pot:40;flag:j2b_fuxue_gate"
+            }
+          ]
+        },
+        {
+          "desc": "回东市·西巷，把名额的走法告诉屈疏",
+          "targets": [
+            {
+              "id": "hk_npcv_010_fuxue_go3",
+              "kind": "room",
+              "key": "jn_market_west",
+              "count": 1,
+              "var": "hk_npcv_010_fuxue_go3",
+              "desc": "回西巷回话"
+            }
+          ],
+          "next": 99,
+          "lock": {
+            "flag": "jiuye_done",
+            "name": "卷二·风起",
+            "msg": "这桩事还没到能见底的时候。东边的路没开，话就还没处说。"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "屈疏听完，扳指在指头上转了两圈。「炭敬我出得起。可我这辈子没求过人。这是头一回，为儿子求。」"
+            },
+            {
+              "type": "say",
+              "raw": "「帖子你替我递。求人这条路，我不熟，你熟。」"
+            },
+            {
+              "type": "menu",
+              "raw": "递帖子|替他把帖子递了，门开在哪天算哪天>+karma:8;+exp:170;favor:npcv_010:30;incvar:favor_npcv_010:30;flag:j2b_fuxue_done;;把路数教给孩子，让他自己走>+exp:150;+pot:50;favor:npcv_010:20;incvar:favor_npcv_010:20;flag:j2b_fuxue_done"
             }
           ]
         }
@@ -507,7 +787,7 @@
               "desc": "就在茶馆里，找元若替杜听涛说句话"
             }
           ],
-          "next": 99,
+          "next": 1,
           "effects": [
             {
               "type": "say",
@@ -522,6 +802,95 @@
               "raw": "这四十七两|替他还>-money:47;+exp:200;+pot:50;favor:npcv_065:30;incvar:favor_npcv_065:30;flag:hk_npcv_065_siqiliang_paid;;逼他开口>+money:47;+exp:120;favor:npcv_065:-30;incvar:favor_npcv_065:-30;flag:hk_npcv_065_siqiliang_press;;替他把话说透>+karma:10;+exp:260;favor:npcv_073:20;incvar:favor_npcv_073:20;flag:hk_npcv_065_siqiliang_truth"
             }
           ]
+        },
+        {
+          "desc": "去东市·南巷，翻和放经手的借据找那笔的底",
+          "targets": [
+            {
+              "id": "hk_npcv_065_siqiliang_go1",
+              "kind": "room",
+              "key": "jn_market_south",
+              "count": 1,
+              "var": "hk_npcv_065_siqiliang_go1",
+              "desc": "去南巷查借据底档"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "和放的借据按年扎捆。杜听涛那一笔翻出来，借据背面有一行小字：代茶资，无息。"
+            },
+            {
+              "type": "say",
+              "raw": "和放把借据按回去：「放贷的见惯了欠钱的。欠三年不跑的，我只见过他一个。」"
+            },
+            {
+              "type": "menu",
+              "raw": "借据这一页|原样借来对一遍，明早还回>+exp:130;+karma:5;flag:j2b_siqi_note;;出五十文买通小厮多问两句>-money:50;+pot:40;flag:j2b_siqi_note"
+            }
+          ]
+        },
+        {
+          "desc": "去衙门·架阁库，查杜听涛当年捐修石桥的名册",
+          "targets": [
+            {
+              "id": "hk_npcv_065_siqiliang_go2",
+              "kind": "room",
+              "key": "jn_yamen_arch",
+              "count": 1,
+              "var": "hk_npcv_065_siqiliang_go2",
+              "desc": "去架阁库查官册"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "架阁库里那本捐修名册还在。杜听涛的名字排在第七，捐银十二两，落款是四十年前。"
+            },
+            {
+              "type": "say",
+              "raw": "看库的老吏认得这个名字：「城南那座石桥就是他修的。桥如今还走着人。」"
+            },
+            {
+              "type": "menu",
+              "raw": "官册这一页|抄下来，等会儿给他看>+rep:朝廷:10;+exp:130;flag:j2b_siqi_guan;;记在心里，不落纸>+pot:50;flag:j2b_siqi_guan"
+            }
+          ]
+        },
+        {
+          "desc": "回东市·老茶馆，让这两个老头把四十七两说开",
+          "targets": [
+            {
+              "id": "hk_npcv_065_siqiliang_go3",
+              "kind": "room",
+              "key": "jn_teahouse",
+              "count": 1,
+              "var": "hk_npcv_065_siqiliang_go3",
+              "desc": "回老茶馆回话"
+            }
+          ],
+          "next": 99,
+          "lock": {
+            "flag": "jiuye_done",
+            "name": "卷二·风起",
+            "msg": "这桩事还没到能见底的时候。东边的路没开，话就还没处说。"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你把借据背面那行小字念给两个人听。元若听完先笑了：「我还当他不记得。他连利息都替我免了。」"
+            },
+            {
+              "type": "say",
+              "raw": "杜听涛把那只磕了口的茶碗推过去：「茶钱四十七两，早备下了。银子是小事，缺的是个台阶。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这个台阶|把话带到，让他们自己下>+favor:npcv_065:35;incvar:favor_npcv_065:35;+pot:50;+exp:150;flag:j2b_siqi_done;;替他垫一半，今天就清>-money:24;+karma:12;+exp:130;flag:j2b_siqi_done"
+            }
+          ]
         }
       ],
       "rewards": [
@@ -529,7 +898,10 @@
           "type": "say",
           "raw": "杜听涛把茶碗搁下，起身往元若那张桌子走了过去。"
         }
-      ]
+      ],
+      "require": {
+        "flag": "jiuye_done"
+      }
     },
     "hk_npcv_065_ziju": {
       "id": "hk_npcv_065_ziju",
@@ -610,22 +982,22 @@
           "next": 1
         },
         {
-          "desc": "去姑苏·枫桥，跟那个人对质",
+          "desc": "去姑苏城外，跟那个人对质",
           "targets": [
             {
               "id": "go1",
               "kind": "room",
-              "key": "gusu_fengqiao",
+              "key": "gusu_town",
               "count": 1,
               "var": "hk_npcv_223_meimei_go1",
-              "desc": "去姑苏·枫桥，跟那个人对质"
+              "desc": "去姑苏城外，跟那个人对质"
             }
           ],
           "next": 99,
           "effects": [
             {
               "type": "narrate",
-              "raw": "枫桥底下停了条小船，船里堆着旧衣裳，大小不一。"
+              "raw": "城外渡口底下停了条小船，船里堆着旧衣裳，大小不一。"
             },
             {
               "type": "say",
@@ -703,15 +1075,15 @@
       "desc": "城里旱象已起。蒋倦仓里那批米，掺过一遍沙土，他要你再走一趟粮仓。",
       "stages": [
         {
-          "desc": "去东市·粮仓，看蒋倦那批米掺了多少",
+          "desc": "去东市·西巷米行，看蒋倦那批米掺了多少",
           "targets": [
             {
               "id": "go0",
               "kind": "room",
-              "key": "jn_granary",
+              "key": "jn_market_west",
               "count": 1,
               "var": "hk_npcv_174_tuntang_go0",
-              "desc": "去东市·粮仓，看蒋倦那批米掺了多少"
+              "desc": "去东市·西巷米行，看蒋倦那批米掺了多少"
             }
           ],
           "next": 99,
@@ -807,7 +1179,7 @@
               "desc": "去东市·绸缎庄，剪开那匹绸验货"
             }
           ],
-          "next": 99,
+          "next": 1,
           "effects": [
             {
               "type": "+item",
@@ -829,6 +1201,95 @@
               "raw": "这匹绸|劝他换真货>+karma:10;+exp:220;+pot:50;favor:npcv_240:30;incvar:favor_npcv_240:30;flag:hk_npcv_240_laocaifeng_honest;;帮他把货卖出>+money:200;+karma:-10;+exp:140;flag:hk_npcv_240_laocaifeng_sold"
             }
           ]
+        },
+        {
+          "desc": "回东市·北巷，问邬修远那批便宜绸的上家",
+          "targets": [
+            {
+              "id": "hk_npcv_240_laocaifeng_go1",
+              "kind": "room",
+              "key": "jn_market_north",
+              "count": 1,
+              "var": "hk_npcv_240_laocaifeng_go1",
+              "desc": "回北巷问上家"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "邬修远一拍大腿：「上家走水路，三船绸，价钱只有市价的一半。我贪那个价，进了三十匹。」"
+            },
+            {
+              "type": "say",
+              "raw": "「船是上个月靠的岸。上家如今找不着了。找着了，我也说不出口，人家待我不薄。」"
+            },
+            {
+              "type": "menu",
+              "raw": "货底怎么看|把三十匹全拆验，一匹一匹来>+exp:150;+pot:40;flag:j2b_silk_boat;;只问船期的账，不动货>+exp:120;+karma:5;flag:j2b_silk_boat"
+            }
+          ]
+        },
+        {
+          "desc": "去江南城·市集，查同批掺麻绸还流进了谁的柜上",
+          "targets": [
+            {
+              "id": "hk_npcv_240_laocaifeng_go2",
+              "kind": "room",
+              "key": "jiangnan_market",
+              "count": 1,
+              "var": "hk_npcv_240_laocaifeng_go2",
+              "desc": "去市集查同批货"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "市集上转了一圈，当铺的柜上压着一匹同批的绸，剪口里一样的麻丝。熊时的折扇点着那匹料子：「进价低得蹊跷，收的时候我就疑心。」"
+            },
+            {
+              "type": "say",
+              "raw": "「疑心归疑心，账上不能写疑心。写了，我这柜子就不用开了。」"
+            },
+            {
+              "type": "menu",
+              "raw": "证词怎么记|把两家的剪口对在一起，串成证据>+karma:5;+exp:140;flag:j2b_silk_proof;;给熊时留个面子，压下不说>+money:60;+karma:-5;+exp:110;flag:j2b_silk_proof"
+            }
+          ]
+        },
+        {
+          "desc": "回东市·北巷，帮邬修远把这三年的账收个尾",
+          "targets": [
+            {
+              "id": "hk_npcv_240_laocaifeng_go3",
+              "kind": "room",
+              "key": "jn_market_north",
+              "count": 1,
+              "var": "hk_npcv_240_laocaifeng_go3",
+              "desc": "回北巷收尾"
+            }
+          ],
+          "next": 99,
+          "lock": {
+            "flag": "jiuye_done",
+            "name": "卷二·风起",
+            "msg": "这桩事还没到能见底的时候。东边的路没开，话就还没处说。"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "三十匹掺麻的绸在铺子里码成一垛。邬修远坐在垛边上，半天没说话。"
+            },
+            {
+              "type": "say",
+              "raw": "「三年攒的本钱，折在一个月里。」他拍拍那垛绸，「你说，往后这铺子还开不开？」"
+            },
+            {
+              "type": "menu",
+              "raw": "退本金|拉着行会去找上家的保人，讨回本金>+rep:朝廷:10;+exp:170;favor:npcv_240:35;incvar:favor_npcv_240:35;flag:j2b_silk_done;;认折损，改行卖麻布>+money:120;+karma:-8;+exp:130;flag:j2b_silk_done"
+            }
+          ]
         }
       ],
       "rewards": [
@@ -836,7 +1297,10 @@
           "type": "say",
           "raw": "邬修远把剪开的那匹绸卷回去，露出一截没掺麻的边。"
         }
-      ]
+      ],
+      "require": {
+        "flag": "jiuye_done"
+      }
     },
     "hk_npcv_240_shouyi": {
       "id": "hk_npcv_240_shouyi",
@@ -907,7 +1371,7 @@
               "desc": "去江南城市集，找绣娘喻凝看那幅百子图"
             }
           ],
-          "next": 99,
+          "next": 1,
           "effects": [
             {
               "type": "narrate",
@@ -922,6 +1386,95 @@
               "raw": "那幅图|替她卖出去>+money:10;+karma:-5;+exp:150;favor:npcv_009:20;incvar:favor_npcv_009:20;flag:hk_npcv_009_baizi_sell;;替绣娘说情>+karma:10;+exp:200;+pot:40;favor:npcv_009:-10;incvar:favor_npcv_009:-10;flag:hk_npcv_009_baizi_grey"
             }
           ]
+        },
+        {
+          "desc": "去东市·老茶馆，向柳三弦打听绣娘喻凝的行情",
+          "targets": [
+            {
+              "id": "hk_npcv_009_baizi_go1",
+              "kind": "room",
+              "key": "jn_teahouse",
+              "count": 1,
+              "var": "hk_npcv_009_baizi_go1",
+              "desc": "去老茶馆打听绣娘"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "柳三弦拨了个空弦：「喻凝的手，城里绣行排头一份。一幅百子图，正价二十两打底。她押给熊时，抵的是九两债。」"
+            },
+            {
+              "type": "say",
+              "raw": "「不是图贱卖。是她男人病着，等钱。绣一幅的工夫，等不起。」"
+            },
+            {
+              "type": "menu",
+              "raw": "行情怎么问|点茶听他讲绣行的规矩>-money:40;+exp:140;+pot:30;flag:j2b_baizi_needle;;直接去绣行问价，不听词>+exp:120;+karma:5;flag:j2b_baizi_needle"
+            }
+          ]
+        },
+        {
+          "desc": "去东市·南巷，把九两债的本息算清楚",
+          "targets": [
+            {
+              "id": "hk_npcv_009_baizi_go2",
+              "kind": "room",
+              "key": "jn_market_south",
+              "count": 1,
+              "var": "hk_npcv_009_baizi_go2",
+              "desc": "去南巷算债"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "和放把借据摊开：本金九两，三年滚到十四两。喻凝的百子图抵债，作价九两，差的五两她还欠着。"
+            },
+            {
+              "type": "say",
+              "raw": "「账没有错处。」和放把借据收回去，「错处不在账上。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这笔账|照借据算清，一文不让>+exp:140;favor:npcv_241:10;incvar:favor_npcv_241:10;flag:j2b_baizi_math;;自己垫十两，替她平账>-money:100;+karma:10;+exp:120;flag:j2b_baizi_math"
+            }
+          ]
+        },
+        {
+          "desc": "回江南城·市集，让熊时把那幅图的去向定下来",
+          "targets": [
+            {
+              "id": "hk_npcv_009_baizi_go3",
+              "kind": "room",
+              "key": "jiangnan_market",
+              "count": 1,
+              "var": "hk_npcv_009_baizi_go3",
+              "desc": "回市集找熊时"
+            }
+          ],
+          "next": 99,
+          "lock": {
+            "flag": "jiuye_done",
+            "name": "卷二·风起",
+            "msg": "这桩事还没到能见底的时候。东边的路没开，话就还没处说。"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "熊时把百子图在柜上摊开，九十九个孩子，缺的那个线头还留着。「图是好图。可我收它，收的是债，不是绣活。」"
+            },
+            {
+              "type": "say",
+              "raw": "「你要真替绣娘想，就把图的价钱和债的数目都摆到桌面上来。摆得平，我就放手。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那幅图|凑钱替喻凝把图赎回来>-money:200;+karma:15;+exp:170;favor:npcv_009:20;incvar:favor_npcv_009:20;flag:j2b_baizi_done;;让熊时再押一年，等喻凝缓过来>+money:80;+karma:-8;+exp:130;flag:j2b_baizi_done"
+            }
+          ]
         }
       ],
       "rewards": [
@@ -929,18 +1482,28 @@
           "type": "say",
           "raw": "熊时把算珠一推，说这幅图她先收着。"
         }
-      ]
+      ],
+      "require": {
+        "flag": "jiuye_done"
+      }
     },
     "hk_npcv_009_shuoshu": {
       "id": "hk_npcv_009_shuoshu",
       "name": "说书人那张嘴",
       "type": "支线",
-      "npc": "npcv_009",
-      "giver": "npcv_009",
+      "npc": "hk_storyteller",
+      "giver": "hk_storyteller",
       "level": 9,
       "desc": "熊时不识字，可全城欠钱的人，名字一个跑不掉。跑不掉，是因为有人的嘴。",
       "require": {
-        "questDone": "hk_npcv_009_baizi"
+        "and": [
+          {
+            "questDone": "hk_npcv_009_baizi"
+          },
+          {
+            "flag": "jiuye_done"
+          }
+        ]
       },
       "stages": [
         {
@@ -955,7 +1518,7 @@
               "desc": "去老茶馆，听听说书人念的是哪几个名字"
             }
           ],
-          "next": 99,
+          "next": 1,
           "effects": [
             {
               "type": "narrate",
@@ -968,6 +1531,95 @@
             {
               "type": "menu",
               "raw": "说书人那张嘴|买断他>-money:120;+exp:220;+pot:50;favor:npcv_009:30;incvar:favor_npcv_009:30;flag:hk_npcv_009_shuoshu_buy;;让债户知晓>+rep:*:15;+exp:260;favor:npcv_009:-40;incvar:favor_npcv_009:-40;flag:hk_npcv_009_shuoshu_liang"
+            }
+          ]
+        },
+        {
+          "desc": "去江南城·市集，跟熊时对词里那三个名字",
+          "targets": [
+            {
+              "id": "hk_npcv_009_shuoshu_go1",
+              "kind": "room",
+              "key": "jiangnan_market",
+              "count": 1,
+              "var": "hk_npcv_009_shuoshu_go1",
+              "desc": "去市集找熊时对名字"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "熊时的珠子拨到一半停下：「词里第三个名字，是我念给他的。欠我的那笔，他拿去翻本，本没了。」"
+            },
+            {
+              "type": "say",
+              "raw": "「我不识字。名字进了他的词，比进了衙门的册子还稳。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这三个名字|替熊时把话递回茶馆，指名道姓>+favor:npcv_009:15;incvar:favor_npcv_009:15;+exp:140;flag:j2b_shuoshu_name;;劝他把最末一个划了，给条活路>+karma:8;+exp:120;flag:j2b_shuoshu_name"
+            }
+          ]
+        },
+        {
+          "desc": "去江南城·翰墨斋，认一认柳三弦那本词的字是谁抄的",
+          "targets": [
+            {
+              "id": "hk_npcv_009_shuoshu_go2",
+              "kind": "room",
+              "key": "jn_bookshop",
+              "count": 1,
+              "var": "hk_npcv_009_shuoshu_go2",
+              "desc": "去翰墨斋认笔迹"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "词本的字抄得工整。鲁拂衣看了一眼就认出来：「这手字出自一个落第的秀才。他抄一页，换三文钱。」"
+            },
+            {
+              "type": "say",
+              "raw": "「词是他写的，事是真事。抄词的人不管真不真，管字数。」"
+            },
+            {
+              "type": "menu",
+              "raw": "词本的来历|听他把抄词人的下落讲完>+exp:140;flag:j2b_shuoshu_book;;买一册词本回去慢慢对>-money:30;+pot:40;flag:j2b_shuoshu_book"
+            }
+          ]
+        },
+        {
+          "desc": "回东市·老茶馆，听柳三弦给这张嘴一个去处",
+          "targets": [
+            {
+              "id": "hk_npcv_009_shuoshu_go3",
+              "kind": "room",
+              "key": "jn_teahouse",
+              "count": 1,
+              "var": "hk_npcv_009_shuoshu_go3",
+              "desc": "回老茶馆收尾"
+            }
+          ],
+          "next": 99,
+          "lock": {
+            "flag": "jiuye_done",
+            "name": "卷二·风起",
+            "msg": "这桩事还没到能见底的时候。东边的路没开，话就还没处说。"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "柳三弦把三弦调了个弦。「这张嘴吃的是旧事的饭。名字进了词，就取不出来了。词是活的，比人活得久。」"
+            },
+            {
+              "type": "say",
+              "raw": "「你要真替那些人求情，别找我。让他们把钱还了，我第二天就把词改了。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这张嘴|请他留半句余地，不把话说死>+favor:npcv_009:25;incvar:favor_npcv_009:25;+karma:10;+exp:150;flag:j2b_shuoshu_done;;让词接着唱，债户自己掂量>+rep:*:10;+exp:140;favor:npcv_009:-15;incvar:favor_npcv_009:-15;flag:j2b_shuoshu_done"
             }
           ]
         }
@@ -1037,22 +1689,22 @@
       },
       "stages": [
         {
-          "desc": "陪李无咎去城西义庄旧址走一趟",
+          "desc": "陪李无咎去杏花巷旧宅走一趟",
           "targets": [
             {
               "id": "go0",
               "kind": "room",
-              "key": "jn_yizhuang",
+              "key": "jn_resident_2",
               "count": 1,
               "var": "hk_npcv_237_cheng_go0",
-              "desc": "陪李无咎去城西义庄旧址走一趟"
+              "desc": "陪李无咎去杏花巷旧宅走一趟"
             }
           ],
           "next": 99,
           "effects": [
             {
               "type": "narrate",
-              "raw": "义庄门口的青砖上，留着几道旧验伤的划痕。"
+              "raw": "旧宅门口的青砖上，留着几道旧验伤的划痕。"
             },
             {
               "type": "say",
@@ -1060,7 +1712,7 @@
             },
             {
               "type": "menu",
-              "raw": "那杆秤|陪他在义庄门口站一会儿>+karma:8;+exp:200;favor:npcv_237:25;incvar:favor_npcv_237:25;flag:hk_npcv_237_cheng_grey;;不问>+exp:90;favor:npcv_237:10;incvar:favor_npcv_237:10"
+              "raw": "那杆秤|陪他在旧宅门口站一会儿>+karma:8;+exp:200;favor:npcv_237:25;incvar:favor_npcv_237:25;flag:hk_npcv_237_cheng_grey;;不问>+exp:90;favor:npcv_237:10;incvar:favor_npcv_237:10"
             }
           ]
         }
@@ -1321,9 +1973,16 @@
       "level": 8,
       "desc": "乐知的镖车上有一口箱子，货单上没写。她头一回先把箱子拆开看。",
       "require": {
-        "not": {
-          "flag": "know_zhenyi"
-        }
+        "and": [
+          {
+            "flag": "jiuye_done"
+          },
+          {
+            "not": {
+              "flag": "know_zhenyi"
+            }
+          }
+        ]
       },
       "stages": [
         {
@@ -1338,7 +1997,7 @@
               "desc": "在东市大街，验那口不写货单的箱子"
             }
           ],
-          "next": 99,
+          "next": 1,
           "effects": [
             {
               "type": "narrate",
@@ -1351,6 +2010,95 @@
             {
               "type": "menu",
               "raw": "北边那趟镖|替她验货>+exp:200;+pot:60;flag:hk_heibiao;;劝她退镖>+karma:10;+exp:240;favor:npcv_180:30;incvar:favor_npcv_180:30;flag:hk_npcv_180_beibian_stop"
+            }
+          ]
+        },
+        {
+          "desc": "去东市·老茶馆，从柳三弦的词里找封条上那家货栈",
+          "targets": [
+            {
+              "id": "hk_npcv_180_beibian_go1",
+              "kind": "room",
+              "key": "jn_teahouse",
+              "count": 1,
+              "var": "hk_npcv_180_beibian_go1",
+              "desc": "去老茶馆对字号"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "柳三弦的词里有这家字号：黑水集的顺记货栈。词里唱它「三年不歇脚，货比人先到」，说的是那家栈从不留人过夜。"
+            },
+            {
+              "type": "say",
+              "raw": "「词是编的，字号是真的。押过它家货的镖师，回来就没再接过第二趟。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这段词|点一整段，把字号的下落听全>-money:50;+exp:150;+pot:40;flag:j2b_biao_mark;;只翻茶客的水单，找同路人>+exp:130;+karma:5;flag:j2b_biao_mark"
+            }
+          ]
+        },
+        {
+          "desc": "去衙门·架阁库，查那口箱子出的关防文书",
+          "targets": [
+            {
+              "id": "hk_npcv_180_beibian_go2",
+              "kind": "room",
+              "key": "jn_yamen_arch",
+              "count": 1,
+              "var": "hk_npcv_180_beibian_go2",
+              "desc": "去架阁库查火牌"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "架阁库的过所底簿里翻到那口箱子的出关记录。兵部火牌，押的是官粮，一路不必开箱。"
+            },
+            {
+              "type": "say",
+              "raw": "看库的老吏把底簿按住：「火牌倒是真的。粮就不是了。真牌假粮一道走，查的人得先掂量掂量自己。」"
+            },
+            {
+              "type": "menu",
+              "raw": "底簿这一页|抄下火牌的编号，往后对得上>+rep:朝廷:10;+exp:140;flag:j2b_biao_paper;;只记字号，不落纸面>+exp:130;+pot:40;flag:j2b_biao_paper"
+            }
+          ]
+        },
+        {
+          "desc": "回东市·大街，让乐知把这一趟的决定做下来",
+          "targets": [
+            {
+              "id": "hk_npcv_180_beibian_go3",
+              "kind": "room",
+              "key": "jn_market_main",
+              "count": 1,
+              "var": "hk_npcv_180_beibian_go3",
+              "desc": "回大街找乐知"
+            }
+          ],
+          "next": 99,
+          "lock": {
+            "flag": "jiuye_done",
+            "name": "卷二·风起",
+            "msg": "这桩事还没到能见底的时候。东边的路没开，话就还没处说。"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "乐知听完，把那块没撕净的旧封条折了折，收进号衣内袋。她把火牌的事说了，又把货栈的事说了。「这一趟拉的不是货。」"
+            },
+            {
+              "type": "say",
+              "raw": "「镖行的规矩，货出了门就认银子。可我乐知接镖，认的是货单上写的东西。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这一趟|逼她报官，镖局出面>+rep:朝廷:20;+exp:180;favor:npcv_180:-15;incvar:favor_npcv_180:-15;flag:j2b_biao_done;;劝她箱子原路退回，装不知道>+favor:npcv_180:35;incvar:favor_npcv_180:35;+pot:50;+exp:140;flag:j2b_biao_done"
             }
           ]
         }
@@ -1524,7 +2272,7 @@
               "desc": "去翰墨斋，寻一册好书换下那本孤本"
             }
           ],
-          "next": 99,
+          "next": 1,
           "effects": [
             {
               "type": "+item",
@@ -1546,6 +2294,95 @@
               "raw": "这册孤本|拿好书换下它>-item:book_rare;+karma:10;+exp:220;+pot:60;favor:npcv_083:30;incvar:favor_npcv_083:30;flag:hk_npcv_083_guben_swap;;逼他改判>+karma:-15;+money:300;+exp:140;flag:hk_npcv_083_guben_force"
             }
           ]
+        },
+        {
+          "desc": "去衙门·刑房，调他改过判词的那桩案卷",
+          "targets": [
+            {
+              "id": "hk_npcv_083_guben_go1",
+              "kind": "room",
+              "key": "jn_yamen_wt",
+              "count": 1,
+              "var": "hk_npcv_083_guben_go1",
+              "desc": "去刑房调案卷"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "刑房的案卷按年归档。翻到那一年，判词的抄件与底档并排放着：底档上那行字被人用朱笔圈过，圈了不止一遍。"
+            },
+            {
+              "type": "say",
+              "raw": "当值书吏把底档收回去：「圈卷的是胡录事。他与毕大人一个库房坐了十九年。」"
+            },
+            {
+              "type": "menu",
+              "raw": "案卷这一页|照抄圈过的那行，留个凭据>+exp:140;flag:j2b_guben_case;;只问一句：圈了几年>+exp:130;+pot:40;flag:j2b_guben_case"
+            }
+          ]
+        },
+        {
+          "desc": "去东市·南巷，让和放估一估那册孤本的价",
+          "targets": [
+            {
+              "id": "hk_npcv_083_guben_go2",
+              "kind": "room",
+              "key": "jn_market_south",
+              "count": 1,
+              "var": "hk_npcv_083_guben_go2",
+              "desc": "去南巷问书价"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "和放翻开书页，手指在纸面上停了停。「宋版，白麻纸，初印。三百两起，遇着识货的，翻一倍。」"
+            },
+            {
+              "type": "say",
+              "raw": "「毕元拿它压判词。压的不是书，是他自己那点心虚。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这个价|记下，往后对证用得上>+exp:140;+karma:5;flag:j2b_guben_price;;出一百两定金，表示诚心买>-money:100;+exp:120;flag:j2b_guben_price"
+            }
+          ]
+        },
+        {
+          "desc": "回衙门·架阁库，让毕元给那册孤本一个去处",
+          "targets": [
+            {
+              "id": "hk_npcv_083_guben_go3",
+              "kind": "room",
+              "key": "jn_yamen_arch",
+              "count": 1,
+              "var": "hk_npcv_083_guben_go3",
+              "desc": "回架阁库回话"
+            }
+          ],
+          "next": 99,
+          "lock": {
+            "flag": "jiuye_done",
+            "name": "卷二·风起",
+            "msg": "这桩事还没到能见底的时候。东边的路没开，话就还没处说。"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "毕元听完，把洗得发白的笔搁回笔山。「我改那一行的时候，图的就是这册书。如今看来，图错了。」"
+            },
+            {
+              "type": "say",
+              "raw": "「书是好书。判词是赃的。两样放在一起，书也脏了。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那册孤本|替他呈给学政，书归公家>+rep:朝廷:15;+exp:170;favor:npcv_083:20;incvar:favor_npcv_083:20;flag:j2b_guben_done;;让他自己把书送回去，只当借过>+favor:npcv_083:35;incvar:favor_npcv_083:35;+karma:10;+exp:150;flag:j2b_guben_done"
+            }
+          ]
         }
       ],
       "rewards": [
@@ -1553,7 +2390,10 @@
           "type": "say",
           "raw": "毕元把那册孤本搁进了换回来的书堆里，没看成色。"
         }
-      ]
+      ],
+      "require": {
+        "flag": "jiuye_done"
+      }
     },
     "hk_npcv_083_gaizi": {
       "id": "hk_npcv_083_gaizi",
@@ -1624,7 +2464,7 @@
               "desc": "在破庙和他一起清点功德箱"
             }
           ],
-          "next": 99,
+          "next": 1,
           "effects": [
             {
               "type": "say",
@@ -1639,6 +2479,95 @@
               "raw": "这点香火|分给庙里众人>+karma:10;+exp:200;+pot:50;favor:npcv_126:-10;incvar:favor_npcv_126:-10;flag:hk_npcv_126_xianghuo_share;;替他独吞>+money:200;+karma:-15;+exp:130;favor:npcv_126:30;incvar:favor_npcv_126:30;flag:hk_npcv_126_xianghuo_keep"
             }
           ]
+        },
+        {
+          "desc": "去城西·破庙，读庙外老碑上铜像的来历",
+          "targets": [
+            {
+              "id": "hk_npcv_126_xianghuo_go1",
+              "kind": "room",
+              "key": "jiangnan_temple",
+              "count": 1,
+              "var": "hk_npcv_126_xianghuo_go1",
+              "desc": "去破庙读老碑"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "老碑风化得厉害，碑文还认得出几行：信女捐铜像一尊，高四尺，重六十斤。落款是二十一年前。"
+            },
+            {
+              "type": "say",
+              "raw": "庞南枝在碑边扫落叶：「这碑我扫了七年。铜像没了以后，来拜的人少了一半。」"
+            },
+            {
+              "type": "menu",
+              "raw": "碑文这一段|拿纸拓下来，留着对证>+exp:140;flag:j2b_xianghuo_bei;;多扫一会落叶，听她讲那尊像>+exp:130;+pot:40;flag:j2b_xianghuo_bei"
+            }
+          ]
+        },
+        {
+          "desc": "去东市·北巷，问邬修远进没进过一尊旧铜像",
+          "targets": [
+            {
+              "id": "hk_npcv_126_xianghuo_go2",
+              "kind": "room",
+              "key": "jn_market_north",
+              "count": 1,
+              "var": "hk_npcv_126_xianghuo_go2",
+              "desc": "去北巷问铜像"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "邬修远一拍大腿：「进过！三年前有人抬来一尊铜像，说是家传的，八十两就出了。我转手卖一百六，还嫌压手。」"
+            },
+            {
+              "type": "say",
+              "raw": "「买主是外乡人，口音听着像北边的。铜像装了车，往北去了，再没消息。」"
+            },
+            {
+              "type": "menu",
+              "raw": "买主的话|多问两句，把车行的字号记下>+exp:140;+karma:5;flag:j2b_xianghuo_tong;;不追问，只记个价钱>+exp:130;flag:j2b_xianghuo_tong"
+            }
+          ]
+        },
+        {
+          "desc": "回城西·破庙，把钱和铜像的事摊开给和苍",
+          "targets": [
+            {
+              "id": "hk_npcv_126_xianghuo_go3",
+              "kind": "room",
+              "key": "gaibang_po_miao",
+              "count": 1,
+              "var": "hk_npcv_126_xianghuo_go3",
+              "desc": "回破庙回话"
+            }
+          ],
+          "next": 99,
+          "lock": {
+            "flag": "jiuye_done",
+            "name": "卷二·风起",
+            "msg": "这桩事还没到能见底的时候。东边的路没开，话就还没处说。"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "和苍把功德箱里的钱倒出来，数了三遍，数目没变。「铜像的事，我知道。卖铜像的人，我也知道。」"
+            },
+            {
+              "type": "say",
+              "raw": "「阿弥陀佛。庙穷，佛不穷。这箱里的钱，一天够两个人的粥。」"
+            },
+            {
+              "type": "menu",
+              "raw": "香火钱|凑一凑，把铜像塑回来>-money:120;+karma:12;+exp:170;favor:npcv_126:25;incvar:favor_npcv_126:25;flag:j2b_xianghuo_done;;钱留着熬粥，铜像的事不提>+favor:npcv_126:35;incvar:favor_npcv_126:35;+pot:50;+exp:150;flag:j2b_xianghuo_done"
+            }
+          ]
         }
       ],
       "rewards": [
@@ -1646,7 +2575,10 @@
           "type": "say",
           "raw": "和苍把功德箱锁上，钥匙照旧挂在自己腰里。"
         }
-      ]
+      ],
+      "require": {
+        "flag": "jiuye_done"
+      }
     },
     "hk_npcv_126_tongxiang": {
       "id": "hk_npcv_126_tongxiang",
@@ -1810,7 +2742,7 @@
               "desc": "在醉春楼花厅，听鲁半夏转述雅间那句醉话"
             }
           ],
-          "next": 99,
+          "next": 1,
           "effects": [
             {
               "type": "say",
@@ -1825,6 +2757,95 @@
               "raw": "那句话|替她压下不递>+karma:15;+exp:240;+pot:70;favor:npcv_186:40;incvar:favor_npcv_186:40;flag:hk_npcv_186_zuihua_hold;;替她递上去>+rep:日月神教:25;+exp:180;favor:npcv_186:-20;incvar:favor_npcv_186:-20;flag:hk_npcv_186_zuihua_send"
             }
           ]
+        },
+        {
+          "desc": "去衙门·刑房，看昨夜递进来的那张帖子",
+          "targets": [
+            {
+              "id": "hk_npcv_186_zuihua_go1",
+              "kind": "room",
+              "key": "jn_yamen_wt",
+              "count": 1,
+              "var": "hk_npcv_186_zuihua_go1",
+              "desc": "去刑房看帖子"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "刑房的帖子簿上，昨夜递进来一张名帖，落款是个官讳。当值书吏说，人没等，帖留下了。"
+            },
+            {
+              "type": "say",
+              "raw": "「喝醉的人说什么，衙门不录。可帖子递到刑房，就由不得衙门了。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那张帖子|抄下落款的官讳>+rep:朝廷:8;+exp:140;flag:j2b_zuihua_tie;;不碰帖子，只记时辰>+pot:50;flag:j2b_zuihua_tie"
+            }
+          ]
+        },
+        {
+          "desc": "去东市·老茶馆，听茶客里有没有第二双耳朵",
+          "targets": [
+            {
+              "id": "hk_npcv_186_zuihua_go2",
+              "kind": "room",
+              "key": "jn_teahouse",
+              "count": 1,
+              "var": "hk_npcv_186_zuihua_go2",
+              "desc": "去老茶馆探口风"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "茶馆里果然有人提同一句醉话，说的人压着嗓子，听的人不接茬。角落里坐着个生面孔，茶续了三回，人没走。"
+            },
+            {
+              "type": "say",
+              "raw": "跑堂的收碗时低声说：「那位爷这几天天天来。点的都是最便宜的茶，坐的都是最贵的时辰。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那双耳朵|散三十文，让跑堂的嘴严些>-money:30;+karma:8;+exp:130;flag:j2b_zuihua_er;;凑近听两句，记住长相>+exp:140;flag:j2b_zuihua_er"
+            }
+          ]
+        },
+        {
+          "desc": "回醉春楼·花厅，让鲁半夏自己拿主意",
+          "targets": [
+            {
+              "id": "hk_npcv_186_zuihua_go3",
+              "kind": "room",
+              "key": "jn_brothel_hall",
+              "count": 1,
+              "var": "hk_npcv_186_zuihua_go3",
+              "desc": "回花厅回话"
+            }
+          ],
+          "next": 99,
+          "lock": {
+            "flag": "jiuye_done",
+            "name": "卷二·风起",
+            "msg": "这桩事还没到能见底的时候。东边的路没开，话就还没处说。"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "鲁半夏听完，把酒盏终于放下了。「帖子、耳朵、醉话。三样凑齐，我这条命就不算白捡，算借来的。」"
+            },
+            {
+              "type": "say",
+              "raw": "「借来的东西，总有一天要还。你说，我现在还，还是等他们来收？」"
+            },
+            {
+              "type": "menu",
+              "raw": "这句话|替她把话烂在肚里，谁也不递>+favor:npcv_186:35;incvar:favor_npcv_186:35;+pot:50;+exp:160;flag:j2b_zuihua_done;;递给该收账的人，换她一条干净路>+rep:日月神教:15;+karma:-10;+exp:150;flag:j2b_zuihua_done"
+            }
+          ]
         }
       ],
       "rewards": [
@@ -1832,7 +2853,10 @@
           "type": "say",
           "raw": "鲁半夏把那只酒盏搁下，起身去伺候下一桌客人。"
         }
-      ]
+      ],
+      "require": {
+        "flag": "jiuye_done"
+      }
     },
     "hk_npcv_186_yao": {
       "id": "hk_npcv_186_yao",
@@ -2153,7 +3177,14 @@
       "level": 9,
       "desc": "镖师强秋在老茶馆坐了很久，等一个说法。那趟误期的镖，坏在一坛酒上。",
       "require": {
-        "questDone": "hk_npcv_074_yajian"
+        "and": [
+          {
+            "questDone": "hk_npcv_074_yajian"
+          },
+          {
+            "flag": "jiuye_done"
+          }
+        ]
       },
       "stages": [
         {
@@ -2168,7 +3199,7 @@
               "desc": "在老茶馆找强秋，问那趟误期的镖"
             }
           ],
-          "next": 99,
+          "next": 1,
           "effects": [
             {
               "type": "say",
@@ -2181,6 +3212,95 @@
             {
               "type": "menu",
               "raw": "那坛酒|替他还强秋一个说法>+karma:10;+exp:260;+pot:60;favor:npcv_081:40;incvar:favor_npcv_081:40;flag:hk_npcv_074_qian_clear;;不问>+exp:100;favor:npcv_074:10;incvar:favor_npcv_074:10"
+            }
+          ]
+        },
+        {
+          "desc": "去东市·大街，看镖行的账上那趟误期记了什么",
+          "targets": [
+            {
+              "id": "hk_npcv_074_qian_go1",
+              "kind": "room",
+              "key": "jn_market_main",
+              "count": 1,
+              "var": "hk_npcv_074_qian_go1",
+              "desc": "去大街看镖行账"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "乐知把那趟的账翻出来。误期三天的罚银记了，压货的利息记了，栏外还有一行小字：酒。"
+            },
+            {
+              "type": "say",
+              "raw": "「货单上没有酒。多出来的这一笔，是护镖的兄弟们凑钱添的。添给谁，账上不能写。」"
+            },
+            {
+              "type": "menu",
+              "raw": "账上这一行|照账念给他听，一个字不改>+exp:140;+karma:5;flag:j2b_qian_zhang;;替他把那一行遮过去>-money:30;+pot:40;flag:j2b_qian_zhang"
+            }
+          ]
+        },
+        {
+          "desc": "去东市·醉仙楼，查那晚被换掉的酒是哪来的",
+          "targets": [
+            {
+              "id": "hk_npcv_074_qian_go2",
+              "kind": "room",
+              "key": "jn_wine_house",
+              "count": 1,
+              "var": "hk_npcv_074_qian_go2",
+              "desc": "去醉仙楼查酒"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "店小二记得那坛酒：「那晚有人来买一坛陈酿，指名要最烈的。买主付了双倍的价，只问了一句：几点关城门。」"
+            },
+            {
+              "type": "say",
+              "raw": "「我们只卖酒，不卖别的话。可那坛酒抬出去的时候，我瞧见买主的靴子，是衙门里的样式。」"
+            },
+            {
+              "type": "menu",
+              "raw": "买主的靴子|多给二十文，把模样问细>-money:20;+exp:130;flag:j2b_qian_jiu;;不追问，记下关城门的时辰>+exp:120;+pot:40;flag:j2b_qian_jiu"
+            }
+          ]
+        },
+        {
+          "desc": "回东市·老茶馆，把这个说法带到强秋那桌",
+          "targets": [
+            {
+              "id": "hk_npcv_074_qian_go3",
+              "kind": "room",
+              "key": "jn_teahouse",
+              "count": 1,
+              "var": "hk_npcv_074_qian_go3",
+              "desc": "回老茶馆交话"
+            }
+          ],
+          "next": 99,
+          "lock": {
+            "flag": "jiuye_done",
+            "name": "卷二·风起",
+            "msg": "这桩事还没到能见底的时候。东边的路没开，话就还没处说。"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "和归鸿把那晚的事原原本本说了。强秋听完，端着茶碗半天没动。"
+            },
+            {
+              "type": "say",
+              "raw": "「误的镖我认赔，酒我不认。」强秋把碗搁下，「我等的不是赔罪，是这句实话。」"
+            },
+            {
+              "type": "menu",
+              "raw": "这个说法|当面把话带到，让两个人把梁子解了>+favor:npcv_081:30;incvar:favor_npcv_081:30;+karma:8;+exp:160;flag:j2b_qian_done;;替和归鸿把酒钱赔了，不说破是谁>-money:60;+favor:npcv_074:20;incvar:favor_npcv_074:20;+exp:130;flag:j2b_qian_done"
             }
           ]
         }
@@ -2521,7 +3641,7 @@
               "desc": "去衙门·架阁库，调那批庙产的旧档"
             }
           ],
-          "next": 99,
+          "next": 1,
           "effects": [
             {
               "type": "narrate",
@@ -2536,6 +3656,95 @@
               "raw": "那半张契|替她压下>+karma:-15;+exp:240;+pot:60;flag:hk_npcv_095_qi_hide;;把旧档原样呈上>+rep:朝廷:20;+exp:260;flag:hk_npcv_095_qi_show"
             }
           ]
+        },
+        {
+          "desc": "去城西·破庙，看任停那半张契的下落",
+          "targets": [
+            {
+              "id": "hk_npcv_095_qi_go1",
+              "kind": "room",
+              "key": "gaibang_po_miao",
+              "count": 1,
+              "var": "hk_npcv_095_qi_go1",
+              "desc": "去破庙找任停的半张契"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "佛座底下果然压着半张契，纸色比庞南枝那半张旧。两半的裂口对上，严丝合缝。"
+            },
+            {
+              "type": "say",
+              "raw": "和苍念了半句佛号：「住了七年，庙是家。契是纸。贫道只认得家，认不得纸。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那半张契|只看裂口，不动原物>+exp:140;+karma:8;flag:j2b_qi_ken;;借走对档，明日归还>+exp:130;flag:j2b_qi_ken"
+            }
+          ]
+        },
+        {
+          "desc": "去翰墨斋·后堂，请鲁拂衣验年份上那两笔的墨",
+          "targets": [
+            {
+              "id": "hk_npcv_095_qi_go2",
+              "kind": "room",
+              "key": "jn_study_1",
+              "count": 1,
+              "var": "hk_npcv_095_qi_go2",
+              "desc": "去后堂验墨"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "鲁拂衣对着日头看了半晌。「契身的墨沉在纸里，年份那两个字的墨浮在面上。浮墨，至多五年。」"
+            },
+            {
+              "type": "say",
+              "raw": "「落款两百多年的道观，添了五年新的年份。添字的人不怕神佛，怕官府。」"
+            },
+            {
+              "type": "menu",
+              "raw": "验墨的结论|请她落一纸凭据，往后呈堂用得上>+exp:150;flag:j2b_qi_mo;;口头记住，不落纸面>+pot:50;flag:j2b_qi_mo"
+            }
+          ]
+        },
+        {
+          "desc": "回江南城·城隍庙，把两半契的去向交给庞南枝",
+          "targets": [
+            {
+              "id": "hk_npcv_095_qi_go3",
+              "kind": "room",
+              "key": "jiangnan_temple",
+              "count": 1,
+              "var": "hk_npcv_095_qi_go3",
+              "desc": "回城隍庙回话"
+            }
+          ],
+          "next": 99,
+          "lock": {
+            "flag": "jiuye_done",
+            "name": "卷二·风起",
+            "msg": "这桩事还没到能见底的时候。东边的路没开，话就还没处说。"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "庞南枝把两半契在石桌上拼起来，看了很久。「争了七年，争的是这一行浮墨。」"
+            },
+            {
+              "type": "say",
+              "raw": "「师父说莫争。我争了七年，到头来是该争的东西没争，不该争的争了七年。」"
+            },
+            {
+              "type": "menu",
+              "raw": "两半契|合在一起，还给破庙，庙归住的人>+favor:npcv_095:30;incvar:favor_npcv_095:30;+karma:10;+exp:160;flag:j2b_qi_done;;连验墨凭据一起呈衙门，公断>+rep:朝廷:15;+exp:150;favor:npcv_095:-15;incvar:favor_npcv_095:-15;flag:j2b_qi_done"
+            }
+          ]
         }
       ],
       "rewards": [
@@ -2543,7 +3752,10 @@
           "type": "say",
           "raw": "庞南枝把契收进佛龛后头，压在一部经书上。"
         }
-      ]
+      ],
+      "require": {
+        "flag": "jiuye_done"
+      }
     },
     "hk_npcv_095_shifu": {
       "id": "hk_npcv_095_shifu",
@@ -2614,7 +3826,7 @@
               "desc": "在后堂找樊湘、岑元，问落第那年的考卷"
             }
           ],
-          "next": 99,
+          "next": 1,
           "effects": [
             {
               "type": "say",
@@ -2629,6 +3841,95 @@
               "raw": "那一页考卷|替她还回去>+karma:15;+exp:240;+pot:60;favor:npcv_234:40;incvar:favor_npcv_234:40;flag:hk_npcv_036_juanzi_back;;替她压下>+rep:*:10;+karma:-15;+exp:150;favor:npcv_036:20;incvar:favor_npcv_036:20;flag:hk_npcv_036_juanzi_hold"
             }
           ]
+        },
+        {
+          "desc": "去白鹿书院·讲堂，问夫子樊湘落第那一年的旧事",
+          "targets": [
+            {
+              "id": "hk_npcv_036_juanzi_go1",
+              "kind": "room",
+              "key": "jn_school",
+              "count": 1,
+              "var": "hk_npcv_036_juanzi_go1",
+              "desc": "去书院问旧年学籍"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "夫子翻着旧学籍：「樊湘那年卷子被墨污了半页，按例誊抄复核。誊抄的卷子，没进过贡院。」"
+            },
+            {
+              "type": "say",
+              "raw": "「污卷是常有的事。少见的是，誊抄那一页后来自己长了腿。」"
+            },
+            {
+              "type": "menu",
+              "raw": "学籍这一册|翻誊抄那一页的存根>+exp:140;+pot:40;flag:j2b_juanzi_xue;;问誊抄经手人的名字>+exp:130;+karma:5;flag:j2b_juanzi_xue"
+            }
+          ]
+        },
+        {
+          "desc": "去衙门·架阁库，对贡院留底的那份副本",
+          "targets": [
+            {
+              "id": "hk_npcv_036_juanzi_go2",
+              "kind": "room",
+              "key": "jn_yamen_arch",
+              "count": 1,
+              "var": "hk_npcv_036_juanzi_go2",
+              "desc": "去架阁库对副本"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "架阁库里那份副本找到了，纸角泡过水，字还在。誊抄卷与副本并排一放：文气一致，落笔却差着一个时辰。"
+            },
+            {
+              "type": "say",
+              "raw": "看库的老吏把两份卷子分开收好：「差一个时辰，就是两份卷子。两份卷子，就有一份是假的。」"
+            },
+            {
+              "type": "menu",
+              "raw": "两份卷子|并排抄一份对照，留个凭据>+rep:朝廷:8;+exp:140;flag:j2b_juanzi_fu;;只记差异，卷子原样归档>+exp:130;+pot:40;flag:j2b_juanzi_fu"
+            }
+          ]
+        },
+        {
+          "desc": "回翰墨斋·后堂，让鲁拂衣对那一页做个了断",
+          "targets": [
+            {
+              "id": "hk_npcv_036_juanzi_go3",
+              "kind": "room",
+              "key": "jn_study_1",
+              "count": 1,
+              "var": "hk_npcv_036_juanzi_go3",
+              "desc": "回后堂回了断"
+            }
+          ],
+          "next": 99,
+          "lock": {
+            "flag": "jiuye_done",
+            "name": "卷二·风起",
+            "msg": "这桩事还没到能见底的时候。东边的路没开，话就还没处说。"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "鲁拂衣把两处对好的结果听完，从书堆底下抽出那一页。「抄它的时候我不懂事。存着它的时候，我更不懂事。」"
+            },
+            {
+              "type": "say",
+              "raw": "「读书人的事，算不得手段。可手段不认你算不算。」"
+            },
+            {
+              "type": "menu",
+              "raw": "那一页|还回去，连誊抄的实情一并说清>+favor:npcv_036:30;incvar:favor_npcv_036:30;+karma:10;+exp:170;flag:j2b_juanzi_done;;烧了它，就当没有过这一页>+karma:-10;+favor:npcv_234:-20;incvar:favor_npcv_234:-20;+exp:140;flag:j2b_juanzi_done"
+            }
+          ]
         }
       ],
       "rewards": [
@@ -2636,7 +3937,10 @@
           "type": "say",
           "raw": "鲁拂衣把那一页夹回了原处，压得很平。"
         }
-      ]
+      ],
+      "require": {
+        "flag": "jiuye_done"
+      }
     },
     "hk_npcv_036_kai": {
       "id": "hk_npcv_036_kai",
@@ -3117,6 +4421,39 @@
       "neighbors": [
         "杜听涛",
         "和归鸿"
+      ],
+      "quests": [
+        "hk_npcv_009_shuoshu"
+      ],
+      "actions": [
+        {
+          "cmd": "问柳三弦",
+          "label": "向柳三弦打听说书的事",
+          "keywords": [
+            "问柳三弦",
+            "柳三弦旧事",
+            "打听旧事"
+          ],
+          "desc": "说书人那张嘴",
+          "cond": {
+            "not": {
+              "quest": "hk_npcv_009_shuoshu"
+            }
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "熊时不识字，可全城欠钱的人，名字一个跑不掉。跑不掉，是因为有人的嘴。"
+            },
+            {
+              "type": "quest",
+              "args": [
+                "hk_npcv_009_shuoshu",
+                0
+              ]
+            }
+          ]
+        }
       ]
     },
     "npcv_241": {
@@ -3635,8 +4972,7 @@
     "npcv_009": {
       "id": "npcv_009",
       "quests": [
-        "hk_npcv_009_baizi",
-        "hk_npcv_009_shuoshu"
+        "hk_npcv_009_baizi"
       ],
       "actions": [
         {
@@ -3658,30 +4994,6 @@
               "type": "quest",
               "args": [
                 "hk_npcv_009_baizi",
-                0
-              ]
-            }
-          ]
-        },
-        {
-          "cmd": "听说书",
-          "label": "听说书",
-          "keywords": [],
-          "desc": "说书人那张嘴",
-          "cond": {
-            "not": {
-              "quest": "hk_npcv_009_shuoshu"
-            }
-          },
-          "effects": [
-            {
-              "type": "narrate",
-              "raw": "熊时不识字，可全城欠钱的人，名字一个跑不掉。跑不掉，是因为有人的嘴。"
-            },
-            {
-              "type": "quest",
-              "args": [
-                "hk_npcv_009_shuoshu",
                 0
               ]
             }
