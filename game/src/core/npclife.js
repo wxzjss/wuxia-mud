@@ -106,8 +106,26 @@ const QUARREL = [
 
 /* ---------------- ① 过日子：打工 / 吃喝 / 练功 / 打坐 ---------------- */
 
+/**
+ * 兽类判定（单一入口 = bestiary.speciesOf，2026-10-18 主人真机「野猪打短工挣 32 文」）。
+ * 野猪/灰狼/毒蛇是野兽，不该有打工挣钱、下馆子这类人类经济行为。
+ * 判据复用 bestiary 的锚定 id 表（mob_wolf/boar/snake/tiger/black_bear/leopard
+ * + 显式 species 声明）——mob_bandit/soldier/assassin 是人，判不出物种照旧。
+ * ⚠️ 只认显式锚定 id，不猜名字关键词（BLK-2 教训，见 bestiary 文件头）。
+ */
+function beastOf(world, npc) {
+  try {
+    const B = require('./bestiary');
+    const def = (npc && npc.def) || (world && world.data && world.data.npcs && world.data.npcs[npc.defId]) || null;
+    return B.speciesOf({ id: (npc && npc.defId) || (def && def.id) || '', species: def && def.species });
+  } catch (e) { return null; }
+}
+
 /** 一个 NPC 这一刻最该干什么（看他的状态，不是随机） */
 function decide(world, npc) {
+  /* 兽类不进人类日程：打工/下馆子/练功/打坐都不是兽干的事，
+     兽只拱地、巡山、晒太阳（actBeast）。 */
+  if (beastOf(world, npc)) return 'beast';
   const mp = npc.mp || 0, maxMp = npc.maxMp || 0;
   const money = purseOf(npc);
   const learned = Object.keys(npc.learned || {});
@@ -169,7 +187,30 @@ function actMeditate(world, npc) {
   return { text: `${npc.name}盘腿坐下了，闭着眼细细地调息。`, kind: 'plain' };
 }
 
+/* ---------------- ①b 兽类行为（2026-10-18 人兽分域）----------------
+   野猪可以是「在林子里拱了一夜地」，但不能是「打短工挣 32 文」。
+   只播行为，不动钱袋（兽不挣钱也不下馆子）；文案像兽，不像人。 */
+const BEAST_LINE = {
+  snake: ['{a}盘在向阳的石头上，吐了吐信子。', '{a}顺着墙根悄没声地游了过去。', '{a}在草窠里盘了一圈，又不动了。'],
+  beast: ['{a}在林子里拱了一夜地。', '{a}沿着溪边嗅了一圈，低头喝了口水。', '{a}在坡上刨了个坑，趴下了。', '{a}冲着林子深处低吼了两声。'],
+};
+
+function actBeast(world, npc) {
+  const sp = beastOf(world, npc) || 'beast';
+  const t = pickBy(BEAST_LINE[sp] || BEAST_LINE.beast, (npc.defId || npc.id || '') + 'b' + Math.floor((world.clockMinutes || 0) / 240));
+  return { text: t.replace(/\{a\}/g, npc.name), kind: 'plain' };
+}
+
 /* ---------------- ② 社交：聊两句 / 拌嘴 ---------------- */
+
+/** 兽与兽（或兽与人）碰面：只是演出，没有寒暄、没有好感账。首句即主人真机
+    「毒蛇朝灰狼那边看了一眼，很快收回来」的合格样例。 */
+const BEAST_PAIR = [
+  '{a}朝{b}那边看了一眼，很快收回来。',
+  '{a}与{b}隔着几步远，谁也没动。',
+  '{a}压低了身子，冲{b}龇了龇牙。',
+  '{a}绕开{b}走了。',
+];
 
 /**
  * 同屋两个人的互动。
@@ -179,6 +220,13 @@ function actMeditate(world, npc) {
 function socialize(world, a, b) {
   const P = require('./personality');
   const out = [];
+  /* 兽间社交演出（2026-10-18 主人定调：「毒蛇朝灰狼那边看了一眼」这类可以留，
+     但拱手/问吃了吗/聊物价是人类寒暄，兽不干；好感/拌嘴/动手也一并免了——
+     兽没有性格相性那套人类账。） */
+  if (beastOf(world, a) || beastOf(world, b)) {
+    const seed = `${a.defId || a.id}|${b.defId || b.id}|${Math.floor((world.clockMinutes || 0) / 240)}`;
+    return [{ kind: 'plain', text: pickBy(BEAST_PAIR, seed).replace(/\{a\}/g, a.name).replace(/\{b\}/g, b.name) }];
+  }
   const aff = P.affinityOf(P.personaIdOf(a), P.personaIdOf(b));
   const seed = `${a.defId || a.id}|${b.defId || b.id}|${Math.floor((world.clockMinutes || 0) / 240)}`;
   const known = (a.favor || 0) > 0 || (b.favor || 0) > 0;
@@ -350,6 +398,7 @@ function onTick(world, minutes) {
     let line = null;
     if (what === 'work') line = actWork(world, n);
     else if (what === 'eat') line = actEat(world, n);
+    else if (what === 'beast') line = actBeast(world, n);
     else if (what === 'practice') line = actPractice(world, n);
     else if (what === 'meditate') line = actMeditate(world, n);
     if (line) out.push(line);
@@ -383,6 +432,6 @@ function onTick(world, minutes) {
 
 module.exports = {
   onTick, decide, socialize, haggle, bidWar, tourneySay,
-  purseOf, setPurse, bagOf, hasForce, actWork, actEat, actPractice, actMeditate,
-  GREET, SMALLTALK, QUARREL, TOURNEY_SAY, CFG,
+  purseOf, setPurse, bagOf, hasForce, actWork, actEat, actPractice, actMeditate, actBeast, beastOf,
+  GREET, SMALLTALK, QUARREL, TOURNEY_SAY, BEAST_LINE, BEAST_PAIR, CFG,
 };

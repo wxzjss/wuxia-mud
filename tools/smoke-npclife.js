@@ -168,5 +168,68 @@ console.log('===== ⑦ 世界自己会转（onTick 出播报） =====');
   ok('播报里没有 AI 腔', !lines.some(l => /命运的齿轮|这一刻|不禁/.test(l.text)));
 }
 
+console.log('===== ⑧ 人兽分域：mob 不打工挣钱（主人真机「野猪打短工挣 32 文」） =====');
+{
+  const mk = (id, name) => ({ id, defId: id, name, isNpc: true, carry: { money: 5 } });
+  const boar = mk('mob_boar', '野猪'), wolf = mk('mob_wolf', '灰狼'),
+    snake = mk('mob_snake', '毒蛇'), bandit = mk('mob_bandit', '山贼');
+
+  ok('判据：野猪/灰狼/野猪族判兽、毒蛇判蛇，山贼仍是人（bestiary 单一入口）',
+    L.beastOf(w, boar) === 'beast' && L.beastOf(w, wolf) === 'beast'
+    && L.beastOf(w, snake) === 'snake' && !L.beastOf(w, bandit),
+    [L.beastOf(w, boar), L.beastOf(w, wolf), L.beastOf(w, snake), L.beastOf(w, bandit)].join('/'));
+  ok('★ 反例钉死：野兽再穷也不进人类日程（decide 恒 beast，不给 work/eat）',
+    (() => { for (let i = 0; i < 300; i++) if (L.decide(w, boar) !== 'beast') return false; return true; })());
+  ok('★ 主人案例（野猪 32 文）不复现：野兽钱袋分文不动',
+    (() => {
+      const before = L.purseOf(boar);
+      for (let i = 0; i < 50; i++) if (L.decide(w, boar) === 'work') L.actWork(w, boar);
+      return L.purseOf(boar) === before;
+    })());
+  const bl = L.actBeast(w, boar);
+  ok('兽类行为播报样例：像兽不像人（无短工/挣/文）',
+    bl.text.indexOf('野猪') === 0 && !/短工|挣|文/.test(bl.text), bl.text);
+  ok('兽类文案池按物种分句（蛇/兽各有池）',
+    L.BEAST_LINE.snake.length >= 3 && L.BEAST_LINE.beast.length >= 3);
+
+  /* 兽间社交：演出保留，人类寒暄与好感账全免 */
+  const favA = snake.favor || 0, favB = wolf.favor || 0;
+  const pair = L.socialize(w, snake, wolf);
+  const pairText = pair.map(l => l.text).join('|');
+  ok('★ 兽间演出保留（主人原话「毒蛇朝灰狼那边看了一眼」即池中合格样例）',
+    pair.length === 1 && pairText.indexOf('{a}') < 0 && pairText.indexOf('{b}') < 0,
+    pairText);
+  ok('兽间演出没有人类寒暄（拱手/吃了吗/雨水物价）与好感账',
+    !/拱手|吃了吗|雨水|物价|喜事|戏班子/.test(pairText)
+    && (snake.favor || 0) === favA && (wolf.favor || 0) === favB, pairText);
+
+  /* 端到端：真 onTick 抽样里，野猪零「挣钱」播报 */
+  const e3 = new GameEngine({ seed: 20261010 });
+  e3.boot(); e3.newGame({ name: '丙', gender: '男', identity: 'zhuangyuan' });
+  const w3 = e3.world;
+  const b3 = w3.spawnNpc('mob_boar', w3.player.room, 1, true);
+  b3.carry = { money: 5 };
+  const all = [];
+  for (let i = 0; i < 200; i++) {
+    delete b3._lifeDay;                                   /* 免掉一日一动的抽样门槛，专打分域 */
+    w3.clockMinutes = (w3.clockMinutes || 0) + 30;
+    all.push(...(L.onTick(w3, 30) || []));
+  }
+  ok('★ 端到端反例：200 轮 onTick 里野猪零「挣钱/短工」播报',
+    !all.some(l => /野猪/.test(l.text) && /短工|挣|文/.test(l.text)),
+    all.length + ' 行，含野猪 ' + all.filter(l => /野猪/.test(l.text)).length + ' 行');
+  ok('端到端：野猪的全部播报都是兽类行为（BEAST_LINE 池或兽人碰面 BEAST_PAIR 模板）',
+    all.filter(l => /野猪/.test(l.text)).every(l =>
+      /* 独行：BEAST_LINE.beast 原句（{a}=野猪）；碰面：BEAST_PAIR 四式模板
+         （野猪可居 {a} 或 {b}，对面是出生点定岗 NPC）。 */
+      L.BEAST_LINE.beast.some(t => l.text === t.replace('{a}', '野猪'))
+      || [
+        /^野猪朝(.+)那边看了一眼，很快收回来。$/, /^(.+)朝野猪那边看了一眼，很快收回来。$/,
+        /^野猪与(.+)隔着几步远，谁也没动。$/, /^(.+)与野猪隔着几步远，谁也没动。$/,
+        /^野猪压低了身子，冲(.+)龇了龇牙。$/, /^(.+)压低了身子，冲野猪龇了龇牙。$/,
+        /^野猪绕开(.+)走了。$/, /^(.+)绕开野猪走了。$/,
+      ].some(re => re.test(l.text))));
+}
+
 console.log(`\n===== smoke-npclife: ${pass} 通过 / ${fail} 失败 =====`);
 process.exit(fail ? 1 : 0);
