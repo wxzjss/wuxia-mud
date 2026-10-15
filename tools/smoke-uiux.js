@@ -1898,6 +1898,67 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
       && /function renderDirPad\(/.test(UISRC12)
       && /renderDirPad\(S\.view\)/.test(UISRC12)
       && /#dirpad:not\(\[hidden\]\)/.test(CSS12));
+
+    /* ⑤⑥⑦ 快捷栏瘦身（design/103 §四 · 2026-10-18 放行施工）：
+       撤 查看四周 / 打坐 / 运功疗伤（→状态面板动作钮）/ 拍卖（→场景化），
+       练武学按 §二「留（中期并入）」保留。常驻 = 背包·装备·武学·状态·地图·
+       行路·任务·帮助·吐纳·练武学 = 10 颗，门派是条件颗。 */
+    const qbEnv = loadUi(makeEnv({}));
+    stubApi(qbEnv, VIEW);
+    qbEnv.WX.S.view = VIEW;
+    qbEnv.WXUI.renderQuickbar(VIEW);
+    const qbCmds = [...qbEnv.document.getElementById('quickbar').innerHTML.matchAll(/data-cmd="([^"]+)"/g)]
+      .map(m => m[1]);
+    ok('S12-5 ★ 快捷栏常驻恰好 10 颗（查看四周/打坐/运功疗伤/拍卖已撤）',
+      qbCmds.length === 10
+      && ['i', 'equipment', 'skills', 'sc', 'map', 'fly', 'quests', 'help', '吐纳', '练武学']
+        .every(c => qbCmds.indexOf(c) >= 0)
+      && ['look', 'meditate', 'heal', 'auction'].every(c => qbCmds.indexOf(c) < 0),
+      JSON.stringify(qbCmds));
+    /* 门派条件颗：有门派的玩家多一颗「门派」 */
+    const qbEnv2 = loadUi(makeEnv({}));
+    stubApi(qbEnv2, VIEW);
+    const sectView = Object.assign({}, VIEW, {
+      player: Object.assign({}, VIEW.player, { sectName: '武当派' }),
+    });
+    qbEnv2.WX.S.view = sectView;
+    qbEnv2.WXUI.renderQuickbar(sectView);
+    const qbCmds2 = [...qbEnv2.document.getElementById('quickbar').innerHTML.matchAll(/data-cmd="([^"]+)"/g)]
+      .map(m => m[1]);
+    ok('S12-6 ★ 门派条件颗：有门派 11 颗（多「门派」）、无门派没有',
+      qbCmds2.length === 11 && qbCmds2.indexOf('sect') >= 0 && qbCmds.indexOf('sect') < 0,
+      JSON.stringify(qbCmds2));
+
+    /* 状态面板两颗恢复钮（打坐/运功疗伤的新家）：贴在血蓝条数值下方，
+       走通用 .op-btn[data-cmd] 通路，panel() 渲染后 bindPanelActions 自动接事件。 */
+    const scEnv = loadUi(makeEnv({}));
+    const scRec = stubApi(scEnv, VIEW);
+    scEnv.WX.S.view = VIEW;
+    await scEnv.WXUI.panel('score');
+    const scHtml = scEnv.document.getElementById('modal-body').innerHTML;
+    const medM = scHtml.match(/<button class="op-btn" data-cmd="meditate"[^>]*>打坐<\/button>/);
+    const healM = scHtml.match(/<button class="op-btn" data-cmd="heal"[^>]*>运功疗伤<\/button>/);
+    ok('S12-7 ★ 状态面板有「打坐/运功疗伤」两颗动作钮（panel-acts 行内，op-btn 通路）',
+      !!medM && !!healM
+      && /class="panel-acts">[\s\S]*data-cmd="meditate"[\s\S]*data-cmd="heal"/.test(scHtml)
+      && /panel-acts/.test(fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'css', 'main.css'), 'utf8')),
+      (medM ? '' : '缺打坐 ') + (healM ? '' : '缺运功疗伤'));
+    /* 真点打坐：走 op-btn 通用绑定（bindPanelActions 在 panel() 尾自动跑）。
+       ⚠️ 必须用与 bindPanelActions **同一个选择器串**（'#modal-body .op-btn'）：
+          stub 的 querySelectorAll 按 (选择器, innerHTML) 缓存 —— 换个串会解析出
+          一套新元素对象，onclick 绑在旧对象上，点了没反应（假红）。 */
+    const scBtns = scEnv.document.getElementById('modal-body').querySelectorAll('#modal-body .op-btn');
+    const med = scBtns.find(b => b.getAttribute('data-cmd') === 'meditate');
+    if (med && typeof med.onclick === 'function') {
+      med.onclick();
+      await settle();
+      ok('S12-8 ★ 点「打坐」真发 meditate 指令（op-btn 通路：关面板→执行）',
+        scRec.exec.some(x => x.cmd === 'meditate'),
+        JSON.stringify(scRec.exec.map(x => x.cmd)));
+    } else {
+      ok('S12-8 ★ 点「打坐」真发 meditate 指令（op-btn 通路：关面板→执行）',
+        false, 'stub 解析不出按钮或 onclick 未绑');
+    }
   }
 
   console.log('\n———————————————————————————————');

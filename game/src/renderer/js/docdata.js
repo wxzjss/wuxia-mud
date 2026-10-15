@@ -244,7 +244,7 @@
   <tr><td>门派</td><td><code>sect</code> / <code>join 门派</code> / <code>promote</code> / <code>contribute</code></td></tr>
   <tr><td>战斗</td><td><code>kill 人</code> / <code>flee</code> / <code>auto</code></td></tr>
   <tr><td>任务</td><td><code>quests</code> / <code>accept 任务</code> / <code>report</code> / <code>abandon 任务</code></td></tr>
-  <tr><td>店铺</td><td><code>list 商人</code> / <code>buy 物 数量</code> / <code>sell 物 数量</code></td></tr>
+  <tr><td>店铺</td><td><code>list 商人</code> / <code>buy 物 数量</code> / <code>sell 物 数量</code> / <code>拍卖</code>（六大城市集的拍卖行看拍寄卖）</td></tr>
   <tr><td>系统</td><td><code>save</code> / <code>load</code> / <code>map</code> / <code>sc</code> / <code>attr</code> / <code>time</code> / <code>rebirth</code>（转生）</td></tr>
   </table>
 </div>
