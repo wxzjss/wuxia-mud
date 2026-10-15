@@ -23,12 +23,11 @@
       /* 界面配色：`dark`（默认，主人 2026-10-11 要的整页暗）/ `light`。
          老存档里没有这一项 —— ui.js 的 themeOf() 一律当 dark，也就是新默认。 */
       theme: 'dark',
-      /* P0-C C-1「地图显示未探索地名」：**默认关** ⇒ 未探索的地块只显示留白，
-         不剧透名字与出口（后端 fog=1）。
-         ⚠️ 老存档的 localStorage 里没有这一项 —— `loadSettings` 用的是
-            `Object.assign(S.settings, 存档)`，缺的键自动吃到这里的默认值 `false`，
-            不需要写迁移。 */
-      mapnames: false
+      /* 屏幕下方方向九宫格：**默认隐藏**，设置「方向九宫格」手动打开
+         （2026-10-18 主人四条 UI 之④）。开关随 wxgame.settings.v1 单键持久化，
+         沿用既有收敛纪律，不新增 localStorage 键。
+         ⚠️ 老存档没有这一项 —— loadSettings 的 Object.assign 自动吃到默认 false。 */
+      dirpad: false
     },
     my: null               // 当前登录（本站简易身份，存 localStorage）
   };

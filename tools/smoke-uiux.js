@@ -1844,6 +1844,62 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
       r2.filter(t => t === '攻击 游侠').length === 1 && r2.indexOf('交谈 游侠') >= 0, JSON.stringify(r2));
   }
 
+  /* ---------- §12 主人四条 UI（2026-10-18）：placeholder / 玩家块去红底 /
+              迷雾探索制 / 九宫格方向盘 ----------
+     断言缝：§12-2/§12-3 走「从真 ui.js 抠 mapHtml 真渲染」（与 map 族守卫同款 grab），
+     其余为源码静态契约（index.html / main.css / app.js 的接线三件套）。 */
+  section('§12 主人四条 UI：输入框指引 · 玩家块金字 · 迷雾探索制 · 九宫格开关');
+  {
+    const HTML = fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'index.html'), 'utf8');
+    const UISRC12 = fs.readFileSync(path.join(RJS, 'ui.js'), 'utf8');
+    const CSS12 = fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'css', 'main.css'), 'utf8');
+    const APPSRC = fs.readFileSync(path.join(RJS, 'app.js'), 'utf8');
+
+    /* ① 输入框 placeholder：教主人用「帮助」指令 */
+    ok('S12-1 ★ 输入框 placeholder =「输入「帮助」查看指令」',
+      HTML.indexOf('placeholder="输入「帮助」查看指令"') >= 0);
+
+    /* ② 玩家块只留金字：朱砂方印（.mn-seal）删干净，.here 金字契约仍在 */
+    const grab12 = (name) => {
+      const mm = UISRC12.match(new RegExp('function ' + name + '\\([\\s\\S]*?\\n  \\}'));
+      if (!mm) throw new Error('未找到 ' + name);
+      return mm[0];
+    };
+    const esc12 = s => String(s == null ? '' : s).replace(/[&<>"]/g,
+      c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const mapHtml12 = new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF',
+      grab12('mapHtml') + '\nreturn mapHtml;')(
+      esc12, 30, 26, 34, { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下' },
+      { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0], u: [0, -1], d: [0, 1] });
+    const hHere = mapHtml12(VIEW);
+    ok('S12-2 ★ 玩家块无红底方印（.mn-seal 渲染与 CSS 双删），金字（.here）仍在',
+      hHere.indexOf('mn-seal') < 0
+      && !/\.mn-seal\s*\{/.test(CSS12)
+      && /\.map-node\.here \.mn-name\s*\{[^}]*color/.test(CSS12)
+      && /class="map-node here"/.test(hHere));
+
+    /* ③ 迷雾探索制：没探索过的零渲染（开局只有脚下 1 格）；
+       「相邻可走」空心圈（.mn-ring）随探索制整体退役。 */
+    const hereIds = VIEW.map.rooms.filter(r => r.visited || r.current).map(r => r.id);
+    const drawn12 = (hHere.match(/data-room="([^"]+)"/g) || []).map(s => s.slice(11, -1));
+    ok('S12-3 ★ 探索制零渲染：画布上只有 visited∪current（开局=脚下 1 格），无空心圈',
+      hereIds.length === 1
+      && drawn12.length === 1 && drawn12[0] === hereIds[0]
+      && hHere.indexOf('mn-ring') < 0
+      && !/\.mn-ring\s*\{/.test(CSS12)
+      && UISRC12.indexOf('if (!r.visited && !r.current) return;') >= 0,
+      'visited=' + hereIds.length + ' drawn=' + drawn12.join(','));
+
+    /* ④ 九宫格方向盘：默认隐藏 + 设置开关（settings.dirpad 单键持久化）
+       接线三件套：HTML 挂 hidden 容器 / app.js 默认 false / ui.js 渲染+applySettings 即时生效。 */
+    ok('S12-4 ★ 九宫格：#dirpad 默认 hidden + settings.dirpad 默认 false + 渲染/设置双接线',
+      /<div id="dirpad" class="dirpad" hidden>/.test(HTML)
+      && /dirpad:\s*false/.test(APPSRC)
+      && /function renderDirPad\(/.test(UISRC12)
+      && /renderDirPad\(S\.view\)/.test(UISRC12)
+      && /#dirpad:not\(\[hidden\]\)/.test(CSS12));
+  }
+
   console.log('\n———————————————————————————————');
   console.log(`  批次7 双端与 UI 回归：${pass} 通过 / ${fail} 失败`);
   if (fails.length) console.log('  失败项：' + fails.join('、'));

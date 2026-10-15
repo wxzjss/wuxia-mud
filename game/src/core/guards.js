@@ -30,6 +30,16 @@ const COOLDOWN = 90;
 
 function wantedOf(p) { return Math.round((p && p.kidnap && p.kidnap.wanted) || 0); }
 
+/* ---------- 硬闯戒备（2026-10-18 主人门禁两病裁定）----------
+   病①：硬闯 +15 恶名、天下人都看在眼里，可再去山门没人拦——
+        根因有二：拦人冷却把「问话」连同「拦截」一起免了；打赢后守卫倒地
+        guardIn 查无人 → 直接放行。修法：**硬闯无论成败都记档**
+        （gateBreach_<sectId> flag，随档持久化），戒备态下守卫见你就动手。 */
+function breachFlag(sectId) { return 'gateBreach_' + sectId; }
+function isBreach(world, p, sectId) {
+  return !!(p && p.hasFlag && p.hasFlag(breachFlag(sectId)));
+}
+
 /** 房间是不是某家山门（返回该门派数据，不是就 null）。
  *  ⚠️ 判据用 `sect.entry`（41_sect_entry.json 里的权威入口），
  *     与「飞往」落点同源 —— 两处用同一个来源，才不会守卫守 A 门、你飞到 B 门。 */
@@ -105,9 +115,31 @@ function maybeBar(world, player, room, npcs) {
   const guard = guardIn(world, roomId);
   if (!guard) return null;   /* 没人看着（数据缺失）→ 不硬拦，保住可玩性 */
 
-  /* 冷却：同一守卫一炷香内不重复拦同一个人 */
+  /* 冷却：同一守卫一炷香内不重复拦同一个人。
+     ⚠️ 戒备态（硬闯被记档）不吃冷却——冷却免的是「重复问话」，
+        不是「放行」；戒备态守卫见你就动手（见下）。 */
   const now = world.clockMinutes || 0;
-  if (p.vars && p.vars.guardAt && p.vars.guardAt.sect === sd.id && now - p.vars.guardAt.at < COOLDOWN) return null;
+  const breach = isBreach(world, p, sd.id);
+  if (!breach && p.vars && p.vars.guardAt && p.vars.guardAt.sect === sd.id && now - p.vars.guardAt.at < COOLDOWN) return null;
+
+  /* 🔴 戒备态：守卫 hostile 起手——不问话、不给报名号，拔刀就上。
+     （主人口令：恶名入档后该门派守卫对玩家 hostile 起手。）
+     startCombat 与 encounter 遇袭同一条通路（ambush），台词由战斗句库出。 */
+  if (breach) {
+    p.vars = p.vars || {};
+    p.vars.guardAt = { sect: sd.id, at: now };
+    p.vars.guardBy = guard.defId || guard.id;
+    let more = [];
+    try {
+      const r = world.startCombat(p, guard, { ambush: true });
+      if (r && Array.isArray(r.lines)) more = r.lines;
+    } catch (e) { /* 开打失败退回问话，不挡路 */ }
+    return {
+      kind: 'warn',
+      text: `${guard.name}一眼认出你来，脸色一沉：「上次硬闯${sd.name}的就是你！」话音未落，刀已出鞘。`,
+      more,
+    };
+  }
 
   /* 三层判据，优先级：门槛 > 恶名 > 引荐
      —— 门槛不达标的人，就算报上也进不去，先说门槛（那是最硬的墙）。 */
@@ -177,6 +209,19 @@ function stateName(world, p, sectId) {
       { kind: 'hint', text: '（恶名太重，报名字只会招来打手。要退就「退下」，要拼就「硬闯」。）' },
     ];
   }
+  /* 报名号放行门槛（2026-10-18 主人裁定）：声望 ≥50 或 门派身份/引荐信——
+     「我什么声望都没有、跟谁都不认识，报个名号就让我进了」就是这里漏的。
+     声望口径复用既有 reputation 账本（键：门派 id / '*'=全江湖），
+     取两者较高者；门槛过的无名小卒照样嗤笑拒之。
+     （台词保底版，润色归游有方 lane。） */
+  const rep = p.reputation || {};
+  const repute = Math.max(rep[sd.id] || 0, rep['*'] || 0);
+  if (!isInsider(world, p, sd.id) && repute < 50) {
+    return [
+      { kind: 'say', text: `你报上名号。${g.name}上下打量你两眼，嗤笑一声：「没听过。${sd.name}的门，还轮不到报个名号就进。」` },
+      { kind: 'hint', text: '（江湖声望到了 50、进了门派、或揣着引荐信，再报不迟；要不就「硬闯」。）' },
+    ];
+  }
   return [
     { kind: 'say', text: `你报上名号。${g.name}盯着你看了两息，侧身让开半步：「进去吧，规矩着点。」` },
     { kind: 'sys', text: `你进了${sd.name}的山门。要拜师，就在此处「拜师 ${sd.name}」。` },
@@ -212,6 +257,9 @@ function forceIn(world, p, sectId) {
   const guard = guardIn(world, p.room);
   if (!guard) return [{ kind: 'plain', text: '门前没人拦你，你径直走了进去。' }];
   clearGuard(p);
+  /* 硬闯记档（2026-10-18 门禁两病）：无论被擒还是开打，这一门从此记住你——
+     戒备态下守卫 hostile 起手（见 maybeBar）。flag 随档持久化。 */
+  try { p.setFlag(breachFlag(sd.id), true); } catch (e) { }
 
   /* 守卫 tier 远高于玩家 → 直接擒下（照《唐律》掳人那条通路的反向：玩家被守门人拿了）。
      「远高于」的判据：守卫气血是玩家上限的 3 倍以上（打不过就别硬闯）。
@@ -241,15 +289,28 @@ function forceIn(world, p, sectId) {
 function onGuardBeaten(world, p, npc) {
   const tag = (npc && npc.def && npc.def.tag) || (npc && npc.tag);
   if (tag !== GUARD_TAG) return;
-  const sd = (npc && npc.def && npc.def.sect) ? world.getSect(npc.def.sect) : null;
+  /* 门派归属：def.sect 优先；老守卫（guard_shaolin / guard_huashan，40_npcs 的旧人）
+     没这字段 —— 但他们定岗在自家 entry（41_sect_entry 与 def.room 同源），
+     用 sectAtRoom 反查兜底，别让他们成了「打赢也不记仇」的漏网之鱼。 */
+  const sd = (npc && npc.def && npc.def.sect)
+    ? world.getSect(npc.def.sect)
+    : sectAtRoom(world, (npc && npc.def && npc.def.room) || (npc && npc.room));
   if (!sd) return;
+  /* 硬闯打赢 = 戒备记档（2026-10-18 门禁两病）：再去山门，守卫见你就动手 */
+  try { p.setFlag(breachFlag(sd.id), true); } catch (e) { }
   p.reputation = p.reputation || {};
-  p.reputation[sd.name] = Math.max(-100, (p.reputation[sd.name] || 0) - 30);
-  /* 打伤守门人算一桩可传的事 */
-  try { require('./rumorfeed').note(world, 'rs_sect_join', { vars: { who: p.name, where: sd.name } }); } catch (e) { }
+  /* ⚠️ 键用门派 **id**（reputation 账本全库约定：applyRumorReputation / repGain
+     都以 id 为键，总览面板按 id 查门派名）；原写 sd.name 是记到一本谁都不读的账上。 */
+  p.reputation[sd.id] = Math.max(-100, (p.reputation[sd.id] || 0) - 30);
+  /* ⚠️ 原这里还挂了一条 rs_sect_join 传闻——那是「正式入了门墙」的**拜师喜报**
+     （polarity +1，还会同步给声望 +15，把上面的 −30 抵掉一半）。
+     打伤守门人播出一条拜师传闻，语义反向，已摘（2026-10-18）。
+     「打伤守门人」的专属负面传闻种子归 #104 台词与数值配套（游有方 lane），
+     补上种子后在此 note 回来即可。 */
 }
 
 module.exports = {
   maybeBar, stateName, bribe, forceIn, onGuardBeaten,
   guardIn, sectAtRoom, isInsider, blockedBy, GUARD_TAG, COOLDOWN,
+  breachFlag, isBreach,
 };

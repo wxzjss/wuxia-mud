@@ -53,7 +53,8 @@ global.window = global;
 /* ⚠️ `settings` 这一份**不许手抄**：键集必须和 `app.js` 里 `settings: { … }` 的默认值
    完全一致，§8 有一条断言在守它（桩漂移 ⇒ 行为跟线上不是一回事，且上面几条照样绿）。 */
 const S = { busy: false, view: null, screen: 'game',
-  settings: { font: 100, anim: true, autosave: true, narrow: false, theme: 'dark', mapnames: false } };
+  /* ⚠️ mapnames 已随迷雾探索制退役（2026-10-18），换成 dirpad —— 键集必须跟 app.js 同步 */
+  settings: { font: 100, anim: true, autosave: true, narrow: false, theme: 'dark', dirpad: false } };
 
 const api = { exec: async () => ({ ok: true }), view: async () => ({ view: {} }), combat: async () => ({}), menu: async () => ({}) };
 const util = {

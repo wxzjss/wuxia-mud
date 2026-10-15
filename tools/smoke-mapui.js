@@ -659,15 +659,14 @@ engine.newGame({ name: '试侠', gender: 'male', birth: 'wuxue' });
       const r2 = await openMap(env2, v2);
       const unkStub = r2.modal.querySelectorAll('#modal-body .map-node[data-room]')
         .find(b => b.getAttribute('data-room') === unknownRoom.id && !b.getAttribute('data-go'));
-      if (unkStub) {
-        env2.document.getElementById('toast').innerHTML = '';
-        unkStub.onclick();
-        const th = env2.document.getElementById('toast').innerHTML || '';
-        ok('C-6 点未探索方块 → 只提示「尚未探索」，不泄露房间名',
-          th.indexOf('尚未探索') >= 0 && th.indexOf(unknownRoom.name) < 0, th || '(空)');
-      } else {
-        ok('C-6 点未探索方块 → 只提示「尚未探索」，不泄露房间名', false, '未找到未探索方块 stub');
-      }
+      /* ⚠️ 探索制返修（2026-10-18 主人口径）：未探索格**零渲染** ——
+         画布上根本没有它的方块，「点了才不剧透」升级成「根本不出现 ⇒ 无从剧透」。
+         绑定侧的「此处尚未探索」兜底 toast 保留（ui.js），防的是旧档视图串档，
+         不再承担「未探索可见」的职责 —— 那条路径探索制下不可达。 */
+      ok('C-6 未探索格零渲染：画布上不存在它的方块，名字也不出现在渲染产物里',
+        !unkStub && r2.html.indexOf(unknownRoom.name) < 0,
+        unkStub ? '未探索格仍在画布上（应零渲染）'
+          : (r2.html.indexOf(unknownRoom.name) >= 0 ? '名字泄漏在渲染产物里' : '零渲染成立'));
     }
   }
 

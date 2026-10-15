@@ -135,57 +135,50 @@ let fogOn, fogOff;
     visited.length > 0 && visited.every((n) => n.nameText.length > 0 && n.nameText.indexOf('…') < 0),
     visited.length + ' 格已探索 · 例：' + (visited[0] ? visited[0].nameText : '-'));
 
-  ok('78/M-V-2 相邻可走档 = 无字 + 恰好 1 个空心圈',
-    nearU.length > 0 && nearU.every((n) => n.nameText.length === 0 && n.rings === 1),
-    nearU.length + ' 格相邻可走 · '
-      + (nearU.every((n) => n.nameText.length === 0) ? '均无字' : '⚠ 有格子漏了名字')
-      + ' · ' + (nearU.every((n) => n.rings === 1) ? '均 1 圈' : '⚠ 圈数不对：' + nearU.map((n) => n.rings).join(',')));
-
-  ok('78/M-V-3 完全未知档 = 无字 + 无圈',
-    unknown.length > 0 && unknown.every((n) => n.nameText.length === 0 && n.rings === 0),
-    unknown.length + ' 格完全未知');
-
+  /* 🔴 探索制（2026-10-18 主人四条 UI 之③·修正稿）：**探索过的房间显示，
+     没探索过的不显示**——未探索（含「相邻可走」档）一律零渲染。
+     M-V-2/2b/3/4 的「空心圈」判据整体作废：圈是「在没去过的地方画东西」，
+     探索制下语义反向；`.mn-ring` 渲染与 CSS 已一并退役。 */
+  ok('78/M-V-2 → 探索制：未探索零渲染（相邻可走档 0 个节点）', nearU.length === 0,
+    nearU.length + ' 个残留');
+  ok('78/M-V-3 → 探索制：完全未知档 0 个节点', unknown.length === 0,
+    unknown.length + ' 个残留');
   const totalRings = (fogOn.match(/class="mn-ring"/g) || []).length;
-  ok('78/M-V-4 .mn-ring 总数 === 「相邻可走」档数量（多=未知处漏圈，少=路口没提示）',
-    totalRings === nearU.length, '圈 ' + totalRings + ' / 相邻可走 ' + nearU.length);
+  ok('78/M-V-4 → 探索制：.mn-ring 渲染已退役（全图 0 圈）', totalRings === 0,
+    totalRings + ' 个圈');
+  ok('78/M-V-2b → 探索制：.mn-ring CSS 规则已删（不再养死样式）',
+    !/\.map-node\s+\.mn-ring\s*\{/.test(CSSSRC));
 
-  /* 🔴 M-V-2b：只做亮度、没做形状 = 不算完成 */
-  const ringRule = (CSSSRC.match(/\.map-node\s+\.mn-ring\s*\{[^}]*\}/) || [''])[0];
-  const bgT = /background\s*:\s*(transparent|none)\s*;/.test(ringRule);
-  const bwM = ringRule.match(/border(?:-width)?\s*:\s*([\d.]+)px/);
-  const brM = ringRule.match(/border-radius\s*:\s*(\d+)%/);
-  ok('78/M-V-2b 🔴 圈是**空心**的（background: transparent / none）', bgT,
-    bgT ? '是空心' : (ringRule ? '⚠ ' + (ringRule.match(/background\s*:[^;]*/) || [''])[0] : '⚠ 没找到 .mn-ring 规则'));
-  ok('78/M-V-2b 🔴 圈有描边（border-width ≥ 1px）', !!bwM && parseFloat(bwM[1]) >= 1,
-    bwM ? bwM[1] + 'px' : '⚠ 没有 border');
-  ok('78/M-V-2b 🔴 圈是圆的（border-radius ≥ 50%）', !!brM && parseInt(brM[1], 10) >= 50,
-    brM ? brM[1] + '%' : '⚠ 没有 border-radius');
-
-  /* M-V-7：未探索格子的 title 不得漏房间名 */
-  const leak = ns.filter((n) => n.visited === '0' && n.title && n.title !== '尚未探索');
-  ok('78/M-V-7 未探索格子的 title 不剧透（只能是「尚未探索」）',
-    leak.length === 0, leak.length ? leak.length + ' 格漏了：' + leak[0].title : '0 格漏');
+  /* M-V-7：未探索格子的 title 不得漏房间名（探索制下未探索根本不渲染，
+     有 name 的格子全是去过的，title 剧透面自然归零；此条改为防回归：
+     渲染产物里不允许出现「尚未探索」兜底字样——那是未探索漏渲染的签名） */
+  const leak = ns.filter((n) => n.title && n.title === '尚未探索');
+  ok('78/M-V-7 → 探索制：渲染产物里没有「尚未探索」兜底（未探索=零渲染的回归签名）',
+    leak.length === 0, leak.length ? leak.length + ' 格漏渲染' : '0 格漏');
 }
 
 /* ================================================================ */
 section('78/M-V-8 / 9 / 10 / 11 迷雾开关');
 
 {
-  /* M-V-8：开关存在且默认开（fog=1 = 迷雾开；设置项 mapnames 默认关 ⇒ fog=1） */
-  const defLine = (UISRC.match(/fog:\s*\([^)]*\)\s*\?\s*\d+\s*:\s*\d+/) || [''])[0];
-  const defaultIsFogOn = /mapnames\s*\)\s*\?\s*0\s*:\s*1/.test(defLine);
-  ok('78/M-V-8 迷雾开关存在且**默认开**（mapnames 默认关 ⇒ fog=1）',
-    !!defLine && defaultIsFogOn, defLine || '(没找到 fog 映射那行)');
+  /* M-V-8 → 探索制口径（2026-10-18 修正稿）：前端 mapViewOpts 恒 fog:1
+     （已探索名单由后端裁名下发），渲染层按 visited/current 零渲染未探索；
+     迷雾不再挂设置开关（探索集合本身就是开关），无 mapnames 映射 */
+  ok('78/M-V-8 → 探索制：mapViewOpts 恒 fog:1，无 mapnames 映射',
+    /fog:\s*1,/.test(UISRC) && !/S\.settings\.mapnames/.test(UISRC));
+  ok('78/M-V-8 → 探索制：mapHtml 对未探索零渲染（visited/current 才进节点循环）',
+    /if \(!r\.visited && !r\.current\) return;/.test(UISRC));
 
-  /* M-V-9：关掉后 → 无圈 + 所有格子有字 */
+  /* M-V-9：探索制下 fog=0/1 两种数据都只渲出已探索格（渲染层不看 fog） */
   const ns = nodesOf(fogOff);
   const ringsOff = (fogOff.match(/class="mn-ring"/g) || []).length;
   const noName = ns.filter((n) => n.nameText.length === 0);
-  ok('78/M-V-9 关掉迷雾 ⇒ 无圈（回到「全都已知」渲染）', ringsOff === 0, ringsOff + ' 个圈');
-  ok('78/M-V-9 关掉迷雾 ⇒ 所有格子都有名字', noName.length === 0,
+  ok('78/M-V-9 → 探索制：无圈（.mn-ring 已退役）', ringsOff === 0, ringsOff + ' 个圈');
+  ok('78/M-V-9 → 探索制：渲染出的格子全部有名字（未探索根本不渲染）',
+    noName.length === 0,
     noName.length ? noName.length + ' 格无字' : ns.length + ' 格全部有字');
 
-  /* M-V-10：来回切 —— 同一份输入渲两次必须一致（幂等） */
+  /* M-V-10：幂等——同一份输入渲两次必须一致 */
   const v = e.view();
   v.map = e.mapView({ fog: 1, neighbors: 0, geometry: 1 });
   const a1 = built.mapHtml(v).length;
@@ -193,13 +186,13 @@ section('78/M-V-8 / 9 / 10 / 11 迷雾开关');
   const b1 = built.mapHtml(v).length;
   v.map = e.mapView({ fog: 1, neighbors: 0, geometry: 1 });
   const a2 = built.mapHtml(v).length;
-  ok('78/M-V-10 关→开→关 来回切，渲染回到一致（幂等）', a1 === a2 && b1 !== a1,
-    '开 ' + a1 + ' / 关 ' + b1 + ' / 再开 ' + a2);
+  ok('78/M-V-10 → 探索制：同输入渲两次一致（幂等）', a1 === a2,
+    '第一次 ' + a1 + ' / 复渲 ' + a2 + ' / fog=0 版 ' + b1);
 
-  /* M-V-11：开关两侧分母恒为 512 */
+  /* M-V-11：开关两侧分母恒为 512（分母是引擎探索账本的事，渲染层不动它） */
   const t1 = (fogOn.match(/全江湖 (\d+)\/(\d+)/) || []);
   const t0 = (fogOff.match(/全江湖 (\d+)\/(\d+)/) || []);
-  ok('78/M-V-11 开关不影响探索分母（两侧一致）',
+  ok('78/M-V-11 → 探索制：分母不受渲染口径影响（两侧一致）',
     t1[2] === t0[2],
     '雾开 ' + (t1[2] || '?') + ' / 雾关 ' + (t0[2] || '?'));
 }
@@ -243,11 +236,25 @@ section('78/M-V-16 / 17 回归保护（改迷雾别改坏已落地的）');
   const v = e.view();
   v.map = e.mapView({ fog: 1, neighbors: 0, geometry: 1 });
   const h = built.mapHtml(v);
-  ok('78/M-V-16 L1 朱印唯一', (h.match(/class="mn-seal"/g) || []).length === 1,
+  ok('78/M-V-16 → 已反转：朱砂方印已删（2026-10-18 主人四条 UI 之②：玩家位置只留金字，无底色块）',
+    (h.match(/class="mn-seal"/g) || []).length === 0,
     (h.match(/class="mn-seal"/g) || []).length + ' 个');
   ok('78/M-V-17 羽化层唯一', (h.match(/class="map-veil"/g) || []).length === 1,
     (h.match(/class="map-veil"/g) || []).length + ' 个');
 }
+
+/* ================================================================ */
+section('迷雾默认不启用（2026-10-18 主人四条 UI 之③：地图默认全亮）');
+/* 口径：fog 渲染分支保留（能力测试照旧跑 fog=1/0 两种），但**前端默认不再启用**
+   —— mapViewOpts 恒 fog:0，设置面板的迷雾开关摘除（死开关不留界面）。 */
+ok('探索制渲染：mapViewOpts 恒 fog:1，未探索由渲染层零渲染（无 mapnames 映射）',
+  /fog:\s*1,/.test(UISRC) && !/S\.settings\.mapnames/.test(UISRC)
+  && /if \(!r\.visited && !r\.current\) return;/.test(UISRC));
+ok('迷雾默认不启用：设置面板不再有迷雾开关（set-mapnames 绑定与行模板已摘；注释里的历史提法不算）',
+  !/id="set-mapnames"/.test(UISRC) && !/'set-mapnames'/.test(UISRC) && !/s\.mapnames/.test(UISRC));
+ok('玩家块无红底：.mn-seal 规则已从 CSS 摘除（金字 .mn-name 规则仍在）',
+  !/\.map-node \.mn-seal\s*\{/.test(CSSSRC)
+  && /\.map-node\.here \.mn-name \{[^}]*color:\s*var\(--map-here-name\)/.test(CSSSRC));
 
 /* ================================================================ */
 console.log('\n' + '─'.repeat(56));

@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>武侠行 · 江湖再启</title>
-  <link rel="stylesheet" href="css/main.css?v=20261018e">
+  <link rel="stylesheet" href="css/main.css?v=20261018f">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
 </head>
 
@@ -203,10 +203,13 @@
 
         <div id="cmdbar">
           <span class="prompt">&gt;</span>
-          <input id="cmd-input" type="text" autocomplete="off" spellcheck="false" placeholder="输入指令，或点击下方快捷按钮…（输入 help 查看全部指令）">
+          <input id="cmd-input" type="text" autocomplete="off" spellcheck="false" placeholder="输入「帮助」查看指令">
           <button id="cmd-send">发 送</button>
         </div>
         <div id="quickbar" class="quickbar"></div>
+        <!-- 屏幕下方方向九宫格（2026-10-18 主人四条 UI 之④）：
+             **默认 hidden**（无 hidden 属性时 JS 也会按设置收起），设置「方向九宫格」打开才显示。 -->
+        <div id="dirpad" class="dirpad" hidden></div>
       </section>
 
       <!-- 右侧：场景 -->
@@ -347,18 +350,18 @@
 
   <!-- ?v= 用于缓存穿透：改了这里就等于强制所有浏览器重新拉脚本。
        配合服务端的 no-store，确保发版后不会有人继续跑旧代码。 -->
-  <script src="js/savestore.js?v=20261018e"></script>
-  <script src="js/localmods.js?v=20261018e"></script>
-  <script src="js/app.js?v=20261018e"></script>
+  <script src="js/savestore.js?v=20261018f"></script>
+  <script src="js/localmods.js?v=20261018f"></script>
+  <script src="js/app.js?v=20261018f"></script>
   <!-- combat-lines.js：战斗演出句库 v2（design/75 §1.8）。
        纯数据 + 一个 render()，不依赖引擎内部状态，改文案只动这一个文件。
        放在 ui.js 前面只是为了让「数据先于消费方」这件事读得出来 ——
        它不参与首屏，只在战斗渲染时才被调到。 -->
-  <script src="js/combat-lines.js?v=20261018e"></script>
-  <script src="js/ui.js?v=20261018e"></script>
-  <script src="js/modmaker.js?v=20261018e"></script>
-  <script src="js/docdata.js?v=20261018e"></script>
-  <script src="js/start.js?v=20261018e"></script>
+  <script src="js/combat-lines.js?v=20261018f"></script>
+  <script src="js/ui.js?v=20261018f"></script>
+  <script src="js/modmaker.js?v=20261018f"></script>
+  <script src="js/docdata.js?v=20261018f"></script>
+  <script src="js/start.js?v=20261018f"></script>
 </body>
 
 </html>

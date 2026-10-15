@@ -33,6 +33,16 @@ const section = t => console.log('\n── ' + t + ' ──');
   const e = new GameEngine({ seed: 20261013 });
   await e.boot({});
   e.newGame({ name: '观' });
+  /* ⚠️ 探索制 setup（2026-10-18 迷雾返修）：mapHtml 只画 visited∪current。
+     本守卫管的是「分层撤干净 + 层信息没白丢」，不管迷雾（迷雾有专属守卫），
+     ⇒ 把本区整区踩点：C-2 的「格数==本区同层」与 D 节的▲/▼角标才有样本。 */
+  {
+    const probe = e.view({ map: true }).map;
+    const here = probe.rooms.find(r => r.current) || {};
+    probe.rooms.filter(r => r.region === here.region).forEach(r => {
+      try { e.world.player.setFlag('visited_' + r.id, true); } catch (err) { }
+    });
+  }
   const v = e.view({ map: true });
   const m = v.map;
 

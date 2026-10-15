@@ -519,7 +519,9 @@ function buildCommands(world) {
        三个出口：报上名号 / 塞钱打点 / 硬闯（不另造战斗分支，硬闯就是普通的「打」）。 */
     try {
       const gb = require('./guards').maybeBar(w, p, w.getRoom(p.room), w.npcsIncludingTemplates(p.room));
-      if (gb) lines.push(gb);
+      /* 戒备态（硬闯记档）守卫直接动手：gb.more 是 startCombat 的目击/开打台词，
+         并进本次移动输出——不并的话玩家只看到「刀已出鞘」却看不到打斗。 */
+      if (gb) { lines.push(gb); if (Array.isArray(gb.more) && gb.more.length) lines.push(...gb.more); }
     } catch (e) { /* 守卫拦人失败不该挡路 */ }
     /* ---- 押镖路上可能被劫（design/67 §4）----
        同一层（玩家自己走一格才掷），不与 patrol 共用冷却。 */

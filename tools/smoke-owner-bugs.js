@@ -2016,6 +2016,91 @@ section('B32 · 野怪离场生态：encounter 野怪人走茶凉（山贼×4 �
   ok('B32-9 ★ 记仇（avengers）野怪豁免消散', !!w.instances.npcs[wild3.id]);
 }
 
+section('B33 · 门禁两病（2026-10-18 主人裁定）：硬闯后戒备态 + 报名号声望门槛');
+{
+  const G = require(path.join(ROOT, 'game', 'src', 'core', 'guards.js'));
+  /* —— 病②：新档无名小卒报名号 → 嗤笑拒之（声望门槛）—— */
+  const e = boot(); const w = e.world; const p = w.player;
+  const entry = w.data.sects.wudang.entry;
+  const room = w.getRoom(entry);
+  ok('B33-0 前提：wudang entry 房与守卫 def 都在（41/42 数据合并链）',
+    !!room && !!w.data.npcs.sectguard_wudang, entry);
+  p.room = entry;
+  const npcs = w.npcsIncludingTemplates(entry);
+  ok('B33-1 前提：山门口当真有守卫当值（shouwei 显式标签）',
+    npcs.some(n => ((n.def && n.def.tag) || n.tag) === 'shouwei'));
+  const bar1 = G.maybeBar(w, p, room, npcs);
+  ok('B33-2 ★ 新档走到山门被拦下（问话 + 给「报上名号」出口）',
+    !!bar1 && bar1.kind === 'warn' && (bar1.choices || []).some(c => String(c.cmd).indexOf('报名入山') === 0),
+    bar1 ? bar1.text.slice(0, 40) : 'null');
+  ok('B33-3 ★ 新档报上名号 → 嗤笑拒之（声望门槛，绝不是「进去吧」）', (() => {
+    const lines = G.stateName(w, p, 'wudang');
+    const t = lines.map(l => l.text || '').join('');
+    return t.indexOf('嗤笑') >= 0 && t.indexOf('进去吧') < 0;
+  })());
+  /* 对照：声望 ≥50 → 报号放行（reputation 账本键 = 门派 id）
+     ⚠️ stateName 会 clearGuard，重挂 guardBy 再试放行分支。 */
+  p.reputation = { wudang: 50 };
+  p.vars.guardBy = 'sectguard_wudang';
+  ok('B33-4 ★ 对照：声望 ≥50 报号 → 守卫侧身放行', (() => {
+    const lines = G.stateName(w, p, 'wudang');
+    return lines.map(l => l.text || '').join('').indexOf('进去吧') >= 0;
+  })());
+  /* 对照：引荐信（tutPass 与 joinSect 同源）→ isInsider 直接不拦 */
+  p.reputation = {};
+  p.vars.tutPass = 'wudang';
+  const bar2 = G.maybeBar(w, p, room, npcs);
+  ok('B33-5 ★ 对照：揣着引荐信 → isInsider 放行（maybeBar 不拦）', bar2 === null);
+  delete p.vars.tutPass;
+
+  /* —— 病①：硬闯被擒记档 → 再来守卫戒备态拔刀（不吃冷却）—— */
+  const e2 = boot(); const w2 = e2.world; const p2 = w2.player;
+  const entry2 = w2.data.sects.wudang.entry;
+  const room2 = w2.getRoom(entry2);
+  p2.room = entry2;
+  const npcs2 = w2.npcsIncludingTemplates(entry2);
+  const guard2 = npcs2.find(n => ((n.def && n.def.tag) || n.tag) === 'shouwei');
+  ok('B33-6 前提：守卫在岗且对新档是压倒性的（走「被擒」分支）',
+    !!guard2 && (guard2.maxHp || guard2.hp || 1) >= (p2.maxHp || 1) * 3,
+    'guardHp=' + (guard2 ? (guard2.maxHp || guard2.hp) : '无') + ' myMax=' + p2.maxHp);
+  const fi = G.forceIn(w2, p2, 'wudang');
+  ok('B33-7 ★ 硬闯被擒：气血打光 + 恶名 +15（这一闯天下人都看在眼里）',
+    p2.kidnap.wanted >= 15 && p2.hp <= 1, 'wanted=' + p2.kidnap.wanted + ' hp=' + p2.hp);
+  ok('B33-8 ★ 硬闯被擒也记档（gateBreach_wudang 落 flag，随档持久化）',
+    p2.hasFlag('gateBreach_wudang'));
+  /* 戒备态不吃冷却：把冷却戳拨到「刚刚被拦过」，戒备态照样拦——
+     旧病根就是这条冷却把「拦截」连同「问话」一起免了。 */
+  p2.vars = p2.vars || {};
+  p2.vars.guardAt = { sect: 'wudang', at: (w2.clockMinutes || 0) };
+  p2.hp = p2.maxHp;
+  const bar3 = G.maybeBar(w2, p2, room2, w2.npcsIncludingTemplates(entry2));
+  ok('B33-9 ★ 硬闯后再来：守卫认出你、话音未落刀已出鞘（戒备态不吃冷却）',
+    !!bar3 && bar3.text.indexOf('上次硬闯') >= 0 && Array.isArray(bar3.more) && bar3.more.length > 0,
+    bar3 ? ('more=' + (bar3.more || []).length) : 'null');
+  ok('B33-10 ★ 戒备态开打是真的：world.battle 已建立（startCombat ambush 通路）',
+    !!w2.battle);
+  w2.battle = null;
+
+  /* 打赢守卫也记仇：onGuardBeaten 记档 + 门派声望 −30（键 = 门派 id） */
+  const e4 = boot(); const w4 = e4.world; const p4 = w4.player;
+  p4.room = entry2;
+  const guard4 = w4.npcsIncludingTemplates(entry2)
+    .find(n => ((n.def && n.def.tag) || n.tag) === 'shouwei');
+  G.onGuardBeaten(w4, p4, guard4);
+  ok('B33-11 ★ 打赢守门人：戒备记档 + wudang 声望 −30（记在 id 名下，不是没人读的账）',
+    p4.hasFlag('gateBreach_wudang') && (p4.reputation.wudang || 0) === -30,
+    'rep=' + JSON.stringify(p4.reputation));
+
+  /* 对照：清白玩家冷却期内不再重复问话（冷却语义没被戒备态改坏） */
+  const e3 = boot(); const w3 = e3.world; const p3 = w3.player;
+  const entry3 = w3.data.sects.wudang.entry;
+  p3.room = entry3;
+  p3.vars.guardAt = { sect: 'wudang', at: (w3.clockMinutes || 0) };
+  const bar4 = G.maybeBar(w3, p3, w3.getRoom(entry3), w3.npcsIncludingTemplates(entry3));
+  ok('B33-12 ★ 对照：清白玩家冷却期内不重复问话（冷却对无戒备者照常生效）',
+    bar4 === null, bar4 ? bar4.text.slice(0, 30) : 'null（未拦，正确）');
+}
+
   /* 汇总 */
   console.log('\n==============================================');
   console.log(`  主人 bug 专项 smoke：${pass} 通过 / ${fail} 失败`);

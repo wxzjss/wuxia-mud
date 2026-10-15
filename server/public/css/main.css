@@ -1713,39 +1713,14 @@ body::before {
    spec 没要求删，删了就是白丢一条已验收的线索。 */
 .map-node.here .mn-name { color: var(--map-here-name); font-weight: 700;
   text-decoration: underline; text-underline-offset: 2px; }
-/* L1 朱砂方印（spec §3.3）：印是「人在纸上留下的动作」，与「私人笔记」同构 ——
-   我到过这儿，我盖了个章。实心 + 金环 + 阴刻「我」，三重信息量。
-   ⚠️ 为什么非加不可：不加的话，L1 只有「黄字」一重区分，而**颜色不得成为唯一
-      信息载体** —— 灰度截图下 L1 就找不着了。印是形状，去色仍在。 */
-.map-node .mn-seal { position: absolute; left: 50%; top: 50%;
-  transform: translate(-50%, -50%); z-index: -1;
-  width: var(--map-seal-len, 30px); height: var(--map-seal-len, 30px);
-  border-radius: 2px; background: var(--map-here-fill, #b8493c);
-  border: 1.5px solid var(--map-here-ring, rgba(207,166,74,.88));
-  box-shadow: 0 0 6px 2px var(--map-here-glow, rgba(184,73,60,.26));
-  color: var(--map-here-ink, #f7f1e4); font-weight: 700; font-style: normal;
-  font-size: calc(var(--map-seal-len, 30px) * .52); line-height: 1;
-  display: flex; align-items: center; justify-content: center; }
-/* `.map-node.near` 的整套样式（金字 / pointer / hover 放大）随「删掉可点击前往」下线。 */
+/* 🔴 L1 朱砂方印（.mn-seal）已删（2026-10-18 主人四条 UI 之②：玩家位置
+   **只留金色字体**，红底方块不要了）。金色 + 700 字重 + 下划线三重线索仍在。
+   `.map-node.near` 的整套样式（金字 / pointer / hover 放大）随「删掉可点击前往」下线。 */
 
-/* ── 「相邻可走，但你还没走过」那一档的**空心圈**（design/78 §4.5.1 M-V-2 / M-V-2b / M-V-4）
-   🔴 为什么非得有它：没有这个圈，地图就只剩「有字」和「整片空」两档 ——
-      而「整片空」正是主理人最烦的"空白方块"，玩家分不出"那边是堵墙"还是"那边有路没走过"。
-      这一档是四档里最需要被读懂的：**玩家靠它判断旁边有没有路可以走。**
-   🔴 主理人 2026-10-13 拍板：**形状是主判据、亮度是辅助，单靠亮度不算完成。**
-      ⇒ 下面三条是 `78/M-V-2b` 的机械判据，缺一即判定为"只靠亮度"：
-        ① `background: transparent` —— **空心**才是圈；填了色就成了"点"，与 L1 朱印撞语义
-        ② `border-width ≥ 1px`      —— 描边要在，去色后靠它撑出形状
-        ③ `border-radius ≥ 50%`     —— 圆形，与「朱印是方的」在形状上分开
-      ⚠️ 别把 `background` 改成 `var(--map-near-ring)`：那这一档就退化成实心点，
-         去色后与"已知"档的墨字混在一起，M-V-5（三档去色仍可数）直接失效。
-   ⚠️ 描边色用 `--map-near-ring`（暗/亮成对），取的是"墨渗进纸里"的方向，不是"褪色/没印实"。 */
-.map-node .mn-ring { flex: 0 0 auto;
-  width: 11px; height: 11px; box-sizing: border-box;
-  border: 1.5px solid var(--map-near-ring, rgba(228, 222, 209, .52));
-  border-radius: 50%;
-  background: transparent;
-  font-style: normal; }
+/* ── 「相邻可走」空心圈（.mn-ring）已随探索制**整体退役**（2026-10-18 主人四条
+   UI 之③·修正稿）：未探索的格子零渲染，圈再也没有可画的格子。
+   圈本是「在没去过的地方画东西」——探索制下「没去过 = 什么都不画」，
+   这套 M-V-2/2b/3/4 的形状判据随之作废（守卫 map-fog-check 已同步改口径）。 */
 
 /* `.map-node.reach / .known / .unknown / .dim` 的差异色随「一律亮白」一起下线。
    🔴 C-2 追加：`.dim` 的样式**连同 class 一起删** —— 「没去过 = 淡字」仍是
@@ -2613,3 +2588,29 @@ body.narrow #scene { flex: 0 0 190px; }
   opacity: .88;
   letter-spacing: .3px;
 }
+
+/* ============ 屏幕下方方向九宫格（2026-10-18 主人四条 UI 之④） ============
+   默认 hidden（HTML hidden 属性 + 设置默认关）；设置「方向九宫格」打开才显示。
+   视觉与日志里 .exit-map 同语（亮白字描边圆角钮 + 金色中心房名），
+   但常驻控件不挂在 .log-line 作用域下，自成一套选择器。
+   网格靠 DOM 顺序自动布位（nw n ne / w 核心 e / sw s se），无需写死 grid-area。 */
+#dirpad { display: none; margin: 8px auto 2px; width: fit-content; max-width: 100%; text-align: center; }
+#dirpad:not([hidden]) { display: block; }
+#dirpad .dp-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr);
+  grid-template-rows: repeat(3, auto);
+  align-items: center; justify-items: center;
+  gap: 4px 8px; margin: 0 auto;
+}
+#dirpad .dp-c { display: flex; align-items: center; justify-content: center; min-width: 0; }
+#dirpad .dp-core { color: var(--gold-d); font-weight: 700; padding: 0 6px;
+  max-width: 12em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#dirpad .dp-vert { display: flex; flex-wrap: wrap; gap: 4px 8px; justify-content: center; margin-top: 4px; }
+#dirpad .exit-inline {
+  display: inline-block; padding: 2px 12px; margin: 0;
+  font: inherit; font-weight: 600; line-height: 1.6;
+  color: #fff; background: var(--solid); border: 1px solid var(--solid);
+  border-radius: 11px; cursor: pointer; transition: all .14s; white-space: nowrap;
+}
+#dirpad .exit-inline:hover { border-color: var(--gold); }

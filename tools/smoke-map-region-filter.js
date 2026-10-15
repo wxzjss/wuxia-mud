@@ -259,7 +259,7 @@ async function main() {
     fg.explore.visited === base.explore.visited, fg.explore.visited + ' vs ' + base.explore.visited);
 
   /* ================= §4 fog=0 ================= */
-  section('  \u00a74 fog=0（设置项「地图显示未探索地名」打开）');
+  section('  \u00a74 fog=0（opt-in 关雾；⚠️ 探索制后前端已无此开关，引擎契约不变）');
   const nf = e.view({ map: true, mapRegion: 'auto', mapNeighbors: true, mapFog: false }).map;
   ok('§4-1 fog=0 ⇒ 全量名字回来', nf.rooms.every(r => typeof r.name === 'string'), '');
   ok('§4-2 fog=0 ⇒ exits 也回来', nf.rooms.every(r => Array.isArray(r.exits)), '');
@@ -346,10 +346,15 @@ async function main() {
       ok('§7-2 ★ 发 region=auto（不是前端猜州名，那是循环依赖）', u1.indexOf('region=auto') >= 0, u1);
 
       urls.length = 0;
+      /* ⚠️ 探索制返修（主人 2026-10-18 口径）：迷雾改成**探索制**之后，
+         「地图显示未探索地名」这个设置整体退役 —— 探索集合本身就是开关，没有第二个闸。
+         这里故意塞一份旧设置残留进去：真机老用户的 localStorage 里就躺着这条，
+         前端不许因为它把 fog 关掉（ui.js 的 mapViewOpts 已写死 fog:1）。 */
       WX.S.settings.mapnames = true;
       await run();
       const u2 = urls.find(u => u.indexOf('/api/view') >= 0) || '(没发出 /api/view)';
-      ok('§7-3 ★ 设置项打开 ⇒ 改发 fog=0', u2.indexOf('fog=0') >= 0, u2);
+      ok('§7-3 ★ 探索制无开关：旧 mapnames 残留也照样发 fog=1',
+        u2.indexOf('fog=1') >= 0 && u2.indexOf('fog=0') < 0, u2);
 
       urls.length = 0;
       await run.call(null);
@@ -381,12 +386,33 @@ async function main() {
   const mapHtml = new Function('esc', 'MAP_CELL', 'MAP_NODE', 'MAP_PAD', 'DIR_CN', 'DIR_OFF',
     grab('mapHtml') + '\nreturn mapHtml;')(esc, 30, 26, 34, DIR_CN, DIR_OFF);
   {
-    /* 用「整包」渲染作对照：格子数必须一模一样，否则分批就改变了玩家看到的东西 */
+    /* ⚠️ 探索制 setup（主人 2026-10-18 口径：探索过的显示、没探索过的不显示）：
+       mapHtml 现在只画 visited∪current（ui.js 节点循环头部零渲染 skip），
+       而 visited 来自引擎进房打点的 `visited_<roomId>` 玩家旗标（engine.js mapView）。
+       开局只踩过脚下 1 格 —— 直接渲染的话「零截断」断言只能找到 1 个名字，
+       鉴别力归零。⇒ 先把**画布层**（本州本层）整层踩点，本节/§9 的断言才有样本。
+       注意：§0–§6 的视图对象早已算好，不受踩点影响；
+       本节的迷雾视图必须**踩点之后**重取（fg2），未探索样本才会落在层外/州外。 */
+    const here0 = base.rooms.find(r => r.current) || {};
+    const curZ0 = here0.z || 0;
+    const pExp = e.world.player;
+    const canvasIds = base.rooms
+      .filter(r => r.region === here0.region && (r.z || 0) === curZ0)
+      .map(r => r.id);
+    canvasIds.forEach(id => { try { pExp.setFlag('visited_' + id, true); } catch (err) { } });
+
+    /* 用「整包」渲染作对照：探索制下两边画的都是踩过点的格子 */
     const render = (view) => mapHtml(view);
 
     let hFull = '', hFog = '', errFull = null, errFog = null;
+    let fg2 = null;
     try { hFull = render(e.view({ map: true })); } catch (err) { errFull = err; }
-    try { hFog = render(e.view({ map: true, mapRegion: 'auto', mapNeighbors: true, mapFog: true })); } catch (err) { errFog = err; }
+    try {
+      /* ⚠️ mapHtml 吃的是**整个 view 对象**（内部自取 v.map），别把 .map 剥了传进去 */
+      const vFog = e.view({ map: true, mapRegion: 'auto', mapNeighbors: true, mapFog: true });
+      fg2 = vFog.map;
+      hFog = render(vFog);
+    } catch (err) { errFog = err; }
 
     ok('§8-1 整包视图渲染不崩', !errFull, errFull ? String(errFull.message) : '');
     ok('§8-2 ★ 迷雾视图渲染不崩（这是最该红的一条：房间对象形状变了）',
@@ -394,14 +420,20 @@ async function main() {
 
     if (!errFull && !errFog) {
       const nodes = (h) => (h.match(/data-room="/g) || []).length;
-      ok('§8-3 ★ 迷雾后画出来的格子数 = 整包画出来的格子数（玩家看到的地图没变）',
-        nodes(hFog) === nodes(hFull) && nodes(hFog) > 0,
-        nodes(hFog) + ' vs ' + nodes(hFull));
+      /* ⚠️ 探索制返修：旧口径「迷雾格子数 = 整包格子数」已死 —— 零渲染之后，
+         两边画出来的都是 visited∪current。新口径：画布格数 == 画布层踩点数
+         （整层踩点 ⇒ 一间不多一间不少），且迷雾/整包一致。 */
+      ok('§8-3 ★ 探索制：画布只画踩过点的那层（踩点 ' + canvasIds.length
+        + ' 间，迷雾/整包都一间不多一间不少）',
+        nodes(hFog) === canvasIds.length && nodes(hFull) === canvasIds.length,
+        '迷雾 ' + nodes(hFog) + ' · 整包 ' + nodes(hFull) + ' · 踩点 ' + canvasIds.length);
       ok('§8-4 渲染结果里没有 "undefined"（字段缺了最容易漏成这个）',
         hFog.indexOf('undefined') < 0, '');
       /* 不剧透：拿整包那份查出某个迷雾房的真名，再断言迷雾渲染结果里没有它。
-         ⚠️ 挑 2 字以上的短名来查 —— 单字名（「市」「街」）在别处也可能出现，会假绿。 */
-      const fogIds = new Set(fg.rooms.filter(r => r.known === false).map(r => r.id));
+         ⚠️ 挑 2 字以上的短名来查 —— 单字名（「市」「街」）在别处也可能出现，会假绿。
+         ⚠️ 用 fg2（踩点之后的迷雾视图）取未知房：踩点后画布层已全部 visited，
+            未探索样本只剩层外/州外 —— 它们本就不该被画出来。 */
+      const fogIds = new Set(fg2.rooms.filter(r => r.known === false).map(r => r.id));
       const probe = base.rooms.filter(r => fogIds.has(r.id) && String(r.name || '').length >= 3).slice(0, 20);
       const leaked = probe.filter(r => hFog.indexOf(String(r.name)) >= 0);
       ok('§8-5 ★ 迷雾房的真名不出现在渲染结果里（抽查 ' + probe.length + ' 个）',
@@ -414,10 +446,20 @@ async function main() {
          画一个「？」等于在**没去过的地方画了个东西**，语义反了 ——
          「？」表达的是「这里有内容但你不知道」，而未探索表达的是「你没去过，所以这里什么都没有」。
          ⇒ 新期望：空的 `.mn-name`，且全图不再出现「？」。 */
-      const emptyNames = (hFog.match(/<span class="mn-name"><\/span>/g) || []).length;
-      ok('§8-6 未探索格渲染成**空**的 .mn-name（spec V-5：textContent 长度为 0）',
-        emptyNames > 0 && (hFog.match(/？/g) || []).length === 0,
-        '空名 ' + emptyNames + ' 个 · 「？」 ' + (hFog.match(/？/g) || []).length + ' 个');
+      /* ⚠️ 探索制返修：这条的旧期望「空 .mn-name 占位」也退役了 ——
+         未探索表达的是「你没去过，所以这里什么都没有」，
+         连空壳格子都不该有（画一个空壳等于在没去过的地方画了个东西，语义反了）。
+         ⇒ 新期望：known:false 的房间一间都不出现在画布上；「？」同样不许出现。
+         fg2 的未知房在 neighbors=1 下必有样本（邻州整片未探索），断言不会恒真。 */
+      const drawnIds8 = new Set((hFog.match(/data-room="([^"]+)"/g) || [])
+        .map(s => s.slice('data-room="'.length, -1)));
+      const unknownIds8 = new Set(fg2.rooms.filter(r => r.known === false).map(r => r.id));
+      const badDrawn = [...drawnIds8].filter(id => unknownIds8.has(id));
+      ok('§8-6 探索制零渲染：未探索格（known:false）一间都不出现在画布上，且无「？」',
+        unknownIds8.size > 0 && badDrawn.length === 0
+        && (hFog.match(/？/g) || []).length === 0,
+        '未知房 ' + unknownIds8.size + ' · 误画 ' + badDrawn.length
+        + ' · 「？」 ' + (hFog.match(/？/g) || []).length + ' 个');
 
       /* §8-7 是 C-2 的**核心验收**：spec V-1「任意房间名不被截断，全名逐字出现在 DOM 里」。
          老代码用 `MAP_NAME_MAX = 4` + `mapLabel()` 把「江南城·长街」砍成「长街」，
@@ -436,11 +478,9 @@ async function main() {
          「零截断」是 mapHtml 的属性，跟「名字发不发得出来」是两码事。
          ⇒ 挪到**整包视图**上查：那里 512 间全带名字，样本管够。
          迷雾该守的「不剧透」由 §8-5 / §8-6 守，各守各的，别互相连坐。 */
-      const hereRoom = base.rooms.find(r => r.current) || {};
-      const curZ = hereRoom.z || 0;
-      const shownIds = new Set(
-        base.rooms.filter(r => r.region === hereRoom.region && (r.z || 0) === curZ)
-          .map(r => r.id));
+      /* ⚠️ 探索制 setup 已把画布层整层踩点 ⇒ shownIds 里的每一间都会被真画出来，
+         「零截断」的样本一个不少。 */
+      const shownIds = new Set(canvasIds);
       /* ⚠️ 查全名之前必须先把 `<wbr>` 摘掉：名字是 `青溪村·<wbr>村口`，
          直接 `indexOf('青溪村·村口')` 会因为中间那个标签而漏判。
          只摘 `<wbr>`、**不摘其它标签** —— 全摘会把相邻两格的文本粘在一起，

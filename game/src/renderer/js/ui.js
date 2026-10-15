@@ -794,11 +794,44 @@
   /* ============================================================
    *  右侧场景栏
    * ============================================================ */
+  /* 屏幕下方方向九宫格（2026-10-18 主人四条 UI 之④）：
+     默认收起（S.settings.dirpad=false），设置「方向九宫格」手动打开。
+     内容 = 当前房间出口（view.exits：{dir,name,to,toName,locked}），摆成与日志
+     exit-map 同一个三行网格；上/下/内/外单独一行附在下面。点击发方向指令
+     （与日志出口按钮同一 doCmd 路径）；锁门照给按钮，走了走不动由后端把门，
+     前端不预判（否则「看得见走不了」的提示就丢了）。 */
+  function renderDirPad(v) {
+    const el = $('dirpad');
+    if (!el) return;
+    if (!S.settings.dirpad) { el.hidden = true; el.innerHTML = ''; return; }
+    const CN = { n: '北', s: '南', e: '东', w: '西', u: '上', d: '下', ne: '东北', nw: '西北', se: '东南', sw: '西南', in: '内', out: '外' };
+    const byDir = {};
+    ((v && v.exits) || []).forEach(e2 => { byDir[e2.dir] = e2; });
+    const btn = e2 =>
+      '<button class="exit-inline dp-' + esc(e2.dir) + '" data-dir="' + esc(e2.dir) + '" title="向' + (CN[e2.dir] || esc(e2.dir)) + '走，前往「' + esc(e2.toName || '') + '」">' + (CN[e2.dir] || esc(e2.dir)) + '</button>';
+    const slot = d => '<span class="dp-c">' + (byDir[d] ? btn(byDir[d]) : '') + '</span>';
+    let h = '<span class="dp-grid">'
+      + slot('nw') + slot('n') + slot('ne')
+      + slot('w')
+      + '<span class="dp-c dp-core">' + esc((v && v.room && v.room.name) || '这里') + '</span>'
+      + slot('e')
+      + slot('sw') + slot('s') + slot('se')
+      + '</span>';
+    const vert = ['u', 'd', 'in', 'out'].filter(d => byDir[d]).map(d => btn(byDir[d]));
+    if (vert.length) h += '<span class="dp-vert">' + vert.join('') + '</span>';
+    el.innerHTML = h;
+    el.hidden = false;
+    el.querySelectorAll('.exit-inline').forEach(b => {
+      b.onclick = () => doCmd(b.getAttribute('data-dir'), { fromButton: true });
+    });
+  }
+
   function renderScene(v) {
     /* 缓存当前场景 view，供 openNpcMenu 读玩家性别等 */
     if (v && v.player) S.view = v;
     renderGuide(v);
     maybeShowIntro(v);
+    renderDirPad(v);
 
     const npcBox = $('scene-npcs');
     npcBox.innerHTML = '';
@@ -1884,10 +1917,11 @@
     return {
       region: 'auto',
       neighbors: MAP_VIEW_NEIGHBORS,
-      /* 「地图显示未探索地名」默认关 ⇒ fog=1（不剧透名字与出口）；
-         玩家在设置里打开 ⇒ fog=0，服务端把全量名字发回来。
-         ⚠️ 每次开面板都重新取图，所以改完设置**重开一次地图面板**即生效。 */
-      fog: (S.settings && S.settings.mapnames) ? 0 : 1,
+      /* 探索制取图（2026-10-18 主人四条 UI 之③·修正稿）：fog=1 ——
+         已探索房下发全名，未探索不下发；**渲染层**再对未探索零渲染（见
+         mapHtml 节点循环头部）。迷雾开关不设（探索集合本身就是开关），
+         设置面板不恢复「地图显示未探索地名」这个死开关。 */
+      fog: 1,
     };
   }
 
@@ -3524,6 +3558,12 @@
       };
     };
     rooms.forEach(r => {
+      /* 🔴 探索制渲染（2026-10-18 主人四条 UI 之③·修正稿）：**探索过的房间才显示，
+         没探索过的不显示**——未探索（含「相邻可走」那档）一律**零渲染**，
+         连空心圈也不画：圈是「在没去过的地方画了东西」，语义反了。
+         visited 标记由引擎进房打点（`visited_<roomId>` flag，随档持久化）；
+         fog 数据侧照旧裁名，渲染层只认 visited/current。 */
+      if (!r.visited && !r.current) return;
       const left = (r.x - b.minX) * MAP_CELL + MAP_PAD;
       const top = (r.y - b.minY) * MAP_CELL + MAP_PAD;
       /* ★ 2026-10-12 主人：「把地图上地块名字的黄色字体呈现与可点击前往删了」。
@@ -3538,7 +3578,7 @@
       else cls += ' unknown';
       const reg = (m.regions || []).find(x => x.id === r.region);
       /* ★ P0-C C-2：三档语义（spec §3.1 的 L1/L2/L3 + §3.2 的留白）：
-           L1 我在这里  → `.here`  + 朱印 `.mn-seal`，全名，粗字
+           L1 我在这里  → `.here` 金字加粗（朱印已删，见下方 2026-10-18 注），全名
            L2 我从哪来  → `.known` + 全名
            L3 其余      → `.unknown`，**不显示名字**（未探索 = 纸褪回底色）
          ⚠️ 老代码给没去过的格子加 `.dim`（淡字），那条**删了**：
@@ -3576,25 +3616,15 @@
         ? '<i class="mn-lv" title="' + esc(lvTip) + '">' +
           (up ? '▲' : '') + (dn ? '▼' : '') + '</i>'
         : '';
-      /* L1 朱砂方印（spec §3.3）：印是「人在纸上留下的动作」，与「私人笔记」同构。
-         ⚠️ 老方案只有一个黄字色来标「我在这里」—— 那是**颜色做唯一信息载体**，
-            去色就全没了。印是形状（实心方块 + 金环 + 阴刻「我」），灰度下仍在。 */
-      const seal = r.current ? '<i class="mn-seal" aria-hidden="true">我</i>' : '';
-      /* ★ 「相邻可走、但还没走过」那一档的**空心圈**（design/78 §4.5.1 M-V-2 / M-V-4）。
-         判据是 `r.name` 为空 + `near`：
-           · fog=1（迷雾开）⇒ 后端给这一类**只留 `near:1`、不发名字** ⇒ 画圈；
-           · fog=0（迷雾关）⇒ 后端发全量名字 ⇒ 这一类 `r.name` 非空 ⇒ **不画圈**，
-             正好对上 M-V-9「关掉迷雾后 `.mn-ring` 数量 === 0，所有格子都有名字」。
-         ⇒ 用「有没有名字」当判据，比再传一个 fog 标志给前端更省事，也**不会两边打架**：
-            后端什么时候决定发名字，前端就什么时候决定画不画圈，只有一处真相。
-         ⚠️ 别写成 `node.className = '...'` 整块赋值 —— 会冲掉 `data-visited` / `data-near`
-            这些同批写进去的状态（design/78 §4.5.3-bis 点名的坑）。这里是拼字符串后一次性
-            写进 class，属性各自 `setAttribute` / 内联，两条路都避开了。 */
-      const ring = (r.near && !r.visited && !r.current && !r.name)
-        ? '<i class="mn-ring" aria-hidden="true"></i>'
-        : '';
+      /* 🔴 朱砂方印（.mn-seal）已删（2026-10-18 主人四条 UI 之②：玩家位置
+         **只留金色字体**，红底方块不要了）。金色 + 700 字重 + 下划线三重线索仍在，
+         「颜色不得成为唯一信息载体」的底线靠字重与下划线守住。 */
+      /* ★ 「相邻可走」空心圈（.mn-ring）随探索制**整体退役**（2026-10-18 修正稿）：
+         未探索一律零渲染（见循环头部），圈再也没有可画的格子——
+         圈本来就是「在没去过的地方画东西」，探索制下语义彻底反向。 */
       /* ⚠️ 未探索的格子**不给 title**：title 里写的是全名 + 州名，
-         鼠标一悬停就把没去过的地方剧透了（spec V-12 同理）。 */
+         鼠标一悬停就把没去过的地方剧透了（spec V-12 同理）。
+         （探索制下未探索格根本不渲染，此条对 visited 格自然成立。） */
       const title = r.name
         ? (esc(r.name) + (r.region ? '（' + esc((reg && reg.name) || r.region) + '）' : '') +
           (r.z ? '　' + esc(lvName(Number(r.z))) : '') +
@@ -3608,7 +3638,7 @@
         ' data-visited="' + (r.visited || r.current ? '1' : '0') + '"' +
         ' data-near="' + (r.near ? '1' : '0') + '"' +
         (r.region ? ' data-region="' + esc(r.region) + '"' : '') +
-        '>' + seal + ring + nm.html + lvMark + '</button>';
+        '>' + nm.html + lvMark + '</button>';
     });
 
     /* （区域/城市名已按主人 2026-10-12 要求整体下线，见上方 map-region-box 那段注释。） */
@@ -4961,10 +4991,9 @@
          这个开关就这样死了很久（2026-10-13 修）。改名时两处一起改，别只改一半。 */
       '<div class="set-row"><label>自动存档</label><button class="switch' + (s.autosave ? ' on' : '') + '" id="set-autosave">' + (s.autosave ? '开' : '关') + '</button></div>' +
       '<div class="set-row"><label>紧凑模式</label><button class="switch' + (s.narrow ? ' on' : '') + '" id="set-narrow">' + (s.narrow ? '开' : '关') + '</button></div>' +
-      /* P0-C C-1「地图显示未探索地名」：默认关 ⇒ 未探索地块只留白，不剧透。
-         ⚠️ 改的是**下次取图**的参数，不是当前这份缓存 —— 关掉设置面板后
-            重开一次「地图」就生效（panel('map') 每次都重新请求）。 */
-      '<div class="set-row"><label>地图显示未探索地名</label><button class="switch' + (s.mapnames ? ' on' : '') + '" id="set-mapnames">' + (s.mapnames ? '开' : '关') + '</button></div>' +
+      /* 屏幕下方方向九宫格（2026-10-18 主人四条 UI 之④）：默认收起，这里手动打开。
+         原「地图显示未探索地名」行随迷雾整体关闭一并摘除（死开关不留界面）。 */
+      '<div class="set-row"><label>方向九宫格（屏幕下方）</label><button class="switch' + (s.dirpad ? ' on' : '') + '" id="set-dirpad">' + (s.dirpad ? '开' : '关') + '</button></div>' +
       /* 外观：默认暗色（主人 2026-10-11 要的「浏览器强制暗色」那种整页暗），
          但浅色那套没删 —— 想切回来随时切，不用再改代码。 */
       '<div class="set-row"><label>界面配色</label>' +
@@ -4982,13 +5011,13 @@
     };
     /* ⚠️ 数组里的每一项 **k** 同时是：① 元素 id 的后半截（`set-' + k`）
          ② `S.settings` 的键名。**两边必须是同一个名字**，见上面 `set-autosave` 的注释。 */
-    ['anim', 'autosave', 'narrow', 'mapnames'].forEach(k => {
+    ['anim', 'autosave', 'narrow', 'dirpad'].forEach(k => {
       const btn = $('set-' + k);
       btn.onclick = () => {
         S.settings[k] = !S.settings[k];
         btn.classList.toggle('on', S.settings[k]);
         btn.textContent = S.settings[k] ? '开' : '关';
-        if (k === 'narrow') applySettings();
+        if (k === 'narrow' || k === 'dirpad') applySettings();
       };
     });
     /* 界面配色：暗 / 浅 两套（切换立刻生效，方便一边看一边挑） */
@@ -5025,6 +5054,8 @@
     document.documentElement.classList.toggle('theme-light', themeOf(s) === 'light');
     const bg = $('bg-art');
     if (bg) bg.style.display = s.anim ? '' : 'none';
+    /* 方向九宫格开关：即时生效（开=按当前 view 摆格子，关=收起清空） */
+    renderDirPad(S.view);
   }
 
   /* ============================================================

@@ -172,6 +172,14 @@ async function main() {
 section('A. 数据前提：江南区确有跨层房间（先确认要测的东西真实存在）');
 const eng = new GameEngine({ seed: 20261013 }); eng.boot(); eng.newGame();
 const w = eng.world, P = w.player;
+/* ⚠️ 探索制 setup（2026-10-18 迷雾返修）：mapHtml 只画 visited∪current。
+   本守卫管的是「同层筛选 + 布局重算 + 无断头线」，不管迷雾（迷雾有专属守卫），
+   ⇒ 江南区**整区**踩点（含 z=1）——C 节要证的是「层筛选把楼上房藏了」，
+     不是「没踩点所以没画」，两种隐藏必须分得开。 */
+Object.keys(w.data.rooms).forEach(id => {
+  const r = w.data.rooms[id];
+  if (r && r.region === 'jiangnan') { try { P.setFlag('visited_' + id, true); } catch (err) { } }
+});
 P.room = 'jiangnan_street';
 {
   const street = w.getRoom('jiangnan_street');

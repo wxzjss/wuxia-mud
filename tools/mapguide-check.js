@@ -32,6 +32,13 @@ function ok(name, cond, extra) {
   await e.boot({});
   e.newGame({ name: '验证侠客' });
 
+  /* ⚠️ 探索制 setup（2026-10-18 迷雾返修）：mapHtml 只画 visited∪current ——
+     本守卫管的是几何 / 桥 / 命名，不管迷雾（迷雾有专属守卫 map-fog-check /
+     smoke-map-region-filter），⇒ 全图踩点，保住下面各断言的原口径。 */
+  Object.keys(e.world.data.rooms).forEach(id => {
+    try { e.world.player.setFlag('visited_' + id, true); } catch (err) { }
+  });
+
   console.log('\n── 地图数据 ──');
   const v = e.view();
   const m = v.map;
@@ -140,10 +147,13 @@ function ok(name, cond, extra) {
     }
     /* 跨区边仍然要连上 —— 靠的是「布局咬合后本来就相邻」（走走廊那一段），
        不是靠兜底折线。所以这里改成查「跨区边真的被走廊画到了」：
-       世界地图模式下渲染出的 path 里必须有 M/L 段（= 有走廊）。 */
-    const edgePath = (wh.match(/<path d="([^"]*)" class="edge edge-dim"/) || [])[1] || '';
+       渲染出的 path 里必须有 M/L 段（= 有走廊）。
+       ⚠️ 探索制 setup（2026-10-18）全图踩点后，所有走廊都进了「走过」那档
+          （edge-known），edge-dim 恒 0 —— 所以这里数**全部** edge 段，
+          不再只数 dim 档（那是全图未踩点时代才有的形状）。 */
+    const edgeSegs = (wh.match(/<path d="[^"]*" class="edge[- "]/g) || []).length;
     ok('★ 世界地图仍然把地块连成一张网（有走廊段，不是一盘散沙）',
-      (edgePath.match(/M/g) || []).length > 0, (edgePath.match(/M/g) || []).length + ' 段');
+      edgeSegs > 0, edgeSegs + ' 段');
   }
 
   /* —— 两级地图视野（默认只看当前区域）—— */
