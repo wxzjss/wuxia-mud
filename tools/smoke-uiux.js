@@ -18,6 +18,7 @@
  *   §7  窄屏 ☰ 菜单 ⊇ 侧栏全部入口（防「加了面板忘了加 ☰」复发；真点每一项）
  *   §8  中栏统一成一列（房间卡/日志/输入栏/快捷条 同一条 --col-w；D2 · CSS 契约）
  *   §9  诊断锚：历史日志行点已不在场的 NPC 名 → 归因句，不打服务器（2026-10-18）
+ *   §10 同名多实例 tokenize：恰好两颗按钮 · 属性零嵌套 · 「（可交互）」不漏正文（2026-10-18）
  *
  * ⚠️ DOM stub 三坑（照抄 smoke-mapui.js）：
  *   ① querySelectorAll 必须按 (选择器, innerHTML) 缓存；② innerHTML setter 必须清 children；
@@ -1722,6 +1723,72 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     await settle(); await settle();
     ok('S9-4 ★ 在场的名字照旧自动 look（锚不误伤）',
       rec.exec.some(x => /^look 卖茶的老汉/.test(x.cmd)), JSON.stringify(rec.exec.map(x => x.cmd)));
+  }
+
+  /* ---------- §10 同名多实例 tokenize：主人真机「四只山贼」截图定案（2026-10-18） ---------- */
+  section('§10 同名多实例：恰好两颗按钮 · 属性零嵌套 · 「（可交互）」不漏正文');
+  {
+    /* 主人现场复刻：同一行两个同名条目（#91 sameAs 瘦身形）。
+       旧 split/join 逐条替换时，第二趟 needle 命中第一趟按钮的 aria-label →
+       按钮嵌进属性 → 「（可交互）">山贼（山贼）」漏成正文，主人看到四只山贼。
+       单趟 tokenize 后：机制上不可能嵌套，同名条目共享同一注册项。 */
+    const env = loadUi(makeEnv({}));
+    const rec = stubApi(env, VIEW);
+    env.WX.S.view = { npcs: [{ name: '山贼' }, { name: '山贼' }, { name: '卖茶的老汉' }] };
+    env.WXUI.appendLog([
+      { type: 'plain', text: '这里有：山贼、山贼、卖茶的老汉。',
+        hl: [
+          { text: '山贼', type: 'npc', actions: [{ label: '查看', cmd: 'look 山贼' }] },
+          { text: '山贼', sameAs: 0 },
+          { text: '卖茶的老汉', type: 'npc', actions: [{ label: '交谈', cmd: 'talk 卖茶的老汉' }] },
+        ] },
+    ]);
+    const logA = env.document._els['log'];
+    const htmlA = logA._html;
+    const plainA = htmlA.replace(/<[^>]*>/g, '');
+
+    /* 判据①：渲染产物 HTML 里属性值零 <button 嵌套（旧实现的泄漏签名） */
+    ok('S10-1 ★ 属性值零 <button 嵌套', !/<[a-z-]+="[^"]*<button/.test(htmlA));
+
+    /* 判据②：两同名实例 = 恰好 2 颗山贼按钮 + 1 颗老汉按钮 + 0 漏文本 */
+    const banditBtns = htmlA.match(/<button class="hl" data-hl="\d+" aria-label="山贼（可交互）">山贼<\/button>/g) || [];
+    ok('S10-2 ★ 两同名实例渲染出恰好 2 颗山贼按钮（不是「四只山贼」）',
+      banditBtns.length === 2, '山贼按钮 ' + banditBtns.length + ' 颗 / hl 总数 ' + (htmlA.match(/class="hl"/g) || []).length);
+    ok('S10-3 ★ 0 漏文本（去标签正文：山贼恰好 2 次、老汉 1 次）',
+      (plainA.match(/山贼/g) || []).length === 2 && (plainA.match(/卖茶的老汉/g) || []).length === 1, plainA);
+
+    /* 判据③：「（可交互）」只活在 aria-label 属性里，永不出现在可见正文 */
+    ok('S10-4 ★ 「（可交互）」不出现在可见正文', plainA.indexOf('（可交互）') === -1);
+    ok('S10-5 aria-label 里照常有「（可交互）」（读屏依赖，不许矫枉过正）',
+      /aria-label="山贼（可交互）"/.test(htmlA));
+
+    /* 同名共享注册项：两颗山贼按钮共用同一 data-hl；老汉是第 2 个注册项 */
+    ok('S10-6 同名按钮共用同一 data-hl（注册表只 2 项：山贼 + 老汉）',
+      banditBtns.length === 2
+      && banditBtns[0].match(/data-hl="(\d+)"/)[1] === banditBtns[1].match(/data-hl="(\d+)"/)[1]
+      && /data-hl="1" aria-label="卖茶的老汉（可交互）"/.test(htmlA));
+
+    /* 长词优先：「岳不群（掌门）」不得被「岳不群」吃成按钮 + 漏尾巴 */
+    env.WXUI.appendLog([
+      { type: 'plain', text: '岳不群（掌门）与岳不群对视。',
+        hl: [
+          { text: '岳不群（掌门）', type: 'npc', actions: [{ label: '查看', cmd: 'look 岳不群' }] },
+          { text: '岳不群', type: 'npc', actions: [{ label: '查看', cmd: 'look 岳不群' }] },
+        ] },
+    ]);
+    const htmlB = logA._html.slice(htmlA.length);
+    const plainB = htmlB.replace(/<[^>]*>/g, '');
+    ok('S10-7 ★ 长词优先：掌门整词成按钮，尾巴不漏成正文',
+      /<button[^>]*>岳不群（掌门）<\/button>/.test(htmlB)
+      && !/岳不群<\/button>（掌门）/.test(htmlB)
+      && (plainB.match(/岳不群（掌门）/g) || []).length === 1, plainB);
+
+    /* 点击仍正常：共享注册项点第二颗同名按钮照常自动 look */
+    const btnsB = logA.querySelectorAll('.hl');
+    const before = rec.exec.length;
+    btnsB[1].onclick(); await settle(); await settle();
+    ok('S10-8 点第二颗同名按钮照常自动 look（共享注册项无碍点击）',
+      rec.exec.some(x => /^look 山贼/.test(x.cmd)), JSON.stringify(rec.exec.slice(before).map(x => x.cmd)));
   }
 
   console.log('\n———————————————————————————————');

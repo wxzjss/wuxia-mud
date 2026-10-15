@@ -569,30 +569,34 @@
     let raw = esc(l.text || '');
 
     /* ① 可交互名词
-       2026-10-17 主人「任何 NPC 都不合并」配套：同文条目**逐处替换**——
-       旧 indexOf 只点亮第一个，逐实例拆行后第二个「山贼」会点不到。
-       同名多实例共享同一注册项（actions 按名寻址，本就同路）。 */
+       ⚠️ 2026-10-18 重写为**单趟 tokenize**（主人真机「四只山贼」截图定案）：
+       旧实现（#96 同文逐处替换，split/join）有嵌套替换大坑——同一行出现两个
+       同名条目（逐实例拆行后很常见：两只山贼）时，第二趟的同名 needle 会命中
+       第一趟生成的按钮 HTML（aria-label 里就是名字原文），按钮嵌进按钮属性 →
+       属性提前闭合，「（可交互）">」漏成正文——主人数的「四只山贼」其实是
+       2 实例 × 2 次渲染。单趟 tokenize：全部 needle 合成一个正则（长词优先，
+       防「岳不群」吃掉「岳不群（掌门）」），replace 一趟出结果，回调产物
+       **不参与扫描**——嵌套替换从机制上不可能。
+       同名条目仍共享同一注册项（sameAs 指回首条，#91 口径）：同名只造一种
+       按钮、只注册一次，几处出现就几颗按钮、共用同一 data-hl。 */
     const hls = l.hl;
     if (hls && hls.length) {
+      const uniq = [];
       hls.forEach(h => {
         if (!h.text) return;
-        const needle = esc(h.text);
-        if (raw.indexOf(needle) < 0) return;
-        /* 载荷瘦身（perf B2 退回 2026-10-17）：同名实例的重复条目只带
-           sameAs（指回首条下标），解析时换成首条的**全量注册项**——
-           菜单按名寻址本就同路，注册表里存的始终是带 actions 的那条。 */
         const ref = (h.sameAs != null && hls[h.sameAs] && hls[h.sameAs].actions) ? hls[h.sameAs] : h;
-        const hi = reg ? reg.length : 0;
-        if (reg) reg.push(ref);
-        /* 81/N-V-26（L1 一个字都不说）：屏幕上不许有 hover 冒泡提示，
-           title= 已删；无障碍信息走 aria-label（读屏念，屏幕不显示）。
-           ⚠️ esc 恰好一次（N-V-29）：双重转义会把名字里的引号显示成
-           &amp;quot;（读屏念「amp quot」）；单次转义后属性值里的 "
-           已是 &quot;，属性不会提前闭合——真机上「(可交互)\">」那种
-           裸标签尾巴，就是旧前端 esc 版本不齐时的属性泄漏形态。 */
-        const tag = '<button class="hl" data-hl="' + hi + '" aria-label="' + esc(h.text) + '（可交互）">' + needle + '</button>';
-        raw = raw.split(needle).join(tag);
+        if (!uniq.some(x => x.text === h.text)) uniq.push({ text: h.text, ref: ref, hi: -1 });
       });
+      if (uniq.length) {
+        const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const re = new RegExp(uniq.map(x => escRe(esc(x.text))).sort((a, b) => b.length - a.length).join('|'), 'g');
+        raw = raw.replace(re, m => {
+          const u = uniq.find(x => esc(x.text) === m);
+          if (!u) return m;
+          if (u.hi < 0) { u.hi = reg ? reg.length : 0; if (reg) reg.push(u.ref); }
+          return '<button class="hl" data-hl="' + u.hi + '" aria-label="' + esc(u.text) + '（可交互）">' + esc(u.text) + '</button>';
+        });
+      }
     }
 
     /* ② 出口：有 exitMap 就只渲染九宫格方位图。

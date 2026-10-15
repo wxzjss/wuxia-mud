@@ -129,7 +129,7 @@ console.log('[N-V-29] hl 标签转义恰一次（主人真机 2026-10-18「(可�
    + 行为（真 esc 对敌意输入的产物无双引号泄漏、无双重转义失真）。 */
 t('N-V-29a 构造点恰好 esc 一次：无 esc(esc( 双重转义',
   !/esc\(esc\(/.test(uiNoCmt)
-  && /aria-label="' \+ esc\(h\.text\) \+ '（可交互）">'/.test(uiNoCmt));
+  && /aria-label="' \+ esc\(u\.text\) \+ '（可交互）">'/.test(uiNoCmt));
 {
   /* 行为断言：取 app.js 的**真 esc**（vm 求值 util 对象字面量），按 589 行的
      构造式拼标签，敌意输入（引号/单引号/尖括号/实体/常规名）逐个过：
