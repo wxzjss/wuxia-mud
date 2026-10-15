@@ -19,6 +19,7 @@
  *   §8  中栏统一成一列（房间卡/日志/输入栏/快捷条 同一条 --col-w；D2 · CSS 契约）
  *   §9  诊断锚：历史日志行点已不在场的 NPC 名 → 归因句，不打服务器（2026-10-18）
  *   §10 同名多实例 tokenize：恰好两颗按钮 · 属性零嵌套 · 「（可交互）」不漏正文（2026-10-18）
+ *   §11 菜单动作去重：攻击恰好 1 条 · 绑架不冒名攻击 · 同文条目留首（2026-10-18）
  *
  * ⚠️ DOM stub 三坑（照抄 smoke-mapui.js）：
  *   ① querySelectorAll 必须按 (选择器, innerHTML) 缓存；② innerHTML setter 必须清 children；
@@ -1789,6 +1790,58 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     btnsB[1].onclick(); await settle(); await settle();
     ok('S10-8 点第二颗同名按钮照常自动 look（共享注册项无碍点击）',
       rec.exec.some(x => /^look 山贼/.test(x.cmd)), JSON.stringify(rec.exec.slice(before).map(x => x.cmd)));
+  }
+
+  /* ---------- §11 菜单动作去重：主人真机「菜单里两个攻击」（2026-10-18） ----------
+     断言缝：__html.hlTipRows —— 提示菜单行构造的**纯函数本体**（toggleHlTip
+     渲染的就是它的产物）。为什么走纯函数不走真点击：DOM stub 的 closest()/
+     querySelector() 是恒 null 的最小实现，openInteractMenu 的「look 回包后
+     按新 DOM 找回按钮再展开」在 stub 里断链（与 §0 把纯渲染函数挂 __html
+     是同一先例）。菜单消费的动作清单与后端完全同形（commands.js「这里有：」
+     hl 构造）；同名双实例共享同一份清单由 §10 S10-6（共用 data-hl）钉住。 */
+  section('§11 菜单动作去重：攻击恰好 1 条 · 绑架不冒名攻击 · 同文条目留首');
+  {
+    const rows = acts => env.WXUI.__html.hlTipRows(acts).map(r => r.t + (r.hint ? ' —— ' + r.hint : ''));
+    const env = loadUi(makeEnv({}));
+    /* 后端真实动作形态：hot 实例攻击置顶、绑架条目 cmd 是 `kill 山贼`
+       （＝打晕再装袋）。修前：kill→攻击 动词表把绑架条目念成「攻击 山贼」，
+       与真攻击并排双「攻击」；倒地菜单的「补刀」同理。 */
+    const banditActs = [
+      { label: '攻击', cmd: 'attack 山贼' },
+      { label: '交谈', cmd: 'talk 山贼' },
+      { label: '询问', cmd: 'ask 山贼' },
+      { label: '伺机偷袭', cmd: '偷袭 山贼', hint: '先手重击，但会结仇，多半被告发' },
+      { label: '送礼', cmd: 'give 山贼' },
+      { label: '查看关系', cmd: 'guanxi 山贼' },
+      { label: '绑架', cmd: 'kill 山贼', hint: '打晕他，再装袋' },
+    ];
+    const r1 = rows(banditActs);
+    ok('S11-1 ★ 攻击恰好 1 条（真机「两个攻击」不再现）',
+      r1.filter(t => t.indexOf('攻击 山贼') === 0).length === 1, JSON.stringify(r1));
+    ok('S11-2 ★ 绑架条目不冒名攻击（kill cmd 按后端 label 显示「绑架」）',
+      r1.some(t => t.indexOf('绑架 山贼') === 0 && t.indexOf('打晕他，再装袋') > 0));
+    ok('S11-3 中文 label 优先：伺机偷袭/送礼/查看关系按后端动作名显示',
+      r1.some(t => t.indexOf('伺机偷袭 山贼') === 0)
+      && r1.some(t => t.indexOf('送礼 山贼') === 0)
+      && r1.some(t => t.indexOf('查看关系 山贼') === 0));
+    ok('S11-4 倒地菜单同理：补刀/搜身不冒名攻击',
+      (() => {
+        const d = env.WXUI.__html.hlTipRows([
+          { label: '补刀', cmd: 'kill 山贼', hint: '结果了他' },
+          { label: '搜身', cmd: '搜身 山贼', hint: '翻他身上的东西' },
+        ]).map(r => r.t);
+        return d.length === 2 && d[0] === '补刀 山贼' && d[1] === '搜身 山贼';
+      })(), JSON.stringify(rows(banditActs)));
+
+    /* 去重双保险：后端真给同文条目时（历史上 kill/attack 双映射那类），
+       按渲染文本留首条，不重复刷屏。 */
+    const r2 = rows([
+      { label: '攻击', cmd: 'attack 游侠' },
+      { label: '交谈', cmd: 'talk 游侠' },
+      { label: '攻击', cmd: 'attack 游侠' },
+    ]);
+    ok('S11-5 ★ 同文条目去重：攻击 2 进 1 出、交谈保留',
+      r2.filter(t => t === '攻击 游侠').length === 1 && r2.indexOf('交谈 游侠') >= 0, JSON.stringify(r2));
   }
 
   console.log('\n———————————————————————————————');

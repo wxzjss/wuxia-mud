@@ -649,8 +649,30 @@
     const sp = cmd.indexOf(' ');
     const head = sp > 0 ? cmd.slice(0, sp) : cmd;
     const rest = sp > 0 ? cmd.slice(sp + 1) : '';
-    const verb = HL_TIP_VERBS[head.toLowerCase()] || (a && a.label) || head;
+    /* 2026-10-18 主人真机「菜单里两个攻击」定案：绑架条目 cmd 是 `kill xxx`，
+       动词表 kill→攻击 把它渲染成「攻击 xxx——打晕他，再装袋」，与真攻击条目
+       并排成双「攻击」；倒地菜单的「补刀」（同 kill cmd）同理被念成「攻击」。
+       修法：条目自带的**中文 label 优先**（绑架/补刀/伺机偷袭…是后端起的准确
+       动作名），动词表退为兜底（label 缺失或纯英文指令时才查表）。 */
+    const label = (a && a.label) || '';
+    const verb = /[\u4e00-\u9fff]/.test(label) ? label
+      : (HL_TIP_VERBS[head.toLowerCase()] || label || head);
     return rest ? verb + ' ' + rest : verb;
+  }
+  /* 菜单行构造（纯函数，测试口 __html.hlTipRows）：
+     按渲染文本去重（2026-10-18 主人报「菜单里两个攻击」双保险）——同名实例共享
+     一份动作清单（sameAs）本不该重复，但后端若真给两条同文条目（历史上
+     kill/attack 双映射那类），玩家会看到两行一样的提示，按文本留首条。 */
+  function hlTipRows(acts) {
+    const seen = {};
+    const rows = [];
+    (acts || []).forEach(a => {
+      const t = hlTipText(a);
+      if (seen[t]) return;
+      seen[t] = 1;
+      rows.push({ t: t, hint: (a && a.hint) || '' });
+    });
+    return rows;
   }
 
   function openInteractMenu(h, btnEl) {
@@ -722,9 +744,9 @@
          按钮 / 手输指令（「细看 <人名>」走人物详情文本流，2026-10-13 并入口径）。
          （本函数内经历过「act 条目可点 → 又撤」一个来回，别再接回去——
          runInteractAct 仍挂导出，仅供测试真跑派发。） */
-      tip.innerHTML = acts.map(a =>
-        '<div class="hl-tip-cmd">' + esc(hlTipText(a)) +
-        (a.hint ? '<span class="hl-tip-note"> —— ' + esc(a.hint) + '</span>' : '') + '</div>'
+      tip.innerHTML = hlTipRows(acts).map(r =>
+        '<div class="hl-tip-cmd">' + esc(r.t) +
+        (r.hint ? '<span class="hl-tip-note"> —— ' + esc(r.hint) + '</span>' : '') + '</div>'
       ).join('');
       line.appendChild(tip);
     }
@@ -5316,7 +5338,7 @@
        以前只能从真 DOM（modal-body.innerHTML）里读文本，
        写「读字段名对不对」的断言就别扭。
        全是纯函数（view → html 字符串），不碰 DOM 状态，不产生副作用。 */
-    __html: { attrHtml, martialHtml, slavesHtml, npcProfileHtml, questPreviewHtml, storyHtml },
+    __html: { attrHtml, martialHtml, slavesHtml, npcProfileHtml, questPreviewHtml, storyHtml, hlTipText, hlTipRows },
   };
 
 })(window);

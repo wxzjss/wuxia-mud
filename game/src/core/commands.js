@@ -771,7 +771,6 @@ function buildCommands(world) {
           return { text: labelOf(k), type: 'npc', sameAs: actsByName[k] };
         }
         actsByName[k] = idx;
-        const pron = pronounOf(one);   // B11：兽→它 / 女→她 / 男→他（单一入口）
         const def = (one && one.def) || {};
         const actions = [
           /* ⚠️ 菜单演变史（别再做回头的两套）：
@@ -828,7 +827,7 @@ function buildCommands(world) {
         if (!(one && one.knockedOut)) {
           actions.push({ label: '伺机偷袭', cmd: '偷袭 ' + k, hint: '先手重击，但会结仇，多半被告发' });
         }
-        actions.push({ label: `送${pron}东西`, cmd: 'give ' + k });
+        actions.push({ label: '送礼', cmd: 'give ' + k });
         actions.push({ label: '查看关系', cmd: 'guanxi ' + k });
         /* B10（主人亲报：点 NPC / 野兽弹出来的菜单里没有「攻击」）：
            · cmd 用**真实的攻击指令** `attack` —— 批次 2 已把 attack 并入 kill
