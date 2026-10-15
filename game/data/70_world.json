@@ -362,6 +362,25 @@
       "marks": [
         "官面"
       ]
+    },
+    "rs_guard_beaten": {
+      "id": "rs_guard_beaten",
+      "kind": "门派",
+      "polarity": -1,
+      "weight": 2.5,
+      "heat0": 70,
+      "tauDays": 10,
+      "ttlDays": 25,
+      "loud": true,
+      "texts": {
+        "true": "{who}在{where}山门前动了手，把守门的打得不轻。这样的事，门里不会忘。",
+        "half": "有人说{who}在{where}闯了山门，连守门的都挨了打，不知真假。",
+        "false": "{who}在{where}连挑一派山门，守门人排着队挨打，好生了得！"
+      },
+      "marks": [
+        "江湖",
+        "风评"
+      ]
     }
   },
   "worldEvents": {

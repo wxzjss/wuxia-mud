@@ -213,17 +213,17 @@ function stateName(world, p, sectId) {
      「我什么声望都没有、跟谁都不认识，报个名号就让我进了」就是这里漏的。
      声望口径复用既有 reputation 账本（键：门派 id / '*'=全江湖），
      取两者较高者；门槛过的无名小卒照样嗤笑拒之。
-     （台词保底版，润色归游有方 lane。） */
+     （台词润色终稿 design/104 §二，游有方 2026-10-18。） */
   const rep = p.reputation || {};
   const repute = Math.max(rep[sd.id] || 0, rep['*'] || 0);
   if (!isInsider(world, p, sd.id) && repute < 50) {
     return [
-      { kind: 'say', text: `你报上名号。${g.name}上下打量你两眼，嗤笑一声：「没听过。${sd.name}的门，还轮不到报个名号就进。」` },
-      { kind: 'hint', text: '（江湖声望到了 50、进了门派、或揣着引荐信，再报不迟；要不就「硬闯」。）' },
+      { kind: 'say', text: `你报上名号。${g.name}把这两个字嚼了嚼，嗤了一声：「没听过。」他往门心一站，「名字没人提过，门就没人让。」` },
+      { kind: 'hint', text: '（声望到了 50、或进了门派、或揣着引荐信，再报不迟；要不就「硬闯」。）' },
     ];
   }
   return [
-    { kind: 'say', text: `你报上名号。${g.name}盯着你看了两息，侧身让开半步：「进去吧，规矩着点。」` },
+    { kind: 'say', text: `你报上名号。${g.name}眯眼看了你两息，忽然一抱拳：「原来是您。门里提过您的事。」侧身让开。` },
     { kind: 'sys', text: `你进了${sd.name}的山门。要拜师，就在此处「拜师 ${sd.name}」。` },
   ];
 }
@@ -302,11 +302,12 @@ function onGuardBeaten(world, p, npc) {
   /* ⚠️ 键用门派 **id**（reputation 账本全库约定：applyRumorReputation / repGain
      都以 id 为键，总览面板按 id 查门派名）；原写 sd.name 是记到一本谁都不读的账上。 */
   p.reputation[sd.id] = Math.max(-100, (p.reputation[sd.id] || 0) - 30);
-  /* ⚠️ 原这里还挂了一条 rs_sect_join 传闻——那是「正式入了门墙」的**拜师喜报**
-     （polarity +1，还会同步给声望 +15，把上面的 −30 抵掉一半）。
-     打伤守门人播出一条拜师传闻，语义反向，已摘（2026-10-18）。
-     「打伤守门人」的专属负面传闻种子归 #104 台词与数值配套（游有方 lane），
-     补上种子后在此 note 回来即可。 */
+  /* 打伤守门人算一桩可传的事（#104 配套，游有方落 2026-10-18）：
+     原挂 rs_sect_join 是「正式入了门墙」的**拜师喜报**（polarity +1，还会同步
+     给声望 +15，把上面的 −30 抵掉一半）——语义反向，已摘。
+     现挂专属负面种子 rs_guard_beaten（70_world.json：polarity −1 / loud），
+     声望经 applyRumorReputation 走传闻账（约 −14，与上面 −30 叠加）。 */
+  try { require('./rumorfeed').note(world, 'rs_guard_beaten', { vars: { who: p.name, where: sd.name } }); } catch (e) { }
 }
 
 module.exports = {

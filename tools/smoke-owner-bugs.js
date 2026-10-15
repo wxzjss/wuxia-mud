@@ -2033,18 +2033,21 @@ section('B33 · 门禁两病（2026-10-18 主人裁定）：硬闯后戒备态 +
   ok('B33-2 ★ 新档走到山门被拦下（问话 + 给「报上名号」出口）',
     !!bar1 && bar1.kind === 'warn' && (bar1.choices || []).some(c => String(c.cmd).indexOf('报名入山') === 0),
     bar1 ? bar1.text.slice(0, 40) : 'null');
-  ok('B33-3 ★ 新档报上名号 → 嗤笑拒之（声望门槛，绝不是「进去吧」）', (() => {
+  ok('B33-3 ★ 新档报上名号 → 嗤一声拒之（声望门槛，绝不是放行）', (() => {
+    /* 台词润色终稿（design/104 §二）：「没听过。」+「名字没人提过，门就没人让。」 */
     const lines = G.stateName(w, p, 'wudang');
     const t = lines.map(l => l.text || '').join('');
-    return t.indexOf('嗤笑') >= 0 && t.indexOf('进去吧') < 0;
+    return t.indexOf('没听过') >= 0 && t.indexOf('门就没人让') >= 0 && t.indexOf('原来是他') < 0 && t.indexOf('原来是您') < 0;
   })());
   /* 对照：声望 ≥50 → 报号放行（reputation 账本键 = 门派 id）
-     ⚠️ stateName 会 clearGuard，重挂 guardBy 再试放行分支。 */
+     ⚠️ stateName 会 clearGuard，重挂 guardBy 再试放行分支。
+     台词润色终稿：放行走抱拳句「原来是您」，sys 行不变。 */
   p.reputation = { wudang: 50 };
   p.vars.guardBy = 'sectguard_wudang';
-  ok('B33-4 ★ 对照：声望 ≥50 报号 → 守卫侧身放行', (() => {
+  ok('B33-4 ★ 对照：声望 ≥50 报号 → 守卫抱拳放行（润色终稿）+ sys 行仍在', (() => {
     const lines = G.stateName(w, p, 'wudang');
-    return lines.map(l => l.text || '').join('').indexOf('进去吧') >= 0;
+    const t = lines.map(l => l.text || '').join('');
+    return t.indexOf('原来是您') >= 0 && t.indexOf('门里提过您的事') >= 0 && t.indexOf('拜师 ') >= 0;
   })());
   /* 对照：引荐信（tutPass 与 joinSect 同源）→ isInsider 直接不拦 */
   p.reputation = {};
@@ -2081,15 +2084,20 @@ section('B33 · 门禁两病（2026-10-18 主人裁定）：硬闯后戒备态 +
     !!w2.battle);
   w2.battle = null;
 
-  /* 打赢守卫也记仇：onGuardBeaten 记档 + 门派声望 −30（键 = 门派 id） */
+  /* 打赢守卫也记仇：onGuardBeaten 记档 + 门派声望 −30（键 = 门派 id）
+     + 专属负面传闻 rs_guard_beaten（#104 配套：种子 polarity −1，applyRumorReputation
+     按传闻账再扣约 −14，与显式 −30 叠加；note 有日冷却，测试内只发一条）。 */
   const e4 = boot(); const w4 = e4.world; const p4 = w4.player;
   p4.room = entry2;
   const guard4 = w4.npcsIncludingTemplates(entry2)
     .find(n => ((n.def && n.def.tag) || n.tag) === 'shouwei');
   G.onGuardBeaten(w4, p4, guard4);
-  ok('B33-11 ★ 打赢守门人：戒备记档 + wudang 声望 −30（记在 id 名下，不是没人读的账）',
-    p4.hasFlag('gateBreach_wudang') && (p4.reputation.wudang || 0) === -30,
-    'rep=' + JSON.stringify(p4.reputation));
+  ok('B33-11 ★ 打赢守门人：戒备记档 + 声望重扣（−30 显式 + 传闻账）+ 传闻真挂上',
+    p4.hasFlag('gateBreach_wudang')
+    && (p4.reputation.wudang || 0) <= -30
+    && (w4.rumors || []).some(r => r.seedId === 'rs_guard_beaten'),
+    'rep=' + JSON.stringify(p4.reputation)
+    + ' rumors=' + (w4.rumors || []).map(r => r.seedId).join(','));
 
   /* 对照：清白玩家冷却期内不再重复问话（冷却语义没被戒备态改坏） */
   const e3 = boot(); const w3 = e3.world; const p3 = w3.player;
