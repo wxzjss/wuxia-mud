@@ -1943,6 +1943,7 @@ section('B31 · 清剿第三刀：def.room 静态定岗族离岗清理（老周�
     z3: { defId: 'cy_pre_teaman', room: 'jiangnan_street', isNpc: true, hp: 10, maxHp: 10, favor: 0, pstate: { met: false } },
     b1: { defId: 'mob_bandit', room: 'road_jiangnan_1', isNpc: true, hp: 10, maxHp: 10, hostile: true, pstate: { met: false } },
     b2: { defId: 'mob_bandit', room: 'wild_forest_1', isNpc: true, hp: 10, maxHp: 10, hostile: true, favor: 25, pstate: { met: true } },
+    b4: { defId: 'mob_bandit', room: 'road_jiangnan_1', isNpc: true, hp: 250, maxHp: 250, hostile: true, favor: 31, pstate: { met: false } },
     b3: { defId: 'mob_bandit', room: 'jm_underground', isNpc: true, hp: 10, maxHp: 10, hostile: true, pstate: { met: false } },
     v1: { defId: 'disciple_huashan_0', room: 'jn_market_s', isNpc: true, hp: 10, maxHp: 10, pstate: { met: false } },
   };
@@ -1952,7 +1953,9 @@ section('B31 · 清剿第三刀：def.room 静态定岗族离岗清理（老周�
   ok('B31-2 ★ 真见过面的离岗定岗豁免（pstate.met=玩家交情凭据）', left.includes('z2'));
   ok('B31-3 在岗定岗不咬', left.includes('z3'));
   ok('B31-4 刀② 仍咬离岗山贼（favor=0）', !left.includes('b1'));
-  ok('B31-5 刀② 交情豁免仍在（favor≠0，#90 口径不回退）', left.includes('b2'));
+  ok('B31-5 刀② 交情豁免收窄后仍在（favor≠0 且 met=true）', left.includes('b2'));
+  ok('B31-5b ★ 线上活体复刻：favor=31、met=false 的漂移山贼照清（2026-10-18 road_jiangnan_1 真捕）',
+    !left.includes('b4'));
   ok('B31-6 在岗山贼不咬', left.includes('b3'));
   ok('B31-7 游走族离岗不咬（带 wander=设计内行为，165 个）', left.includes('v1'));
 

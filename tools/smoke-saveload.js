@@ -175,15 +175,22 @@ console.log('  结缘知晓人数 前'+before.bondKnows+' → 后'+bondKnowsAfte
   ok('★ 记仇人 hostile / favor / avengers 原样',
     wi2 && wi2.hostile === true && (wi2.favor || 0) <= -90 &&
     wi2.pstate && Array.isArray(wi2.pstate.avengers) && wi2.pstate.avengers.indexOf(VIC2) >= 0);
-  /* 刀② 豁免反例：离岗但带交情（favor≠0 = 运行时个人化状态）→ 不删 */
+  /* 刀② 豁免（2026-10-18 收窄口径，线上活体 favor=31 定案）：
+     favor≠0 **且 met=true** 才算玩家处出来的交情——出身亲和给的 favor
+     （met 永假，没见过面）不算交情，离岗漂移实例照清；真见过面的保留。 */
   const dr = w.spawnNpc('wg_zhou', 'road_jiangnan_1', 1, true);
-  dr.favor = 50;
+  dr.favor = 50;                                   /* spawnNpc 初始态：met=false */
+  const dr2 = w.spawnNpc('wg_zhou', 'wild_forest_1', 1, true);
+  dr2.favor = 60; dr2.pstate.met = true;           /* 真见过面＝交情凭据 */
   const saveF = JSON.parse(JSON.stringify(w.serialize()));
   const e8 = new GameEngine({ seed: 20261010, saveDir: TEST_SAVE_DIR });
   e8.boot();
   e8.world.deserialize(saveF, []);
-  ok('★ 刀② 豁免：带交情（favor≠0）的离岗 NPC 保留',
-    Object.values(e8.world.instances.npcs).some(n => n && n.defId === 'wg_zhou' && n.favor === 50));
+  const wf8 = Object.values(e8.world.instances.npcs);
+  ok('★ 刀② 收窄：favor≠0 但没见过面（met=false）的离岗 NPC 照清',
+    !wf8.some(n => n && n.defId === 'wg_zhou' && n.favor === 50));
+  ok('★ 刀② 豁免：真见过面（met=true）的带交情离岗 NPC 保留',
+    wf8.some(n => n && n.defId === 'wg_zhou' && n.favor === 60));
 }
 
 /* ================================================================
@@ -213,6 +220,25 @@ const fs = require('fs'), path = require('path'), vm = require('vm');
   ok('⑧A5 坏正文明确拒绝（不炸世界）', rBad.ok === false && !!rBad.msg);
   ok('⑧A6 loadSave 与 restoreFrom 同一套收口（正文来源不同、收尾只有一份）',
     /loadSave\(id\) \{[\s\S]{0,200}return this\.restoreFrom\(s\);/.test(fs.readFileSync(path.join(__dirname, '..', 'game', 'src', 'core', 'engine.js'), 'utf8')));
+
+  /* ---- A7/A8 ★ restoreFrom 链路必经清剿（2026-10-18 线上活体定案）----
+     主人实测：road_jiangnan_1 真捕 mob_bandit 漂移实例（favor=31、met=false），
+     每次读档原地复活。restoreFrom → world.deserialize → pruneOrphanInstances
+     是同一条链——老档无论从哪条路进来（loadSave / /api/restore / 迁移桥导入后
+     的首次读取），落地即净。这条断言同时钉住「链路没绕过清剿」与「favor 裸豁免
+     不复活漂移怪」两件事。 */
+  {
+    const wLive = e.world;
+    const liveBandit = wLive.spawnNpc('mob_bandit', 'road_jiangnan_1', 1, true);
+    liveBandit.favor = 31;          /* spawnNpc 已置 pstate.met=false＝出身亲和形态 */
+    const snapLive = JSON.parse(JSON.stringify(wLive.serialize()));
+    const eA = new GameEngine({ seed: 20261010, saveDir: TEST_SAVE_DIR });
+    eA.boot();
+    const rLive = eA.restoreFrom(snapLive);
+    ok('⑧A7 restoreFrom 读入成功', rLive.ok === true);
+    ok('⑧A8 ★ restoreFrom 链路跑清剿：漂移山贼（favor=31、met=false）落地即净',
+      !Object.values(eA.world.instances.npcs).some(n => n && n.defId === 'mob_bandit' && n.room === 'road_jiangnan_1'));
+  }
 
   /* ---- B. WXSAVE 本地组件（vm 真跑，localStorage 用内存桩） ---- */
   const mkLs = () => { const d = {}; return { getItem: k => (k in d ? d[k] : null), setItem: (k, v) => { d[k] = String(v); }, removeItem: k => { delete d[k]; }, _d: d }; };

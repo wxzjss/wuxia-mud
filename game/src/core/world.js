@@ -1200,7 +1200,10 @@ class World extends EventEmitter {
  *   · 跟随玩家的实例（p.followers——跟随者人在玩家身边，room≠岗位是**对的**）；
  *   · squads（分队不进本函数口径）；
  *   · 带运行时个人化状态的剧情实例（pstate.avengers / 运行期翻红 hostile /
- *     非零 favor——主人 2026-10-17 退回裁定：**剧情生成的人不能被存档维护误删**）。
+ *     非零 favor **且真见过面**（pstate.met）——主人 2026-10-17 退回裁定：
+ *     **剧情生成的人不能被存档维护误删**；2026-10-18 线上活体（mob_bandit
+ *     favor=31、met=false 漂进出生点）定案：出身亲和的 favor 不算交情，
+ *     favor 豁免收窄为「favor≠0 且 met=true」，刀②③ 同口径）。
  * ⚠️ 2026-10-18 两处加严（主人真机「幽灵 NPC：列表有名、看无此人」）：
  *   ① **真 def 判据**：77/86/87/91 辅助表（武学/内力/画像/生活）以 npc id 为键、
  *      顶层键同为 npcs，mergeData 会把这些**无名残片**揉进 data.npcs——
@@ -1240,10 +1243,13 @@ class World extends EventEmitter {
            刀①②③ 全豁免；
          · hostile 运行期翻红（实例 true 而 def 非敌）—— 公共闸豁免（刀②③ 都认）；
            天生敌对的山贼 def.hostile 本就是 true，不会被误豁免；
-         · favor 非零 —— **只刀②豁免**（在刀② 判，不在公共闸）：
+         · favor 非零且 met —— **只刀②豁免**（在刀② 判，不在公共闸）：
            spawnNpc 的出身亲和会给初始 favor（老周一落地就 favor=8、pstate.met=false
            根本没见过面）——那不是玩家处出来的交情。刀③ 若认它，「老周站出生点」
-           这类漂移定岗实例就被自家亲和永久豁免了（2026-10-18 主人新档实测）。 */
+           这类漂移定岗实例就被自家亲和永久豁免了（2026-10-18 主人新档实测）。
+           2026-10-18 线上活体再收窄一刀：**只有 met=true 的 favor 才豁免**——
+           road_jiangnan_1 的 mob_bandit 漂移实例 favor=31、met=false，
+           favor≠0 裸豁免让它每次读档都原地复活。 */
       const avenged = !!(n.pstate && Array.isArray(n.pstate.avengers) && n.pstate.avengers.length);
       /* 倒地/真尸（dead+knockedOut）：只走刀①——真 def 已不在的倒地孤儿
          就是「幽灵 NPC」本尊（view 列得出、look 查无人），照删；
@@ -1265,9 +1271,13 @@ class World extends EventEmitter {
         continue;
       }
       /* 刀②：noWander 定岗 NPC 不在岗（老档漂移实例）。
-         favor 非零豁免独占在这一刀（#90 口径：玩家处出来的交情不删）。 */
+         favor 豁免收窄（2026-10-18 线上活体定案）：road_jiangnan_1 真捕到
+         mob_bandit 漂移实例 favor=31、pstate.met=false——出身亲和给的 favor
+         根本不是玩家处出来的交情，favor≠0 裸豁免把它每次读档都护活。
+         收窄成「favor≠0 **且 pstate.met=true**」（与刀③ 同一口径）：
+         原版玩法 met 只在真互动链路置位，mob 没有社交语义、met 永假，照清。 */
       if (def.noWander) {
-        if (typeof n.favor === 'number' && n.favor !== 0) continue;
+        if (typeof n.favor === 'number' && n.favor !== 0 && n.pstate && n.pstate.met) continue;
         const home = posts[defId];
         const offPost = home ? !home.has(n.room)
           : (def.room ? n.room !== def.room : false);
