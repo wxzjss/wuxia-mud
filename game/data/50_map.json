@@ -1563,6 +1563,82 @@
               ]
             }
           ]
+        },
+        {
+          "cmd": "问门中近况",
+          "label": "问门中近况",
+          "keywords": [
+            "门中近况",
+            "门里",
+            "师门"
+          ],
+          "desc": "问问门里近来如何",
+          "cond": {
+            "or": [
+              {
+                "flag": "questdone_q_huashan_entry"
+              },
+              {
+                "flag": "questdone_q_huashan_sword_test"
+              },
+              {
+                "flag": "questdone_q_huashan_spy"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "cond",
+              "if": {
+                "flag": "questdone_q_huashan_entry"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "正气堂西侧的木架新添了一块名牌，字是新刻的，边角还没磨圆。"
+                },
+                {
+                  "type": "say",
+                  "raw": "岳不群：「门里添了个人，饭要多做一份。」"
+                }
+              ],
+              "else": []
+            },
+            {
+              "type": "cond",
+              "if": {
+                "flag": "questdone_q_huashan_sword_test"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "剑坪上几个师弟在比划，比的是你下山时用过的那几式，学得不像。"
+                },
+                {
+                  "type": "say",
+                  "raw": "岳不群：「他们只看你出剑，没看你收剑。」"
+                }
+              ],
+              "else": []
+            },
+            {
+              "type": "cond",
+              "if": {
+                "flag": "questdone_q_huashan_spy"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "岳不群听你提黑木崖，把茶碗盖按住了，没有揭。"
+                },
+                {
+                  "type": "say",
+                  "raw": "「那一趟，你没有留尾巴吧。」他声音压得比平时低半分。"
+                }
+              ],
+              "else": []
+            }
+          ]
         }
       ]
     },
@@ -2077,6 +2153,31 @@
           "count": 1,
           "chance": 1
         }
+      ],
+      "actions": [
+        {
+          "cmd": "问门中近况",
+          "label": "问门中近况",
+          "keywords": [
+            "门中近况",
+            "门规",
+            "道童"
+          ],
+          "desc": "问问观里近来如何",
+          "cond": {
+            "flag": "questdone_q_wudang_entry"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "紫霄宫的道童又把门规背了一遍，背到「不与人争」时看了你一眼。"
+            },
+            {
+              "type": "say",
+              "raw": "冲虚：「规矩是给守得住的人定的。」"
+            }
+          ]
+        }
       ]
     },
     "wudang_jinding": {
@@ -2202,6 +2303,31 @@
           "npc": "emei_miejue",
           "count": 1,
           "chance": 1
+        }
+      ],
+      "actions": [
+        {
+          "cmd": "问门中近况",
+          "label": "问门中近况",
+          "keywords": [
+            "门中近况",
+            "师姐",
+            "粗碗"
+          ],
+          "desc": "问问山上近来如何",
+          "cond": {
+            "flag": "questdone_q_emei_entry"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "金顶的师姐们递茶换了粗碗，不再用待客的那一套。"
+            },
+            {
+              "type": "say",
+              "raw": "灭绝：「峨眉不留闲人，也不赶做过事的人。」"
+            }
+          ]
         }
       ]
     },
@@ -2408,6 +2534,64 @@
           "count": 1,
           "chance": 1
         }
+      ],
+      "actions": [
+        {
+          "cmd": "问门中近况",
+          "label": "问门中近况",
+          "keywords": [
+            "门中近况",
+            "王府",
+            "侧门"
+          ],
+          "desc": "问问王府里的近况",
+          "cond": {
+            "or": [
+              {
+                "flag": "questdone_q_dali_entry"
+              },
+              {
+                "flag": "questdone_q_liumai"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "cond",
+              "if": {
+                "flag": "questdone_q_dali_entry"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "王府的下人改了称呼，不再叫「那位客人」。"
+                },
+                {
+                  "type": "say",
+                  "raw": "段誉：「往后你出入走侧门就行，不必再通报。」"
+                }
+              ],
+              "else": []
+            },
+            {
+              "type": "cond",
+              "if": {
+                "flag": "questdone_q_liumai"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "牟尼堂的石壁前留了一盏灯，灯芯剪得很短，够烧到天亮。"
+                },
+                {
+                  "type": "say",
+                  "raw": "段誉：「六脉那道气，你现在心里有数了吧。」"
+                }
+              ],
+              "else": []
+            }
+          ]
+        }
       ]
     },
     "dali_tianlong": {
@@ -2476,6 +2660,31 @@
           "npc": "miao_lan",
           "count": 1,
           "chance": 1
+        }
+      ],
+      "actions": [
+        {
+          "cmd": "问门中近况",
+          "label": "问门中近况",
+          "keywords": [
+            "门中近况",
+            "圣堂",
+            "草籽"
+          ],
+          "desc": "问问圣堂里的近况",
+          "cond": {
+            "flag": "questdone_q_miao_entry"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "圣堂的梁上挂着一串干草，风过时响得像小铃。"
+            },
+            {
+              "type": "say",
+              "raw": "蓝凤凰：「那包草籽你喂着看，长得活，才算数。」"
+            }
+          ]
         }
       ]
     },
@@ -2871,6 +3080,62 @@
             {
               "type": "narrate",
               "raw": "佛座底下压着几件旧物。拨开草席一角，纸的边角露了出来。"
+            }
+          ]
+        },
+        {
+          "cmd": "问门中近况",
+          "label": "问门中近况",
+          "keywords": [
+            "门中近况",
+            "帮里",
+            "窝头"
+          ],
+          "desc": "问问破庙里的近况",
+          "cond": {
+            "or": [
+              {
+                "flag": "questdone_q_gaibang_entry"
+              },
+              {
+                "flag": "questdone_q_xianglong"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "cond",
+              "if": {
+                "flag": "questdone_q_gaibang_entry"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "破庙的佛座底下有人留了半个窝头，用油纸包着，包得很整齐。"
+                },
+                {
+                  "type": "say",
+                  "raw": "洪七公：「帮里的规矩，做过事的人先吃。」"
+                }
+              ],
+              "else": []
+            },
+            {
+              "type": "cond",
+              "if": {
+                "flag": "questdone_q_xianglong"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "洪七公拍你肩膀时手上有油，拍完在自己衣襟上擦了擦。"
+                },
+                {
+                  "type": "say",
+                  "raw": "「降龙练到这个火候，撑腰比打人更用得上。」"
+                }
+              ],
+              "else": []
             }
           ]
         }
@@ -6619,6 +6884,33 @@
               "raw": "南市街心一座两层门脸，檐下金字招牌被香火熏得发暗。柜上朝奉拨着算盘核账，算珠响得又急又稳。他抬眼扫你一下：「看货寄货，道声『拍卖』。」"
             }
           ]
+        },
+        {
+          "cmd": "听摊上人说话",
+          "label": "听摊上人说话",
+          "keywords": [
+            "摊上人",
+            "收摊",
+            "账"
+          ],
+          "desc": "在集市上听摊主闲话",
+          "cond": {
+            "flag": "act_neutral_done"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "摊主收摊时提起一个没有门帖的人，说那人把两边的账算明白了，算完就走。"
+            },
+            {
+              "type": "say",
+              "raw": "「叫什么来着……」他把秤砣放进箱子，「忘了。就记得他没带腰牌。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "他把布一块一块卷起来，多看了你一眼。"
+            }
+          ]
         }
       ]
     },
@@ -6724,7 +7016,36 @@
       },
       "name": "长安城·朱雀大街",
       "region": "changan",
-      "desc": "朱雀大街笔直宽阔，可容数十骑并行。这是天下第一等的通衢大道，两侧坊墙高耸，车马如龙。"
+      "desc": "朱雀大街笔直宽阔，可容数十骑并行。这是天下第一等的通衢大道，两侧坊墙高耸，车马如龙。",
+      "actions": [
+        {
+          "cmd": "听街上人说话",
+          "label": "听街上人说话",
+          "keywords": [
+            "街上人",
+            "茶棚",
+            "翻案"
+          ],
+          "desc": "在朱雀大街上听人闲话",
+          "cond": {
+            "flag": "act_court_done"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "茶棚里两个人压着嗓子说话，说的是大理寺把一桩旧案的第一句重写了。"
+            },
+            {
+              "type": "say",
+              "raw": "「听说翻案的人不是官。」「那是什么人？」「不知道。听说姓什么都不肯说。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "茶博士过来添水，添到一半停住，看了你一眼，把壶嘴挪开了。"
+            }
+          ]
+        }
+      ]
     },
     "changan_market": {
       "id": "changan_market",
