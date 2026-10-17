@@ -172,6 +172,12 @@ function respawnAtInn(world, lines, opts) {
     if (lost > 0) parts.push(`银钱少了 ${lost} 文`);
     if (expLost > 0) parts.push('功力折了些');
     if (parts.length) lines.push({ kind: 'sys', text: `（${parts.join('，')}）` });
+    /* 两种「输」讲清楚（2026-10-18 审计 #12）：不与上一条数字重复，
+       只把规则说一遍——玩家要知道自己怎么输的、下次会怎样。 */
+    lines.push({
+      kind: 'hint',
+      text: `（只是力竭昏过去；醒在${roomName}，气血约四成、内力约四成；随身银钱扣两成、功力折一成。）`,
+    });
   }
   return { room: anchor, name: roomName, lost, expLost, same };
 }

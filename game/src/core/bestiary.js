@@ -102,7 +102,7 @@ const SPECIES_MOVES = {
       damageMult: 1.1, accuracy: 90, mpCost: 0,
       desc: '三瓣利爪一扯，血肉翻开。',
       effects: [
-        { type: 'dot', name: '创口', turns: 2, value: 12 },
+        { type: 'dot', name: '创口', turns: 2, value: 6 },
       ],
     },
     {

@@ -56,6 +56,41 @@ fs.mkdirSync(process.env.WX_SAVE_DIR, { recursive: true });
 
 const STEPS = parseInt(process.argv[2], 10) > 0 ? parseInt(process.argv[2], 10) : 300;
 
+/* ==========================================================================
+ *  环境负载标定（2026-10-18 门禁口径变更，team-lead 批）
+ *  --------------------------------------------------------------------------
+ *  病因：B1 的阈值是在**空载机器**上定的，它分不清「代码变慢」和「机器被抢」。
+ *        实测同一份代码：空载 p50 3.2 / p95 6.5；6 个并发 node 时 p50 7.6 / p95 15。
+ *        这道门因此测的是「机器余量」，不是产品性能。
+ *  改法：开跑前做**固定工作量纯计算标定**（热身 1 次 + 3 次取中位），
+ *        k = 本次标定 / 基线标定（_perf_baseline.json#calibration.ms）。
+ *        B1 四个阈值按 k 缩放（封顶 2.0）：
+ *          · 空载 k≈1 → 不放松（不掩盖真回归）
+ *          · 并发 k≈1.5–2 → 同比放大，真回归（p50 翻倍级）照样红
+ *          · k>2 → 「环境过载·未判」：B1 不进红名单，体积门照常判
+ *  标定工作量的口径一旦改动，必须同步重跑 --rebaseline。
+ * ========================================================================== */
+const CALIB_ITER = 2000000;
+const CALIB_MAX_K = 2.0;
+function calibOnce() {
+  const t0 = process.hrtime.bigint();
+  let x = 0;
+  for (let i = 1; i <= CALIB_ITER; i++) { x = (x + i * 2654435761) >>> 0; x ^= x >>> 13; }
+  const t = Number(process.hrtime.bigint() - t0) / 1e6;
+  if (x === 123456789) console.log('');   /* 防 DCE：拿结果做一个永不成立的分支 */
+  return t;
+}
+function calibrate() {
+  if (Number(process.env.PERF_CALIB_FORCE_MS) > 0) return Number(process.env.PERF_CALIB_FORCE_MS);
+  calibOnce();                                   /* 热身 */
+  const a = [calibOnce(), calibOnce(), calibOnce()].sort((x, y) => x - y);
+  return a[1];
+}
+/* 自测口：PERF_CALIB_FORCE_MS 强制标定值（仅用于演示 k>2 的环境过载分支）。 */
+const CALIB_MS = Number(process.env.PERF_CALIB_FORCE_MS) > 0
+  ? Number(process.env.PERF_CALIB_FORCE_MS)
+  : calibrate();
+
 /* ---- 阈值（bytes）。KB 按 1024 记，与服务端 Content-Length 同口径 ---- */
 const KB = 1024;
 const LIMIT = {
@@ -90,6 +125,30 @@ const LIMIT = {
 let BASE = null;
 try { BASE = JSON.parse(fs.readFileSync(path.join(__dirname, '_perf_baseline.json'), 'utf8')); }
 catch (e) { /* main 里判空处理 */ }
+
+/* 负载系数 k：本次标定 / 基线标定。基线没记标定值 ⇒ k 按 1，并在输出里明说。 */
+const REF_CALIB = BASE && BASE.calibration && Number(BASE.calibration.ms) > 0
+  ? Number(BASE.calibration.ms) : null;
+let RAW_K = REF_CALIB ? (CALIB_MS / REF_CALIB) : 1;
+let K = Math.min(CALIB_MAX_K, Math.max(1, RAW_K));   /* 机器更快时不收紧阈值 */
+let OVERLOADED = RAW_K > CALIB_MAX_K;
+
+/* --rebaseline：把「基线标定值」重写进 _perf_baseline.json（环境变动/改工作量时才跑）。
+   记录的不只是毫秒数，还有工作量口径与日期 —— 以后 k 不可比时能一眼看出为什么。 */
+if (process.argv.indexOf('--rebaseline') >= 0) {
+  const f = path.join(__dirname, '_perf_baseline.json');
+  const j = JSON.parse(fs.readFileSync(f, 'utf8'));
+  j.calibration = {
+    ms: Math.round(CALIB_MS * 100) / 100,
+    k: 1,
+    workload: 'CALIB_ITER=' + CALIB_ITER,
+    date: new Date().toISOString().slice(0, 10),
+    note: '负载系数基准：B1 阈值按 本次标定/此值 缩放（封顶 2.0；>2 判环境过载未判）',
+  };
+  fs.writeFileSync(f, JSON.stringify(j, null, 2) + String.fromCharCode(10));
+  console.log('已重写基线标定：' + JSON.stringify(j.calibration));
+  process.exit(0);
+}
 
 let pass = 0, fail = 0; const fails = [];
 function ok(name, cond, extra) {
@@ -307,16 +366,42 @@ async function main() {
     console.log('    单步下行 p95 ' + kb(pct(sDownRaw, 95)) + ' / ' + kb(pct(sDownGz, 95))
       + ' \u00b7 max ' + kb(sDownRaw[sDownRaw.length - 1]) + ' / ' + kb(sDownGz[sDownGz.length - 1]));
 
-    ok('B1 单步服务端 p95 \u2264 ' + LIMIT.stepP95Ms + ' ms', P_EXEC_MS.p95 <= LIMIT.stepP95Ms, ms(P_EXEC_MS.p95));
-    ok('B1 单步服务端 max \u2264 ' + LIMIT.stepMaxMs + ' ms', P_EXEC_MS.max <= LIMIT.stepMaxMs, ms(P_EXEC_MS.max));
-    /* p50 硬判（2026-10-13 新增）：之前 p50 只打日志不判红 —— 只打不判 = 这条数
-       没人负责，p50 慢一倍门禁也绿着。阈值推导见 LIMIT.stepP50Ms 的注。 */
-    ok('B1 单步服务端 p50 \u2264 ' + LIMIT.stepP50Ms + ' ms（硬判）',
-      P_EXEC_MS.p50 <= LIMIT.stepP50Ms, ms(P_EXEC_MS.p50));
-    ok('B1 比值 p50 \u2264 修前 \u00d7 1.5（_perf_baseline.json）',
-      !!BASE && !!(BASE.pre && BASE.pre.p50Ms) && P_EXEC_MS.p50 <= BASE.pre.p50Ms * 1.5,
-      ms(P_EXEC_MS.p50) + ' vs 修前 ' + (BASE && BASE.pre ? BASE.pre.p50Ms : '?') + ' ms'
-        + (BASE ? '' : '  ← 基线读不到，比值门未生效'));
+    /* 跑完回看标定（2026-10-18）：夹在中间的突发负载（别的 lane 开跑）
+       开跑前那一刻的标定是看不见的。跑完再标一次，取两次里更差的那个当 k——
+       这样「跑到一半机器被抢」也会被判成环境过载，而不是记成产品回归。 */
+    const POST_CALIB = calibrate();
+    const RAW_K_POST = REF_CALIB ? (POST_CALIB / REF_CALIB) : 1;
+    if (RAW_K_POST > RAW_K) {
+      RAW_K = RAW_K_POST;
+      K = Math.min(CALIB_MAX_K, Math.max(1, RAW_K));
+      OVERLOADED = RAW_K > CALIB_MAX_K;
+    }
+
+    /* B1 四个门全部按负载系数 k 缩放（封顶 2.0；k>2 判环境过载、不进红名单）。
+       标定明细见文件头 §「环境负载标定」。 */
+    console.log('    环境标定  k=' + RAW_K.toFixed(2)
+      + (K !== RAW_K ? '（按 ' + K.toFixed(2) + ' 计）' : '')
+      + ' · 本次 ' + ms(CALIB_MS) + ' / 跑后 ' + ms(POST_CALIB)
+      + (REF_CALIB ? ' / 基线 ' + ms(REF_CALIB) : '（基线缺标定值，k 按 1）')
+      + (OVERLOADED ? ' · **环境过载：B1 未判**' : ''));
+    if (OVERLOADED) {
+      console.log('    B1 单步延迟 — 环境过载（k=' + RAW_K.toFixed(2) + ' > ' + CALIB_MAX_K
+        + '），本机被其它进程抢占，延迟读数不可信：**不判红也不判绿**（体积门照常判）。');
+    } else {
+      const p95Lim = LIMIT.stepP95Ms * K, maxLim = LIMIT.stepMaxMs * K, p50Lim = LIMIT.stepP50Ms * K;
+      ok('B1 单步服务端 p95 ≤ ' + p95Lim.toFixed(1) + ' ms（k=' + K.toFixed(2) + '）',
+        P_EXEC_MS.p95 <= p95Lim, ms(P_EXEC_MS.p95));
+      ok('B1 单步服务端 max ≤ ' + maxLim.toFixed(1) + ' ms（k=' + K.toFixed(2) + '）',
+        P_EXEC_MS.max <= maxLim, ms(P_EXEC_MS.max));
+      /* p50 硬判（2026-10-13 新增）：之前 p50 只打日志不判红 —— 只打不判 = 这条数
+         没人负责，p50 慢一倍门禁也绿着。阈值推导见 LIMIT.stepP50Ms 的注。 */
+      ok('B1 单步服务端 p50 ≤ ' + p50Lim.toFixed(1) + ' ms（硬判·k=' + K.toFixed(2) + '）',
+        P_EXEC_MS.p50 <= p50Lim, ms(P_EXEC_MS.p50));
+      ok('B1 比值 p50 ≤ 修前 × 1.5 × k（_perf_baseline.json）',
+        !!BASE && !!(BASE.pre && BASE.pre.p50Ms) && P_EXEC_MS.p50 <= BASE.pre.p50Ms * 1.5 * K,
+        ms(P_EXEC_MS.p50) + ' vs 修前 ' + (BASE && BASE.pre ? BASE.pre.p50Ms : '?') + ' ms × 1.5 × '
+          + K.toFixed(2) + (BASE ? '' : '  ← 基线读不到，比值门未生效'));
+    }
 
     const maxExecRaw = sExecRaw[sExecRaw.length - 1];
     const maxExecGz = worst.execGz.slice().sort((a, b2) => a - b2).pop();

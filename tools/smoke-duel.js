@@ -91,6 +91,7 @@ console.log('\n③ 一天最多三次，拒绝词按战绩选');
   p.room = room.id;
   const foe = w.npcsIncludingTemplates(p.room).find(n => !(n.def || {}).hostile && !/\b狼|虎|熊|蛇/.test(n.name));
   foe.favor = 20;
+  foe.level = Math.max(1, Math.min(foe.level || 1, (p.level || 1) + 8)); // 门槛不属本节被测项
   ok('★ 上限是 3 次', duelMod.MAX_PER_DAY === 3);
   let opened = 0, refused = '';
   for (let i = 0; i < 5; i++) {
@@ -122,7 +123,11 @@ console.log('\n④ 打到「血尽」也不会死、不会被抬走（最重的�
     w.npcsIncludingTemplates(r.id).some(n => !(n.def || {}).hostile && !/\b狼|虎|熊|蛇/.test(n.name)));
   p.room = room.id;
   const foe = w.npcsIncludingTemplates(p.room).find(n => !(n.def || {}).hostile && !/\b狼|虎|熊|蛇/.test(n.name));
+  /* ⚠️ 2026-10-18 切磋加了等级门槛（差 8 级以上拒接，审计 #9）：
+     本条测「血尽不死」的机制而非门槛，所以把对手等级拉进可切磋区间。 */
+  foe.level = Math.max(1, Math.min(foe.level || 1, (p.level || 1) + 8));
   foe.favor = 20;
+  foe.level = Math.max(1, Math.min(foe.level || 1, (p.level || 1) + 8)); // 门槛不属本节被测项
   const startRoom = p.room;
   const r0 = w.startDuel(p, foe);
   ok('★ 应战话跟着出来了', txt(r0).length > 0, txt(r0).slice(0, 40));
@@ -148,6 +153,7 @@ console.log('\n④ 打到「血尽」也不会死、不会被抬走（最重的�
   pp.room = startRoom;
   const foe2 = w2.npcsIncludingTemplates(pp.room).find(n => !(n.def || {}).hostile && !/\b狼|虎|熊|蛇/.test(n.name));
   foe2.favor = 20;
+  foe2.level = Math.max(1, Math.min(foe2.level || 1, (pp.level || 1) + 8)); // 同一门槛：本条测机制不测门槛
   w2.startDuel(pp, foe2);
   pp.hp = 0;
   const eng2 = new C.CombatEngine(w2);

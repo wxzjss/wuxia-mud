@@ -1966,11 +1966,16 @@ class GameEngine {
       name: p.name, hp: p.hp, maxHp: p.maxHp, mp: p.mp, maxMp: p.maxMp,
       buffs: (p.buffs || []).map(x => ({ name: x.name, turns: x.turns })),
     };
+    /* 危险度（2026-10-18 审计 #11）：让玩家在开打前就知道「打不打得过」。
+       high = 敌方最高等级高出你 8 级以上；mid = 高出 4 级以上。 */
+    const topLv = enemies.reduce((m, e) => Math.max(m, e.level || 1), 1);
+    const myLv = p.level || 1;
+    const danger = topLv > myLv + 8 ? 'high' : (topLv > myLv + 4 ? 'mid' : '');
     const usableSkills = Object.keys(p.learned).map(id => {
       const sd = this.world.getSkill(id);
       return sd ? { id, name: sd.name, mpCost: sd.mpCost || 0, type: sd.type } : null;
     }).filter(Boolean);
-    return { enemies, turn: b.turn, actions, self, usableSkills, usableItems: this.inventoryList().filter(i => i.usable) };
+    return { enemies, turn: b.turn, actions, self, danger, usableSkills, usableItems: this.inventoryList().filter(i => i.usable) };
   }
 
   /* ------------------------------------------------------------------ *

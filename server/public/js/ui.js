@@ -1864,6 +1864,14 @@
 
     const c = v.combat;
     $('combat-turn').textContent = '第 ' + (c.turn || 1) + ' 回合';
+    /* 危险度提示（2026-10-18 审计 #11）：开打前就知道打不打得过，
+       不再靠「被一刀秒了再猜」。文案归 design/115 §四。 */
+    const dangerEl = $('combat-danger');
+    if (dangerEl) {
+      dangerEl.textContent = c.danger === 'high' ? '此人远在你之上。'
+        : (c.danger === 'mid' ? '他比你现在强一截。' : '');
+      dangerEl.className = 'combat-danger' + (c.danger ? ' ' + c.danger : '');
+    }
 
     /* 玩家自身战斗态（2026-10-18 审计 #15）：面板原来只有敌人卡，
        打起来看不见自己还剩多少血/内力/身上挂着什么。 */

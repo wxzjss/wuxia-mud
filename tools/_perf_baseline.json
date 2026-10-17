@@ -34,9 +34,16 @@
     "p95Ms": 4.91,
     "maxMs": 7.16,
     "newRawKB": 28.6,
-    "loadRawKB": 29.0,
+    "loadRawKB": 29,
     "downMaxKB": 30.2,
     "saveMaxKB": 0.1,
     "evidence": "tools/_re_perf.txt"
+  },
+  "calibration": {
+    "ms": 8.95,
+    "k": 1,
+    "workload": "CALIB_ITER=2000000",
+    "date": "2026-10-17",
+    "note": "负载系数基准：B1 阈值按 本次标定/此值 缩放（封顶 2.0；>2 判环境过载未判）"
   }
 }

@@ -2816,6 +2816,11 @@ class World extends EventEmitter {
    *   - 不会结仇，不触发通缉
    */
   startDuel(ch, npc) {
+    /* 实力门槛（2026-10-18 审计 #9）：差 8 级以上不接——
+       否则新手点「切磋」就是被 lv23 的对手一招教育。文案归设计（design/115 §四）。 */
+    if (ch && npc && (ch.level || 1) + 8 < (npc.level || 1)) {
+      return { lines: [{ kind: 'say', text: `${npc.name}摆摆手：「你还没到能跟我过招的火候。」` }] };
+    }
     const duel = require('./duel');
     /* 三道闸（好感 / 战斗中 / 今日次数）统一在 duel.canDuel 里判 ——
        原来这段逻辑散在这里，加「一天三次」就得再改一遍世界文件。 */
@@ -2987,7 +2992,12 @@ class World extends EventEmitter {
         const b = this.battle; this.battle = null;
         return { lines: [{ kind: 'combat', text: '你抽身疾退，脱离了战斗。' }], over: true, winner: 'flee', battle: b };
       }
-      return { lines: this.stepEnemyOnly([{ kind: 'combat', text: '你想跑，却被对方缠住！' }]) };
+      return {
+        lines: this.stepEnemyOnly([
+          { kind: 'combat', text: '你想跑，却被对方缠住！' },
+          { kind: 'hint', text: `（他身法 ${t ? t.speed : '?'}，你 ${p.speed}；对方比你快，硬跑跑不掉——可先「防御」撑一回合再试。）` },
+        ]),
+      };
     }
     if (userAction && userAction.type === 'skill') {
       const p = this.player;

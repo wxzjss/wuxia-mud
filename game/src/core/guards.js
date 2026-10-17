@@ -274,6 +274,7 @@ function forceIn(world, p, sectId) {
       { kind: 'bad', text: `你刚抬脚，${guard.name}的手就到了。眼前一黑，人已被按在地上。` },
       { kind: 'warn', text: `「哪儿来的野狗，也敢闯${sd.name}的门。」他把你拎起来，随手一丢。` },
       { kind: 'plain', text: `（气血被打到 1，恶名 +15。这一闯，山下的人都看在眼里。）` },
+      { kind: 'hint', text: '（他们没杀你，只把你按在地上：hp 留 1、恶名上升，但不会昏迷，爬起来还能再走。）' },
     ];
   }
 

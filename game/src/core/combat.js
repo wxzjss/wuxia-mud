@@ -527,6 +527,9 @@ class CombatEngine {
       critRate: u.critRate + (skill ? (skill.critBonus || 0) : 0),
       critDmg: u.critDmg + (skill ? (skill.critDmgBonus || 0) : 0),
     };
+    /* 切磋点到为止（2026-10-18 审计 #9）：双方伤害 ×0.3，
+       否则 lv23 的切磋对手一招 159 就能把新档打倒，「点到为止」名不副实。 */
+    if (battle && battle.duel) ctx.mult *= 0.3;
     // 武器绑定：无对应兵刃则威力打折
     const pen = weaponPenalty(u, skill);
     if (pen.mult !== 1 || pen.acc) {
@@ -667,8 +670,20 @@ class CombatEngine {
     }
     switch (eff.type) {
       case 'dot': {
-        t.addBuff({ name: eff.name || '持伤', turns: eff.turns || 3, mods: {}, tag: 'dot_' + (eff.name || 'x'), dot: { value: eff.value || 5, source: u.id } });
-        text += ` ${t.name}中了${eff.name || '暗伤'}。`;
+        /* ★ 同源 DOT 不叠层（2026-10-18 审计 #3）：同一个「创口」再中一次，
+           旧行为是 push 一条新的 → 每回合扣两遍，玩家看着血条莫名往下掉。
+           现在只**刷新剩余回合**、保留原伤害值，不叠层不叠伤。
+           首次挂上给一次解法提示；刷新时只报「又裂开了」。 */
+        const dotName = eff.name || '持伤';
+        const dotTag = 'dot_' + dotName;
+        const exist = (t.buffs || []).find(b => b.tag === dotTag);
+        if (exist) {
+          exist.turns = Math.max(exist.turns || 0, eff.turns || 3);
+          text += ` ${t.name}的${dotName}又裂开了。`;
+        } else {
+          t.addBuff({ name: dotName, turns: eff.turns || 3, mods: {}, tag: dotTag, dot: { value: eff.value || 5, source: u.id } });
+          text += ` ${t.name}中了${dotName}。（金创药或「包扎」能止住。）`;
+        }
         break;
       }
       case 'stun':
@@ -767,7 +782,7 @@ class CombatEngine {
         const src = this.findChar(battle, b.dot.source);
         const dmg = Math.floor((b.dot.value || 3));
         u.hp = clamp(u.hp - dmg, 0, u.maxHp);
-        lines.push({ kind: 'combat', text: `${u.name}因${b.name}受损 ${dmg} 点。` });
+        lines.push({ kind: 'combat', text: `${u.name}的${b.name}在渗血（还剩 ${Math.max(0, (b.turns || 0) - 1)} 回合），受损 ${dmg} 点。` });
         if (u.hp <= 0) { lines.push({ kind: 'combat', text: `${u.name}不支倒地！` }); continue; }
       }
       b.turns--;

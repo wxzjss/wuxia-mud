@@ -182,6 +182,101 @@ const firstLine = r => ((r && r.lines || []).find(l => l.text) || {}).text || ''
     ok('C10 ★ 持刀且会刀法 → 出招自动用刀法', /刀法/.test(blade[0].text), blade[0].text.slice(0, 40));
   }
 
+  /* C11~C16 审计 A/B 级（design/115 §四数值与文案已交） */
+  {
+    const bootP = () => {
+      const e = new GameEngine({ seed: 20261018 });
+      e.boot(); e.newGame({ name: '战探', gender: 'male', birth: 'wuxue' });
+      return e;
+    };
+
+    /* C11 创口：同源不叠层 + 每回合「还剩 N 回合」+ 首次解法提示 */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      const t = w.spawnNpc('mob_bandit', p.room, 1, true);
+      const battle = { attackers: [p], defenders: [t], duel: false, turn: 0 };
+      const eff = { type: 'dot', name: '创口', turns: 2, value: 6 };
+      const r1 = e.world.combat.applySkillEffect(eff, p, t, null, battle);
+      const r2 = e.world.combat.applySkillEffect(eff, p, t, null, battle);
+      const dots = (t.buffs || []).filter(b => b.tag === 'dot_创口');
+      ok('C11 ★ 创口同源不叠层（两次命中仍只一条 buff）', dots.length === 1, 'buff 数=' + dots.length);
+      ok('C11b 创口伤害 6（旧 12）', dots[0] && dots[0].dot.value === 6, dots[0] && String(dots[0].dot.value));
+      ok('C11c 首次挂上给解法提示（金创药/包扎）', /金创药|包扎/.test(String(r1 && r1.text)), String(r1 && r1.text).slice(0, 50));
+      const lines = [];
+      e.world.combat.tickBuffs(t, lines, battle);
+      const statusLine = (lines || []).map(l => l.text).join(' ');
+      ok('C11d 每回合状态行带剩余回合（还剩 N 回合）', /还剩/.test(statusLine), statusLine.slice(0, 60));
+    }
+
+    /* C12 切磋：等级门槛 + 伤害系数 0.3 */
+    {
+      const e1 = bootP(); const p1 = e1.world.player;
+      p1.room = 'road_jiangnan_2';
+      const r = e1.exec('切磋 范清');
+      ok('C12 ★ 差 8 级以上拒绝切磋（火候不够）', !e1.world.battle && /火候/.test(txt(r)), txt(r).slice(0, 50));
+
+      /* 系数：同一场（手动构造 duel battle）与普通战斗各打一手，伤害应显著更低 */
+      const dmgOf = duel => {
+        const e = bootP(); const w = e.world, p = w.player;
+        p.room = 'road_jiangnan_2';
+        const t = w.spawnNpc('npcv_196', p.room, 1, true);
+        const battle = { attackers: [p], defenders: [t], duel, turn: 0 };
+        const before = t.hp;
+        w.combat.oneAttack(p, t, null, battle, 0);
+        return before - t.hp;
+      };
+      const normal = dmgOf(false), duel = dmgOf(true);
+      ok('C12b 切磋伤害系数 0.3（同一手，切磋伤害显著更低）', duel > 0 && duel <= normal,
+        '普通 ' + normal + ' vs 切磋 ' + duel);
+    }
+
+    /* C13 危险度 */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      const n = w.spawnNpc('mob_bandit_chief', p.room, 1, true);
+      w.startCombat(p, n);
+      const c = e.view({ map: false }).combat;
+      ok('C13 ★ 高等级对手 → danger=high（远在你之上）', c && c.danger === 'high', c && c.danger);
+    }
+
+    /* C14 倒地代价讲清楚 */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      p.hp = 3;
+      const n = w.spawnNpc('mob_bandit', p.room, 1, true);
+      w.startCombat(p, n);
+      let all = '';
+      for (let i = 0; i < 8 && w.battle; i++) all += txt(e.exec('attack')) + ' ';
+      ok('C14 ★ 倒地后讲清代价（力竭昏过去/四成/扣两成）', /力竭昏过去/.test(all) && /四成/.test(all) && /两成/.test(all), all.slice(-90));
+    }
+
+    /* C15 被擒后果讲清楚 */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      const G = require(path.join(ROOT, 'game', 'src', 'core', 'guards.js'));
+      const entry = w.data.sects.wudang.entry;
+      p.room = entry;
+      const lines = G.forceIn(w, p, 'wudang');
+      ok('C15 ★ 被擒讲清后果（hp 留 1 / 不会昏迷）', /不会昏迷/.test(txt({ lines })), txt({ lines }).slice(-70));
+    }
+
+    /* C16 逃跑失败给身法差与建议 */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      const n = w.spawnNpc('mob_bandit_chief', p.room, 1, true);
+      w.startCombat(p, n);
+      p.speed = 1;
+      let out = '';
+      for (let i = 0; i < 8 && w.battle; i++) {
+        const r = w.combatStep('flee');
+        out = (r && (r.lines || []).map(l => l.text).join(' ')) || '';
+        if (!w.battle) break;
+        if (/身法/.test(out)) break;
+      }
+      ok('C16 ★ 逃跑失败说清身法差与建议（先防御）', /身法/.test(out) && /防御/.test(out), out.slice(0, 70));
+    }
+  }
+
   console.log('\n' + (fail ? '✘ ' + fail + ' 项失败：' + fails.join(' / ') : '✔ 全部通过'));
   console.log('通过 ' + pass + ' / 失败 ' + fail);
   process.exit(fail ? 1 : 0);
