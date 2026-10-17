@@ -616,6 +616,12 @@
         raw = raw.replace(cn, '<button class="exit-inline" data-dir="' + esc(d) + '" title="向' + cn + '走">' + cn + '</button>');
       });
     }
+    /* ④ 日课小标签（M6 名分，2026-10-18）：可接任务行带 `daily:true` 时前置一枚
+       浅色小签 —— 别抢眼（灰底细边、字号更小），只用来把「今天能做」和
+       「一桩故事」分开。标签由数据结构决定，不靠文案里塞字（那样没法做视觉）。 */
+    if (l.daily) {
+      raw = '<span class="q-daily-tag">日课</span>' + raw;
+    }
     return raw;
   }
 
@@ -1204,6 +1210,8 @@
     if (!q) return '<div class="modal-text">（打听不到这桩事。）</div>';
     let h = '';
     const tags = [];
+    /* M6 日课名分：详情页也标一枚（同「可接列表」的标签口径，轻量文本即可） */
+    if (q.daily) tags.push('日课');
     if (q.type) tags.push(esc(q.type));
     if (q.level) tags.push('推荐修为 ' + q.level);
     if (q.giver) tags.push('委托人 ' + esc(q.giver));
@@ -2867,11 +2875,14 @@
        支线/门派/委托全被压到下面，看着就像「任务面板只有主线」。
        现在按类型分组、主线在最上，一眼能分清「我该走的故事」和「我手头的差事」。
        类型名直接用数据里的 `type` 字段（60_quests.json 里就是中文：主线/支线/门派/委托…），
-       不认识的类型归到「其他」，不丢内容。 */
-    const ORDER = ['新手', '主线', '支线', '门派', '委托', '江湖', '其他'];
+       不认识的类型归到「其他」，不丢内容。
+       ★ M6 日课名分（2026-10-18）：数据新增 `daily:true` 字段（**不动 type**——
+         成就/统计按 type 计数，改 type 会翻车）。日课一律提到自己的「日课」组，
+         不占「支线」位；老快照没有 daily ⇒ falsy ⇒ 仍按 type 归组（向后兼容）。 */
+    const ORDER = ['新手', '主线', '支线', '日课', '门派', '委托', '江湖', '其他'];
     const groups = {};
     list.forEach(q => {
-      const t = String((q && q.type) || '').trim() || '其他';
+      const t = (q && q.daily) ? '日课' : (String((q && q.type) || '').trim() || '其他');
       (groups[t] = groups[t] || []).push(q);
     });
     const keys = Object.keys(groups).sort((a, b) => {
@@ -5392,7 +5403,7 @@
        以前只能从真 DOM（modal-body.innerHTML）里读文本，
        写「读字段名对不对」的断言就别扭。
        全是纯函数（view → html 字符串），不碰 DOM 状态，不产生副作用。 */
-    __html: { attrHtml, martialHtml, slavesHtml, npcProfileHtml, questPreviewHtml, storyHtml, hlTipText, hlTipRows },
+    __html: { attrHtml, martialHtml, slavesHtml, npcProfileHtml, questPreviewHtml, storyHtml, hlTipText, hlTipRows, renderLogText },
   };
 
 })(window);

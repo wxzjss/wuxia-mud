@@ -1427,6 +1427,11 @@ body::before {
 .q-group-title:first-child { margin-top: 0; }
 .q-group-title::after { content: ''; flex: 1; height: 1px; background: var(--line-2); }
 .qg-num { font-size: 11px; color: var(--ink-4); letter-spacing: 0; opacity: .75; }
+/* 日课小标签（M6 名分，2026-10-18）：**别抢眼** —— 灰底细边、字号更小、低对比，
+   只把「今天能做的」和「一桩故事」分开，不跟主线/门派名抢视线。 */
+.q-daily-tag { display: inline-block; font-size: 10px; line-height: 1.5; padding: 0 4px; margin-right: 5px;
+  color: var(--ink-4); background: var(--paper-2); border: 1px solid var(--line-2); border-radius: 3px;
+  vertical-align: 1px; letter-spacing: 1px; opacity: .8; }
 .quest-card { padding: 13px 15px; margin-bottom: 11px; background: var(--card-2); border: 1px solid var(--line); border-left: 3px solid var(--jade); border-radius: 5px; }
 .q-name { font-family: var(--font); font-size: 16px; color: var(--ink); margin-bottom: 5px; }
 .q-desc { font-size: 13px; color: var(--ink-3); line-height: 1.7; margin-bottom: 7px; }

@@ -1961,6 +1961,60 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     }
   }
 
+  /* ---------- §13 M6 日课名分（team-lead 2026-10-18） ----------
+     判据：「面板分组存在」「可接列表日课加浅色小标签」「追踪器默认不追日课」
+     （最后一条在 smoke-quest-track §M6 钉）。数据侧新增 daily 字段，type 不动；
+     老快照无 daily ⇒ 按支线处理（S13-3 用同一条 fixture 反向验证）。 */
+  section('§13 M6 日课名分：面板「日课」组 · 可接列表小标签 · 老数据向后兼容');
+  {
+    const vM6 = {
+      player: { name: '试侠' },
+      quests: {
+        active: [
+          { id: 'q_m6_side', name: '捎封信', type: '支线', desc: 'x', stageDesc: '送信', targets: [] },
+          { id: 'q_m6_daily', name: '扫洒山门', type: '支线', daily: true, desc: 'y', stageDesc: '扫一遍', targets: [] },
+        ],
+        done: [],
+      },
+      track: null,
+      npcs: [],
+    };
+    const envM6 = loadUi(makeEnv({}));
+    stubApi(envM6, vM6);
+    envM6.WX.S.view = vM6;
+    await envM6.WXUI.panel('quests');
+    const qh = envM6.document.getElementById('modal-body').innerHTML;
+    ok('S13-1 ★ 任务面板分出「日课」组，且日课不占支线位（支线组只剩 1）',
+      /q-group-title">日课<span class="qg-num">1</.test(qh)
+      && /q-group-title">支线<span class="qg-num">1</.test(qh)
+      && qh.indexOf('捎封信') < qh.indexOf('日课')
+      && qh.indexOf('日课') < qh.indexOf('扫洒山门'),
+      '支线/日课 组标题 = ' + (qh.match(/q-group-title">([^<]+)<span class="qg-num">(\d+)/g) || []).join(' | '));
+
+    const rl = envM6.WXUI.__html.renderLogText;
+    ok('S13-2 ★ 可接列表日课条目带浅色小标签（无 daily 的行不带）',
+      rl({ kind: 'quest', text: '扫洒山门（找 老王）', daily: true }, []).indexOf('q-daily-tag') >= 0
+      && rl({ kind: 'quest', text: '捎封信（找 老王）' }, []).indexOf('q-daily-tag') < 0,
+      rl({ kind: 'quest', text: '扫洒山门（找 老王）', daily: true }, []).slice(0, 60));
+
+    /* 向后兼容：老快照没有 daily 字段 → 仍按 type 归组（支线组 2 颗），不丢内容 */
+    const vOld = JSON.parse(JSON.stringify(vM6));
+    delete vOld.quests.active[1].daily;
+    const envOld = loadUi(makeEnv({}));
+    stubApi(envOld, vOld);
+    envOld.WX.S.view = vOld;
+    await envOld.WXUI.panel('quests');
+    const oh = envOld.document.getElementById('modal-body').innerHTML;
+    ok('S13-3 ★ 老快照无 daily ⇒ 按支线处理（支线组 2、无日课组，向后兼容）',
+      /q-group-title">支线<span class="qg-num">2</.test(oh) && oh.indexOf('>日课<') < 0,
+      '组标题 = ' + (oh.match(/q-group-title">([^<]+)<span class="qg-num">(\d+)/g) || []).join(' | '));
+
+    /* 详情页标签（接取前的预览）也标日课 */
+    ok('S13-4 任务详情预览的标签行含「日课」',
+      envM6.WXUI.__html.questPreviewHtml({ name: '扫洒山门', type: '支线', daily: true })
+        .indexOf('日课') >= 0);
+  }
+
   console.log('\n———————————————————————————————');
   console.log(`  批次7 双端与 UI 回归：${pass} 通过 / ${fail} 失败`);
   if (fails.length) console.log('  失败项：' + fails.join('、'));

@@ -4725,7 +4725,9 @@ function buildCommands(world) {
       lines.push({ kind: 'subtitle', text: '可接任务' });
       for (const a of available) {
         const qd = w.getQuest(a.q);
-        lines.push({ kind: 'quest', text: `${qd ? qd.name : a.q}（找 ${a.npc.name}）`, quest: a.q });
+        /* M6 日课名分：`daily` 挂在**行对象**上（不是塞进 text），前端用小标签渲染——
+           塞 text 就没法做「浅色小标签别抢眼」的视觉，只能是一串普通字。 */
+        lines.push({ kind: 'quest', text: `${qd ? qd.name : a.q}（找 ${a.npc.name}）`, quest: a.q, daily: !!(qd && qd.daily) });
       }
       lines.push({ kind: 'hint', text: '用「接取 <任务名>」接取。' });
     }
@@ -4869,8 +4871,11 @@ function buildCommands(world) {
          正追着别的东西就不抢 —— 那是玩家自己挑的，别给他换掉。
        ⚠️ 规则挂在这里而不是 storybeat.reconcile：那边判「第一次见到」用的是
          `_storyBeat` 那本记忆账，开局/读档后它是空的，会把**手上的老任务**
-         当成刚接的（实测：取消追踪后下一条指令又把主线追回来了）。 */
-    if (!p.track) p.track = qd.id;
+         当成刚接的（实测：取消追踪后下一条指令又把主线追回来了）。
+       ★ M6 日课名分（2026-10-18）：**日课不抢默认追踪位**——每天例行的事挂在大框上
+         会把剧情挤掉；玩家想钉，到任务面板按「追踪」即可（那条路直接改 p.track，
+         不过这里，手动意图不受此限）。 */
+    if (!p.track && !qd.daily) p.track = qd.id;
     /* ⚠️ 这里**不再**自己念 desc / 目标 —— 交给 `storybeat.reconcile`。
        为什么：任务的来历写的就是委托人的做派（「他缠着你去看看」），
        属于「人物的言行」，必须过**在场闸门**（人不在场就不该上屏，主人 2026-10-11 的要求）。

@@ -284,7 +284,13 @@ function pickAuto(world, p) {
     return st !== undefined && st >= 0 && st < 99;
   };
   for (const qid of ml.ACT_QUESTS.slice(1)) if (active(qid)) return qid;   // 优先主线
-  const rest = Object.keys(p.quests || {}).filter(active).sort();
+  /* ★ M6 日课名分（2026-10-18）：日课不进自动追踪的候选池——每天例行的事不该
+     把大框从剧情上挤走。玩家手动钉过的不受影响（`p.track` 已指向它，
+     syncTrack 只在「追的那条没了」时才回来重新 pickAuto）。 */
+  const rest = Object.keys(p.quests || {}).filter(active).filter(qid => {
+    const qd = world && world.getQuest ? world.getQuest(qid) : null;
+    return !(qd && qd.daily);
+  }).sort();
   return rest.length ? rest[0] : null;
 }
 

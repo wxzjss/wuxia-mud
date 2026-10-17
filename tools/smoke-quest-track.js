@@ -348,6 +348,42 @@ function boot(seed) {
     ok('　变异对照：+rep 效果动台账（断言在量）', c1 !== c2 && (JSON.parse(c2).华山派 - JSON.parse(c1).华山派) === 7);
   }
 
+  /* ---------- §M6 日课名分：不抢默认追踪位（team-lead 2026-10-18） ----------
+     判据（team-lead 原话）：「追踪器默认不追日课（可手动钉）」。
+     数据侧新增 daily:true 字段（不动 type）；老档无 daily ⇒ 按支线处理。
+     这里用运行时塞进 data.quests 的测试任务，不碰真数据。 */
+  sec('§M6 日课名分：不抢默认追踪位（daily 字段，不动 type）');
+  {
+    const e = boot(); const w = e.world; const p = w.player;
+    const D = 'q_test_daily_m6', S = 'q_test_side_m6';
+    w.data.quests[D] = {
+      id: D, name: '扫洒山门（日课）', type: '支线', daily: true, desc: '日课',
+      stages: [{ desc: '扫一遍', targets: [] }],
+    };
+    w.data.quests[S] = {
+      id: S, name: '捎封信（支线）', type: '支线', desc: '支线',
+      stages: [{ desc: '送信', targets: [] }],
+    };
+    /* ① 接日课：默认追踪位不许被抢（老规则「手上没追就自动追起来」对日课不生效） */
+    p.track = null;
+    e.exec('接取 扫洒山门（日课）');
+    ok('M6-1 ★ 接日课不抢默认追踪位（p.track 仍为空）', p.track === null, JSON.stringify(p.track));
+    ok('M6-1b 日课真的接上了（不是没接上才没追）', p.questStage(D) === 0);
+    /* ② 手动钉：追踪指令不受限（玩家想追就得追得起来） */
+    e.exec('追踪 扫洒山门（日课）');
+    ok('M6-2 ★ 日课可手动钉（追踪指令不受限）', p.track === D, JSON.stringify(p.track));
+    /* ③ 自动挑选排除日课：把追着的那条判成已完，逼 pickAuto 重新挑 */
+    p.quests['q_main_jianghu'] = 99;          /* 排除「优先主线」分支的干扰 */
+    p.track = 'q_main_jianghu';
+    sb.syncTrack(w, p);
+    ok('M6-3 ★ 自动转追时不挑日课（候选池只剩日课时宁可不追）', p.track === null, JSON.stringify(p.track));
+    /* ④ 有支线候选时挑支线（证明上面的 null 是「排除日课」而不是「挑不到任何东西」） */
+    p.setQuestStage(S, 0);
+    p.track = 'q_main_jianghu';
+    sb.syncTrack(w, p);
+    ok('M6-4 ★ 有支线候选 → 自动转追挑支线不挑日课', p.track === S, JSON.stringify(p.track));
+  }
+
   console.log('\n==============================================');
   console.log('  任务追踪：' + pass + ' 通过 / ' + fail + ' 失败');
   if (fails.length) console.log('  失败项：' + fails.join('、'));

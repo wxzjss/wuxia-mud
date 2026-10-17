@@ -1238,6 +1238,10 @@ class GameEngine {
       });
       out.push({
         id: qid, name: qd.name, type: qd.type, level: qd.level, stage: st, desc: qd.desc,
+        /* ⚠️ M6 日课名分（2026-10-18）：**新增 daily 字段，绝不动 type**——
+           成就/统计按 type 计数，改 type 会翻车。老档/老数据没有 daily ⇒ false ⇒
+           前端按支线处理（向后兼容）。 */
+        daily: !!qd.daily,
         stageDesc: stage ? stage.desc || '' : '',
         targets,
         /* 前置没做完 → 明说，不静默（P2 的验收条款） */
@@ -1291,6 +1295,8 @@ class GameEngine {
       id: qd.id || qid,
       name: qd.name || qid,
       type: qd.type || '',
+      /* M6：日课标记原样下发（详情页标签用）；老数据无此字段 ⇒ false */
+      daily: !!qd.daily,
       level: qd.level || 0,
       giver, giverId,
       desc: qd.desc || '',

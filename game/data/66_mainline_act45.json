@@ -1461,6 +1461,59 @@
       "id": "haitan_boat",
       "actions": [
         {
+          "cmd": "上船离港",
+          "label": "上船离港",
+          "keywords": [
+            "上船",
+            "离港",
+            "开船"
+          ],
+          "desc": "不问去处，先上船",
+          "cond": {
+            "and": [
+              {
+                "flag": "three_words"
+              },
+              {
+                "flag": "haitan_ferry_seen"
+              },
+              {
+                "notFlag": "act5_done"
+              },
+              {
+                "notFlag": "act5_sail"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你把船钱放在船板上。艄公看了一眼，没数，收进袖里。"
+            },
+            {
+              "type": "narrate",
+              "raw": "缆绳解开的时候，岸上的人都还站在原地，没有人招手。"
+            },
+            {
+              "type": "narrate",
+              "raw": "船离了港，海上的雾从两边合上来，把皇城收进去，收得很干净。"
+            },
+            {
+              "type": "ending",
+              "args": [
+                "yuanhang",
+                "远航"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "act5_sail"
+              ]
+            }
+          ]
+        },
+        {
           "cmd": "问船期",
           "label": "问船期",
           "keywords": [
@@ -1794,6 +1847,67 @@
       "id": "palace_road",
       "actions": [
         {
+          "cmd": "出宫余响",
+          "label": "出宫余响",
+          "keywords": [
+            "余响",
+            "出宫",
+            "路上"
+          ],
+          "desc": "从宫里往外走，回头想一想",
+          "cond": {
+            "and": [
+              {
+                "or": [
+                  {
+                    "flag": "ending_jujiao"
+                  },
+                  {
+                    "flag": "ending_yuanhang"
+                  }
+                ]
+              },
+              {
+                "notFlag": "echo_road_seen"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "cond",
+              "if": {
+                "flag": "ending_jujiao"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "出宫的路上没有别人。城门上贴着你的画像，风把边角吹起来，又按回去。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "有人在你门口放过酒，也有人朝你吐过唾沫。两样你都收下了，一样也没有还回去。"
+                }
+              ],
+              "else": [
+                {
+                  "type": "narrate",
+                  "raw": "出宫的路走到底，就是码头。船离岸的时候，岸上的人都还站在原地。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "海上的雾把皇城收进去，收得很干净。你把那卷东西留在了长凳底下，没有带走。"
+                }
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "echo_road_seen"
+              ]
+            }
+          ]
+        },
+        {
           "cmd": "看封墙",
           "label": "看看那道封死的墙",
           "keywords": [
@@ -1915,6 +2029,67 @@
     "palace_hall": {
       "id": "palace_hall",
       "actions": [
+        {
+          "cmd": "殿上余响",
+          "label": "殿上余响",
+          "keywords": [
+            "余响",
+            "殿上",
+            "再站一会儿"
+          ],
+          "desc": "在殿上再站一会儿",
+          "cond": {
+            "and": [
+              {
+                "or": [
+                  {
+                    "flag": "ending_jiaojuan"
+                  },
+                  {
+                    "flag": "ending_banjiao"
+                  }
+                ]
+              },
+              {
+                "notFlag": "echo_hall_seen"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "cond",
+              "if": {
+                "flag": "ending_jiaojuan"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "殿门在你身后合上。案上那本册子还摊着，末页那个名字的墨色没干透。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "往后街上念你的名字，念的是书里那一行。你站在那行字外头听着，没有应。"
+                }
+              ],
+              "else": [
+                {
+                  "type": "narrate",
+                  "raw": "你出殿的时候，冯保还站在案边。册子摊在最后一页，笔尖上的墨凝成一颗，没有落下去。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "他没有喊你。往后江湖上提起那一年的事，说的都是别人。"
+                }
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "echo_hall_seen"
+              ]
+            }
+          ]
+        },
         {
           "cmd": "面圣",
           "label": "面圣",

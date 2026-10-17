@@ -4276,6 +4276,30 @@
       },
       "stages": [
         {
+          "desc": "在天牢廊下，听夏承志说院里埋的那份副本",
+          "targets": [
+            {
+              "id": "hk_npcv_082_mibao_goA",
+              "kind": "room",
+              "key": "palace_prison",
+              "count": 1,
+              "var": "hk_npcv_082_mibao_goA",
+              "desc": "听夏承志说那份副本"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "天牢的过道里有铁链拖地的声音，隔一会儿响一阵。夏承志坐在廊下那张旧凳上，手搭在膝头。"
+            },
+            {
+              "type": "say",
+              "raw": "「我每递一回，就埋一份。院角那层土，我留着等你来刨。刨出来，拿去衙门大堂见元怀瑾。他认得我的字。」"
+            }
+          ]
+        },
+        {
           "desc": "去衙门·大堂，见元怀瑾，问那份副本的下落",
           "targets": [
             {
@@ -4323,6 +4347,30 @@
         "questDone": "hk_npcv_082_mibao"
       },
       "stages": [
+        {
+          "desc": "在天牢廊下，听夏承志提御书房那幅画",
+          "targets": [
+            {
+              "id": "hk_npcv_082_hua_goB",
+              "kind": "room",
+              "key": "palace_prison",
+              "count": 1,
+              "var": "hk_npcv_082_hua_goB",
+              "desc": "听夏承志提那幅画"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "他还坐在那张旧凳上。牢门半开，廊下有风，吹得灯芯一晃。"
+            },
+            {
+              "type": "say",
+              "raw": "「老爷书房那幅画，我理了三十年，一次没敢多看。你去御书房替我看一眼。画上那片水，是不是我记的那片。」"
+            }
+          ]
+        },
         {
           "desc": "在天牢，随夏承志去看那幅画",
           "targets": [
@@ -6143,9 +6191,18 @@
           "keywords": [],
           "desc": "埋在院里那份副本",
           "cond": {
-            "not": {
-              "quest": "hk_npcv_082_mibao"
-            }
+            "and": [
+              {
+                "not": {
+                  "quest": "hk_npcv_082_mibao"
+                }
+              },
+              {
+                "not": {
+                  "flag": "know_depot_master"
+                }
+              }
+            ]
           },
           "effects": [
             {
@@ -6167,9 +6224,16 @@
           "keywords": [],
           "desc": "书房里那幅画",
           "cond": {
-            "not": {
-              "quest": "hk_npcv_082_hua"
-            }
+            "and": [
+              {
+                "not": {
+                  "quest": "hk_npcv_082_hua"
+                }
+              },
+              {
+                "questDone": "hk_npcv_082_mibao"
+              }
+            ]
           },
           "effects": [
             {
