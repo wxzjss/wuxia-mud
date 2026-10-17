@@ -682,7 +682,7 @@ class CombatEngine {
           text += ` ${t.name}的${dotName}又裂开了。`;
         } else {
           t.addBuff({ name: dotName, turns: eff.turns || 3, mods: {}, tag: dotTag, dot: { value: eff.value || 5, source: u.id } });
-          text += ` ${t.name}中了${dotName}。（金创药或「包扎」能止住。）`;
+          text += ` ${t.name}中了${dotName}。（金创药能止住。）`;
         }
         break;
       }

@@ -604,6 +604,25 @@ function evalEffect(eff, ctx) {
     case '+pot': case 'pot+': p.gainPotential(num(0, 0)); out.push({ kind: 'sys', text: `你增长了 ${num(0, 0)} 点潜能。` }); break;
     case '-pot': p.potential = Math.max(0, p.potential - num(0, 0)); break;
     case '+hp': p.hp = clamp(p.hp + num(0, 0), 0, p.maxHp); break;
+    /* 疗伤/止血类：清持续伤害 buff（2026-10-18 QA 独立验收 #3-b）。
+       文案说「金创药能止住」就必须真能止住，否则玩家白花钱——这是文案承诺，
+       不是描述性文字。args[0] 支持三种写法：
+         'dot'        → 清所有 dot_ 前缀（流血/创口/中毒这类持续伤害）
+         'dot_创口'   → 只清同名 tag
+         '创口'       → 按 buff 名或 tag 清
+       守卫 tools/copy-promise-check.js 会拿真实 buff 验一遍，别再只写文案。 */
+    case 'cure': {
+      const what = String((eff.args && eff.args[0]) || 'poison');
+      const before = (p.buffs || []).length;
+      if (what === 'dot') p.buffs = (p.buffs || []).filter(b => !/^dot_/.test(b.tag || ''));
+      else p.buffs = (p.buffs || []).filter(b => b.name !== what && b.tag !== what && b.tag !== ('dot_' + what));
+      if ((p.buffs || []).length !== before) {
+        if (p.recalc) p.recalc();
+        out.push({ kind: 'sys', text: '伤口的血止住了。' });
+      }
+      break;
+    }
+
     case '-hp': p.hp = clamp(p.hp - num(0, 0), 0, p.maxHp); break;
     case '+mp': p.mp = clamp(p.mp + num(0, 0), 0, p.maxMp); break;
     /* 内力**上限**（走 maxMpBase，与吐纳/采补同一根轴）。

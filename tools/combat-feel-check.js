@@ -277,6 +277,54 @@ const firstLine = r => ((r && r.lines || []).find(l => l.text) || {}).text || ''
     }
   }
 
+  /* C17~C19 边界与文案方向（2026-10-18 QA 独立验收） */
+  {
+    const bootP = () => {
+      const e = new GameEngine({ seed: 20261018 });
+      e.boot(); e.newGame({ name: '战探', gender: 'male', birth: 'wuxue' });
+      return e;
+    };
+    /* C17 切磋「差 ≥8 拒」边界：差 8 必须拒，差 7 必须放 */
+    {
+      const mk = diff => {
+        const e = bootP(); const w = e.world, p = w.player;
+        p.room = 'road_jiangnan_2';
+        const n = w.spawnNpc('npcv_196', p.room, 1, true);
+        n.level = (p.level || 1) + diff;
+        n.favor = 20;
+        return { e, w, p, n, r: w.startDuel(p, n) };
+      };
+      const at8 = mk(8), at7 = mk(7);
+      ok('C17 ★ 差 8 级拒接切磋（口径：≥8 拒）',
+        !at8.w.battle && /火候/.test(txt(at8.r)), txt(at8.r).slice(0, 40));
+      ok('C17b 差 7 级可切磋（边界不误伤）', !!at7.w.battle, !!at7.w.battle);
+    }
+    /* C18 danger 两档边界：+8 → high，+4 → mid */
+    {
+      const dangerOf = diff => {
+        const e = bootP(); const w = e.world, p = w.player;
+        const n = w.spawnNpc('mob_bandit', p.room, 1, true);
+        n.level = (p.level || 1) + diff;
+        w.startCombat(p, n);
+        return e.view({ map: false }).combat.danger;
+      };
+      ok('C18 ★ 高 8 级 = high（不是 mid）', dangerOf(8) === 'high', dangerOf(8));
+      ok('C18b 高 4 级 = mid（不是空）', dangerOf(4) === 'mid', dangerOf(4));
+      ok('C18c 高 3 级 = 无提示', dangerOf(3) === '', JSON.stringify(dangerOf(3)));
+    }
+    /* C19 逃跑提示方向：玩家更快 → 说「踏空/再来一次」，不能说「对方比你快」 */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      const n = w.spawnNpc('mob_bandit', p.room, 1, true);
+      w.startCombat(p, n);
+      p.speed = 99; n.speed = 10;
+      w.rng = { next: () => 0.99 };            // 强行掷失败
+      const r = w.combatStep('flee');
+      const out = txt(r);
+      ok('C19 ★ 玩家更快时逃跑失败不说反话（踏空/再来一次）',
+        /踏空|再来一次/.test(out) && !/对方比你快/.test(out), out.slice(0, 70));
+    }
+  }
   console.log('\n' + (fail ? '✘ ' + fail + ' 项失败：' + fails.join(' / ') : '✔ 全部通过'));
   console.log('通过 ' + pass + ' / 失败 ' + fail);
   process.exit(fail ? 1 : 0);

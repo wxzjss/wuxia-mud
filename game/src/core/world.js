@@ -2818,7 +2818,7 @@ class World extends EventEmitter {
   startDuel(ch, npc) {
     /* 实力门槛（2026-10-18 审计 #9）：差 8 级以上不接——
        否则新手点「切磋」就是被 lv23 的对手一招教育。文案归设计（design/115 §四）。 */
-    if (ch && npc && (ch.level || 1) + 8 < (npc.level || 1)) {
+    if (ch && npc && (ch.level || 1) + 8 <= (npc.level || 1)) {
       return { lines: [{ kind: 'say', text: `${npc.name}摆摆手：「你还没到能跟我过招的火候。」` }] };
     }
     const duel = require('./duel');
@@ -2995,7 +2995,9 @@ class World extends EventEmitter {
       return {
         lines: this.stepEnemyOnly([
           { kind: 'combat', text: '你想跑，却被对方缠住！' },
-          { kind: 'hint', text: `（他身法 ${t ? t.speed : '?'}，你 ${p.speed}；对方比你快，硬跑跑不掉——可先「防御」撑一回合再试。）` },
+          { kind: 'hint', text: (p.speed > (t ? t.speed : 0))
+            ? '（你身形本比他快，这一下是一步踏空被抢了先——再来一次多半能脱身。）'
+            : `（他身法 ${t ? t.speed : '?'}，你 ${p.speed}；对方比你快，硬跑跑不掉——可先「防御」撑一回合再试。）` },
         ]),
       };
     }
