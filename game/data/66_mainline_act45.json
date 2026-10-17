@@ -531,6 +531,197 @@
               ]
             }
           ]
+        },
+        {
+          "cmd": "摸井沿",
+          "label": "摸崖后那口井的井沿",
+          "keywords": [
+            "井沿",
+            "井口",
+            "井台"
+          ],
+          "desc": "摸崖后那口井的井沿",
+          "cond": {
+            "quest": "hk_npcv_164_yinzi"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖后的井口压着一块青石。挪开半尺，井壁上有绳子磨出的沟。"
+            },
+            {
+              "type": "narrate",
+              "raw": "沟是干的。井底没有水声。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "yinzi_well"
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "亮腰牌",
+          "label": "亮腰牌上崖",
+          "keywords": [
+            "亮腰牌",
+            "腰牌",
+            "门派牌"
+          ],
+          "desc": "把门派腰牌递给山门哨卫",
+          "cond": {
+            "and": [
+              {
+                "flag": "act3_done"
+              },
+              {
+                "hasSect": true
+              },
+              {
+                "karma": ">=20"
+              },
+              {
+                "notFlag": "sentinel1"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "门里两个人看的是你的手。你把腰牌摘下来，递过去。"
+            },
+            {
+              "type": "narrate",
+              "raw": "左边那人接过，翻过来看了一眼背面的字，又递给右边那个。两个人各自让开半步。"
+            },
+            {
+              "type": "say",
+              "raw": "「同道的路，我们不为难。上崖吧。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "sentinel1"
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "报号",
+          "label": "报号过哨",
+          "keywords": [
+            "报号",
+            "递名帖",
+            "报名号"
+          ],
+          "desc": "把名号报给山门哨卫",
+          "cond": {
+            "and": [
+              {
+                "flag": "act3_done"
+              },
+              {
+                "or": [
+                  {
+                    "karma": "<=-20"
+                  },
+                  {
+                    "rep": "日月神教",
+                    ">=": 40
+                  }
+                ]
+              },
+              {
+                "notFlag": "sentinel1"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "你没有亮牌。你只把名字说出来，说得不快。"
+            },
+            {
+              "type": "narrate",
+              "raw": "那两个人对看了一眼。其中一个笑了一声，笑意没到眼睛里。"
+            },
+            {
+              "type": "say",
+              "raw": "「崖上收的就是你这种人。上去吧，大殿里别乱看。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "sentinel1"
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "对暗号",
+          "label": "对暗号",
+          "keywords": [
+            "对暗号",
+            "暗号",
+            "留话"
+          ],
+          "desc": "跟山门哨卫对一句暗号",
+          "cond": {
+            "and": [
+              {
+                "flag": "act3_done"
+              },
+              {
+                "noSect": true
+              },
+              {
+                "notFlag": "sentinel1"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "cond",
+              "if": {
+                "karma": ">=20"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "哨上问你走哪条道。你说了一句不相干的话：去年冬天，有人在这山下分过半袋干粮。"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "两个人对看一眼，其中一个抬起手，朝崖上指了指。"
+                },
+                {
+                  "type": "say",
+                  "raw": "「有人替你留过话。上崖吧，过了大殿别开口。」"
+                },
+                {
+                  "type": "flag",
+                  "args": [
+                    "sentinel1"
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "type": "narrate",
+                  "raw": "哨上问你走哪条道。你把话说了，两个人没有反应。"
+                },
+                {
+                  "type": "say",
+                  "raw": "「这条道不认生人。你换个走过来法。」"
+                },
+                {
+                  "type": "narrate",
+                  "raw": "他们没有拦你，也没有让开。崖上的栈道就在那儿。"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -685,6 +876,35 @@
                   "type": "menu",
                   "raw": "他怎么用你，你怎么用他|接下他的帖子>flag:ren_pact;flag:ren_appears;narrate:他递过来一片竹牌，上面刻着一个字：行。;say:绣绷的夹层，我替你拆。你欠我一次。;;把竹牌推回去>flag:ren_refused;narrate:你把那片竹牌推了回去。;say:不接。;narrate:他把竹牌翻过来，又翻回去，像在数着什么。;say:那就当我先收一笔利钱。;combat:ren_woxing"
                 }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "翻旧账",
+          "label": "翻大殿的旧账",
+          "keywords": [
+            "旧账",
+            "翻账",
+            "查旧账"
+          ],
+          "desc": "翻大殿的旧账",
+          "cond": {
+            "quest": "hk_npcv_164_yinzi"
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "旧账压在殿侧木柜里，抽出来时带起一层灰。"
+            },
+            {
+              "type": "narrate",
+              "raw": "那一年的进出记了两遍：一遍写「采买」，一遍只画个圈。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "yinzi_ledger"
               ]
             }
           ]
@@ -1240,6 +1460,46 @@
     "haitan_boat": {
       "id": "haitan_boat",
       "actions": [
+        {
+          "cmd": "问船期",
+          "label": "问船期",
+          "keywords": [
+            "问船期",
+            "船期",
+            "几时开船"
+          ],
+          "desc": "问艄公这船什么时候走",
+          "cond": {
+            "and": [
+              {
+                "flag": "act4_done"
+              },
+              {
+                "notFlag": "haitan_ferry_seen"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "艄公蹲在船头补网，头也不抬。你问他这船几时走，他先把网上的结解开一个。"
+            },
+            {
+              "type": "narrate",
+              "raw": "「一个月两趟。一趟往东，岛上没有活人想你上去；一趟往南，京里来的人在码头等货。」"
+            },
+            {
+              "type": "say",
+              "raw": "「你要走哪一趟，想好了再来。船不等人，人也不必等船。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "haitan_ferry_seen"
+              ]
+            }
+          ]
+        },
         {
           "cmd": "搜查",
           "keywords": [

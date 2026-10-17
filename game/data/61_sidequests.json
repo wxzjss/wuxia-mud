@@ -2638,6 +2638,94 @@
       "desc": "黑木崖的账从皮朝颜手里过。她说崖后有口井，井里的银子一枚没动。",
       "stages": [
         {
+          "desc": "回黑木崖山门，听皮朝颜说那笔周转银子",
+          "targets": [
+            {
+              "id": "hk_npcv_164_yinzi_goA",
+              "kind": "room",
+              "key": "mojiao_shanmen",
+              "count": 1,
+              "var": "hk_npcv_164_yinzi_goA",
+              "desc": "听皮朝颜说那笔银子"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "皮朝颜把手拢回袖子里，先回头看了一眼崖上。"
+            },
+            {
+              "type": "say",
+              "raw": "「账上有一笔走动过的银子，走的不是明账。崖后有口井，我这辈子的银子都在里头。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "她说完就闭了嘴，等你先开口。"
+            }
+          ]
+        },
+        {
+          "desc": "去黑木崖大殿，翻旧账查那笔银子的成色",
+          "targets": [
+            {
+              "id": "hk_npcv_164_yinzi_goB",
+              "kind": "room",
+              "key": "mojiao_hall",
+              "count": 1,
+              "var": "hk_npcv_164_yinzi_goB",
+              "desc": "翻大殿的旧账"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "旧账压在殿侧木柜里，抽出来时带起一层灰。翻到那一年，同一笔进出记了两遍。"
+            },
+            {
+              "type": "narrate",
+              "raw": "一遍写「采买」，数目整；另一遍只画了个圈，圈旁边是空的。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "yinzi_ledger"
+              ]
+            }
+          ]
+        },
+        {
+          "desc": "回山门崖后，看那口枯井",
+          "targets": [
+            {
+              "id": "hk_npcv_164_yinzi_goC",
+              "kind": "room",
+              "key": "mojiao_shanmen",
+              "count": 1,
+              "var": "hk_npcv_164_yinzi_goC",
+              "desc": "去崖后看那口井"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖后的井口压着一块青石。挪开半尺，井壁上有绳子磨出的沟，沟是干的。"
+            },
+            {
+              "type": "narrate",
+              "raw": "井底没有水声。她说的「一枚没动」，是这口井早就空了的意思。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "yinzi_well"
+              ]
+            }
+          ]
+        },
+        {
           "desc": "去黑木崖大殿，找教中旧账房打听那笔银子的成色",
           "targets": [
             {
@@ -2663,7 +2751,12 @@
               "type": "menu",
               "raw": "那笔银子|替她查账>+exp:240;+pot:70;flag:hk_sirenzhang;;回报教中>+rep:日月神教:20;+exp:180;favor:npcv_164:-30;incvar:favor_npcv_164:-30"
             }
-          ]
+          ],
+          "lock": {
+            "flag": "act3_done",
+            "name": "卷四·黑木崖",
+            "msg": "黑木崖上的账，是过了雪谷之后的事。"
+          }
         }
       ],
       "rewards": [
@@ -5566,9 +5659,16 @@
           "keywords": [],
           "desc": "那笔周转银子",
           "cond": {
-            "not": {
-              "quest": "hk_npcv_164_yinzi"
-            }
+            "and": [
+              {
+                "flag": "act3_done"
+              },
+              {
+                "not": {
+                  "quest": "hk_npcv_164_yinzi"
+                }
+              }
+            ]
           },
           "effects": [
             {
@@ -5590,9 +5690,16 @@
           "keywords": [],
           "desc": "死人账",
           "cond": {
-            "not": {
-              "quest": "hk_npcv_164_sirenzhang"
-            }
+            "and": [
+              {
+                "not": {
+                  "quest": "hk_npcv_164_sirenzhang"
+                }
+              },
+              {
+                "questDone": "hk_npcv_164_yinzi"
+              }
+            ]
           },
           "effects": [
             {
