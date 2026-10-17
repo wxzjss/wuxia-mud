@@ -24,9 +24,21 @@
  *   node tools/room-action-wiring-check.js --manifest <清单.json>
  *   node tools/room-action-wiring-check.js --manifest <清单.json> --data <分片目录>   # 注入用
  *   node tools/room-action-wiring-check.js --selftest
+ *   node tools/room-action-wiring-check.js --scan-all        # 存量普查（只打印，永不改退出码）
+ *
+ * `--scan-all`（lead-programmer 2026-10-17 批准）：B/C 默认只扫 diff 范围；存量里
+ *   「同房多分片带 actions 键」的房全库 28 间、其中 14 间有动作被顶掉（见
+ *   `tools/_out_room_action_override.tsv`）。这个模式只把清单打出来供人一批批收，
+ *   **不判红、不改退出码**——全库判红会被迫加白名单，反而烂掉。
  *
  * 清单元数据：[{ "rid": "road_xixia_1", "cmd": "对账", "note": "批5 件②" }, …]
  * 清单来源：apply 脚本的 HOOKS（游有方出），或批内手工清单。
+ *
+ * 🔴 纪律（team-lead 2026-10-17 裁定，全员）：**清单刻意保持静态，不改成从 HOOKS 动态推导。**
+ *    A 判据的意图是「这批**新挂的** hook 一定在引擎里」，静态清单 = 显式纪律；
+ *    动态推导会绕回「数据自己证明自己」。
+ *    ⇒ **今后任何新挂 room action 的批，必须把自己那几条加进 manifest**，
+ *      否则本守卫对那一批是**零覆盖**——绿了也不代表这批没问题。
  *
  * 门禁说明：文件名字符合 .reg_full.sh 收录正则（`^(smoke-.*|.*-check)\.js$`），
  * 但**进门禁属于发布门禁变更**，按 103/104 先例需 team-lead 记档后再并入（本文件不自作主张）。
@@ -177,6 +189,26 @@ if (dataDir !== DATA && !shards.length) { console.error('✘ 注入目录里没�
     console.log('§3 提示（不判红，供 lead-programmer 看）');
     notes.forEach((n) => console.log('  · ' + n));
   }
+
+  /* §4 存量普查（--scan-all）：只打印，**永不改退出码** */
+  if (process.argv.includes('--scan-all')) {
+    const multi = Object.entries(index).filter(([, cs]) => cs.length > 1);
+    const lostRows = [];
+    for (const [rid, cs] of multi) {
+      const lastKeys = new Set((cs[cs.length - 1].actions || []).map((a) => a && (a.cmd || a.label)).filter(Boolean));
+      const lost = [];
+      for (const c of cs.slice(0, -1)) for (const a of c.actions || []) {
+        const k = a && (a.cmd || a.label);
+        if (k && !lastKeys.has(k)) lost.push(k + '@' + c.file);
+      }
+      if (lost.length) lostRows.push(rid + ' [' + cs.map((c) => c.file).join('→') + '] 丢 ' + lost.length + '：' + lost.join(' ; '));
+    }
+    console.log('\n§4 存量普查（不判红）');
+    console.log('  同房多分片带 actions 键：' + multi.length + ' 间 · 有动作被顶掉：' + lostRows.length + ' 间');
+    lostRows.slice(0, 30).forEach((l) => console.log('    ' + l));
+    if (lostRows.length > 30) console.log('    …（共 ' + lostRows.length + ' 间，完整表见 tools/_out_room_action_override.tsv）');
+  }
+
   if (fail) { console.log('✘ 失败项: ' + fails.join(' / ')); process.exit(1); }
   process.exit(0);
 })().catch((err) => { console.error(err); process.exit(2); });

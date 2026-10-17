@@ -60,7 +60,6 @@ const FALLBACK = /此处暂时没有更多可做的了|是什么指令|这里没
        否则 `ask 徐半仙 / talk 元怀瑾` 这类内置指令会被误判「这里没有」，
        那是量具的假红，不是数据缺 NPC。真玩家进房必然先看到房间描写。 */
     p.room = c.rid;
-    try { await e.exec('看'); } catch (e0) {}
     let out = '', threw = false;
     try {
       const r = await e.exec(c.label);

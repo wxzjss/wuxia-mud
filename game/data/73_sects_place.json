@@ -22,6 +22,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "taishan"
+              ]
             }
           ],
           "failMsg": null
@@ -77,6 +83,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "hengshan"
+              ]
             }
           ],
           "failMsg": null
@@ -132,6 +144,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "hengshanN"
+              ]
             }
           ],
           "failMsg": null
@@ -187,6 +205,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "qingcheng"
+              ]
             }
           ],
           "failMsg": null
@@ -242,6 +266,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "kongtong"
+              ]
             }
           ],
           "failMsg": null
@@ -297,6 +327,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "kunlun"
+              ]
             }
           ],
           "failMsg": null
@@ -352,6 +388,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "diancang"
+              ]
             }
           ],
           "failMsg": null
@@ -407,6 +449,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "tiezhang"
+              ]
             }
           ],
           "failMsg": null
@@ -462,6 +510,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "jindao"
+              ]
             }
           ],
           "failMsg": null
@@ -517,6 +571,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "wuhu"
+              ]
             }
           ],
           "failMsg": null,
@@ -573,6 +633,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "feihu"
+              ]
             }
           ],
           "failMsg": null
@@ -628,6 +694,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "zhenyuan"
+              ]
             }
           ],
           "failMsg": null
@@ -683,6 +755,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "shenquan"
+              ]
             }
           ],
           "failMsg": null
@@ -738,6 +816,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "tieqiang"
+              ]
             }
           ],
           "failMsg": null
@@ -793,6 +877,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "kuaidao"
+              ]
             }
           ],
           "failMsg": null
@@ -848,6 +938,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "luohan"
+              ]
             }
           ],
           "failMsg": null
@@ -903,6 +999,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "wuyun"
+              ]
             }
           ],
           "failMsg": null,
@@ -959,6 +1061,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "dafeng"
+              ]
             }
           ],
           "failMsg": null,
@@ -1015,6 +1123,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "huanghe"
+              ]
             }
           ],
           "failMsg": null
@@ -1070,6 +1184,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "taihu"
+              ]
             }
           ],
           "failMsg": null
@@ -1125,6 +1245,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "poyang"
+              ]
             }
           ],
           "failMsg": null
@@ -1180,6 +1306,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "qingzhu"
+              ]
             }
           ],
           "failMsg": null
@@ -1235,6 +1367,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "jujing"
+              ]
             }
           ],
           "failMsg": null
@@ -1290,6 +1428,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "jinlong"
+              ]
             }
           ],
           "failMsg": null
@@ -1345,6 +1489,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "wuliang"
+              ]
             }
           ],
           "failMsg": null
@@ -1400,6 +1550,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "funiu"
+              ]
             }
           ],
           "failMsg": null
@@ -1455,6 +1611,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "baisheng"
+              ]
             }
           ],
           "failMsg": null
@@ -1510,6 +1672,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "baituo"
+              ]
             }
           ],
           "failMsg": null
@@ -1565,6 +1733,12 @@
             {
               "type": "narrate",
               "raw": "山门里走出一个人，上下打量了你两眼。"
+            },
+            {
+              "type": "joinSect",
+              "args": [
+                "hehuan"
+              ]
             }
           ],
           "failMsg": null

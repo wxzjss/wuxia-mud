@@ -180,8 +180,13 @@ section('§A 回春堂「老郎中」「药柜」—— 点下去必须真有人
 
   /* 房间的两条 action 与真实存在的人对得上 */
   const acts = (w.data.rooms.jn_pharmacy.actions || []);
+  /* ⚠️ 2026-10-18 判据对齐（label 兜底批）：原来要求 `acts.length >= 2`，
+     隐含「药铺得同时有 list 与 talk 两条房动作」。但按本轮修正后的模型，
+     `talk/ask <真名>` 一律交给**内置对话**（房动作带 effects 会盖掉画像/信任轴，
+     见 smoke-portrait 红），房动作只留 `list <真名>` 一条。所以判据改为
+     「至少一条，且每条 cmd 都指向在场真名（或显式 look）」——真实名要求保留，放宽的只是条数。 */
   ok('A-6 房间 action 指向的都是**在场真名**（不再是「郎中」「药铺」这种称谓）',
-    acts.length >= 2 && acts.every(a => /陈济仁/.test(a.cmd) || /^look /.test(a.cmd)),
+    acts.length >= 1 && acts.every(a => /陈济仁/.test(a.cmd) || /^look /.test(a.cmd)),
     acts.map(a => a.label + '→' + a.cmd).join(' ｜ '));
 }
 
