@@ -2996,7 +2996,7 @@ class World extends EventEmitter {
         lines: this.stepEnemyOnly([
           { kind: 'combat', text: '你想跑，却被对方缠住！' },
           { kind: 'hint', text: (p.speed > (t ? t.speed : 0))
-            ? '（你身形本比他快，这一下是一步踏空被抢了先——再来一次多半能脱身。）'
+            ? '（你身形本比他快，这一下是一步踏空被抢了先，再来一次多半能脱身。）'
             : `（他身法 ${t ? t.speed : '?'}，你 ${p.speed}；对方比你快，硬跑跑不掉——可先「防御」撑一回合再试。）` },
         ]),
       };
