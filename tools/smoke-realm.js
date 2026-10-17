@@ -37,8 +37,15 @@ section('2. 凡人与狼同量级（α 压锚口径）');
   e.newGame({ name: '凡人', gender: 'male' });
   const w = e.world, p = w.player;
   const wolf = w.spawnNpc('mob_wolf', 'road_jiangnan_1', 1, true);
-  /* 狼不再是凡人的两倍：攻击与气血都落在同量级（±2 倍以内） */
-  ok('狼攻击与凡人同量级（不再碾压）', wolf.atk <= p.atk * 2 && wolf.atk * 2 >= p.atk, '狼atk=' + wolf.atk + ' 凡人atk=' + p.atk);
+  /* 狼不再是凡人的两倍：攻击与气血都落在同量级。
+     ⚠️ 2026-10-18 数值调整（design/115 §一）：灰狼按「新手 5 回合可胜」重定
+     → 58 血 / atk 6（新档 atk 14）。
+     ⇒ 下界从「≥ 凡人/2」放宽到「≥ 凡人 ×0.35」：设计要求狼**明显弱于凡人但不可无视**，
+        原下界 7 是「旧锚」的余数，会把「按设计调弱」判红。
+     上界（不碾压：≤ 凡人×2）保持不变——那才是这条断言的本意。 */
+  ok('狼攻击与凡人同量级（不碾压、也不至于毫无威胁）',
+    wolf.atk <= p.atk * 2 && wolf.atk >= Math.floor(p.atk * 0.35),
+    '狼atk=' + wolf.atk + ' 凡人atk=' + p.atk);
   ok('狼气血与凡人同量级（不再碾压）', wolf.maxHp <= p.maxHp * 2 && wolf.maxHp >= p.maxHp / 2, '狼hp=' + wolf.maxHp + ' 凡人hp=' + p.maxHp);
 }
 

@@ -112,7 +112,11 @@ for nid, n in npcs.items():
         rows.append(dict(slot=slot, sid=sid, name=s.get('name', ''), type=s.get('type', ''),
                          grade=s.get('grade'), sect=s.get('sect', ''),
                          level=(lv.get('level') if isinstance(lv, dict) else lv)))
-    gs = [r['grade'] for r in rows if isinstance(r['grade'], int)]
+    # 口径补充（2026-10-18）：绝学档 skill 若 learned 等级 ≤ 80，视为「挂名未成」——
+    # 品阶是上限不是现有火候（例：鲍归 jiuyang_shengong g1 但只练到 40 级）。
+    # 仍计入「有没有这门」的展示，但不计入 maxGrade/minGrade 的身份判定。
+    gs = [r['grade'] for r in rows
+          if isinstance(r['grade'], int) and not (r['grade'] <= 3 and isinstance(r.get('level'), int) and r['level'] <= 80)]
     NPC[nid] = dict(id=nid, name=n.get('name') or '', tier=n.get('tier') or '-',
                     role=role_of(nid, n), sect=infer_sect(nid, n), rank=n.get('rank') or 0,
                     level=n.get('level') or 0, room=n.get('room') or '', src=src_npc.get(nid, ''),
@@ -135,6 +139,12 @@ for nid, v in NPC.items():
     if v['minGrade'] is None:
         continue
     # ① 身份错配
+    # 低火候绝学（learned ≤80）单列成「挂名未成」，不算身份错配但留痕
+    _weak = [r for r in v['rows'] if isinstance(r['grade'], int) and r['grade'] <= 3
+             and isinstance(r.get('level'), int) and r['level'] <= 80]
+    if v['role'] in ('散人/平民', '守卫', '弟子', '门人') and _weak and v['minGrade'] > 3:
+        add('挂名未成·绝学只练到低火候', nid,
+            '绝学档但 learned≤80：' + ','.join(f"{r['sid']}(g{r['grade']}/lv{r['level']})" for r in _weak[:3]))
     if v['role'] in ('散人/平民', '守卫', '弟子', '门人') and v['minGrade'] <= 3 and v['tier'] != 'A':
         add('身份错配·低身份持绝学', nid,
             'minGrade=%d（%s）绝学池: %s' % (v['minGrade'], v['role'],
@@ -155,9 +165,18 @@ for nid, v in NPC.items():
     gi = min([r['grade'] for r in inner if isinstance(r['grade'], int)] or [99])
     gm = min([r['grade'] for r in moves if isinstance(r['grade'], int)] or [99])
     if moves and gm <= 3 and gi >= 7 and not v['sect'] and inner:
-        add('待B刀·无门派绝学配通用内功', nid,
-            '招式=%s（g%d）/ 内功=%s（g%d）' % (','.join(r['sid'] for r in moves[:2]), gm,
-             ','.join(r['sid'] for r in inner[:2]) or '无', gi))
+        # 无门派 + 绝学 + 通用内功：按**修为**再分两类（品阶是上限，不是现有火候）
+        _real = [r for r in moves if isinstance(r['grade'], int) and r['grade'] <= 3
+                 and not (isinstance(r.get('level'), int) and r['level'] <= 80)]
+        if _real:
+            add('无门派高手·剧情（合法，留痕）', nid,
+                '招式=%s（最高火候 %s）' % (','.join(r['sid'] for r in _real[:2]),
+                 max([r['level'] for r in _real if isinstance(r.get('level'), int)] or [0])))
+        else:
+            add('挂名未成·绝学只练到低火候', nid,
+                '招式=%s（learned≤80）/ 内功=%s' % (
+                 ','.join(f"{r['sid']}(lv{r.get('level')})" for r in moves[:2]),
+                 ','.join(r['sid'] for r in inner[:2]) or '无'))
     elif moves and gm <= 3 and gi >= 7:
         add('配套错配·绝学招式配入门内功', nid,
             '招式=%s（g%d）/ 内功=%s（g%d）' % (

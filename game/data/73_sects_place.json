@@ -3865,22 +3865,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "刀": "jindao_atk_1",
-        "内功": "jindao_force_1",
-        "招架": "jindao_guard_1",
-        "轻功": "jindao_fly_1"
+        "刀": "jindao_atk_3",
+        "内功": "jindao_force_2",
+        "招架": "jindao_guard_2",
+        "轻功": "jindao_fly_2"
       },
       "learned": {
-        "jindao_atk_1": {
+        "jindao_atk_3": {
           "level": 160
         },
-        "jindao_force_1": {
+        "jindao_force_2": {
           "level": 180
         },
-        "jindao_guard_1": {
+        "jindao_guard_2": {
           "level": 120
         },
-        "jindao_fly_1": {
+        "jindao_fly_2": {
           "level": 110
         }
       },
@@ -4007,22 +4007,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "刀": "wuhu_atk_1",
-        "内功": "wuhu_force_1",
-        "招架": "wuhu_guard_1",
-        "轻功": "wuhu_fly_1"
+        "刀": "wuhu_atk_3",
+        "内功": "wuhu_force_2",
+        "招架": "wuhu_guard_2",
+        "轻功": "wuhu_fly_2"
       },
       "learned": {
-        "wuhu_atk_1": {
+        "wuhu_atk_3": {
           "level": 160
         },
-        "wuhu_force_1": {
+        "wuhu_force_2": {
           "level": 180
         },
-        "wuhu_guard_1": {
+        "wuhu_guard_2": {
           "level": 120
         },
-        "wuhu_fly_1": {
+        "wuhu_fly_2": {
           "level": 110
         }
       },
@@ -4149,22 +4149,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "刀": "feihu_atk_1",
-        "内功": "feihu_force_1",
-        "招架": "feihu_guard_1",
-        "轻功": "feihu_fly_1"
+        "刀": "feihu_atk_3",
+        "内功": "feihu_force_2",
+        "招架": "feihu_guard_2",
+        "轻功": "feihu_fly_2"
       },
       "learned": {
-        "feihu_atk_1": {
+        "feihu_atk_3": {
           "level": 160
         },
-        "feihu_force_1": {
+        "feihu_force_2": {
           "level": 180
         },
-        "feihu_guard_1": {
+        "feihu_guard_2": {
           "level": 120
         },
-        "feihu_fly_1": {
+        "feihu_fly_2": {
           "level": 110
         }
       },
@@ -4291,22 +4291,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "刀": "zhenyuan_atk_1",
-        "内功": "zhenyuan_force_1",
-        "招架": "zhenyuan_guard_1",
-        "轻功": "zhenyuan_fly_1"
+        "刀": "zhenyuan_atk_3",
+        "内功": "zhenyuan_force_2",
+        "招架": "zhenyuan_guard_2",
+        "轻功": "zhenyuan_fly_2"
       },
       "learned": {
-        "zhenyuan_atk_1": {
+        "zhenyuan_atk_3": {
           "level": 160
         },
-        "zhenyuan_force_1": {
+        "zhenyuan_force_2": {
           "level": 180
         },
-        "zhenyuan_guard_1": {
+        "zhenyuan_guard_2": {
           "level": 120
         },
-        "zhenyuan_fly_1": {
+        "zhenyuan_fly_2": {
           "level": 110
         }
       },
@@ -4433,22 +4433,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "拳": "shenquan_atk_1",
-        "内功": "shenquan_force_1",
-        "招架": "shenquan_guard_1",
-        "轻功": "shenquan_fly_1"
+        "拳": "shenquan_atk_3",
+        "内功": "shenquan_force_2",
+        "招架": "shenquan_guard_2",
+        "轻功": "shenquan_fly_2"
       },
       "learned": {
-        "shenquan_atk_1": {
+        "shenquan_atk_3": {
           "level": 160
         },
-        "shenquan_force_1": {
+        "shenquan_force_2": {
           "level": 180
         },
-        "shenquan_guard_1": {
+        "shenquan_guard_2": {
           "level": 120
         },
-        "shenquan_fly_1": {
+        "shenquan_fly_2": {
           "level": 110
         }
       },
@@ -4569,22 +4569,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "棍": "tieqiang_atk_1",
-        "内功": "tieqiang_force_1",
-        "招架": "tieqiang_guard_1",
-        "轻功": "tieqiang_fly_1"
+        "棍": "tieqiang_atk_3",
+        "内功": "tieqiang_force_2",
+        "招架": "tieqiang_guard_2",
+        "轻功": "tieqiang_fly_2"
       },
       "learned": {
-        "tieqiang_atk_1": {
+        "tieqiang_atk_3": {
           "level": 160
         },
-        "tieqiang_force_1": {
+        "tieqiang_force_2": {
           "level": 180
         },
-        "tieqiang_guard_1": {
+        "tieqiang_guard_2": {
           "level": 120
         },
-        "tieqiang_fly_1": {
+        "tieqiang_fly_2": {
           "level": 110
         }
       },
@@ -4711,22 +4711,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "刀": "kuaidao_atk_1",
-        "内功": "kuaidao_force_1",
-        "招架": "kuaidao_guard_1",
-        "轻功": "kuaidao_fly_1"
+        "刀": "kuaidao_atk_3",
+        "内功": "kuaidao_force_2",
+        "招架": "kuaidao_guard_2",
+        "轻功": "kuaidao_fly_2"
       },
       "learned": {
-        "kuaidao_atk_1": {
+        "kuaidao_atk_3": {
           "level": 160
         },
-        "kuaidao_force_1": {
+        "kuaidao_force_2": {
           "level": 180
         },
-        "kuaidao_guard_1": {
+        "kuaidao_guard_2": {
           "level": 120
         },
-        "kuaidao_fly_1": {
+        "kuaidao_fly_2": {
           "level": 110
         }
       },
@@ -4853,22 +4853,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "拳": "luohan_atk_1",
-        "内功": "luohan_force_1",
-        "招架": "luohan_guard_1",
-        "轻功": "luohan_fly_1"
+        "拳": "luohan_atk_3",
+        "内功": "luohan_force_2",
+        "招架": "luohan_guard_2",
+        "轻功": "luohan_fly_2"
       },
       "learned": {
-        "luohan_atk_1": {
+        "luohan_atk_3": {
           "level": 160
         },
-        "luohan_force_1": {
+        "luohan_force_2": {
           "level": 180
         },
-        "luohan_guard_1": {
+        "luohan_guard_2": {
           "level": 120
         },
-        "luohan_fly_1": {
+        "luohan_fly_2": {
           "level": 110
         }
       },
@@ -4989,22 +4989,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "拳": "wuyun_atk_1",
-        "内功": "wuyun_force_1",
-        "招架": "wuyun_guard_1",
-        "轻功": "wuyun_fly_1"
+        "拳": "wuyun_atk_3",
+        "内功": "wuyun_force_2",
+        "招架": "wuyun_guard_2",
+        "轻功": "wuyun_fly_2"
       },
       "learned": {
-        "wuyun_atk_1": {
+        "wuyun_atk_3": {
           "level": 160
         },
-        "wuyun_force_1": {
+        "wuyun_force_2": {
           "level": 180
         },
-        "wuyun_guard_1": {
+        "wuyun_guard_2": {
           "level": 120
         },
-        "wuyun_fly_1": {
+        "wuyun_fly_2": {
           "level": 110
         }
       },
@@ -5125,22 +5125,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "刀": "dafeng_atk_1",
-        "内功": "dafeng_force_1",
-        "招架": "dafeng_guard_1",
-        "轻功": "dafeng_fly_1"
+        "刀": "dafeng_atk_3",
+        "内功": "dafeng_force_2",
+        "招架": "dafeng_guard_2",
+        "轻功": "dafeng_fly_2"
       },
       "learned": {
-        "dafeng_atk_1": {
+        "dafeng_atk_3": {
           "level": 160
         },
-        "dafeng_force_1": {
+        "dafeng_force_2": {
           "level": 180
         },
-        "dafeng_guard_1": {
+        "dafeng_guard_2": {
           "level": 120
         },
-        "dafeng_fly_1": {
+        "dafeng_fly_2": {
           "level": 110
         }
       },
@@ -5267,22 +5267,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "棍": "huanghe_atk_1",
-        "内功": "huanghe_force_1",
-        "招架": "huanghe_guard_1",
-        "轻功": "huanghe_fly_1"
+        "棍": "huanghe_atk_3",
+        "内功": "huanghe_force_2",
+        "招架": "huanghe_guard_2",
+        "轻功": "huanghe_fly_2"
       },
       "learned": {
-        "huanghe_atk_1": {
+        "huanghe_atk_3": {
           "level": 160
         },
-        "huanghe_force_1": {
+        "huanghe_force_2": {
           "level": 180
         },
-        "huanghe_guard_1": {
+        "huanghe_guard_2": {
           "level": 120
         },
-        "huanghe_fly_1": {
+        "huanghe_fly_2": {
           "level": 110
         }
       },
@@ -5409,22 +5409,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "刀": "taihu_atk_1",
-        "内功": "taihu_force_1",
-        "招架": "taihu_guard_1",
-        "轻功": "taihu_fly_1"
+        "刀": "taihu_atk_3",
+        "内功": "taihu_force_2",
+        "招架": "taihu_guard_2",
+        "轻功": "taihu_fly_2"
       },
       "learned": {
-        "taihu_atk_1": {
+        "taihu_atk_3": {
           "level": 160
         },
-        "taihu_force_1": {
+        "taihu_force_2": {
           "level": 180
         },
-        "taihu_guard_1": {
+        "taihu_guard_2": {
           "level": 120
         },
-        "taihu_fly_1": {
+        "taihu_fly_2": {
           "level": 110
         }
       },
@@ -5551,22 +5551,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "棍": "poyang_atk_1",
-        "内功": "poyang_force_1",
-        "招架": "poyang_guard_1",
-        "轻功": "poyang_fly_1"
+        "棍": "poyang_atk_3",
+        "内功": "poyang_force_2",
+        "招架": "poyang_guard_2",
+        "轻功": "poyang_fly_2"
       },
       "learned": {
-        "poyang_atk_1": {
+        "poyang_atk_3": {
           "level": 160
         },
-        "poyang_force_1": {
+        "poyang_force_2": {
           "level": 180
         },
-        "poyang_guard_1": {
+        "poyang_guard_2": {
           "level": 120
         },
-        "poyang_fly_1": {
+        "poyang_fly_2": {
           "level": 110
         }
       },
@@ -5693,22 +5693,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "刀": "qingzhu_atk_1",
-        "内功": "qingzhu_force_1",
-        "招架": "qingzhu_guard_1",
-        "轻功": "qingzhu_fly_1"
+        "刀": "qingzhu_atk_3",
+        "内功": "qingzhu_force_2",
+        "招架": "qingzhu_guard_2",
+        "轻功": "qingzhu_fly_2"
       },
       "learned": {
-        "qingzhu_atk_1": {
+        "qingzhu_atk_3": {
           "level": 160
         },
-        "qingzhu_force_1": {
+        "qingzhu_force_2": {
           "level": 180
         },
-        "qingzhu_guard_1": {
+        "qingzhu_guard_2": {
           "level": 120
         },
-        "qingzhu_fly_1": {
+        "qingzhu_fly_2": {
           "level": 110
         }
       },
@@ -5835,22 +5835,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "刀": "jujing_atk_1",
-        "内功": "jujing_force_1",
-        "招架": "jujing_guard_1",
-        "轻功": "jujing_fly_1"
+        "刀": "jujing_atk_3",
+        "内功": "jujing_force_2",
+        "招架": "jujing_guard_2",
+        "轻功": "jujing_fly_2"
       },
       "learned": {
-        "jujing_atk_1": {
+        "jujing_atk_3": {
           "level": 160
         },
-        "jujing_force_1": {
+        "jujing_force_2": {
           "level": 180
         },
-        "jujing_guard_1": {
+        "jujing_guard_2": {
           "level": 120
         },
-        "jujing_fly_1": {
+        "jujing_fly_2": {
           "level": 110
         }
       },
@@ -5977,22 +5977,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "拳": "jinlong_atk_1",
-        "内功": "jinlong_force_1",
-        "招架": "jinlong_guard_1",
-        "轻功": "jinlong_fly_1"
+        "拳": "jinlong_atk_3",
+        "内功": "jinlong_force_2",
+        "招架": "jinlong_guard_2",
+        "轻功": "jinlong_fly_2"
       },
       "learned": {
-        "jinlong_atk_1": {
+        "jinlong_atk_3": {
           "level": 160
         },
-        "jinlong_force_1": {
+        "jinlong_force_2": {
           "level": 180
         },
-        "jinlong_guard_1": {
+        "jinlong_guard_2": {
           "level": 120
         },
-        "jinlong_fly_1": {
+        "jinlong_fly_2": {
           "level": 110
         }
       },
@@ -6113,22 +6113,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "剑": "wuliang_atk_1",
-        "内功": "wuliang_force_1",
-        "招架": "wuliang_guard_1",
-        "轻功": "wuliang_fly_1"
+        "剑": "wuliang_atk_3",
+        "内功": "wuliang_force_2",
+        "招架": "wuliang_guard_2",
+        "轻功": "wuliang_fly_2"
       },
       "learned": {
-        "wuliang_atk_1": {
+        "wuliang_atk_3": {
           "level": 160
         },
-        "wuliang_force_1": {
+        "wuliang_force_2": {
           "level": 180
         },
-        "wuliang_guard_1": {
+        "wuliang_guard_2": {
           "level": 120
         },
-        "wuliang_fly_1": {
+        "wuliang_fly_2": {
           "level": 110
         }
       },
@@ -6255,22 +6255,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "拳": "funiu_atk_1",
-        "内功": "funiu_force_1",
-        "招架": "funiu_guard_1",
-        "轻功": "funiu_fly_1"
+        "拳": "funiu_atk_3",
+        "内功": "funiu_force_2",
+        "招架": "funiu_guard_2",
+        "轻功": "funiu_fly_2"
       },
       "learned": {
-        "funiu_atk_1": {
+        "funiu_atk_3": {
           "level": 160
         },
-        "funiu_force_1": {
+        "funiu_force_2": {
           "level": 180
         },
-        "funiu_guard_1": {
+        "funiu_guard_2": {
           "level": 120
         },
-        "funiu_fly_1": {
+        "funiu_fly_2": {
           "level": 110
         }
       },
@@ -6391,22 +6391,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "刀": "baisheng_atk_1",
-        "内功": "baisheng_force_1",
-        "招架": "baisheng_guard_1",
-        "轻功": "baisheng_fly_1"
+        "刀": "baisheng_atk_3",
+        "内功": "baisheng_force_2",
+        "招架": "baisheng_guard_2",
+        "轻功": "baisheng_fly_2"
       },
       "learned": {
-        "baisheng_atk_1": {
+        "baisheng_atk_3": {
           "level": 160
         },
-        "baisheng_force_1": {
+        "baisheng_force_2": {
           "level": 180
         },
-        "baisheng_guard_1": {
+        "baisheng_guard_2": {
           "level": 120
         },
-        "baisheng_fly_1": {
+        "baisheng_fly_2": {
           "level": 110
         }
       },
@@ -6533,22 +6533,22 @@
       "parry": 60,
       "speed": 55,
       "skills": {
-        "拳": "baituo_atk_1",
-        "内功": "baituo_force_1",
-        "招架": "baituo_guard_1",
-        "轻功": "baituo_fly_1"
+        "拳": "baituo_atk_3",
+        "内功": "baituo_force_2",
+        "招架": "baituo_guard_2",
+        "轻功": "baituo_fly_2"
       },
       "learned": {
-        "baituo_atk_1": {
+        "baituo_atk_3": {
           "level": 160
         },
-        "baituo_force_1": {
+        "baituo_force_2": {
           "level": 180
         },
-        "baituo_guard_1": {
+        "baituo_guard_2": {
           "level": 120
         },
-        "baituo_fly_1": {
+        "baituo_fly_2": {
           "level": 110
         }
       },

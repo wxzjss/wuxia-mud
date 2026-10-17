@@ -433,17 +433,56 @@ class CombatEngine {
         if (!bsd.mpCost || u.mp >= bsd.mpCost) return bsd;
       }
     }
-    // 选择已装备的武器武学；若无，用拳法
-    const slots = ['剑', '刀', '棍', '鞭', '暗器', '音波', '拳'];
-    for (const s of slots) {
-      const id = u.equippedSkills[s];
-      if (id && u.learned[id]) {
-        const sd = this.world.getSkill(id);
-        if (sd) return sd;
-      }
+    /* ---- 出招选择（2026-10-18「猎刀陷阱」重写）----
+       旧实现按**槽位顺序**硬选（剑→刀→…→拳）：新档剑槽有 basic_sword，
+       于是永远出剑招；装上猎刀（刀）后变成「剑招 + 刀武器」→ 吃 0.45 惩罚，
+       照新手引导做反而战斗力砍半。学会刀法也不管用，因为选招根本不看武器。
+       新口径（team-lead 裁定，三条同源）：
+         ① 候选 = 所有已学武学（不按槽位硬挑）；
+         ② **武器匹配优先**：手上有刀就先用刀法，有剑先用剑法；
+            赤手/武器无对应武学时，拳脚是**不罚**的保底（weaponPenalty 对拳返回 1）；
+         ③ 同档内按 `damageMult × 熟练档` 择优——学得越好、招越狠的先用。
+       ⚠️ 绝不选「类型与手上武器不符」的招去白挨 0.45：那正是本 bug 的形态。 */
+    const wpnId = u.equipment && u.equipment['武器'];
+    const wpnItem = wpnId ? this.world.getItem(wpnId) : null;
+    const wpnType = wpnItem ? (wpnItem.weaponType || (wpnItem.category === '乐器' ? '音波' : null)) : null;
+    const pool = [];
+    for (const id of Object.keys(u.learned || {})) {
+      const sd = this.world.getSkill(id);
+      if (sd) pool.push(sd);
     }
-    const fist = u.equippedSkills['拳'];
-    if (fist && u.learned[fist]) return this.world.getSkill(fist);
+    const needsWeapon = s => !!WEAPON_REQUIRED[s.type];
+    const matches = s => !needsWeapon(s) || (wpnType && s.type === wpnType);
+    /* 内力付得起的才进候选（2026-10-18）：否则「按倍率挑最强」会挑中高耗招，
+       一出手就是「内力不济」空转——boss 的幂等回退分支正是为此而设。
+       全军覆没（都付不起）时才退回全池，该报「内力不济」就照报。 */
+    const afford = s => !s.mpCost || (u.mp || 0) >= s.mpCost;
+    const pool2 = pool.filter(afford);
+    const use = pool2.length ? pool2 : pool;
+    let cands;
+    if (wpnType) {
+      /* 手上有家伙：**先可着武器类型选**（有刀法用刀法，这是玩家的意图）；
+         该类型一门都不会 → 退回拳脚（不罚），而不是拿别的兵器招白挨 0.45。 */
+      cands = use.filter(s => s.type === wpnType);
+      if (!cands.length) cands = use.filter(s => s.type === '拳');
+    } else {
+      /* 赤手/武器无类型：拳脚优先（不罚），没有拳脚再轮到别的 */
+      cands = use.filter(s => s.type === '拳');
+      if (!cands.length) cands = use.filter(s => !needsWeapon(s));
+    }
+    if (!cands.length) cands = use;                                  // 什么都没有：爱咋咋地
+    if (cands.length) {
+      const scoreOf = s => (s.damageMult || 1) * profTierMult(profTierOf(u, s.id));
+      cands.sort((a, b) => scoreOf(b) - scoreOf(a));
+      /* 同分时优先已装备槽的那门（玩家的编辑意图），再不行按 id 稳定排序 */
+      const top = cands[0];
+      const eq = u.equippedSkills && u.equippedSkills[top.type];
+      if (eq && u.learned[eq]) {
+        const eqSd = this.world.getSkill(eq);
+        if (eqSd && matches(eqSd) && scoreOf(eqSd) >= scoreOf(top)) return eqSd;
+      }
+      return top;
+    }
     return null;
   }
 

@@ -151,10 +151,16 @@ console.log('===== ⑥ 拦不拦 =====');
   const r = O.doIntercept(w, p, foe);
   ok('人多就拦得住', r.ok === true, JSON.stringify({ ok: r.ok, allies: r.allies }));
 
-  /* 拦不住就自己挨一刀 */
+  /* 拦不住就自己挨一刀。
+     ⚠️ 2026-10-18：山贼数值下调（design/115）后，「atkBase 1 / hpBase 10」的探针
+     已经拦得住了（账面 66 ≥ 反派 75.6×0.85），断言变成恒假。
+     ⇒ 探针改为**把反派抬强**（不动玩家侧——玩家账面下限由基础属性托着，压不下去），
+        保住「拦不住必须挨一下」这个本意。 */
   const s2 = scene();
   tune(s2.p, 0, 1, 10);
   fool(s2.w, 0.99);
+  s2.foe.atk = 60;
+  s2.foe.maxHp = 400;
   const r2 = O.doIntercept(s2.w, s2.p, s2.foe);
   ok('拦不住要挨一下（不是白拦）', r2.ok === false && r2.dmg > 0, JSON.stringify(r2.dmg));
   ok('挨了刀但没死', s2.p.hp >= 1);

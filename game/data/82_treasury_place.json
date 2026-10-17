@@ -2092,7 +2092,7 @@
       "gender": "male",
       "room": "tangmen_library",
       "sect": "tangmen",
-      "rank": 4,
+      "rank": 1,
       "tier": "B",
       "desc": "坐在阁门口擦一匣暗器，擦完一枚，对着光看一眼，再原样放回匣里。",
       "attr": {
@@ -2572,7 +2572,7 @@
       "gender": "male",
       "room": "taishan_library",
       "sect": "taishan",
-      "rank": 4,
+      "rank": 1,
       "tier": "B",
       "desc": "站得笔直，双手垂在身侧。接他班的人不来，他就不挪窝，饭也是站着吃的。",
       "attr": {
@@ -2632,7 +2632,7 @@
       "gender": "male",
       "room": "hengshan_library",
       "sect": "hengshan",
-      "rank": 4,
+      "rank": 1,
       "tier": "B",
       "desc": "阁门一把铜锁，钥匙拿布条缠了拴在腕上。布条磨毛了就换新的，锁从没换过。",
       "attr": {
@@ -2692,7 +2692,7 @@
       "gender": "male",
       "room": "hengshanN_library",
       "sect": "hengshanN",
-      "rank": 4,
+      "rank": 1,
       "tier": "B",
       "desc": "腕上缠一串念珠，拨珠子比扫地勤。架子上的灰任它厚着，珠子一颗没数错。",
       "attr": {
@@ -2752,7 +2752,7 @@
       "gender": "male",
       "room": "qingcheng_library",
       "sect": "qingcheng",
-      "rank": 4,
+      "rank": 1,
       "tier": "B",
       "desc": "捧一册入库的账本对架子，对完一本，在页脚打一个小小的勾，勾不压过字。",
       "attr": {
@@ -2812,7 +2812,7 @@
       "gender": "male",
       "room": "kongtong_library",
       "sect": "kongtong",
-      "rank": 4,
+      "rank": 1,
       "tier": "B",
       "desc": "坐在门槛上啃干饼，啃完把渣拍进衣襟里。阁门的闩他上了三道，出门前再摸一遍。",
       "attr": {
@@ -2869,7 +2869,7 @@
       "gender": "male",
       "room": "kunlun_library",
       "sect": "kunlun",
-      "rank": 4,
+      "rank": 1,
       "tier": "B",
       "desc": "阁里冷。他披一件旧皮袄在架间来回走，走一趟，跺一回脚，皮袄的袖口油亮。",
       "attr": {
@@ -2929,7 +2929,7 @@
       "gender": "male",
       "room": "diancang_library",
       "sect": "diancang",
-      "rank": 4,
+      "rank": 1,
       "tier": "B",
       "desc": "袖里笼着一卷剑谱抄本，看几行，抬头数一眼架子上的卷轴，两边都不耽误。",
       "attr": {
@@ -2989,7 +2989,7 @@
       "gender": "male",
       "room": "tiezhang_library",
       "sect": "tiezhang",
-      "rank": 4,
+      "rank": 1,
       "tier": "B",
       "desc": "拄一根铁杖站在架子中间，杖头点地，一声一声很匀。他换脚的时候，杖不离手。",
       "attr": {
@@ -3046,7 +3046,7 @@
       "gender": "male",
       "room": "hehuan_library",
       "sect": "hehuan",
-      "rank": 4,
+      "rank": 1,
       "tier": "B",
       "desc": "阁门边燃着一炉香，他隔一阵添一段，添香的时候不看人，香断了才抬头。",
       "attr": {
@@ -3103,7 +3103,7 @@
       "gender": "male",
       "room": "jindao_vault",
       "sect": "jindao",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "刀房的钥匙拴在裤腰上，走动就响。他数钥匙的次数，比数钱勤。",
       "attr": {
@@ -3163,7 +3163,7 @@
       "gender": "male",
       "room": "wuhu_vault",
       "sect": "wuhu",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "门口一张条凳，他坐在凳头，凳尾搁个酒葫芦。葫芦见底的日子，他把凳子往门边挪了挪。",
       "attr": {
@@ -3223,7 +3223,7 @@
       "gender": "male",
       "room": "feihu_vault",
       "sect": "feihu",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "镖旗收在门后，隔几天取出来抖一遍灰，再挂回去。旗杆他扶得比门框还直。",
       "attr": {
@@ -3283,7 +3283,7 @@
       "gender": "male",
       "room": "zhenyuan_vault",
       "sect": "zhenyuan",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "腿上摆一把算盘，没账可打就空拨，珠子响得又快又匀。档位从没拨乱过。",
       "attr": {
@@ -3343,7 +3343,7 @@
       "gender": "male",
       "room": "shenquan_vault",
       "sect": "shenquan",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "在门口搓两颗铁胆，不出声。有人走近，胆声先停，人走了再响起来。",
       "attr": {
@@ -3400,7 +3400,7 @@
       "gender": "male",
       "room": "tieqiang_vault",
       "sect": "tieqiang",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "一杆枪立在门边，枪缨秃了。他只擦枪头，枪杆从不上油，杆身上全是手掌印。",
       "attr": {
@@ -3460,7 +3460,7 @@
       "gender": "male",
       "room": "kuaidao_vault",
       "sect": "kuaidao",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "腰里别一块小磨石，闲下来就磨那把削果皮的小刀，磨得能照见人。",
       "attr": {
@@ -3520,7 +3520,7 @@
       "gender": "male",
       "room": "luohan_vault",
       "sect": "luohan",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "在数门口的台阶，数完一遍，从头再数。问他数到几了，他不答，退一步重新数。",
       "attr": {
@@ -3577,7 +3577,7 @@
       "gender": "male",
       "room": "wuyun_vault",
       "sect": "wuyun",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "袖里笼一副骨牌，不出声。门轴上过油，开合不响，他的座也摆在门轴那一侧。",
       "attr": {
@@ -3634,7 +3634,7 @@
       "gender": "male",
       "room": "dafeng_vault",
       "sect": "dafeng",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "门闩又粗又长。天黑前他要试三遍闩，起风的日子试五遍，试完把闩眼里的灰抠出来。",
       "attr": {
@@ -3694,7 +3694,7 @@
       "gender": "male",
       "room": "huanghe_vault",
       "sect": "huanghe",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "门边挂半旧蓑衣，屋里一股河腥气。他嗓门大，一句话说出来像在水面上喊惯了的。",
       "attr": {
@@ -3754,7 +3754,7 @@
       "gender": "male",
       "room": "taihu_vault",
       "sect": "taihu",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "手里编鱼篓，篓条转得快。架子那边掉下来一根线头，他手里的活不停，人已经过去了。",
       "attr": {
@@ -3814,7 +3814,7 @@
       "gender": "male",
       "room": "poyang_vault",
       "sect": "poyang",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "门口摆一双干布鞋，他光着脚。鞋不上脚，留着雨天走路用，雨天他照旧光脚。",
       "attr": {
@@ -3874,7 +3874,7 @@
       "gender": "male",
       "room": "qingzhu_vault",
       "sect": "qingzhu",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "门边一丛竹，修得齐。竹叶扫成一堆，堆得棱是棱角是角，比墙头的砖还齐整。",
       "attr": {
@@ -3934,7 +3934,7 @@
       "gender": "male",
       "room": "jujing_vault",
       "sect": "jujing",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "蹲在门檐下搓缆绳，搓一股，比一股，比完不满意的拆了重搓。帆上的补丁也是他缝的。",
       "attr": {
@@ -3994,7 +3994,7 @@
       "gender": "male",
       "room": "jinlong_vault",
       "sect": "jinlong",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "门楣上盘一条褪色的布龙，年年翻新一次。他守着门，也守着那块布，谁碰谁挨骂。",
       "attr": {
@@ -4051,7 +4051,7 @@
       "gender": "male",
       "room": "wuliang_vault",
       "sect": "wuliang",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "阁前一副棋盘，棋子是他自己削的。路过的人坐下下完一局，他才让你进去看一眼架子。",
       "attr": {
@@ -4111,7 +4111,7 @@
       "gender": "male",
       "room": "funiu_vault",
       "sect": "funiu",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "墙角立一把柴斧，劈出的柴又细又匀。架上那把锁他擦得比柴勤，钥匙用红绳系着。",
       "attr": {
@@ -4168,7 +4168,7 @@
       "gender": "male",
       "room": "baisheng_vault",
       "sect": "baisheng",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "门口挂历年比武的锦标，褪成一片白。他每天拿布掸一遍，掸得最勤的是最上头那一面。",
       "attr": {
@@ -4228,7 +4228,7 @@
       "gender": "male",
       "room": "baituo_vault",
       "sect": "baituo",
-      "rank": 4,
+      "rank": 1,
       "tier": "C",
       "desc": "门环铸成蛇形，两条白蛇盘在环上，他不赶，喂食的时候顺带把环擦一遍。",
       "attr": {

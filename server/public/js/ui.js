@@ -1865,16 +1865,31 @@
     const c = v.combat;
     $('combat-turn').textContent = '第 ' + (c.turn || 1) + ' 回合';
 
+    /* 玩家自身战斗态（2026-10-18 审计 #15）：面板原来只有敌人卡，
+       打起来看不见自己还剩多少血/内力/身上挂着什么。 */
+    const selfBox = $('combat-self');
+    if (selfBox) {
+      const s = c.self || {};
+      selfBox.innerHTML = s.hp != null
+        ? '<div class="cs-row"><span class="cs-name">你</span>' +
+          '<span class="cs-hp"><i style="width:' + util.pct(s.hp, s.maxHp) + '%"></i>' +
+          '<em>气血 ' + s.hp + '/' + s.maxHp + '</em></span>' +
+          '<span class="cs-mp">内力 ' + (s.mp || 0) + '/' + (s.maxMp || 0) + '</span>' +
+          ((s.buffs && s.buffs.length) ? '<span class="cs-buffs">' + s.buffs.map(b => esc(b.name) + (b.turns ? '(' + b.turns + ')' : '')).join(' · ') + '</span>' : '') +
+          '</div>'
+        : '';
+    }
+
     const box = $('combat-enemies');
     box.innerHTML = '';
     (c.enemies || []).forEach(e => {
       const d = document.createElement('div');
       d.className = 'ce-card' + (e.dead ? ' dead' : '') + (e.targeted ? ' targeted' : '');
       d.innerHTML =
-        '<div class="ce-name">' + esc(e.name) + (e.level ? ' <i>' + e.level + '级</i>' : '') + '</div>' +
+        '<div class="ce-name">' + esc(e.name) + (e.level ? ' <i>' + e.level + '级</i>' : '') + (e.targeted ? ' <b class="ce-tag">目标</b>' : '') + '</div>' +
         '<div class="ce-hp"><div class="fill" style="width:' + util.pct(e.hp, e.maxHp) + '%"></div>' +
         '<span>' + e.hp + '/' + e.maxHp + '</span></div>' +
-        (e.buffs && e.buffs.length ? '<div class="ce-buffs">' + e.buffs.map(b => esc(b)).join(' · ') + '</div>' : '');
+        (e.buffs && e.buffs.length ? '<div class="ce-buffs">' + e.buffs.map(b => esc(b.name)).join(' · ') + '</div>' : '');
       d.onclick = () => combatAct('target', e.uid);
       box.appendChild(d);
     });

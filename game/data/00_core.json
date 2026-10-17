@@ -19,13 +19,15 @@
     },
     "startItems": [
       "cloth_robe",
-      "wood_sword",
       "steamed_bun",
       "water_gourd",
       "map_rough",
       "sack_coarse"
     ],
-    "startSkills": ["basic_fist", "basic_force"],
+    "startSkills": [
+      "basic_fist",
+      "basic_force"
+    ],
     "startTraits": [],
     "titles": [
       "初入江湖",

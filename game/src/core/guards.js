@@ -131,7 +131,7 @@ function maybeBar(world, player, room, npcs) {
     p.vars.guardBy = guard.defId || guard.id;
     let more = [];
     try {
-      const r = world.startCombat(p, guard, { ambush: true });
+      const r = world.startCombat(p, guard, { ambush: true, silent: true });
       if (r && Array.isArray(r.lines)) more = r.lines;
     } catch (e) { /* 开打失败退回问话，不挡路 */ }
     return {

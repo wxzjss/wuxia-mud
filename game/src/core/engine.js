@@ -1919,15 +1919,58 @@ class GameEngine {
     const b = this.world.battle;
     if (!b) return null;
     const p = this.world.player;
-    const enemies = [].concat(b.defenders).map(e => ({
-      id: e.id, name: e.name, title: e.title, level: e.level, hp: e.hp, maxHp: e.maxHp,
-      mp: e.mp, maxMp: e.maxMp, buffs: e.buffs.map(x => ({ name: x.name, turns: x.turns })),
-    })).filter(e => e.hp > 0);
+    /* 目标标记（审计 #7）：UI 靠 uid 点选、靠 targeted 画高亮。
+       旧实现两者都没有 → 点敌卡发出 combatAct('target', undefined)，
+       引擎没这个分支，落成普通一回合攻击（“选目标”是假的）。 */
+    const enemies = [].concat(b.defenders).filter(e => e && e.hp > 0 && !e.dead).map(e => ({
+      id: e.id, uid: e.id, name: e.name, title: e.title, level: e.level,
+      hp: e.hp, maxHp: e.maxHp, mp: e.mp, maxMp: e.maxMp,
+      targeted: !!(b.target && b.target.id === e.id),
+      buffs: (e.buffs || []).map(x => ({ name: x.name, turns: x.turns })),
+    }));
+    /* 可用动作表（审计 #8）：UI 的 #combat-actions 读的就是这个字段。
+       之前 combatView 根本不发 actions → 战斗面板操作栏永远是空的，
+       出招只能靠下方快捷栏。现在按「当前招式/武器/内力」生成：
+       普攻 + 已装备武学里的武技（前 2 式/门）+ 防御 + 逃跑 + 药（前 3 件）。 */
+    const actions = [];
+    actions.push({ action: 'attack', label: '普通攻击', hint: '朝当前目标出招' });
+    const moves = [];
+    for (const s of (p.skills || [])) {
+      if (!s || s.isBasic) continue;
+      if (!(s.equipped || s.standaloneActive)) continue;
+      for (const mv of (s.moves || []).slice(0, 2)) {
+        if (!mv || !mv.id) continue;
+        moves.push({
+          action: 'skill',
+          key: s.id + '|' + mv.id,
+          label: mv.name || mv.id,
+          hint: (mv.mpCost ? '内力 ' + mv.mpCost : '') + (s.name ? ' · ' + s.name : ''),
+        });
+        if (moves.length >= 5) break;
+      }
+      if (moves.length >= 5) break;
+    }
+    actions.push(...moves);
+    actions.push({ action: 'defend', label: '防御', hint: '沉肩扎马，减伤' });
+    actions.push({ action: 'flee', label: '逃跑', hint: '抽身脱离战斗' });
+    const items = this.inventoryList().filter(i => i.usable).slice(0, 3);
+    for (const it of items) {
+      actions.push({
+        action: 'item', key: it.uid,
+        label: '用' + it.name, hint: '×' + (it.count || 1) + (it.healHp ? ' 回血 ' + it.healHp : ''),
+      });
+    }
+    /* 玩家自身战斗态（审计 #15）：面板只有敌人血条，看不到自己。
+       放 player 块里与敌卡对称（血/内/状态）。 */
+    const self = {
+      name: p.name, hp: p.hp, maxHp: p.maxHp, mp: p.mp, maxMp: p.maxMp,
+      buffs: (p.buffs || []).map(x => ({ name: x.name, turns: x.turns })),
+    };
     const usableSkills = Object.keys(p.learned).map(id => {
       const sd = this.world.getSkill(id);
       return sd ? { id, name: sd.name, mpCost: sd.mpCost || 0, type: sd.type } : null;
     }).filter(Boolean);
-    return { enemies, turn: b.turn, usableSkills, usableItems: this.inventoryList().filter(i => i.usable) };
+    return { enemies, turn: b.turn, actions, self, usableSkills, usableItems: this.inventoryList().filter(i => i.usable) };
   }
 
   /* ------------------------------------------------------------------ *
@@ -2357,10 +2400,26 @@ class GameEngine {
   combatAction(action, payload) {
     const w = this.world, p = w.player;
     if (!w.battle) return { lines: [{ kind: 'warn', text: '你并没有在战斗。' }], view: this.view({ map: false }) };
+    /* ★ 切换目标（审计 #7，2026-10-18）：旧实现没有这个分支，
+       前端点敌卡发的 'target' 会掉进最后的 else → **白打一回合**，
+       玩家以为在选目标，实际是闷头输出。 */
+    if (action === 'target') {
+      const uid = (payload && (payload.uid || payload.key)) || '';
+      const t = (w.battle.defenders || []).find(d => d && d.id === uid && d.hp > 0 && !d.dead);
+      if (!t) return { lines: [{ kind: 'warn', text: '那个对手已经不在战局里了。' }], view: this.view({ map: false }) };
+      w.battle.target = t;
+      p.combatTarget = t.id;
+      return { lines: [{ kind: 'plain', text: `你转向${t.name}，凝神盯住他的破绽。` }], view: this.view({ map: false }) };
+    }
     let r;
     if (action === 'flee') r = w.combatStep('flee');
-    else if (action === 'skill') r = w.combatStep({ type: 'skill', skill: payload.skill });
-    else if (action === 'item') r = w.combatStep({ type: 'item', uid: payload.uid });
+    else if (action === 'skill') {
+      /* key 形如 "<skillId>|<moveId>"（combatView 的招式按钮），拆开传给战斗层；
+         moveId 缺省时走「整门武学」的老路径。 */
+      const raw = String((payload && (payload.key || payload.skill)) || '');
+      const parts = raw.split('|');
+      r = w.combatStep({ type: 'skill', skill: parts[0], moveId: parts[1] || undefined });
+    } else if (action === 'item') r = w.combatStep({ type: 'item', uid: payload.uid || payload.key });
     else r = w.combatStep();
     const lines = r ? r.lines : [];
     this.postProcess(lines, p.room);

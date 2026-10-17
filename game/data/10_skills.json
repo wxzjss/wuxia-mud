@@ -1448,8 +1448,8 @@
       "maxLevel": 500,
       "difficulty": 0.7,
       "trainCost": 30,
-      "damageMult": 1.05,
-      "accuracy": 84,
+      "damageMult": 1.25,
+      "accuracy": 86,
       "mpCost": 0,
       "effects": [],
       "desc": "大路货的拳架子，起手快、收手稳，市井护院多半会两手。"

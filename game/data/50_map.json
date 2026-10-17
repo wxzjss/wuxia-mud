@@ -899,9 +899,22 @@
               ]
             },
             {
+              "type": "learnskill",
+              "args": [
+                "jh_blade"
+              ]
+            },
+            {
               "type": "+skill",
               "args": [
                 "jh_fist",
+                10
+              ]
+            },
+            {
+              "type": "+skill",
+              "args": [
+                "jh_blade",
                 10
               ]
             },
@@ -1144,7 +1157,7 @@
       "id": "road_jiangnan_2",
       "name": "江南大路·岔路口",
       "region": "jiangnan",
-      "desc": "官道在此分作三岔：西去通往蜀中，东去往东海，北面则是江南城。路口立着一块斑驳的石碑。",
+      "desc": "官道在此分作三岔：西去通往蜀中，东去往东海，北面则是江南城。路口立着一块斑驳的石碑。路口蹲着几条汉子，眼神在你行李上打转。",
       "exits": {
         "n": "road_jiangnan_1",
         "w": "gusu_town",
@@ -3292,7 +3305,7 @@
       "id": "road_beijiang_1",
       "name": "塞外风沙",
       "region": "beijiang",
-      "desc": "越过长城，眼前是一片茫茫戈壁。风沙打得脸生疼，远处几座荒废的烽火台兀立。",
+      "desc": "越过长城，眼前是一片茫茫戈壁。风沙打得脸生疼，远处几座荒废的烽火台兀立。沙里有马蹄印，比寻常骑马的人深。",
       "exits": {
         "e": "road_nan_1",
         "n": "beijiang_xuedao",

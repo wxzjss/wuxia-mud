@@ -35,10 +35,6 @@
    "tag": "disciple",
    "title": "副掌门",
    "learned": {
-    "huashan_sword": {
-     "level": 139,
-     "exp": 0
-    },
     "huashan_sword_art": {
      "level": 170,
      "exp": 0
@@ -50,10 +46,13 @@
     "jh_parry": {
      "level": 88,
      "exp": 0
+    },
+    "huashan_atk_2": {
+     "level": 139
     }
    },
    "skills": {
-    "剑": "huashan_sword"
+    "剑": "huashan_atk_2"
    },
    "equipment": {
     "武器": "iron_sword_basic"
@@ -113,10 +112,6 @@
    "tag": "disciple",
    "title": "首座弟子",
    "learned": {
-    "huashan_sword": {
-     "level": 73,
-     "exp": 0
-    },
     "huashan_sword_art": {
      "level": 89,
      "exp": 0
@@ -128,10 +123,13 @@
     "jh_parry": {
      "level": 46,
      "exp": 0
+    },
+    "huashan_atk_2": {
+     "level": 73
     }
    },
    "skills": {
-    "剑": "huashan_sword"
+    "剑": "huashan_atk_2"
    },
    "equipment": {
     "武器": "iron_sword_basic"
@@ -504,10 +502,6 @@
    "tag": "disciple",
    "title": "长老",
    "learned": {
-    "shaolin_changquan": {
-     "level": 148,
-     "exp": 0
-    },
     "weituo_zhang": {
      "level": 180,
      "exp": 0
@@ -519,10 +513,13 @@
     "jh_parry": {
      "level": 93,
      "exp": 0
+    },
+    "shaolin_atk_2": {
+     "level": 148
     }
    },
    "skills": {
-    "拳": "shaolin_changquan",
+    "拳": "shaolin_atk_2",
     "棍": "weituo_zhang"
    },
    "equipment": {
@@ -583,10 +580,6 @@
    "tag": "disciple",
    "title": "首座",
    "learned": {
-    "shaolin_changquan": {
-     "level": 73,
-     "exp": 0
-    },
     "weituo_zhang": {
      "level": 89,
      "exp": 0
@@ -598,10 +591,13 @@
     "jh_parry": {
      "level": 46,
      "exp": 0
+    },
+    "shaolin_atk_2": {
+     "level": 73
     }
    },
    "skills": {
-    "拳": "shaolin_changquan",
+    "拳": "shaolin_atk_2",
     "棍": "weituo_zhang"
    },
    "equipment": {
@@ -1478,10 +1474,6 @@
    "tag": "disciple",
    "title": "首座",
    "learned": {
-    "emei_sword": {
-     "level": 135,
-     "exp": 0
-    },
     "emei_ci": {
      "level": 165,
      "exp": 0
@@ -1493,10 +1485,13 @@
     "jh_parry": {
      "level": 85,
      "exp": 0
+    },
+    "emei_atk_2": {
+     "level": 135
     }
    },
    "skills": {
-    "剑": "emei_sword"
+    "剑": "emei_atk_2"
    },
    "equipment": {
     "武器": "iron_sword_basic"
@@ -1556,10 +1551,6 @@
    "tag": "disciple",
    "title": "静字辈",
    "learned": {
-    "emei_sword": {
-     "level": 73,
-     "exp": 0
-    },
     "emei_ci": {
      "level": 89,
      "exp": 0
@@ -1571,10 +1562,13 @@
     "jh_parry": {
      "level": 46,
      "exp": 0
+    },
+    "emei_atk_2": {
+     "level": 73
     }
    },
    "skills": {
-    "剑": "emei_sword"
+    "剑": "emei_atk_2"
    },
    "equipment": {
     "武器": "iron_sword_basic"
@@ -2440,10 +2434,6 @@
    "tag": "disciple",
    "title": "光明右使",
    "learned": {
-    "heimu_zhang": {
-     "level": 130,
-     "exp": 0
-    },
     "xixing_dafa": {
      "level": 160,
      "exp": 0
@@ -2455,10 +2445,13 @@
     "jh_parry": {
      "level": 82,
      "exp": 0
+    },
+    "mojiao_atk_2": {
+     "level": 130
     }
    },
    "skills": {
-    "棍": "heimu_zhang",
+    "棍": "mojiao_atk_2",
     "内功": "xixing_dafa"
    },
    "equipment": {
@@ -2519,10 +2512,6 @@
    "tag": "disciple",
    "title": "长老",
    "learned": {
-    "heimu_zhang": {
-     "level": 68,
-     "exp": 0
-    },
     "xixing_dafa": {
      "level": 84,
      "exp": 0
@@ -2534,10 +2523,13 @@
     "jh_parry": {
      "level": 43,
      "exp": 0
+    },
+    "mojiao_atk_2": {
+     "level": 68
     }
    },
    "skills": {
-    "棍": "heimu_zhang",
+    "棍": "mojiao_atk_2",
     "内功": "xixing_dafa"
    },
    "equipment": {
@@ -4705,13 +4697,12 @@
      "level": 32,
      "exp": 0
     },
-    "gumu_atk_1": {
-     "level": 51,
-     "exp": 0
+    "gumu_atk_2": {
+     "level": 60
     }
    },
    "skills": {
-    "剑": "gumu_atk_1"
+    "剑": "gumu_atk_2"
    },
    "equipment": {
     "武器": "iron_sword_basic"
@@ -4808,13 +4799,12 @@
      "level": 32,
      "exp": 0
     },
-    "gumu_atk_1": {
-     "level": 51,
-     "exp": 0
+    "gumu_atk_2": {
+     "level": 60
     }
    },
    "skills": {
-    "剑": "gumu_atk_1"
+    "剑": "gumu_atk_2"
    },
    "equipment": {
     "武器": "iron_sword_basic"
@@ -5995,10 +5985,14 @@
     "jh_parry": {
      "level": 27,
      "exp": 0
+    },
+    "cn_iron_shirt": {
+     "level": 120
     }
    },
    "skills": {
-    "内功": "jiuyin_zhenjing"
+    "内功": "jiuyin_zhenjing",
+    "招架": "cn_iron_shirt"
    },
    "equipment": null,
    "carry": {
@@ -6088,10 +6082,14 @@
     "jh_parry": {
      "level": 27,
      "exp": 0
+    },
+    "cn_iron_shirt": {
+     "level": 120
     }
    },
    "skills": {
-    "内功": "jiuyin_zhenjing"
+    "内功": "jiuyin_zhenjing",
+    "招架": "cn_iron_shirt"
    },
    "equipment": null,
    "carry": {

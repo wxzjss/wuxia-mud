@@ -2796,7 +2796,7 @@ class World extends EventEmitter {
              但屏幕上**一行台词都没有** —— 观感上等于「还是没反应」。
              `kill` 路径（commands.js）早就老实接了 `r.lines`，只有这里漏了。
              所以必须接住返回体并把台词并进本次房间输出，玩家才真能看到。 */
-          const r = this.startCombat(ch, npc, { ambush: true });
+          const r = this.startCombat(ch, npc, { ambush: true, silent: true });
           if (r && Array.isArray(r.lines) && r.lines.length) lines.push(...r.lines);
         }
       }
@@ -2892,10 +2892,23 @@ class World extends EventEmitter {
     }
     if (!npc) return { ok: false, msg: '找不到对手。' };
     ch.inCombat = true;
-    npc.inCombat = true;
+    /* ★ 同房群战（2026-10-18 战斗审计 #5）：同屋**敌意且清醒**的怪一并入战，
+       而不是「只打你点的那一只，旁边三只站桩」。判据只认 hostile——
+       剧情 NPC / 商贩 / 路人都不带 hostile，天然排除；
+       已倒地的（knockedOut/dead）、正在另一场里的、切磋中的也不拉。
+       ⚠️ 这是设计拍板的行为（team-lead 2026-10-18），不是顺手加戏：
+          「三贼同房只打一只」与「被围殴」两个预期必须有一个落地，选前者反直觉，
+          选后者才符合玩家对山贼窝的想象。 */
+    const mates = this.npcsIn(ch.room).filter(n =>
+      n && n !== npc && !n.isPlayer && n.hostile && !n.dead && !n.knockedOut
+      && !n.inCombat && !n.duel);
+    const defenders = [npc].concat(mates);
+    for (const d of defenders) d.inCombat = true;
+    /* 玩家当前目标（供普通攻击的 pickTarget 用；切换目标时同步更新） */
+    ch.combatTarget = npc.id;
     this.battle = {
       attackers: [ch],
-      defenders: [npc],
+      defenders,
       turn: 0, log: [], over: false, winner: null,
       startedAt: this.clockMinutes,
       target: npc,
@@ -2907,7 +2920,30 @@ class World extends EventEmitter {
        没有这一步的话，反应只存在于事件里，玩家在界面上看不到。 */
     const witnessLines = this._combatWitnessLines || [];
     this._combatWitnessLines = [];
+    /* ★ 对手登场必须先于旁观者（2026-10-18 审计 #1）：
+       旧实现 startCombat 只回旁观者台词，直接调用它的路径（脚本/新入口）
+       开屏第一句会是「卖茶的老汉面色一沉…」——玩家以为老汉要打自己。
+       调用方若已自带登场句（kill 的「你向X发起攻击」/ 遭遇的「【遭遇】X拦住去路」），
+       传 `silent:true` 跳过，避免双份。 */
+    if (!(opts && opts.silent)) {
+      witnessLines.unshift({ kind: 'combat', text: `${npc.name}逼上前来，这一场躲不开了。` });
+    }
+    if (mates.length) {
+      witnessLines.unshift({
+        kind: 'combat',
+        text: `${mates.map(n => n.name).join('、')}也围了上来——这一场不止一个对手。`,
+      });
+    }
     return { ok: true, battle: this.battle, npc, lines: witnessLines };
+  }
+
+  /** 当前该打在谁身上（审计 #7）：目标死了/不在了就退回第一个还站着的 */
+  currentFoe() {
+    const b = this.battle;
+    if (!b || !b.defenders || !b.defenders.length) return null;
+    const t = b.target;
+    if (t && t.hp > 0 && !t.dead && b.defenders.indexOf(t) >= 0) return t;
+    return b.defenders.find(d => d && d.hp > 0 && !d.dead) || b.defenders[0];
   }
 
   /* 回合推进 + 平局判定 —— **四条分支共用**（普通攻击 / 绝招 / 防御 / 物品）。
@@ -2941,7 +2977,7 @@ class World extends EventEmitter {
     // 玩家行动
     if (userAction === 'flee') {
       const p = this.player;
-      const t = this.battle.defenders[0];
+      const t = this.currentFoe();
       const chance = clamp(0.3 + (p.speed - (t ? t.speed : 10)) * 0.02, 0.05, 0.9);
       /* 天赋「脚底抹油」：逃跑必成（不看速度、不掷骰） */
       if (this.hasFleeAlways(p) || this.rng.next() < chance) {
@@ -2955,7 +2991,7 @@ class World extends EventEmitter {
     }
     if (userAction && userAction.type === 'skill') {
       const p = this.player;
-      const t = this.battle.defenders[0];
+      const t = this.currentFoe();
       const sd = this.data.skills[userAction.skill];
       if (!sd) return null;
       if (!p.learned[sd.id]) { return { lines: [{ kind: 'combat', text: '你尚未学会这门武学。' }] }; }
@@ -3073,7 +3109,7 @@ class World extends EventEmitter {
        ============================================================ */
     {
       const p = this.player;
-      const t = this.battle.defenders[0];
+      const t = this.currentFoe();
       const lines = [];
 
       /* 玩家侧 buff 结算。原来由 `combat.step()` 顺带做了（它对所有单位 tick 一遍）；
@@ -3173,6 +3209,9 @@ class World extends EventEmitter {
     const b = this.battle;
     if (!b) return { lines, over: true };
     this.player.inCombat = false;
+    /* 目标指向只在这一局有效（审计 #7）：不清掉的话，下一场开打
+       玩家会先手锁着上一场那只已经不在的 uid。 */
+    if (this.player) this.player.combatTarget = null;
     for (const d of [].concat(b.defenders, b.attackers)) { for (const u of (d && d.members ? d.members : [d])) { if (u) u.inCombat = false; } }
     /* Boss 阶段状态复位：打输从门口重来时必须回到第一阶段。
        不清的话实例上的 bossPhaseIdx / bossSkill / bossphase buff 会跟着进下一场，

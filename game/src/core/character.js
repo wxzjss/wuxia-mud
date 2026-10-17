@@ -540,8 +540,25 @@ class Character {
        必须对上，别再写 learned_jiuyang 这种简称（对不上就是又一个卡死点）。 */
     this.setFlag('learned_' + skillId, true);
     this.setFlag('learned_skill', skillId);   // 最近学会的那门，剧情用
-    // 自动装备到空槽
-    if (sd.type && !this.equippedSkills[sd.type]) this.equippedSkills[sd.type] = skillId;
+    /* ---- 自动装备（2026-10-18 猎刀陷阱）----
+       旧实现只在**空槽**时自动装备 → 新档 拳=basic_fist 已占着槽，
+       老汉教的长拳永远装不上（「授艺」在数值上等于白教）。
+       现在：空槽装；同槽已有旧技能时，**新旧比强弱，强的新技上位**。
+       强弱的判据只看「伤害倍率 × 熟练档」，与战斗选招同一套口径（见 combat.pickSkill）。 */
+    if (sd.type) {
+      const cur = this.equippedSkills[sd.type];
+      if (!cur || !this.learned[cur]) {
+        this.equippedSkills[sd.type] = skillId;
+      } else {
+        const oldSd = this.world.getSkill(cur);
+        const scoreOf = (s, id) => {
+          if (!s) return 0;
+          const lvl = (this.learned[id] && this.learned[id].level) || 0;
+          return (s.damageMult || 1) * (1 + lvl / 200);
+        };
+        if (scoreOf(sd, skillId) > scoreOf(oldSd, cur)) this.equippedSkills[sd.type] = skillId;
+      }
+    }
     this.recalc();
     return { ok: true, msg: `你学会了「${sd.name}」！` };
   }

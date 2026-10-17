@@ -3502,6 +3502,28 @@ function buildCommands(world) {
       const r = w.combatStep();
       return { lines: r ? r.lines : [], combatStep: true };
     }
+    /* ★ 交战中有目标名（审计 #6，2026-10-18）：旧实现会走到下面的
+       `startCombat` —— 同房两只同名山贼时 fuzzyFind 拿到的是**第一只**，
+       于是「打第二只」= 把战斗重置成第一只，回一句「你发起了攻击」，
+       defenders/hp 全不变（假回执，还把回合数与战报清空）。
+       现在：点名的人在当前战局里 → **切目标并真出一手**；
+       不在战局里 → 明说腾不出手，不制造假动作。 */
+    if (w.battle && args.length) {
+      const kw = args.join(' ');
+      const alive = (w.battle.defenders || []).filter(d => d && d.hp > 0 && !d.dead);
+      const hit = fuzzyFind(alive, kw, n => n.name);
+      if (!hit) {
+        const cur = w.battle.target && w.battle.target.name ? `你正与${w.battle.target.name}缠斗` : '你正缠斗着';
+        return { lines: [{ kind: 'warn', text: `${cur}，腾不出手去打「${kw}」。` }] };
+      }
+      w.battle.target = hit;
+      p.combatTarget = hit.id;
+      const r = w.combatStep();
+      return {
+        lines: [{ kind: 'combat', text: `你转向${hit.name}，进身出招！` }].concat(r ? r.lines : []),
+        combatStep: true,
+      };
+    }
     if (!args.length) return { lines: [{ kind: 'warn', text: '你想攻击谁？' }] };
     const kw = args.join(' ');
     const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), kw, n => n.name);
@@ -3511,7 +3533,7 @@ function buildCommands(world) {
       w.onNpcKilled(npc, null);
       return { lines: [{ kind: 'combat', text: `你手起刀落，将昏倒在地的${npc.name}结果了性命。` }] };
     }
-    const r = w.startCombat(p, npc);
+    const r = w.startCombat(p, npc, { silent: true });
     if (!r.ok) return { lines: [{ kind: 'warn', text: r.msg }] };
     const lines = [{ kind: 'combat', text: `你向${npc.name}发起了攻击！` }];
     /* B7：同房间目击者（怯懦的逃走、侠义的拔刀相助、平民惊呼）的反应台词。
@@ -3548,7 +3570,7 @@ function buildCommands(world) {
     if (tdef.quest && tdef.quest.length) {
       return { lines: [{ kind: 'warn', text: `${npc.name}身上牵着事，暗算了他，这条线索也就断了。` }] };
     }
-    const r = w.startCombat(p, npc);
+    const r = w.startCombat(p, npc, { silent: true });
     if (!r.ok) return { lines: [{ kind: 'warn', text: r.msg }] };
     const combatMod = require('./combat');
     const atk = Number(p.atk) || 1;
