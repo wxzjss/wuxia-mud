@@ -2050,7 +2050,7 @@
       "speed": 90,
       "skills": {
         "棍": "dagou_bangfa",
-        "内功": "gaibang_force_1"
+        "内功": "gaibang_force_3"
       },
       "learned": {
         "dagou_bangfa": {
@@ -2058,6 +2058,9 @@
         },
         "gaibang_force_1": {
           "level": 450
+        },
+        "gaibang_force_3": {
+          "level": 44
         }
       },
       "equipment": {
@@ -2227,7 +2230,7 @@
       "speed": 70,
       "skills": {
         "拳": "ice_silk_zhang",
-        "内功": "miaojiang_force_1"
+        "内功": "miaojiang_force_3"
       },
       "learned": {
         "ice_silk_zhang": {
@@ -2235,6 +2238,9 @@
         },
         "miaojiang_force_1": {
           "level": 270
+        },
+        "miaojiang_force_3": {
+          "level": 44
         }
       },
       "hostile": false,
@@ -2341,7 +2347,7 @@
       "speed": 70,
       "skills": {
         "拳": "cuixin_zhang",
-        "内功": "xingxiu_force_1"
+        "内功": "xingxiu_force_3"
       },
       "learned": {
         "cuixin_zhang": {
@@ -2349,6 +2355,9 @@
         },
         "xingxiu_force_1": {
           "level": 270
+        },
+        "xingxiu_force_3": {
+          "level": 44
         }
       },
       "hostile": false,
@@ -2397,15 +2406,15 @@
       "parry": 100,
       "speed": 70,
       "skills": {
-        "剑": "emei_sword",
+        "剑": "gumu_atk_1",
         "内功": "jiuyin_zhenjing"
       },
       "learned": {
-        "emei_sword": {
-          "level": 300
-        },
         "jiuyin_zhenjing": {
           "level": 270
+        },
+        "gumu_atk_1": {
+          "level": 300
         }
       },
       "equipment": {
@@ -2458,7 +2467,7 @@
       "speed": 70,
       "skills": {
         "刀": "kuangfeng_daofa",
-        "内功": "taohua_force_1"
+        "内功": "taohua_force_3"
       },
       "learned": {
         "kuangfeng_daofa": {
@@ -2466,6 +2475,9 @@
         },
         "taohua_force_1": {
           "level": 270
+        },
+        "taohua_force_3": {
+          "level": 44
         }
       },
       "equipment": {
@@ -2518,7 +2530,7 @@
       "speed": 70,
       "skills": {
         "刀": "xuedao",
-        "内功": "xuedao_force_1"
+        "内功": "xuedao_force_3"
       },
       "learned": {
         "xuedao": {
@@ -2526,6 +2538,9 @@
         },
         "xuedao_force_1": {
           "level": 270
+        },
+        "xuedao_force_3": {
+          "level": 44
         }
       },
       "equipment": {

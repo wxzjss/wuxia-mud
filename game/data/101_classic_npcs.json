@@ -287,6 +287,10 @@
             "act": "坐在墓前的石阶上，一只袖管垂着，动也不动"
           }
         ]
+      },
+      "skills": {
+        "拳": "anran_xiaohunzhang",
+        "内功": "jiuyin_zhenjing"
       }
     },
     "xiao_longnv": {
@@ -364,6 +368,9 @@
             "act": "在寒玉床边上坐着，一动不动"
           }
         ]
+      },
+      "skills": {
+        "内功": "jiuyin_zhenjing"
       }
     },
     "li_mochou": {
@@ -445,6 +452,10 @@
             "act": "坐在山石上，把拂尘一根一根理过去"
           }
         ]
+      },
+      "skills": {
+        "拳": "jiuyin_baiguzhao",
+        "内功": "jiuyin_zhenjing"
       }
     },
     "guo_xiang": {
@@ -522,6 +533,13 @@
             "act": "牵着头青驴上山。走到半道驴乏了，便在道边喂一把草。"
           }
         ]
+      },
+      "skills": {
+        "内功": "jiuyang_shengong",
+        "剑": "emei_atk_1"
+      },
+      "equipment": {
+        "武器": "iron_sword_basic"
       }
     },
     "guo_jing": {
@@ -598,6 +616,10 @@
             "act": "沿着城头走一圈，走到哪面墙都要停下来拍一拍"
           }
         ]
+      },
+      "skills": {
+        "拳": "xianglong_zhang",
+        "内功": "jiuyin_zhenjing"
       }
     },
     "huang_rong": {
@@ -645,6 +667,9 @@
         "luoying_shenjianzhang": {
           "level": 760,
           "exp": 0
+        },
+        "cn_breath_art": {
+          "level": 165
         }
       },
       "schedule": {
@@ -674,6 +699,14 @@
             "act": "在米铺后头翻账本，翻两页抬眼看一下门外"
           }
         ]
+      },
+      "skills": {
+        "棍": "dagou_bangfa",
+        "拳": "luoying_shenjianzhang",
+        "内功": "cn_breath_art"
+      },
+      "equipment": {
+        "武器": "wood_staff"
       }
     },
     "ouyang_feng": {
@@ -759,6 +792,10 @@
             "act": "背着手在院里倒着走圈，一圈一圈"
           }
         ]
+      },
+      "skills": {
+        "拳": "hamagong",
+        "内功": "baituo_force_3"
       }
     },
     "zhou_botong": {
@@ -840,6 +877,11 @@
             "act": "在林子空地上左手打右手，打得尘土飞扬"
           }
         ]
+      },
+      "skills": {
+        "内功": "jiuyin_zhenjing",
+        "拳": "kongming_quan",
+        "轻功": "lingbo_weibu"
       }
     },
     "xiao_feng": {
@@ -888,6 +930,9 @@
         "shaolin_atk_1": {
           "level": 820,
           "exp": 0
+        },
+        "gaibang_force_3": {
+          "level": 202
         }
       },
       "schedule": {
@@ -917,6 +962,10 @@
             "act": "坐在破庙门槛上喝酒，一大碗一口气见底"
           }
         ]
+      },
+      "skills": {
+        "拳": "xianglong_zhang",
+        "内功": "gaibang_force_3"
       }
     },
     "duan_yu": {
@@ -1075,6 +1124,10 @@
             "act": "从山门一路扫到大殿，扫完再扫一遍"
           }
         ]
+      },
+      "skills": {
+        "拳": "tianshan_liuyangzhang",
+        "内功": "yijinjing"
       }
     },
     "wang_yuyan": {
@@ -1181,6 +1234,9 @@
         "xixing_dafa": {
           "level": 780,
           "exp": 0
+        },
+        "mojiao_atk_1": {
+          "level": 154
         }
       },
       "schedule": {
@@ -1210,6 +1266,10 @@
             "act": "在殿后吹笛，吹两句就停下听一听"
           }
         ]
+      },
+      "skills": {
+        "内功": "xixing_dafa",
+        "拳": "mojiao_atk_1"
       }
     },
     "feng_qingyang": {
@@ -1257,6 +1317,9 @@
         "huashan_sword": {
           "level": 650,
           "exp": 0
+        },
+        "huashan_force_3": {
+          "level": 209
         }
       },
       "schedule": {
@@ -1286,6 +1349,13 @@
             "act": "坐在崖边，用一根树枝在石头上划，划的不是字"
           }
         ]
+      },
+      "skills": {
+        "剑": "dugu_jiujian",
+        "内功": "huashan_force_3"
+      },
+      "equipment": {
+        "武器": "wood_sword"
       }
     },
     "tian_boguang": {
@@ -1328,6 +1398,9 @@
         "kuangfeng_daofa": {
           "level": 620,
           "exp": 0
+        },
+        "cn_breath_art": {
+          "level": 132
         }
       },
       "schedule": {
@@ -1357,6 +1430,13 @@
             "act": "在城墙根下磨刀，磨一下用大拇指试一下"
           }
         ]
+      },
+      "skills": {
+        "刀": "kuangfeng_daofa",
+        "内功": "cn_breath_art"
+      },
+      "equipment": {
+        "武器": "iron_blade"
       }
     },
     "lin_pingzhi": {
@@ -1404,6 +1484,9 @@
         "huashan_sword": {
           "level": 650,
           "exp": 0
+        },
+        "huashan_force_3": {
+          "level": 127
         }
       },
       "schedule": {
@@ -1433,6 +1516,13 @@
             "act": "在无人处练剑，练到手腕发青也不停"
           }
         ]
+      },
+      "skills": {
+        "剑": "pixie_jianfa",
+        "内功": "huashan_force_3"
+      },
+      "equipment": {
+        "武器": "iron_sword_basic"
       }
     }
   }
