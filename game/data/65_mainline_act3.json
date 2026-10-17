@@ -670,6 +670,53 @@
               ]
             }
           ]
+        },
+        {
+          "cmd": "递牌",
+          "label": "递牌过哨",
+          "keywords": [
+            "递牌",
+            "验牌",
+            "过哨"
+          ],
+          "desc": "把牌子递过哨卡，让兵对一对",
+          "cond": {
+            "and": [
+              {
+                "or": [
+                  {
+                    "flag": "bj_manifest"
+                  },
+                  {
+                    "flag": "pass_shankou"
+                  }
+                ]
+              },
+              {
+                "notFlag": "shankou_card_seen"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "兵把长枪往雪里一戳，接过牌子翻了个面，朝哨楼里喊了一声。"
+            },
+            {
+              "type": "narrate",
+              "raw": "哨楼里下来一个人，抱着本簿子，指尖从上往下点。点过一行，抬头看你一眼。"
+            },
+            {
+              "type": "say",
+              "raw": "「单子上的货，卡上的人，早有人对过账了。打这往上，道认牌不认人。有人先你一步，把你的名字递上去了。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "shankou_card_seen"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1054,6 +1101,59 @@
               "args": [
                 "q_main_snow"
               ]
+            }
+          ]
+        },
+        {
+          "cmd": "对账",
+          "label": "对三线的账",
+          "keywords": [
+            "对账",
+            "三线的账",
+            "对一遍账"
+          ],
+          "desc": "把北边三条道上查来的事，摆到俞初面前对一遍",
+          "cond": {
+            "and": [
+              {
+                "or": [
+                  {
+                    "flag": "snow_evidence_xixia"
+                  },
+                  {
+                    "flag": "bj_manifest"
+                  },
+                  {
+                    "flag": "ruan_cure"
+                  },
+                  {
+                    "flag": "poisoned_xingxiu"
+                  },
+                  {
+                    "flag": "refuse_fake"
+                  }
+                ]
+              },
+              {
+                "notFlag": "act3_mole_named"
+              },
+              {
+                "notFlag": "act3_mole_withheld"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "俞初把茶碗往边上推了推，腾出半张桌面。「北边三条道，你走了几条，我心里有数。」"
+            },
+            {
+              "type": "narrate",
+              "raw": "他摆出三样东西：半页运单，一片从冰面上揭下来的纸，一个空药包。「摆在一处，是一件事。这账说给谁听，你定。」"
+            },
+            {
+              "type": "menu",
+              "raw": "对三线的账|照实说>flag:act3_mole_named;+rep:朝廷:20;;留一手>flag:act3_mole_withheld"
             }
           ]
         }
