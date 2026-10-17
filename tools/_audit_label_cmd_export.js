@@ -54,8 +54,13 @@ const FALLBACK = /此处暂时没有更多可做的了|是什么指令|这里没
   const rows = [];
   let lost = 0, cmdLost = 0;
   for (const c of cand) {
-    /* ① 键盘路径：exec(label) */
+    /* ① 键盘路径：exec(label)
+       ⚠️ 2026-10-18 补：切房后先 `看` 一次 —— NPC 实例是**进房懒生成**的
+       （world.npcsIncludingTemplates 的活体闸），不看不生成；
+       否则 `ask 徐半仙 / talk 元怀瑾` 这类内置指令会被误判「这里没有」，
+       那是量具的假红，不是数据缺 NPC。真玩家进房必然先看到房间描写。 */
     p.room = c.rid;
+    try { await e.exec('看'); } catch (e0) {}
     let out = '', threw = false;
     try {
       const r = await e.exec(c.label);
