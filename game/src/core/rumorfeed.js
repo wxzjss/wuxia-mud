@@ -39,6 +39,37 @@ function spreadMax(r) {
 function score(r) { return (r.heat || 0) * (0.4 + spreadMax(r) / 100); }
 
 /**
+ * 旗标派生的「尾声」（design/105 §四 · 半交浮名的判定侧，2026-10-18）
+ *
+ * 剧情让你「留一手」时，交出去的只是一部分：数据侧只落 flag
+ * （`act3_mole_withheld`），+rep 只挂在「照实说」分支。
+ * 没交的那几线会在江湖风评里留一条**没头没尾的话** —— 但它不该走
+ * seeded 传闻那套（要有种子、要有人目击、会扩散/走样/衰减）：
+ * 「没说完」的语义恰恰是它**不会**长成一条有始有终的传闻。
+ * ⇒ 做成旗标派生的常驻尾声：只在「风声」里附在传闻之后，
+ *    不参与热度、不扩散、不衰减。旗标在，尾音就在；旗标不在，什么都没有。
+ *
+ * ⚠️ 加新条目时只用**已经落定的结局旗标**（一次性、幂等）；
+ *    别挂过程旗标（会让人一辈子只听到半句话）。
+ */
+const FLAG_WISPS = {
+  act3_mole_withheld: {
+    text: '北边道上有人提起过你：话说了一半，剩下半句咽回去了。',
+    hint: '（半交的话，风里只留个尾音 —— 没交出去的那几线，明面上没人提。）',
+  },
+};
+
+/** 玩家身上挂着的「尾声」列表（{flag,text,hint}）。空数组＝没有。 */
+function flagWisps(p) {
+  const out = [];
+  if (!p || typeof p.hasFlag !== 'function') return out;
+  for (const k of Object.keys(FLAG_WISPS)) {
+    if (p.hasFlag(k)) out.push(Object.assign({ flag: k }, FLAG_WISPS[k]));
+  }
+  return out;
+}
+
+/**
  * 统一接线口：把一桩玩家事迹传出去。
  *
  * @param {World}  world
@@ -185,4 +216,4 @@ function hash(s) {
   return h >>> 0;
 }
 
-module.exports = { note, aboutPlayer, chatterIn, whatTheySay, reputationLines, hasWitness, score, spreadMax, dayOf };
+module.exports = { note, aboutPlayer, chatterIn, whatTheySay, reputationLines, hasWitness, score, spreadMax, dayOf, flagWisps, FLAG_WISPS };

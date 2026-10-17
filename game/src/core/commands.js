@@ -1743,7 +1743,11 @@ function buildCommands(world) {
     const rf = require('./rumorfeed');
     const list = rf.whatTheySay(w, 5);
     const repLines = rf.reputationLines(w);
-    if (!list.length) {
+    /* 半交浮名的尾声（design/105 §四 · 判定侧）：旗标派生，不走 seeded 传闻
+       （不参与热度/扩散/衰减，见 rumorfeed.FLAG_WISPS 注释）。
+       它也算「别人在说你」，所以有尾声时不再走「没人议论你」那条空态。 */
+    const wisps = rf.flagWisps(p);
+    if (!list.length && !wisps.length) {
       const none = [
         { kind: 'title', text: '【 江湖风声 】' },
         { kind: 'plain', text: '你在江湖上还没留下什么话柄 —— 没人议论你，也没人怕你。' },
@@ -1764,6 +1768,12 @@ function buildCommands(world) {
         kind: 'hint',
         text: `（${r.kind}·${fresh}；传到 ${where}；${drift}）`,
       });
+    });
+    /* 尾声排在传闻之后、声望账之前：它是「话没说完」的尾音，不是一条新传闻，
+       所以不编号、不标传到哪儿、不标走样。 */
+    wisps.forEach(wp => {
+      lines.push({ kind: 'say', text: `· 「${wp.text}」` });
+      lines.push({ kind: 'hint', text: wp.hint });
     });
     lines.push(...repLines);
     lines.push({ kind: 'hint', text: '（风头会随日子淡下去；声望高到一定程度，认识你的人待你会不一样。）' });

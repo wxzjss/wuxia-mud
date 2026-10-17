@@ -255,6 +255,61 @@ function section(t) { console.log('\n── ' + t + ' ──'); }
   ok('标了走样与否', /话还是原样|走样/.test(stxt));
   ok('给了「会淡下去」的提示', /淡下去/.test(stxt));
 
+  /* ================= 十、半交浮名的风声尾声（design/105 §四 · 2026-10-18） ================= */
+  section('10 半交浮名：留一手的尾声（旗标派生，不入朝廷账）');
+  {
+    /* 真路径：置一线证据 → road_xixia_1「对账」→ 选「留一手」→ 风声里多一条没头没尾的话 */
+    const e6 = new GameEngine({ seed: 20261018 });
+    await e6.boot({});
+    e6.newGame({ name: '半交侠', gender: 'male' });
+    const p6 = e6.world.player;
+    p6.setFlag('ruan_cure', true);
+    p6.room = 'road_xixia_1';
+    const before = await e6.exec('风声');
+    const btxt = (before.lines || []).map(l => l.text).join(' ');
+    ok('S10-1 前置：没选过的人风声里没有尾声（空态照旧）',
+      btxt.indexOf('咽回去') < 0 && /没人议论你/.test(btxt), btxt.slice(0, 60));
+
+    const r6 = await e6.exec('对账');
+    const menu = (r6.lines || []).find(x => x && x.kind === 'menu');
+    ok('S10-2 前提：对账菜单出得来（一线证据即可）',
+      !!(menu && menu.options && menu.options.length === 2));
+    if (menu && menu.options[1]) e6.menuPick({ effects: menu.options[1].effects });
+    ok('S10-3 留一手 → act3_mole_withheld 落旗，且不入朝廷账',
+      p6.hasFlag('act3_mole_withheld') && !(p6.reputation['朝廷'] || 0),
+      'rep朝廷=' + JSON.stringify(p6.reputation['朝廷'] || 0));
+
+    const after = await e6.exec('风声');
+    const atxt = (after.lines || []).map(l => l.text).join(' ');
+    ok('S10-4 ★ 风声里多一条没头没尾的尾声（不再走「没人议论你」空态）',
+      atxt.indexOf('话说了一半') >= 0 && atxt.indexOf('咽回去') >= 0
+      && !/没人议论你/.test(atxt), atxt.slice(0, 100));
+    ok('S10-5 ★ 尾声不是一条新传闻：不编号、不标传到哪儿/走样',
+      atxt.indexOf('· 「') >= 0
+      && !/（[^）]*半交[^）]*传到/.test(atxt));
+
+    /* 对照：照实说分支没有尾声（浮名入朝廷账，暗线不外传市井） */
+    const e7 = new GameEngine({ seed: 20261018 });
+    await e7.boot({});
+    e7.newGame({ name: '照实侠', gender: 'male' });
+    const p7 = e7.world.player;
+    p7.setFlag('ruan_cure', true);
+    p7.room = 'road_xixia_1';
+    const r7 = await e7.exec('对账');
+    const m7 = (r7.lines || []).find(x => x && x.kind === 'menu');
+    if (m7 && m7.options[0]) e7.menuPick({ effects: m7.options[0].effects });
+    const a7 = await e7.exec('风声');
+    const t7 = (a7.lines || []).map(l => l.text).join(' ');
+    ok('S10-6 对照：照实说不留尾声（浮名已入朝廷账 +20）',
+      (p7.reputation['朝廷'] || 0) === 20 && t7.indexOf('咽回去') < 0,
+      'rep朝廷=' + (p7.reputation['朝廷'] || 0));
+
+    /* 尾声的持久性：再问一次仍在（常驻，不是一次性播报） */
+    const again = await e6.exec('风声');
+    ok('S10-7 ★ 尾声常驻：再问一次风声还在（旗标在，尾音就在）',
+      (again.lines || []).map(l => l.text).join(' ').indexOf('话说了一半') >= 0);
+  }
+
   console.log('\n结果：' + pass + ' 通过 / ' + fail + ' 失败');
   process.exit(fail ? 1 : 0);
 })().catch(err => { console.error(err); process.exit(1); });
