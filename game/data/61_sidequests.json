@@ -3088,6 +3088,90 @@
       },
       "stages": [
         {
+          "desc": "回东市·果子摊，听阮听说妹妹的药钱",
+          "targets": [
+            {
+              "id": "hk_npcv_090_meimei_goA",
+              "kind": "room",
+              "key": "jn_fruit_stall",
+              "count": 1,
+              "var": "hk_npcv_090_meimei_goA",
+              "desc": "听阮听说妹妹的药钱"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "阮听把秤杆收进箱子，动作比往常慢了一倍。"
+            },
+            {
+              "type": "say",
+              "raw": "「药钱我凑得出来，凑不出的是药引那头。姑苏燕子坞有位毛郎中，收得住星宿海的毒。我这副身子过不去。你的腿还利索。」"
+            }
+          ]
+        },
+        {
+          "desc": "去姑苏·燕子坞，找郎中毛清辨验那碗药的毒",
+          "targets": [
+            {
+              "id": "hk_npcv_090_meimei_goB",
+              "kind": "room",
+              "key": "gusu_yanzi",
+              "count": 1,
+              "var": "hk_npcv_090_meimei_goB",
+              "desc": "找毛郎中验毒"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "毛清辨搭了脉，只搭了左腕，眉头就没松开过。"
+            },
+            {
+              "type": "narrate",
+              "raw": "「这不是病。是蛊，星宿海的蛊。药压得住疼，压不住根。方子在那边一间药庐里，上回有人去问过。」"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "meimi_poison_known"
+              ]
+            }
+          ]
+        },
+        {
+          "desc": "去星宿海·药庐，翻那本试方的册子",
+          "targets": [
+            {
+              "id": "hk_npcv_090_meimei_goC",
+              "kind": "room",
+              "key": "xiyu_herb_hut",
+              "count": 1,
+              "var": "hk_npcv_090_meimei_goC",
+              "desc": "翻药庐的试方册"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "药庐窗下的架子码着一摞册子，最上面那本封皮不上字，只按着一个指印。"
+            },
+            {
+              "type": "narrate",
+              "raw": "翻开，一笔一笔记着试过什么、熬了几日、反应如何。字迹越往后越稳。末页只有一行：哥若来，别让我回去。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "meimi_note_read"
+              ]
+            }
+          ]
+        },
+        {
           "desc": "去姑苏·燕子坞，找郎中毛清辨那碗药的毒",
           "targets": [
             {
@@ -3113,7 +3197,12 @@
               "type": "menu",
               "raw": "妹妹那碗药|替他妹妹解蛊并告知真相>+karma:15;+pot:70;+exp:280;favor:npcv_090:-30;incvar:favor_npcv_090:-30;flag:hk_npcv_090_meimei_tell;;瞒下>+karma:-5;+exp:140;favor:npcv_090:20;incvar:favor_npcv_090:20"
             }
-          ]
+          ],
+          "lock": {
+            "flag": "know_zhenyi",
+            "name": "卷三·伪秘籍",
+            "msg": "伪秘籍的事没到收束那一步。这一层，等北边的信有了下落再谈。"
+          }
         }
       ],
       "rewards": [
@@ -3492,6 +3581,90 @@
       },
       "stages": [
         {
+          "desc": "回醉春楼·雅阁，听陈语冰说枕下那张纸",
+          "targets": [
+            {
+              "id": "hk_npcv_252_zi_goA",
+              "kind": "room",
+              "key": "jn_brothel_room",
+              "count": 1,
+              "var": "hk_npcv_252_zi_goA",
+              "desc": "听陈语冰说那张纸"
+            }
+          ],
+          "next": 1,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "抄本的事了了，雅阁的灯又添回三盏。陈语冰坐在原处，一只手压着枕沿，没挪开。"
+            },
+            {
+              "type": "say",
+              "raw": "「枕底下有张纸。梅拾说烧了干净，我压着它三年。你识字，替我瞧瞧上头到底写了什么。」"
+            }
+          ]
+        },
+        {
+          "desc": "在房里，看枕下那张纸写的是什么",
+          "targets": [
+            {
+              "id": "hk_npcv_252_zi_goB",
+              "kind": "room",
+              "key": "jn_brothel_room",
+              "count": 1,
+              "var": "hk_npcv_252_zi_goB",
+              "desc": "看枕下那张纸"
+            }
+          ],
+          "next": 2,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "枕头底下那张纸折了四折，折缝磨得发白。摊开，墨迹洇了大半，只剩个字的轮廓还认得出。"
+            },
+            {
+              "type": "narrate",
+              "raw": "那个字是「陈」。她的姓。牙婆的船上没有名字，货单上只记斤两，这是她自己挣回来的头一个字。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "zi_name_known"
+              ]
+            }
+          ]
+        },
+        {
+          "desc": "去疏勒·巴扎，翻常家货栈的旧货单",
+          "targets": [
+            {
+              "id": "hk_npcv_252_zi_goC",
+              "kind": "room",
+              "key": "xiyu_bazaar",
+              "count": 1,
+              "var": "hk_npcv_252_zi_goC",
+              "desc": "翻常家货栈的旧账"
+            }
+          ],
+          "next": 3,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "常家货栈的旧账压在柜底，三年前那册的封皮脱了线。"
+            },
+            {
+              "type": "narrate",
+              "raw": "翻到南边那几页：收进来的「货」没有名姓，一概按斤两记账，行话叫「走件」。当年经手的一笔，画着与雪谷运单同一款记号。"
+            },
+            {
+              "type": "flag",
+              "args": [
+                "zi_ledger_seen"
+              ]
+            }
+          ]
+        },
+        {
           "desc": "在房里，看她枕下那张纸",
           "targets": [
             {
@@ -3517,7 +3690,12 @@
               "type": "menu",
               "raw": "枕下那个字|让梅拾知晓>+karma:5;+exp:220;favor:npcv_219:30;incvar:favor_npcv_219:30;favor:npcv_252:-20;incvar:favor_npcv_252:-20;flag:hk_npcv_252_zi_tell;;什么都不说>+exp:100;favor:npcv_252:10;incvar:favor_npcv_252:10"
             }
-          ]
+          ],
+          "lock": {
+            "flag": "know_zhenyi",
+            "name": "卷三·伪秘籍",
+            "msg": "伪秘籍的事没到收束那一步。这一层，等北边的信有了下落再谈。"
+          }
         }
       ],
       "rewards": [
@@ -5526,9 +5704,16 @@
           "keywords": [],
           "desc": "妹妹那碗药",
           "cond": {
-            "not": {
-              "quest": "hk_npcv_090_meimei"
-            }
+            "and": [
+              {
+                "not": {
+                  "quest": "hk_npcv_090_meimei"
+                }
+              },
+              {
+                "questDone": "hk_npcv_090_jieyao"
+              }
+            ]
           },
           "effects": [
             {
@@ -5640,9 +5825,16 @@
           "keywords": [],
           "desc": "枕下那个字",
           "cond": {
-            "not": {
-              "quest": "hk_npcv_252_zi"
-            }
+            "and": [
+              {
+                "not": {
+                  "quest": "hk_npcv_252_zi"
+                }
+              },
+              {
+                "questDone": "hk_npcv_252_minge"
+              }
+            ]
           },
           "effects": [
             {
