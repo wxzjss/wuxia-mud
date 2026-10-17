@@ -487,7 +487,8 @@
     "taishan_master": {
       "carry": {
         "money": 40
-      }
+      },
+      "sect": "taishan"
     },
     "taishan_disciple": {
       "carry": {
@@ -497,7 +498,8 @@
     "hengshan_master": {
       "carry": {
         "money": 279
-      }
+      },
+      "sect": "hengshan"
     },
     "hengshan_disciple": {
       "carry": {
@@ -507,7 +509,8 @@
     "hengshanN_master": {
       "carry": {
         "money": 193
-      }
+      },
+      "sect": "hengshanN"
     },
     "hengshanN_disciple": {
       "carry": {
@@ -517,7 +520,8 @@
     "qingcheng_master": {
       "carry": {
         "money": 42
-      }
+      },
+      "sect": "qingcheng"
     },
     "qingcheng_disciple": {
       "carry": {
@@ -527,7 +531,8 @@
     "kongtong_master": {
       "carry": {
         "money": 234
-      }
+      },
+      "sect": "kongtong"
     },
     "kongtong_disciple": {
       "carry": {
@@ -537,7 +542,8 @@
     "kunlun_master": {
       "carry": {
         "money": 136
-      }
+      },
+      "sect": "kunlun"
     },
     "kunlun_disciple": {
       "carry": {
@@ -557,7 +563,8 @@
     "tiezhang_master": {
       "carry": {
         "money": 114
-      }
+      },
+      "sect": "tiezhang"
     },
     "tiezhang_disciple": {
       "carry": {
@@ -767,7 +774,8 @@
     "hehuan_master": {
       "carry": {
         "money": 126
-      }
+      },
+      "sect": "hehuan"
     },
     "hehuan_disciple": {
       "carry": {
@@ -777,12 +785,14 @@
     "tangmen_master": {
       "carry": {
         "money": 86
-      }
+      },
+      "sect": "tangmen"
     },
     "gumu_master": {
       "carry": {
         "money": 160
-      }
+      },
+      "sect": "gumu"
     },
     "fisher_old": {
       "carry": {

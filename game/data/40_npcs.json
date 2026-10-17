@@ -1095,6 +1095,9 @@
       "speed": 0.9
      }
     }
+   ],
+   "quests": [
+    "q_sect_mojiao_errand"
    ]
   },
   "nv_huang": {
@@ -1569,6 +1572,9 @@
     "马秋",
     "华云",
     "尹伯"
+   ],
+   "quests": [
+    "q_sect_xuedao_errand"
    ]
   },
   "xingxiu_laoxian": {
@@ -1685,6 +1691,9 @@
    ],
    "crossSect": [
     "tangmen_du"
+   ],
+   "quests": [
+    "q_sect_xingxiu_errand"
    ]
   },
   "mob_bandit": {
@@ -12377,11 +12386,16 @@
     "jh_parry": {
      "level": 6,
      "exp": 0
+    },
+    "jiuyang_shengong": {
+     "level": 40,
+     "exp": 0
     }
    },
    "skills": {
     "拳": "jh_fist",
-    "招架": "jh_parry"
+    "招架": "jh_parry",
+    "内功": "jiuyang_shengong"
    },
    "favorToLearn": 32,
    "age": 56,
@@ -12412,7 +12426,10 @@
     "marks": [
      "逃"
     ]
-   }
+   },
+   "quests": [
+    "q_sect_xiake_errand"
+   ]
   },
   "npcv_081": {
    "id": "npcv_081",

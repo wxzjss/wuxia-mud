@@ -531,6 +531,14 @@
         {
           "item": "jinchuang_yao",
           "price": 45
+        },
+        {
+          "item": "tea_coarse",
+          "price": 2
+        },
+        {
+          "item": "flatbread",
+          "price": 3
         }
       ]
     },

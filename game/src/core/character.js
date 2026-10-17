@@ -903,28 +903,115 @@ class Character {
    * 被山门拒了，得说清楚**卡在哪一条** ——
    * 主人原话：「如果不成功会告诉你哪里不成功…比如是否需要学某个功法，以及告诉你该功法在哪获取」。
    * 一句「不收你这样的弟子」等于什么都没说，玩家只能挨个试。
+   *
+   * 🔴 2026-10-18 重写（文案与判定分叉现场）：数据里有
+   *   `{"attr":"悟性",">=":18}` 这种「属性名 + 运算符键」写法，旧实现的分支只认
+   *   gender/karma/wis/…，`>=` 被当成独立键 → 拼出「>= 需 18（你 0）」，
+   *   8 个门派（桃花/泰山/衡山/恒山/青城/崆峒/点苍/铁掌）全中招。
+   * 修法两条，缺一不可：
+   *   ① **判定与文案同源**：每条要不要报，用 `evalCond(单条条件)` 判（与 joinSect 同一个函数），
+   *      不再自己写第二套阈值比较；
+   *   ② 文案按**条件的实际形状**分类生成：gender/race/karma/level/attr(+运算符)/skill/通用数值。
+   *      **运算符（>= <= > < ==）绝不出现在文案里**——它是语法，不是人话。
    */
   sectRefusal(sd) {
     const req = (sd && sd.require) || {};
+    const { evalCond } = require('./modapi');
+    const OPS = ['>=', '>', '<=', '<', '==', '!='];
+    const normGender = g => ({ '男': 'male', '女': 'female', male: 'male', female: 'female' }[g] || g);
+    const myG = normGender(this.gender);
+    const probe = myG === this.gender ? this : Object.assign(Object.create(this), { gender: myG });
+    /* 单条条件是否没过 —— 与 joinSect 走同一个 evalCond（同源，不再分叉） */
+    const failed = sub => {
+      try { return !evalCond(sub, { player: probe, world: this.world }); } catch (e) { return false; }
+    };
+    /* ">=18" / ">=0" / "<=-20" / 18 → {op, n} */
+    const parseOp = v => {
+      if (typeof v === 'number') return { op: '>=', n: v };
+      const m = String(v).match(/^\s*(>=|<=|==|>|<)?\s*(-?\d+(?:\.\d+)?)\s*$/);
+      if (!m) return null;
+      return { op: m[1] || '>=', n: parseFloat(m[2]) };
+    };
+    /* 门槛说成人话：大于等于 → 「要X N（你M）」；小于等于 → 「X 不能高过 N（你M）」 */
+    const cmpLine = (label, po, mine, fix) => {
+      const tail = fix ? '——' + fix : '';
+      if (po.op === '>=') return `要${label} ${po.n}（你 ${mine}）${tail}`;
+      if (po.op === '>') return `要${label}高过 ${po.n}（你 ${mine}）${tail}`;
+      if (po.op === '<=') return `${label}不能高过 ${po.n}（你 ${mine}）${tail}`;
+      if (po.op === '<') return `要${label}低于 ${po.n}（你 ${mine}）${tail}`;
+      return `要${label}为 ${po.n}（你 ${mine}）${tail}`;
+    };
+    const ATTR_FIX = {
+      悟性: '读书、访名师、住得好些都能养',
+      根骨: '练外功、耐饥耐渴地熬，根骨才长得出来',
+      力量: '练拳脚、搬搬扛扛会长力气',
+      身法: '多走多练轻功，身法才灵',
+      福缘: '行善结缘，福缘自来',
+      定力: '打坐静心，定力是坐出来的',
+    };
+    const KEY_CN = { level: '修为', karma: '侠名', money: '银两', kills: '杀敌数', pot: '潜能', age: '年纪' };
+
     const miss = [];
     for (const k of Object.keys(req)) {
       const v = req[k];
+      if (OPS.includes(k)) continue;                  // 运算符键由 attr/skill 分支消费
+      if (k === 'count') continue;                    // item 的数量键
       if (k === 'gender') {
-        if (normGender(this.gender || 'male') !== normGender(v)) miss.push(`本门只收${v === 'female' ? '女' : '男'}儿身`);
-      } else if (k === 'karma') {
-        const mine = Math.round(this.karma || 0);
-        if (mine < v) miss.push(`要侠名 ${v}（你 ${mine}）——多行善事、少结仇，名声是攒出来的`);
-      } else if (k === 'wis' || k === '悟性') {
-        const mine = this.attrTotal('悟性');
-        if (mine < v) miss.push(`要悟性 ${v}（你 ${mine}）——读书、访名师、住得好些都能养`);
-      } else if (k === 'skill' || k === 'skills' || k === 'learned') {
-        const lack = [].concat(v).filter(s => !this.learned[s]);
-        if (lack.length) {
-          const names = lack.map(s => (this.world.getSkill(s) || {}).name || s);
-          miss.push(`须先学会${names.join('、')}（${names.map(n => this.skillSource(n)).join('；')}）`);
+        if (failed({ gender: normGender(v) })) miss.push(`本门只收${String(normGender(v)) === 'female' ? '女' : '男'}儿身`);
+      } else if (k === 'race') {
+        if (failed({ race: v })) miss.push(v === 'human' ? '本门只收人族' : `本门只收「${v}」族`);
+      } else if (k === 'attr') {
+        /* {"attr":"悟性",">=":18}：按同一条件判，文案用属性中文名 */
+        const opKey = OPS.find(o => req[o] !== undefined);
+        const po = opKey ? { op: opKey, n: Number(req[opKey]) } : { op: '>=', n: NaN };
+        const name = String(v);
+        const mine = this.attrTotal(name);
+        /* 判的仍是 evalCond（与 joinSect 同源）；opKey 缺失说明数据写法坏了，
+           退化成「要 X 」（po.n 为 NaN 时文案用原始值兜底）。 */
+        const sub = opKey ? { attr: name, [opKey]: Number(req[opKey]) } : { attr: name };
+        if (failed(sub)) {
+          const line = po && !isNaN(po.n) ? cmpLine(name, po, mine, ATTR_FIX[name]) : `要${name}（你 ${mine}）`;
+          miss.push(line);
         }
-      } else if (typeof v === 'number' && (this[k] || 0) < v) {
-        miss.push(`${k} 需 ${v}（你 ${this[k] || 0}）`);
+      } else if (k === 'skill' || k === 'skills' || k === 'learned') {
+        if (!failed({ [k]: v })) continue;
+        const opKey = OPS.find(o => req[o] !== undefined);
+        if (opKey) {
+          /* {"skill":"基本剑法",">=":50}：熟练度门槛（与 evalCond 同形） */
+          const po = { op: opKey, n: Number(req[opKey]) };
+          const nm = (this.world.getSkill(v) || {}).name || v;
+          miss.push(`要把${nm}练到 ${po.n}（你现在 ${this.skillLevel ? this.skillLevel(v) : 0}）——${this.skillSource(nm)}`);
+        } else {
+          const lack = [].concat(v).filter(s => !this.learned[s]);
+          if (lack.length) {
+            const names = lack.map(s => (this.world.getSkill(s) || {}).name || s);
+            miss.push(`须先学会${names.join('、')}（${names.map(n => this.skillSource(n)).join('；')}）`);
+          }
+        }
+      } else if (k === 'rep') {
+        /* {"rep":"华山派",">=":50}：声望门槛（数据现在没用，但按同一套形状支持，防以后漏） */
+        const opKey = OPS.find(o => req[o] !== undefined);
+        const po = opKey ? { op: opKey, n: Number(req[opKey]) } : { op: '>=', n: NaN };
+        const mine = (this.reputation || {})[v] || 0;
+        const sub = opKey ? { rep: v, [opKey]: Number(req[opKey]) } : { rep: v };
+        if (failed(sub)) {
+          const line = po && !isNaN(po.n) ? cmpLine(`${v}声望`, po, mine) : `要${v}声望（你 ${mine}）`;
+          miss.push(line);
+        }
+      } else if (k === 'item') {
+        /* {"item":"藏宝图","count":1}：入门信物（与 joinSect 的 evalCond 同形） */
+        const need = Number(req.count || 1);
+        const mine = this.countItem ? this.countItem(v) : 0;
+        if (failed({ item: v, count: need })) {
+          const nm = (this.world.data.items && this.world.data.items[v] && this.world.data.items[v].name) || v;
+          miss.push(`须先带着${nm}（需 ${need} 件，你有 ${mine} 件）`);
+        }
+      } else if (typeof v === 'string' || typeof v === 'number') {
+        const po = parseOp(v);
+        const label = KEY_CN[k] || k;
+        if (po && failed({ [k]: v })) {
+          miss.push(cmpLine(label, po, this[k] !== undefined ? this[k] : 0));
+        }
       }
     }
     if (!miss.length) return `${sd.name}不收你这样的弟子。`;

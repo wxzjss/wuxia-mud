@@ -3792,6 +3792,33 @@
               ]
             }
           ]
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "gumu"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "墓道里的灯添了油，风进不来。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -4106,6 +4133,33 @@
           ],
           "once": true,
           "spentMsg": "此处你已经悟透了，再看也无新得。"
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "xiake"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "岛上的路走了一遍，石阶上没有人。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },

@@ -152,7 +152,8 @@
     },
     "mojiao_dongfang": {
       "quests": [
-        "q_main_moye"
+        "q_main_moye",
+        "q_sect_mojiao_errand"
       ]
     },
     "nv_huang": {
@@ -728,6 +729,33 @@
                   "type": "narrate",
                   "raw": "他们没有拦你，也没有让开。崖上的栈道就在那儿。"
                 }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "mojiao"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖下的哨换了班，雾里看不清脸。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
               ]
             }
           ]

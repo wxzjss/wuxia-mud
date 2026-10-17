@@ -21,7 +21,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "松树底下站着守门弟子，手按剑鞘。「剑提得上肩么？提不上先空手上来。」"
             },
             {
               "type": "joinSect",
@@ -31,6 +31,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "taishan"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "石阶从下到上数了一遍，第七级又松了。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -82,7 +109,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "门里有人膝上横着琴，剑搁在脚边。「先听一段。听不出杀意的，剑白练。」"
             },
             {
               "type": "joinSect",
@@ -92,6 +119,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "hengshan"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "剑坪的落叶扫过一遍，风又送回来一些。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -143,7 +197,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "女弟子把剑横在膝上，抬眼看你。「握剑的手别抖。抖了先伤自己。」"
             },
             {
               "type": "joinSect",
@@ -153,6 +207,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "hengshanN"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "后殿的灯都亮着，一盏灯芯结了花。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -204,7 +285,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "雾里传来剑鞘碰石的轻响。「青城看步。步子浮的人，剑也浮。」"
             },
             {
               "type": "joinSect",
@@ -214,6 +295,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "qingcheng"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "雾里沿着崖边走了一圈，栏杆都还结实。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -265,7 +373,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "道装老者手里转着剑穗。「崆峒七伤，先看你眼稳不稳。」"
             },
             {
               "type": "joinSect",
@@ -275,6 +383,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "kongtong"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "演武场的兵器一杆杆扶正。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -326,7 +461,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "风沙里那人把剑裹在布里。「昆仑的剑不长眼，人得长眼。」"
             },
             {
               "type": "joinSect",
@@ -336,6 +471,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "kunlun"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "风口那面旗换了新的，边角压得死。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -387,7 +549,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "守门弟子弹出一枚石子，打落枝上一片叶。「点苍看两样：眼快，气沉。」"
             },
             {
               "type": "joinSect",
@@ -397,6 +559,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "diancang"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "院里的石子又多了几颗，圆的不多。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -448,7 +637,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "门口那只石锁上有一道捏出来的印。「掌门看手，我看你走路。」"
             },
             {
               "type": "joinSect",
@@ -458,6 +647,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "tiezhang"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "门口那只石锁被挪回原位，地上留了个坑。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -509,7 +725,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "门里挂着长短不齐一排刀。「挑一把。扛得动就进。」"
             },
             {
               "type": "joinSect",
@@ -519,6 +735,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "jindao"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "门前那排刀挨个看过去，刃口都还亮。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -570,7 +813,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "五个汉子各站一边，刀都不出鞘。「进来。看你能站哪一边。」"
             },
             {
               "type": "joinSect",
@@ -581,6 +824,33 @@
           ],
           "failMsg": null,
           "say": "投师"
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "wuhu"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "五条道各走了半程，道上没有生人。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -632,7 +902,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "镖师往车上捆箱子，抬眼。「会赶车么？不会就先跟着走一趟。」"
             },
             {
               "type": "joinSect",
@@ -642,6 +912,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "feihu"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "镖车上的绳重新捆过，结都朝外。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -693,7 +990,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "镖旗卷着靠在墙边，镖师在捆绳。「夜里赶过路么？怕不怕黑？」"
             },
             {
               "type": "joinSect",
@@ -703,6 +1000,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "zhenyuan"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "镖旗卷好入库，旗面没有受潮。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -754,7 +1078,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "院里有人打拳，拳风带起一层土。「站远点，别溅着。看完再说。」"
             },
             {
               "type": "joinSect",
@@ -764,6 +1088,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "shenquan"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "院里的土扫平了，脚印一层压一层。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -815,7 +1166,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "七杆枪插在门边，杆杆有旧痕。「挑一杆，端平了走十步。」"
             },
             {
               "type": "joinSect",
@@ -825,6 +1176,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "tieqiang"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "七杆枪挨个扶正，有一杆松了半寸。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -876,7 +1254,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "门口有人试刀，一道白线劈过木桩。「看清楚了，再提学字。」"
             },
             {
               "type": "joinSect",
@@ -886,6 +1264,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "kuaidao"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "木桩换了新的，旧的劈口还留着。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -937,7 +1342,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "院里一排木桩，桩上都是拳印。「先打三拳。我看力道。」"
             },
             {
               "type": "joinSect",
@@ -947,6 +1352,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "luohan"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "木桩上的拳印又深了一层。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -998,7 +1430,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "老门房搓着核桃，手背一道旧疤。「温家做皮货，也用毒。传男不传女。」"
             },
             {
               "type": "joinSect",
@@ -1009,6 +1441,33 @@
           ],
           "failMsg": null,
           "say": "投师"
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "wuyun"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "院里的柴码得齐，离墙都留了三寸。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1060,7 +1519,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "门房抬头看了看天，又看你。「风大。进来躲一躲，也算个缘分。」"
             },
             {
               "type": "joinSect",
@@ -1071,6 +1530,33 @@
           ],
           "failMsg": null,
           "say": "投师"
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "dafeng"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "门口的土扫过，风一过又落一层。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1122,7 +1608,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "帮众蹲在跳板上啃馍，抬了抬下巴。「上过船没有？我看你的鞋。」"
             },
             {
               "type": "joinSect",
@@ -1132,6 +1618,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "huanghe"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "跳板上的霜刮净了，走上去不打滑。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1183,7 +1696,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "岸上盘着船缆，帮众在补网。「会水么？不会水在这儿活不长。」"
             },
             {
               "type": "joinSect",
@@ -1193,6 +1706,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "taihu"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "补好的网挂在架子上，网眼都匀。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1244,7 +1784,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "湖风把旗子吹得直响。「裤脚还是干的。走一趟湖再来。」"
             },
             {
               "type": "joinSect",
@@ -1254,6 +1794,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "poyang"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "旗子收进仓里，杆子还立在原处。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1305,7 +1872,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "门边一丛竹，帮众在削竹签。「手上有茧么？削签子要这个。」"
             },
             {
               "type": "joinSect",
@@ -1315,6 +1882,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "qingzhu"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "新削的竹签捆成一扎，签尖都朝里。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1366,7 +1960,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "一堵人墙似的汉子俯身看你。「鞋底磨穿过几双？说实话。」"
             },
             {
               "type": "joinSect",
@@ -1376,6 +1970,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "jujing"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "舱里的水舀干净了，木板泛白。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1427,7 +2048,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "门房正给门槛上油。「踩门槛的人不招待。绕一步再进。」"
             },
             {
               "type": "joinSect",
@@ -1437,6 +2058,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "jinlong"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "门槛的油擦匀了，从外看是一道亮线。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1488,7 +2136,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "山门后有剑声，一下一下。「听得出哪一剑收了力么？」"
             },
             {
               "type": "joinSect",
@@ -1498,6 +2146,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "wuliang"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "剑架上的剑一柄柄看过，都没有手印。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1549,7 +2224,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "一条老牛卧在门口，人从牛背后出来。「它不叫，就说明你能进。」"
             },
             {
               "type": "joinSect",
@@ -1559,6 +2234,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "funiu"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "牛棚的草添满了，老牛没抬头。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1610,7 +2312,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "门口的人先看你的肩。「肩没开，刀抡不圆。先站三天桩。」"
             },
             {
               "type": "joinSect",
@@ -1620,6 +2322,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "baisheng"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "墙根的桩子挨个拍过去，手上有回音。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1671,7 +2400,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "门里那人裹着厚毡，先闻了闻风。「山上的规矩：不问来路，只问胆子。」"
             },
             {
               "type": "joinSect",
@@ -1681,6 +2410,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "baituo"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "毡子晒了一天，收的时候还带着日头味。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1732,7 +2488,7 @@
           "effects": [
             {
               "type": "narrate",
-              "raw": "山门里走出一个人，上下打量了你两眼。"
+              "raw": "帘子后有人笑了一声。「进来可以。先说说你为什么来。」"
             },
             {
               "type": "joinSect",
@@ -1742,6 +2498,33 @@
             }
           ],
           "failMsg": null
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "hehuan"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "新换的帘子在风里晃，颜色比旧的沉。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1939,7 +2722,9 @@
         "taishan_fly_1",
         "taishan_qimen_3"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_taishan_errand"
+      ],
       "talk": [
         "在十八盘上走一趟不歇脚，再与守山弟子过三十招。",
         "拜了师就是自家人，出门别丢门派的脸。",
@@ -2086,7 +2871,9 @@
         "hengshan_fly_1",
         "hengshan_qimen_3"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_hengshan_errand"
+      ],
       "talk": [
         "听一曲琴，说出曲中杀气在哪个字上。",
         "拜了师就是自家人，出门别丢门派的脸。",
@@ -2233,7 +3020,9 @@
         "hengshanN_fly_1",
         "hengshanN_qimen_3"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_hengshanN_errand"
+      ],
       "talk": [
         "抄一遍药方，替三位伤者换过药。",
         "拜了师就是自家人，出门别丢门派的脸。",
@@ -2380,7 +3169,9 @@
         "qingcheng_fly_1",
         "qingcheng_qimen_3"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_qingcheng_errand"
+      ],
       "talk": [
         "从后山崖壁摘一枝松，掉下来就再来一年。",
         "拜了师就是自家人，出门别丢门派的脸。",
@@ -2524,7 +3315,9 @@
         "kongtong_fly_1",
         "kongtong_qimen_3"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_kongtong_errand"
+      ],
       "talk": [
         "在石桩上打满一百拳，桩不倒就算过。",
         "拜了师就是自家人，出门别丢门派的脸。",
@@ -2668,7 +3461,9 @@
         "kunlun_fly_1",
         "kunlun_qimen_3"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_kunlun_errand"
+      ],
       "talk": [
         "在雪地里站一夜，天亮时手还能握稳剑。",
         "拜了师就是自家人，出门别丢门派的脸。",
@@ -2815,7 +3610,9 @@
         "diancang_fly_1",
         "diancang_qimen_3"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_diancang_errand"
+      ],
       "talk": [
         "看渔翁撒网，午后比划出来。",
         "拜了师就是自家人，出门别丢门派的脸。",
@@ -2956,7 +3753,9 @@
         "tiezhang_fly_1",
         "tiezhang_qimen_3"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_tiezhang_errand"
+      ],
       "talk": [
         "一掌劈开三块青砖。",
         "拜了师就是自家人，出门别丢门派的脸。",
@@ -3096,7 +3895,9 @@
         "jindao_guard_1",
         "jindao_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_jindao_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -3236,7 +4037,9 @@
         "wuhu_guard_1",
         "wuhu_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_wuhu_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -3376,7 +4179,9 @@
         "feihu_guard_1",
         "feihu_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_feihu_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -3516,7 +4321,9 @@
         "zhenyuan_guard_1",
         "zhenyuan_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_zhenyuan_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -3653,7 +4460,9 @@
         "shenquan_guard_1",
         "shenquan_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_shenquan_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -3790,7 +4599,9 @@
         "tieqiang_guard_1",
         "tieqiang_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_tieqiang_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -3930,7 +4741,9 @@
         "kuaidao_guard_1",
         "kuaidao_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_kuaidao_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -4067,7 +4880,9 @@
         "luohan_guard_1",
         "luohan_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_luohan_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -4201,7 +5016,9 @@
         "wuyun_guard_1",
         "wuyun_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_wuyun_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -4338,7 +5155,9 @@
         "dafeng_guard_1",
         "dafeng_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_dafeng_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -4478,7 +5297,9 @@
         "huanghe_guard_1",
         "huanghe_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_huanghe_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -4618,7 +5439,9 @@
         "taihu_guard_1",
         "taihu_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_taihu_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -4758,7 +5581,9 @@
         "poyang_guard_1",
         "poyang_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_poyang_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -4898,7 +5723,9 @@
         "qingzhu_guard_1",
         "qingzhu_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_qingzhu_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -5038,7 +5865,9 @@
         "jujing_guard_1",
         "jujing_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_jujing_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -5175,7 +6004,9 @@
         "jinlong_guard_1",
         "jinlong_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_jinlong_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -5312,7 +6143,9 @@
         "wuliang_guard_1",
         "wuliang_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_wuliang_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -5449,7 +6282,9 @@
         "funiu_guard_1",
         "funiu_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_funiu_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -5586,7 +6421,9 @@
         "baisheng_guard_1",
         "baisheng_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_baisheng_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -5723,7 +6560,9 @@
         "baituo_guard_1",
         "baituo_fly_1"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_baituo_errand"
+      ],
       "talk": [
         "想学啊？先交束脩。",
         "这里的功夫不值钱，管用就行。",
@@ -5861,7 +6700,9 @@
         "hehuan_fly_1",
         "hehuan_qimen_3"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_hehuan_errand"
+      ],
       "talk": [
         "不考较武功，只看你肯不肯把脸面放下。",
         "拜了师就是自家人，出门别丢门派的脸。",
@@ -6000,7 +6841,9 @@
         "tangmen_guard_1",
         "tangmen_qimen_3"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_tangmen_errand"
+      ],
       "talk": [
         "进了这个门，就得守这个门的规矩。",
         "本门的功夫不外传。"
@@ -6084,7 +6927,9 @@
         "gumu_guard_1",
         "gumu_qimen_3"
       ],
-      "quests": [],
+      "quests": [
+        "q_sect_gumu_errand"
+      ],
       "talk": [
         "进了这个门，就得守这个门的规矩。",
         "本门的功夫不外传。"

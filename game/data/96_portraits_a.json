@@ -671,7 +671,8 @@
      "痴",
      "旧案"
     ]
-   }
+   },
+   "sect": "mojiao"
   },
   "nv_huang": {
    "portrait": {
@@ -1105,7 +1106,8 @@
      "血",
      "刀"
     ]
-   }
+   },
+   "sect": "xuedao"
   },
   "xingxiu_laoxian": {
    "portrait": {
@@ -1198,7 +1200,8 @@
      "毒",
      "教"
     ]
-   }
+   },
+   "sect": "xingxiu"
   }
  }
 }

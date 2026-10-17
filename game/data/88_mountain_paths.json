@@ -477,7 +477,36 @@
       "id": "tangmen_gate",
       "exits": {
         "n": "tangmen_path6"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "tangmen"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "药圃的篱笆补了两处，土还是新的。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
+        }
+      ]
     },
     "miaojiang_path1": {
       "id": "miaojiang_path1",

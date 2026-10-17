@@ -559,7 +559,9 @@
       "personality": "mune"
     },
     "npcv_080": {
-      "personality": "mune"
+      "personality": "mune",
+      "sect": "xiake",
+      "rank": 0
     },
     "npcv_081": {
       "personality": "lengmo"

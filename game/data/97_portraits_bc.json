@@ -1605,7 +1605,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "diancang"
   },
   "gumu_keeper": {
    "portrait": {
@@ -1825,7 +1826,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "jindao"
   },
   "jindao_disciple": {
    "portrait": {
@@ -1861,7 +1863,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "wuhu"
   },
   "wuhu_disciple": {
    "portrait": {
@@ -1897,7 +1900,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "feihu"
   },
   "feihu_disciple": {
    "portrait": {
@@ -1933,7 +1937,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "zhenyuan"
   },
   "zhenyuan_disciple": {
    "portrait": {
@@ -1969,7 +1974,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "shenquan"
   },
   "shenquan_disciple": {
    "portrait": {
@@ -2005,7 +2011,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "tieqiang"
   },
   "tieqiang_disciple": {
    "portrait": {
@@ -2041,7 +2048,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "kuaidao"
   },
   "kuaidao_disciple": {
    "portrait": {
@@ -2077,7 +2085,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "luohan"
   },
   "luohan_disciple": {
    "portrait": {
@@ -2113,7 +2122,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "wuyun"
   },
   "wuyun_disciple": {
    "portrait": {
@@ -2149,7 +2159,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "dafeng"
   },
   "dafeng_disciple": {
    "portrait": {
@@ -2185,7 +2196,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "huanghe"
   },
   "huanghe_disciple": {
    "portrait": {
@@ -2221,7 +2233,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "taihu"
   },
   "taihu_disciple": {
    "portrait": {
@@ -2257,7 +2270,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "poyang"
   },
   "poyang_disciple": {
    "portrait": {
@@ -2293,7 +2307,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "qingzhu"
   },
   "qingzhu_disciple": {
    "portrait": {
@@ -2329,7 +2344,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "jujing"
   },
   "jujing_disciple": {
    "portrait": {
@@ -2365,7 +2381,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "jinlong"
   },
   "jinlong_disciple": {
    "portrait": {
@@ -2401,7 +2418,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "wuliang"
   },
   "wuliang_disciple": {
    "portrait": {
@@ -2437,7 +2455,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "funiu"
   },
   "funiu_disciple": {
    "portrait": {
@@ -2473,7 +2492,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "baisheng"
   },
   "baisheng_disciple": {
    "portrait": {
@@ -2509,7 +2529,8 @@
      "武",
      "掌门"
     ]
-   }
+   },
+   "sect": "baituo"
   },
   "baituo_disciple": {
    "portrait": {

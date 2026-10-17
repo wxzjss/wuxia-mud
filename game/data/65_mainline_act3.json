@@ -840,6 +840,33 @@
               ]
             }
           ]
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "xuedao"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "雪线往后退了一段，前庭的石阶露出来半截。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1015,6 +1042,33 @@
                   "type": "menu",
                   "raw": "（七天，还是三十年）|（把匣子接过来）>narrate:你确实觉得快了。快得心口发慌。;narrate:第二天，你手背上起了三个红点，不疼，一按就退。;say:看。老祖从不骗人。;narrate:他把匣子合上，收进袖里。;+attr:力量:2;+skill:cuixin_zhang:100;flag:poisoned_xingxiu;narrate:他拍手的时候，星宿海的水面浮起来一排人。那是他教出来的，也长得像他。;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down;;（把匣子推回去）>narrate:你没接那只匣子。;say:聪明的傻子。;narrate:他笑了一声，转身去看水。水里那群小圈，比刚才多了一层。;flag:refuse_fake;narrate:他拍手的时候，星宿海的水面浮起来一排人。那是他教出来的，也长得像他。;combat:xingxiu_laoxian;+item:fake_manual;flag:xingxiu_down"
                 }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "巡山",
+          "label": "巡山",
+          "keywords": [
+            "巡山",
+            "巡视",
+            "转一圈"
+          ],
+          "desc": "在门派里走一圈",
+          "cond": {
+            "sect": "xingxiu"
+          },
+          "oncePerDay": true,
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "沙丘背风那一面走了半圈，没有脚印。"
+            },
+            {
+              "type": "contrib",
+              "args": [
+                "本门",
+                5
               ]
             }
           ]

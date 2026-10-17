@@ -1710,6 +1710,33 @@
       ],
       "stackable": false,
       "stackMax": 1
+    },
+    "tea_coarse": {
+      "id": "tea_coarse",
+      "name": "粗茶",
+      "type": "food",
+      "desc": "大壶里舀出来的一碗，叶子粗，热气足。",
+      "healWater": 8,
+      "healFood": 2,
+      "value": 2,
+      "stackable": true,
+      "stackMax": 99,
+      "quality": "worn",
+      "tags": [
+        "tea",
+        "food"
+      ]
+    },
+    "flatbread": {
+      "id": "flatbread",
+      "name": "烧饼",
+      "type": "food",
+      "desc": "炉壁上贴出来的，一面焦，一面软，芝麻掉了半层。",
+      "healFood": 25,
+      "value": 3,
+      "stackable": true,
+      "stackMax": 99,
+      "quality": "worn"
     }
   },
   "recipes": {

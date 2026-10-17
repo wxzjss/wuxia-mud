@@ -187,10 +187,14 @@
     "jh_parry": {
      "level": 46,
      "exp": 0
+    },
+    "gaibang_atk_1": {
+     "level": 40,
+     "exp": 0
     }
    },
    "skills": {
-    "棍": "basic_staff",
+    "棍": "gaibang_atk_1",
     "招架": "jh_parry"
    },
    "equipment": {

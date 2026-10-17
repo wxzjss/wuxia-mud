@@ -1329,6 +1329,2037 @@
       "require": {
         "flag": "jiuye_done"
       }
+    },
+    "q_sect_jindao_errand": {
+      "id": "q_sect_jindao_errand",
+      "name": "金刀门的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "jindao_master",
+      "desc": "山下的散匪摸到金刀门外的道上，把他们赶回去。",
+      "require": {
+        "sect": "jindao"
+      },
+      "stages": [
+        {
+          "desc": "山下的散匪摸到金刀门外的道上，把他们赶回去",
+          "targets": [
+            {
+              "id": "slay",
+              "kind": "kill",
+              "keys": [
+                "mob_bandit"
+              ],
+              "desc": "山下的散匪摸到金刀门外的道上，把他们赶回去",
+              "count": 3
+            }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "金世安：「刀口别卷。回去上油。」"
+        }
+      ]
+    },
+    "q_sect_wuhu_errand": {
+      "id": "q_sect_wuhu_errand",
+      "name": "五虎断门刀的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "wuhu_master",
+      "desc": "官道上有伙人专劫单行的商客，去清一趟。",
+      "require": {
+        "sect": "wuhu"
+      },
+      "stages": [
+        {
+          "desc": "官道上有伙人专劫单行的商客，去清一趟",
+          "targets": [
+            {
+              "id": "slay",
+              "kind": "kill",
+              "keys": [
+                "mob_bandit",
+                "mob_bandit_chief"
+              ],
+              "desc": "官道上有伙人专劫单行的商客，去清一趟",
+              "count": 3
+            }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "雷五虎：「五个人守五条道。你守哪条，自己挑。」"
+        }
+      ]
+    },
+    "q_sect_kuaidao_errand": {
+      "id": "q_sect_kuaidao_errand",
+      "name": "快刀门的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "kuaidao_master",
+      "desc": "有人夜里摸到快刀门外探路，把人留下。",
+      "require": {
+        "sect": "kuaidao"
+      },
+      "stages": [
+        {
+          "desc": "有人夜里摸到快刀门外探路，把人留下",
+          "targets": [
+            {
+              "id": "slay",
+              "kind": "kill",
+              "keys": [
+                "mob_assassin"
+              ],
+              "desc": "有人夜里摸到快刀门外探路，把人留下",
+              "count": 2
+            }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "单冲：「刀快不算本事。收得住才算。」"
+        }
+      ]
+    },
+    "q_sect_baisheng_errand": {
+      "id": "q_sect_baisheng_errand",
+      "name": "百胜刀门的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "baisheng_master",
+      "desc": "巡城的兵丁近来总在门口转，打发他们走。",
+      "require": {
+        "sect": "baisheng"
+      },
+      "stages": [
+        {
+          "desc": "巡城的兵丁近来总在门口转，打发他们走",
+          "targets": [
+            {
+              "id": "slay",
+              "kind": "kill",
+              "keys": [
+                "mob_soldier"
+              ],
+              "desc": "巡城的兵丁近来总在门口转，打发他们走",
+              "count": 3
+            }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "常百胜：「别砍死。砍死了要赔。」"
+        }
+      ]
+    },
+    "q_sect_tieqiang_errand": {
+      "id": "q_sect_tieqiang_errand",
+      "name": "铁枪门的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "tieqiang_master",
+      "desc": "后山的野猪拱了菜地，挑死几头。",
+      "require": {
+        "sect": "tieqiang"
+      },
+      "stages": [
+        {
+          "desc": "后山的野猪拱了菜地，挑死几头",
+          "targets": [
+            {
+              "id": "slay",
+              "kind": "kill",
+              "keys": [
+                "mob_boar"
+              ],
+              "desc": "后山的野猪拱了菜地，挑死几头",
+              "count": 3
+            }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "岳擎：「枪要平。抖一下就是三寸。」"
+        }
+      ]
+    },
+    "q_sect_tiezhang_errand": {
+      "id": "q_sect_tiezhang_errand",
+      "name": "铁掌帮的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "tiezhang_master",
+      "desc": "山道上的熊和狼伤了樵夫，去除了。",
+      "require": {
+        "sect": "tiezhang"
+      },
+      "stages": [
+        {
+          "desc": "山道上的熊和狼伤了樵夫，去除了",
+          "targets": [
+            {
+              "id": "slay",
+              "kind": "kill",
+              "keys": [
+                "mob_black_bear",
+                "mob_wolf"
+              ],
+              "desc": "山道上的熊和狼伤了樵夫，去除了",
+              "count": 3
+            }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "裴镇山：「掌下去要有一声闷响。」"
+        }
+      ]
+    },
+    "q_sect_shenquan_errand": {
+      "id": "q_sect_shenquan_errand",
+      "name": "神拳门的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "shenquan_master",
+      "desc": "村后的野猪进了院，打死了拖回来。",
+      "require": {
+        "sect": "shenquan"
+      },
+      "stages": [
+        {
+          "desc": "村后的野猪进了院，打死了拖回来",
+          "targets": [
+            {
+              "id": "slay",
+              "kind": "kill",
+              "keys": [
+                "mob_boar"
+              ],
+              "desc": "村后的野猪进了院，打死了拖回来",
+              "count": 2
+            }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "武连山：「打完洗手。拳上带腥气不好看。」"
+        }
+      ]
+    },
+    "q_sect_luohan_errand": {
+      "id": "q_sect_luohan_errand",
+      "name": "罗汉门的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "luohan_master",
+      "desc": "庙后的狼群夜里叫，扰了早课。",
+      "require": {
+        "sect": "luohan"
+      },
+      "stages": [
+        {
+          "desc": "庙后的狼群夜里叫，扰了早课",
+          "targets": [
+            {
+              "id": "slay",
+              "kind": "kill",
+              "keys": [
+                "mob_wolf"
+              ],
+              "desc": "庙后的狼群夜里叫，扰了早课",
+              "count": 3
+            }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "空悟：「打狼不打窝。窝里有崽。」"
+        }
+      ]
+    },
+    "q_sect_xuedao_errand": {
+      "id": "q_sect_xuedao_errand",
+      "name": "血刀门的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "blood_saber",
+      "desc": "巡边的兵丁近前庭了，让他们留下。",
+      "require": {
+        "sect": "xuedao"
+      },
+      "stages": [
+        {
+          "desc": "巡边的兵丁近前庭了，让他们留下",
+          "targets": [
+            {
+              "id": "slay",
+              "kind": "kill",
+              "keys": [
+                "mob_soldier"
+              ],
+              "desc": "巡边的兵丁近前庭了，让他们留下",
+              "count": 3
+            }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "血刀老祖：「刀口舔过血，才算入门。」"
+        }
+      ]
+    },
+    "q_sect_mojiao_errand": {
+      "id": "q_sect_mojiao_errand",
+      "name": "日月神教的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "mojiao_dongfang",
+      "desc": "崖下巡哨的人换了班，把这一班留下。",
+      "require": {
+        "sect": "mojiao"
+      },
+      "stages": [
+        {
+          "desc": "崖下巡哨的人换了班，把这一班留下",
+          "targets": [
+            {
+              "id": "slay",
+              "kind": "kill",
+              "keys": [
+                "mob_soldier"
+              ],
+              "desc": "崖下巡哨的人换了班，把这一班留下",
+              "count": 3
+            }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "东方不败：「不必留活口。留一个报信的就够。」"
+        }
+      ]
+    },
+    "q_sect_taishan_errand": {
+      "id": "q_sect_taishan_errand",
+      "name": "泰山派的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "taishan_master",
+      "desc": "把山门到正殿的石阶扫一遍，霜下来打滑。",
+      "require": {
+        "sect": "taishan"
+      },
+      "stages": [
+        {
+          "desc": "把山门到正殿的石阶扫一遍，霜下来打滑",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "taishan_hall",
+              "desc": "把山门到正殿的石阶扫一遍，霜下来打滑",
+              "count": 1,
+              "var": "q_sect_taishan_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_taishan_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "卜守正：「石阶扫干净。上山的人先看这个。」"
+        }
+      ]
+    },
+    "q_sect_hengshan_errand": {
+      "id": "q_sect_hengshan_errand",
+      "name": "衡山派的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "hengshan_master",
+      "desc": "剑坪的落叶扫到东头，西头又落满。",
+      "require": {
+        "sect": "hengshan"
+      },
+      "stages": [
+        {
+          "desc": "剑坪的落叶扫到东头，西头又落满",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "hengshan_hall",
+              "desc": "剑坪的落叶扫到东头，西头又落满",
+              "count": 1,
+              "var": "q_sect_hengshan_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_hengshan_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "莫听松：「扫不过来就慢慢扫。」"
+        }
+      ]
+    },
+    "q_sect_hengshanN_errand": {
+      "id": "q_sect_hengshanN_errand",
+      "name": "恒山派的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "hengshanN_master",
+      "desc": "后殿的灯油添一遍，别让灯断在半夜。",
+      "require": {
+        "sect": "hengshanN"
+      },
+      "stages": [
+        {
+          "desc": "后殿的灯油添一遍，别让灯断在半夜",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "hengshanN_hall",
+              "desc": "后殿的灯油添一遍，别让灯断在半夜",
+              "count": 1,
+              "var": "q_sect_hengshanN_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_hengshanN_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "静玄师太：「灯要长明。人也是。」"
+        }
+      ]
+    },
+    "q_sect_qingcheng_errand": {
+      "id": "q_sect_qingcheng_errand",
+      "name": "青城派的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "qingcheng_master",
+      "desc": "雾天沿着崖边巡一圈，看栏杆松没松。",
+      "require": {
+        "sect": "qingcheng"
+      },
+      "stages": [
+        {
+          "desc": "雾天沿着崖边巡一圈，看栏杆松没松",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "qingcheng_hall",
+              "desc": "雾天沿着崖边巡一圈，看栏杆松没松",
+              "count": 1,
+              "var": "q_sect_qingcheng_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_qingcheng_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "余松亭：「雾里走路，脚比眼可靠。」"
+        }
+      ]
+    },
+    "q_sect_kongtong_errand": {
+      "id": "q_sect_kongtong_errand",
+      "name": "崆峒派的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "kongtong_master",
+      "desc": "演武场的兵器散着，归位。",
+      "require": {
+        "sect": "kongtong"
+      },
+      "stages": [
+        {
+          "desc": "演武场的兵器散着，归位",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "kongtong_hall",
+              "desc": "演武场的兵器散着，归位",
+              "count": 1,
+              "var": "q_sect_kongtong_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_kongtong_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "关铁衣：「兵器归位，心也归位。」"
+        }
+      ]
+    },
+    "q_sect_kunlun_errand": {
+      "id": "q_sect_kunlun_errand",
+      "name": "昆仑派的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "kunlun_master",
+      "desc": "风口那面旗撕了半边，换一面新的。",
+      "require": {
+        "sect": "kunlun"
+      },
+      "stages": [
+        {
+          "desc": "风口那面旗撕了半边，换一面新的",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "kunlun_hall",
+              "desc": "风口那面旗撕了半边，换一面新的",
+              "count": 1,
+              "var": "q_sect_kunlun_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_kunlun_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "霍长风：「昆仑的旗不能倒着挂。」"
+        }
+      ]
+    },
+    "q_sect_diancang_errand": {
+      "id": "q_sect_diancang_errand",
+      "name": "点苍派的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "diancang_master",
+      "desc": "把院里的石子捡出来，练眼要用。",
+      "require": {
+        "sect": "diancang"
+      },
+      "stages": [
+        {
+          "desc": "把院里的石子捡出来，练眼要用",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "diancang_hall",
+              "desc": "把院里的石子捡出来，练眼要用",
+              "count": 1,
+              "var": "q_sect_diancang_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_diancang_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "段明川：「石子要圆的。棱角的会伤人。」"
+        }
+      ]
+    },
+    "q_sect_wuliang_errand": {
+      "id": "q_sect_wuliang_errand",
+      "name": "无量剑派的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "wuliang_master",
+      "desc": "剑架上的剑擦一遍，别留手印。",
+      "require": {
+        "sect": "wuliang"
+      },
+      "stages": [
+        {
+          "desc": "剑架上的剑擦一遍，别留手印",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "wuliang_hall",
+              "desc": "剑架上的剑擦一遍，别留手印",
+              "count": 1,
+              "var": "q_sect_wuliang_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_wuliang_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "段青崖：「剑上有手印，出鞘就慢半分。」"
+        }
+      ]
+    },
+    "q_sect_hehuan_errand": {
+      "id": "q_sect_hehuan_errand",
+      "name": "合欢宗的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "hehuan_master",
+      "desc": "帘子晒褪色了，换一幅。",
+      "require": {
+        "sect": "hehuan"
+      },
+      "stages": [
+        {
+          "desc": "帘子晒褪色了，换一幅",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "hehuan_hall",
+              "desc": "帘子晒褪色了，换一幅",
+              "count": 1,
+              "var": "q_sect_hehuan_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_hehuan_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "柳含烟：「帘子要新的。人也是。」"
+        }
+      ]
+    },
+    "q_sect_wuyun_errand": {
+      "id": "q_sect_wuyun_errand",
+      "name": "五云手温家的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "wuyun_master",
+      "desc": "院里的柴码齐，别靠着墙。",
+      "require": {
+        "sect": "wuyun"
+      },
+      "stages": [
+        {
+          "desc": "院里的柴码齐，别靠着墙",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "wuyun_hall",
+              "desc": "院里的柴码齐，别靠着墙",
+              "count": 1,
+              "var": "q_sect_wuyun_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_wuyun_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "温世昌：「柴离墙三寸，潮气上不来。」"
+        }
+      ]
+    },
+    "q_sect_dafeng_errand": {
+      "id": "q_sect_dafeng_errand",
+      "name": "大风云飞门的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "dafeng_master",
+      "desc": "门口的土扫开，风一起就糊门。",
+      "require": {
+        "sect": "dafeng"
+      },
+      "stages": [
+        {
+          "desc": "门口的土扫开，风一起就糊门",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "dafeng_hall",
+              "desc": "门口的土扫开，风一起就糊门",
+              "count": 1,
+              "var": "q_sect_dafeng_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_dafeng_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "燕双飞：「风来了挡不住。土能扫。」"
+        }
+      ]
+    },
+    "q_sect_funiu_errand": {
+      "id": "q_sect_funiu_errand",
+      "name": "伏牛派的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "funiu_master",
+      "desc": "牛棚的草添满，夜里冷。",
+      "require": {
+        "sect": "funiu"
+      },
+      "stages": [
+        {
+          "desc": "牛棚的草添满，夜里冷",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "funiu_hall",
+              "desc": "牛棚的草添满，夜里冷",
+              "count": 1,
+              "var": "q_sect_funiu_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_funiu_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "牛伯耕：「牛吃好了，人才有得吃。」"
+        }
+      ]
+    },
+    "q_sect_baituo_errand": {
+      "id": "q_sect_baituo_errand",
+      "name": "白驼山的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "baituo_master",
+      "desc": "把毡子搬出去晒，山里的潮气重。",
+      "require": {
+        "sect": "baituo"
+      },
+      "stages": [
+        {
+          "desc": "把毡子搬出去晒，山里的潮气重",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "baituo_hall",
+              "desc": "把毡子搬出去晒，山里的潮气重",
+              "count": 1,
+              "var": "q_sect_baituo_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_baituo_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "欧阳夜：「毡子潮了，刀会锈。」"
+        }
+      ]
+    },
+    "q_sect_huanghe_errand": {
+      "id": "q_sect_huanghe_errand",
+      "name": "黄河帮的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "huanghe_master",
+      "desc": "跳板上结了霜，刮干净。",
+      "require": {
+        "sect": "huanghe"
+      },
+      "stages": [
+        {
+          "desc": "跳板上结了霜，刮干净",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "huanghe_hall",
+              "desc": "跳板上结了霜，刮干净",
+              "count": 1,
+              "var": "q_sect_huanghe_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_huanghe_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "沙万舟：「跳板滑一下，货就下水了。」"
+        }
+      ]
+    },
+    "q_sect_taihu_errand": {
+      "id": "q_sect_taihu_errand",
+      "name": "太湖帮的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "taihu_master",
+      "desc": "补三张网，明早出湖要用。",
+      "require": {
+        "sect": "taihu"
+      },
+      "stages": [
+        {
+          "desc": "补三张网，明早出湖要用",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "taihu_hall",
+              "desc": "补三张网，明早出湖要用",
+              "count": 1,
+              "var": "q_sect_taihu_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_taihu_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "陆子清：「网眼补密些。小鱼放回去。」"
+        }
+      ]
+    },
+    "q_sect_poyang_errand": {
+      "id": "q_sect_poyang_errand",
+      "name": "鄱阳帮的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "poyang_master",
+      "desc": "旗子降下来收好，夜里风大。",
+      "require": {
+        "sect": "poyang"
+      },
+      "stages": [
+        {
+          "desc": "旗子降下来收好，夜里风大",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "poyang_hall",
+              "desc": "旗子降下来收好，夜里风大",
+              "count": 1,
+              "var": "q_sect_poyang_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_poyang_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "鄱九：「旗倒了不吉利。收起来。」"
+        }
+      ]
+    },
+    "q_sect_qingzhu_errand": {
+      "id": "q_sect_qingzhu_errand",
+      "name": "青竹帮的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "qingzhu_master",
+      "desc": "削一捆竹签，明早要用。",
+      "require": {
+        "sect": "qingzhu"
+      },
+      "stages": [
+        {
+          "desc": "削一捆竹签，明早要用",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "qingzhu_hall",
+              "desc": "削一捆竹签，明早要用",
+              "count": 1,
+              "var": "q_sect_qingzhu_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_qingzhu_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "祝青竹：「签子削尖了，手别抖。」"
+        }
+      ]
+    },
+    "q_sect_jujing_errand": {
+      "id": "q_sect_jujing_errand",
+      "name": "巨鲸帮的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "jujing_master",
+      "desc": "舱里进了水，舀干。",
+      "require": {
+        "sect": "jujing"
+      },
+      "stages": [
+        {
+          "desc": "舱里进了水，舀干",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "jujing_hall",
+              "desc": "舱里进了水，舀干",
+              "count": 1,
+              "var": "q_sect_jujing_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_jujing_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "海九皋：「水舀不干，船就沉。舀。」"
+        }
+      ]
+    },
+    "q_sect_jinlong_errand": {
+      "id": "q_sect_jinlong_errand",
+      "name": "金龙帮的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "jinlong_master",
+      "desc": "门槛的油擦匀，别糊了来客的鞋。",
+      "require": {
+        "sect": "jinlong"
+      },
+      "stages": [
+        {
+          "desc": "门槛的油擦匀，别糊了来客的鞋",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "jinlong_hall",
+              "desc": "门槛的油擦匀，别糊了来客的鞋",
+              "count": 1,
+              "var": "q_sect_jinlong_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_jinlong_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "龙在渊：「门槛是脸面。糊人一脚，记一辈子。」"
+        }
+      ]
+    },
+    "q_sect_feihu_errand": {
+      "id": "q_sect_feihu_errand",
+      "name": "飞虎镖局的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "feihu_master",
+      "desc": "镖车上的绳重新捆一遍。",
+      "require": {
+        "sect": "feihu"
+      },
+      "stages": [
+        {
+          "desc": "镖车上的绳重新捆一遍",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "feihu_hall",
+              "desc": "镖车上的绳重新捆一遍",
+              "count": 1,
+              "var": "q_sect_feihu_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_feihu_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "秦伯远：「绳松一寸，路上丢一箱。」"
+        }
+      ]
+    },
+    "q_sect_zhenyuan_errand": {
+      "id": "q_sect_zhenyuan_errand",
+      "name": "镇远镖局的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "zhenyuan_master",
+      "desc": "镖旗卷好入库，别让雨泡了。",
+      "require": {
+        "sect": "zhenyuan"
+      },
+      "stages": [
+        {
+          "desc": "镖旗卷好入库，别让雨泡了",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "zhenyuan_hall",
+              "desc": "镖旗卷好入库，别让雨泡了",
+              "count": 1,
+              "var": "q_sect_zhenyuan_errand_go"
+            }
+          ],
+          "next": 1,
+          "cond": {
+            "var": "q_sect_zhenyuan_errand_go"
+          }
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "周慎行：「旗在人在。旗不在，镖也不算到。」"
+        }
+      ]
+    },
+    "q_sect_tangmen_errand": {
+      "id": "q_sect_tangmen_errand",
+      "name": "唐门的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "tangmen_master",
+      "desc": "药圃缺一味引子，去山下采一支灵芝。",
+      "require": {
+        "sect": "tangmen"
+      },
+      "stages": [
+        {
+          "desc": "药圃缺一味引子，去山下采一支灵芝",
+          "targets": [
+            {
+              "id": "fetch",
+              "kind": "item",
+              "key": "herb_lingshen",
+              "desc": "药圃缺一味引子，去山下采一支灵芝",
+              "count": 1
+            }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "唐不语：「采的时候戴手套。它认得人手。」"
+        }
+      ]
+    },
+    "q_sect_gumu_errand": {
+      "id": "q_sect_gumu_errand",
+      "name": "古墓派的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "gumu_master",
+      "desc": "蜂箱要换新草，后山采两把寒水草。",
+      "require": {
+        "sect": "gumu"
+      },
+      "stages": [
+        {
+          "desc": "蜂箱要换新草，后山采两把寒水草",
+          "targets": [
+            {
+              "id": "fetch",
+              "kind": "item",
+              "key": "herb_hanshui",
+              "desc": "蜂箱要换新草，后山采两把寒水草",
+              "count": 2
+            }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "甄清黎：「草要带露采。干了就没用。」"
+        }
+      ]
+    },
+    "q_sect_xingxiu_errand": {
+      "id": "q_sect_xingxiu_errand",
+      "name": "星宿派的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "xingxiu_laoxian",
+      "desc": "练功要用的血草断了，去采两把。",
+      "require": {
+        "sect": "xingxiu"
+      },
+      "stages": [
+        {
+          "desc": "练功要用的血草断了，去采两把",
+          "targets": [
+            {
+              "id": "fetch",
+              "kind": "item",
+              "key": "herb_xuecao",
+              "desc": "练功要用的血草断了，去采两把",
+              "count": 2
+            }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "丁春秋：「采回来先给我看。你分不出真假。」"
+        }
+      ]
+    },
+    "q_sect_xiake_errand": {
+      "id": "q_sect_xiake_errand",
+      "name": "侠客岛的差事",
+      "type": "门派",
+      "level": 12,
+      "giver": "npcv_080",
+      "desc": "渡口的船要补钉，去捡两块铁矿石。",
+      "require": {
+        "sect": "xiake"
+      },
+      "stages": [
+        {
+          "desc": "渡口的船要补钉，去捡两块铁矿石",
+          "targets": [
+            {
+              "id": "fetch",
+              "kind": "item",
+              "key": "iron_ore",
+              "desc": "渡口的船要补钉，去捡两块铁矿石",
+              "count": 2
+            }
+          ],
+          "next": 1
+        },
+        {
+          "desc": "回山门复命",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+contrib",
+          "args": [
+            "本门",
+            30
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "鲍归：「岛上没有铁匠。石头也得自己捡。」"
+        }
+      ]
     }
   },
   "items": {
