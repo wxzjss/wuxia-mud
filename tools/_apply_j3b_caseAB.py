@@ -20,10 +20,8 @@ def read(p):
         return json.load(f)
 
 def write(p, j):
-    with io.open(p, 'w', encoding='utf-8', newline='\n') as f:
-        json.dump(j, f, ensure_ascii=False, indent=2)
-        f.write('\n')
-
+    from _canon_write import write_canon as _wc
+    _wc(p, j)
 P61 = os.path.join(ROOT, 'game', 'data', '61_sidequests.json')
 P50 = os.path.join(ROOT, 'game', 'data', '50_map.json')
 

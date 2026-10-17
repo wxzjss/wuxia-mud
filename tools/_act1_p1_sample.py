@@ -28,5 +28,5 @@ for rid, txt in DESC.items():
     assert d['rooms'][rid].get('desc') != txt
     print(rid, '旧 desc', len(d['rooms'][rid].get('desc', '')), '字 ->', len(txt), '字')
     d['rooms'][rid]['desc'] = txt
-open(P, 'w', encoding='utf-8', newline='').write(json.dumps(d, ensure_ascii=False, indent=2) + '\n')
+from _canon_write import write_canon; write_canon(P, d)
 print('样板房两间已落（备份 50_map_bak_pre_act1p1.json）')

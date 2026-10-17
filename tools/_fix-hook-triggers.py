@@ -163,8 +163,8 @@ for fn in glob.glob(D + '/*.json'):
     n0 = len(report)
     walk(d, src)
     if len(report) > n0:
-        io.open(fn, 'w', encoding='utf-8').write(
-            json.dumps(d, ensure_ascii=False, indent=2) + '\n')
+        from _canon_write import write_canon
+        write_canon(fn, d)
 
 n_remap = sum(1 for r in report if r[3][0] == 'remap')
 n_drop = sum(1 for r in report if r[3][0] == 'drop')

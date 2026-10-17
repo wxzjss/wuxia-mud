@@ -38,11 +38,8 @@ def read(p):
 
 
 def write(p, j):
-    with io.open(p, 'w', encoding='utf-8', newline='\n') as f:
-        json.dump(j, f, ensure_ascii=False, indent=2)
-        f.write('\n')
-
-
+    from _canon_write import write_canon as _wc
+    _wc(p, j)
 # ---------- ① mob_bandit noWander（新分片 104，深合并补丁） ----------
 P104 = os.path.join(ROOT, 'game', 'data', '104_birth_polish.json')
 d104 = read(P104) if os.path.exists(P104) else {"_note": ""}

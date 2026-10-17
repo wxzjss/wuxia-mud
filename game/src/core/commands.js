@@ -5665,6 +5665,35 @@ function buildCommands(world) {
     };
   }
 
+  /** 房动作按 label 等值兜底（2026-10-18，审计 92/310 落空）
+   *  返回 execute 的完整结果对象，或 null（没命中，继续走后面的派发）。
+   *  ⚠️ 命中后走 execute(a.cmd)：条件锁/限次/once/failMsg 全部复用原路，
+   *     不在这里另判一遍（凡是「同一概念多入口」，判定就必须共用——本项目老规矩）。 */
+  function actionLabelCmd(ctx, raw) {
+    if (ctx.__labelDepth) return null;              // 只兜一层
+    const p = ctx.player, w = ctx.world;
+    const room = w && w.getRoom && w.getRoom(p.room);
+    if (!room || !Array.isArray(room.actions)) return null;
+    const norm = s => String(s || '')
+      .replace(/[「」『』“”"'’‘\s，,。.！!？?、：:；;…（）()]/g, '');
+    const want = norm(raw);
+    if (!want) return null;
+    for (const a of room.actions) {
+      if (!a || !a.cmd) continue;
+      if (a.cmd === raw) continue;                  // 同名 cmd 上游已处理过，别再绕
+      if (norm(a.label) === want) {
+        ctx.__labelDepth = 1;
+        try {
+          const r = execute(a.cmd, ctx);
+          return (r && r.lines) ? r : null;
+        } finally {
+          delete ctx.__labelDepth;
+        }
+      }
+    }
+    return null;
+  }
+
   function execute(input, ctx) {
     const raw = String(input || '').trim();
     if (!raw) return { lines: [] };
@@ -5716,6 +5745,20 @@ function buildCommands(world) {
     // 3) 房间/世界自定义指令
     const r1 = roomCmd(ctx, cmd0, args);
     if (r1) return { lines: r1 };
+
+    /* 3.5) 「此地可做」按钮名兜底（2026-10-18 审计：92/310 按钮名照抄落空）
+       前端按钮显示的是动作的 **label**，而 label 与 cmd 不同值是常态
+       （例：label「回武当，把这事烂在肚子里」/ cmd「按下不提」；label「绸缎」/ cmd「list 闻素娘」）。
+       玩家看着按钮敲字 → 落到「是什么指令」或 B6 兜底句 —— 看着面板敲字就撞墙。
+       这里按 label **等值**兜底（去引号/书名号/空白/标点后比对），命中即按该动作的
+       cmd 再走一遍 execute —— 条件锁、限次、once、failMsg 全部由原路照旧判。
+       ⚠️ 必须排在 questKeyword 之前：那一步对「看起来像房间里的东西」的词会先回
+          B6 兜底句（「你留心察看了一番，此处暂时没有更多可做的了」），
+          直接把等值命中的机会吃掉（实测 83 条里绝大多数是这么落空的）。
+       ⚠️ 只认整串等值，不做包含匹配：包含会抢走别的指令（本项目第 N 次栽在这上面）。
+       ⚠️ 只兜一层（__labelDepth），cmd 本身不存在时不再往回兜。 */
+    const r25 = actionLabelCmd(ctx, raw);
+    if (r25) return r25;
 
     // 4) 任务关键词（常见的任务动作）
     const r2 = questKeyword(ctx, cmd0, args, raw);
@@ -5962,6 +6005,10 @@ function questKeyword(ctx, cmd, args, rawFull) {
         for (const k of Object.keys(def.repGainOnQuest)) p.reputation[k] = (p.reputation[k] || 0) + def.repGainOnQuest[k];
         p.setFlag(repFlag, true);
       }
+      /* 结局兜底（2026-10-18，半成品审计第 8 项）：任务定义带 endingOnComplete、
+         且当前还没有 final 结局 → 落兜底。三选一结局先落 final 的路径不覆盖。 */
+      const fbEnd = require('./endings').onQuestDone(w, p, qd);
+      if (fbEnd) lines.push(fbEnd);
     } else {
       p.setQuestStage(q, next);
       lines.push({ kind: 'quest', text: `【任务进展】${qd.name}` });

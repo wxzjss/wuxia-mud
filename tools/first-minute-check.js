@@ -95,8 +95,9 @@ console.log('\n③ T2 第一件事恰一条（链式单提示）');
   ok('101/T2 主线链齐：伸手/翻案底/倒水/撬/垫/挪缸/问信/接信/回茶摊/动身',
     ['伸手', '翻案底', '倒水', '撬', '垫', '挪缸', '问信', '接信', '回茶摊', '动身'].every(has));
   const hidden = acts.filter(a => a.hint === false);
-  ok('101/T2 细交互 hint:false 收锚物（信/掏灰/绕回茶摊）',
-    hidden.length >= 2 && hidden.every(a => ['信', '掏灰', '绕回茶摊'].includes(a.cmd)),
+  ok('101/T2 细交互 hint:false 收锚物（信/掏灰/绕回茶摊；103 B8 增补 端详* 同类）',
+    hidden.length >= 2 && hidden.every(a =>
+      ['信', '掏灰', '绕回茶摊'].includes(a.cmd) || /^端详/.test(a.cmd || '')),
     hidden.map(a => a.cmd).join('/'));
   /* 第一分钟链头：hint:true 且 cond 满足（未挪缸）的恰 1 条=伸手 */
   e.newGame({ name: '试剑', gender: 'male', birth: 'wuxue' });

@@ -184,7 +184,7 @@ M63 = {
     },
 }
 if not os.path.exists(P63):
-    open(P63, 'w', encoding='utf-8', newline='').write(json.dumps(M63, ensure_ascii=False, indent=2) + '\n')
+    from _canon_write import write_canon; write_canon(P63, M63)
     print('63_mainline_act1.json 新建：6 房 8 组剧情 actions，全部 cond flag 追踪式')
 else:
     print('63 已存在，跳过')

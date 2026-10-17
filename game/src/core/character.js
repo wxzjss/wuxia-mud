@@ -841,8 +841,22 @@ class Character {
     return v;
   }
   setQuestStage(qid, st) {
+    const prev = this.quests[qid];
     this.quests[qid] = st;
-    if (st === 99) this.setFlag('questdone_' + qid, true);
+    if (st === 99) {
+      this.setFlag('questdone_' + qid, true);
+      /* 「江湖记得你」回声层（2026-10-18）：记下完成序 + 时刻，供 questecho
+         做「近期优先」取样。只记首次完成（重入 99 不重复记）。
+         ⚠️ 用的是玩家自身的 timeMinutes（advanceTime 每次推进都会写），
+            不引入新的世界引用 —— setQuestStage 是角色方法，拿不到 world。 */
+      if (prev !== 99) {
+        this.vars = this.vars || {};
+        const log = Array.isArray(this.vars.questDone) ? this.vars.questDone : (this.vars.questDone = []);
+        log.push({ id: qid, at: this.timeMinutes || 0 });
+        /* 只留最近 40 条 —— 老档玩上几百条时别让存档无限长 */
+        if (log.length > 40) log.splice(0, log.length - 40);
+      }
+    }
   }
 
   /* ---------------- 门派 ---------------- */

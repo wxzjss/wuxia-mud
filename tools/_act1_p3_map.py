@@ -121,8 +121,6 @@ for a in acts:
     if c.get('flag') == '挪过缸':
         c['flag'] = 'act1_vat_moved'
 
-out = json.dumps(d, ensure_ascii=False, indent=2)
-if not out.endswith('\n'):
-    out += '\n'
-open(P, 'w', encoding='utf8').write(out)
+from _canon_write import write_canon
+write_canon(P, d)
 print('50_map 五步落库：', [a['cmd'] for a in acts])

@@ -1,3426 +1,3426 @@
 {
-  "_note": [
-    "43 门派山门守卫（design/71 §四 缺口 1 的补法）。",
-    "现状：全库只有 guard_city / guard_shaolin / guard_huashan 三个守卫，其余山门没人看着 ，",
-    "「闯山门要拦」的前提是**有人拦**，所以先补人。",
-    "守卫 tag = shouwei（显式标签，照 patrol.js 的纪律：不猜名字、不猜 title）。",
-    "守卫落在自家 entry（41_sect_entry.json），与「飞往」落点是同一来源。",
-    "强度按门派 tier：一流正道 A / 一流邪道 B / 二流 B / 其余 C。",
-    "⚠️ id 用 sectguard_<sectId>，**不占用/覆盖** 40_npcs.json 里已存在的 guard_shaolin / guard_huashan ，",
-    "   那两个是「有生有色的老人物」（带 ask / sidequest / rel），本文件只补白地，不重写旧人。"
-  ],
-  "npcs": {
-    "guard_shaolin": {
-      "id": "guard_shaolin",
-      "tag": "shouwei"
+ "_note": [
+  "43 门派山门守卫（design/71 §四 缺口 1 的补法）。",
+  "现状：全库只有 guard_city / guard_shaolin / guard_huashan 三个守卫，其余山门没人看着 ，",
+  "「闯山门要拦」的前提是**有人拦**，所以先补人。",
+  "守卫 tag = shouwei（显式标签，照 patrol.js 的纪律：不猜名字、不猜 title）。",
+  "守卫落在自家 entry（41_sect_entry.json），与「飞往」落点是同一来源。",
+  "强度按门派 tier：一流正道 A / 一流邪道 B / 二流 B / 其余 C。",
+  "⚠️ id 用 sectguard_<sectId>，**不占用/覆盖** 40_npcs.json 里已存在的 guard_shaolin / guard_huashan ，",
+  "   那两个是「有生有色的老人物」（带 ask / sidequest / rel），本文件只补白地，不重写旧人。"
+ ],
+ "npcs": {
+  "guard_shaolin": {
+   "id": "guard_shaolin",
+   "tag": "shouwei"
+  },
+  "guard_huashan": {
+   "id": "guard_huashan",
+   "tag": "shouwei"
+  },
+  "sectguard_wudang": {
+   "id": "sectguard_wudang",
+   "name": "知客道人",
+   "gender": "male",
+   "room": "wudang_shanmen",
+   "desc": "月白道袍，拂尘搭在臂弯。他先看你的脚，再看你的手。",
+   "level": 46,
+   "hp": 1850,
+   "mp": 300,
+   "atk": 195,
+   "def": 150,
+   "dodge": 74,
+   "parry": 50,
+   "speed": 87,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「解剑。搁在石台上，走时自己取，我们不收。」",
+    "「掌门在三清殿。你要见他，先在这儿站够一炷香。」",
+    "「香在左边那个香筒里，自己点。」"
+   ],
+   "tag": "shouwei",
+   "title": "知客",
+   "learned": {
+    "wudang_taiji": {
+     "level": 92,
+     "exp": 0
     },
-    "guard_huashan": {
-      "id": "guard_huashan",
-      "tag": "shouwei"
+    "basic_force": {
+     "level": 92,
+     "exp": 0
     },
-    "sectguard_wudang": {
-      "id": "sectguard_wudang",
-      "name": "知客道人",
-      "gender": "male",
-      "room": "wudang_shanmen",
-      "desc": "月白道袍，拂尘搭在臂弯。他先看你的脚，再看你的手。",
-      "level": 46,
-      "hp": 1850,
-      "mp": 300,
-      "atk": 195,
-      "def": 150,
-      "dodge": 74,
-      "parry": 50,
-      "speed": 87,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「解剑。搁在石台上，走时自己取，我们不收。」",
-        "「掌门在三清殿。你要见他，先在这儿站够一炷香。」",
-        "「香在左边那个香筒里，自己点。」"
-      ],
-      "tag": "shouwei",
-      "title": "知客",
-      "learned": {
-        "wudang_taiji": {
-          "level": 92,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 92,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 46,
-          "exp": 0
-        },
-        "wudang_force_2": {
-          "level": 101
-        }
-      },
-      "skills": {
-        "拳": "wudang_taiji",
-        "招架": "jh_parry",
-        "内功": "wudang_force_2"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 138,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_wudang",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "wudang",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "A",
-      "job": "shouwei"
+    "jh_parry": {
+     "level": 46,
+     "exp": 0
     },
-    "sectguard_emei": {
-      "id": "sectguard_emei",
-      "name": "峨眉弟子",
-      "gender": "female",
-      "room": "emei_shanmen",
-      "desc": "素衣女弟子，鬓边别一朵杜鹃。她挡在门前的样子很客气，脚下却一步不让。",
-      "level": 46,
-      "hp": 1850,
-      "mp": 300,
-      "atk": 195,
-      "def": 150,
-      "dodge": 74,
-      "parry": 50,
-      "speed": 87,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「男客止步。你要找人，报名字，我替你进去问。」",
-        "「后山那条路你能走，走到舍身崖为止。」",
-        "「过了崖就不是你能走的地方了，我也不拦你，我只记一笔。」"
-      ],
-      "tag": "shouwei",
-      "title": "迎客弟子",
-      "learned": {
-        "emei_sword": {
-          "level": 92,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 92,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 46,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "剑": "emei_sword",
-        "招架": "jh_parry"
-      },
-      "equipment": {
-        "武器": "iron_sword_basic"
-      },
-      "carry": {
-        "money": 138,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_emei",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "emei",
-      "rank": 0,
-      "personality": "wenwan",
-      "tier": "A",
-      "job": "shouwei"
-    },
-    "sectguard_gaibang": {
-      "id": "sectguard_gaibang",
-      "name": "丐帮弟子",
-      "gender": "male",
-      "room": "gaibang_po_miao",
-      "desc": "破衫赤足，蹲在庙门槛上啃干粮。他抬眼看你的时候，眼睛很亮。",
-      "level": 46,
-      "hp": 1850,
-      "mp": 300,
-      "atk": 195,
-      "def": 150,
-      "dodge": 74,
-      "parry": 50,
-      "speed": 87,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「锅里有。碗在那摞着，自己拿。吃完把碗搁回原处，上次有人没搁，我找了三天。」",
-        "「见长老等他醒。他在东边那堆草里睡，别踩着他的腿。」",
-        "「他右腿断过。你踩了他也不喊，就是往后一个月都得你去喂他吃饭。」"
-      ],
-      "tag": "shouwei",
-      "title": "把风弟子",
-      "learned": {
-        "basic_staff": {
-          "level": 92,
-          "exp": 0
-        },
-        "basic_fist": {
-          "level": 92,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 46,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "棍": "basic_staff",
-        "招架": "jh_parry"
-      },
-      "equipment": {
-        "武器": "wood_staff"
-      },
-      "carry": {
-        "money": 138,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_gaibang",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "gaibang",
-      "rank": 0,
-      "personality": "youhua",
-      "tier": "A",
-      "job": "shouwei"
-    },
-    "sectguard_mojiao": {
-      "id": "sectguard_mojiao",
-      "name": "教众",
-      "gender": "male",
-      "room": "mojiao_shanmen",
-      "desc": "黑衣，脸上没表情。他手里横着刀柄，刀尖朝下。",
-      "level": 40,
-      "hp": 1650,
-      "mp": 300,
-      "atk": 165,
-      "def": 128,
-      "dodge": 64,
-      "parry": 50,
-      "speed": 76,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「牌子。要么亮，要么滚。」",
-        "「亮了也别乱走。崖上七条路，六条通不归处。」",
-        "「第七条你自己找。找不着就原路回来，回来我不记。」"
-      ],
-      "tag": "shouwei",
-      "title": "守崖教众",
-      "learned": {
-        "heimu_zhang": {
-          "level": 80,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 80,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 40,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "棍": "heimu_zhang",
-        "招架": "jh_parry"
-      },
-      "equipment": {
-        "武器": "wood_staff"
-      },
-      "carry": {
-        "money": 120,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_mojiao",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "mojiao",
-      "rank": 0,
-      "personality": "yinzhi",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "替人收拾尸首的，手比谁都稳",
-        "now": "同棚的兄弟殁在去年冬天，抚恤的银子还在司里压着手续。",
-        "want": "把手上的事办完，回家看一眼",
-        "voice": {
-          "tone": "城府深，话里都有算计",
-          "catchphrase": "「你猜呢。」"
-        },
-        "marks": [
-          "指甲缝里有洗不净的黑"
-        ],
-        "sect": "日月神教",
-        "origin": "被捡上山的时候还不到十岁，名字是老一辈随手起的",
-        "fear": "怕一个人待太久，待到忘了自己原来是谁",
-        "routine": [
-          {
-            "at": "dusk",
-            "act": "晌午靠着墙根打个盹，醒了再练"
-          }
-        ],
-        "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
-      }
-    },
-    "sectguard_dali": {
-      "id": "sectguard_dali",
-      "name": "王府侍卫",
-      "gender": "male",
-      "room": "dali_wangfu",
-      "desc": "锦袍金带，腰里悬着剑。他站在阶下，背挺得笔直。",
-      "level": 46,
-      "hp": 1850,
-      "mp": 300,
-      "atk": 195,
-      "def": 150,
-      "dodge": 74,
-      "parry": 50,
-      "speed": 87,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「王府不接外客。什么事写在纸上，我递进二门。」",
-        "「门口那两个卖饵块的，一天到晚坐着不动。别去跟他们搭话。」",
-        "「他们从腊月初坐到今天。卖出去的饵块不够他们自己吃的。」"
-      ],
-      "tag": "shouwei",
-      "title": "门卫",
-      "learned": {
-        "yiyang_zhi": {
-          "level": 92,
-          "exp": 0
-        },
-        "dali_force_1": {
-          "level": 92,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 46,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "yiyang_zhi",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 138,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_dali",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "dali",
-      "rank": 0,
-      "personality": "lengmo",
-      "tier": "A",
-      "job": "shouwei"
-    },
-    "sectguard_tangmen": {
-      "id": "sectguard_tangmen",
-      "name": "堡门守卫",
-      "gender": "male",
-      "room": "tangmen_gate",
-      "desc": "黑衣，袖口很宽。他两只手都拢在袖子里，看不出在做什么。",
-      "level": 32,
-      "hp": 1250,
-      "mp": 300,
-      "atk": 125,
-      "def": 100,
-      "dodge": 51,
-      "parry": 50,
-      "speed": 61,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「暗器不带进饭堂。」",
-        "「身上几样铁器，你自己数一遍。数不清的我现在替你收。」",
-        "「收了不还。上个月收了十七样，还回去的没有。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门人",
-      "learned": {
-        "tangmen_anqi": {
-          "level": 64,
-          "exp": 0
-        },
-        "tangmen_force_1": {
-          "level": 64,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 32,
-          "exp": 0
-        },
-        "tangmen_force_2": {
-          "level": 70
-        }
-      },
-      "skills": {
-        "拳": "tangmen_anqi",
-        "招架": "jh_parry",
-        "内功": "tangmen_force_2"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 96,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_tangmen",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "tangmen",
-      "rank": 0,
-      "personality": "lengmo",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "巡山的，脚步比山猫还轻",
-        "now": "药棚底下收着一封信，火漆都验过三遍了，就是不拆。",
-        "want": "在下次比试里赢回来",
-        "voice": {
-          "tone": "冷淡，话里不带情绪",
-          "catchphrase": "「同门之间，本该如此。」"
-        },
-        "marks": [
-          "掌门亲传"
-        ],
-        "sect": "唐门",
-        "origin": "早年在别处混过几年，后来嫌那行当脏",
-        "fear": "怕家里人知道自己在这条路上",
-        "routine": [
-          {
-            "at": "dawn",
-            "act": "天不亮就起来，先扫一遍院子再练功"
-          }
-        ],
-        "arc": "迟早要为一个人破一次例"
-      }
-    },
-    "sectguard_miaojiang": {
-      "id": "sectguard_miaojiang",
-      "name": "五毒教众",
-      "gender": "male",
-      "room": "miaojiang_sheng",
-      "desc": "赤足，脚踝缠着细铃。他站在圣堂门口，腰间挂着个用布盖住的竹篓。",
-      "level": 32,
-      "hp": 1250,
-      "mp": 300,
-      "atk": 125,
-      "def": 100,
-      "dodge": 51,
-      "parry": 50,
-      "speed": 61,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「站住。脚下那块石板是湿的，湿的地方有东西。」",
-        "「过了那道竹桥再说话。桥这边的话，圣堂听得见。」",
-        "「你先看桥板。第三块是新换的，换上去的那块没毒。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "miao_gu": {
-          "level": 64,
-          "exp": 0
-        },
-        "miaojiang_force_1": {
-          "level": 64,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 32,
-          "exp": 0
-        },
-        "miaojiang_force_2": {
-          "level": 70
-        }
-      },
-      "skills": {
-        "拳": "miao_gu",
-        "招架": "jh_parry",
-        "内功": "miaojiang_force_2"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 96,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_miaojiang",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "miaojiang",
-      "rank": 0,
-      "personality": "qienuo",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "守着寨后那处崖口，夜里的虫鸣停了三回，人来了三回。",
-        "now": "有人赏了他一把刀，条件是替人办一件说不清的事",
-        "want": "往上再挪一挪，哪怕只是一格",
-        "voice": {
-          "tone": "结结巴巴，怯生生的",
-          "catchphrase": "「哦。」"
-        },
-        "marks": [
-          "刀疤"
-        ],
-        "sect": "苗疆五毒教",
-        "origin": "被捡上山的时候还不到十岁，名字是老一辈随手起的",
-        "fear": "怕哪天自己也被写成名册上的一行",
-        "routine": [
-          {
-            "at": "dusk",
-            "act": "天不亮就起来，先扫一遍院子再练功"
-          }
-        ],
-        "arc": "迟早要为一个人破一次例"
-      }
-    },
-    "sectguard_taohua": {
-      "id": "sectguard_taohua",
-      "name": "桃花岛弟子",
-      "gender": "male",
-      "room": "taohuadao_dock",
-      "desc": "青衣小帽，站在渡口的木桩上。他说话时总先笑一笑。",
-      "level": 32,
-      "hp": 1250,
-      "mp": 300,
-      "atk": 125,
-      "def": 100,
-      "dodge": 51,
-      "parry": 50,
-      "speed": 61,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「船卯时发，申时回。误了就坐这儿等明早。」",
-        "「上船别碰船尾那捆绳子。那绳子不是系船用的。」",
-        "「你问它是做什么的，我也不知道。岛上的人都不问。」"
-      ],
-      "tag": "shouwei",
-      "title": "渡口迎客",
-      "learned": {
-        "kuangfeng_daofa": {
-          "level": 64,
-          "exp": 0
-        },
-        "taohua_force_1": {
-          "level": 64,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 32,
-          "exp": 0
-        },
-        "taohua_force_2": {
-          "level": 70
-        }
-      },
-      "skills": {
-        "刀": "kuangfeng_daofa",
-        "招架": "jh_parry",
-        "内功": "taohua_force_2"
-      },
-      "equipment": {
-        "武器": "iron_blade"
-      },
-      "carry": {
-        "money": 96,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_taohua",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "taohua",
-      "rank": 0,
-      "personality": "wenwan",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "在山门下扫了十一年地的老弟子，扫帚柄上磨出了包浆",
-        "now": "眼看就要开春，棉袄该换下来了，可还没攒够钱",
-        "want": "攒够二两银子，把家里那笔债还清",
-        "voice": {
-          "tone": "和气，说话轻",
-          "catchphrase": "「上岛的？先把船系稳再说话。」"
-        },
-        "marks": [
-          "佛珠"
-        ],
-        "sect": "桃花岛",
-        "origin": "十六岁剃度，师父说是见了佛缘",
-        "fear": "怕练不到头，白挨了这多年苦",
-        "routine": [
-          {
-            "at": "night",
-            "act": "晌午靠着墙根打个盹，醒了再练"
-          }
-        ],
-        "arc": " someday 会挑明自己当年为什么上山"
-      }
-    },
-    "sectguard_gumu": {
-      "id": "sectguard_gumu",
-      "name": "古墓弟子",
-      "gender": "female",
-      "room": "gumu_mu",
-      "desc": "白衣，面罩轻纱。她拦在墓道口，声音很轻：「来者何人？」",
-      "level": 32,
-      "hp": 1250,
-      "mp": 300,
-      "atk": 125,
-      "def": 100,
-      "dodge": 51,
-      "parry": 50,
-      "speed": 61,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「进去了别叫名字。里头那位听不得自己姓什么。」",
-        "「墓门只开半个时辰。没赶上出来，就等下个月。」",
-        "「上个月有个没赶上的。他在里头待到今天，人还认得路，就是不太认得人了。」"
-      ],
-      "tag": "shouwei",
-      "title": "护墓弟子",
-      "learned": {
-        "basic_sword": {
-          "level": 64,
-          "exp": 0
-        },
-        "lingbo_weibu": {
-          "level": 64,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 32,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "剑": "basic_sword",
-        "招架": "jh_parry"
-      },
-      "equipment": {
-        "武器": "iron_sword_basic"
-      },
-      "carry": {
-        "money": 96,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_gumu",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "gumu",
-      "rank": 0,
-      "personality": "lengmo",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "在山门下扫了十一年地的老弟子，扫帚柄上磨出了包浆",
-        "now": "眼看就要开春，棉袄该换下来了，可还没攒够钱",
-        "want": "攒够二两银子，把家里那笔债还清",
-        "voice": {
-          "tone": "冷淡，话里不带情绪",
-          "catchphrase": "「墓里冷，话说短些。」"
-        },
-        "marks": [
-          "佛珠"
-        ],
-        "sect": "古墓派",
-        "origin": "十六岁剃度，师父说是见了佛缘",
-        "fear": "怕家里人知道自己在这条路上",
-        "routine": [
-          {
-            "at": "dawn",
-            "act": "天擦黑在门口站一会儿，看有没有人上山"
-          }
-        ],
-        "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
-      }
-    },
-    "sectguard_xingxiu": {
-      "id": "sectguard_xingxiu",
-      "name": "星宿弟子",
-      "gender": "male",
-      "room": "xiyu_oasis",
-      "desc": "一身番僧打扮，脸上堆着笑。笑得越亲热，眼神越冷。",
-      "level": 32,
-      "hp": 1250,
-      "mp": 300,
-      "atk": 125,
-      "def": 100,
-      "dodge": 51,
-      "parry": 50,
-      "speed": 61,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「哎哟，这位爷！您先喝口水，水里有沙子，您多担待。」",
-        "「您是要见老仙吧？我这就给您通报。通报之前，您身上的东西都搁这儿。」",
-        "「搁这儿不吃亏。上一位爷搁了三十两，走的时候还多拿了两匹布。」"
-      ],
-      "tag": "shouwei",
-      "title": "迎客弟子",
-      "learned": {
-        "cuixin_zhang": {
-          "level": 64,
-          "exp": 0
-        },
-        "xingxiu_force_1": {
-          "level": 64,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 32,
-          "exp": 0
-        },
-        "xingxiu_force_2": {
-          "level": 70
-        }
-      },
-      "skills": {
-        "棍": "cuixin_zhang",
-        "招架": "jh_parry",
-        "内功": "xingxiu_force_2"
-      },
-      "equipment": {
-        "武器": "wood_staff"
-      },
-      "carry": {
-        "money": 96,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_xingxiu",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "xingxiu",
-      "rank": 0,
-      "personality": "youhua",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "替上头跑腿的，什么脏活都接，从不多问一句",
-        "now": "他知道自己迟早也是那个被写进名册的人",
-        "want": "把手上的事办完，回家看一眼",
-        "voice": {
-          "tone": "油滑，见人先笑",
-          "catchphrase": "「别问，问了就得知道。」"
-        },
-        "marks": [
-          "指甲缝里有洗不净的黑"
-        ],
-        "sect": "星宿派",
-        "origin": "卖身契按在别人手里，契上写着他的名字",
-        "fear": "怕哪天自己也被写成名册上的一行",
-        "routine": [
-          {
-            "at": "dusk",
-            "act": "天不亮就起来，先扫一遍院子再练功"
-          }
-        ],
-        "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
-      }
-    },
-    "sectguard_xuedao": {
-      "id": "sectguard_xuedao",
-      "name": "血刀弟子",
-      "gender": "male",
-      "room": "beijiang_xuedao",
-      "desc": "红衣，刀鞘上缠着褪色的绳。他看你的眼神像在看一件物什。",
-      "level": 32,
-      "hp": 1250,
-      "mp": 300,
-      "atk": 125,
-      "def": 100,
-      "dodge": 51,
-      "parry": 50,
-      "speed": 61,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「把刀放在地上，退三步。」",
-        "「你退得挺快。上一个没退的，埋在后头那片林子里。」",
-        "「林子里的树今年长得特别好。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "xuedao": {
-          "level": 64,
-          "exp": 0
-        },
-        "xuedao_force_1": {
-          "level": 64,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 32,
-          "exp": 0
-        },
-        "xuedao_force_2": {
-          "level": 70
-        }
-      },
-      "skills": {
-        "刀": "xuedao",
-        "招架": "jh_parry",
-        "内功": "xuedao_force_2"
-      },
-      "equipment": {
-        "武器": "iron_blade"
-      },
-      "carry": {
-        "money": 96,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_xuedao",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "xuedao",
-      "rank": 0,
-      "personality": "baozhao",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "崖上风大，夜里守着守着，就学会了听雪落的声音。",
-        "now": "他知道自己迟早也是那个被写进名册的人",
-        "want": "往上再挪一挪，哪怕只是一格",
-        "voice": {
-          "tone": "嗓门硬，一句就顶回去",
-          "catchphrase": "「别问，问了就得知道。」"
-        },
-        "marks": [
-          "指甲缝里有洗不净的黑"
-        ],
-        "sect": "血刀门",
-        "origin": "卖身契按在别人手里，契上写着他的名字",
-        "fear": "怕哪天自己也被写成名册上的一行",
-        "routine": [
-          {
-            "at": "dusk",
-            "act": "睡得很浅，一有脚步声就醒"
-          }
-        ],
-        "arc": "迟早要为一个人破一次例"
-      }
-    },
-    "sectguard_xiake": {
-      "id": "sectguard_xiake",
-      "name": "侠客岛仆役",
-      "gender": "male",
-      "room": "xiake_dukou",
-      "desc": "灰衣仆役，垂手立在渡口。他不多话，只等你开口。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「岛上不收留人。你是被请来的，还是自己来的？」",
-        "「自己来的就回去。船十年一趟，你等不起。」",
-        "「上一个自己来的等了六年，第六年他自己游回去了。」"
-      ],
-      "tag": "shouwei",
-      "title": "引路仆役",
-      "learned": {
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_parry": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "basic_force",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_xiake",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "xiake",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "跑外路的，一趟三个月不着家",
-        "now": "老镖头的腿伤了，局里正缺人顶他的位置",
-        "want": "等这一趟走完就回家，不干了",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「您的货，我担着。」"
-        },
-        "marks": [
-          "护腕"
-        ],
-        "sect": "侠客岛"
-      }
-    },
-    "sectguard_taishan": {
-      "id": "sectguard_taishan",
-      "name": "泰山派弟子",
-      "gender": "male",
-      "room": "taishan_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 32,
-      "hp": 1250,
-      "mp": 300,
-      "atk": 125,
-      "def": 100,
-      "dodge": 51,
-      "parry": 50,
-      "speed": 61,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「松树下不许拴马。马粪烧根，那树比我师父年纪还大。」",
-        "「你是来说并派的事的吧。今年已经来过十一个了。」",
-        "「第十二个是你。你要说，我听着，我不回话。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "taishan_force_1": {
-          "level": 64,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 64,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 32,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "taishan_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 96,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_taishan",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "taishan",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "在山门下扫了十一年地的老弟子，扫帚柄上磨出了包浆",
-        "now": "眼看就要开春，棉袄该换下来了，可还没攒够钱",
-        "want": "想讨一本注解来看懂经上那句没头没尾的话",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「山门里不宜喧哗。」"
-        },
-        "marks": [
-          "僧"
-        ],
-        "sect": "泰山派",
-        "origin": "自幼在寺里长大，没下过山",
-        "fear": "怕练不到头，白挨了这多年苦",
-        "routine": [
-          {
-            "at": "dusk",
-            "act": "睡得很浅，一有脚步声就醒"
-          }
-        ],
-        "arc": "迟早要为一个人破一次例"
-      }
-    },
-    "sectguard_hengshan": {
-      "id": "sectguard_hengshan",
-      "name": "衡山派弟子",
-      "gender": "male",
-      "room": "hengshan_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 32,
-      "hp": 1250,
-      "mp": 300,
-      "atk": 125,
-      "def": 100,
-      "dodge": 51,
-      "parry": 50,
-      "speed": 61,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「琴房在左手第二间。进去先听，听完再敲门。」",
-        "「敲三下。敲四下的人，我们当他是来打架的。」",
-        "「上个月敲四下的那位，现在还在养伤。他说是他数错了。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "hengshan_force_1": {
-          "level": 64,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 64,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 32,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "hengshan_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 96,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_hengshan",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "hengshan",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "每日三炷香，风雨不误，从没断过",
-        "now": "守门的活计清闲，闲下来反倒睡不踏实。",
-        "want": "攒够二两银子，把家里那笔债还清",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「山门不接空手的外客，报上师承。」"
-        },
-        "marks": [
-          "道"
-        ],
-        "sect": "衡山派",
-        "origin": "十六岁剃度，师父说是见了佛缘",
-        "fear": "怕哪天自己也被写成名册上的一行",
-        "routine": [
-          {
-            "at": "dusk",
-            "act": "睡得很浅，一有脚步声就醒"
-          }
-        ],
-        "arc": " someday 会挑明自己当年为什么上山"
-      }
-    },
-    "sectguard_hengshanN": {
-      "id": "sectguard_hengshanN",
-      "name": "恒山派弟子",
-      "gender": "male",
-      "room": "hengshanN_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 32,
-      "hp": 1250,
-      "mp": 300,
-      "atk": 125,
-      "def": 100,
-      "dodge": 51,
-      "parry": 50,
-      "speed": 61,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「上香还是看病？」",
-        "「看病往右，上香往左。药箱搁在门槛外头，别提进来。」",
-        "「门槛里头是佛地，药是脏东西。我们这么分，不是嫌药，是嫌血。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "hengshanN_force_1": {
-          "level": 64,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 64,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 32,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "hengshanN_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 96,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_hengshanN",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "hengshanN",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "每日三炷香，风雨不误，从没断过",
-        "now": "进山九年，只回过一次家。那次是母亲没了。",
-        "want": "攒够二两银子，把家里那笔债还清",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「阿弥陀佛。」"
-        },
-        "marks": [
-          "佛珠"
-        ],
-        "sect": "恒山派",
-        "origin": "自幼在寺里长大，没下过山",
-        "fear": "怕哪天自己也被写成名册上的一行",
-        "routine": [
-          {
-            "at": "night",
-            "act": "晌午靠着墙根打个盹，醒了再练"
-          }
-        ],
-        "arc": "迟早要为一个人破一次例"
-      }
-    },
-    "sectguard_qingcheng": {
-      "id": "sectguard_qingcheng",
-      "name": "青城派弟子",
-      "gender": "male",
-      "room": "qingcheng_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 32,
-      "hp": 1250,
-      "mp": 300,
-      "atk": 125,
-      "def": 100,
-      "dodge": 51,
-      "parry": 50,
-      "speed": 61,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「雾大，跟着我走，别自己走。」",
-        "「找掌门去后头。他这会儿在练掌，练掌的时候别站他对面。」",
-        "「站侧面也不成。你就站在我这儿，我这儿他看得见，打不着。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "qingcheng_force_1": {
-          "level": 64,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 64,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 32,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "qingcheng_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 96,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_qingcheng",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "qingcheng",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "每日三炷香，风雨不误，从没断过",
-        "now": "儿子该开蒙了，束脩还差着一大截没凑齐。",
-        "want": "想讨一本注解来看懂经上那句没头没尾的话",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「青城的山门不看衣冠，看你走不走得稳。」"
-        },
-        "marks": [
-          "佛珠"
-        ],
-        "sect": "青城派",
-        "origin": "自幼在寺里长大，没下过山",
-        "fear": "怕家里人知道自己在这条路上",
-        "routine": [
-          {
-            "at": "dawn",
-            "act": "天擦黑在门口站一会儿，看有没有人上山"
-          }
-        ],
-        "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
-      }
-    },
-    "sectguard_kongtong": {
-      "id": "sectguard_kongtong",
-      "name": "崆峒派弟子",
-      "gender": "male",
-      "room": "kongtong_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 32,
-      "hp": 1250,
-      "mp": 300,
-      "atk": 125,
-      "def": 100,
-      "dodge": 51,
-      "parry": 50,
-      "speed": 61,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「门里的老人手都抖。你看见别问，问了也没人答。」",
-        "「七伤拳的场子在西边，那块地的土是红的，别踩。」",
-        "「红不是染的。踩了你就明白了。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "kongtong_force_1": {
-          "level": 64,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 64,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 32,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "kongtong_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 96,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_kongtong",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "kongtong",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "管一盏长明灯的，灯芯换得比谁都快",
-        "now": "夜里山风大，守到三更就冷得跺脚。",
-        "want": "攒够二两银子，把家里那笔债还清",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「崆峒的规矩写在门边那块木牌上，自己看。」"
-        },
-        "marks": [
-          "旧布衣"
-        ],
-        "sect": "崆峒派",
-        "origin": "自幼在寺里长大，没下过山",
-        "fear": "怕家里人知道自己在这条路上",
-        "routine": [
-          {
-            "at": "night",
-            "act": "睡得很浅，一有脚步声就醒"
-          }
-        ],
-        "arc": "迟早要为一个人破一次例"
-      }
-    },
-    "sectguard_kunlun": {
-      "id": "sectguard_kunlun",
-      "name": "昆仑派弟子",
-      "gender": "male",
-      "room": "kunlun_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 32,
-      "hp": 1250,
-      "mp": 300,
-      "atk": 125,
-      "def": 100,
-      "dodge": 51,
-      "parry": 50,
-      "speed": 61,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「左手还是右手？」",
-        "「答不上来的，山上不教。」",
-        "「剑架在门后，两柄一副。少一柄你就别拿了，拿一柄上去要被赶下来。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "kunlun_force_1": {
-          "level": 64,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 64,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 32,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "kunlun_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 96,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_kunlun",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "kunlun",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "在山门下扫了十一年地的老弟子，扫帚柄上磨出了包浆",
-        "now": "眼看就要开春，棉袄该换下来了，可还没攒够钱",
-        "want": "攒够二两银子，把家里那笔债还清",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「上了这道坡就是昆仑的地界，先把口气匀匀。」"
-        },
-        "marks": [
-          "佛珠"
-        ],
-        "sect": "昆仑派",
-        "origin": "自幼在寺里长大，没下过山",
-        "fear": "怕哪天自己也被写成名册上的一行",
-        "routine": [
-          {
-            "at": "night",
-            "act": "天不亮就起来，先扫一遍院子再练功"
-          }
-        ],
-        "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
-      }
-    },
-    "sectguard_diancang": {
-      "id": "sectguard_diancang",
-      "name": "点苍派弟子",
-      "gender": "male",
-      "room": "diancang_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 32,
-      "hp": 1250,
-      "mp": 300,
-      "atk": 125,
-      "def": 100,
-      "dodge": 51,
-      "parry": 50,
-      "speed": 61,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「十九峰，我们只占三座。你找人，先说哪座。」",
-        "「山下集市今天逢五，人都在那儿。你要找的人多半也在。」",
-        "「掌门也在。他逢五必去，去了就买两捆柴回来，自己扛。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "diancang_force_1": {
-          "level": 64,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 64,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 32,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "diancang_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 96,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_diancang",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "diancang",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "管一盏长明灯的，灯芯换得比谁都快",
-        "now": "他把剑谱抄了三遍，第三遍的字比第一遍小。",
-        "want": "想讨一本注解来看懂经上那句没头没尾的话",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「点苍不接生客。有事说事，别绕。」"
-        },
-        "marks": [
-          "佛珠"
-        ],
-        "sect": "点苍派",
-        "origin": "十六岁剃度，师父说是见了佛缘",
-        "fear": "怕练不到头，白挨了这多年苦",
-        "routine": [
-          {
-            "at": "dusk",
-            "act": "晌午靠着墙根打个盹，醒了再练"
-          }
-        ],
-        "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
-      }
-    },
-    "sectguard_tiezhang": {
-      "id": "sectguard_tiezhang",
-      "name": "铁掌帮弟子",
-      "gender": "male",
-      "room": "tiezhang_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 32,
-      "hp": 1250,
-      "mp": 300,
-      "atk": 125,
-      "def": 100,
-      "dodge": 51,
-      "parry": 50,
-      "speed": 61,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「手伸出来。」",
-        "「掌心的茧我一看就知道你练过什么。练过的更好办，规矩你懂。」",
-        "「没练过的也不打紧，你把手缩回去，我就不问了。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "tiezhang_force_1": {
-          "level": 64,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 64,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 32,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "棍": "tiezhang_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": {
-        "武器": "wood_staff"
-      },
-      "carry": {
-        "money": 96,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_tiezhang",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "tiezhang",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "扛了六年旗子的，旗子比人还重要",
-        "now": "上一趟押货亏了二百两，局里还没追究，也不知追究不追究",
-        "want": "等这一趟走完就回家，不干了",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「这价钱，砍不动。」"
-        },
-        "marks": [
-          "护腰刀"
-        ],
-        "sect": "铁掌帮",
-        "origin": "家里兄弟姊妹多，排到自己是最后一个",
-        "fear": "怕家里人知道自己在这条路上",
-        "routine": [
-          {
-            "at": "dusk",
-            "act": "天不亮就起来，先扫一遍院子再练功"
-          }
-        ],
-        "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
-      }
-    },
-    "sectguard_hehuan": {
-      "id": "sectguard_hehuan",
-      "name": "合欢宗弟子",
-      "gender": "male",
-      "room": "hehuan_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 32,
-      "hp": 1250,
-      "mp": 300,
-      "atk": 125,
-      "def": 100,
-      "dodge": 51,
-      "parry": 50,
-      "speed": 61,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「白天不接客。」",
-        "「找人黄昏以后来，走后门。前门那个灯笼是给巡街的看的。」",
-        "「灯笼里点的不是蜡烛，是香。烧完了就换，一天换三回。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "hehuan_force_1": {
-          "level": 64,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 64,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 32,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "hehuan_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 96,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_hehuan",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "hehuan",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "B",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "B",
-        "lock": false,
-        "role": "替人收拾尸首的，手比谁都稳",
-        "now": "他知道自己迟早也是那个被写进名册的人",
-        "want": "往上再挪一挪，哪怕只是一格",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「你猜呢。」"
-        },
-        "marks": [
-          "黑衣"
-        ],
-        "sect": "合欢宗",
-        "origin": "曾是正道门下的弃徒，转投过来之后再没回过头",
-        "fear": "怕一个人待太久，待到忘了自己原来是谁",
-        "routine": [
-          {
-            "at": "dusk",
-            "act": "晌午靠着墙根打个盹，醒了再练"
-          }
-        ],
-        "arc": " someday 会挑明自己当年为什么上山"
-      }
-    },
-    "sectguard_jindao": {
-      "id": "sectguard_jindao",
-      "name": "金刀门弟子",
-      "gender": "male",
-      "room": "jindao_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「刀是真货，招牌是假的。金漆掉了三年，没人管。」",
-        "「想学先交三个月束脩。钱不够就来劈三个月柴，一样的。」",
-        "「劈柴的也教。教得慢些，教完一样给刀。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "jindao_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "刀": "jindao_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": {
-        "武器": "iron_blade"
-      },
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_jindao",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "jindao",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "他守着刀房十九年，刀架上少一把他都知道。",
-        "now": "新收的弟子分去了正屋，自己搬去柴房，铺盖一样没少带。",
-        "want": "在下次比试里赢回来",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「胜负事小。」"
-        },
-        "marks": [
-          "掌门亲传"
-        ],
-        "sect": "金刀门"
-      }
-    },
-    "sectguard_wuhu": {
-      "id": "sectguard_wuhu",
-      "name": "五虎断门刀弟子",
-      "gender": "male",
-      "room": "wuhu_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「五招。一招管一刀，多了没有。」",
-        "「老爷子在里头睡觉。你要学，先学会别问第六招。」",
-        "「问过第六招的有四个人。四个都没学成。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "wuhu_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "wuhu_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_wuhu",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "wuhu",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "守藏经阁的，闲下来就抄书",
-        "now": "山门口的迎客活交给了新人，改守后山，清净不少。",
-        "want": "能替师门接一趟护镖的活",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「我这就去办。」"
-        },
-        "marks": [
-          "青衫"
-        ],
-        "sect": "五虎断门刀"
-      }
-    },
-    "sectguard_feihu": {
-      "id": "sectguard_feihu",
-      "name": "飞虎镖局弟子",
-      "gender": "male",
-      "room": "feihu_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「旗子还在，镖就没丢。」",
-        "「托镖先说货。说不出货的，我们不接。」",
-        "「上个月有个说不出货的，我们也没接。后来那趟镖是别家走的，走到一半没了。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "feihu_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "feihu_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_feihu",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "feihu",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "扛了六年旗子的，旗子比人还重要",
-        "now": "老镖头的腿伤了，局里正缺人顶他的位置",
-        "want": "等这一趟走完就回家，不干了",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「走镖的，认路。」"
-        },
-        "marks": [
-          "肩上压出的印子"
-        ],
-        "sect": "飞虎镖局"
-      }
-    },
-    "sectguard_zhenyuan": {
-      "id": "sectguard_zhenyuan",
-      "name": "镇远镖局弟子",
-      "gender": "male",
-      "room": "zhenyuan_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「旗子补过三回，补一回少走一趟远路。」",
-        "「规矩贴在墙上，二十七条。你先看，看完再说。」",
-        "「看不完就看前三条。前三条是拿命换的，后二十四条是拿钱换的。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "zhenyuan_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "zhenyuan_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_zhenyuan",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "zhenyuan",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "看夜门的，夜里最精神",
-        "now": "老镖头的腿伤了，局里正缺人顶他的位置",
-        "want": "把上一趟亏的补回来",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「这价钱，砍不动。」"
-        },
-        "marks": [
-          "肩上压出的印子"
-        ],
-        "sect": "镇远镖局"
-      }
-    },
-    "sectguard_shenquan": {
-      "id": "sectguard_shenquan",
-      "name": "神拳门弟子",
-      "gender": "male",
-      "room": "shenquan_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「拳架子要正。先站马步，站稳了再说别的。」",
-        "「镇上的孩子都学过两天，学完就不来了。」",
-        "「你要是有事，就别占这个时辰。这个时辰是给他们的。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "shenquan_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "shenquan_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_shenquan",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "shenquan",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "跑街串巷收生意的",
-        "now": "他想改行，又放不下攒了十年的那点本钱",
-        "want": "把这个月亏的补回来",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「这价钱，砍不动。」"
-        },
-        "marks": [
-          "算盘"
-        ],
-        "sect": "神拳门"
-      }
-    },
-    "sectguard_tieqiang": {
-      "id": "sectguard_tieqiang",
-      "name": "铁枪门弟子",
-      "gender": "male",
-      "room": "tieqiang_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「门口那杆枪一百二十斤。提得起来，门就自己开了。」",
-        "「提不起来也别硬提。上上个月有个硬提的，现在还躺着。」",
-        "「躺着那位也不亏，门里管饭。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "tieqiang_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "tieqiang_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_tieqiang",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "tieqiang",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "守藏经阁的，闲下来就抄书",
-        "now": "铺子交徒弟看着，自己退到后院打铁，火候反而比从前稳。",
-        "want": "在下次比试里赢回来",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「胜负事小。」"
-        },
-        "marks": [
-          "旧伤在右腕"
-        ],
-        "sect": "铁枪门"
-      }
-    },
-    "sectguard_kuaidao": {
-      "id": "sectguard_kuaidao",
-      "name": "快刀门弟子",
-      "gender": "male",
-      "room": "kuaidao_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「后院有人在劈柴。你要是慢的，就去跟他一块劈。」",
-        "「门里的话只说一遍，听不清是你自己的事。」",
-        "「劈柴劈得快的，我们收。劈得慢的，劈到今年冬天也就习惯了。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "kuaidao_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "刀": "kuaidao_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": {
-        "武器": "iron_blade"
-      },
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_kuaidao",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "kuaidao",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "巡山的，脚步比山猫还轻",
-        "now": "娘的信说入冬要添衣，赏钱还没攒够，看一眼心里堵一分。",
-        "want": "就想听爹说一句「比当年强」，他不肯说，只好自己接着练。",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「胜负事小。」"
-        },
-        "marks": [
-          "青衫"
-        ],
-        "sect": "快刀门"
-      }
-    },
-    "sectguard_luohan": {
-      "id": "sectguard_luohan",
-      "name": "罗汉门弟子",
-      "gender": "male",
-      "room": "luohan_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「我们不是少林的。你找少林往北三百里。」",
-        "「拳是真的。你要试，我陪你试三招。」",
-        "「试完再问是不是少林的，我也不恼。问的人都试过三招了。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "luohan_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "luohan_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_luohan",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "luohan",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "每日三炷香，风雨不误，从没断过",
-        "now": "他不识字。戒牒上的名字是别人替他写的。",
-        "want": "想讨一本注解来看懂经上那句没头没尾的话",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「山门里不宜喧哗。」"
-        },
-        "marks": [
-          "僧"
-        ],
-        "sect": "罗汉门"
-      }
-    },
-    "sectguard_wuyun": {
-      "id": "sectguard_wuyun",
-      "name": "五云手温家弟子",
-      "gender": "male",
-      "room": "wuyun_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「皮货走东门，这门是家里人走的。」",
-        "「姑娘今天在后院鞣皮。」",
-        "「你要说毒的事，就别提传男不传女那句。她听过太多回了。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "wuyun_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "wuyun_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_wuyun",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "wuyun",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "在山门下扫了十一年地的老弟子，扫帚柄上磨出了包浆",
-        "now": "他说话前先咽一口，咽完还是不说。",
-        "want": "攒够盘缠就辞了这份差，回滇南看看阿妈种的茶树。",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「温家的门不常开。你找谁？」"
-        },
-        "marks": [
-          "僧"
-        ],
-        "sect": "五云手温家"
-      }
-    },
-    "sectguard_dafeng": {
-      "id": "sectguard_dafeng",
-      "name": "大风云飞门弟子",
-      "gender": "male",
-      "room": "dafeng_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「我们门里跑得快，跳得不高。你看跳的，隔壁山头有。」",
-        "「门主在操场上绕圈，一天八十圈。你等他绕完，或者跟着绕。」",
-        "「绕不完的也有。绕不完的人第二天还来。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "dafeng_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "dafeng_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_dafeng",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "dafeng",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "巡山的，脚步比山猫还轻",
-        "now": "船上的平安信压在箱底，自己识字慢，一封要看一晚上。",
-        "want": "在下次比试里赢回来",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「胜负事小。」"
-        },
-        "marks": [
-          "护腕"
-        ],
-        "sect": "大风云飞门"
-      }
-    },
-    "sectguard_huanghe": {
-      "id": "sectguard_huanghe",
-      "name": "黄河帮弟子",
-      "gender": "male",
-      "room": "huanghe_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「码头是帮里的。你的船要泊，往下游去三百步。」",
-        "「纤绳不许踩。踩断一回，赔三天的工。」",
-        "「三天工不算多。断的那回，船上的货全下水了。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "huanghe_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "huanghe_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_huanghe",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "huanghe",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "扛了六年旗子的，旗子比人还重要",
-        "now": "老镖头的腿伤了，局里正缺人顶他的位置",
-        "want": "把上一趟亏的补回来",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「您的货，我担着。」"
-        },
-        "marks": [
-          "护腕"
-        ],
-        "sect": "黄河帮"
-      }
-    },
-    "sectguard_taihu": {
-      "id": "sectguard_taihu",
-      "name": "太湖帮弟子",
-      "gender": "male",
-      "room": "taihu_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「船比人多，你别看空船就上。空船多半是漏的。」",
-        "「帮主出湖了，收例钱去了。你要找他，等风向转南。」",
-        "「转南他就回来了。船走北风快，走南风也快，他这个人只认南风。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "taihu_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "taihu_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_taihu",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "taihu",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "在库房点货，闭着眼都能点清",
-        "now": "家里的婆娘带着孩子住在城里，他一年见不上两回",
-        "want": "把上一趟亏的补回来",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「走镖的，认路。」"
-        },
-        "marks": [
-          "肩上压出的印子"
-        ],
-        "sect": "太湖帮"
-      }
-    },
-    "sectguard_poyang": {
-      "id": "sectguard_poyang",
-      "name": "鄱阳帮弟子",
-      "gender": "male",
-      "room": "poyang_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「太湖来的？」",
-        "「不像。太湖的人不会从这门进。」",
-        "「门后那条岔河，往左是鄱阳，往右是太湖。你走错了我不拦，走了就别回来。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "poyang_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "poyang_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_poyang",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "poyang",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "扛了六年旗子的，旗子比人还重要",
-        "now": "老镖头的腿伤了，局里正缺人顶他的位置",
-        "want": "等这一趟走完就回家，不干了",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「走镖的，认路。」"
-        },
-        "marks": [
-          "肩上压出的印子"
-        ],
-        "sect": "鄱阳帮"
-      }
-    },
-    "sectguard_qingzhu": {
-      "id": "sectguard_qingzhu",
-      "name": "青竹帮弟子",
-      "gender": "male",
-      "room": "qingzhu_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「竹山不给人看。你要买竹，去城里那家行。」",
-        "「别摸门框。门框是竹的，新砍的，有刺。」",
-        "「上个月扎了三个人。三个都是外乡的。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "qingzhu_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "qingzhu_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_qingzhu",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "qingzhu",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "扛了六年旗子的，旗子比人还重要",
-        "now": "老镖头的腿伤了，局里正缺人顶他的位置",
-        "want": "把上一趟亏的补回来",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「您的货，我担着。」"
-        },
-        "marks": [
-          "肩上压出的印子"
-        ],
-        "sect": "青竹帮"
-      }
-    },
-    "sectguard_jujing": {
-      "id": "sectguard_jujing",
-      "name": "巨鲸帮弟子",
-      "gender": "male",
-      "room": "jujing_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「船补过七八回了，看着破，还浮着。」",
-        "「你要出海，先说会不会水。不会水的我们不带。」",
-        "「带了也是白搭。名字起得凶，日子过得苦，这两样我们都不瞒人。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "jujing_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "jujing_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_jujing",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "jujing",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "跑外路的，一趟三个月不着家",
-        "now": "上一趟押货亏了二百两，局里还没追究，也不知追究不追究",
-        "want": "在局里混个名分，别再被人叫「喂」",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「您的货，我担着。」"
-        },
-        "marks": [
-          "护腰刀"
-        ],
-        "sect": "巨鲸帮"
-      }
-    },
-    "sectguard_jinlong": {
-      "id": "sectguard_jinlong",
-      "name": "金龙帮弟子",
-      "gender": "male",
-      "room": "jinlong_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「堂口是新修的。别摸柱子，漆还没干。」",
-        "「账房在二楼。你要查账，得帮主点头，帮主这几天不在。」",
-        "「上个月也不在，上上个月也不在。账房那位倒是天天在。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "jinlong_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "jinlong_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_jinlong",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "jinlong",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "看夜门的，夜里最精神",
-        "now": "家里的婆娘带着孩子住在城里，他一年见不上两回",
-        "want": "等这一趟走完就回家，不干了",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「您的货，我担着。」"
-        },
-        "marks": [
-          "旗"
-        ],
-        "sect": "金龙帮"
-      }
-    },
-    "sectguard_wuliang": {
-      "id": "sectguard_wuliang",
-      "name": "无量剑派弟子",
-      "gender": "male",
-      "room": "wuliang_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「东宗在西边，西宗在东边。别搞反了。」",
-        "「今年比剑在腊月廿九。要看就早一天上山，山上没客房。」",
-        "「没客房，有柴房。柴房去年住了十一个人，都是来看比剑的。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "wuliang_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "wuliang_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_wuliang",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "wuliang",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "替师兄弟收尾招的，收得比打得还认真",
-        "now": "上月校场输了半式枪，这月枪杆不离手，茧又厚了一层。",
-        "want": "师父从来只点头不夸人，想着哪天打得他非开口不可。",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「胜负事小。」"
-        },
-        "marks": [
-          "青衫"
-        ],
-        "sect": "无量剑派"
-      }
-    },
-    "sectguard_funiu": {
-      "id": "sectguard_funiu",
-      "name": "伏牛派弟子",
-      "gender": "male",
-      "room": "funiu_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「牛在坡上。你要看拳，先帮我把牛牵回来。」",
-        "「按牛的拳按人也行。你别问哪个更顶用。」",
-        "「问的人都是没被按过的。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "funiu_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "funiu_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_funiu",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "funiu",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "巡山的，脚步比山猫还轻",
-        "now": "比试输在三招之外，回来把那三招拆了又装，装了又拆。",
-        "want": "在下次比试里赢回来",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「我这就去办。」"
-        },
-        "marks": [
-          "掌门亲传"
-        ],
-        "sect": "伏牛派"
-      }
-    },
-    "sectguard_baisheng": {
-      "id": "sectguard_baisheng",
-      "name": "百胜刀门弟子",
-      "gender": "male",
-      "room": "baisheng_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「百胜。不是百战百胜。」",
-        "「门主交代的，谁来都先说这一句。」",
-        "「你要问第二遍，我也还是这么答。门主说了，答得多了就成真的了。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "baisheng_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "baisheng_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_baisheng",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "baisheng",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "巡山的，脚步比山猫还轻",
-        "now": "输给同门半分力道，如今劈柴都数着数练。",
-        "want": "能替师门接一趟护镖的活",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「同门之间，本该如此。」"
-        },
-        "marks": [
-          "掌门亲传"
-        ],
-        "sect": "百胜刀门"
-      }
-    },
-    "sectguard_baituo": {
-      "id": "sectguard_baituo",
-      "name": "白驼山弟子",
-      "gender": "male",
-      "room": "baituo_gate",
-      "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
-      "level": 24,
-      "hp": 950,
-      "mp": 300,
-      "atk": 92,
-      "def": 76,
-      "dodge": 38,
-      "parry": 50,
-      "speed": 46,
-      "hostile": false,
-      "leavesCorpse": true,
-      "talk": [
-        "「别动脚。你脚边那条不是草。」",
-        "「山主说话的时候你别插嘴。他手边那条认生。」",
-        "「山上养蛇的人比住的人多，这话不是吓你，是告诉你别乱走。」"
-      ],
-      "tag": "shouwei",
-      "title": "守门弟子",
-      "learned": {
-        "baituo_force_1": {
-          "level": 48,
-          "exp": 0
-        },
-        "basic_force": {
-          "level": 48,
-          "exp": 0
-        },
-        "jh_parry": {
-          "level": 30,
-          "exp": 0
-        }
-      },
-      "skills": {
-        "拳": "baituo_force_1",
-        "招架": "jh_parry"
-      },
-      "equipment": null,
-      "carry": {
-        "money": 72,
-        "items": []
-      },
-      "favorBase": 0.2,
-      "favorInit": 0,
-      "sidequest": null,
-      "home": "house:sectguard_baituo",
-      "age": 30,
-      "schedule": null,
-      "expReward": 0,
-      "potReward": 0,
-      "moneyReward": 0,
-      "loot": null,
-      "socialDone": true,
-      "relDone": true,
-      "sect": "baituo",
-      "rank": 0,
-      "personality": "mune",
-      "tier": "C",
-      "job": "shouwei",
-      "portrait": {
-        "v": 1,
-        "tier": "C",
-        "lock": false,
-        "role": "替人收拾尸首的，手比谁都稳",
-        "now": "有人赏了他一把刀，条件是替人办一件说不清的事",
-        "want": "攒够赎身的银子——虽然没人明说，可他知道有这条道",
-        "voice": {
-          "tone": "慢吞吞，半天才说一句",
-          "catchphrase": "「别问，问了就得知道。」"
-        },
-        "marks": [
-          "黑衣"
-        ],
-        "sect": "白驼山"
-      }
+    "wudang_force_2": {
+     "level": 101
     }
+   },
+   "skills": {
+    "拳": "wudang_taiji",
+    "招架": "jh_parry",
+    "内功": "wudang_force_2"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 138,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_wudang",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "wudang",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "A",
+   "job": "shouwei"
+  },
+  "sectguard_emei": {
+   "id": "sectguard_emei",
+   "name": "峨眉弟子",
+   "gender": "female",
+   "room": "emei_shanmen",
+   "desc": "素衣女弟子，鬓边别一朵杜鹃。她挡在门前的样子很客气，脚下却一步不让。",
+   "level": 46,
+   "hp": 1850,
+   "mp": 300,
+   "atk": 195,
+   "def": 150,
+   "dodge": 74,
+   "parry": 50,
+   "speed": 87,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「男客止步。你要找人，报名字，我替你进去问。」",
+    "「后山那条路你能走，走到舍身崖为止。」",
+    "「过了崖就不是你能走的地方了，我也不拦你，我只记一笔。」"
+   ],
+   "tag": "shouwei",
+   "title": "迎客弟子",
+   "learned": {
+    "emei_sword": {
+     "level": 92,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 92,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 46,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "剑": "emei_sword",
+    "招架": "jh_parry"
+   },
+   "equipment": {
+    "武器": "iron_sword_basic"
+   },
+   "carry": {
+    "money": 138,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_emei",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "emei",
+   "rank": 0,
+   "personality": "wenwan",
+   "tier": "A",
+   "job": "shouwei"
+  },
+  "sectguard_gaibang": {
+   "id": "sectguard_gaibang",
+   "name": "丐帮弟子",
+   "gender": "male",
+   "room": "gaibang_po_miao",
+   "desc": "破衫赤足，蹲在庙门槛上啃干粮。他抬眼看你的时候，眼睛很亮。",
+   "level": 46,
+   "hp": 1850,
+   "mp": 300,
+   "atk": 195,
+   "def": 150,
+   "dodge": 74,
+   "parry": 50,
+   "speed": 87,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「锅里有。碗在那摞着，自己拿。吃完把碗搁回原处，上次有人没搁，我找了三天。」",
+    "「见长老等他醒。他在东边那堆草里睡，别踩着他的腿。」",
+    "「他右腿断过。你踩了他也不喊，就是往后一个月都得你去喂他吃饭。」"
+   ],
+   "tag": "shouwei",
+   "title": "把风弟子",
+   "learned": {
+    "basic_staff": {
+     "level": 92,
+     "exp": 0
+    },
+    "basic_fist": {
+     "level": 92,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 46,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "棍": "basic_staff",
+    "招架": "jh_parry"
+   },
+   "equipment": {
+    "武器": "wood_staff"
+   },
+   "carry": {
+    "money": 138,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_gaibang",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "gaibang",
+   "rank": 0,
+   "personality": "youhua",
+   "tier": "A",
+   "job": "shouwei"
+  },
+  "sectguard_mojiao": {
+   "id": "sectguard_mojiao",
+   "name": "教众",
+   "gender": "male",
+   "room": "mojiao_shanmen",
+   "desc": "黑衣，脸上没表情。他手里横着刀柄，刀尖朝下。",
+   "level": 40,
+   "hp": 1650,
+   "mp": 300,
+   "atk": 165,
+   "def": 128,
+   "dodge": 64,
+   "parry": 50,
+   "speed": 76,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「牌子。要么亮，要么滚。」",
+    "「亮了也别乱走。崖上七条路，六条通不归处。」",
+    "「第七条你自己找。找不着就原路回来，回来我不记。」"
+   ],
+   "tag": "shouwei",
+   "title": "守崖教众",
+   "learned": {
+    "heimu_zhang": {
+     "level": 80,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 80,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 40,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "棍": "heimu_zhang",
+    "招架": "jh_parry"
+   },
+   "equipment": {
+    "武器": "wood_staff"
+   },
+   "carry": {
+    "money": 120,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_mojiao",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "mojiao",
+   "rank": 0,
+   "personality": "yinzhi",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "替人收拾尸首的，手比谁都稳",
+    "now": "同棚的兄弟殁在去年冬天，抚恤的银子还在司里压着手续。",
+    "want": "把手上的事办完，回家看一眼",
+    "voice": {
+     "tone": "城府深，话里都有算计",
+     "catchphrase": "「你猜呢。」"
+    },
+    "marks": [
+     "指甲缝里有洗不净的黑"
+    ],
+    "sect": "日月神教",
+    "origin": "被捡上山的时候还不到十岁，名字是老一辈随手起的",
+    "fear": "怕一个人待太久，待到忘了自己原来是谁",
+    "routine": [
+     {
+      "at": "dusk",
+      "act": "晌午靠着墙根打个盹，醒了再练"
+     }
+    ],
+    "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
+   }
+  },
+  "sectguard_dali": {
+   "id": "sectguard_dali",
+   "name": "王府侍卫",
+   "gender": "male",
+   "room": "dali_wangfu",
+   "desc": "锦袍金带，腰里悬着剑。他站在阶下，背挺得笔直。",
+   "level": 46,
+   "hp": 1850,
+   "mp": 300,
+   "atk": 195,
+   "def": 150,
+   "dodge": 74,
+   "parry": 50,
+   "speed": 87,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「王府不接外客。什么事写在纸上，我递进二门。」",
+    "「门口那两个卖饵块的，一天到晚坐着不动。别去跟他们搭话。」",
+    "「他们从腊月初坐到今天。卖出去的饵块不够他们自己吃的。」"
+   ],
+   "tag": "shouwei",
+   "title": "门卫",
+   "learned": {
+    "yiyang_zhi": {
+     "level": 92,
+     "exp": 0
+    },
+    "dali_force_1": {
+     "level": 92,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 46,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "yiyang_zhi",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 138,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_dali",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "dali",
+   "rank": 0,
+   "personality": "lengmo",
+   "tier": "A",
+   "job": "shouwei"
+  },
+  "sectguard_tangmen": {
+   "id": "sectguard_tangmen",
+   "name": "堡门守卫",
+   "gender": "male",
+   "room": "tangmen_gate",
+   "desc": "黑衣，袖口很宽。他两只手都拢在袖子里，看不出在做什么。",
+   "level": 32,
+   "hp": 1250,
+   "mp": 300,
+   "atk": 125,
+   "def": 100,
+   "dodge": 51,
+   "parry": 50,
+   "speed": 61,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「暗器不带进饭堂。」",
+    "「身上几样铁器，你自己数一遍。数不清的我现在替你收。」",
+    "「收了不还。上个月收了十七样，还回去的没有。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门人",
+   "learned": {
+    "tangmen_anqi": {
+     "level": 64,
+     "exp": 0
+    },
+    "tangmen_force_1": {
+     "level": 64,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 32,
+     "exp": 0
+    },
+    "tangmen_force_2": {
+     "level": 70
+    }
+   },
+   "skills": {
+    "拳": "tangmen_anqi",
+    "招架": "jh_parry",
+    "内功": "tangmen_force_2"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 96,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_tangmen",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "tangmen",
+   "rank": 0,
+   "personality": "lengmo",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "巡山的，脚步比山猫还轻",
+    "now": "药棚底下收着一封信，火漆都验过三遍了，就是不拆。",
+    "want": "在下次比试里赢回来",
+    "voice": {
+     "tone": "冷淡，话里不带情绪",
+     "catchphrase": "「同门之间，本该如此。」"
+    },
+    "marks": [
+     "掌门亲传"
+    ],
+    "sect": "唐门",
+    "origin": "早年在别处混过几年，后来嫌那行当脏",
+    "fear": "怕家里人知道自己在这条路上",
+    "routine": [
+     {
+      "at": "dawn",
+      "act": "天不亮就起来，先扫一遍院子再练功"
+     }
+    ],
+    "arc": "迟早要为一个人破一次例"
+   }
+  },
+  "sectguard_miaojiang": {
+   "id": "sectguard_miaojiang",
+   "name": "五毒教众",
+   "gender": "male",
+   "room": "miaojiang_sheng",
+   "desc": "赤足，脚踝缠着细铃。他站在圣堂门口，腰间挂着个用布盖住的竹篓。",
+   "level": 32,
+   "hp": 1250,
+   "mp": 300,
+   "atk": 125,
+   "def": 100,
+   "dodge": 51,
+   "parry": 50,
+   "speed": 61,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「站住。脚下那块石板是湿的，湿的地方有东西。」",
+    "「过了那道竹桥再说话。桥这边的话，圣堂听得见。」",
+    "「你先看桥板。第三块是新换的，换上去的那块没毒。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "miao_gu": {
+     "level": 64,
+     "exp": 0
+    },
+    "miaojiang_force_1": {
+     "level": 64,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 32,
+     "exp": 0
+    },
+    "miaojiang_force_2": {
+     "level": 70
+    }
+   },
+   "skills": {
+    "拳": "miao_gu",
+    "招架": "jh_parry",
+    "内功": "miaojiang_force_2"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 96,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_miaojiang",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "miaojiang",
+   "rank": 0,
+   "personality": "qienuo",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "守着寨后那处崖口，夜里的虫鸣停了三回，人来了三回。",
+    "now": "有人赏了他一把刀，条件是替人办一件说不清的事",
+    "want": "往上再挪一挪，哪怕只是一格",
+    "voice": {
+     "tone": "结结巴巴，怯生生的",
+     "catchphrase": "「哦。」"
+    },
+    "marks": [
+     "刀疤"
+    ],
+    "sect": "苗疆五毒教",
+    "origin": "被捡上山的时候还不到十岁，名字是老一辈随手起的",
+    "fear": "怕哪天自己也被写成名册上的一行",
+    "routine": [
+     {
+      "at": "dusk",
+      "act": "天不亮就起来，先扫一遍院子再练功"
+     }
+    ],
+    "arc": "迟早要为一个人破一次例"
+   }
+  },
+  "sectguard_taohua": {
+   "id": "sectguard_taohua",
+   "name": "桃花岛弟子",
+   "gender": "male",
+   "room": "taohuadao_dock",
+   "desc": "青衣小帽，站在渡口的木桩上。他说话时总先笑一笑。",
+   "level": 32,
+   "hp": 1250,
+   "mp": 300,
+   "atk": 125,
+   "def": 100,
+   "dodge": 51,
+   "parry": 50,
+   "speed": 61,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「船卯时发，申时回。误了就坐这儿等明早。」",
+    "「上船别碰船尾那捆绳子。那绳子不是系船用的。」",
+    "「你问它是做什么的，我也不知道。岛上的人都不问。」"
+   ],
+   "tag": "shouwei",
+   "title": "渡口迎客",
+   "learned": {
+    "kuangfeng_daofa": {
+     "level": 64,
+     "exp": 0
+    },
+    "taohua_force_1": {
+     "level": 64,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 32,
+     "exp": 0
+    },
+    "taohua_force_2": {
+     "level": 70
+    }
+   },
+   "skills": {
+    "刀": "kuangfeng_daofa",
+    "招架": "jh_parry",
+    "内功": "taohua_force_2"
+   },
+   "equipment": {
+    "武器": "iron_blade"
+   },
+   "carry": {
+    "money": 96,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_taohua",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "taohua",
+   "rank": 0,
+   "personality": "wenwan",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "在山门下扫了十一年地的老弟子，扫帚柄上磨出了包浆",
+    "now": "眼看就要开春，棉袄该换下来了，可还没攒够钱",
+    "want": "攒够二两银子，把家里那笔债还清",
+    "voice": {
+     "tone": "和气，说话轻",
+     "catchphrase": "「上岛的？先把船系稳再说话。」"
+    },
+    "marks": [
+     "佛珠"
+    ],
+    "sect": "桃花岛",
+    "origin": "十六岁剃度，师父说是见了佛缘",
+    "fear": "怕练不到头，白挨了这多年苦",
+    "routine": [
+     {
+      "at": "night",
+      "act": "晌午靠着墙根打个盹，醒了再练"
+     }
+    ],
+    "arc": " someday 会挑明自己当年为什么上山"
+   }
+  },
+  "sectguard_gumu": {
+   "id": "sectguard_gumu",
+   "name": "古墓弟子",
+   "gender": "female",
+   "room": "gumu_mu",
+   "desc": "白衣，面罩轻纱。她拦在墓道口，声音很轻：「来者何人？」",
+   "level": 32,
+   "hp": 1250,
+   "mp": 300,
+   "atk": 125,
+   "def": 100,
+   "dodge": 51,
+   "parry": 50,
+   "speed": 61,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「进去了别叫名字。里头那位听不得自己姓什么。」",
+    "「墓门只开半个时辰。没赶上出来，就等下个月。」",
+    "「上个月有个没赶上的。他在里头待到今天，人还认得路，就是不太认得人了。」"
+   ],
+   "tag": "shouwei",
+   "title": "护墓弟子",
+   "learned": {
+    "basic_sword": {
+     "level": 64,
+     "exp": 0
+    },
+    "lingbo_weibu": {
+     "level": 64,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 32,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "剑": "basic_sword",
+    "招架": "jh_parry"
+   },
+   "equipment": {
+    "武器": "iron_sword_basic"
+   },
+   "carry": {
+    "money": 96,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_gumu",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "gumu",
+   "rank": 0,
+   "personality": "lengmo",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "在山门下扫了十一年地的老弟子，扫帚柄上磨出了包浆",
+    "now": "眼看就要开春，棉袄该换下来了，可还没攒够钱",
+    "want": "攒够二两银子，把家里那笔债还清",
+    "voice": {
+     "tone": "冷淡，话里不带情绪",
+     "catchphrase": "「墓里冷，话说短些。」"
+    },
+    "marks": [
+     "佛珠"
+    ],
+    "sect": "古墓派",
+    "origin": "十六岁剃度，师父说是见了佛缘",
+    "fear": "怕家里人知道自己在这条路上",
+    "routine": [
+     {
+      "at": "dawn",
+      "act": "天擦黑在门口站一会儿，看有没有人上山"
+     }
+    ],
+    "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
+   }
+  },
+  "sectguard_xingxiu": {
+   "id": "sectguard_xingxiu",
+   "name": "星宿弟子",
+   "gender": "male",
+   "room": "xiyu_oasis",
+   "desc": "一身番僧打扮，脸上堆着笑。笑得越亲热，眼神越冷。",
+   "level": 32,
+   "hp": 1250,
+   "mp": 300,
+   "atk": 125,
+   "def": 100,
+   "dodge": 51,
+   "parry": 50,
+   "speed": 61,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「哎哟，这位爷！您先喝口水，水里有沙子，您多担待。」",
+    "「您是要见老仙吧？我这就给您通报。通报之前，您身上的东西都搁这儿。」",
+    "「搁这儿不吃亏。上一位爷搁了三十两，走的时候还多拿了两匹布。」"
+   ],
+   "tag": "shouwei",
+   "title": "迎客弟子",
+   "learned": {
+    "cuixin_zhang": {
+     "level": 64,
+     "exp": 0
+    },
+    "xingxiu_force_1": {
+     "level": 64,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 32,
+     "exp": 0
+    },
+    "xingxiu_force_2": {
+     "level": 70
+    }
+   },
+   "skills": {
+    "棍": "cuixin_zhang",
+    "招架": "jh_parry",
+    "内功": "xingxiu_force_2"
+   },
+   "equipment": {
+    "武器": "wood_staff"
+   },
+   "carry": {
+    "money": 96,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_xingxiu",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "xingxiu",
+   "rank": 0,
+   "personality": "youhua",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "替上头跑腿的，什么脏活都接，从不多问一句",
+    "now": "他知道自己迟早也是那个被写进名册的人",
+    "want": "把手上的事办完，回家看一眼",
+    "voice": {
+     "tone": "油滑，见人先笑",
+     "catchphrase": "「别问，问了就得知道。」"
+    },
+    "marks": [
+     "指甲缝里有洗不净的黑"
+    ],
+    "sect": "星宿派",
+    "origin": "卖身契按在别人手里，契上写着他的名字",
+    "fear": "怕哪天自己也被写成名册上的一行",
+    "routine": [
+     {
+      "at": "dusk",
+      "act": "天不亮就起来，先扫一遍院子再练功"
+     }
+    ],
+    "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
+   }
+  },
+  "sectguard_xuedao": {
+   "id": "sectguard_xuedao",
+   "name": "血刀弟子",
+   "gender": "male",
+   "room": "beijiang_xuedao",
+   "desc": "红衣，刀鞘上缠着褪色的绳。他看你的眼神像在看一件物什。",
+   "level": 32,
+   "hp": 1250,
+   "mp": 300,
+   "atk": 125,
+   "def": 100,
+   "dodge": 51,
+   "parry": 50,
+   "speed": 61,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「把刀放在地上，退三步。」",
+    "「你退得挺快。上一个没退的，埋在后头那片林子里。」",
+    "「林子里的树今年长得特别好。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "xuedao": {
+     "level": 64,
+     "exp": 0
+    },
+    "xuedao_force_1": {
+     "level": 64,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 32,
+     "exp": 0
+    },
+    "xuedao_force_2": {
+     "level": 70
+    }
+   },
+   "skills": {
+    "刀": "xuedao",
+    "招架": "jh_parry",
+    "内功": "xuedao_force_2"
+   },
+   "equipment": {
+    "武器": "iron_blade"
+   },
+   "carry": {
+    "money": 96,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_xuedao",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "xuedao",
+   "rank": 0,
+   "personality": "baozhao",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "崖上风大，夜里守着守着，就学会了听雪落的声音。",
+    "now": "他知道自己迟早也是那个被写进名册的人",
+    "want": "往上再挪一挪，哪怕只是一格",
+    "voice": {
+     "tone": "嗓门硬，一句就顶回去",
+     "catchphrase": "「别问，问了就得知道。」"
+    },
+    "marks": [
+     "指甲缝里有洗不净的黑"
+    ],
+    "sect": "血刀门",
+    "origin": "卖身契按在别人手里，契上写着他的名字",
+    "fear": "怕哪天自己也被写成名册上的一行",
+    "routine": [
+     {
+      "at": "dusk",
+      "act": "睡得很浅，一有脚步声就醒"
+     }
+    ],
+    "arc": "迟早要为一个人破一次例"
+   }
+  },
+  "sectguard_xiake": {
+   "id": "sectguard_xiake",
+   "name": "侠客岛仆役",
+   "gender": "male",
+   "room": "xiake_dukou",
+   "desc": "灰衣仆役，垂手立在渡口。他不多话，只等你开口。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「岛上不收留人。你是被请来的，还是自己来的？」",
+    "「自己来的就回去。船十年一趟，你等不起。」",
+    "「上一个自己来的等了六年，第六年他自己游回去了。」"
+   ],
+   "tag": "shouwei",
+   "title": "引路仆役",
+   "learned": {
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_parry": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "basic_force",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_xiake",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "xiake",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "跑外路的，一趟三个月不着家",
+    "now": "老镖头的腿伤了，局里正缺人顶他的位置",
+    "want": "等这一趟走完就回家，不干了",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「您的货，我担着。」"
+    },
+    "marks": [
+     "护腕"
+    ],
+    "sect": "侠客岛"
+   }
+  },
+  "sectguard_taishan": {
+   "id": "sectguard_taishan",
+   "name": "泰山派弟子",
+   "gender": "male",
+   "room": "taishan_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 32,
+   "hp": 1250,
+   "mp": 300,
+   "atk": 125,
+   "def": 100,
+   "dodge": 51,
+   "parry": 50,
+   "speed": 61,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「松树下不许拴马。马粪烧根，那树比我师父年纪还大。」",
+    "「你是来说并派的事的吧。今年已经来过十一个了。」",
+    "「第十二个是你。你要说，我听着，我不回话。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "taishan_force_1": {
+     "level": 64,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 64,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 32,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "taishan_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 96,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_taishan",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "taishan",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "在山门下扫了十一年地的老弟子，扫帚柄上磨出了包浆",
+    "now": "眼看就要开春，棉袄该换下来了，可还没攒够钱",
+    "want": "想讨一本注解来看懂经上那句没头没尾的话",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「山门里不宜喧哗。」"
+    },
+    "marks": [
+     "僧"
+    ],
+    "sect": "泰山派",
+    "origin": "自幼在寺里长大，没下过山",
+    "fear": "怕练不到头，白挨了这多年苦",
+    "routine": [
+     {
+      "at": "dusk",
+      "act": "睡得很浅，一有脚步声就醒"
+     }
+    ],
+    "arc": "迟早要为一个人破一次例"
+   }
+  },
+  "sectguard_hengshan": {
+   "id": "sectguard_hengshan",
+   "name": "衡山派弟子",
+   "gender": "male",
+   "room": "hengshan_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 32,
+   "hp": 1250,
+   "mp": 300,
+   "atk": 125,
+   "def": 100,
+   "dodge": 51,
+   "parry": 50,
+   "speed": 61,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「琴房在左手第二间。进去先听，听完再敲门。」",
+    "「敲三下。敲四下的人，我们当他是来打架的。」",
+    "「上个月敲四下的那位，现在还在养伤。他说是他数错了。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "hengshan_force_1": {
+     "level": 64,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 64,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 32,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "hengshan_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 96,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_hengshan",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "hengshan",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "每日三炷香，风雨不误，从没断过",
+    "now": "守门的活计清闲，闲下来反倒睡不踏实。",
+    "want": "攒够二两银子，把家里那笔债还清",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「山门不接空手的外客，报上师承。」"
+    },
+    "marks": [
+     "道"
+    ],
+    "sect": "衡山派",
+    "origin": "十六岁剃度，师父说是见了佛缘",
+    "fear": "怕哪天自己也被写成名册上的一行",
+    "routine": [
+     {
+      "at": "dusk",
+      "act": "睡得很浅，一有脚步声就醒"
+     }
+    ],
+    "arc": " someday 会挑明自己当年为什么上山"
+   }
+  },
+  "sectguard_hengshanN": {
+   "id": "sectguard_hengshanN",
+   "name": "恒山派弟子",
+   "gender": "male",
+   "room": "hengshanN_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 32,
+   "hp": 1250,
+   "mp": 300,
+   "atk": 125,
+   "def": 100,
+   "dodge": 51,
+   "parry": 50,
+   "speed": 61,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「上香还是看病？」",
+    "「看病往右，上香往左。药箱搁在门槛外头，别提进来。」",
+    "「门槛里头是佛地，药是脏东西。我们这么分，不是嫌药，是嫌血。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "hengshanN_force_1": {
+     "level": 64,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 64,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 32,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "hengshanN_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 96,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_hengshanN",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "hengshanN",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "每日三炷香，风雨不误，从没断过",
+    "now": "进山九年，只回过一次家。那次是母亲没了。",
+    "want": "攒够二两银子，把家里那笔债还清",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「阿弥陀佛。」"
+    },
+    "marks": [
+     "佛珠"
+    ],
+    "sect": "恒山派",
+    "origin": "自幼在寺里长大，没下过山",
+    "fear": "怕哪天自己也被写成名册上的一行",
+    "routine": [
+     {
+      "at": "night",
+      "act": "晌午靠着墙根打个盹，醒了再练"
+     }
+    ],
+    "arc": "迟早要为一个人破一次例"
+   }
+  },
+  "sectguard_qingcheng": {
+   "id": "sectguard_qingcheng",
+   "name": "青城派弟子",
+   "gender": "male",
+   "room": "qingcheng_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 32,
+   "hp": 1250,
+   "mp": 300,
+   "atk": 125,
+   "def": 100,
+   "dodge": 51,
+   "parry": 50,
+   "speed": 61,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「雾大，跟着我走，别自己走。」",
+    "「找掌门去后头。他这会儿在练掌，练掌的时候别站他对面。」",
+    "「站侧面也不成。你就站在我这儿，我这儿他看得见，打不着。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "qingcheng_force_1": {
+     "level": 64,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 64,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 32,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "qingcheng_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 96,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_qingcheng",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "qingcheng",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "每日三炷香，风雨不误，从没断过",
+    "now": "儿子该开蒙了，束脩还差着一大截没凑齐。",
+    "want": "想讨一本注解来看懂经上那句没头没尾的话",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「青城的山门不看衣冠，看你走不走得稳。」"
+    },
+    "marks": [
+     "佛珠"
+    ],
+    "sect": "青城派",
+    "origin": "自幼在寺里长大，没下过山",
+    "fear": "怕家里人知道自己在这条路上",
+    "routine": [
+     {
+      "at": "dawn",
+      "act": "天擦黑在门口站一会儿，看有没有人上山"
+     }
+    ],
+    "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
+   }
+  },
+  "sectguard_kongtong": {
+   "id": "sectguard_kongtong",
+   "name": "崆峒派弟子",
+   "gender": "male",
+   "room": "kongtong_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 32,
+   "hp": 1250,
+   "mp": 300,
+   "atk": 125,
+   "def": 100,
+   "dodge": 51,
+   "parry": 50,
+   "speed": 61,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「门里的老人手都抖。你看见别问，问了也没人答。」",
+    "「七伤拳的场子在西边，那块地的土是红的，别踩。」",
+    "「红不是染的。踩了你就明白了。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "kongtong_force_1": {
+     "level": 64,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 64,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 32,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "kongtong_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 96,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_kongtong",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "kongtong",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "管一盏长明灯的，灯芯换得比谁都快",
+    "now": "夜里山风大，守到三更就冷得跺脚。",
+    "want": "攒够二两银子，把家里那笔债还清",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「崆峒的规矩写在门边那块木牌上，自己看。」"
+    },
+    "marks": [
+     "旧布衣"
+    ],
+    "sect": "崆峒派",
+    "origin": "自幼在寺里长大，没下过山",
+    "fear": "怕家里人知道自己在这条路上",
+    "routine": [
+     {
+      "at": "night",
+      "act": "睡得很浅，一有脚步声就醒"
+     }
+    ],
+    "arc": "迟早要为一个人破一次例"
+   }
+  },
+  "sectguard_kunlun": {
+   "id": "sectguard_kunlun",
+   "name": "昆仑派弟子",
+   "gender": "male",
+   "room": "kunlun_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 32,
+   "hp": 1250,
+   "mp": 300,
+   "atk": 125,
+   "def": 100,
+   "dodge": 51,
+   "parry": 50,
+   "speed": 61,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「左手还是右手？」",
+    "「答不上来的，山上不教。」",
+    "「剑架在门后，两柄一副。少一柄你就别拿了，拿一柄上去要被赶下来。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "kunlun_force_1": {
+     "level": 64,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 64,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 32,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "kunlun_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 96,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_kunlun",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "kunlun",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "在山门下扫了十一年地的老弟子，扫帚柄上磨出了包浆",
+    "now": "眼看就要开春，棉袄该换下来了，可还没攒够钱",
+    "want": "攒够二两银子，把家里那笔债还清",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「上了这道坡就是昆仑的地界，先把口气匀匀。」"
+    },
+    "marks": [
+     "佛珠"
+    ],
+    "sect": "昆仑派",
+    "origin": "自幼在寺里长大，没下过山",
+    "fear": "怕哪天自己也被写成名册上的一行",
+    "routine": [
+     {
+      "at": "night",
+      "act": "天不亮就起来，先扫一遍院子再练功"
+     }
+    ],
+    "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
+   }
+  },
+  "sectguard_diancang": {
+   "id": "sectguard_diancang",
+   "name": "点苍派弟子",
+   "gender": "male",
+   "room": "diancang_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 32,
+   "hp": 1250,
+   "mp": 300,
+   "atk": 125,
+   "def": 100,
+   "dodge": 51,
+   "parry": 50,
+   "speed": 61,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「十九峰，我们只占三座。你找人，先说哪座。」",
+    "「山下集市今天逢五，人都在那儿。你要找的人多半也在。」",
+    "「掌门也在。他逢五必去，去了就买两捆柴回来，自己扛。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "diancang_force_1": {
+     "level": 64,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 64,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 32,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "diancang_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 96,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_diancang",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "diancang",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "管一盏长明灯的，灯芯换得比谁都快",
+    "now": "他把剑谱抄了三遍，第三遍的字比第一遍小。",
+    "want": "想讨一本注解来看懂经上那句没头没尾的话",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「点苍不接生客。有事说事，别绕。」"
+    },
+    "marks": [
+     "佛珠"
+    ],
+    "sect": "点苍派",
+    "origin": "十六岁剃度，师父说是见了佛缘",
+    "fear": "怕练不到头，白挨了这多年苦",
+    "routine": [
+     {
+      "at": "dusk",
+      "act": "晌午靠着墙根打个盹，醒了再练"
+     }
+    ],
+    "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
+   }
+  },
+  "sectguard_tiezhang": {
+   "id": "sectguard_tiezhang",
+   "name": "铁掌帮弟子",
+   "gender": "male",
+   "room": "tiezhang_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 32,
+   "hp": 1250,
+   "mp": 300,
+   "atk": 125,
+   "def": 100,
+   "dodge": 51,
+   "parry": 50,
+   "speed": 61,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「手伸出来。」",
+    "「掌心的茧我一看就知道你练过什么。练过的更好办，规矩你懂。」",
+    "「没练过的也不打紧，你把手缩回去，我就不问了。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "tiezhang_force_1": {
+     "level": 64,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 64,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 32,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "棍": "tiezhang_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": {
+    "武器": "wood_staff"
+   },
+   "carry": {
+    "money": 96,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_tiezhang",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "tiezhang",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "扛了六年旗子的，旗子比人还重要",
+    "now": "上一趟押货亏了二百两，局里还没追究，也不知追究不追究",
+    "want": "等这一趟走完就回家，不干了",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「这价钱，砍不动。」"
+    },
+    "marks": [
+     "护腰刀"
+    ],
+    "sect": "铁掌帮",
+    "origin": "家里兄弟姊妹多，排到自己是最后一个",
+    "fear": "怕家里人知道自己在这条路上",
+    "routine": [
+     {
+      "at": "dusk",
+      "act": "天不亮就起来，先扫一遍院子再练功"
+     }
+    ],
+    "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
+   }
+  },
+  "sectguard_hehuan": {
+   "id": "sectguard_hehuan",
+   "name": "合欢宗弟子",
+   "gender": "male",
+   "room": "hehuan_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 32,
+   "hp": 1250,
+   "mp": 300,
+   "atk": 125,
+   "def": 100,
+   "dodge": 51,
+   "parry": 50,
+   "speed": 61,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「白天不接客。」",
+    "「找人黄昏以后来，走后门。前门那个灯笼是给巡街的看的。」",
+    "「灯笼里点的不是蜡烛，是香。烧完了就换，一天换三回。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "hehuan_force_1": {
+     "level": 64,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 64,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 32,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "hehuan_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 96,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_hehuan",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "hehuan",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "B",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "B",
+    "lock": false,
+    "role": "替人收拾尸首的，手比谁都稳",
+    "now": "他知道自己迟早也是那个被写进名册的人",
+    "want": "往上再挪一挪，哪怕只是一格",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「你猜呢。」"
+    },
+    "marks": [
+     "黑衣"
+    ],
+    "sect": "合欢宗",
+    "origin": "曾是正道门下的弃徒，转投过来之后再没回过头",
+    "fear": "怕一个人待太久，待到忘了自己原来是谁",
+    "routine": [
+     {
+      "at": "dusk",
+      "act": "晌午靠着墙根打个盹，醒了再练"
+     }
+    ],
+    "arc": " someday 会挑明自己当年为什么上山"
+   }
+  },
+  "sectguard_jindao": {
+   "id": "sectguard_jindao",
+   "name": "金刀门弟子",
+   "gender": "male",
+   "room": "jindao_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「刀是真货，招牌是假的。金漆掉了三年，没人管。」",
+    "「想学先交三个月束脩。钱不够就来劈三个月柴，一样的。」",
+    "「劈柴的也教。教得慢些，教完一样给刀。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "jindao_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "刀": "jindao_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": {
+    "武器": "iron_blade"
+   },
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_jindao",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "jindao",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "他守着刀房十九年，刀架上少一把他都知道。",
+    "now": "新收的弟子分去了正屋，自己搬去柴房，铺盖一样没少带。",
+    "want": "在下次比试里赢回来",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「胜负事小。」"
+    },
+    "marks": [
+     "掌门亲传"
+    ],
+    "sect": "金刀门"
+   }
+  },
+  "sectguard_wuhu": {
+   "id": "sectguard_wuhu",
+   "name": "五虎断门刀弟子",
+   "gender": "male",
+   "room": "wuhu_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「五招。一招管一刀，多了没有。」",
+    "「老爷子在里头睡觉。你要学，先学会别问第六招。」",
+    "「问过第六招的有四个人。四个都没学成。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "wuhu_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "wuhu_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_wuhu",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "wuhu",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "守藏经阁的，闲下来就抄书",
+    "now": "山门口的迎客活交给了新人，改守后山，清净不少。",
+    "want": "能替师门接一趟护镖的活",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「我这就去办。」"
+    },
+    "marks": [
+     "青衫"
+    ],
+    "sect": "五虎断门刀"
+   }
+  },
+  "sectguard_feihu": {
+   "id": "sectguard_feihu",
+   "name": "飞虎镖局弟子",
+   "gender": "male",
+   "room": "feihu_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「旗子还在，镖就没丢。」",
+    "「托镖先说货。说不出货的，我们不接。」",
+    "「上个月有个说不出货的，我们也没接。后来那趟镖是别家走的，走到一半没了。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "feihu_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "feihu_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_feihu",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "feihu",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "扛了六年旗子的，旗子比人还重要",
+    "now": "老镖头的腿伤了，局里正缺人顶他的位置",
+    "want": "等这一趟走完就回家，不干了",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「走镖的，认路。」"
+    },
+    "marks": [
+     "肩上压出的印子"
+    ],
+    "sect": "飞虎镖局"
+   }
+  },
+  "sectguard_zhenyuan": {
+   "id": "sectguard_zhenyuan",
+   "name": "镇远镖局弟子",
+   "gender": "male",
+   "room": "zhenyuan_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「旗子补过三回，补一回少走一趟远路。」",
+    "「规矩贴在墙上，二十七条。你先看，看完再说。」",
+    "「看不完就看前三条。前三条是拿命换的，后二十四条是拿钱换的。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "zhenyuan_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "zhenyuan_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_zhenyuan",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "zhenyuan",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "看夜门的，夜里最精神",
+    "now": "老镖头的腿伤了，局里正缺人顶他的位置",
+    "want": "把上一趟亏的补回来",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「这价钱，砍不动。」"
+    },
+    "marks": [
+     "肩上压出的印子"
+    ],
+    "sect": "镇远镖局"
+   }
+  },
+  "sectguard_shenquan": {
+   "id": "sectguard_shenquan",
+   "name": "神拳门弟子",
+   "gender": "male",
+   "room": "shenquan_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「拳架子要正。先站马步，站稳了再说别的。」",
+    "「镇上的孩子都学过两天，学完就不来了。」",
+    "「你要是有事，就别占这个时辰。这个时辰是给他们的。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "shenquan_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "shenquan_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_shenquan",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "shenquan",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "跑街串巷收生意的",
+    "now": "他想改行，又放不下攒了十年的那点本钱",
+    "want": "把这个月亏的补回来",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「这价钱，砍不动。」"
+    },
+    "marks": [
+     "算盘"
+    ],
+    "sect": "神拳门"
+   }
+  },
+  "sectguard_tieqiang": {
+   "id": "sectguard_tieqiang",
+   "name": "铁枪门弟子",
+   "gender": "male",
+   "room": "tieqiang_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「门口那杆枪一百二十斤。提得起来，门就自己开了。」",
+    "「提不起来也别硬提。上上个月有个硬提的，现在还躺着。」",
+    "「躺着那位也不亏，门里管饭。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "tieqiang_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "tieqiang_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_tieqiang",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "tieqiang",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "守藏经阁的，闲下来就抄书",
+    "now": "铺子交徒弟看着，自己退到后院打铁，火候反而比从前稳。",
+    "want": "在下次比试里赢回来",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「胜负事小。」"
+    },
+    "marks": [
+     "旧伤在右腕"
+    ],
+    "sect": "铁枪门"
+   }
+  },
+  "sectguard_kuaidao": {
+   "id": "sectguard_kuaidao",
+   "name": "快刀门弟子",
+   "gender": "male",
+   "room": "kuaidao_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「后院有人在劈柴。你要是慢的，就去跟他一块劈。」",
+    "「门里的话只说一遍，听不清是你自己的事。」",
+    "「劈柴劈得快的，我们收。劈得慢的，劈到今年冬天也就习惯了。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "kuaidao_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "刀": "kuaidao_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": {
+    "武器": "iron_blade"
+   },
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_kuaidao",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "kuaidao",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "巡山的，脚步比山猫还轻",
+    "now": "娘的信说入冬要添衣，赏钱还没攒够，看一眼心里堵一分。",
+    "want": "就想听爹说一句「比当年强」，他不肯说，只好自己接着练。",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「胜负事小。」"
+    },
+    "marks": [
+     "青衫"
+    ],
+    "sect": "快刀门"
+   }
+  },
+  "sectguard_luohan": {
+   "id": "sectguard_luohan",
+   "name": "罗汉门弟子",
+   "gender": "male",
+   "room": "luohan_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「我们不是少林的。你找少林往北三百里。」",
+    "「拳是真的。你要试，我陪你试三招。」",
+    "「试完再问是不是少林的，我也不恼。问的人都试过三招了。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "luohan_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "luohan_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_luohan",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "luohan",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "每日三炷香，风雨不误，从没断过",
+    "now": "他不识字。戒牒上的名字是别人替他写的。",
+    "want": "想讨一本注解来看懂经上那句没头没尾的话",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「山门里不宜喧哗。」"
+    },
+    "marks": [
+     "僧"
+    ],
+    "sect": "罗汉门"
+   }
+  },
+  "sectguard_wuyun": {
+   "id": "sectguard_wuyun",
+   "name": "五云手温家弟子",
+   "gender": "male",
+   "room": "wuyun_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「皮货走东门，这门是家里人走的。」",
+    "「姑娘今天在后院鞣皮。」",
+    "「你要说毒的事，就别提传男不传女那句。她听过太多回了。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "wuyun_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "wuyun_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_wuyun",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "wuyun",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "在山门下扫了十一年地的老弟子，扫帚柄上磨出了包浆",
+    "now": "他说话前先咽一口，咽完还是不说。",
+    "want": "攒够盘缠就辞了这份差，回滇南看看阿妈种的茶树。",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「温家的门不常开。你找谁？」"
+    },
+    "marks": [
+     "僧"
+    ],
+    "sect": "五云手温家"
+   }
+  },
+  "sectguard_dafeng": {
+   "id": "sectguard_dafeng",
+   "name": "大风云飞门弟子",
+   "gender": "male",
+   "room": "dafeng_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「我们门里跑得快，跳得不高。你看跳的，隔壁山头有。」",
+    "「门主在操场上绕圈，一天八十圈。你等他绕完，或者跟着绕。」",
+    "「绕不完的也有。绕不完的人第二天还来。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "dafeng_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "dafeng_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_dafeng",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "dafeng",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "巡山的，脚步比山猫还轻",
+    "now": "船上的平安信压在箱底，自己识字慢，一封要看一晚上。",
+    "want": "在下次比试里赢回来",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「胜负事小。」"
+    },
+    "marks": [
+     "护腕"
+    ],
+    "sect": "大风云飞门"
+   }
+  },
+  "sectguard_huanghe": {
+   "id": "sectguard_huanghe",
+   "name": "黄河帮弟子",
+   "gender": "male",
+   "room": "huanghe_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「码头是帮里的。你的船要泊，往下游去三百步。」",
+    "「纤绳不许踩。踩断一回，赔三天的工。」",
+    "「三天工不算多。断的那回，船上的货全下水了。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "huanghe_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "huanghe_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_huanghe",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "huanghe",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "扛了六年旗子的，旗子比人还重要",
+    "now": "老镖头的腿伤了，局里正缺人顶他的位置",
+    "want": "把上一趟亏的补回来",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「您的货，我担着。」"
+    },
+    "marks": [
+     "护腕"
+    ],
+    "sect": "黄河帮"
+   }
+  },
+  "sectguard_taihu": {
+   "id": "sectguard_taihu",
+   "name": "太湖帮弟子",
+   "gender": "male",
+   "room": "taihu_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「船比人多，你别看空船就上。空船多半是漏的。」",
+    "「帮主出湖了，收例钱去了。你要找他，等风向转南。」",
+    "「转南他就回来了。船走北风快，走南风也快，他这个人只认南风。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "taihu_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "taihu_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_taihu",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "taihu",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "在库房点货，闭着眼都能点清",
+    "now": "家里的婆娘带着孩子住在城里，他一年见不上两回",
+    "want": "把上一趟亏的补回来",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「走镖的，认路。」"
+    },
+    "marks": [
+     "肩上压出的印子"
+    ],
+    "sect": "太湖帮"
+   }
+  },
+  "sectguard_poyang": {
+   "id": "sectguard_poyang",
+   "name": "鄱阳帮弟子",
+   "gender": "male",
+   "room": "poyang_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「太湖来的？」",
+    "「不像。太湖的人不会从这门进。」",
+    "「门后那条岔河，往左是鄱阳，往右是太湖。你走错了我不拦，走了就别回来。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "poyang_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "poyang_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_poyang",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "poyang",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "扛了六年旗子的，旗子比人还重要",
+    "now": "老镖头的腿伤了，局里正缺人顶他的位置",
+    "want": "等这一趟走完就回家，不干了",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「走镖的，认路。」"
+    },
+    "marks": [
+     "肩上压出的印子"
+    ],
+    "sect": "鄱阳帮"
+   }
+  },
+  "sectguard_qingzhu": {
+   "id": "sectguard_qingzhu",
+   "name": "青竹帮弟子",
+   "gender": "male",
+   "room": "qingzhu_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「竹山不给人看。你要买竹，去城里那家行。」",
+    "「别摸门框。门框是竹的，新砍的，有刺。」",
+    "「上个月扎了三个人。三个都是外乡的。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "qingzhu_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "qingzhu_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_qingzhu",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "qingzhu",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "扛了六年旗子的，旗子比人还重要",
+    "now": "老镖头的腿伤了，局里正缺人顶他的位置",
+    "want": "把上一趟亏的补回来",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「您的货，我担着。」"
+    },
+    "marks": [
+     "肩上压出的印子"
+    ],
+    "sect": "青竹帮"
+   }
+  },
+  "sectguard_jujing": {
+   "id": "sectguard_jujing",
+   "name": "巨鲸帮弟子",
+   "gender": "male",
+   "room": "jujing_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「船补过七八回了，看着破，还浮着。」",
+    "「你要出海，先说会不会水。不会水的我们不带。」",
+    "「带了也是白搭。名字起得凶，日子过得苦，这两样我们都不瞒人。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "jujing_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "jujing_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_jujing",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "jujing",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "跑外路的，一趟三个月不着家",
+    "now": "上一趟押货亏了二百两，局里还没追究，也不知追究不追究",
+    "want": "在局里混个名分，别再被人叫「喂」",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「您的货，我担着。」"
+    },
+    "marks": [
+     "护腰刀"
+    ],
+    "sect": "巨鲸帮"
+   }
+  },
+  "sectguard_jinlong": {
+   "id": "sectguard_jinlong",
+   "name": "金龙帮弟子",
+   "gender": "male",
+   "room": "jinlong_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「堂口是新修的。别摸柱子，漆还没干。」",
+    "「账房在二楼。你要查账，得帮主点头，帮主这几天不在。」",
+    "「上个月也不在，上上个月也不在。账房那位倒是天天在。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "jinlong_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "jinlong_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_jinlong",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "jinlong",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "看夜门的，夜里最精神",
+    "now": "家里的婆娘带着孩子住在城里，他一年见不上两回",
+    "want": "等这一趟走完就回家，不干了",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「您的货，我担着。」"
+    },
+    "marks": [
+     "旗"
+    ],
+    "sect": "金龙帮"
+   }
+  },
+  "sectguard_wuliang": {
+   "id": "sectguard_wuliang",
+   "name": "无量剑派弟子",
+   "gender": "male",
+   "room": "wuliang_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「东宗在西边，西宗在东边。别搞反了。」",
+    "「今年比剑在腊月廿九。要看就早一天上山，山上没客房。」",
+    "「没客房，有柴房。柴房去年住了十一个人，都是来看比剑的。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "wuliang_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "wuliang_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_wuliang",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "wuliang",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "替师兄弟收尾招的，收得比打得还认真",
+    "now": "上月校场输了半式枪，这月枪杆不离手，茧又厚了一层。",
+    "want": "师父从来只点头不夸人，想着哪天打得他非开口不可。",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「胜负事小。」"
+    },
+    "marks": [
+     "青衫"
+    ],
+    "sect": "无量剑派"
+   }
+  },
+  "sectguard_funiu": {
+   "id": "sectguard_funiu",
+   "name": "伏牛派弟子",
+   "gender": "male",
+   "room": "funiu_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「牛在坡上。你要看拳，先帮我把牛牵回来。」",
+    "「按牛的拳按人也行。你别问哪个更顶用。」",
+    "「问的人都是没被按过的。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "funiu_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "funiu_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_funiu",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "funiu",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "巡山的，脚步比山猫还轻",
+    "now": "比试输在三招之外，回来把那三招拆了又装，装了又拆。",
+    "want": "在下次比试里赢回来",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「我这就去办。」"
+    },
+    "marks": [
+     "掌门亲传"
+    ],
+    "sect": "伏牛派"
+   }
+  },
+  "sectguard_baisheng": {
+   "id": "sectguard_baisheng",
+   "name": "百胜刀门弟子",
+   "gender": "male",
+   "room": "baisheng_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「百胜。不是百战百胜。」",
+    "「门主交代的，谁来都先说这一句。」",
+    "「你要问第二遍，我也还是这么答。门主说了，答得多了就成真的了。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "baisheng_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "baisheng_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_baisheng",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "baisheng",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "巡山的，脚步比山猫还轻",
+    "now": "输给同门半分力道，如今劈柴都数着数练。",
+    "want": "能替师门接一趟护镖的活",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「同门之间，本该如此。」"
+    },
+    "marks": [
+     "掌门亲传"
+    ],
+    "sect": "百胜刀门"
+   }
+  },
+  "sectguard_baituo": {
+   "id": "sectguard_baituo",
+   "name": "白驼山弟子",
+   "gender": "male",
+   "room": "baituo_gate",
+   "desc": "一身本门短打，腰里别着家伙，堵在门里那一侧。",
+   "level": 24,
+   "hp": 950,
+   "mp": 300,
+   "atk": 92,
+   "def": 76,
+   "dodge": 38,
+   "parry": 50,
+   "speed": 46,
+   "hostile": false,
+   "leavesCorpse": true,
+   "talk": [
+    "「别动脚。你脚边那条不是草。」",
+    "「山主说话的时候你别插嘴。他手边那条认生。」",
+    "「山上养蛇的人比住的人多，这话不是吓你，是告诉你别乱走。」"
+   ],
+   "tag": "shouwei",
+   "title": "守门弟子",
+   "learned": {
+    "baituo_force_1": {
+     "level": 48,
+     "exp": 0
+    },
+    "basic_force": {
+     "level": 48,
+     "exp": 0
+    },
+    "jh_parry": {
+     "level": 30,
+     "exp": 0
+    }
+   },
+   "skills": {
+    "拳": "baituo_force_1",
+    "招架": "jh_parry"
+   },
+   "equipment": null,
+   "carry": {
+    "money": 72,
+    "items": []
+   },
+   "favorBase": 0.2,
+   "favorInit": 0,
+   "sidequest": null,
+   "home": "house:sectguard_baituo",
+   "age": 30,
+   "schedule": null,
+   "expReward": 0,
+   "potReward": 0,
+   "moneyReward": 0,
+   "loot": null,
+   "socialDone": true,
+   "relDone": true,
+   "sect": "baituo",
+   "rank": 0,
+   "personality": "mune",
+   "tier": "C",
+   "job": "shouwei",
+   "portrait": {
+    "v": 1,
+    "tier": "C",
+    "lock": false,
+    "role": "替人收拾尸首的，手比谁都稳",
+    "now": "有人赏了他一把刀，条件是替人办一件说不清的事",
+    "want": "攒够赎身的银子——虽然没人明说，可他知道有这条道",
+    "voice": {
+     "tone": "慢吞吞，半天才说一句",
+     "catchphrase": "「别问，问了就得知道。」"
+    },
+    "marks": [
+     "黑衣"
+    ],
+    "sect": "白驼山"
+   }
   }
+ }
 }

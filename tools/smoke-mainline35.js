@@ -227,7 +227,11 @@ sec('⑥ ★★ flag 闭环：cond 读到的 flag，必须真有地方能置位'
   }
   const orphan = readFlags.filter(([f]) =>
     !settable.has(f) && !CODE_FLAGS.includes(f) &&
-    !f.startsWith('learned_') && !f.startsWith('killed_') && !f.startsWith('ending_'));
+    !f.startsWith('learned_') && !f.startsWith('killed_') && !f.startsWith('ending_') &&
+    /* ⚠️ `questdone_<id>` 由引擎在任务完成时写（character.setQuestStage，stage=99），
+       与 learned_/killed_/ending_ 同一类「代码置位旗」。2026-10-18 新数据
+       （门派指路房动作）开始读它，此前没进前缀白名单 → 假红。 */
+    !f.startsWith('questdone_'));
   ok(`★ 本轮新数据里 cond 读的 flag（${readFlags.length} 处）全都有地方置位`,
     orphan.length === 0, orphan.map(([f, w2]) => f + '@' + w2).slice(0, 8).join(' ; '));
 

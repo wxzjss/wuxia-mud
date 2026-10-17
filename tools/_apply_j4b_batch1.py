@@ -28,10 +28,8 @@ def read(p):
         return json.load(f)
 
 def write(p, j):
-    with io.open(p, 'w', encoding='utf-8', newline='\n') as f:
-        json.dump(j, f, ensure_ascii=False, indent=2)
-        f.write('\n')
-
+    from _canon_write import write_canon as _wc
+    _wc(p, j)
 def narr(t): return {"type": "narrate", "raw": t}
 def say(t):  return {"type": "say", "raw": t}
 def flag(f): return {"type": "flag", "args": [f]}
@@ -272,9 +270,11 @@ for c, a in l4.items():
 
 # 海路接引：存在、排第一、cond、flag
 acts_h = v66['rooms']['haitan_boat']['actions']
-assert acts_h[0]['cmd'] == '问船期', '问船期 没排到头部（会被渡海的『船』keyword 吃掉）'
-assert acts_h[0]['cond'] == {"and": [{"flag": "act4_done"}, {"notFlag": "haitan_ferry_seen"}]}
-assert any(e.get('type') == 'flag' and e['args'] == ['haitan_ferry_seen'] for e in acts_h[0]['effects'])
+_cmds_h = [a.get('cmd') for a in acts_h]
+assert _cmds_h.index('问船期') < _cmds_h.index('渡海'), '问船期 必须排在渡海之前（否则被『船』keyword 吃掉）'
+_ferry = next(a for a in acts_h if a.get('cmd') == '问船期')
+assert _ferry['cond'] == {"and": [{"flag": "act4_done"}, {"notFlag": "haitan_ferry_seen"}]}, '问船期 cond 不对'
+assert any(e.get('type') == 'flag' and e['args'] == ['haitan_ferry_seen'] for e in _ferry['effects']), '问船期 flag 缺'
 # 既有动作未被挤掉
 for rid, cmds in (('mojiao_shanmen', ['探后山', '闯山门']),
                   ('mojiao_hall', ['过前殿', '回大殿']),

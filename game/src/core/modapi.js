@@ -753,6 +753,10 @@ function evalEffect(eff, ctx) {
       if (qd) {
         out.push({ kind: 'quest', text: `【任务完成】${qd.name}` });
         if (qd.rewards) evalEffects(qd.rewards, ctx).forEach(x => out.push(x));
+        /* 结局兜底（2026-10-18，半成品审计第 8 项）：quest 定义带 endingOnComplete
+           且当前还没有 final 结局 → 落兜底。三选一结局若已先落 final，这里不覆盖。 */
+        const fb = require('./endings').onQuestDone(w, p, qd);
+        if (fb) out.push(fb);
       }
       break;
     }
@@ -826,18 +830,12 @@ function evalEffect(eff, ctx) {
       break;
     }
     case 'ending': {
-      /* 结局树三写过渡（design/89，S5 上线；2026-10-15 预留批）：
+      /* 结局树三写（design/89，S5 上线；2026-10-15 预留批）：
          flag / var 是老口径（老前端/老 mod 可能还在读），保留不断；
-         p.ending = 新结构台账（achieved 集合 + final 指针），S5 前端切读它。 */
-      p.setFlag('ending_' + args[0], true);
-      p.setVar('ending', args[0]);
-      p.ending = p.ending || { achieved: {}, final: null };
-      p.ending.achieved = p.ending.achieved || {};
-      p.ending.achieved[args[0]] = true;
-      /* final 跟随**刚触发的这个结局 id**（与 setVar('ending', args[0]) 同口径）；
-         args[1] 只是展示标题，不进台账。 */
-      p.ending.final = args[0];
-      out.push({ kind: 'ending', text: args[0], title: args[1] || args[0] });
+         p.ending = 新结构台账（achieved 集合 + final 指针），S5 前端切读它。
+         ⚠️ 2026-10-18 收口：落定逻辑抽到 endings.grant（唯一入口）——
+            与任务完成兜底（endingOnComplete）共用一份三写，别再各写一遍。 */
+      out.push(require('./endings').grant(p, args[0], args[1] || args[0]));
       break;
     }
     case 'sound': out.push({ kind: 'sound', text: args[0] }); break;

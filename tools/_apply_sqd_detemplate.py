@@ -157,11 +157,8 @@ def read(p):
 
 
 def write(p, j):
-    with io.open(p, 'w', encoding='utf-8', newline='\n') as f:
-        json.dump(j, f, ensure_ascii=False, indent=2)
-        f.write('\n')
-
-
+    from _canon_write import write_canon as _wc
+    _wc(p, j)
 d = read(P44)
 dirty = 0
 for qid, (desc, say) in SQD.items():

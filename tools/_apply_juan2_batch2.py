@@ -288,8 +288,8 @@ assert n40['npcv_237']['room'] == 'chengdu_market'
 assert n40['npcv_223']['room'] == 'gusu_yanzi'
 
 # ---------- 写盘（口径：69 indent=2 尾换行 LF；40_npcs indent=2 无尾换行 LF） ----------
-with open('game/data/69_juan2_s3.json', 'w', encoding='utf-8', newline='') as f:
-    f.write(json.dumps(d69, ensure_ascii=False, indent=2) + '\n')
+from _canon_write import write_canon
+write_canon('game/data/69_juan2_s3.json', d69)
 with open('game/data/40_npcs.json', 'w', encoding='utf-8', newline='') as f:
     f.write(json.dumps(d40, ensure_ascii=False, indent=1))
 

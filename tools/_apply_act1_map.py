@@ -257,9 +257,8 @@ for st_txt in [moved2['effects'][1]['raw'], d103['rooms']['cunzhen_farm']['actio
 
 # ---------- 写盘（口径：50/60/62/65/102 indent=2 尾换行 LF；103 新建 indent=2 尾换行 LF） ----------
 def save(d, p):
-    with open(p, 'w', encoding='utf-8', newline='') as f:
-        f.write(json.dumps(d, ensure_ascii=False, indent=2) + '\n')
-
+    from _canon_write import write_canon as _wc
+    _wc(p, p)
 save(d50, 'game/data/50_map.json')
 save(d62, 'game/data/62_shops.json')
 save(d60, 'game/data/60_quests.json')

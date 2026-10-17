@@ -3459,6 +3459,15 @@ class World extends EventEmitter {
       const life = require('./npclife').onTick(this, 30);
       for (const l of life) this.emit('storyline', { line: l });
     } catch (e) { /* NPC 的日常挂了不该拖垮时间系统 */ }
+    /* ---- 「江湖记得你」回声层（2026-10-18）----
+       玩家做过的案子，偶尔被路人一句话提起来。**不走传闻生命周期**（不 seed、
+       不扩散、不走样、不衰减、不进 world.rumors / reputation 账），
+       冷却（20 个 worldTick）与同区/近期取样全在 questecho 里。
+       数据池 world.data.questEchoes 由设计 lane 供；没落池子时静默不出声。 */
+    try {
+      const echo = require('./questecho').tick(this, this.player);
+      if (echo) this.emit('storyline', { line: echo });
+    } catch (e) { /* 回声挂了不该拖垮时间系统 */ }
     // 时间作息：昼夜轮换时，把 NPC 从工作地（day）挪回家（night），反之亦然。
     // 玩家眼前的 NPC 不动，避免交互到一半人突然消失。
     const night = this.isNight();

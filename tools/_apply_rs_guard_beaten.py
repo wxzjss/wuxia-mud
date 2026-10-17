@@ -21,7 +21,7 @@ texts 三档（true 全知 / half 传闻走样 / false 越传越玄），红线�
 
 幂等：种子已存在则跳过。改完跑 ai-flavor-check 复验。
 """
-import json, io, os
+import json, io, os, os
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 P70 = os.path.join(ROOT, 'game', 'data', '70_world.json')
@@ -49,9 +49,18 @@ if 'rs_guard_beaten' in seeds:
     print('OK（已落，跳过）: rs_guard_beaten 种子已在场')
 else:
     seeds['rs_guard_beaten'] = SEED
-    with io.open(P70, 'w', encoding='utf-8', newline='') as f:
-        json.dump(d, f, ensure_ascii=False, indent=2)
-        f.write('\n')
+    _p = P70
+    if not os.path.isabs(_p):
+        _base = globals().get('DATA') or os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'game', 'data')
+        _p = os.path.join(_base, _p)
+    _raw = open(_p, 'rb').read()
+    _bom = _raw.startswith(b'\xef\xbb\xbf')
+    _crlf = b'\r\n' in _raw[:2000]
+    _s = json.dumps(d, ensure_ascii=False, indent=1)
+    if _crlf:
+        _s = _s.replace('\n', '\r\n')
+    with open(_p, 'wb') as _f:
+        _f.write((b'\xef\xbb\xbf' if _bom else b'') + _s.encode('utf-8'))
     print('OK: 70_world.json 新增 rs_guard_beaten（打伤守门人·负面传闻种子）')
 
 # ---------------- 断言（重读盘面） ----------------

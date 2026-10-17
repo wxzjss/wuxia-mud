@@ -2093,6 +2093,15 @@ class GameEngine {
        剧情章节已经改到上方大框（`view.story`），见 storybeat 顶部注释。 */
     try { lines.push(...storybeat.reconcile(w, p)); } catch (e) { /* 讲不成不该挡着玩 */ }
     const out = { lines, ...res };
+    /* 结局回包（2026-10-18，半成品审计第 8 项）：效果里的 ending 行 → `out.ending`。
+       前端「故事终章」弹框读的是 `d.ending`，而此前**全仓没有任何地方给它赋值**
+       （死代码：结局只播台词、不弹终章）。这条路是唯一定义处，别再另加一份。 */
+    if (!out.ending) {
+      try {
+        const end = require('./endings').endingOf(lines);
+        if (end) out.ending = end;
+      } catch (e) { /* 认不出结局不该挡着这一条指令 */ }
+    }
     /* ⚠️ 指令回包**不带地图**（`map: false`）。这里是所有指令的总出口 ——
        漏掉这一处，上面六处 `map: false` 全白改（实测 274 KB，一点没瘦）。
        地图 247 KB / 回包 280 KB，只在你打开「地图」面板时才需要。 */

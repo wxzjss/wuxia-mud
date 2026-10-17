@@ -1084,7 +1084,7 @@
       "desc": "你站在江南道口，身上只有一件旧衣裳，一个不认得的来路。茶摊那位老汉给你的信还在怀里。拿着它上山门，先在江湖上得一个名分。",
       "stages": [
         {
-          "desc": "拿引荐信拜入一个门派（茶摊老汉给的那封）",
+          "desc": "先去青溪村·村口小铺，把信给掌柜看一眼（路东出村口，往东走）；再拿这封信拜入一个门派",
           "cond": {
             "or": [
               {
@@ -1232,6 +1232,10 @@
         {
           "type": "say",
           "raw": "你立于山巅，回望来路。江湖依旧，而你已经不再是当初那个无名少年。"
+        },
+        {
+          "type": "narrate",
+          "raw": "往北进南门，出东门沿官道走，到华山道·山脚；夜里在石阶底下宿一晚，会有人来寻你。"
         }
       ]
     },
@@ -7414,5 +7418,1799 @@
         ]
       }
     }
+  },
+  "questEchoes": {
+    "sq_guo_jing_shoucheng": [
+      {
+        "text": "城头那批箭用完了，垛口补过一层新土。",
+        "region": "palace"
+      }
+    ],
+    "sq_yang_guo_muqian": [
+      {
+        "text": "古墓前那坛酒空了，坛子还摆着，没人收。",
+        "region": "gumu"
+      }
+    ],
+    "sq_xiao_feng_shenshi": [
+      {
+        "text": "有人问起他到底姓什么，问的人自己先笑了。",
+        "region": "gaibang"
+      }
+    ],
+    "sq_feng_qingyang_shoujian": [
+      {
+        "text": "崖上那把剑不见了，崖边多了一道新划的痕。",
+        "region": "huashan"
+      }
+    ],
+    "sq_xiao_longnv_chumen": [
+      {
+        "text": "终南山的墓门开过一回，风灌进去，又关上。",
+        "region": "gumu"
+      }
+    ],
+    "sqd_huashan": [
+      {
+        "text": "思过崖的石壁有人常去看，看守的说看的人不吵。",
+        "region": "huashan"
+      },
+      {
+        "text": "剑坪上的师弟近来爱学一招半式，说是跟人学的。",
+        "region": "huashan"
+      }
+    ],
+    "sqd_shaolin": [
+      {
+        "text": "后山那窝兽挪了窝，砍柴的说山上清静了。",
+        "region": "shaolin"
+      },
+      {
+        "text": "藏经阁后头多了双草鞋印，没人认领。",
+        "region": "shaolin"
+      }
+    ],
+    "sqd_wudang": [
+      {
+        "text": "金顶那笔旧账，如今没人提了。",
+        "region": "wudang"
+      },
+      {
+        "text": "后山药圃补了一圈篱，谁补的没问。",
+        "region": "wudang"
+      }
+    ],
+    "sqd_emei": [
+      {
+        "text": "舍身崖的香客比去年多，崖边的路修过一截。",
+        "region": "emei"
+      },
+      {
+        "text": "金顶的师姐们换了个说法，叫那个人「来过的」。",
+        "region": "emei"
+      }
+    ],
+    "sqd_gaibang": [
+      {
+        "text": "破庙那半袋干粮的旧账，前些日子有人替它还了。",
+        "region": "gaibang"
+      },
+      {
+        "text": "有个不是帮里的人，被叫了半句「兄弟」，没叫完。",
+        "region": "gaibang"
+      }
+    ],
+    "sqd_tangmen": [
+      {
+        "text": "门里丢过两回信，如今信使换了路。",
+        "region": "tangmen"
+      },
+      {
+        "text": "药圃的引子补齐了，谁采的没人问。",
+        "region": "tangmen"
+      }
+    ],
+    "sqd_miaojiang": [
+      {
+        "text": "寨子里丢过一只银项圈，后来在神树下找着了。",
+        "region": "miaojiang"
+      },
+      {
+        "text": "外客进寨，这回有人肯递碗水。",
+        "region": "miaojiang"
+      }
+    ],
+    "sqd_taohua": [
+      {
+        "text": "岛上桃林里有条小径被人踩实了，不是岛上人踩的。",
+        "region": "taohuadao"
+      },
+      {
+        "text": "清音洞的石桌上多了一壶冷茶。",
+        "region": "taohuadao"
+      }
+    ],
+    "sqd_gumu": [
+      {
+        "text": "终南山道上近来少有人巡，走货的胆子大了些。",
+        "region": "gumu"
+      },
+      {
+        "text": "后山的针匣子没人再提，提的人也说不清。",
+        "region": "gumu"
+      }
+    ],
+    "sqd_xuedao": [
+      {
+        "text": "雪道上有人扫过一段，扫得比旁边干净。",
+        "region": "beijiang"
+      },
+      {
+        "text": "血刀寨近来不问过路人的行李了，问的人换了。",
+        "region": "beijiang"
+      }
+    ],
+    "q_beggar_help": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "q_herb_collect": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "q_swordman_spar": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "q_huashan_entry": [
+      {
+        "text": "华山正气堂的木架上多了块名牌，牌子新，字也新。",
+        "region": "huashan"
+      }
+    ],
+    "q_huashan_sword_test": [
+      {
+        "text": "华山剑坪上的师弟近来爱学几式陌生的剑，学得不像。",
+        "region": "huashan"
+      }
+    ],
+    "q_huashan_spy": [
+      {
+        "text": "岳掌门近来提黑木崖时声音压低半度，说完就换话题。",
+        "region": "huashan"
+      }
+    ],
+    "q_siguya_sword": [
+      {
+        "text": "思过崖的石壁上有人常去看，看守的说看的人不吵。",
+        "region": "huashan"
+      }
+    ],
+    "q_shaolin_entry": [
+      {
+        "text": "少林知客僧的名册上添了一个法号，写得很正。",
+        "region": "shaolin"
+      }
+    ],
+    "q_yijinjing": [
+      {
+        "text": "少林后殿的青砖比去年亮，扫地的人换过一个。",
+        "region": "shaolin"
+      }
+    ],
+    "q_wudang_entry": [
+      {
+        "text": "紫霄宫的道童背门规时，多背了一条给新来的人听。",
+        "region": "wudang"
+      }
+    ],
+    "q_emei_entry": [
+      {
+        "text": "峨眉金顶待客的细瓷收起来了，换成了粗碗。",
+        "region": "emei"
+      }
+    ],
+    "q_gaibang_entry": [
+      {
+        "text": "破庙佛座底下留了半个窝头，油纸包得很整齐。",
+        "region": "gaibang"
+      }
+    ],
+    "q_xianglong": [
+      {
+        "text": "丐帮的人说，降龙练到火候，撑腰比打人用得上。",
+        "region": "gaibang"
+      }
+    ],
+    "q_miao_entry": [
+      {
+        "text": "五毒圣堂梁上多挂了一串干草，风过响得像小铃。",
+        "region": "miaojiang"
+      }
+    ],
+    "q_dali_entry": [
+      {
+        "text": "大理王府的人改了口，不再叫「那位客人」。",
+        "region": "dali"
+      }
+    ],
+    "q_liumai": [
+      {
+        "text": "牟尼堂石壁前留了一盏灯，灯芯剪得短，够烧到天亮。",
+        "region": "dali"
+      }
+    ],
+    "q_taohua_entry": [
+      {
+        "text": "桃花岛一张药方的背面多了个名字，墨很新。",
+        "region": "taohuadao"
+      }
+    ],
+    "q_main_jianghu": [
+      {
+        "text": "{name}那个名字，如今在江南道口也有人念了。念的人多半没见过本人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "说书人把{name}的事编成半段，说完了自己摇头，说编不下去了。",
+        "region": "jiangnan"
+      }
+    ],
+    "q_bounty_bandit": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "q_bounty_wolf": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_master_yue": [
+      {
+        "text": "思过崖的石壁有人常去看，看守的说看的人不吵。",
+        "region": "huashan"
+      },
+      {
+        "text": "剑坪上的师弟近来爱学一招半式，说是跟人学的。",
+        "region": "huashan"
+      }
+    ],
+    "sq_nv_yue": [
+      {
+        "text": "思过崖的石壁有人常去看，看守的说看的人不吵。",
+        "region": "huashan"
+      },
+      {
+        "text": "剑坪上的师弟近来爱学一招半式，说是跟人学的。",
+        "region": "huashan"
+      }
+    ],
+    "sq_linghu": [
+      {
+        "text": "思过崖的石壁有人常去看，看守的说看的人不吵。",
+        "region": "huashan"
+      },
+      {
+        "text": "剑坪上的师弟近来爱学一招半式，说是跟人学的。",
+        "region": "huashan"
+      }
+    ],
+    "sq_shaolin_fangzheng": [
+      {
+        "text": "后山那窝兽挪了窝，砍柴的说山上清静了。",
+        "region": "shaolin"
+      },
+      {
+        "text": "藏经阁后头多了双草鞋印，没人认领。",
+        "region": "shaolin"
+      }
+    ],
+    "sq_wudang_chongxu": [
+      {
+        "text": "金顶那笔旧账，如今没人提了。",
+        "region": "wudang"
+      },
+      {
+        "text": "后山药圃补了一圈篱，谁补的没问。",
+        "region": "wudang"
+      }
+    ],
+    "sq_emei_miejue": [
+      {
+        "text": "舍身崖的香客比去年多，崖边的路修过一截。",
+        "region": "emei"
+      },
+      {
+        "text": "金顶的师姐们换了个说法，叫那个人「来过的」。",
+        "region": "emei"
+      }
+    ],
+    "sq_gaibang_hong": [
+      {
+        "text": "破庙那半袋干粮的旧账，前些日子有人替它还了。",
+        "region": "gaibang"
+      },
+      {
+        "text": "有个不是帮里的人，被叫了半句「兄弟」，没叫完。",
+        "region": "gaibang"
+      }
+    ],
+    "sq_nv_huang": [
+      {
+        "text": "岛上桃林里有条小径被人踩实了，不是岛上人踩的。",
+        "region": "taohuadao"
+      },
+      {
+        "text": "清音洞的石桌上多了一壶冷茶。",
+        "region": "taohuadao"
+      }
+    ],
+    "sq_miao_lan": [
+      {
+        "text": "寨子里丢过一只银项圈，后来在神树下找着了。",
+        "region": "miaojiang"
+      },
+      {
+        "text": "外客进寨，这回有人肯递碗水。",
+        "region": "miaojiang"
+      }
+    ],
+    "sq_duan_yu": [
+      {
+        "text": "茶马过了城，价没翻那么狠了，说是有人压过。",
+        "region": "dali"
+      },
+      {
+        "text": "天龙寺的门开了半扇，进不进得去还得看人。",
+        "region": "dali"
+      }
+    ],
+    "sq_blood_saber": [
+      {
+        "text": "雪道上有人扫过一段，扫得比旁边干净。",
+        "region": "beijiang"
+      },
+      {
+        "text": "血刀寨近来不问过路人的行李了，问的人换了。",
+        "region": "beijiang"
+      }
+    ],
+    "sq_xingxiu_laoxian": [
+      {
+        "text": "商道上劫驼铃的少了，走货的敢夜里赶一程。",
+        "region": "xiyu"
+      },
+      {
+        "text": "绿洲那口水囊有人捡到放回了石台。",
+        "region": "xiyu"
+      }
+    ],
+    "sq_wen_jiangnan": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_wen_huashan_shop": [
+      {
+        "text": "思过崖的石壁有人常去看，看守的说看的人不吵。",
+        "region": "huashan"
+      },
+      {
+        "text": "剑坪上的师弟近来爱学一招半式，说是跟人学的。",
+        "region": "huashan"
+      }
+    ],
+    "sq_beggar_info": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_old_herbalist": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_beggar_boy": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_guard_city": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_swordman_wander": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_shenni": [
+      {
+        "text": "后山那窝兽挪了窝，砍柴的说山上清静了。",
+        "region": "shaolin"
+      },
+      {
+        "text": "藏经阁后头多了双草鞋印，没人认领。",
+        "region": "shaolin"
+      }
+    ],
+    "sq_npcv_001": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_npcv_002": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_npcv_003": [
+      {
+        "text": "后山那窝兽挪了窝，砍柴的说山上清静了。",
+        "region": "shaolin"
+      },
+      {
+        "text": "藏经阁后头多了双草鞋印，没人认领。",
+        "region": "shaolin"
+      }
+    ],
+    "sq_npcv_004": [
+      {
+        "text": "庄里今年谷子多收了三石，老柯说是有人替他讨回来的。",
+        "region": "farmland"
+      },
+      {
+        "text": "田埂窄，翻过两回车，如今车辙都换了道。",
+        "region": "farmland"
+      }
+    ],
+    "sq_npcv_005": [
+      {
+        "text": "后山那窝兽挪了窝，砍柴的说山上清静了。",
+        "region": "shaolin"
+      },
+      {
+        "text": "藏经阁后头多了双草鞋印，没人认领。",
+        "region": "shaolin"
+      }
+    ],
+    "sq_npcv_006": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_npcv_013": [
+      {
+        "text": "后山那窝兽挪了窝，砍柴的说山上清静了。",
+        "region": "shaolin"
+      },
+      {
+        "text": "藏经阁后头多了双草鞋印，没人认领。",
+        "region": "shaolin"
+      }
+    ],
+    "sq_npcv_015": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "sq_npcv_016": [
+      {
+        "text": "门里丢过两回信，如今信使换了路。",
+        "region": "tangmen"
+      },
+      {
+        "text": "药圃的引子补齐了，谁采的没人问。",
+        "region": "tangmen"
+      }
+    ],
+    "sq_npcv_017": [
+      {
+        "text": "渔村的孩子近来爱问海那边是什么，大人答不上来。",
+        "region": "haitan"
+      },
+      {
+        "text": "船期还是两趟，一趟往东，一趟往南，问的人多了。",
+        "region": "haitan"
+      }
+    ],
+    "sq_npcv_018": [
+      {
+        "text": "宫里近日少提一个人的名字，提起来都只说「那件事」。",
+        "region": "palace"
+      },
+      {
+        "text": "御道上的石翁仲补过一只耳朵，没人知道谁补的。",
+        "region": "palace"
+      }
+    ],
+    "sq_npcv_019": [
+      {
+        "text": "宫里近日少提一个人的名字，提起来都只说「那件事」。",
+        "region": "palace"
+      },
+      {
+        "text": "御道上的石翁仲补过一只耳朵，没人知道谁补的。",
+        "region": "palace"
+      }
+    ],
+    "sq_npcv_020": [
+      {
+        "text": "宫里近日少提一个人的名字，提起来都只说「那件事」。",
+        "region": "palace"
+      },
+      {
+        "text": "御道上的石翁仲补过一只耳朵，没人知道谁补的。",
+        "region": "palace"
+      }
+    ],
+    "sq_npcv_021": [
+      {
+        "text": "望江阁后头那条夹道，如今没人敢夜里走。",
+        "region": "qinglou"
+      },
+      {
+        "text": "有个姑娘赎了身，走那天没让人送。",
+        "region": "qinglou"
+      }
+    ],
+    "sq_npcv_022": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "sq_npcv_023": [
+      {
+        "text": "望江阁后头那条夹道，如今没人敢夜里走。",
+        "region": "qinglou"
+      },
+      {
+        "text": "有个姑娘赎了身，走那天没让人送。",
+        "region": "qinglou"
+      }
+    ],
+    "sq_npcv_025": [
+      {
+        "text": "金顶那笔旧账，如今没人提了。",
+        "region": "wudang"
+      },
+      {
+        "text": "后山药圃补了一圈篱，谁补的没问。",
+        "region": "wudang"
+      }
+    ],
+    "sq_npcv_026": [
+      {
+        "text": "庄里今年谷子多收了三石，老柯说是有人替他讨回来的。",
+        "region": "farmland"
+      },
+      {
+        "text": "田埂窄，翻过两回车，如今车辙都换了道。",
+        "region": "farmland"
+      }
+    ],
+    "sq_npcv_028": [
+      {
+        "text": "破庙那半袋干粮的旧账，前些日子有人替它还了。",
+        "region": "gaibang"
+      },
+      {
+        "text": "有个不是帮里的人，被叫了半句「兄弟」，没叫完。",
+        "region": "gaibang"
+      }
+    ],
+    "sq_npcv_030": [
+      {
+        "text": "望江阁后头那条夹道，如今没人敢夜里走。",
+        "region": "qinglou"
+      },
+      {
+        "text": "有个姑娘赎了身，走那天没让人送。",
+        "region": "qinglou"
+      }
+    ],
+    "sq_npcv_031": [
+      {
+        "text": "渔村的孩子近来爱问海那边是什么，大人答不上来。",
+        "region": "haitan"
+      },
+      {
+        "text": "船期还是两趟，一趟往东，一趟往南，问的人多了。",
+        "region": "haitan"
+      }
+    ],
+    "sq_npcv_034": [
+      {
+        "text": "金顶那笔旧账，如今没人提了。",
+        "region": "wudang"
+      },
+      {
+        "text": "后山药圃补了一圈篱，谁补的没问。",
+        "region": "wudang"
+      }
+    ],
+    "sq_npcv_035": [
+      {
+        "text": "舍身崖的香客比去年多，崖边的路修过一截。",
+        "region": "emei"
+      },
+      {
+        "text": "金顶的师姐们换了个说法，叫那个人「来过的」。",
+        "region": "emei"
+      }
+    ],
+    "sq_npcv_037": [
+      {
+        "text": "庄里今年谷子多收了三石，老柯说是有人替他讨回来的。",
+        "region": "farmland"
+      },
+      {
+        "text": "田埂窄，翻过两回车，如今车辙都换了道。",
+        "region": "farmland"
+      }
+    ],
+    "sq_npcv_039": [
+      {
+        "text": "门里丢过两回信，如今信使换了路。",
+        "region": "tangmen"
+      },
+      {
+        "text": "药圃的引子补齐了，谁采的没人问。",
+        "region": "tangmen"
+      }
+    ],
+    "sq_npcv_042": [
+      {
+        "text": "门里丢过两回信，如今信使换了路。",
+        "region": "tangmen"
+      },
+      {
+        "text": "药圃的引子补齐了，谁采的没人问。",
+        "region": "tangmen"
+      }
+    ],
+    "sq_npcv_044": [
+      {
+        "text": "商道上劫驼铃的少了，走货的敢夜里赶一程。",
+        "region": "xiyu"
+      },
+      {
+        "text": "绿洲那口水囊有人捡到放回了石台。",
+        "region": "xiyu"
+      }
+    ],
+    "sq_npcv_045": [
+      {
+        "text": "寨子里丢过一只银项圈，后来在神树下找着了。",
+        "region": "miaojiang"
+      },
+      {
+        "text": "外客进寨，这回有人肯递碗水。",
+        "region": "miaojiang"
+      }
+    ],
+    "sq_npcv_046": [
+      {
+        "text": "岛上桃林里有条小径被人踩实了，不是岛上人踩的。",
+        "region": "taohuadao"
+      },
+      {
+        "text": "清音洞的石桌上多了一壶冷茶。",
+        "region": "taohuadao"
+      }
+    ],
+    "sq_npcv_047": [
+      {
+        "text": "岛上桃林里有条小径被人踩实了，不是岛上人踩的。",
+        "region": "taohuadao"
+      },
+      {
+        "text": "清音洞的石桌上多了一壶冷茶。",
+        "region": "taohuadao"
+      }
+    ],
+    "sq_npcv_052": [
+      {
+        "text": "金顶那笔旧账，如今没人提了。",
+        "region": "wudang"
+      },
+      {
+        "text": "后山药圃补了一圈篱，谁补的没问。",
+        "region": "wudang"
+      }
+    ],
+    "sq_npcv_055": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "sq_npcv_058": [
+      {
+        "text": "破庙那半袋干粮的旧账，前些日子有人替它还了。",
+        "region": "gaibang"
+      },
+      {
+        "text": "有个不是帮里的人，被叫了半句「兄弟」，没叫完。",
+        "region": "gaibang"
+      }
+    ],
+    "sq_npcv_060": [
+      {
+        "text": "破庙那半袋干粮的旧账，前些日子有人替它还了。",
+        "region": "gaibang"
+      },
+      {
+        "text": "有个不是帮里的人，被叫了半句「兄弟」，没叫完。",
+        "region": "gaibang"
+      }
+    ],
+    "sq_npcv_067": [
+      {
+        "text": "雪道上有人扫过一段，扫得比旁边干净。",
+        "region": "beijiang"
+      },
+      {
+        "text": "血刀寨近来不问过路人的行李了，问的人换了。",
+        "region": "beijiang"
+      }
+    ],
+    "sq_npcv_068": [
+      {
+        "text": "商道上劫驼铃的少了，走货的敢夜里赶一程。",
+        "region": "xiyu"
+      },
+      {
+        "text": "绿洲那口水囊有人捡到放回了石台。",
+        "region": "xiyu"
+      }
+    ],
+    "sq_npcv_072": [
+      {
+        "text": "燕子坞的药铺肯赊账了，赊给谁掌柜的不说。",
+        "region": "gusu"
+      },
+      {
+        "text": "运河上查船的少了，船户松了口气。",
+        "region": "gusu"
+      }
+    ],
+    "sq_npcv_075": [
+      {
+        "text": "终南山道上近来少有人巡，走货的胆子大了些。",
+        "region": "gumu"
+      },
+      {
+        "text": "后山的针匣子没人再提，提的人也说不清。",
+        "region": "gumu"
+      }
+    ],
+    "sq_npcv_077": [
+      {
+        "text": "江口那条沉船，去年有人下去过，什么也没捞上来。",
+        "region": "harbor"
+      },
+      {
+        "text": "码头上的野狗少了，打更的敢走夜路了。",
+        "region": "harbor"
+      }
+    ],
+    "sq_npcv_097": [
+      {
+        "text": "江口那条沉船，去年有人下去过，什么也没捞上来。",
+        "region": "harbor"
+      },
+      {
+        "text": "码头上的野狗少了，打更的敢走夜路了。",
+        "region": "harbor"
+      }
+    ],
+    "sq_npcv_107": [
+      {
+        "text": "思过崖的石壁有人常去看，看守的说看的人不吵。",
+        "region": "huashan"
+      },
+      {
+        "text": "剑坪上的师弟近来爱学一招半式，说是跟人学的。",
+        "region": "huashan"
+      }
+    ],
+    "sq_npcv_108": [
+      {
+        "text": "思过崖的石壁有人常去看，看守的说看的人不吵。",
+        "region": "huashan"
+      },
+      {
+        "text": "剑坪上的师弟近来爱学一招半式，说是跟人学的。",
+        "region": "huashan"
+      }
+    ],
+    "sq_npcv_111": [
+      {
+        "text": "思过崖的石壁有人常去看，看守的说看的人不吵。",
+        "region": "huashan"
+      },
+      {
+        "text": "剑坪上的师弟近来爱学一招半式，说是跟人学的。",
+        "region": "huashan"
+      }
+    ],
+    "sq_npcv_116": [
+      {
+        "text": "茶马过了城，价没翻那么狠了，说是有人压过。",
+        "region": "dali"
+      },
+      {
+        "text": "天龙寺的门开了半扇，进不进得去还得看人。",
+        "region": "dali"
+      }
+    ],
+    "sq_npcv_132": [
+      {
+        "text": "舍身崖的香客比去年多，崖边的路修过一截。",
+        "region": "emei"
+      },
+      {
+        "text": "金顶的师姐们换了个说法，叫那个人「来过的」。",
+        "region": "emei"
+      }
+    ],
+    "sq_npcv_133": [
+      {
+        "text": "舍身崖的香客比去年多，崖边的路修过一截。",
+        "region": "emei"
+      },
+      {
+        "text": "金顶的师姐们换了个说法，叫那个人「来过的」。",
+        "region": "emei"
+      }
+    ],
+    "sq_npcv_137": [
+      {
+        "text": "寨子里丢过一只银项圈，后来在神树下找着了。",
+        "region": "miaojiang"
+      },
+      {
+        "text": "外客进寨，这回有人肯递碗水。",
+        "region": "miaojiang"
+      }
+    ],
+    "sq_npcv_138": [
+      {
+        "text": "寨子里丢过一只银项圈，后来在神树下找着了。",
+        "region": "miaojiang"
+      },
+      {
+        "text": "外客进寨，这回有人肯递碗水。",
+        "region": "miaojiang"
+      }
+    ],
+    "sq_npcv_139": [
+      {
+        "text": "岛上桃林里有条小径被人踩实了，不是岛上人踩的。",
+        "region": "taohuadao"
+      },
+      {
+        "text": "清音洞的石桌上多了一壶冷茶。",
+        "region": "taohuadao"
+      }
+    ],
+    "sq_npcv_141": [
+      {
+        "text": "雪道上有人扫过一段，扫得比旁边干净。",
+        "region": "beijiang"
+      },
+      {
+        "text": "血刀寨近来不问过路人的行李了，问的人换了。",
+        "region": "beijiang"
+      }
+    ],
+    "sq_npcv_143": [
+      {
+        "text": "江口那条沉船，去年有人下去过，什么也没捞上来。",
+        "region": "harbor"
+      },
+      {
+        "text": "码头上的野狗少了，打更的敢走夜路了。",
+        "region": "harbor"
+      }
+    ],
+    "sq_npcv_144": [
+      {
+        "text": "草原上那群羊回来了三只，铁头没说剩下那些去了哪。",
+        "region": "many"
+      },
+      {
+        "text": "按羊算的债，如今有人肯用盐抵了。",
+        "region": "many"
+      }
+    ],
+    "sq_npcv_145": [
+      {
+        "text": "商道上劫驼铃的少了，走货的敢夜里赶一程。",
+        "region": "xiyu"
+      },
+      {
+        "text": "绿洲那口水囊有人捡到放回了石台。",
+        "region": "xiyu"
+      }
+    ],
+    "sq_npcv_146": [
+      {
+        "text": "燕子坞的药铺肯赊账了，赊给谁掌柜的不说。",
+        "region": "gusu"
+      },
+      {
+        "text": "运河上查船的少了，船户松了口气。",
+        "region": "gusu"
+      }
+    ],
+    "sq_npcv_156": [
+      {
+        "text": "终南山道上近来少有人巡，走货的胆子大了些。",
+        "region": "gumu"
+      },
+      {
+        "text": "后山的针匣子没人再提，提的人也说不清。",
+        "region": "gumu"
+      }
+    ],
+    "sq_npcv_158": [
+      {
+        "text": "燕子坞的药铺肯赊账了，赊给谁掌柜的不说。",
+        "region": "gusu"
+      },
+      {
+        "text": "运河上查船的少了，船户松了口气。",
+        "region": "gusu"
+      }
+    ],
+    "sq_npcv_159": [
+      {
+        "text": "茶马过了城，价没翻那么狠了，说是有人压过。",
+        "region": "dali"
+      },
+      {
+        "text": "天龙寺的门开了半扇，进不进得去还得看人。",
+        "region": "dali"
+      }
+    ],
+    "sq_npcv_161": [
+      {
+        "text": "茶马过了城，价没翻那么狠了，说是有人压过。",
+        "region": "dali"
+      },
+      {
+        "text": "天龙寺的门开了半扇，进不进得去还得看人。",
+        "region": "dali"
+      }
+    ],
+    "sq_npcv_209": [
+      {
+        "text": "渔村的孩子近来爱问海那边是什么，大人答不上来。",
+        "region": "haitan"
+      },
+      {
+        "text": "船期还是两趟，一趟往东，一趟往南，问的人多了。",
+        "region": "haitan"
+      }
+    ],
+    "sq_npcv_212": [
+      {
+        "text": "雪道上有人扫过一段，扫得比旁边干净。",
+        "region": "beijiang"
+      },
+      {
+        "text": "血刀寨近来不问过路人的行李了，问的人换了。",
+        "region": "beijiang"
+      }
+    ],
+    "sq_npcv_230": [
+      {
+        "text": "终南山道上近来少有人巡，走货的胆子大了些。",
+        "region": "gumu"
+      },
+      {
+        "text": "后山的针匣子没人再提，提的人也说不清。",
+        "region": "gumu"
+      }
+    ],
+    "hk_npcv_241_yinzi": [
+      {
+        "text": "绸缎庄那笔窟窿填上了，填的人没在账上留名。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_241_guancai": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_154_maishen": [
+      {
+        "text": "妆匣最底下那张纸被烧了，烧的人手很稳。",
+        "region": "qinglou"
+      }
+    ],
+    "hk_npcv_154_suoyin": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_010_haosun": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_010_fuxue": [
+      {
+        "text": "府学门口那道门换了锁，钥匙在谁手里没人说。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_065_siqiliang": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_065_ziju": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_223_meimei": [
+      {
+        "text": "燕子坞的药铺肯赊账了，赊给谁掌柜的不说。",
+        "region": "gusu"
+      },
+      {
+        "text": "运河上查船的少了，船户松了口气。",
+        "region": "gusu"
+      }
+    ],
+    "hk_npcv_223_laoxiapo": [
+      {
+        "text": "燕子坞的药铺肯赊账了，赊给谁掌柜的不说。",
+        "region": "gusu"
+      },
+      {
+        "text": "运河上查船的少了，船户松了口气。",
+        "region": "gusu"
+      }
+    ],
+    "hk_npcv_240_laocaifeng": [
+      {
+        "text": "那匹攒了三年的绸，后来做成了一件衣裳。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_240_shouyi": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_009_baizi": [
+      {
+        "text": "百子图上的一针补好了，补的人用的线颜色略深。",
+        "region": "jiangnan"
+      }
+    ],
+    "hk_npcv_009_shuoshu": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_180_beibian": [
+      {
+        "text": "北边那趟镖的路线改了，改道的人不肯留名。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_180_qi": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_115_mingan": [
+      {
+        "text": "门里丢过两回信，如今信使换了路。",
+        "region": "tangmen"
+      },
+      {
+        "text": "药圃的引子补齐了，谁采的没人问。",
+        "region": "tangmen"
+      }
+    ],
+    "hk_npcv_115_ce": [
+      {
+        "text": "门里丢过两回信，如今信使换了路。",
+        "region": "tangmen"
+      },
+      {
+        "text": "药圃的引子补齐了，谁采的没人问。",
+        "region": "tangmen"
+      }
+    ],
+    "hk_npcv_126_xianghuo": [
+      {
+        "text": "破庙那半袋干粮的旧账，前些日子有人替它还了。",
+        "region": "gaibang"
+      },
+      {
+        "text": "有个不是帮里的人，被叫了半句「兄弟」，没叫完。",
+        "region": "gaibang"
+      }
+    ],
+    "hk_npcv_126_tongxiang": [
+      {
+        "text": "破庙那半袋干粮的旧账，前些日子有人替它还了。",
+        "region": "gaibang"
+      },
+      {
+        "text": "有个不是帮里的人，被叫了半句「兄弟」，没叫完。",
+        "region": "gaibang"
+      }
+    ],
+    "hk_npcv_164_yinzi": [
+      {
+        "text": "黑木崖山门的账房换了人，旧账锁进柜里。",
+        "region": "mojiao"
+      }
+    ],
+    "hk_npcv_164_sirenzhang": [
+      {
+        "text": "崖后那口枯井填了土，填土的人没有立碑。",
+        "region": "mojiao"
+      }
+    ],
+    "hk_npcv_186_zuihua": [
+      {
+        "text": "望江阁后头那条夹道，如今没人敢夜里走。",
+        "region": "qinglou"
+      },
+      {
+        "text": "有个姑娘赎了身，走那天没让人送。",
+        "region": "qinglou"
+      }
+    ],
+    "hk_npcv_186_yao": [
+      {
+        "text": "望江阁后头那条夹道，如今没人敢夜里走。",
+        "region": "qinglou"
+      },
+      {
+        "text": "有个姑娘赎了身，走那天没让人送。",
+        "region": "qinglou"
+      }
+    ],
+    "hk_npcv_090_jieyao": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_090_meimei": [
+      {
+        "text": "东市果子摊的秤换了新的，旧秤被收进箱子。",
+        "region": "jiangnan"
+      }
+    ],
+    "hk_npcv_074_yajian": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_074_qian": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_252_minge": [
+      {
+        "text": "望江阁后头那条夹道，如今没人敢夜里走。",
+        "region": "qinglou"
+      },
+      {
+        "text": "有个姑娘赎了身，走那天没让人送。",
+        "region": "qinglou"
+      }
+    ],
+    "hk_npcv_252_zi": [
+      {
+        "text": "雅阁的灯添回三盏，枕下那张纸还在原处。",
+        "region": "qinglou"
+      }
+    ],
+    "hk_npcv_178_fangzi": [
+      {
+        "text": "思过崖的石壁有人常去看，看守的说看的人不吵。",
+        "region": "huashan"
+      },
+      {
+        "text": "剑坪上的师弟近来爱学一招半式，说是跟人学的。",
+        "region": "huashan"
+      }
+    ],
+    "hk_npcv_178_jiao": [
+      {
+        "text": "思过崖的石壁有人常去看，看守的说看的人不吵。",
+        "region": "huashan"
+      },
+      {
+        "text": "剑坪上的师弟近来爱学一招半式，说是跟人学的。",
+        "region": "huashan"
+      }
+    ],
+    "hk_npcv_095_qi": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "hk_npcv_095_shifu": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "hk_npcv_082_mibao": [
+      {
+        "text": "天牢院角那层土被刨开过，又踩实了。",
+        "region": "palace"
+      }
+    ],
+    "hk_npcv_082_hua": [
+      {
+        "text": "御书房墙上那幅画挪了半寸，没人说为什么。",
+        "region": "palace"
+      }
+    ],
+    "q_bj_shaogui": [
+      {
+        "text": "雪道上有人扫过一段，扫得比旁边干净。",
+        "region": "beijiang"
+      },
+      {
+        "text": "血刀寨近来不问过路人的行李了，问的人换了。",
+        "region": "beijiang"
+      }
+    ],
+    "hk_npcv_109_junxu": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_073_yajian": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_npcv_027_miaozheng": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "hk_npcv_081_xiangzi": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_yaopopo_shanzi": [
+      {
+        "text": "思过崖的石壁有人常去看，看守的说看的人不吵。",
+        "region": "huashan"
+      },
+      {
+        "text": "剑坪上的师弟近来爱学一招半式，说是跟人学的。",
+        "region": "huashan"
+      }
+    ],
+    "hk_npcv_219_zhangmu": [
+      {
+        "text": "望江阁后头那条夹道，如今没人敢夜里走。",
+        "region": "qinglou"
+      },
+      {
+        "text": "有个姑娘赎了身，走那天没让人送。",
+        "region": "qinglou"
+      }
+    ],
+    "q_brothel_sell": [
+      {
+        "text": "望江阁后头那条夹道，如今没人敢夜里走。",
+        "region": "qinglou"
+      },
+      {
+        "text": "有个姑娘赎了身，走那天没让人送。",
+        "region": "qinglou"
+      }
+    ],
+    "sq_pre_a1_chuan": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_pre_a1_shi": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_pre_a1_yao": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_pre_a2_menfang": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_pre_a4_dukou": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_pre_a5_mubei": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "sq_pre_court_tongshi": [
+      {
+        "text": "听说江南道上那桩事，后来有人去问过，问的人没问出什么。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "桥头那家茶摊换过三回桌布了，说书人还在讲同一个人。",
+        "region": "jiangnan"
+      },
+      {
+        "text": "绸缎庄的账清了一笔，谁清的没人说。",
+        "region": "jiangnan"
+      }
+    ],
+    "q_main_court": [
+      {
+        "text": "大理寺那桩旧案的第一句重写了，写的人不是官。",
+        "region": "palace"
+      },
+      {
+        "text": "{name}这个名字，朝里有人记在册子上，册子不给外人看。",
+        "region": "palace"
+      }
+    ],
+    "q_main_neutral": [
+      {
+        "text": "洛阳那边有人说，一个没带腰牌的人把两边的账算明白了。",
+        "region": "market"
+      },
+      {
+        "text": "{name}没入过哪家门，江湖上却肯给个面子。",
+        "region": "market"
+      }
+    ],
+    "hk_tang_bohu": [
+      {
+        "text": "望江阁后头那条夹道，如今没人敢夜里走。",
+        "region": "qinglou"
+      },
+      {
+        "text": "有个姑娘赎了身，走那天没让人送。",
+        "region": "qinglou"
+      }
+    ],
+    "hk_zhu_zhishan": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_zhou_wenbin": [
+      {
+        "text": "望江阁后头那条夹道，如今没人敢夜里走。",
+        "region": "qinglou"
+      },
+      {
+        "text": "有个姑娘赎了身，走那天没让人送。",
+        "region": "qinglou"
+      }
+    ],
+    "hk_xu_zhenqing": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_zhang_ling": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_du_mu": [
+      {
+        "text": "东市那笔倒了的账，有人垫上了，垫的人没留名。",
+        "region": "market"
+      },
+      {
+        "text": "酒牌丢过一块，后来找回来了，回来时多了道划痕。",
+        "region": "market"
+      }
+    ],
+    "hk_liu_hanyan": [
+      {
+        "text": "望江阁后头那条夹道，如今没人敢夜里走。",
+        "region": "qinglou"
+      },
+      {
+        "text": "有个姑娘赎了身，走那天没让人送。",
+        "region": "qinglou"
+      }
+    ],
+    "sq_cy_gs_du": [
+      {
+        "text": "燕子坞的药铺肯赊账了，赊给谁掌柜的不说。",
+        "region": "gusu"
+      },
+      {
+        "text": "运河上查船的少了，船户松了口气。",
+        "region": "gusu"
+      }
+    ],
+    "sq_cy_gs_xiu": [
+      {
+        "text": "燕子坞的药铺肯赊账了，赊给谁掌柜的不说。",
+        "region": "gusu"
+      },
+      {
+        "text": "运河上查船的少了，船户松了口气。",
+        "region": "gusu"
+      }
+    ],
+    "sq_cy_gs_qu": [
+      {
+        "text": "燕子坞的药铺肯赊账了，赊给谁掌柜的不说。",
+        "region": "gusu"
+      },
+      {
+        "text": "运河上查船的少了，船户松了口气。",
+        "region": "gusu"
+      }
+    ],
+    "sq_cy_hb_ren": [
+      {
+        "text": "江口那条沉船，去年有人下去过，什么也没捞上来。",
+        "region": "harbor"
+      },
+      {
+        "text": "码头上的野狗少了，打更的敢走夜路了。",
+        "region": "harbor"
+      }
+    ],
+    "sq_cy_hb_huo": [
+      {
+        "text": "江口那条沉船，去年有人下去过，什么也没捞上来。",
+        "region": "harbor"
+      },
+      {
+        "text": "码头上的野狗少了，打更的敢走夜路了。",
+        "region": "harbor"
+      }
+    ],
+    "sq_cy_hb_chuan": [
+      {
+        "text": "江口那条沉船，去年有人下去过，什么也没捞上来。",
+        "region": "harbor"
+      },
+      {
+        "text": "码头上的野狗少了，打更的敢走夜路了。",
+        "region": "harbor"
+      }
+    ]
   }
 }

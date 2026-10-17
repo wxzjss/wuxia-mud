@@ -1,0 +1,10 @@
+[
+  { "rid": "road_xixia_1",    "cmd": "对账",     "note": "批5 件②" },
+  { "rid": "beijiang_shankou", "cmd": "递牌",    "note": "批5 件③" },
+  { "rid": "luoyang_market",  "cmd": "逛拍卖行", "note": "#103 拍卖" },
+  { "rid": "changan_market",  "cmd": "逛拍卖行", "note": "#103 拍卖" },
+  { "rid": "chengdu_market",  "cmd": "逛拍卖行", "note": "#103 拍卖" },
+  { "rid": "xiangyang_market", "cmd": "逛拍卖行", "note": "#103 拍卖" },
+  { "rid": "jiangnan_market", "cmd": "逛拍卖行", "note": "#103 拍卖" },
+  { "rid": "gusu_town",       "cmd": "逛拍卖行", "note": "#103 拍卖" }
+]

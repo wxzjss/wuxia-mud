@@ -17,7 +17,7 @@ A5 奇遇 q_siguya_sword（思过崖「再看剑痕」）。
      同房不撞词、不被前面的动作吞（cmd 不用「看」开头）。
 幂等：结构比对，两连跑 OK。
 """
-import json, io, os
+import json, io, os, os
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 DATA = os.path.join(ROOT, 'game', 'data')
@@ -27,20 +27,22 @@ def read(fn):
         return json.load(f)
 
 def write(fn, j):
-    with io.open(os.path.join(DATA, fn), 'w', encoding='utf-8', newline='\n') as f:
-        json.dump(j, f, ensure_ascii=False, indent=2)
-        f.write('\n')
-
+    from _canon_write import write_canon as _wc
+    _wc(os.path.join(DATA, fn), j)
 def narr(t): return {"type": "narrate", "raw": t}
 def say(t):  return {"type": "say", "raw": t}
 
 dirty = set()
 docs = {}
+_BEFORE_QUESTS = None   # 本次运行前的 quest 快照（用于「只改 rewards」红线）
 
 def doc(fn):
     if fn not in docs:
         docs[fn] = read(fn)
     return docs[fn]
+
+# 本次运行前的 quest 快照（红线用：本脚本只许改 rewards）
+_RUN_BEFORE = json.loads(json.dumps(read('60_quests.json').get('quests') or {}))
 
 # =====================================================================
 # A1 · BARE 6：rewards 补专属台词
@@ -217,6 +219,9 @@ for fn, rid, act in ECHOES:
     if upsert(room, act):
         dirty.add(fn)
 
+# 红线快照：本次改动前
+_BEFORE_QUESTS = json.dumps(read('60_quests.json').get('quests') or {}, ensure_ascii=False, sort_keys=True)
+
 # ---------------- 落盘 ----------------
 for fn in sorted(dirty):
     write(fn, docs[fn])
@@ -276,18 +281,20 @@ for fn, rid, act in ECHOES:
     for w in ('最后', '落地', '死死', '猛地', '稳稳'):
         assert w not in blob, f'{rid} 偏好词: {w}'
 
-# 4) 红线：248 QUIET 原文未动（只查 quest 的 desc 与 stages 未被改写——用 HEAD 对比）
-import subprocess
-for qf in ('60_quests.json',):
-    r = subprocess.run(['git', 'show', f'HEAD:game/data/{qf}'], cwd=ROOT,
-                       capture_output=True, text=True, timeout=30)
-    if r.returncode == 0 and r.stdout.strip():
-        old = json.loads(r.stdout)['quests']
-        now = read(qf)['quests']
-        changed = [q for q in old if q in now and
-                   json.dumps({k: v for k, v in old[q].items() if k != 'rewards'}, sort_keys=True, ensure_ascii=False) !=
-                   json.dumps({k: v for k, v in now[q].items() if k != 'rewards'}, sort_keys=True, ensure_ascii=False)]
-        assert not changed, '除 rewards 外有 quest 被改: ' + str(changed[:3])
+# 4) 红线：248 QUIET 原文未动 —— 口径改为「**本脚本**除 rewards 外没碰任何 quest」
+#    （跨批改动由各自脚本负责：act1_polish 会改 q_main_jianghu 的 stage0 文案，
+#      拿 HEAD 比会把别人的合法改动算到本脚本头上，假红。）
+now_q = read('60_quests.json')['quests']
+bad = []
+for qid, after in now_q.items():
+    before = (_RUN_BEFORE or {}).get(qid)
+    if before is None:
+        continue
+    a = json.dumps({k: v for k, v in before.items() if k != 'rewards'}, sort_keys=True, ensure_ascii=False)
+    b = json.dumps({k: v for k, v in after.items() if k != 'rewards'}, sort_keys=True, ensure_ascii=False)
+    if a != b:
+        bad.append(qid)
+assert not bad, '本脚本除 rewards 外改了 quest: ' + str(bad[:3])
 
 print(f'断言全过：{len(ECHOES)} 处回响落地 / {len(REWARD_SAY)} 条 BARE 台词 / 17 个回响旗有读者 / '
       '不撞词不吞词 / QUIET 原文未动')

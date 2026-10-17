@@ -53,7 +53,7 @@ for k, arts in PLAN.items():
     npcs[k] = new
     done += 1
 
-out = json.dumps(d, ensure_ascii=False, indent=2) + '\n'
-open(P, 'w', encoding='utf-8', newline='').write(out)
+from _canon_write import write_canon
+write_canon(P, d)
 print('A-2 done: 补功法 %d 人；wang_yuyan 保留（teach=[] 纯剧情）' % done)
 assert done in (15, 0), done

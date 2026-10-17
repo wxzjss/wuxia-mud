@@ -207,7 +207,6 @@
       "quests": [
         "q_shaolin_entry",
         "q_yijinjing",
-        "q_main_sect",
         "q_main_snow"
       ]
     },
@@ -453,6 +452,62 @@
               "args": [
                 "snow_lead"
               ]
+            }
+          ]
+        },
+        {
+          "cmd": "问门中近况",
+          "label": "问门中近况",
+          "keywords": [
+            "门中近况",
+            "门里",
+            "早课"
+          ],
+          "desc": "问问寺里近来如何",
+          "cond": {
+            "or": [
+              {
+                "flag": "questdone_q_shaolin_entry"
+              },
+              {
+                "flag": "questdone_q_yijinjing"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "cond",
+              "if": {
+                "flag": "questdone_q_shaolin_entry"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "知客僧翻名册翻到你的法号，手指在上面停了一下。"
+                },
+                {
+                  "type": "say",
+                  "raw": "「往后早课，你的位置在第三排东头。」"
+                }
+              ],
+              "else": []
+            },
+            {
+              "type": "cond",
+              "if": {
+                "flag": "questdone_q_yijinjing"
+              },
+              "then": [
+                {
+                  "type": "narrate",
+                  "raw": "大雄宝殿后头的青砖磨得更亮了，扫地的人换过。"
+                },
+                {
+                  "type": "say",
+                  "raw": "方证：「铜人阵过了，往后扫地也算修行。」"
+                }
+              ],
+              "else": []
             }
           ]
         }

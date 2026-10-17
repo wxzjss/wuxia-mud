@@ -21,7 +21,7 @@ C 刀（配套补齐，同批）
       level/atk/def/hp/mp 与 git HEAD 逐字节同（脚本断言）。
 幂等：条件满足即跳过。写盘 indent=2 + 尾换行。
 """
-import json, io, os, re, subprocess
+import json, io, os, os, re, subprocess
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 DATA = os.path.join(ROOT, 'game', 'data')
@@ -31,10 +31,8 @@ def read(fn):
         return json.load(f)
 
 def write(fn, j):
-    with io.open(os.path.join(DATA, fn), 'w', encoding='utf-8', newline='\n') as f:
-        json.dump(j, f, ensure_ascii=False, indent=2)
-        f.write('\n')
-
+    from _canon_write import write_canon as _wc
+    _wc(os.path.join(DATA, fn), j)
 def norm(c):
     if isinstance(c, dict):
         return c

@@ -26,10 +26,8 @@ def read(p):
         return json.load(f)
 
 def write(p, j):
-    with io.open(p, 'w', encoding='utf-8', newline='\n') as f:
-        json.dump(j, f, ensure_ascii=False, indent=2)
-        f.write('\n')
-
+    from _canon_write import write_canon as _wc
+    _wc(p, j)
 SHELLS = ['采药', '采买', '打探', '了结', '送信', '寻物', '护送', '寻人', '除害', '讨债']
 
 # 第二步：卷三/卷四 10 条 desc 按区重写（本地物象与生计）

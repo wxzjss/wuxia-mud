@@ -23,7 +23,7 @@ design/103 快捷栏审计的配套落盘：拍卖常驻快捷钮已撤，给六
 
 幂等：已落则跳过。改完复验 _zhuque_per_asset 六房 ≤10 + ai-flavor + map-check。
 """
-import json, io, os
+import json, io, os, os
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 P50 = os.path.join(ROOT, 'game', 'data', '50_map.json')
@@ -34,11 +34,8 @@ def read(p):
 
 
 def write(p, d):
-    with io.open(p, 'w', encoding='utf-8', newline='') as f:
-        json.dump(d, f, ensure_ascii=False, indent=2)
-        f.write('\n')
-
-
+    from _canon_write import write_canon as _wc
+    _wc(p, d)
 # 六城六写：场景一句 + 出路一句（出路句统一点破「拍卖」主入口词）
 ACTIONS = {
     'luoyang_market':

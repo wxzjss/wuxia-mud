@@ -83,6 +83,6 @@ r['jiangnan_gate'].setdefault('actions', []).append({
     ],
 })
 
-out = json.dumps(d, ensure_ascii=False, indent=2) + '\n'
-open(P, 'w', encoding='utf-8', newline='').write(out)
+from _canon_write import write_canon
+write_canon(P, d)
 print('P1 批量落库：desc 改 2 + 新房 2 + exits 接线 4 处 + actions 4 组（路钱 + T-C 三步）')
