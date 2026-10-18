@@ -493,6 +493,65 @@ const firstLine = r => ((r && r.lines || []).find(l => l.text) || {}).text || ''
       + a.label + (a.hint ? '<i>' + a.hint + '</i>' : '') + '</button>').join('');
     ok('C29b 面板 HTML 片段含 disabled 类与提示文字', /cb-btn disabled/.test(html) && /内力不足/.test(html), html.slice(0, 120));
   }
+  /* C30~C33 倒地补刀与人形击杀任务（2026-10-18 P0） */
+  {
+    const bootP = () => {
+      const e = new GameEngine({ seed: 20261018 });
+      e.boot(); e.newGame({ name: '杀', gender: 'male', birth: 'wuxue' });
+      return e;
+    };
+    const down = (w, id, room) => {
+      const n = w.spawnNpc(id, room || w.player.room, 1, true);
+      n.hp = 0; n.knockedOut = true; n.dead = true;
+      return n;
+    };
+    /* C30 倒地的人形怪能被补刀，且不再对尸体开战 */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      const n = down(w, 'mob_bandit');
+      const r = e.exec('杀 山贼');
+      ok('C30 ★ 倒地山贼可被补刀（不再「这里没有山贼」）', /结果了性命/.test(txt(r)), txt(r).slice(0, 40));
+      ok('C30b 补刀后不再进入战斗', !w.battle, !!w.battle);
+      ok('C30c 补刀后从倒地名单移除', w.downedIn(p.room).indexOf(n) < 0, 'downed=' + w.downedIn(p.room).length);
+    }
+    /* C31 活着的 NPC：行为不变（进入战斗，不是直接杀） */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      const n = w.spawnNpc('mob_bandit', p.room, 1, true);
+      const r = e.exec('杀 山贼');
+      ok('C31 ★ 对活人发「杀」仍然是开战（不误杀）', !!w.battle && !n.knockedOut,
+        'battle=' + !!w.battle + ' knocked=' + n.knockedOut);
+    }
+    /* C32 同名不同实例：只杀点名的那个 */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      const a = down(w, 'mob_bandit', p.room);
+      const b = down(w, 'mob_bandit', p.room);
+      e.exec('杀 山贼');
+      const left = w.downedIn(p.room);
+      ok('C32 ★ 同名倒地者只杀一个，不连带', left.length === 1 && left[0] === b,
+        '剩 ' + left.length + ' 个');
+    }
+    /* C33 q_bounty_bandit：杀满 10 名 → 目标计数 10、可复命 */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      const qd = w.getQuest('q_bounty_bandit');
+      e.exec('接取 ' + qd.name);
+      ok('C33 悬赏任务已接取', p.questStage('q_bounty_bandit') === 0, 'stage=' + p.questStage('q_bounty_bandit'));
+      for (let i = 0; i < 10; i++) {
+        down(w, 'mob_bandit', p.room);
+        e.exec('杀 山贼');
+      }
+      e.exec('look');
+      /* 引擎的 var 键是 q_<questId>_<targetId>，questId 本身以 q_ 开头 ⇒ 实际是 q_q_...；
+         按后缀取，避免把键名格式写死在断言里。 */
+      const kv = Object.keys(p.vars || {}).find(k => /bounty_bandit_kill$/.test(k));
+      const cnt = kv ? p.vars[kv] : 0;
+      ok('C33b ★ 击杀计数 0→10（补刀真算数）', cnt === 10, 'count=' + cnt);
+      ok('C33c 目标达成后可复命提示出现', p.hasFlag('questready_q_bounty_bandit_0'),
+        'ready=' + p.hasFlag('questready_q_bounty_bandit_0'));
+    }
+  }
   console.log('\n' + (fail ? '✘ ' + fail + ' 项失败：' + fails.join(' / ') : '✔ 全部通过'));
   console.log('通过 ' + pass + ' / 失败 ' + fail);
   process.exit(fail ? 1 : 0);

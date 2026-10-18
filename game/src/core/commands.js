@@ -3526,10 +3526,16 @@ function buildCommands(world) {
     }
     if (!args.length) return { lines: [{ kind: 'warn', text: '你想攻击谁？' }] };
     const kw = args.join(' ');
-    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), kw, n => n.name);
+    /* ⚠️ 倒地的人不在 npcsIncludingTemplates 里（npcsIn 过滤 !dead）；
+       不补 downedIn 这一路，人形击杀类任务永远交不了（打倒了却「没有山贼」）。 */
+    const npc = fuzzyFind(w.npcsIncludingTemplates(p.room), kw, n => n.name)
+      || fuzzyFind(w.downedIn(p.room), kw, n => n.name);
     if (!npc) return { lines: [{ kind: 'warn', text: `这里没有「${kw}」。` }] };
-    /* 第五批：晕倒的 NPC 再被补刀才会真死 */
-    if (npc.knockedOut && !(npc.def || {}).hostile) {
+    /* 第五批：晕倒的 NPC 再被补刀才会真死。
+       ⚠️ 2026-10-18：原来还要求「非 hostile」，但人形怪（山贼/恶徒）打倒后同样是
+       knockedOut+dead，于是 hostile 的倒地者会掉进 startCombat —— 对尸体开战。
+       补刀不该看敌意：只要已经倒地，就按「结果掉」处理。 */
+    if (npc.knockedOut) {
       w.onNpcKilled(npc, null);
       return { lines: [{ kind: 'combat', text: `你手起刀落，将昏倒在地的${npc.name}结果了性命。` }] };
     }
