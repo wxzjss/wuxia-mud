@@ -787,10 +787,6 @@
       "home": "house:cy_xy_tavern_up_1",
       "personality": "yinzhi",
       "desc": "衣裳半新不旧，脸上带着这个岁数该有的疲色。",
-      "talk": [
-        "吃了没？",
-        "有事您说话。"
-      ],
       "age": 37,
       "likes": [
         "food"
@@ -816,6 +812,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "路上少说话。",
+        "镖旗一插，汉江上下都让三分，这一趟抽两成。"
+      ],
+      "ask": [
+        {
+          "topic": "守城",
+          "keywords": [
+            "老卒",
+            "围城"
+          ],
+          "answer": "窗边那几个老卒，围城那年守过西门，话头一开就到三更。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -1088,10 +1098,6 @@
       "home": "house:cy_xy_brothel_1",
       "personality": "youhua",
       "desc": "一头珠翠，脸上的粉却打得匀，看不出年纪。",
-      "talk": [
-        "进来坐坐？",
-        "我这儿的规矩，先说明了。"
-      ],
       "age": 37,
       "likes": [
         "book"
@@ -1117,6 +1123,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "进来坐，先看牌子。",
+        "楼里的姑娘分三等，茶资一两起，过夜另算。"
+      ],
+      "ask": [
+        {
+          "topic": "赎身",
+          "keywords": [
+            "赎身",
+            "三百两"
+          ],
+          "answer": "有个姑娘攒赎身钱，攒了三百两，还差一半。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -1387,10 +1407,6 @@
       "home": "house:cy_xy_home_02",
       "personality": "wenwan",
       "desc": "衣裳半新不旧，脸上带着这个岁数该有的疲色。",
-      "talk": [
-        "吃了没？",
-        "有事您说话。"
-      ],
       "age": 35,
       "likes": [
         "incense"
@@ -1416,6 +1432,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "住这巷子，图个静。",
+        "围城那年箭射进墙里，如今还留着个洞，雨天渗水。"
+      ],
+      "ask": [
+        {
+          "topic": "井",
+          "keywords": [
+            "井",
+            "一丈"
+          ],
+          "answer": "巷尾那口井一丈深，水甜，挑水的都爱来。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -1454,10 +1484,6 @@
       "home": "house:cy_xy_home_03",
       "personality": "lengmo",
       "desc": "药香从他身上先到，人才到。",
-      "talk": [
-        "哪儿不舒服？",
-        "方子我写好了，照抓。"
-      ],
       "age": 52,
       "likes": [
         "music"
@@ -1483,6 +1509,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "手伸出来。",
+        "出诊一次五十文，药钱另算，欠的只限熟人。"
+      ],
+      "ask": [
+        {
+          "topic": "皮货",
+          "keywords": [
+            "皮货",
+            "北边"
+          ],
+          "answer": "院里那堆皮货从北边来，一张狐皮值二两。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -2608,10 +2648,6 @@
       "home": "house:cy_ly_brothel_1",
       "personality": "youhua",
       "desc": "一头珠翠，脸上的粉却打得匀，看不出年纪。",
-      "talk": [
-        "进来坐坐？",
-        "我这儿的规矩，先说明了。"
-      ],
       "age": 37,
       "likes": [
         "food"
@@ -2637,6 +2673,23 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "quests": [
+        "sq_cy_ly_zhang"
+      ],
+      "talk": [
+        "爷，里头请。",
+        "牡丹阁的席面五两一桌，姑娘的曲子另点，一支一钱。"
+      ],
+      "ask": [
+        {
+          "topic": "牡丹",
+          "keywords": [
+            "牡丹",
+            "谷雨"
+          ],
+          "answer": "园里的牡丹谷雨前后开，今年早了五天。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -2664,10 +2717,7 @@
           "风尘",
           "债"
         ]
-      },
-      "quests": [
-        "sq_cy_ly_zhang"
-      ]
+      }
     },
     "cy_ly_mudan_1": {
       "id": "cy_ly_mudan_1",
@@ -2833,10 +2883,6 @@
       "home": "house:cy_ly_home_01",
       "personality": "yinzhi",
       "desc": "说话慢，尾音拖得长，像什么都不必急。",
-      "talk": [
-        "坐。",
-        "这事我记下了。"
-      ],
       "age": 48,
       "likes": [
         "sword"
@@ -2862,6 +2908,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "坐，茶自己倒。",
+        "家里的田租出去，一亩收四斗，收成不好减半。"
+      ],
+      "ask": [
+        {
+          "topic": "儿子",
+          "keywords": [
+            "儿子",
+            "县里"
+          ],
+          "answer": "儿子在县里做官，三个月没捎信回来了。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -2899,10 +2959,6 @@
       "home": "house:cy_ly_home_02",
       "personality": "mune",
       "desc": "手上做着活，眼睛却瞟着街上。",
-      "talk": [
-        "吃了没？",
-        "有事您说话。"
-      ],
       "age": 43,
       "likes": [
         "book"
@@ -2928,6 +2984,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "您先忙。",
+        "院里这口井通洛河，冬暖夏凉，打水不用去巷口。"
+      ],
+      "ask": [
+        {
+          "topic": "井绳",
+          "keywords": [
+            "井绳",
+            "两丈"
+          ],
+          "answer": "井绳两丈才够，去年换过一根，麻的。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -2966,10 +3036,6 @@
       "home": "house:cy_ly_home_03",
       "personality": "wenwan",
       "desc": "一眼看得出是熬了夜的，眼底青着。",
-      "talk": [
-        "书里的话，未必作数。",
-        "考完了再说吧。"
-      ],
       "age": 34,
       "likes": [
         "wine"
@@ -2995,6 +3061,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "书中自有，书中自有。",
+        "教蒙童一月收八十文，笔墨纸砚东家出。"
+      ],
+      "ask": [
+        {
+          "topic": "照壁",
+          "keywords": [
+            "照壁",
+            "蝙蝠"
+          ],
+          "answer": "照壁上的蝙蝠刻了五只，铜钱串成一串，是老花样。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -3032,10 +3112,6 @@
       "home": "house:cy_ly_home_04",
       "personality": "youhua",
       "desc": "衣裳半新不旧，脸上带着这个岁数该有的疲色。",
-      "talk": [
-        "有事您说话。",
-        "吃了没？"
-      ],
       "age": 41,
       "likes": [
         "flower"
@@ -3061,6 +3137,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "这世道，不都这样。",
+        "家里藏书三千卷，借书要押一贯钱，十日为期。"
+      ],
+      "ask": [
+        {
+          "topic": "喜事",
+          "keywords": [
+            "喜事",
+            "份子"
+          ],
+          "answer": "隔壁办喜事，我随了二百文份子，吃了两顿席。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -3099,10 +3189,6 @@
       "home": "house:cy_ly_arena_1",
       "personality": "baozhao",
       "desc": "衣裳上没有一处装饰，只有刀柄缠得极紧。",
-      "talk": [
-        "报个名号。",
-        "手底下见。"
-      ],
       "age": 30,
       "likes": [
         "wine"
@@ -3128,6 +3214,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "报名号，上台。",
+        "守擂一场十两，赢了三场再加五两，输了不赔。"
+      ],
+      "ask": [
+        {
+          "topic": "彩棚",
+          "keywords": [
+            "彩棚",
+            "灯笼"
+          ],
+          "answer": "彩棚里挂八盏灯笼，押我赢的坐东边。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -3321,10 +3421,6 @@
       "home": "house:cy_cd_gate_1",
       "personality": "mune",
       "desc": "甲片上的锈擦不净，站得笔直，眼睛却总往城外的路上瞟。",
-      "talk": [
-        "城门申时落闸，要进城趁早。",
-        "路引带在身上么？"
-      ],
       "age": 26,
       "likes": [
         "sword"
@@ -3350,6 +3446,20 @@
       "tier": "B",
       "district": "chengdu",
       "homeless": true,
+      "talk": [
+        "进城办事？别惹事。",
+        "城门卯时开，申时落闸，一日过四百来人。"
+      ],
+      "ask": [
+        {
+          "topic": "糖画",
+          "keywords": [
+            "糖画",
+            "两条龙"
+          ],
+          "answer": "门口卖糖画的，一锅糖能浇两条龙，一条三文。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -3853,10 +3963,6 @@
       "home": "house:cy_cd_tavern_up_1",
       "personality": "lengmo",
       "desc": "袖里揣着一方脉枕，药箱的角磨得发亮。",
-      "talk": [
-        "哪儿不舒服？",
-        "方子我写好了，照抓。"
-      ],
       "age": 41,
       "likes": [
         "flower"
@@ -3882,6 +3988,23 @@
       "tier": "B",
       "district": "chengdu",
       "homeless": true,
+      "quests": [
+        "sq_cy_cd_yao"
+      ],
+      "talk": [
+        "坐，手伸出来。",
+        "蒙顶茶一壶二十文，麻饼一碟五文，药另算。"
+      ],
+      "ask": [
+        {
+          "topic": "老病人",
+          "keywords": [
+            "老病人",
+            "三个月"
+          ],
+          "answer": "有个老病人赊了三个月药，方子还压在案头。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -3909,10 +4032,7 @@
           "医",
           "药"
         ]
-      },
-      "quests": [
-        "sq_cy_cd_yao"
-      ]
+      }
     },
     "cy_cd_inn_1": {
       "id": "cy_cd_inn_1",
@@ -4081,10 +4201,6 @@
       "home": "house:cy_cd_brothel_1",
       "personality": "youhua",
       "desc": "手里摇着一柄团扇，扇上的字是新描的。",
-      "talk": [
-        "进来坐坐？",
-        "我这儿的规矩，先说明了。"
-      ],
       "age": 25,
       "likes": [
         "flower"
@@ -4110,6 +4226,20 @@
       "tier": "B",
       "district": "chengdu",
       "homeless": true,
+      "talk": [
+        "进来坐，茶刚沏。",
+        "翠云楼的茶资八钱起，唱曲另加二钱。"
+      ],
+      "ask": [
+        {
+          "topic": "姑娘",
+          "keywords": [
+            "姑娘",
+            "赎身"
+          ],
+          "answer": "楼里有个姑娘攒赎身钱，还差八十两。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -4149,10 +4279,6 @@
       "home": "house:cy_cd_jinli_1",
       "personality": "yinzhi",
       "desc": "衣裳料子极好，人却坐着不动，由人伺候。",
-      "talk": [
-        "坐。",
-        "这事我记下了。"
-      ],
       "age": 45,
       "likes": [
         "flower"
@@ -4178,6 +4304,20 @@
       "tier": "B",
       "district": "chengdu",
       "homeless": true,
+      "talk": [
+        "坐。事慢慢说。",
+        "锦里的宅子一进三百两，蜀锦一匹中等的一两二钱。"
+      ],
+      "ask": [
+        {
+          "topic": "蜀锦",
+          "keywords": [
+            "后院",
+            "织机"
+          ],
+          "answer": "后院织机十二张，一日出锦三匹，赶工要加钱。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -4216,10 +4356,6 @@
       "home": "house:cy_cd_home_01",
       "personality": "mune",
       "desc": "裤腿上还沾着泥，一看就是从地里来的。",
-      "talk": [
-        "地里的事，急不来。",
-        "今年看天了。"
-      ],
       "age": 52,
       "likes": [
         "sword"
@@ -4245,6 +4381,20 @@
       "tier": "B",
       "district": "chengdu",
       "homeless": true,
+      "talk": [
+        "今年的雨，来得晚。",
+        "家里十二张织机，一日三匹，田里再收两石谷。"
+      ],
+      "ask": [
+        {
+          "topic": "织机",
+          "keywords": [
+            "织机",
+            "十二"
+          ],
+          "answer": "后院十二张织机，日夜轮着响，耳朵都麻了。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -4283,10 +4433,6 @@
       "home": "house:cy_cd_home_02",
       "personality": "wenwan",
       "desc": "药香从他身上先到，人才到。",
-      "talk": [
-        "方子我写好了，照抓。",
-        "哪儿不舒服？"
-      ],
       "age": 55,
       "likes": [
         "food"
@@ -4312,6 +4458,20 @@
       "tier": "B",
       "district": "chengdu",
       "homeless": true,
+      "talk": [
+        "先坐下，我说得慢些。",
+        "看一次病三十文，药按方抓，川贝一钱要八文。"
+      ],
+      "ask": [
+        {
+          "topic": "药材",
+          "keywords": [
+            "药材",
+            "成色"
+          ],
+          "answer": "新收的几味药材成色不对，我捏了半天没敢入方。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -4351,10 +4511,6 @@
       "home": "house:cy_cd_home_03",
       "personality": "wenwan",
       "desc": "一双手比脸糙，虎口上全是老茧。",
-      "talk": [
-        "活儿要做细，急不来。",
-        "看一眼不打紧，别碰。"
-      ],
       "age": 28,
       "likes": [
         "silver"
@@ -4380,6 +4536,20 @@
       "tier": "B",
       "district": "chengdu",
       "homeless": true,
+      "talk": [
+        "这活儿，快不了。",
+        "绣一幅屏风要两个月，工钱三两，丝线自备。"
+      ],
+      "ask": [
+        {
+          "topic": "川贝",
+          "keywords": [
+            "川贝",
+            "晒"
+          ],
+          "answer": "院里晒着川贝与黄连，苦味钻进屋里，绣线都沾了。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -5431,10 +5601,6 @@
       "home": "house:cy_ca_brothel_1",
       "personality": "youhua",
       "desc": "手里摇着一柄团扇，扇上的字是新描的。",
-      "talk": [
-        "进来坐坐？",
-        "我这儿的规矩，先说明了。"
-      ],
       "age": 56,
       "likes": [
         "silver"
@@ -5460,6 +5626,20 @@
       "tier": "B",
       "district": "changan",
       "homeless": true,
+      "talk": [
+        "进来坐，胡姬有新曲。",
+        "平康坊的席面三两起，听曲一钱一支，赏钱随意。"
+      ],
+      "ask": [
+        {
+          "topic": "胡商",
+          "keywords": [
+            "胡商",
+            "驼队"
+          ],
+          "answer": "坊里的胡商随驼队来，一住半个月，出手比五陵年少阔。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -5499,10 +5679,6 @@
       "home": "house:cy_ca_huanguan_1",
       "personality": "yinzhi",
       "desc": "说话前先看你一眼，像在心里过了一遍章程。",
-      "talk": [
-        "文书压着，急不得。",
-        "照着规矩来。"
-      ],
       "age": 45,
       "likes": [
         "tea"
@@ -5528,6 +5704,20 @@
       "tier": "B",
       "district": "changan",
       "homeless": true,
+      "talk": [
+        "这个，得照规矩来。",
+        "巷里递帖子要经门房，门包二十文，少了进不去。"
+      ],
+      "ask": [
+        {
+          "topic": "旧案",
+          "keywords": [
+            "旧案",
+            "册子"
+          ],
+          "answer": "一桩旧案要重提，我手上的册子对不上年份。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -5567,10 +5757,6 @@
       "home": "house:cy_ca_home_01",
       "personality": "yinzhi",
       "desc": "手上戴着一枚玉扳指，转来转去。",
-      "talk": [
-        "坐。",
-        "这事我记下了。"
-      ],
       "age": 53,
       "likes": [
         "book"
@@ -5596,6 +5782,20 @@
       "tier": "B",
       "district": "changan",
       "homeless": true,
+      "talk": [
+        "坐，名帖留下。",
+        "郑宅见客在申时，一日只留三张帖子，多了不看。"
+      ],
+      "ask": [
+        {
+          "topic": "玉扳指",
+          "keywords": [
+            "玉扳指",
+            "三代"
+          ],
+          "answer": "这枚玉扳指传了三代，玉色不算好，胜在没裂。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -5634,10 +5834,6 @@
       "home": "house:cy_ca_home_02",
       "personality": "wenwan",
       "desc": "一眼看得出是熬了夜的，眼底青着。",
-      "talk": [
-        "书里的话，未必作数。",
-        "考完了再说吧。"
-      ],
       "age": 48,
       "likes": [
         "wine"
@@ -5663,6 +5859,20 @@
       "tier": "B",
       "district": "changan",
       "homeless": true,
+      "talk": [
+        "先坐，书慢慢讲。",
+        "教一个学生一月一百文，四书讲完要两年。"
+      ],
+      "ask": [
+        {
+          "topic": "石墩",
+          "keywords": [
+            "石墩",
+            "祖上"
+          ],
+          "answer": "院里那对旧石墩是祖上征战时用的，如今没人搬得动。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -5700,10 +5910,6 @@
       "home": "house:cy_ca_home_03",
       "personality": "baozhao",
       "desc": "在自家门口站着，见人来了，先点了个头。",
-      "talk": [
-        "吃了没？",
-        "有事您说话。"
-      ],
       "age": 47,
       "likes": [
         "incense"
@@ -5729,6 +5935,20 @@
       "tier": "B",
       "district": "changan",
       "homeless": true,
+      "talk": [
+        "有事快说，我忙着。",
+        "家里一日开销二百文，米价一涨就得裁两个人的月钱。"
+      ],
+      "ask": [
+        {
+          "topic": "垂花门",
+          "keywords": [
+            "垂花门",
+            "三年"
+          ],
+          "answer": "垂花门修了三年，木料是从终南山运来的。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -5766,10 +5986,6 @@
       "home": "house:cy_ca_home_04",
       "personality": "mune",
       "desc": "手上做着活，眼睛却瞟着街上。",
-      "talk": [
-        "有事您说话。",
-        "吃了没？"
-      ],
       "age": 60,
       "likes": [
         "wine"
@@ -5795,6 +6011,20 @@
       "tier": "B",
       "district": "changan",
       "homeless": true,
+      "talk": [
+        "老了，走不动喽。",
+        "院里两株海棠，春分前后开，一巷人都来看。"
+      ],
+      "ask": [
+        {
+          "topic": "花枝",
+          "keywords": [
+            "海棠",
+            "剪枝"
+          ],
+          "answer": "海棠开过就剪枝，一株留三枝，多了明年不旺。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -6304,10 +6534,6 @@
       "home": "house:cy_gs_home_01",
       "personality": "yinzhi",
       "desc": "手上做着活，眼睛却瞟着街上。",
-      "talk": [
-        "吃了没？",
-        "有事您说话。"
-      ],
       "age": 47,
       "likes": [
         "food"
@@ -6333,6 +6559,20 @@
       "tier": "B",
       "district": "gusu",
       "homeless": true,
+      "talk": [
+        "别院不见外客。",
+        "别院一月用银十二两，船钱、灯油、修瓦都在里头。"
+      ],
+      "ask": [
+        {
+          "topic": "门额",
+          "keywords": [
+            "门额",
+            "燕北"
+          ],
+          "answer": "门额上那两个字是燕北旧主写的，南渡时带过来的。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -6371,10 +6611,6 @@
       "home": "house:cy_gs_home_02",
       "personality": "wenwan",
       "desc": "一眼看得出是熬了夜的，眼底青着。",
-      "talk": [
-        "书里的话，未必作数。",
-        "考完了再说吧。"
-      ],
       "age": 32,
       "likes": [
         "sword"
@@ -6400,6 +6636,20 @@
       "tier": "B",
       "district": "gusu",
       "homeless": true,
+      "talk": [
+        "坐，书先摊开。",
+        "塾里学生六个，一年束脩二两，中秋加一盒月饼。"
+      ],
+      "ask": [
+        {
+          "topic": "老桂",
+          "keywords": [
+            "老桂",
+            "八月"
+          ],
+          "answer": "院里老桂八月开，花香能飘半条巷子。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -6438,10 +6688,6 @@
       "home": "house:cy_gs_home_03",
       "personality": "haoshuang",
       "desc": "一身水气，晒得比谁都黑。",
-      "talk": [
-        "这条水，我熟。",
-        "坐稳了。"
-      ],
       "age": 53,
       "likes": [
         "flower"
@@ -6467,6 +6713,20 @@
       "tier": "B",
       "district": "gusu",
       "homeless": true,
+      "talk": [
+        "坐稳，篙点了。",
+        "渡一趟两文，包船半日三十文，夜里不渡。"
+      ],
+      "ask": [
+        {
+          "topic": "紫藤",
+          "keywords": [
+            "紫藤",
+            "四月"
+          ],
+          "answer": "墙上的紫藤四月开花，落一地，扫起来费劲。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -7213,10 +7473,6 @@
       "home": "house:cy_hb_8",
       "personality": "youhua",
       "desc": "嗓子比谁都亮，叫卖的调子拖着尾。",
-      "talk": [
-        "就剩这些了，便宜给你。",
-        "看一眼，不买也看一眼。"
-      ],
       "age": 34,
       "likes": [
         "wine"
@@ -7242,6 +7498,20 @@
       "tier": "B",
       "district": "harbor",
       "homeless": true,
+      "talk": [
+        "看一眼，不买也看。",
+        "担子里的货一早进，晌午卖一半，天黑前贱价清。"
+      ],
+      "ask": [
+        {
+          "topic": "存货",
+          "keywords": [
+            "货",
+            "屋里"
+          ],
+          "answer": "进的货还堆在屋里，再放三天就得扔。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -7357,10 +7627,6 @@
       "home": "house:cy_hb_10",
       "personality": "haoshuang",
       "desc": "手里的橹把磨得发亮，是几十年的手印。",
-      "talk": [
-        "这条水，我熟。",
-        "坐稳了。"
-      ],
       "age": 53,
       "likes": [
         "flower"
@@ -7386,6 +7652,20 @@
       "tier": "B",
       "district": "harbor",
       "homeless": true,
+      "talk": [
+        "坐稳，别乱动。",
+        "褚家的船跑南洋，一趟八个月，回来卸象牙和香料。"
+      ],
+      "ask": [
+        {
+          "topic": "海图",
+          "keywords": [
+            "海图",
+            "前堂"
+          ],
+          "answer": "前堂挂着海图，礁石用朱砂点，点错一处船就回不来。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -7424,10 +7704,6 @@
       "home": "house:cy_hb_11",
       "personality": "mune",
       "desc": "衣裳上沾着漆点，怎么洗都留着一片印子。",
-      "talk": [
-        "活儿要做细，急不来。",
-        "看一眼不打紧，别碰。"
-      ],
       "age": 36,
       "likes": [
         "wine"
@@ -7453,6 +7729,20 @@
       "tier": "B",
       "district": "harbor",
       "homeless": true,
+      "talk": [
+        "木料在看，别催。",
+        "打一张船板工钱二百文，桐油另算，三天交活。"
+      ],
+      "ask": [
+        {
+          "topic": "缆绳",
+          "keywords": [
+            "缆绳",
+            "石头"
+          ],
+          "answer": "门前的缆绳磨得比石头光，换了三根，还是这段最经用。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -7490,10 +7780,6 @@
       "home": "house:cy_hb_12",
       "personality": "wenwan",
       "desc": "手上做着活，眼睛却瞟着街上。",
-      "talk": [
-        "吃了没？",
-        "有事您说话。"
-      ],
       "age": 25,
       "likes": [
         "tea"
@@ -7519,6 +7805,20 @@
       "tier": "B",
       "district": "harbor",
       "homeless": true,
+      "talk": [
+        "坐，屋里乱。",
+        "瓷器转口一箱抽五十文，碎了照价赔，青花最贵。"
+      ],
+      "ask": [
+        {
+          "topic": "青花",
+          "keywords": [
+            "青花",
+            "一船"
+          ],
+          "answer": "院里那批青花还没装船，一船能装二百箱。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -7556,10 +7856,6 @@
       "home": "house:cy_hb_13",
       "personality": "mune",
       "desc": "在自家门口站着，见人来了，先点了个头。",
-      "talk": [
-        "有事您说话。",
-        "吃了没？"
-      ],
       "age": 28,
       "likes": [
         "sword"
@@ -7585,6 +7881,20 @@
       "tier": "B",
       "district": "harbor",
       "homeless": true,
+      "talk": [
+        "船到了，等着。",
+        "码头上谁家先卸，看货单的时辰，早一刻都不行。"
+      ],
+      "ask": [
+        {
+          "topic": "货单",
+          "keywords": [
+            "货单",
+            "卯时"
+          ],
+          "answer": "货单卯时送到，排到第七号就得等到晌午。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -7700,10 +8010,6 @@
       "home": "house:cy_hb_15",
       "personality": "haoshuang",
       "desc": "脸上没什么表情，看人的时候多停半息。",
-      "talk": [
-        "站住，哪儿来的？",
-        "没事别在街上晃。"
-      ],
       "age": 58,
       "likes": [
         "silver"
@@ -7729,6 +8035,20 @@
       "tier": "B",
       "district": "harbor",
       "homeless": true,
+      "talk": [
+        "让让，办案。",
+        "码头的案子一月七八起，多是偷货，找回来的不到一半。"
+      ],
+      "ask": [
+        {
+          "topic": "脚夫",
+          "keywords": [
+            "脚夫",
+            "跳板"
+          ],
+          "answer": "脚夫扛麻袋走跳板，一趟两文，摔了货要赔。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -7767,10 +8087,6 @@
       "home": "house:cy_hb_16",
       "personality": "yinzhi",
       "desc": "公服的袖口磨得发亮，手指上有一处笔茧。",
-      "talk": [
-        "照着规矩来。",
-        "文书压着，急不得。"
-      ],
       "age": 41,
       "likes": [
         "flower"
@@ -7796,6 +8112,20 @@
       "tier": "B",
       "district": "harbor",
       "homeless": true,
+      "talk": [
+        "货单拿来，验货。",
+        "关税十抽一，绸缎十五抽一，果干不抽但要看。"
+      ],
+      "ask": [
+        {
+          "topic": "公文",
+          "keywords": [
+            "公文",
+            "三天"
+          ],
+          "answer": "上头的公文压了三天，落笔前得再核一遍。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -8374,10 +8704,6 @@
       "home": "house:cy_sy_8",
       "personality": "mune",
       "desc": "手里攥着半卷书，走两步看一眼。",
-      "talk": [
-        "别出声，这儿是书楼。",
-        "书要读进心里，不是摆在案上。"
-      ],
       "age": 46,
       "likes": [
         "wine"
@@ -8403,6 +8729,20 @@
       "tier": "B",
       "district": "shuyuan",
       "homeless": true,
+      "talk": [
+        "轻些，墨还没干。",
+        "抄一卷三十文，一日抄两卷，错一个字重来。"
+      ],
+      "ask": [
+        {
+          "topic": "藏书",
+          "keywords": [
+            "藏书",
+            "少了几本"
+          ],
+          "answer": "楼里少了几本藏书，我记着，没声张。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -8440,10 +8780,6 @@
       "home": "house:cy_sy_9",
       "personality": "wenwan",
       "desc": "衣裳半新不旧，脸上带着这个岁数该有的疲色。",
-      "talk": [
-        "吃了没？",
-        "有事您说话。"
-      ],
       "age": 41,
       "likes": [
         "flower"
@@ -8469,6 +8805,20 @@
       "tier": "B",
       "district": "shuyuan",
       "homeless": true,
+      "talk": [
+        "轻步，先生在看书。",
+        "帮佣一月二百文，管两顿饭，洗衣另加五十。"
+      ],
+      "ask": [
+        {
+          "topic": "灯油",
+          "keywords": [
+            "灯油",
+            "一夜"
+          ],
+          "answer": "书斋的灯油一夜耗半盏，先生看到三更才睡。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
