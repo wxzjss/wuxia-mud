@@ -32,9 +32,14 @@ function setupFight() {
   p.maxHp = 999999; p.hp = 999999;
   p.maxMp = 99999; p.mp = 99999;
   const foe = w.spawnNpc('mob_bandit', p.room, 1, true);
-  foe.hp = foe.maxHp = 99999;
   foe.atk = 1;
   w.startCombat(p, foe);
+  /* ⚠️ 必须在 startCombat 之后加固：它会 recalc，把提前写的 hp/maxHp 冲回模板值。
+     P0-a 之后「一方死亡就结束战斗」（以前死亡被忽略），所以夹具要保证
+     一发武技 + DoT 之后双方都还活着，否则 battle 会被 finishCombat 清成 null。 */
+  p.maxHpBase = 100000; p.recalc(); p.hp = p.maxHp;
+  p.maxMp = 99999; p.mp = p.maxMp;
+  foe.maxHpBase = 99999; foe.maxHp = 99999; foe.hp = 99999;
   return { e, w, p, foe };
 }
 
@@ -46,13 +51,15 @@ ok('这门武学挂了武技', !!moveDef, moveDef ? moveDef.name : '(无)');
 const r1 = A.w.combatStep({ type: 'skill', skill: 'jindao_qimen_3', moveId: moveDef.id });
 const t1 = (r1 && r1.lines || []).map(l => l.text).join(' ');
 ok('出了招（日志里出现武技名）', t1.indexOf(moveDef.name) >= 0, t1.slice(0, 90));
+ok('①-b 第一发之后战斗仍在进行（P0-a 后一方死亡会结束战斗）', !!A.w.battle,
+  A.w.battle ? ('turn ' + A.w.battle.turn) : '战斗已结束：玩家或敌人被一击/DoT 打死（夹具问题或数值过强）');
 
 /* ---------- ② 冷却 ---------- */
 section('② 冷却（连点第二次被拒）');
 A.w.battle.cooldowns = {};
 A.p.mp = A.p.maxMp;
 const r2a = A.w.combatStep({ type: 'skill', skill: 'jindao_qimen_3', moveId: moveDef.id });
-const cdAfter = Object.assign({}, A.w.battle.cooldowns);
+const cdAfter = Object.assign({}, (A.w.battle && A.w.battle.cooldowns) || {});
 ok('第一次用完之后记上了冷却', (cdAfter[moveDef.id] || 0) > 0, JSON.stringify(cdAfter));
 const r2b = A.w.combatStep({ type: 'skill', skill: 'jindao_qimen_3', moveId: moveDef.id });
 const t2 = (r2b && r2b.lines || []).map(l => l.text).join(' ');
@@ -62,7 +69,7 @@ ok('冷却期内再用被拒（提示还需几回合）', /尚未缓过气来/.t
 const C = setupFight();
 C.w.battle.cooldowns = {};
 C.w.combatStep({ type: 'skill', skill: 'jindao_qimen_3', moveId: moveDef.id });
-const before = C.w.battle.cooldowns[moveDef.id];
+const before = (C.w.battle && C.w.battle.cooldowns[moveDef.id]) || 0;
 for (let i = 0; i < 4; i++) { C.w.combatStep('auto'); if (!C.w.battle) break; }
 const after = C.w.battle ? (C.w.battle.cooldowns[moveDef.id] || 0) : 0;
 ok('过几个回合冷却会降下来', after < before, before + ' → ' + after);
