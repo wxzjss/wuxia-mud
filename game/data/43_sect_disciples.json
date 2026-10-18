@@ -542,10 +542,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「长老见过师叔。」",
-    "「藏经阁今日轮我值守，香客借书得先登记。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -602,7 +598,21 @@
    "rank": 4,
    "personality": "mune",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "施主，山门清净。",
+    "藏经阁借书要登记，一次只许借一卷。"
+   ],
+   "ask": [
+    {
+     "topic": "铁罗汉",
+     "keywords": [
+      "夜里",
+      "三尊"
+     ],
+     "answer": "夜里山风大，铁罗汉有三尊底座松了，前日才垫稳。"
+    }
+   ]
   },
   "disciple_shaolin_1": {
    "id": "disciple_shaolin_1",
@@ -3801,10 +3811,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「内门见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -3864,6 +3870,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "厅里不许动武。",
+    "唐门的暗器不外传，看可以，摸要问过执事。"
+   ],
+   "ask": [
+    {
+     "topic": "墙上",
+     "keywords": [
+      "少三支",
+      "上月"
+     ],
+     "answer": "墙上那排飞刀少了三支，上个月试招收不回来。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -4948,10 +4968,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「记名弟子见过师叔。」",
-    "「这一趟我们押的是药，路上要是遇见劫道的，你帮不帮？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -5013,6 +5029,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "蛇阵里别乱走。",
+    "带人过阵一趟二十文，踩错一步我不管。"
+   ],
+   "ask": [
+    {
+     "topic": "潮水",
+     "keywords": [
+      "涨潮",
+      "半个时辰"
+     ],
+     "answer": "涨潮时东边那片石滩就没了，水退了才露出来。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -5167,10 +5197,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「传人见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -5227,6 +5253,20 @@
    "personality": "wenwan",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "山道窄，靠右走。",
+    "碑前不许练剑，石阶上更不许。"
+   ],
+   "ask": [
+    {
+     "topic": "墓门",
+     "keywords": [
+      "石碑",
+      "三丈"
+     ],
+     "answer": "石碑往里去三丈有块断崖，寻常人不许靠近。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -5383,10 +5423,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「弟子见过师叔。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -5444,6 +5480,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "道友，从哪座山来？",
+    "山上挑水一日四担，柴两捆，做完才许练功。"
+   ],
+   "ask": [
+    {
+     "topic": "松柏",
+     "keywords": [
+      "后山",
+      "八十年"
+     ],
+     "answer": "后山那片松柏是八十年前栽的，如今合抱粗了。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -15405,10 +15455,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师叔。」",
-    "「刀在鞘里，鞘上有三道旧痕。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -15465,6 +15511,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_baisheng",
+   "talk": [
+    "佩刀解下再进门。",
+    "门里比刀，一炷香为限，见血即止。"
+   ],
+   "ask": [
+    {
+     "topic": "百胜",
+     "keywords": [
+      "三十一场",
+      "二十六"
+     ],
+     "answer": "门主说百胜，其实打了三十一场，赢了二十六场。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -15590,10 +15650,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师兄。」",
-    "「刀在鞘里，鞘上有三道旧痕。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -15649,6 +15705,20 @@
    "personality": "lengmo",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "新来的？先站半个时辰。",
+    "入门先学收刀，三个月不许碰真刃。"
+   ],
+   "ask": [
+    {
+     "topic": "铜扣",
+     "keywords": [
+      "每旬",
+      "两回"
+     ],
+     "answer": "鞘上铜扣每旬擦两回，门主查得比刀法还严。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",

@@ -3228,10 +3228,6 @@
       "home": "house:cy_cd_street_1",
       "personality": "wenwan",
       "desc": "一身好料子，鞋底却磨得薄了。跑得多。",
-      "talk": [
-        "这位，看点什么？",
-        "货是好货，价钱好说。"
-      ],
       "age": 24,
       "likes": [
         "jade"
@@ -3257,6 +3253,20 @@
       "tier": "B",
       "district": "chengdu",
       "homeless": true,
+      "talk": [
+        "坐嘛，茶还烫。",
+        "盖碗茶三文一碗，续水不要钱。"
+      ],
+      "ask": [
+        {
+          "topic": "龙门阵",
+          "keywords": [
+            "晌午",
+            "二十桌"
+          ],
+          "answer": "晌午最热闹，二十张竹椅坐满，摆到日头偏西。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -3529,10 +3539,6 @@
       "home": "house:cy_cd_tavern_1",
       "personality": "wenwan",
       "desc": "围裙上的油点又多了几块，袖口卷到手肘。",
-      "talk": [
-        "住店还是打尖？",
-        "后堂还有位子。"
-      ],
       "age": 25,
       "likes": [
         "incense"
@@ -3558,6 +3564,20 @@
       "tier": "B",
       "district": "chengdu",
       "homeless": true,
+      "talk": [
+        "里头坐，临江有位。",
+        "豆瓣鱼一盘四十文，米饭管饱。"
+      ],
+      "ask": [
+        {
+          "topic": "江上",
+          "keywords": [
+            "昨夜",
+            "三条船"
+          ],
+          "answer": "昨夜江上过了三条船，帆都落着，不知装的什么。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -3596,10 +3616,6 @@
       "home": "house:cy_cd_tavern_2",
       "personality": "haoshuang",
       "desc": "嗓子好，说话的尾音总往上提一提。",
-      "talk": [
-        "听我唱一段？",
-        "嗓子今儿不太开。"
-      ],
       "age": 30,
       "likes": [
         "jade"
@@ -3625,6 +3641,20 @@
       "tier": "B",
       "district": "chengdu",
       "homeless": true,
+      "talk": [
+        "听曲？嗓子刚开。",
+        "一段清唱十五文，点曲子再加十文。"
+      ],
+      "ask": [
+        {
+          "topic": "堂会",
+          "keywords": [
+            "初十",
+            "六桌"
+          ],
+          "answer": "初十有堂会，楼上订了六桌，都是锦市的掌柜。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -3811,10 +3841,6 @@
       "home": "house:cy_cd_lane_1",
       "personality": "mune",
       "desc": "腰上挂着一排小工具，走一步碰出一串轻响。",
-      "talk": [
-        "看一眼不打紧，别碰。",
-        "活儿要做细，急不来。"
-      ],
       "age": 27,
       "likes": [
         "incense"
@@ -3840,6 +3866,23 @@
       "tier": "B",
       "district": "chengdu",
       "homeless": true,
+      "quests": [
+        "sq_cy_cd_zhu"
+      ],
+      "talk": [
+        "看竹器？轻点拿。",
+        "竹篮十文一个，竹席三十文，编三日。"
+      ],
+      "ask": [
+        {
+          "topic": "青竹",
+          "keywords": [
+            "三月",
+            "二十根"
+          ],
+          "answer": "三月里砍青竹，一天砍二十根，晾半月才能用。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -3866,10 +3909,7 @@
         "marks": [
           "工"
         ]
-      },
-      "quests": [
-        "sq_cy_cd_zhu"
-      ]
+      }
     },
     "cy_cd_brothel_1": {
       "id": "cy_cd_brothel_1",
@@ -4218,10 +4258,6 @@
       "home": "house:cy_cd_patrol_1",
       "personality": "xiayi",
       "desc": "脸上没什么表情，看人的时候多停半息。",
-      "talk": [
-        "站住，哪儿来的？",
-        "没事别在街上晃。"
-      ],
       "age": 55,
       "likes": [
         "tea"
@@ -4247,6 +4283,20 @@
       "tier": "B",
       "district": "chengdu",
       "homeless": true,
+      "talk": [
+        "站住，哪儿来的？",
+        "街上摆摊要交地钱，一日三文，不给就收摊。"
+      ],
+      "ask": [
+        {
+          "topic": "蜀绣",
+          "keywords": [
+            "前街",
+            "两匹"
+          ],
+          "answer": "前街绣铺前日丢了两匹蜀绣，到现在没找着。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -4285,10 +4335,6 @@
       "home": "house:cy_cd_patrol_2",
       "personality": "mune",
       "desc": "说话前先看你一眼，像在心里过了一遍章程。",
-      "talk": [
-        "照着规矩来。",
-        "文书压着，急不得。"
-      ],
       "age": 32,
       "likes": [
         "jade"
@@ -4314,6 +4360,20 @@
       "tier": "B",
       "district": "chengdu",
       "homeless": true,
+      "talk": [
+        "让开，别挡路。",
+        "锦市查验，一匹锦抽三文，不开票加倍。"
+      ],
+      "ask": [
+        {
+          "topic": "贼",
+          "keywords": [
+            "初九",
+            "半幅"
+          ],
+          "answer": "初九抓了个贼，怀里揣着一匹蜀锦，剪了半幅。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -4353,10 +4413,6 @@
       "home": "house:cy_ca_gate_1",
       "personality": "yinzhi",
       "desc": "脸上有道旧疤，不笑，握枪的手背上青筋绷着。",
-      "talk": [
-        "城门申时落闸，要进城趁早。",
-        "路引带在身上么？"
-      ],
       "age": 43,
       "likes": [
         "book"
@@ -4382,6 +4438,20 @@
       "tier": "B",
       "district": "changan",
       "homeless": true,
+      "talk": [
+        "路引，手伸出来。",
+        "五道门洞，只开中间三道，车马走西边。"
+      ],
+      "ask": [
+        {
+          "topic": "换岗",
+          "keywords": [
+            "卯时",
+            "四十人"
+          ],
+          "answer": "卯时换岗，一班四十人，城楼上另有一队。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -4420,10 +4490,6 @@
       "home": "house:cy_ca_gate_2",
       "personality": "baozhao",
       "desc": "脸上有道旧疤，不笑，握枪的手背上青筋绷着。",
-      "talk": [
-        "路引带在身上么？",
-        "城门申时落闸，要进城趁早。"
-      ],
       "age": 26,
       "likes": [
         "wine"
@@ -4449,6 +4515,20 @@
       "tier": "B",
       "district": "changan",
       "homeless": true,
+      "talk": [
+        "别挤，一个一个来。",
+        "带货进城要验，盐铁这两样得报官。"
+      ],
+      "ask": [
+        {
+          "topic": "落霜",
+          "keywords": [
+            "九月",
+            "一夜"
+          ],
+          "answer": "九月里就落霜了，夜里甲片冻手，得垫一层布。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -5610,10 +5690,6 @@
       "home": "house:cy_ca_patrol_2",
       "personality": "yinzhi",
       "desc": "说话前先看你一眼，像在心里过了一遍章程。",
-      "talk": [
-        "照着规矩来。",
-        "文书压着，急不得。"
-      ],
       "age": 53,
       "likes": [
         "tea"
@@ -5639,6 +5715,20 @@
       "tier": "B",
       "district": "changan",
       "homeless": true,
+      "talk": [
+        "站着，看你面生。",
+        "西市失窃报案，先写状子，再交十文。"
+      ],
+      "ask": [
+        {
+          "topic": "案子",
+          "keywords": [
+            "上月",
+            "两桩"
+          ],
+          "answer": "上月西市有两桩案子，一桩偷珠子，一桩是假酒。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",

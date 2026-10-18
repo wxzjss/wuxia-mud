@@ -403,10 +403,6 @@
       "home": "house:cy_pre_woodblock",
       "personality": "lengmo",
       "desc": "手上有刀口，一道压着一道。他刻字的时候不看人。",
-      "talk": [
-        "版子脆了，一刀下去就得重来。",
-        "字是刻出来的，不是写出来的。"
-      ],
       "age": 50,
       "likes": [
         "book"
@@ -434,6 +430,20 @@
       "homeless": true,
       "quests": [
         "sq_pre_a3_shufang"
+      ],
+      "talk": [
+        "别碰版子，手脏。",
+        "刻一块书版八十文，写字另算，三日取。"
+      ],
+      "ask": [
+        {
+          "topic": "竹巷",
+          "keywords": [
+            "竹子",
+            "五年"
+          ],
+          "answer": "巷里的竹子五年一砍，砍早了太嫩，刻不得。"
+        }
       ],
       "portrait": {
         "v": 1,
@@ -554,10 +564,6 @@
       "home": "house:cy_pre_carrier",
       "personality": "baozhao",
       "desc": "扁担搁在肩上，一头空着。他走路的时候上身不动，脚在动。",
-      "talk": [
-        "一担两文，十里起算。",
-        "长安的街，我闭着眼也摸得着。"
-      ],
       "age": 35,
       "likes": [
         "wine"
@@ -585,6 +591,20 @@
       "homeless": true,
       "quests": [
         "sq_pre_a4_qiaofu"
+      ],
+      "talk": [
+        "让让，担子沉。",
+        "一担两文，十里起算，过城门加一文。"
+      ],
+      "ask": [
+        {
+          "topic": "脚力",
+          "keywords": [
+            "胡商",
+            "三趟"
+          ],
+          "answer": "胡商的货重，我一天只跑三趟，多了腿受不住。"
+        }
       ],
       "portrait": {
         "v": 1,
@@ -772,10 +792,6 @@
       "home": "house:cy_pre_postman",
       "personality": "mune",
       "desc": "小腿上绑着行缠，走了一天的路还站得很直。",
-      "talk": [
-        "公文有公文的走法，私信有私信的。",
-        "这趟我跑了六天。"
-      ],
       "age": 29,
       "likes": [
         "silver"
@@ -803,6 +819,20 @@
       "homeless": true,
       "quests": [
         "sq_pre_line_orth"
+      ],
+      "talk": [
+        "让路，公文急。",
+        "私信一封五文，加急另加十文，丢了不赔。"
+      ],
+      "ask": [
+        {
+          "topic": "路程",
+          "keywords": [
+            "洛阳",
+            "六天"
+          ],
+          "answer": "这趟从洛阳到长安走了六天，路上换了两匹马。"
+        }
       ],
       "portrait": {
         "v": 1,
@@ -843,10 +873,6 @@
       "home": "house:cy_pre_usurer",
       "personality": "youhua",
       "desc": "右手小指缺了一截。他数钱的时候，缺的那截在桌上敲。",
-      "talk": [
-        "借多少？拿什么抵？",
-        "利息按日算，按日。"
-      ],
       "age": 41,
       "likes": [
         "silver"
@@ -874,6 +900,20 @@
       "homeless": true,
       "quests": [
         "sq_pre_line_out"
+      ],
+      "talk": [
+        "借钱？先看手。",
+        "借一两，一日两文利，十日一结。"
+      ],
+      "ask": [
+        {
+          "topic": "手指",
+          "keywords": [
+            "十年前",
+            "赌桌"
+          ],
+          "answer": "这截手指是十年前在赌桌上押掉的，值八两银子。"
+        }
       ],
       "portrait": {
         "v": 1,

@@ -403,10 +403,6 @@
       "sect": "gumu",
       "rank": 5,
       "desc": "拂尘擦得干净，人倒是邋遢，一身道袍洗得发灰，袖口全起了毛边。她看你的时候不说话，先从头看到脚，再看你的手。",
-      "talk": [
-        "你也听说过我？",
-        "这世上的情，都是假的。"
-      ],
       "personality": "baozhao",
       "likes": [
         "flower"
@@ -449,6 +445,24 @@
         "day": "gumu_shan",
         "night": "gumu_shan"
       },
+      "skills": {
+        "拳": "jiuyin_baiguzhao",
+        "内功": "jiuyin_zhenjing"
+      },
+      "talk": [
+        "你也配问我名字？",
+        "终南山的道，我走过一百回，闭眼也认得。"
+      ],
+      "ask": [
+        {
+          "topic": "旧事",
+          "keywords": [
+            "十年前",
+            "封山"
+          ],
+          "answer": "十年前那场雪封了山，我在碑前站了一夜。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "A",
@@ -472,10 +486,6 @@
             "act": "坐在山石上，把拂尘一根一根理过去"
           }
         ]
-      },
-      "skills": {
-        "拳": "jiuyin_baiguzhao",
-        "内功": "jiuyin_zhenjing"
       }
     },
     "guo_xiang": {
