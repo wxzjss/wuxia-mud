@@ -201,7 +201,11 @@ const firstLine = r => ((r && r.lines || []).find(l => l.text) || {}).text || ''
       const dots = (t.buffs || []).filter(b => b.tag === 'dot_创口');
       ok('C11 ★ 创口同源不叠层（两次命中仍只一条 buff）', dots.length === 1, 'buff 数=' + dots.length);
       ok('C11b 创口伤害 6（旧 12）', dots[0] && dots[0].dot.value === 6, dots[0] && String(dots[0].dot.value));
-      ok('C11c 首次挂上给解法提示（金创药/包扎）', /金创药|包扎/.test(String(r1 && r1.text)), String(r1 && r1.text).slice(0, 50));
+      /* 解法提示只对玩家（NPC 中招不需要给玩家解法建议，#17 之后按 isPlayer 分口径） */
+      const rPl = e.world.combat.applySkillEffect(eff, t, p, null, battle);
+      ok('C11c 玩家中招时给解法提示（金创药，且不再提不存在的包扎）',
+        /金创药/.test(String(rPl && rPl.text)) && !/包扎/.test(String(rPl && rPl.text)),
+        String(rPl && rPl.text).slice(0, 54));
       const lines = [];
       e.world.combat.tickBuffs(t, lines, battle);
       const statusLine = (lines || []).map(l => l.text).join(' ');
@@ -323,6 +327,51 @@ const firstLine = r => ((r && r.lines || []).find(l => l.text) || {}).text || ''
       const out = txt(r);
       ok('C19 ★ 玩家更快时逃跑失败不说反话（踏空/再来一次）',
         /踏空|再来一次/.test(out) && !/对方比你快/.test(out), out.slice(0, 70));
+    }
+  }
+  /* C20/C21 第二人称日志与面板用药（2026-10-18 审计 #17/#16） */
+  {
+    const bootP = () => {
+      const e = new GameEngine({ seed: 20261018 });
+      e.boot(); e.newGame({ name: '战探', gender: 'male', birth: 'wuxue' });
+      return e;
+    };
+    /* C20 日志人称：玩家相关状态行必须用「你」，敌方仍用名字 */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      const n = w.spawnNpc('mob_wolf', p.room, 1, true);
+      w.startCombat(p, n);
+      const sk = w.data.skills.beast_rend;
+      const eff = (sk.effects || [])[0];
+      const onPlayer = (w.combat.applySkillEffect(eff, n, p, sk, w.battle) || {}).text || '';
+      const tickLines = [];
+      w.combat.tickBuffs(p, tickLines, w.battle);
+      const tickText = tickLines.map(l => l.text).join(' ');
+      ok('C20 ★ 玩家中创口用第二人称（不含角色全名）',
+        /你/.test(onPlayer) && !/战探/.test(onPlayer), onPlayer.slice(0, 40));
+      ok('C20b 玩家每回合渗血行也用「你」', /你身上的创口在渗血/.test(tickText) && !/战探/.test(tickText),
+        tickText.slice(0, 46));
+      const onWolf = (w.combat.applySkillEffect(eff, p, n, sk, w.battle) || {}).text || '';
+      ok('C20c 敌方状态行仍用名字（不混人称）', /灰狼/.test(onWolf) && !/你/.test(onWolf), onWolf.slice(0, 40));
+    }
+    /* C21 面板用药：actions 里的「用药」点下去要真生效且吃敌人一手 */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      w.giveItem(p, 'jinchuang_yao', 2); p.hp = 40;
+      const n = w.spawnNpc('mob_bandit', p.room, 1, true);
+      w.startCombat(p, n);
+      p.addBuff({ name: '创口', turns: 2, mods: {}, tag: 'dot_创口', dot: { value: 6, source: n.id } });
+      const c = e.view({ map: false }).combat;
+      const act = (c.actions || []).find(a => a.action === 'item' && /金创药/.test(a.label));
+      ok('C21 ★ 战斗面板出现「用金创药」按钮', !!act, (c.actions || []).map(a => a.label).join(','));
+      const hp0 = p.hp, turn0 = c.turn;
+      const r = e.combatAction('item', { key: act.key });
+      const dotGone = !(p.buffs || []).some(b => b.tag === 'dot_创口');
+      const enemyActed = (r.lines || []).some(l => /山贼.*击中你|山贼.*招式/.test(l.text || ''));
+      ok('C21b 面板用药真生效：回血 + 止血', p.hp > hp0 && dotGone, 'hp ' + hp0 + '→' + p.hp + ' dot=' + !dotGone);
+      ok('C21c 用药后吃敌人一手、回合前进（时序不变）',
+        !!r.view && r.view.combat && r.view.combat.turn > turn0 && enemyActed,
+        'turn ' + turn0 + '→' + (r.view && r.view.combat && r.view.combat.turn));
     }
   }
   console.log('\n' + (fail ? '✘ ' + fail + ' 项失败：' + fails.join(' / ') : '✔ 全部通过'));

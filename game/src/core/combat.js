@@ -26,6 +26,8 @@ const { profTierOf, profTierMult, profTierAcc } = require('./character');
  *   ① defFinal（新档 / 新代码）  ② 数字形态的 def（旧档）  ③ defBase（模板原始防御力）
  * 绝不返回 undefined / NaN / 对象。
  */
+/** 战斗日志的人称：玩家 = 你，其余 = 名字（#17 第二人称口径，2026-10-18） */
+function who(u) { return (u && u.isPlayer) ? '你' : ((u && u.name) || ''); }
 function defenseOf(u) {  if (!u) return 0;
   if (typeof u.defFinal === 'number') return Number.isFinite(u.defFinal) ? u.defFinal : 0;
   if (typeof u.def === 'number') return Number.isFinite(u.def) ? u.def : 0;
@@ -307,7 +309,7 @@ class CombatEngine {
     u.bossPhaseIdx = idx;
 
     /* ① 台词 + 演出（先出字，再上倍率，顺序上玩家先看到「他要变了」） */
-    lines.push({ kind: 'combat', text: `【${u.name} · ${ph.name || ('第 ' + (idx + 1) + ' 阶段')}】` });
+    lines.push({ kind: 'combat', text: `【${who(u)} · ${ph.name || ('第 ' + (idx + 1) + ' 阶段')}】` });
     if (ph.line) lines.push({ kind: 'combat', text: ph.line });
     if (ph.desc) lines.push({ kind: 'combat', text: ph.desc });
 
@@ -507,7 +509,7 @@ class CombatEngine {
     const mpNeed = (skill && skill.mpCost ? skill.mpCost : 0) + (move && move.mpCost ? move.mpCost : 0);
     if (mpNeed) {
       if (u.mp < mpNeed) {
-        if (idx === 0) return { kind: 'combat', text: `${u.name}内力不济，只能以拳脚相搏。` };
+        if (idx === 0) return { kind: 'combat', text: `${who(u)}内力不济，只能以拳脚相搏。` };
         return null;
       }
       u.mp -= mpNeed;
@@ -679,38 +681,42 @@ class CombatEngine {
         const exist = (t.buffs || []).find(b => b.tag === dotTag);
         if (exist) {
           exist.turns = Math.max(exist.turns || 0, eff.turns || 3);
-          text += ` ${t.name}的${dotName}又裂开了。`;
+          text += t.isPlayer
+    ? ` 你身上的${dotName}又裂开了。`
+    : ` ${t.name}的${dotName}又裂开了。`;
         } else {
           t.addBuff({ name: dotName, turns: eff.turns || 3, mods: {}, tag: dotTag, dot: { value: eff.value || 5, source: u.id } });
-          text += ` ${t.name}中了${dotName}。（金创药能止住。）`;
+          text += t.isPlayer
+    ? ` 你身上多了一道${dotName}，血正往外渗。（金创药能止住。）`
+    : ` ${t.name}中了${dotName}。`;
         }
         break;
       }
       case 'stun':
-        if (w.rng.next() < (eff.chance || 0.2)) { t.addBuff({ name: '暈眩', turns: eff.turns || 1, tag: 'stun' }); text += ` ${t.name}被打得闷哼一声，动作一滞。`; }
+        if (w.rng.next() < (eff.chance || 0.2)) { t.addBuff({ name: '暈眩', turns: eff.turns || 1, tag: 'stun' }); text += t.isPlayer ? ' 你被打得闷哼一声，动作一滞。' : ` ${t.name}被打得闷哼一声，动作一滞。`; }
         break;
       case 'slow':
         t.addBuff({ name: '迟缓', turns: eff.turns || 2, mods: { speed: -(eff.value || 5) }, tag: 'slow' });
-        text += ` ${t.name}身法为之一滞。`; break;
+        text += t.isPlayer ? ' 你脚下一沉，身法为之一滞。' : ` ${t.name}身法为之一滞。`; break;
       case 'buff':
         u.addBuff({ name: eff.name || '蓄势', turns: eff.turns || 3, mods: eff.mods || { atk: 5 }, tag: 'buff_' + (eff.name || 'x') });
-        text += ` ${u.name}气势一盛。`; break;
+        text += u.isPlayer ? ' 你气势一盛。' : ` ${u.name}气势一盛。`; break;
       case 'debuff':
         t.addBuff({ name: eff.name || '受挫', turns: eff.turns || 3, mods: eff.mods || { def: -5 }, tag: 'debuff_' + (eff.name || 'x') });
         break;
       case 'drain': {
         const v = Math.floor(t.mp * (eff.ratio || 0.3));
         t.mp = Math.max(0, t.mp - v); u.mp = Math.min(u.maxMp, u.mp + v);
-        text += ` ${t.name}内力被引走！`; break;
+        text += t.isPlayer ? ' 你内力被引走！' : ` ${t.name}内力被引走！`; break;
       }
       case 'ignoreDef':
         text += ''; break;
       case 'heal':
-        u.hp = clamp(u.hp + (eff.value || 20), 0, u.maxHp); text += ` ${u.name}真气流转，伤势略复。`; break;
+        u.hp = clamp(u.hp + (eff.value || 20), 0, u.maxHp); text += u.isPlayer ? ' 你真气流转，伤势略复。' : ` ${u.name}真气流转，伤势略复。`; break;
       /* 回内力（P1-5）：老引擎只有 heal（回血），没有回内的武技效果。
          走这条而不是 custom，是因为「回气」是内功类武技的通用需求，数据侧不该各写一个函数。 */
       case 'mp':
-        u.mp = clamp(u.mp + (eff.value || 20), 0, u.maxMp); text += ` ${u.name}真气稍复。`; break;
+        u.mp = clamp(u.mp + (eff.value || 20), 0, u.maxMp); text += u.isPlayer ? ' 你真气稍复。' : ` ${u.name}真气稍复。`; break;
       /* 迷幻（P1-1）：中了就敌我不分 —— 真正的表现层在 step/pickTarget（会调头打自己人） */
       case 'confuse':
         if (w.rng.next() < (eff.chance || 0.35)) {
@@ -782,8 +788,13 @@ class CombatEngine {
         const src = this.findChar(battle, b.dot.source);
         const dmg = Math.floor((b.dot.value || 3));
         u.hp = clamp(u.hp - dmg, 0, u.maxHp);
-        lines.push({ kind: 'combat', text: `${u.name}的${b.name}在渗血（还剩 ${Math.max(0, (b.turns || 0) - 1)} 回合），受损 ${dmg} 点。` });
-        if (u.hp <= 0) { lines.push({ kind: 'combat', text: `${u.name}不支倒地！` }); continue; }
+        lines.push({
+          kind: 'combat',
+          text: u.isPlayer
+            ? `你身上的${b.name}在渗血（还剩 ${Math.max(0, (b.turns || 0) - 1)} 回合），受损 ${dmg} 点。`
+            : `${u.name}的${b.name}在渗血（还剩 ${Math.max(0, (b.turns || 0) - 1)} 回合），受损 ${dmg} 点。`,
+        });
+        if (u.hp <= 0) { lines.push({ kind: 'combat', text: `${who(u)}不支倒地！` }); continue; }
       }
       b.turns--;
       if (b.turns > 0) remain.push(b);
