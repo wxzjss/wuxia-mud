@@ -55,18 +55,26 @@ const invariantOk = (r) => {
 };
 
 (async () => {
-  console.log('V1 静窗：必须真判（最多试 3 次，任一次 B1 ✔≥5 且 0 失败即算过）');
-  let judgedOk = false;
+  console.log('V1 环境档位自洽（本窗口若安静→必须真判；连续忙→跳过，由 V3 双基线确定性覆盖）');
+  let judgedOk = false, anyJudgeable = false;
   for (let i = 1; i <= 3 && !judgedOk; i++) {
     const r = perfRun([]);
     console.log('    第' + i + '次：k=' + r.k + '（kCpu ' + r.kCpu + ' / kIo ' + r.kIo + '）· ✔B1=' + r.b1ok + ' · 失败=' + r.fail + (r.unjudged ? ' · 未判' : ''));
     ok('  第' + i + '次 一致性', invariantOk(r), 'k=' + r.k + ' 与档位不自洽');
-    if (!r.unjudged && r.b1ok >= 5 && r.fail === 0) judgedOk = true;
-    else await sleep(1200);
+    if (r.k !== null && r.k < 1.3) {
+      anyJudgeable = true;
+      if (!r.unjudged && r.b1ok >= 5 && r.fail === 0) judgedOk = true;
+    }
+    if (!judgedOk) await sleep(1200);
   }
-  ok('静窗：B1 真判且 0 失败', judgedOk, '3 次都没拿到"真判 + 全过"');
+  if (anyJudgeable) {
+    ok('出现可判定轮次时：B1 真判且 0 失败', judgedOk, '有 k<1.3 的轮次却没拿到全过');
+  } else {
+    console.log('  ⚠ 本窗口 3 次全部 k≥1.3（机器忙）：按规则应为「未判」，此处跳过；'
+      + '「正常档能判」由 V3「双基线」确定性证明，不靠环境碰运气');
+  }
 
-  console.log('\nV2 忙窗：起 2 个忙循环（8s）→ k≥1.3 应「未判」零 ✔ B1；kIo 应不低于 kCpu');
+  console.log('\nV2 忙窗：起 2 个忙循环（8s）→ 档位自洽（k≥1.3 必「未判」零 ✔ B1；k<1.3 必出判定）');
   const spinners = [];
   for (let i = 0; i < 2; i++) {
     spinners.push(spawn(NODE, ['-e', 'const t=Date.now()+8000;let x=0;while(Date.now()<t){x=(x+2654435761)>>>0;x^=x>>>13;}'], { stdio: 'ignore' }));
@@ -77,17 +85,31 @@ const invariantOk = (r) => {
   await sleep(1200);
   console.log('    k=' + busy.k + '（kCpu ' + busy.kCpu + ' / kIo ' + busy.kIo + '）· ' + (busy.unjudged ? '未判' : '判了') + ' · ✔B1=' + busy.b1ok + ' · 失败=' + busy.fail);
   ok('忙窗 一致性（k≥1.3→未判零 ✔）', invariantOk(busy), 'k=' + busy.k + ' 与档位不自洽');
-  if (busy.kCpu !== null && busy.kIo !== null) {
-    ok('忙窗 kIo ≥ kCpu（I/O 探针更敏感）', Number(busy.kIo) >= Number(busy.kCpu) - 0.02, 'kCpu ' + busy.kCpu + ' vs kIo ' + busy.kIo);
-  }
+  /* ⚠️ 这里不再断言「kIo ≥ kCpu」——io 探针自身噪声 ±10%，忙窗首跑会读到 kIo 0.96 < kCpu 1.13 而假红
+     （2026-10-18 程序实测指出）。kCpu/kIo 只作读数打印；"io 高了就该未判"由下面 V3 的双注入确定性证明。 */
 
-  console.log('\nV3 注入：验一致性 + kCpu 被钉住（k 由 kIo 决定，不断言固定结论）');
-  for (const [ms, label] of [['9.31', 'kCpu=1.00'], ['13', 'kCpu≈1.40'], ['20', 'kCpu≈2.15']]) {
-    const r = perfRun([], { PERF_CALIB_FORCE_MS: ms });
-    console.log('    ' + label + ' → k=' + r.k + '（kCpu ' + r.kCpu + ' / kIo ' + r.kIo + '）· ' + (r.unjudged ? '未判' : '判了(' + r.b1ok + '✔/' + r.b1fail + '✘)'));
-    ok(label + ' 一致性', invariantOk(r), 'k=' + r.k + ' 与档位不自洽');
-    ok(label + ' kCpu 被钉住', Number(r.kCpu) === 1 || Math.abs(Number(r.kCpu) - Number(ms) / 9.31) < 0.02, 'kCpu ' + r.kCpu);
-    if (r.unjudged) ok(label + ' 未判时零 ✔ B1', r.b1ok === 0, r.b1ok + ' 个');
+  console.log('\nV3 双注入钉档位（CPU + IO 同时钉住 → 档位确定性可复现）');
+  {
+    const b = JSON.parse(fs.readFileSync(path.join(ROOT, 'tools', '_perf_baseline.json'), 'utf8'));
+    const refCpu = Number(b.calibration.ms), refIo = Number(b.calibration.ioMs);
+    const cases = [
+      { cpu: refCpu, io: refIo, wantK: 1.00, tier: '正常', label: '双基线' },
+      { cpu: refCpu, io: Math.round(refIo * 1.55), wantK: 1.55, tier: '未判', label: 'io×1.55' },
+      { cpu: Math.round(refCpu * 1.40), io: refIo, wantK: 1.40, tier: '未判', label: 'cpu×1.40' },
+      { cpu: Math.round(refCpu * 2.15), io: refIo, wantK: 2.15, tier: '未判', label: 'cpu×2.15' },
+    ];
+    for (const c of cases) {
+      const r = perfRun([], { PERF_CALIB_FORCE_MS: String(c.cpu), PERF_IO_FORCE_MS: String(c.io) });
+      console.log('    ' + c.label + ' → k=' + r.k + '（kCpu ' + r.kCpu + ' / kIo ' + r.kIo + '）· '
+        + (r.unjudged ? '未判' : '判了(' + r.b1ok + '✔/' + r.b1fail + '✘)'));
+      ok(c.label + '：k 命中 ' + c.wantK.toFixed(2), r.k !== null && Math.abs(r.k - c.wantK) < 0.04, '实测 k=' + r.k);
+      if (c.tier === '正常') {
+        ok(c.label + '：正常档必须真判且 13/0', !r.unjudged && r.b1ok >= 5 && r.fail === 0,
+          '未判=' + r.unjudged + ' ✔=' + r.b1ok + ' 失败=' + r.fail);
+      } else {
+        ok(c.label + '：必须未判且零 ✔ B1', r.unjudged && r.b1ok === 0, '未判=' + r.unjudged + ' ✔=' + r.b1ok);
+      }
+    }
   }
 
   console.log('\nV4 套件模式：只判体积、不判延迟');
