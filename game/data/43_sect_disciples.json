@@ -103,8 +103,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「首座弟子见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
+    "鞋上的泥，山下带来的？",
+    "师父今日查剑，一招一式都要报名字，报错一个就去崖边站半个时辰。"
    ],
    "wander": {
     "chance": 0.05
@@ -161,7 +161,17 @@
    "rank": 3,
    "personality": "wenwan",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "ask": [
+    {
+     "topic": "崖边",
+     "keywords": [
+      "崖边",
+      "松涛"
+     ],
+     "answer": "崖边风硬，站满半个时辰，耳朵里全是松涛，下来手都僵了。"
+    }
+   ]
   },
   "disciple_huashan_2": {
    "id": "disciple_huashan_2",
@@ -258,8 +268,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「内门弟子见过师叔。」",
-    "「你要的书我借过，只是那页被人撕了。」"
+    "内门的牌子，借我看看。",
+    "青柯坪的柴火定量，一人一捆，练完功还得自己去背。"
    ],
    "wander": {
     "chance": 0.05
@@ -317,7 +327,17 @@
    "rank": 1,
    "personality": "mune",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "ask": [
+    {
+     "topic": "后山的泉",
+     "keywords": [
+      "泉",
+      "水"
+     ],
+     "answer": "后山那眼泉今年水小，厨房只许用来煮饭，洗涮都去溪里。"
+    }
+   ]
   },
   "disciple_huashan_4": {
    "id": "disciple_huashan_4",
@@ -336,8 +356,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「外门弟子见过师兄。」",
-    "「厨房说晚上的馍不够，得再蒸两屉。」"
+    "外门弟子，见过这位。",
+    "外门没有月钱，替山下药铺切药，一个月挣四十文，够买双鞋。"
    ],
    "wander": {
     "chance": 0.05
@@ -396,7 +416,17 @@
    "personality": "wenwan",
    "tier": "A",
    "job": "disciple",
-   "sidequest": "sqd_huashan"
+   "sidequest": "sqd_huashan",
+   "ask": [
+    {
+     "topic": "夜里的通铺",
+     "keywords": [
+      "被子",
+      "打呼"
+     ],
+     "answer": "青柯坪夜里冷，被子薄，几个人挤一间，谁打呼谁挨踢。"
+    }
+   ]
   },
   "disciple_huashan_5": {
    "id": "disciple_huashan_5",
@@ -415,8 +445,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「首座弟子见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
+    "师兄留步，山门要登记。",
+    "这个月轮我守山门，卯时开、酉时关，误一刻师父要问。"
    ],
    "wander": {
     "chance": 0.05
@@ -474,7 +504,17 @@
    "rank": 3,
    "personality": "lengmo",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "ask": [
+    {
+     "topic": "下山买米",
+     "keywords": [
+      "采买",
+      "米价"
+     ],
+     "answer": "上月下山买米，一斤涨了两文，回来报账被盘问了半宿。"
+    }
+   ]
   },
   "disciple_shaolin_0": {
    "id": "disciple_shaolin_0",
@@ -649,8 +689,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「知客僧见过师兄。」",
-    "「早课迟了半刻，罚挑水二十担，挑完这担就能歇。」"
+    "施主，山门内莫骑马。",
+    "知客的差事是记名，一日三十七个香客，能进后殿的不到五个。"
    ],
    "wander": {
     "chance": 0.05
@@ -709,7 +749,17 @@
    "rank": 2,
    "personality": "lengmo",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "ask": [
+    {
+     "topic": "昨日的香客",
+     "keywords": [
+      "香客",
+      "老太太"
+     ],
+     "answer": "前日有位老太太，捐了半升米，非要见方丈，我陪她坐了一炷香。"
+    }
+   ]
   },
   "disciple_shaolin_3": {
    "id": "disciple_shaolin_3",
@@ -807,8 +857,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「沙弥见过师兄。」",
-    "「药圃的金银花该收了，再拖就要落尽。」"
+    "早课还有一刻，快些。",
+    "后山药圃的土硬，一锄下去半锄石头，今年只种活两畦。"
    ],
    "wander": {
     "chance": 0.05
@@ -868,7 +918,17 @@
    "personality": "wenwan",
    "tier": "A",
    "job": "disciple",
-   "sidequest": "sqd_shaolin"
+   "sidequest": "sqd_shaolin",
+   "ask": [
+    {
+     "topic": "柴房的动静",
+     "keywords": [
+      "柴房",
+      "罚"
+     ],
+     "answer": "戒律院昨夜逮着个翻墙的，罚在柴房抄经，抄到鸡叫。"
+    }
+   ]
   },
   "disciple_shaolin_5": {
    "id": "disciple_shaolin_5",
@@ -1697,8 +1757,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「入门弟子见过师叔。」",
-    "「你要的书我借过，只是那页被人撕了。」"
+    "师姐在殿里，我去通传。",
+    "入门三年才许上殿执香，我数着日子，还差四个月。"
    ],
    "wander": {
     "chance": 0.05
@@ -1756,7 +1816,17 @@
    "rank": 1,
    "personality": "mune",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "ask": [
+    {
+     "topic": "山里的雾",
+     "keywords": [
+      "雾",
+      "衣裳"
+     ],
+     "answer": "山里雾重，晾的衣裳三日不干，师姐说要在灶边烘。"
+    }
+   ]
   },
   "disciple_emei_4": {
    "id": "disciple_emei_4",
@@ -1854,8 +1924,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「静字辈见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
+    "男客止步，这是峨眉。",
+    "山门的签筒一日换三回签，求签的多，肯还愿的少。"
    ],
    "wander": {
     "chance": 0.05
@@ -1913,7 +1983,17 @@
    "rank": 3,
    "personality": "lengmo",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "ask": [
+    {
+     "topic": "门外的笋",
+     "keywords": [
+      "笋",
+      "师太"
+     ],
+     "answer": "后山庵里的师太每隔三日送一篮笋来，放在门外，从不进门。"
+    }
+   ]
   },
   "disciple_gaibang_0": {
    "id": "disciple_gaibang_0",
@@ -2014,8 +2094,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「七袋长老见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
+    "有剩饭么？没有也坐。",
+    "七袋管三条街，哪家门朝哪开、几时熄灯，我都得记着。"
    ],
    "wander": {
     "chance": 0.05
@@ -2077,7 +2157,17 @@
    "rank": 3,
    "personality": "youhua",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "ask": [
+    {
+     "topic": "施粥的米",
+     "keywords": [
+      "施粥",
+      "陈米"
+     ],
+     "answer": "城南施粥的米是各家凑的，昨儿掺了陈米，煮出来发酸。"
+    }
+   ]
   },
   "disciple_gaibang_2": {
    "id": "disciple_gaibang_2",
@@ -2178,8 +2268,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「三袋弟子见过师叔。」",
-    "「你要的书我借过，只是那页被人撕了。」"
+    "三袋的，说话不响亮。",
+    "我管着西街的份子，一日走四十户，鞋底两个月磨穿一双。"
    ],
    "wander": {
     "chance": 0.05
@@ -2241,7 +2331,17 @@
    "rank": 1,
    "personality": "haoshuang",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "ask": [
+    {
+     "topic": "穿绸的乞丐",
+     "keywords": [
+      "穿绸",
+      "讨钱"
+     ],
+     "answer": "昨儿见着个穿绸的也在讨钱，手法比我们熟，不知哪一路的。"
+    }
+   ]
   },
   "disciple_gaibang_4": {
    "id": "disciple_gaibang_4",
@@ -2343,8 +2443,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「七袋长老见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
+    "碗在墙角，自己拿。",
+    "破庙的屋顶漏了三处，下雨得挪铺位，草席都霉了。"
    ],
    "wander": {
     "chance": 0.05
@@ -2406,7 +2506,17 @@
    "rank": 3,
    "personality": "baozhao",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "ask": [
+    {
+     "topic": "新收的小子",
+     "keywords": [
+      "新收",
+      "讨钱"
+     ],
+     "answer": "帮里新收的几个不会看眼色，讨钱讨到衙门门口去了。"
+    }
+   ]
   },
   "disciple_mojiao_0": {
    "id": "disciple_mojiao_0",
@@ -2503,8 +2613,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「长老见过师兄。」",
-    "「你也别装好人，这山路上谁干净过？」"
+    "长老巡山，让道。",
+    "崖上的风能把人吹下去，铁索换了新的，旧的还挂在崖边。"
    ],
    "wander": {
     "chance": 0.05
@@ -2562,7 +2672,17 @@
    "rank": 3,
    "personality": "youhua",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "ask": [
+    {
+     "topic": "石壁上的字",
+     "keywords": [
+      "石壁",
+      "刻字"
+     ],
+     "answer": "前日有个教众在石壁上刻自己的名字，被罚去挑粪。"
+    }
+   ]
   },
   "disciple_mojiao_2": {
    "id": "disciple_mojiao_2",
@@ -2660,8 +2780,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「香主见过师叔。」",
-    "「你也别装好人，这山路上谁干净过？」"
+    "大殿内不可佩刀。",
+    "香主的月例是十二两，管着四十号人，伙食另算。"
    ],
    "wander": {
     "chance": 0.05
@@ -2720,7 +2840,17 @@
    "rank": 1,
    "personality": "lengmo",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "ask": [
+    {
+     "topic": "殿里的烛",
+     "keywords": [
+      "烛",
+      "蜡油"
+     ],
+     "answer": "殿里的烛一天换两回，蜡油滴在砖上，得用刀刮。"
+    }
+   ]
   },
   "disciple_mojiao_4": {
    "id": "disciple_mojiao_4",
@@ -2739,8 +2869,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「教众见过师兄。」",
-    "「混口饭吃而已，别的我不管。」"
+    "站住。哪一堂的？",
+    "山门的石阶三百级，新入教的先扫三个月，扫完才许上去。"
    ],
    "wander": {
     "chance": 0.05
@@ -2800,7 +2930,17 @@
    "personality": "yinzhi",
    "tier": "A",
    "job": "disciple",
-   "sidequest": "sqd_mojiao"
+   "sidequest": "sqd_mojiao",
+   "ask": [
+    {
+     "topic": "伙房的肉",
+     "keywords": [
+      "伙房",
+      "肉"
+     ],
+     "answer": "伙房的肉按堂口分，我们这堂人少，每旬只轮着一回。"
+    }
+   ]
   },
   "disciple_mojiao_5": {
    "id": "disciple_mojiao_5",
@@ -3397,8 +3537,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「核心弟子见过师叔。」",
-    "「新配的一炉药引火候过了，倒了重炼。」"
+    "你找谁？我带路。",
+    "药圃的土要过筛，石子挑干净，不然根扎不下去。"
    ],
    "wander": {
     "chance": 0.05
@@ -3483,7 +3623,17 @@
      }
     ],
     "arc": " someday 会挑明自己当年为什么上山"
-   }
+   },
+   "ask": [
+    {
+     "topic": "少了的鸽子",
+     "keywords": [
+      "鸽子",
+      "笼子"
+     ],
+     "answer": "试药的鸽子少了两只，管笼的说夜里听见翅膀响，没敢起来看。"
+    }
+   ]
   },
   "disciple_tangmen_1": {
    "id": "disciple_tangmen_1",
@@ -3607,8 +3757,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「外门见过师兄。」",
-    "「试毒的银针每日都得换，换下来的收在匣里。」"
+    "堡门验牌，伸手。",
+    "守门一日换两班，我值末班，天亮前最冷，脚趾头没知觉。"
    ],
    "wander": {
     "chance": 0.05
@@ -3694,7 +3844,17 @@
      }
     ],
     "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
-   }
+   },
+   "ask": [
+    {
+     "topic": "夹带的货郎",
+     "keywords": [
+      "货郎",
+      "夹层"
+     ],
+     "answer": "上月有个货郎挑着担子想混进去，担底夹层藏了铁砂。"
+    }
+   ]
   },
   "disciple_tangmen_3": {
    "id": "disciple_tangmen_3",
@@ -3713,8 +3873,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「外门见过师叔。」",
-    "「你要的书我借过，只是那页被人撕了。」"
+    "前厅不待客，报名字。",
+    "堡里的规矩，暗器入册，出门要点数，少一枚都得搜身。"
    ],
    "wander": {
     "chance": 0.05
@@ -3799,7 +3959,17 @@
      }
     ],
     "arc": " someday 会挑明自己当年为什么上山"
-   }
+   },
+   "ask": [
+    {
+     "topic": "前厅的灯油",
+     "keywords": [
+      "灯油",
+      "账房"
+     ],
+     "answer": "前厅的灯油按月领，夜里点两盏，多了要去账房说清楚。"
+    }
+   ]
   },
   "disciple_miaojiang_0": {
    "id": "disciple_miaojiang_0",
@@ -5627,8 +5797,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「弟子见过师兄。」",
-    "「你也别装好人，这山路上谁干净过？」"
+    "刀放下，再说话。",
+    "前庭的雪到膝盖，早起扫一遍，扫完又下，扫到晌午就随它去。"
    ],
    "wander": {
     "chance": 0.05
@@ -5715,7 +5885,17 @@
      }
     ],
     "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
-   }
+   },
+   "ask": [
+    {
+     "topic": "马厩",
+     "keywords": [
+      "马厩",
+      "马"
+     ],
+     "answer": "门里的马厩塌了半边，马拴在廊下，夜里冻得直叫。"
+    }
+   ]
   },
   "disciple_xuedao_2": {
    "id": "disciple_xuedao_2",
@@ -5734,8 +5914,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「门下见过师兄。」",
-    "「混口饭吃而已，别的我不管。」"
+    "北地来的？手伸出来烤烤。",
+    "伙房一日两顿，莜面掺沙，嚼久了牙酸，没人抱怨。"
    ],
    "wander": {
     "chance": 0.05
@@ -5823,7 +6003,17 @@
      }
     ],
     "arc": "迟早要为一个人破一次例"
-   }
+   },
+   "ask": [
+    {
+     "topic": "跑了的师弟",
+     "keywords": [
+      "师弟",
+      "跑了"
+     ],
+     "answer": "上个月跑了两个师弟，往南去了，师父说不用追。"
+    }
+   ]
   },
   "disciple_xuedao_3": {
    "id": "disciple_xuedao_3",
@@ -5842,8 +6032,8 @@
    "hostile": false,
    "leavesCorpse": false,
    "talk": [
-    "「门下见过师叔。」",
-    "「你也别装好人，这山路上谁干净过？」"
+    "别站在风口。",
+    "前庭那口井冻了三尺，凿冰要半个时辰，水浑，得澄一澄。"
    ],
    "wander": {
     "chance": 0.05
@@ -5930,7 +6120,17 @@
      }
     ],
     "arc": "迟早要为一个人破一次例"
-   }
+   },
+   "ask": [
+    {
+     "topic": "后山的狼",
+     "keywords": [
+      "狼",
+      "夜里"
+     ],
+     "answer": "后山有狼，夜里嚎，起初睡不着，现在听不见倒不踏实。"
+    }
+   ]
   },
   "disciple_xiake_0": {
    "id": "disciple_xiake_0",
