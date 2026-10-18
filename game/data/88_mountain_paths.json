@@ -9,7 +9,41 @@
       "exits": {
         "n": "huashan_path2",
         "s": "huashan_shanxia"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 铁链",
+          "label": "看 铁链",
+          "keywords": [
+            "铁链",
+            "链子",
+            "锁链"
+          ],
+          "desc": "看阶边的铁链",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "链环上糊着一层黑锈，摸过去手上留一道红。有个环是后接的，焊口还亮。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 阶面",
+          "label": "看 阶面",
+          "keywords": [
+            "阶面",
+            "石阶",
+            "台阶"
+          ],
+          "desc": "看脚下的石阶",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "阶面凿得深浅不一，靠里半边让人踩得发亮。外沿缺了个角，缺口磨圆了。"
+            }
+          ]
+        }
+      ]
     },
     "huashan_path2": {
       "id": "huashan_path2",
@@ -19,7 +53,41 @@
       "exits": {
         "n": "huashan_path3",
         "s": "huashan_path1"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 松脂",
+          "label": "看 松脂",
+          "keywords": [
+            "松脂",
+            "树身",
+            "口子"
+          ],
+          "desc": "看树上的口子",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "树身上划开的口子结了痂，颜色发琥珀。指甲一按还软。"
+            }
+          ]
+        },
+        {
+          "cmd": "听 风声",
+          "label": "听 风声",
+          "keywords": [
+            "风声",
+            "听风",
+            "树梢"
+          ],
+          "desc": "听松林里的风",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "风从树梢上过去，一层压一层。停住以后，耳朵里还留着响。"
+            }
+          ]
+        }
+      ]
     },
     "huashan_path3": {
       "id": "huashan_path3",
@@ -29,7 +97,40 @@
       "exits": {
         "n": "huashan_path4",
         "s": "huashan_path2"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 水囊",
+          "label": "看 水囊",
+          "keywords": [
+            "水囊",
+            "水袋"
+          ],
+          "desc": "看亭里的水囊",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "水囊是牛皮缝的，塞口削了木塞。囊身瘪着，绳子仍系在柱上。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 亭柱",
+          "label": "看 亭柱",
+          "keywords": [
+            "亭柱",
+            "柱子",
+            "刻字"
+          ],
+          "desc": "看亭柱上的字",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "柱上刻着几行字，刀口很深，棱角让人手摸没了。最下一行只剩半个姓。"
+            }
+          ]
+        }
+      ]
     },
     "huashan_path4": {
       "id": "huashan_path4",
@@ -39,7 +140,41 @@
       "exits": {
         "n": "huashan_path5",
         "s": "huashan_path3"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 落叶",
+          "label": "看 落叶",
+          "keywords": [
+            "落叶",
+            "叶子",
+            "地面"
+          ],
+          "desc": "拨开脚下的落叶",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "叶层底下有硬东西，脚尖一挑，是截断剑。锈成了土色。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 岔路",
+          "label": "看 岔路",
+          "keywords": [
+            "岔路",
+            "窄道",
+            "草鞋"
+          ],
+          "desc": "看岔出去的窄道",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "左边岔出一条窄道，草全倒向一边。道上落着一只草鞋，鞋底朝上。"
+            }
+          ]
+        }
+      ]
     },
     "huashan_path5": {
       "id": "huashan_path5",
@@ -49,7 +184,41 @@
       "exits": {
         "n": "huashan_path6",
         "s": "huashan_path4"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 石槽",
+          "label": "看 石槽",
+          "keywords": [
+            "石槽",
+            "水槽",
+            "泉"
+          ],
+          "desc": "看接水的石槽",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "槽底沉着细沙，水一动就翻起来。槽沿外侧结了一圈白碱。"
+            }
+          ]
+        },
+        {
+          "cmd": "掬水",
+          "label": "掬水",
+          "keywords": [
+            "掬水",
+            "喝水",
+            "水"
+          ],
+          "desc": "掬一捧泉水",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "水凉得扎手，咽下去一路凉到胸口。过后舌根发甜。"
+            }
+          ]
+        }
+      ]
     },
     "huashan_path6": {
       "id": "huashan_path6",
@@ -59,7 +228,41 @@
       "exits": {
         "n": "huashan_qingke",
         "s": "huashan_path5"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 崖底",
+          "label": "看 崖底",
+          "keywords": [
+            "崖底",
+            "崖下",
+            "悬崖"
+          ],
+          "desc": "探身看崖底",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖下白茫茫，看不见底。石上一道磨出来的槽，宽窄正好卡住一只脚。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 铁索",
+          "label": "看 铁索",
+          "keywords": [
+            "铁索",
+            "绳索",
+            "断绳"
+          ],
+          "desc": "看崖边的铁索",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "铁索钉进石里，钉头裹的布烂成了絮。索上挂半截绳，断口新。"
+            }
+          ]
+        }
+      ]
     },
     "huashan_shanxia": {
       "id": "huashan_shanxia",
@@ -100,7 +303,41 @@
       "exits": {
         "n": "shaolin_path2",
         "s": "shaolin_shanmen"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 指路碑",
+          "label": "看 指路碑",
+          "keywords": [
+            "指路碑",
+            "碑",
+            "石碑"
+          ],
+          "desc": "看阶边的指路碑",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "碑上的字让雨冲成沟，只认得出一个「嵩」。碑座下压着几枚铜钱。"
+            }
+          ]
+        },
+        {
+          "cmd": "数 石阶",
+          "label": "数 石阶",
+          "keywords": [
+            "石阶",
+            "台阶",
+            "数阶"
+          ],
+          "desc": "一级一级数石阶",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "一级一级数下去，数到八十就乱了。抬头看，山门的檐仍在那里。"
+            }
+          ]
+        }
+      ]
     },
     "shaolin_path2": {
       "id": "shaolin_path2",
@@ -110,7 +347,41 @@
       "exits": {
         "n": "shaolin_path3",
         "s": "shaolin_path1"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 刀痕",
+          "label": "看 刀痕",
+          "keywords": [
+            "刀痕",
+            "树皮",
+            "刀口"
+          ],
+          "desc": "看树上的刀痕",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "树皮上一道旧刀痕，齐着人胸口。口子早长合了，鼓起一道棱。"
+            }
+          ]
+        },
+        {
+          "cmd": "听 钟声",
+          "label": "听 钟声",
+          "keywords": [
+            "钟声",
+            "听钟",
+            "钟"
+          ],
+          "desc": "听山上的钟",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "山上有钟下来，一声，隔很久又一声。松针跟着落了几根。"
+            }
+          ]
+        }
+      ]
     },
     "shaolin_path3": {
       "id": "shaolin_path3",
@@ -120,7 +391,41 @@
       "exits": {
         "n": "shaolin_path4",
         "s": "shaolin_path2"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 柴堆",
+          "label": "看 柴堆",
+          "keywords": [
+            "柴堆",
+            "柴",
+            "柴火"
+          ],
+          "desc": "看亭里的柴堆",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "柴是松木，劈得一样长，码成四四方方一堆。顶上那根压着块石头。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 石凳",
+          "label": "看 石凳",
+          "keywords": [
+            "石凳",
+            "凳子",
+            "坐印"
+          ],
+          "desc": "看亭中的石凳",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "凳面浮着一层薄灰，灰上两个并排的坐印，还新。"
+            }
+          ]
+        }
+      ]
     },
     "shaolin_path4": {
       "id": "shaolin_path4",
@@ -130,7 +435,41 @@
       "exits": {
         "n": "shaolin_path5",
         "s": "shaolin_path3"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 路面",
+          "label": "看 路面",
+          "keywords": [
+            "路面",
+            "车辙",
+            "路"
+          ],
+          "desc": "看林间的路面",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "路中间车辙浅了，草从辙沟里长出来。再往前一小片地被踩平。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 树根",
+          "label": "看 树根",
+          "keywords": [
+            "树根",
+            "铁掌",
+            "根"
+          ],
+          "desc": "看横过路的树根",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "一条树根横过路面，让人踩得发亮。根上钉着半枚铁掌，钉尖朝上。"
+            }
+          ]
+        }
+      ]
     },
     "shaolin_path5": {
       "id": "shaolin_path5",
@@ -140,7 +479,41 @@
       "exits": {
         "n": "shaolin_path6",
         "s": "shaolin_path4"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 水面",
+          "label": "看 水面",
+          "keywords": [
+            "水面",
+            "水",
+            "松针"
+          ],
+          "desc": "看槽里的水",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "水面浮着两片松针，绕着槽沿打转。水底的石子冲得发白。"
+            }
+          ]
+        },
+        {
+          "cmd": "洗 手",
+          "label": "洗 手",
+          "keywords": [
+            "洗手",
+            "手",
+            "水"
+          ],
+          "desc": "就着泉水洗手",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "水凉，指节一会儿就麻。手心有汗，搓两下就净。"
+            }
+          ]
+        }
+      ]
     },
     "shaolin_path6": {
       "id": "shaolin_path6",
@@ -150,7 +523,41 @@
       "exits": {
         "n": "shaolin_tianwang",
         "s": "shaolin_path5"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 崖底",
+          "label": "看 崖底",
+          "keywords": [
+            "崖底",
+            "瓦顶",
+            "崖下"
+          ],
+          "desc": "看崖下",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖底有一片瓦顶，小得像巴掌。云推过来，瓦顶就看不见了。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 石缝",
+          "label": "看 石缝",
+          "keywords": [
+            "石缝",
+            "布",
+            "衣袖"
+          ],
+          "desc": "摸崖边的石缝",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "石缝里塞着一团布，扯出半截，是僧衣的袖子，颜色褪尽。"
+            }
+          ]
+        }
+      ]
     },
     "shaolin_shanmen": {
       "id": "shaolin_shanmen",
@@ -172,7 +579,41 @@
       "exits": {
         "n": "wudang_path2",
         "s": "wudang_shanmen"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 石碑",
+          "label": "看 石碑",
+          "keywords": [
+            "碑",
+            "石碑",
+            "碑文"
+          ],
+          "desc": "看阶旁的碑",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "碑面起了包浆，字只剩转折。碑阴一行小字还清楚：大德三年重修。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 蕨草",
+          "label": "看 蕨草",
+          "keywords": [
+            "蕨",
+            "蕨草",
+            "石缝"
+          ],
+          "desc": "看石缝里的蕨",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "蕨叶背面排着褐点，一碰就落。石缝里还挤着几丛细草。"
+            }
+          ]
+        }
+      ]
     },
     "wudang_path2": {
       "id": "wudang_path2",
@@ -182,7 +623,41 @@
       "exits": {
         "n": "wudang_path3",
         "s": "wudang_path1"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 石桩",
+          "label": "看 石桩",
+          "keywords": [
+            "石桩",
+            "桩子",
+            "绳印"
+          ],
+          "desc": "拨开松针看石桩",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "拨开松针，底下是个石桩，桩上一道绳磨的印。印子很深。"
+            }
+          ]
+        },
+        {
+          "cmd": "听 松涛",
+          "label": "听 松涛",
+          "keywords": [
+            "松涛",
+            "风声",
+            "听"
+          ],
+          "desc": "听松林的声音",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "风从这头推到那头，声音连成一片。推到尽头就散了。"
+            }
+          ]
+        }
+      ]
     },
     "wudang_path3": {
       "id": "wudang_path3",
@@ -192,7 +667,41 @@
       "exits": {
         "n": "wudang_path4",
         "s": "wudang_path2"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 亭顶",
+          "label": "看 亭顶",
+          "keywords": [
+            "亭顶",
+            "瓦",
+            "屋顶"
+          ],
+          "desc": "看亭子的顶",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "亭瓦缺了两块，漏下的光落在地上，是一小片方的。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 水囊",
+          "label": "看 水囊",
+          "keywords": [
+            "水囊",
+            "水袋",
+            "挂钩"
+          ],
+          "desc": "看柱上挂的水囊",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "水囊挂在柱钩上，囊口朝下，地上滴了一小滩。人刚走。"
+            }
+          ]
+        }
+      ]
     },
     "wudang_path4": {
       "id": "wudang_path4",
@@ -202,7 +711,41 @@
       "exits": {
         "n": "wudang_path5",
         "s": "wudang_path3"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 脚印",
+          "label": "看 脚印",
+          "keywords": [
+            "脚印",
+            "足迹",
+            "泥"
+          ],
+          "desc": "看泥上的脚印",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "泥上脚印前掌深、后跟浅，走的是上坡。边上还有一个竹杖戳的洞。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 破碗",
+          "label": "看 破碗",
+          "keywords": [
+            "破碗",
+            "碗",
+            "饭"
+          ],
+          "desc": "看叶下的破碗",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "叶子里埋着只破碗，碗底剩半口饭，让蚂蚁围了一圈。"
+            }
+          ]
+        }
+      ]
     },
     "wudang_path5": {
       "id": "wudang_path5",
@@ -212,7 +755,41 @@
       "exits": {
         "n": "wudang_path6",
         "s": "wudang_path4"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 药渣",
+          "label": "看 药渣",
+          "keywords": [
+            "药渣",
+            "药",
+            "石槽"
+          ],
+          "desc": "看槽边的药渣",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "槽边石上有堆药渣，还潮。认得出姜片和几段草根。"
+            }
+          ]
+        },
+        {
+          "cmd": "掬水",
+          "label": "掬水",
+          "keywords": [
+            "掬水",
+            "喝水",
+            "泉"
+          ],
+          "desc": "掬一捧泉水",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "捧一口，有土腥气。咽下去，胃里暖了一线。"
+            }
+          ]
+        }
+      ]
     },
     "wudang_path6": {
       "id": "wudang_path6",
@@ -222,7 +799,41 @@
       "exits": {
         "n": "wudang_taihe",
         "s": "wudang_path5"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 崖松",
+          "label": "看 崖松",
+          "keywords": [
+            "崖松",
+            "松树",
+            "歪松"
+          ],
+          "desc": "看崖头的松",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖头一棵歪松，根抓着石缝，半个身子探在外头。枝上挂着一条旧布。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 石刻",
+          "label": "看 石刻",
+          "keywords": [
+            "石刻",
+            "刻字",
+            "道"
+          ],
+          "desc": "看石壁上的字",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "石壁凿了两个大字，笔画让风磨圆，仍认得出是个「道」。"
+            }
+          ]
+        }
+      ]
     },
     "wudang_shanmen": {
       "id": "wudang_shanmen",
@@ -244,7 +855,41 @@
       "exits": {
         "n": "emei_path2",
         "s": "emei_shanmen"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 猴子",
+          "label": "看 猴子",
+          "keywords": [
+            "猴子",
+            "猴",
+            "果子"
+          ],
+          "desc": "看栏上的猴",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "猴蹲在栏上，手里攥半个果子，核已啃净。见人看它，往怀里收了收。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 青苔",
+          "label": "看 青苔",
+          "keywords": [
+            "青苔",
+            "苔",
+            "阶"
+          ],
+          "desc": "看阶上的苔",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "苔是青的，越往上越厚。落脚得斜着，正踩会滑。"
+            }
+          ]
+        }
+      ]
     },
     "emei_path2": {
       "id": "emei_path2",
@@ -263,7 +908,41 @@
         "风": "风从上头过，杉梢动，底下不动。",
         "雾": "雾缠在半腰，抬头看不见顶。",
         "night": "林子里比外头黑，凉气更重。"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 树皮",
+          "label": "看 树皮",
+          "keywords": [
+            "树皮",
+            "冷杉",
+            "松脂"
+          ],
+          "desc": "看冷杉的皮",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "冷杉的皮裂成竖条，缝里凝着松脂。树底下不长草，只铺针叶。"
+            }
+          ]
+        },
+        {
+          "cmd": "听 鸟声",
+          "label": "听 鸟声",
+          "keywords": [
+            "鸟声",
+            "鸟",
+            "林子"
+          ],
+          "desc": "听林子里的动静",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "林子静，听得见自己的脚步。走几步，远处鸟叫一声，就没了。"
+            }
+          ]
+        }
+      ]
     },
     "emei_path3": {
       "id": "emei_path3",
@@ -273,7 +952,41 @@
       "exits": {
         "n": "emei_path4",
         "s": "emei_path2"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 铁炉",
+          "label": "看 铁炉",
+          "keywords": [
+            "铁炉",
+            "香炉",
+            "香灰"
+          ],
+          "desc": "看亭角的铁炉",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "亭角搁着个小铁炉，炉里积着香灰，最上头一撮还是白的。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 亭梁",
+          "label": "看 亭梁",
+          "keywords": [
+            "亭梁",
+            "伞",
+            "旧伞"
+          ],
+          "desc": "看亭梁上",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "亭梁上挂着把旧伞，伞骨断了两根，布面落了灰。"
+            }
+          ]
+        }
+      ]
     },
     "emei_path4": {
       "id": "emei_path4",
@@ -283,7 +996,41 @@
       "exits": {
         "n": "emei_path5",
         "s": "emei_path3"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 路石",
+          "label": "看 路石",
+          "keywords": [
+            "石头",
+            "路石",
+            "青苔"
+          ],
+          "desc": "看路当中的石头",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "路当中一块石头，让人绕出一道弧。石上的青苔踩秃了一块。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 竹桩",
+          "label": "看 竹桩",
+          "keywords": [
+            "竹桩",
+            "竹子",
+            "刀口"
+          ],
+          "desc": "看路边的竹桩",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "路边一丛竹子砍了，桩子留着，断口斜。刀是从上往下劈的。"
+            }
+          ]
+        }
+      ]
     },
     "emei_path5": {
       "id": "emei_path5",
@@ -293,7 +1040,41 @@
       "exits": {
         "n": "emei_path6",
         "s": "emei_path4"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 爪印",
+          "label": "看 爪印",
+          "keywords": [
+            "爪印",
+            "沙",
+            "水底"
+          ],
+          "desc": "看水底的沙",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "水底铺着细沙，沙上一串小爪印，从槽这头走到那头。"
+            }
+          ]
+        },
+        {
+          "cmd": "洗 脸",
+          "label": "洗 脸",
+          "keywords": [
+            "洗脸",
+            "脸",
+            "水"
+          ],
+          "desc": "就着泉水抹把脸",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "水扑上脸，雾气退了一层。抬眼，发梢挂着水珠。"
+            }
+          ]
+        }
+      ]
     },
     "emei_path6": {
       "id": "emei_path6",
@@ -303,7 +1084,41 @@
       "exits": {
         "n": "emei_qingyin",
         "s": "emei_path5"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 云",
+          "label": "看 云",
+          "keywords": [
+            "云",
+            "崖下",
+            "云雾"
+          ],
+          "desc": "看崖下的云",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "云从崖下升起来，到脚边散开。再升一层，又散。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 石坑",
+          "label": "看 石坑",
+          "keywords": [
+            "石坑",
+            "脚坑",
+            "香"
+          ],
+          "desc": "看崖壁上的石坑",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖壁凿着几个搁脚的小坑，坑里积水。有一个坑搁着半截香。"
+            }
+          ]
+        }
+      ]
     },
     "emei_shanmen": {
       "id": "emei_shanmen",
