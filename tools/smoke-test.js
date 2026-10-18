@@ -24,7 +24,7 @@ const realModBefore = md5Of(REAL_MOD);
    三轮里我们先后怀疑过 git、怀疑过同事、怀疑过引擎 boot **全错了** ——
    真凶就是本文件的 `engine.writeMod('test_mod', …)` 写进了真实的 `mods/`。
    ⇒ 隔离目录用**项目内** `.livetest/`（.gitignore 第 8 行），不用系统临时目录。 */
-const TMP = path.join(ROOT, '.livetest', 'smoke-mods');
+const TMP = require('./_test-tmp').testTmpDir('smoke-mods');
 fs.mkdirSync(TMP, { recursive: true });
 
 /* 存档写进隔离沙盒，绝不碰玩家的 saves/（主人 bug B1）—— 见 tools/_test-save-dir.js */

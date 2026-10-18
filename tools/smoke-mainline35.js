@@ -123,7 +123,7 @@ sec('⑤ 房间 actions：新增到位 + 既有没被清掉');
   const SRC = path.join(ROOTD, 'game', 'data');
   /* ⚠️ 2026-10-12 改：从仓库根 `.tmp-act35-base` 迁到 `.livetest/`
      （项目铁律：测试不许写仓库真实目录；`.tmp-act35-base` 当时还没进 .gitignore） */
-  const TMP = path.join(ROOTD, '.livetest', 'act35-base');
+  const TMP = require('./_test-tmp').testTmpDir('act35-base');
   /* ⚠️ 用 execSync('rm -rf') 而不是 fs.rmSync：Node 的 fs 层有「一轮删 >50 个文件」的
      安全删除保护，跑全量回归时前面的测试已经把配额吃光 ⇒ 这里会被拦成 exit 1，
      表现为「单跑绿、全量红」的偶发假红（smoke-storybeat / smoke-mod-trace 同因已改）。 */

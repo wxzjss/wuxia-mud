@@ -282,7 +282,7 @@ async function main() {
   /* ================= §6 真 HTTP ================= */
   section('  \u00a76 真 HTTP 量回包（gunzip 出原始字节）');
   /* ⚠️ 2026-10-12 改：从 os.tmpdir() 迁到项目内 .livetest/（统一隔离写法、带 pid 防并发互踩） */
-  const TMP = path.join(ROOT, '.livetest', 'maprf-' + process.pid);
+  const TMP = require('./_test-tmp').testTmpDir('maprf');
   fs.mkdirSync(TMP, { recursive: true });
   process.env.WX_SAVE_DIR = path.join(TMP, 'saves');
   process.env.WX_SITE_DATA = path.join(TMP, 'site-data');

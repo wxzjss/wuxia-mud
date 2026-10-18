@@ -425,7 +425,7 @@ for (const { f, q } of quests) {
 /* 输出 */
 const tsv = ['quest_id\ttype\tcode\tlocate\tdetail', ...rows.map((r) => [r.qid, r.type, r.code, r.at, r.detail].join('\t'))].join('\n') + '\n';
 const ti = process.argv.indexOf('--tsv');
-const outPath = ti > -1 ? path.resolve(ROOT, process.argv[ti + 1]) : path.join(ROOT, '.livetest', 'quest-deadends.tsv');
+const outPath = ti > -1 ? path.resolve(ROOT, process.argv[ti + 1]) : path.join(ROOT, 'tools', '_out_quest_deadends.tsv');
 fs.mkdirSync(path.dirname(outPath), { recursive: true });
 fs.writeFileSync(outPath, tsv, 'utf8');
 

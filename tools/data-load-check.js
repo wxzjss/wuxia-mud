@@ -52,7 +52,7 @@ const head = t => console.log('\n===== ' + t + ' =====');
 /* 临时数据目录：所有注入故障都在这里发生，**绝不碰 game/data/**。
    ⚠️ 2026-10-12 改：从 `os.tmpdir()` 迁到**项目内** `.livetest/`（统一隔离写法；
    系统临时目录在别的机器上权限不可控）。带 pid 以免并发跑互相踩。 */
-const TMP = path.join(ROOT, '.livetest', 'dataload-' + process.pid);
+const TMP = require('./_test-tmp').testTmpDir('dataload');
 fs.mkdirSync(TMP, { recursive: true });
 function tmpDir(tag) {
   const d = path.join(TMP, tag);
@@ -352,10 +352,12 @@ function expectLocated(tag, e, fname) {
   /* ---------------------------------------------------------------- G */
   head('G · 坏数据不许污染真数据目录（本轮只写临时目录）');
   {
-    /* ⚠️ 判据跟着隔离目录一起改：现在是项目内 `.livetest/`，不再是 os.tmpdir()。
-       不改这条的话，迁移过去之后它反而会红 —— 那就成了「守着旧写法」的假红。 */
-    ok('★ G1 注入故障全在项目内隔离目录 .livetest/ 里（不写仓库真实目录、不碰系统临时目录）',
-      TMP.indexOf(path.join(ROOT, '.livetest')) === 0, TMP);
+    /* ⚠️ 2026-10-18 再次迁移：测试临时目录搬出仓库（发布打包会被 .livetest 里的
+       数千目录 + Windows 删除挂起文件 EPERM 卡住）。判据改为「在系统临时区的
+       wuxia-tests 下」，同时反断不在仓库内 —— 两个方向都钉住。 */
+    ok('★ G1 注入故障全在系统临时区（wuxia-tests/），不写仓库真实目录',
+      TMP.indexOf(path.join(require('os').tmpdir(), 'wuxia-tests')) === 0
+      && TMP.indexOf(ROOT) !== 0, TMP);
     const stillOk = fs.existsSync(path.join(DATA, '73_sects_place.json'));
     ok('　G2 game/data/73_sects_place.json 还在', stillOk);
 

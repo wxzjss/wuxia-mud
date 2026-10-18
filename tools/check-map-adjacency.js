@@ -11,7 +11,7 @@
 const path = require('path');
 const ROOT = path.join(__dirname, '..');
 
-process.env.WX_SAVE_DIR = path.join(ROOT, '.livetest', 'adj-' + process.pid);
+process.env.WX_SAVE_DIR = require('./_test-tmp').testTmpDir('adj');
 const { GameEngine } = require(path.join(ROOT, 'game', 'src', 'core', 'engine.js'));
 
 const eng = new GameEngine({ seed: 20261013 });

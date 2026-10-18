@@ -155,7 +155,8 @@ const EXTRACTORS = {
 };
 
 /* ---------- 主流程 ---------- */
-const outDir = path.join(ROOT, '.livetest', 'zhuque', 'seed-' + SEED);
+/* 2026-10-18：样本产物落在 tools/_out_zhuque/（.livetest 会被发布打包扫到，EPERM 源头） */
+const outDir = path.join(ROOT, 'tools', '_out_zhuque', 'seed-' + SEED);
 fs.mkdirSync(outDir, { recursive: true });
 const manifest = { seed: SEED, n: N, generatedAt: new Date().toISOString(), wash: '见 tools/zhuque-sample.js 头注释', categories: {} };
 

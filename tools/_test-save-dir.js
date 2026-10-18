@@ -32,6 +32,6 @@ const path = require('path');
    这个文件只是兜底层，兜底层也照分不误）。
    ⚠️ 别在这里加「清理别的 test-saves-* 目录」的逻辑：回归并发时那可能是
    别人正用着的活目录，清了就是人为制造互踩。残留交给磁盘，.livetest 不进 git。 */
-const DIR = path.join(__dirname, '..', '.livetest', 'test-saves-' + process.pid);
+const DIR = require('./_test-tmp').testTmpDir('test-saves');
 try { fs.mkdirSync(DIR, { recursive: true }); } catch (e) { /* 建不了就让后面去报错，别静默 */ }
 module.exports = DIR;

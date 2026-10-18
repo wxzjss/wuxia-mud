@@ -46,7 +46,7 @@ const zlib = require('zlib');
 const ROOT = path.join(__dirname, '..');
 
 /* --- 测试隔离：纪律是「测试脚本不许写仓库真实目录」，目录走项目内 .livetest/ --- */
-const TMPROOT = path.join(ROOT, '.livetest', 'perfmap-' + process.pid);
+const TMPROOT = require('./_test-tmp').testTmpDir('perfmap');
 fs.mkdirSync(TMPROOT, { recursive: true });
 process.env.WX_SAVE_DIR = path.join(TMPROOT, 'saves');
 process.env.WX_SITE_DATA = path.join(TMPROOT, 'site-data');

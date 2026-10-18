@@ -992,7 +992,7 @@ section('B1 · 存档列表不得混入测试档，且首行必须是最新真�
      现在改成：**自己在沙盒里造三档真存档**（savedAt 递增可控），
      前提恒成立，不依赖玩家 saves/ 里碰巧有什么。 */
   /* ⚠️ 2026-10-12 改：从 os.tmpdir() 迁到项目内 .livetest/（统一隔离写法，带 pid 防并发互踩） */
-  const b13Dir = path.join(ROOT, '.livetest', 'b13-' + process.pid);
+  const b13Dir = require('./_test-tmp').testTmpDir('b13');
   fs2.mkdirSync(b13Dir, { recursive: true });
   const e13 = new GameEngine({ seed: SEED, saveDir: b13Dir });
   e13.boot(); e13.newGame({ name: '首行判据', gender: 'male', birth: 'wuxue' });

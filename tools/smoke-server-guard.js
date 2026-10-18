@@ -24,7 +24,7 @@ const PORT = 18000 + Math.floor(Math.random() * 2000);
    本守卫 ④-a 断言「未起局 /api/quest → 404」，而服务端 boot 会把仓库 `saves/_live.json`
    当成活档恢复——别的 lane 本地跑测试留下的活档（实测玩家名「严过关」）让「未起局」
    永远不成立，红得莫名其妙。⇒ 起服务时指一个本轮独占的 .livetest 沙盒目录。 */
-const SAVE_DIR = path.join(ROOT, '.livetest', 'srvguard-' + process.pid);
+const SAVE_DIR = require('./_test-tmp').testTmpDir('srvguard');
 require('fs').mkdirSync(SAVE_DIR, { recursive: true });
 let pass = 0, fail = 0; const fails = [];
 function ok(name, cond, extra) {
