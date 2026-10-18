@@ -32,23 +32,27 @@ function mkCtx(note) {
   return { player: { room: 'room_test', inCombat: false, roomNotes: note || {} }, world: { battle: null } };
 }
 const act = (cmd, keywords) => ({ cmd, keywords: keywords || [] });
+/* ⚠️ 断言**不许**把痕迹句写死：文案改一次（wash 从「井台的石沿湿了一块」改成「水边石上湿了一片」）
+   守卫就假红（2026-10-18 实测 A4 就是这么红的）。从规则表读期望值，另断言文案非空。 */
+const noteOf = (id) => (C.ROOMNOTE_RULES.find((r) => r.id === id) || {}).note;
+t('A0 规则表可取到痕迹句（noteOf 可用）', ['drink', 'rest', 'incense', 'hide', 'alms', 'wash'].every((id) => typeof noteOf(id) === 'string' && noteOf(id).length > 0));
 
 t('A1 掬泉：cmd 命中「泉水」→ 写入 p.roomNotes[roomId]',
-  (() => { const c = mkCtx(); C.writeRoomNote(c, act('掬泉饮水')); return c.player.roomNotes.room_test === '潭边的石上留着一圈水渍。'; })());
+  (() => { const c = mkCtx(); C.writeRoomNote(c, act('掬泉饮水')); return c.player.roomNotes.room_test === noteOf('drink'); })());
 t('A2 keywords 命中也算（cmd 不带关键词词面时）',
-  (() => { const c = mkCtx(); C.writeRoomNote(c, act('do_stuff', ['上香'])); return c.player.roomNotes.room_test === '香炉里多了一截烧尽的香灰。'; })());
+  (() => { const c = mkCtx(); C.writeRoomNote(c, act('do_stuff', ['上香'])); return c.player.roomNotes.room_test === noteOf('incense'); })());
 t('A3 不在规则内的 action（如「看告示」）不写',
   (() => { const c = mkCtx(); C.writeRoomNote(c, act('看告示')); return Object.keys(c.player.roomNotes).length === 0; })());
 t('A4 单值静默覆盖：同房先后两件事，后者盖前者、无提示',
   (() => { const c = mkCtx(); C.writeRoomNote(c, act('坐歇')); C.writeRoomNote(c, act('净面'));
-    return c.player.roomNotes.room_test === '井台的石沿湿了一块。'; })());
+    return c.player.roomNotes.room_test === noteOf('wash') && noteOf('wash') !== noteOf('rest'); })());
 t('A5 战斗中不写（!combat 闸）',
   (() => { const c = { player: { room: 'r', inCombat: true, roomNotes: {} }, world: { battle: null } };
     C.writeRoomNote(c, act('上香')); return Object.keys(c.player.roomNotes).length === 0; })());
 t('A6 p.roomNotes 未初始化时自动建档（不 throw）',
   (() => { const c = { player: { room: 'r', inCombat: false }, world: {} }; let ok = true;
     try { C.writeRoomNote(c, act('施舍')); } catch (e) { ok = false; }
-    return ok && c.player.roomNotes && c.player.roomNotes.r === '破碗里的铜钱叠着两枚。'; })());
+    return ok && c.player.roomNotes && c.player.roomNotes.r === noteOf('alms'); })());
 t('A7 空 action / 缺 cmd 不炸不写',
   (() => { const c = mkCtx(); let ok = true; try { C.writeRoomNote(c, null); C.writeRoomNote(c, {}); } catch (e) { ok = false; }
     return ok && Object.keys(c.player.roomNotes).length === 0; })());
@@ -89,16 +93,49 @@ for (const f of fs.readdirSync(dataDir).filter(f => f.endsWith('.json'))) {
     }
   }
 }
-/* 实测台账（2026-10-15 全库扫描）：6 条常驻位规则里只有 drink 有真实候选位
-   （饮水 @wild_pool / @xiyu_oasis）；坐歇/上香/藏物/施舍/净面对应的 action
-   **库里还不存在**（拜佛≠上香、打坐≠坐歇、拜师≠施舍）—— 按主理人口令
-   「字段对不上的先不硬造」，这 5 条记缺口：引擎机制已就绪，数据侧将来补了
-   对应 action，D2 会红着提醒把规则接上。ⓘ KnownZero 是活的缺口台账，不是放水。 */
-t('D1 有候选位的规则匹配真实命中（drink ≥1）', cover.drink.length >= 1,
-  'drink:' + cover.drink.length + ' @' + cover.drink.join('/'));
-t('D2 缺口如实登记：其余 5 条候选位为 0（库里有对应 action 时这里红 → 补台账）',
-  ['rest', 'incense', 'hide', 'alms', 'wash'].every(id => cover[id].length === 0),
-  ['rest', 'incense', 'hide', 'alms', 'wash'].map(id => id + ':' + cover[id].length).join('  '));
+/* ── D2 口径（2026-10-18 改，team-lead 裁定）────────────────────────────
+   旧写法「rest/incense/hide/alms/wash 必须全为 0」当年编的是"这些规则还没有数据"，
+   wash 一有真候选位（4 间 path5 的洗手/洗脸）就假红。
+   改法：**每条规则二选一**——
+     ① 有候选位 ⇒ 必须真命中（打印命中房间）
+     ② 0 候选   ⇒ 必须在下面 GAPS 里登记原因，且反向断言「登记的确实 0 候选」
+   这样「谁补了数据」不会假红，「谁把清单当垃圾桶」会被第 ②条的"必须真 0"和销账断言顶回来。
+   ⚠️ 缺口原因均经实测核对（2026-10-18 全库 596 条 action 逐词探过）：
+      上香/焚香/进香 0；坐歇/歇息/小坐 0（打坐 2 例是修炼，不是歇脚）；
+      藏物/藏东西/埋 0（藏经阁/藏宝阁 65 例是建筑名）；施舍/布施/化缘/给钱 0。
+      都不是"词面太窄"漏配——库里真的没有对应动作。 */
+const GAPS = {
+  rest: '库里无「坐歇/歇息/小坐」；有「打坐」2 例（wudang_lianwu/gumu_mu）但那是修炼加修行，不是歇脚',
+  incense: '库里无「上香/焚香/进香」；「参悟」是打坐参禅，不点香',
+  hide: '库里无「藏物/藏东西/埋」；「藏经阁/藏宝阁」65 例是建筑名不是动作（D3 防的正是这种误吞）',
+  alms: '库里无「施舍/布施/化缘/给钱」',
+};
+const hitsOf = (id) => cover[id].slice(0, 8).map((x) => '@' + x).join(' ') + (cover[id].length > 8 ? ' …' : '');
+/** D2 判定（纯函数，可自测）：有候选必须真命中且不在缺口清单；0 候选必须在缺口清单。 */
+function gapVerdict(id, n, gaps) {
+  if (n >= 1) return { ok: !gaps[id], why: gaps[id] ? '有候选却仍留在缺口清单（须销账）' : '' };
+  return { ok: !!gaps[id], why: gaps[id] ? '' : '0 候选但未登记原因' };
+}
+{
+  const G = { rest: 'x' };
+  const teeth = [
+    ['有候选 + 不在清单 → 过', gapVerdict('wash', 4, G).ok === true],
+    ['0 候选 + 在清单 → 过', gapVerdict('rest', 0, G).ok === true],
+    ['0 候选 + 不在清单 → 红', gapVerdict('alms', 0, G).ok === false],
+    ['有候选 + 还在清单 → 红（销账）', gapVerdict('rest', 3, G).ok === false],
+  ];
+  t('D2c 牙口自检 4/4（正反例都验，防"永远绿"）', teeth.every((x) => x[1]), teeth.filter((x) => !x[1]).map((x) => x[0]).join(' / '));
+}
+
+for (const rule of C.ROOMNOTE_RULES) {
+  const id = rule.id, n = cover[id].length;
+  const v = gapVerdict(id, n, GAPS);
+  t('D2.' + id + (n >= 1 ? ' 有候选位 ⇒ 必须真命中（' + n + ' 处）' : ' 0 候选 ⇒ 须在缺口清单登记'), v.ok,
+    (n >= 1 ? hitsOf(id) : '已登记：' + String(GAPS[id]).slice(0, 44) + '…') + (v.why ? '  « ' + v.why : ''));
+}
+t('D2b 缺口清单不虚：登记在 GAPS 的规则确实 0 候选（防清单变垃圾桶）',
+  Object.keys(GAPS).every((id) => cover[id] && cover[id].length === 0),
+  Object.keys(GAPS).map((id) => id + ':' + cover[id].length).join('  '));
 t('D3 无假阳性：词面不得误吞「藏经阁/拜师/坐船」这类同字面 action',
   (() => {
     const bad = [{ cmd: '藏经阁', keywords: ['藏经阁', '经卷'] }, { cmd: '拜师 华山派', keywords: ['拜师'] }, { cmd: '出海', keywords: ['坐船'] }];
