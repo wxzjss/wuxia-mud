@@ -10501,6 +10501,138 @@
       {
         "text": "翰墨斋缺页的那本宋版书，被掌柜摆在了最显眼的地方，缺处不补。"
       }
+    ],
+    "sq_pre_a3_dangpu": [
+      {
+        "text": "焦朝奉把绢布收进柜台，抹平了台面，坐回原处。",
+        "region": "luoyang"
+      }
+    ],
+    "sq_pre_a3_shufang": [
+      {
+        "text": "「补的人想让这句话变成另一句话。」刀搁在案上，没人再动。",
+        "region": "chengdu"
+      }
+    ],
+    "sq_pre_a4_qiaofu": [
+      {
+        "text": "石三把扁担靠在门边。肩上那道印，他没再提。",
+        "region": "changan"
+      }
+    ],
+    "sq_pre_a5_kou": [
+      {
+        "text": "醒木还搁在桌角，茶碗空了，段子没往下说。",
+        "region": "luoyang"
+      }
+    ],
+    "sq_pre_line_orth": [
+      {
+        "text": "驿袋背面那道缝线还在。郑七把手按上去，又拿开。",
+        "region": "changan"
+      }
+    ],
+    "sq_pre_line_out": [
+      {
+        "text": "那户人家门缝里还塞着催单，纸角被雨泡软了。",
+        "region": "chengdu"
+      }
+    ],
+    "sq_pre_line_neu": [
+      {
+        "text": "「货的事别问我们。」铺子的门照旧半开着，里头没人应声。",
+        "region": "luoyang"
+      }
+    ],
+    "sq_pre_court_laoyu": [
+      {
+        "text": "韦头把钥匙挂回腰上，按着走完一圈，才松开手。",
+        "region": "yamen"
+      }
+    ],
+    "hk_wen_zhengming": [
+      {
+        "text": "案上那张纸还是空的，砚里的墨干了一圈。",
+        "region": "shuyuan"
+      }
+    ],
+    "hk_xue_zheng": [
+      {
+        "text": "卷末那行小字还在：文气有余，骨头不足。抄件压在砚台下。",
+        "region": "yamen"
+      }
+    ],
+    "sq_cy_xy_ma": [
+      {
+        "text": "槽边空了，墙根下铺着干草，旧布裹着一条马腿。",
+        "region": "xiangyang"
+      }
+    ],
+    "sq_cy_xy_shu": [
+      {
+        "text": "茶棚照旧开着。段子换了一部，靠里那张桌子空着。",
+        "region": "xiangyang"
+      }
+    ],
+    "sq_cy_xy_lu": [
+      {
+        "text": "炉火没灭，砧板上那排刀坯还摆着，铁屑落了薄薄一层。",
+        "region": "xiangyang"
+      }
+    ],
+    "sq_cy_ly_hua": [
+      {
+        "text": "盛花姑蹲在花架下，新土捏开一把，又捏开一把。",
+        "region": "luoyang"
+      }
+    ],
+    "sq_cy_ly_zhang": [
+      {
+        "text": "账本合上，压在原来的地方。末页那方印，还是没盖。",
+        "region": "luoyang"
+      }
+    ],
+    "sq_cy_ly_an": [
+      {
+        "text": "邹老吏站在南市铺子门口，纸折好了，脚没迈进去。",
+        "region": "luoyang"
+      }
+    ],
+    "sq_cy_cd_jin": [
+      {
+        "text": "仓里空出一片，墙角还留着一匹缺角的锦。",
+        "region": "chengdu"
+      }
+    ],
+    "sq_cy_cd_yao": [
+      {
+        "text": "竹风轩里那股陈味还没散，桌上留着几片碎药渣。",
+        "region": "chengdu"
+      }
+    ],
+    "sq_cy_cd_zhu": [
+      {
+        "text": "竹笼停在半成，笼口的活扣还敞着。篾条在墙根晾得发白。",
+        "region": "chengdu"
+      }
+    ],
+    "sq_cy_ca_hu": [
+      {
+        "text": "镇纸底下压着新换的货单，纸角对齐桌沿。",
+        "region": "changan"
+      }
+    ],
+    "sq_cy_ca_yan": [
+      {
+        "text": "「伤在这儿。」袁仵作说完，指节在空桌上又敲了三下。",
+        "region": "changan"
+      }
+    ],
+    "sq_cy_ca_ju": [
+      {
+        "text": "平康坊的院里有人背书，声音发涩，一句念了三遍。",
+        "region": "changan"
+      }
     ]
   }
 }
