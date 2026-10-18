@@ -156,6 +156,49 @@ function classifyRoom(room) {
  *          宁可少收（漏报可补），不可乱收（误报会让人不信这台量具）。
  * ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ *
+ * 二·五、场所**细类** × 物象：允许表 + 冲突矩阵
+ *   （2026-10-18 team-lead 裁定：判据太粗，会误杀「铁匠打锄头」「山门有石壁」）
+ *
+ *   为什么要细类：`PLACE_RULES` 只分到 market/mountain 这一级。
+ *   铁匠铺与茶馆同属 market —— 用类型判「锄头属农事 ⇒ 不该在 market」必红，
+ *   但铁匠铺打锄头是**它的生意本身**。
+ *   ⇒ 先判房间细类（smithy/teahouse/…），再问「这东西属不属于这行的主营/主景」：
+ *      · 属于 ⇒ 放行（KIND_ALLOW）
+ *      · 明确冲突 ⇒ 判红（CONFLICT：这是矩阵，不是一刀切分类）
+ *      · 都不是 ⇒ 回落到原类型判据（LEXICON 的允许类型表）
+ *   守的方向：**看这间房是干什么的，而不是看词属于哪一类。**
+ * ------------------------------------------------------------------ */
+const ROOM_KIND_RULES = [
+  ['smithy', /铁匠|铁铺|打铁|铁砧|炉火|风箱|铁炉/],
+  ['pharmacy', /药铺|药堂|药局|药庐|医馆|药材|郎中|药柜/],
+  ['teahouse', /茶馆|茶楼|茶棚|茶摊|茶寮|茶肆/],
+  ['wharf', /码头|渡口|船坞|津口|埠头|泊船/],
+  ['boudoir', /闺房|闺阁|卧房|内室|绣楼|妆台|妾室/],
+  ['mountain', /山门|后山|山道|山径|山腰|石阶|崖|峰|岭/],
+];
+function roomKind(room) {
+  const hay = String((room && room.name) || '') + ' ' + String((room && room.desc) || '');
+  for (const [k, re] of ROOM_KIND_RULES) if (re.test(hay)) return k;
+  return '';
+}
+/* 允许表：这一行本来就该出现的东西（按 team-lead 点名的几组，另补同类） */
+const KIND_ALLOW = {
+  smithy: ['锄头', '铁料', '炉火', '淬水', '铁砧', '风箱', '炭', '农具', '犁', '镰', '锤'],
+  mountain: ['石壁', '石阶', '岩', '崖', '峭壁', '青苔', '栈道'],
+  pharmacy: ['药材', '秤', '药碾', '方子', '药柜', '药'],
+  teahouse: ['壶', '茶', '座', '茶客', '堂倌', '桌'],
+  wharf: ['缆', '潮', '船', '纤', '码头', '水'],
+  boudoir: ['妆', '镜', '脂粉', '绣'],
+};
+/* 冲突矩阵：[词, 与哪些细类冲突]。只在「这行压根不碰这东西」时登记。 */
+const KIND_CONFLICT = [
+  ['锄头', ['teahouse', 'boudoir', 'temple', 'brothel']],
+  ['石壁', ['boudoir', 'teahouse', 'market', 'brothel']],
+];
+const kindAllows = (kind, w) => !!(kind && KIND_ALLOW[kind] && KIND_ALLOW[kind].indexOf(w) >= 0);
+const kindConflicts = (kind, w) => KIND_CONFLICT.some(([word, kinds]) => word === w && kinds.indexOf(kind) >= 0);
+
 const LEXICON = [
   /* —— 词域：买卖行当 —— */
   ['铺子', '买卖行当', ['market', 'street']],
@@ -289,6 +332,10 @@ const LEXICON = [
   ['稻子', '农事', ['farm'], '村野才放行'],
   ['秧苗', '农事', ['farm'], '村野才放行'],
   ['锄头', '农事', ['farm'], '村野才放行'],
+  /* 山野物象（2026-10-18 补）：只收「石壁」——它是明确的场所特征。
+     ⚠️ 石阶**不收**：墓前/庙前/府门前都有石阶，收进来立刻误伤
+     `yang_guo@gumu_mu`「坐在墓前的石阶上」（实测，已撤）。 */
+  ['石壁', '山野物象', ['mountain', 'cave'], '山野/洞窟才放行'],
   ['耕地', '农事', ['farm'], '村野才放行'],
   ['牛棚', '农事', ['farm'], '村野才放行'],
   ['猪圈', '农事', ['farm'], '村野才放行'],
@@ -652,11 +699,15 @@ function scan(world) {
 
   /* ---- N1 场景一致 ---- */
   const n1 = [], n1Low = [];
+  /* 覆盖缺口（2026-10-18）：N1 遇到 placeType=unknown 的房会 `continue` 静默跳过。
+     现在全库 unknown=0，所以没漏；但以后新增房型判不出来时，N1 会「安静地不漏」。
+     ⇒ 单独统计「有 NPC 但类型判不出的房」，在汇总里显式打出来（不判红，只提示）。 */
+  const n1UnknownRooms = new Set();
   for (const id of ids) {
     const n = npcs[id];
     const rid = n.room;
     const c = rid ? placeOf[rid] : null;
-    if (!c || c.type === 'unknown') continue;      // 房间都没判出来 → 无法判定，不猜
+    if (!c || c.type === 'unknown') { if (rid) n1UnknownRooms.add(rid); continue; }   // 判不出类型 → 无法判定，不猜（但记账）
     const room = rooms[rid];
     for (const it of npcTexts(n)) {
       if (it.scope !== 'say') continue;      // 传记字段不进 N1
@@ -669,6 +720,13 @@ function scan(world) {
            的正则。秤配了买卖词 —— 「心里那杆秤」没有买卖语境，就当比喻放过。
            守的是「看上下文不看关键词」这个方向。 */
         if (needCo && !needCo.test(text)) continue;
+        /* ⑨ 场所细类（2026-10-18）：先问「这间房是干什么的」
+           —— 铁匠铺打锄头放行、茶馆说锄头判红；山门有石壁放行、闺房说石壁判红。 */
+        {
+          const k = roomKind(room);
+          if (kindAllows(k, w)) continue;
+          if (kindConflicts(k, w)) { hits.push({ w, dom, kind: k }); continue; }
+        }
         if (dom === '佛道') {
           /* 佛道词不看场所类型，看「门派信仰 + 是否在庙里」两级（team-lead 裁定 ③）：
              ① 本门宗教词 → 任何场所都放行（恒山尼姑在山门口说「施主」是对的）
@@ -797,7 +855,7 @@ function scan(world) {
   return {
     npcCount: ids.length, roomCount: Object.keys(rooms).length,
     placeOf, placeDist, lowConf,
-    n1, n1Low, n2a, n2aByAxis, n2b, n2c, n2cPass, noPortrait,
+    n1, n1Low, n1UnknownRooms, n2a, n2aByAxis, n2b, n2c, n2cPass, noPortrait,
     n3, n3Unknown, promises, debtIds,
   };
 }
@@ -849,6 +907,32 @@ function selftest() {
     T(hitIds.has('bad_dock'), '故障1b 渡口说「客栈」门房话 → 判红（N1）');
     T(!hitIds.has('good_street'), '干净1a 长街摊贩说「铺子/秤/客官」→ 不误报');
     T(!hitIds.has('good_cave'), '干净1b 山洞采药人说自己的话 → 不误报');
+  }
+
+  /* ---- 故障 1c：场所细类（铁匠铺/茶馆/山门/闺房 × 锄头/石壁） ---- */
+  {
+    const rooms = {
+      r_smithy: { id: 'r_smithy', name: '江南城·铁匠铺', region: 'jiangnan', desc: '炉火通红，铁砧上火星四溅。' },
+      r_tea: { id: 'r_tea', name: '东市·茶馆', region: 'jiangnan', desc: '几张方桌，有人嗑着瓜子。' },
+      r_gate: { id: 'r_gate', name: '黑木崖·山门', region: 'mojiao', desc: '崖壁上凿着条只容一人走的栈道。' },
+      r_boudoir: { id: 'r_boudoir', name: '某宅·内院', region: 'jiangnan', desc: '妆台上摆着半盒没盖的胭脂。' },  /* 内院→home；妆台→boudoir 细类 */
+    };
+    const npcs = {
+      good_smith: { id: 'good_smith', name: '铁匠', room: 'r_smithy', tag: 'smith', desc: '赤膊，胳膊上全是烫疤。',
+        talk: ['今日打的都是锄头，铁料是昨儿到的旧船钉。'] },
+      bad_tea: { id: 'bad_tea', name: '茶客', room: 'r_tea', tag: 'vendor', desc: '手里捏着把瓜子。',
+        talk: ['昨儿新打了把锄头，趁手。'] },
+      good_gate: { id: 'good_gate', name: '教众', room: 'r_gate', tag: 'disciple', sect: 'mojiao', desc: '腰里别着刀。',
+        talk: ['石壁上那些字，刻得深。'] },
+      bad_boudoir: { id: 'bad_boudoir', name: '侍女', room: 'r_boudoir', tag: 'maid', desc: '手里拿着铜镜。',
+        talk: ['石壁上落了灰，我去擦擦。'] },
+    };
+    const r = scan(mkWorld(rooms, npcs));
+    const ids = new Set(r.n1.map((x) => x.id));
+    T(!ids.has('good_smith'), '场景1a 铁匠铺说「锄头/铁料」→ 绿（这行的生意本身）');
+    T(ids.has('bad_tea'), '场景1b 茶馆说「锄头」→ 红（与主营冲突）');
+    T(!ids.has('good_gate'), '场景1c 山门说「石壁」→ 绿（山门主景）');
+    T(ids.has('bad_boudoir'), '场景1d 闺房说「石壁」→ 红（与主景冲突）');
   }
 
   /* ---- 故障 2：同组三人共用同一句 ---- */
@@ -1274,6 +1358,14 @@ function main() {
   const n1ByNpc = new Set(r.n1.map(x => x.id));
   L.push('\n【N1 场景一致】红条目 ' + r.n1.length + ' 条，涉及 NPC ' + n1ByNpc.size + ' 人'
     + '（另有低置信房间 ' + r.n1Low.length + ' 条单列，不计入）');
+  /* 覆盖缺口（2026-10-18）：判不出场所类型的房会被 N1 静默跳过。
+     现在全库 0 间，但必须显式打出来——否则以后新增房型判不出来，N1 会"安静地不漏"，
+     看起来永远是 0（与「L1 真空 0 是同义反复」同一类风险）。 */
+  {
+    const unk = (r.n1UnknownRooms || new Set()).size;
+    L.push('  覆盖：有 NPC 但场所类型判不出（N1 无法判定）的房间 ' + unk + ' 间'
+      + (unk ? '  ⚠ 覆盖不足，请补判型规则（当前不判红）' : '（全库 0，覆盖完整）'));
+  }
   const n1Top = {};
   for (const x of r.n1) {
     const k = x.place + ' × ' + x.hits.map(h => h.w).join('/');

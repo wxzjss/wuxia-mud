@@ -2444,6 +2444,29 @@
     "night": "hm_wen_huashan_shop"
    },
    "age": 64,
+   "tier": "A",
+   "job": "doctor",
+   "district": "huashan",
+   "province": "江湖",
+   "unlock": {
+    "favor": 20
+   },
+   "neighbors": [
+    "岳不群",
+    "岳灵珊",
+    "令狐冲",
+    "乐静"
+   ],
+   "ask": [
+    {
+     "topic": "山上的后生",
+     "keywords": [
+      "后生",
+      "山上"
+     ],
+     "answer": "山上那个后生每旬来买一次药，伤在背上，从不让我看。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -2547,30 +2570,7 @@
      "逃",
      "旧案"
     ]
-   },
-   "tier": "A",
-   "job": "doctor",
-   "district": "huashan",
-   "province": "江湖",
-   "unlock": {
-    "favor": 20
-   },
-   "neighbors": [
-    "岳不群",
-    "岳灵珊",
-    "令狐冲",
-    "乐静"
-   ],
-   "ask": [
-    {
-     "topic": "山上的后生",
-     "keywords": [
-      "后生",
-      "山上"
-     ],
-     "answer": "山上那个后生每旬来买一次药，伤在背上，从不让我看。"
-    }
-   ]
+   }
   },
   "beggar_info": {
    "id": "beggar_info",
@@ -3402,6 +3402,16 @@
     "采药翁",
     "小叫花"
    ],
+   "ask": [
+    {
+     "topic": "码头的活",
+     "keywords": [
+      "码头",
+      "卸货"
+     ],
+     "answer": "码头昨夜到了一船盐，卸货工钱涨到十五文，去晚了轮不上。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -3416,17 +3426,7 @@
     "marks": [
      "农"
     ]
-   },
-   "ask": [
-    {
-     "topic": "码头的活",
-     "keywords": [
-      "码头",
-      "卸货"
-     ],
-     "answer": "码头昨夜到了一船盐，卸货工钱涨到十五文，去晚了轮不上。"
-    }
-   ]
+   }
   },
   "npcv_002": {
    "id": "npcv_002",
@@ -4273,6 +4273,16 @@
     "采药翁",
     "小叫花"
    ],
+   "ask": [
+    {
+     "topic": "百子图",
+     "keywords": [
+      "百子图",
+      "画"
+     ],
+     "answer": "那幅百子图是替人寻的，画上孩子数来数去只有九十九个。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -4388,17 +4398,7 @@
      "商",
      "债"
     ]
-   },
-   "ask": [
-    {
-     "topic": "百子图",
-     "keywords": [
-      "百子图",
-      "画"
-     ],
-     "answer": "那幅百子图是替人寻的，画上孩子数来数去只有九十九个。"
-    }
-   ]
+   }
   },
   "npcv_010": {
    "id": "npcv_010",
@@ -4901,6 +4901,18 @@
    "equipment": {
     "武器": "wood_staff"
    },
+   "tier": "A",
+   "district": "shaolin",
+   "province": "江湖",
+   "unlock": {
+    "favor": 20
+   },
+   "neighbors": [
+    "方证大师",
+    "神秘老僧",
+    "昝秋",
+    "伍修"
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -5008,19 +5020,7 @@
      "旧案",
      "水"
     ]
-   },
-   "tier": "A",
-   "district": "shaolin",
-   "province": "江湖",
-   "unlock": {
-    "favor": 20
-   },
-   "neighbors": [
-    "方证大师",
-    "神秘老僧",
-    "昝秋",
-    "伍修"
-   ]
+   }
   },
   "npcv_014": {
    "id": "npcv_014",
@@ -6163,6 +6163,20 @@
     "武器": "fine_sword",
     "身体": "leather_armor"
    },
+   "tier": "A",
+   "job": "swordsman",
+   "title": "游侠",
+   "district": "shaolin",
+   "province": "江湖",
+   "unlock": {
+    "favor": 20
+   },
+   "neighbors": [
+    "方证大师",
+    "神秘老僧",
+    "昝秋",
+    "伍修"
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -6246,21 +6260,7 @@
      "胜负",
      "丧亲"
     ]
-   },
-   "tier": "A",
-   "job": "swordsman",
-   "title": "游侠",
-   "district": "shaolin",
-   "province": "江湖",
-   "unlock": {
-    "favor": 20
-   },
-   "neighbors": [
-    "方证大师",
-    "神秘老僧",
-    "昝秋",
-    "伍修"
-   ]
+   }
   },
   "npcv_025": {
    "id": "npcv_025",
@@ -6547,6 +6547,20 @@
     "武器": "wood_staff",
     "身体": "cloth_robe"
    },
+   "tier": "A",
+   "job": "monk",
+   "title": "僧人",
+   "district": "jiangnan",
+   "province": "江南东道",
+   "unlock": {
+    "favor": 20
+   },
+   "neighbors": [
+    "张掌柜",
+    "瞎眼老丐",
+    "采药翁",
+    "小叫花"
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -6647,21 +6661,7 @@
      "旧案",
      "诈"
     ]
-   },
-   "tier": "A",
-   "job": "monk",
-   "title": "僧人",
-   "district": "jiangnan",
-   "province": "江南东道",
-   "unlock": {
-    "favor": 20
-   },
-   "neighbors": [
-    "张掌柜",
-    "瞎眼老丐",
-    "采药翁",
-    "小叫花"
-   ]
+   }
   },
   "npcv_028": {
    "id": "npcv_028",
@@ -7747,6 +7747,20 @@
    "equipment": {
     "武器": "butcher_knife"
    },
+   "tier": "A",
+   "job": "farmer",
+   "title": "农人",
+   "district": "farmland",
+   "province": "江南西道",
+   "unlock": {
+    "favor": 20
+   },
+   "neighbors": [
+    "柯修",
+    "卢半",
+    "喻采薇",
+    "湛归"
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -7798,21 +7812,7 @@
      "租",
      "育子"
     ]
-   },
-   "tier": "A",
-   "job": "farmer",
-   "title": "农人",
-   "district": "farmland",
-   "province": "江南西道",
-   "unlock": {
-    "favor": 20
-   },
-   "neighbors": [
-    "柯修",
-    "卢半",
-    "喻采薇",
-    "湛归"
-   ]
+   }
   },
   "npcv_038": {
    "id": "npcv_038",
@@ -10369,6 +10369,20 @@
     "武器": "iron_sword_basic",
     "身体": "cloth_robe"
    },
+   "tier": "A",
+   "job": "taoist",
+   "title": "道士",
+   "district": "gaibang",
+   "province": "江湖",
+   "unlock": {
+    "favor": 20
+   },
+   "neighbors": [
+    "洪七公",
+    "鲍凝",
+    "黄修",
+    "柯云"
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -10440,21 +10454,7 @@
      "云游",
      "痴"
     ]
-   },
-   "tier": "A",
-   "job": "taoist",
-   "title": "道士",
-   "district": "gaibang",
-   "province": "江湖",
-   "unlock": {
-    "favor": 20
-   },
-   "neighbors": [
-    "洪七公",
-    "鲍凝",
-    "黄修",
-    "柯云"
-   ]
+   }
   },
   "npcv_063": {
    "id": "npcv_063",
@@ -10725,6 +10725,16 @@
     "臧落梅",
     "秦知秋"
    ],
+   "ask": [
+    {
+     "topic": "怀里的字据",
+     "keywords": [
+      "字据",
+      "四十七两"
+     ],
+     "answer": "怀里这张字据押了四十七两，落款是元掌柜，墨还没干透。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -10833,17 +10843,7 @@
      "赌",
      "债"
     ]
-   },
-   "ask": [
-    {
-     "topic": "怀里的字据",
-     "keywords": [
-      "字据",
-      "四十七两"
-     ],
-     "answer": "怀里这张字据押了四十七两，落款是元掌柜，墨还没干透。"
-    }
-   ]
+   }
   },
   "npcv_066": {
    "id": "npcv_066",
@@ -10981,7 +10981,7 @@
    },
    "talk": [
     "扁担压得肩头疼，歇口气。",
-    "客官赶路么？前头那家铺子，秤准。"
+    "这趟货挑到北边，价能翻一倍，就是路上不太平。"
    ],
    "socialDone": true,
    "schedule": {
@@ -11612,6 +11612,30 @@
    "equipment": {
     "武器": "wood_staff"
    },
+   "tier": "A",
+   "job": "innkeeper",
+   "title": "掌柜",
+   "district": "market",
+   "province": "江南东道",
+   "unlock": {
+    "favor": 20
+   },
+   "neighbors": [
+    "屈疏",
+    "滕逢春",
+    "臧落梅",
+    "秦知秋"
+   ],
+   "ask": [
+    {
+     "topic": "雅间的账",
+     "keywords": [
+      "雅间",
+      "茶钱"
+     ],
+     "answer": "雅间那桌欠了二两茶钱，人走了，茶壶还在，壶底刻着个字。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -11727,31 +11751,7 @@
      "债",
      "旧案"
     ]
-   },
-   "tier": "A",
-   "job": "innkeeper",
-   "title": "掌柜",
-   "district": "market",
-   "province": "江南东道",
-   "unlock": {
-    "favor": 20
-   },
-   "neighbors": [
-    "屈疏",
-    "滕逢春",
-    "臧落梅",
-    "秦知秋"
-   ],
-   "ask": [
-    {
-     "topic": "雅间的账",
-     "keywords": [
-      "雅间",
-      "茶钱"
-     ],
-     "answer": "雅间那桌欠了二两茶钱，人走了，茶壶还在，壶底刻着个字。"
-    }
-   ]
+   }
   },
   "npcv_074": {
    "id": "npcv_074",
@@ -11853,6 +11853,16 @@
     "滕逢春",
     "臧落梅",
     "秦知秋"
+   ],
+   "ask": [
+    {
+     "topic": "那坛酒",
+     "keywords": [
+      "酒",
+      "坛子"
+     ],
+     "answer": "后厨的酒坛我日日擦，昨儿掂着轻了半斤，封泥却完好。"
+    }
    ],
    "portrait": {
     "v": 1,
@@ -11976,17 +11986,7 @@
      "债",
      "茶"
     ]
-   },
-   "ask": [
-    {
-     "topic": "那坛酒",
-     "keywords": [
-      "酒",
-      "坛子"
-     ],
-     "answer": "后厨的酒坛我日日擦，昨儿掂着轻了半斤，封泥却完好。"
-    }
-   ]
+   }
   },
   "npcv_075": {
    "id": "npcv_075",
@@ -12564,6 +12564,9 @@
     "冯醒",
     "江倦"
    ],
+   "quests": [
+    "q_sect_xiake_errand"
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -12578,10 +12581,7 @@
     "marks": [
      "逃"
     ]
-   },
-   "quests": [
-    "q_sect_xiake_errand"
-   ]
+   }
   },
   "npcv_081": {
    "id": "npcv_081",
@@ -12671,6 +12671,30 @@
     "武器": "steel_blade",
     "身体": "chain_armor"
    },
+   "tier": "A",
+   "job": "escort",
+   "title": "镖师",
+   "district": "market",
+   "province": "江南东道",
+   "unlock": {
+    "favor": 20
+   },
+   "neighbors": [
+    "屈疏",
+    "滕逢春",
+    "臧落梅",
+    "秦知秋"
+   ],
+   "ask": [
+    {
+     "topic": "箱子",
+     "keywords": [
+      "箱子",
+      "货"
+     ],
+     "answer": "这趟的箱子上了双锁，雇主说钥匙他自个儿带，我只管押到地头。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -12780,31 +12804,7 @@
      "债",
      "货"
     ]
-   },
-   "tier": "A",
-   "job": "escort",
-   "title": "镖师",
-   "district": "market",
-   "province": "江南东道",
-   "unlock": {
-    "favor": 20
-   },
-   "neighbors": [
-    "屈疏",
-    "滕逢春",
-    "臧落梅",
-    "秦知秋"
-   ],
-   "ask": [
-    {
-     "topic": "箱子",
-     "keywords": [
-      "箱子",
-      "货"
-     ],
-     "answer": "这趟的箱子上了双锁，雇主说钥匙他自个儿带，我只管押到地头。"
-    }
-   ]
+   }
   },
   "npcv_082": {
    "id": "npcv_082",
@@ -13107,6 +13107,16 @@
     "黄清",
     "凤凝霜"
    ],
+   "ask": [
+    {
+     "topic": "那册孤本",
+     "keywords": [
+      "孤本",
+      "册子"
+     ],
+     "answer": "那册孤本压在架底，纸都脆了，谁借都得在我这儿画押。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -13223,17 +13233,7 @@
      "刑",
      "书"
     ]
-   },
-   "ask": [
-    {
-     "topic": "那册孤本",
-     "keywords": [
-      "孤本",
-      "册子"
-     ],
-     "answer": "那册孤本压在架底，纸都脆了，谁借都得在我这儿画押。"
-    }
-   ]
+   }
   },
   "npcv_084": {
    "id": "npcv_084",
@@ -15438,6 +15438,19 @@
    },
    "favorToLearn": 59,
    "age": 41,
+   "tier": "A",
+   "job": "scholar",
+   "title": "书生",
+   "district": "shuyuan",
+   "province": "江南西道",
+   "unlock": {
+    "favor": 20
+   },
+   "neighbors": [
+    "鲁拂衣",
+    "岑元",
+    "樊湘"
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -15562,20 +15575,7 @@
      "债",
      "落第"
     ]
-   },
-   "tier": "A",
-   "job": "scholar",
-   "title": "书生",
-   "district": "shuyuan",
-   "province": "江南西道",
-   "unlock": {
-    "favor": 20
-   },
-   "neighbors": [
-    "鲁拂衣",
-    "岑元",
-    "樊湘"
-   ]
+   }
   },
   "npcv_103": {
    "id": "npcv_103",
@@ -16211,6 +16211,20 @@
    },
    "favorToLearn": 48,
    "age": 63,
+   "tier": "A",
+   "job": "richman",
+   "title": "富户",
+   "district": "market",
+   "province": "江南东道",
+   "unlock": {
+    "favor": 20
+   },
+   "neighbors": [
+    "屈疏",
+    "滕逢春",
+    "臧落梅",
+    "秦知秋"
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -16328,21 +16342,7 @@
      "旧案",
      "丧子"
     ]
-   },
-   "tier": "A",
-   "job": "richman",
-   "title": "富户",
-   "district": "market",
-   "province": "江南东道",
-   "unlock": {
-    "favor": 20
-   },
-   "neighbors": [
-    "屈疏",
-    "滕逢春",
-    "臧落梅",
-    "秦知秋"
-   ]
+   }
   },
   "npcv_110": {
    "id": "npcv_110",
@@ -20525,6 +20525,30 @@
     "武器": "fine_sword",
     "身体": "silk_robe"
    },
+   "tier": "A",
+   "job": "official",
+   "title": "官吏",
+   "district": "yamen",
+   "province": "京畿道",
+   "unlock": {
+    "favor": 20
+   },
+   "neighbors": [
+    "傅君",
+    "毕元",
+    "黄清",
+    "凤凝霜"
+   ],
+   "ask": [
+    {
+     "topic": "多出的三千两",
+     "keywords": [
+      "库银",
+      "三千两"
+     ],
+     "answer": "上月盘库多出三千两，账上没这笔，我压着没往上报。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -20642,31 +20666,7 @@
      "武",
      "洁"
     ]
-   },
-   "tier": "A",
-   "job": "official",
-   "title": "官吏",
-   "district": "yamen",
-   "province": "京畿道",
-   "unlock": {
-    "favor": 20
-   },
-   "neighbors": [
-    "傅君",
-    "毕元",
-    "黄清",
-    "凤凝霜"
-   ],
-   "ask": [
-    {
-     "topic": "多出的三千两",
-     "keywords": [
-      "库银",
-      "三千两"
-     ],
-     "answer": "上月盘库多出三千两，账上没这笔，我压着没往上报。"
-    }
-   ]
+   }
   },
   "npcv_150": {
    "id": "npcv_150",
@@ -24120,6 +24120,16 @@
     "臧落梅",
     "秦知秋"
    ],
+   "ask": [
+    {
+     "topic": "北边那趟",
+     "keywords": [
+      "北边",
+      "旧旗"
+     ],
+     "answer": "北边那趟回来，车上的旗换了新的，旧旗我收着，没敢扔。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -24228,17 +24238,7 @@
      "镖",
      "债"
     ]
-   },
-   "ask": [
-    {
-     "topic": "北边那趟",
-     "keywords": [
-      "北边",
-      "旧旗"
-     ],
-     "answer": "北边那趟回来，车上的旗换了新的，旧旗我收着，没敢扔。"
-    }
-   ]
+   }
   },
   "npcv_181": {
    "id": "npcv_181",
@@ -24320,6 +24320,30 @@
     "身体": "leather_armor",
     "头部": "iron_helmet"
    },
+   "tier": "A",
+   "job": "constable",
+   "title": "捕快",
+   "district": "yamen",
+   "province": "京畿道",
+   "unlock": {
+    "favor": 20
+   },
+   "neighbors": [
+    "傅君",
+    "毕元",
+    "元怀瑾",
+    "凤凝霜"
+   ],
+   "ask": [
+    {
+     "topic": "三年前那船人",
+     "keywords": [
+      "船",
+      "三年前"
+     ],
+     "answer": "三年前那船人沉在江里，捞上来七个，名册上却写了十二个。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -24425,31 +24449,7 @@
      "旧案",
      "债"
     ]
-   },
-   "tier": "A",
-   "job": "constable",
-   "title": "捕快",
-   "district": "yamen",
-   "province": "京畿道",
-   "unlock": {
-    "favor": 20
-   },
-   "neighbors": [
-    "傅君",
-    "毕元",
-    "元怀瑾",
-    "凤凝霜"
-   ],
-   "ask": [
-    {
-     "topic": "三年前那船人",
-     "keywords": [
-      "船",
-      "三年前"
-     ],
-     "answer": "三年前那船人沉在江里，捞上来七个，名册上却写了十二个。"
-    }
-   ]
+   }
   },
   "npcv_182": {
    "id": "npcv_182",
@@ -28490,6 +28490,19 @@
    },
    "favorToLearn": 45,
    "age": 28,
+   "tier": "A",
+   "title": "青楼女子",
+   "district": "qinglou",
+   "province": "江南东道",
+   "unlock": {
+    "favor": 20
+   },
+   "neighbors": [
+    "汪秋",
+    "齐灵犀",
+    "苏南",
+    "方朝颜"
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -28593,20 +28606,7 @@
      "旧案",
      "债"
     ]
-   },
-   "tier": "A",
-   "title": "青楼女子",
-   "district": "qinglou",
-   "province": "江南东道",
-   "unlock": {
-    "favor": 20
-   },
-   "neighbors": [
-    "汪秋",
-    "齐灵犀",
-    "苏南",
-    "方朝颜"
-   ]
+   }
   },
   "npcv_220": {
    "id": "npcv_220",
@@ -30433,6 +30433,16 @@
     "臧落梅",
     "秦知秋"
    ],
+   "ask": [
+    {
+     "topic": "秤砣上的尘",
+     "keywords": [
+      "秤",
+      "尘"
+     ],
+     "answer": "药铺的秤砣上落了层灰，我擦了，第二天又落，街上灰大。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "A",
@@ -30542,17 +30552,7 @@
      "医",
      "药"
     ]
-   },
-   "ask": [
-    {
-     "topic": "秤砣上的尘",
-     "keywords": [
-      "秤",
-      "尘"
-     ],
-     "answer": "药铺的秤砣上落了层灰，我擦了，第二天又落，街上灰大。"
-    }
-   ]
+   }
   },
   "npcv_238": {
    "id": "npcv_238",
@@ -36984,6 +36984,10 @@
    "equipment": {
     "身体": "silk_robe"
    },
+   "tier": "B",
+   "job": "official",
+   "title": "县太爷",
+   "personality": "lengmo",
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -37021,11 +37025,7 @@
      "cold": "在大堂上喧哗 −10；托他办事不按章程 −20",
      "break": "逼他在旧案上违心落判——他宁肯摘印。"
     }
-   },
-   "tier": "B",
-   "job": "official",
-   "title": "县太爷",
-   "personality": "lengmo"
+   }
   },
   "act1_chen2": {
    "id": "act1_chen2",
@@ -37059,6 +37059,10 @@
    "tier": "C",
    "district": "jiangnan",
    "province": "江湖",
+   "personality": "qienuo",
+   "quests": [
+    "q_adv_frost_well"
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -37086,11 +37090,7 @@
      "擦手",
      "冻口子"
     ]
-   },
-   "personality": "qienuo",
-   "quests": [
-    "q_adv_frost_well"
-   ]
+   }
   },
   "act1_dianzhu": {
    "id": "act1_dianzhu",
@@ -37124,6 +37124,7 @@
    "tier": "C",
    "district": "jiangnan",
    "province": "江湖",
+   "personality": "wenwan",
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -37151,8 +37152,7 @@
      "瘸腿",
      "看灶"
     ]
-   },
-   "personality": "wenwan"
+   }
   },
   "act1_ji": {
    "id": "act1_ji",
@@ -37187,6 +37187,7 @@
    "tier": "C",
    "district": "jiangnan",
    "province": "江湖",
+   "personality": "lengmo",
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -37214,8 +37215,7 @@
      "看封皮",
      "死结腰带"
     ]
-   },
-   "personality": "lengmo"
+   }
   }
  }
 }
