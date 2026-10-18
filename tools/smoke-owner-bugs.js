@@ -696,6 +696,8 @@ section('B4 · 战斗界面「全力一击 / 防御」');
   {
     const e7 = boot(); const w7 = e7.world, p7 = w7.player;
     const { battle } = startFight(e7);
+    /* ⚠️ P0-a 之后死亡会结束战斗；本节验 guardTurns 消费，先给玩家耐久 fixture。 */
+    p7.maxHpBase = 100000; p7.recalc(); p7.hp = p7.maxHp;
     e7.exec('defend');
     ok('B4-6 守完这一回合后 guardTurns 被消费', (battle.guardTurns || 0) === 0, `guardTurns=${battle.guardTurns}`);
     const b2 = w7.battle;

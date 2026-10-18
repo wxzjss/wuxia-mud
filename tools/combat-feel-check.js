@@ -374,6 +374,91 @@ const firstLine = r => ((r && r.lines || []).find(l => l.text) || {}).text || ''
         'turn ' + turn0 + '→' + (r.view && r.view.combat && r.view.combat.turn));
     }
   }
+  /* C22~C26 战斗效果原语补丁（P0-a~d，2026-10-18） */
+  {
+    const bootP = () => {
+      const e = new GameEngine({ seed: 20261018 });
+      e.boot(); e.newGame({ name: '战探', gender: 'male', birth: 'wuxue' });
+      return e;
+    };
+    /* C22 所有分支都必须递减玩家 buff（旧漏洞：只有普攻分支 tick） */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      const n = w.spawnNpc('mob_bandit', p.room, 1, true);
+      w.startCombat(p, n);
+      p.addBuff({ name: '刀势', turns: 3, mods: { atk: 40 }, tag: 'buff_daoshi' });
+      const turns = [];
+      for (let i = 0; i < 3; i++) {
+        w.combatStep({ type: 'defend' });
+        const b = (p.buffs || []).find(x => x.tag === 'buff_daoshi');
+        turns.push(b ? b.turns : 0);
+        if (!w.battle || w.battle.over) break;
+      }
+      ok('C22 ★ 防御分支也递减玩家 buff（3→2→1→消失）',
+        turns[0] === 2 && turns[1] === 1 && turns[2] === 0, turns.join('→'));
+    }
+    /* C23 防御/绝招分支也要结算玩家 DoT */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      const n = w.spawnNpc('mob_bandit', p.room, 1, true);
+      w.startCombat(p, n);
+      p.hp = 200; p.maxHp = 200;
+      p.addBuff({ name: '创口', turns: 2, mods: {}, tag: 'dot_创口', dot: { value: 6, source: n.id } });
+      const hp0 = p.hp;
+      w.combatStep({ type: 'defend' });
+      const lost = hp0 - p.hp;
+      ok('C23 ★ 防御分支也结算玩家 DoT（至少 6 点）', lost >= 6, '掉血 ' + lost);
+    }
+    /* C24 stun 真的吞掉一回合（敌我两侧） */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      const n = w.spawnNpc('mob_bandit', p.room, 1, true);
+      w.startCombat(p, n);
+      n.addBuff({ name: '暈眩', turns: 1, tag: 'stun' });
+      const hp0 = p.hp;
+      const r = w.combatStep({ type: 'attack' });
+      const txt1 = txt(r);
+      ok('C24 ★ 敌人被眩晕时这一回合不出手', p.hp === hp0 && /恍惚/.test(txt1), 'hp ' + hp0 + '→' + p.hp);
+      p.addBuff({ name: '暈眩', turns: 1, tag: 'stun' });
+      const hpN = n.hp;
+      const r2 = w.combatStep({ type: 'attack' });
+      ok('C24b 玩家被眩晕时这一手打不出去', n.hp === hpN && /发花/.test(txt(r2)), '敌 hp ' + hpN + '→' + n.hp);
+    }
+    /* C25 ignoreDef 真生效（伤害 ≥ +20%） */
+    {
+      const dmgOf = withIgnore => {
+        const e = bootP(); const w = e.world, p = w.player;
+        const n = w.spawnNpc('mob_bandit', p.room, 1, true);
+        n.defFinal = 60;   /* 高防目标才能看出破防收益：低防目标减伤本来就小 */
+        w.startCombat(p, n);
+        const sk = { id: 't_pen', name: '试招', damageMult: 1, accuracy: 100, effects: withIgnore ? [{ type: 'ignoreDef' }] : [] };
+        const before = n.hp;
+        w.combat.oneAttack(p, n, sk, w.battle, 0);
+        return before - n.hp;
+      };
+      const plain = dmgOf(false), pen = dmgOf(true);
+      ok('C25 ★ ignoreDef 真生效（伤害至少 +20%）', pen >= plain * 1.2,
+        '普通 ' + plain + ' → 破防 ' + pen);
+    }
+    /* C26 同名 DoT 取 max + pct 形态 */
+    {
+      const e = bootP(); const w = e.world, p = w.player;
+      const n = w.spawnNpc('mob_bandit', p.room, 1, true);
+      const battle = { attackers: [p], defenders: [n], duel: false, turn: 0 };
+      w.combat.applySkillEffect({ type: 'dot', name: '创口', turns: 2, value: 3 }, p, n, null, battle);
+      const r = w.combat.applySkillEffect({ type: 'dot', name: '创口', turns: 2, value: 9 }, p, n, null, battle);
+      const b = (n.buffs || []).find(x => x.tag === 'dot_创口');
+      ok('C26 ★ 先低后高：DoT 取高级值（9 而不是 3）', b && b.dot.value === 9, b && String(b.dot.value));
+      ok('C26b 升级文案为「更重了」', /更重了/.test(String(r && r.text)), String(r && r.text).slice(0, 30));
+      const r2 = w.combat.applySkillEffect({ type: 'dot', name: '创口', turns: 2, value: 4 }, p, n, null, battle);
+      const b2 = (n.buffs || []).find(x => x.tag === 'dot_创口');
+      ok('C26c 先高后低：不被低级值覆盖', b2 && b2.dot.value === 9, b2 && String(b2.dot.value));
+      n.maxHp = 300;
+      w.combat.applySkillEffect({ type: 'dot', name: '剧毒', turns: 2, pct: 0.03 }, p, n, null, battle);
+      const b3 = (n.buffs || []).find(x => x.tag === 'dot_剧毒');
+      ok('C26d pct 形态按最大血量落地（300×3% = 9）', b3 && b3.dot.value === 9, b3 && String(b3.dot.value));
+    }
+  }
   console.log('\n' + (fail ? '✘ ' + fail + ' 项失败：' + fails.join(' / ') : '✔ 全部通过'));
   console.log('通过 ' + pass + ' / 失败 ' + fail);
   process.exit(fail ? 1 : 0);

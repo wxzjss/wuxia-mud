@@ -2979,6 +2979,15 @@ class World extends EventEmitter {
       return this.finishCombat([{ kind: 'warn', text: '这一架打了许久，谁也奈何不了谁，各自退开。' }]);
     }
 
+    /* P0-b：眩晕/震慑时这一手直接被吞掉（含逃跑），但敌人照常出手、
+       buff 照常结算——所以走 afterPlayerTurn，不要直接 return。 */
+    {
+      const stunLines = [];
+      if (this.combat.incapacitated(this.player, stunLines)) {
+        return this.afterPlayerTurn(stunLines);
+      }
+    }
+
     // 玩家行动
     if (userAction === 'flee') {
       const p = this.player;
@@ -2992,14 +3001,12 @@ class World extends EventEmitter {
         const b = this.battle; this.battle = null;
         return { lines: [{ kind: 'combat', text: '你抽身疾退，脱离了战斗。' }], over: true, winner: 'flee', battle: b };
       }
-      return {
-        lines: this.stepEnemyOnly([
+      return this.afterPlayerTurn([
           { kind: 'combat', text: '你想跑，却被对方缠住！' },
           { kind: 'hint', text: (p.speed > (t ? t.speed : 0))
             ? '（你身形本比他快，这一下是一步踏空被抢了先，再来一次多半能脱身。）'
             : `（他身法 ${t ? t.speed : '?'}，你 ${p.speed}；对方比你快，硬跑跑不掉——可先「防御」撑一回合再试。）` },
-        ]),
-      };
+        ]);
     }
     if (userAction && userAction.type === 'skill') {
       const p = this.player;
@@ -3072,7 +3079,7 @@ class World extends EventEmitter {
           }
           default: break;
         }
-        return { lines: this.stepEnemyOnly(sLines) };
+        return this.afterPlayerTurn(sLines);
       }
       const lv = p.skillLevel(sd.id);
       if (item_mp_check(p, sd)) {
@@ -3081,7 +3088,7 @@ class World extends EventEmitter {
         if (r) lines.push(r);
         if (t.hp <= 0) { this.combat.onDeath(t, this.battle, lines, true); this.battle.over = true; this.battle.winner = 'attackers'; }
         if (this.battle.over) return this.finishCombat(lines);
-        return { lines: this.stepEnemyOnly(lines) };
+        return this.afterPlayerTurn(lines);
       } else {
         return { lines: [{ kind: 'combat', text: `${sd.name}需要 ${sd.mpCost} 点内力，你内力不足。` }] };
       }
@@ -3093,7 +3100,7 @@ class World extends EventEmitter {
          这样多人群战也只对「这一局」生效，战斗结束自然随 battle 一起丢弃，
          不会像 bossPhaseIdx 那样漏清（见 finishCombat 的复位清单）。 */
       this.battle.guardTurns = 1;
-      return { lines: this.stepEnemyOnly([{ kind: 'combat', text: '你沉肩扎马，凝神防守。' }]) };
+      return this.afterPlayerTurn([{ kind: 'combat', text: '你沉肩扎马，凝神防守。' }]);
     }
     if (userAction && userAction.type === 'item') {
       const p = this.player;
@@ -3102,7 +3109,9 @@ class World extends EventEmitter {
       /* `ok` 要透出去：调用方（commands.js 的 `use`）得知道到底吃没吃上，
          才能决定要不要接着走「喝酒传市井传闻」那一步。
          只回 lines 的话，那边只能去正则匹配文本里的"没有"——那是拿文案当 API 用。 */
-      return { lines: this.stepEnemyOnly(lines), ok: !!useRes.ok };
+      const rr = this.afterPlayerTurn(lines);
+      rr.ok = !!useRes.ok;
+      return rr;
     }
     /* ============================================================
        普通攻击 / 自动一回合
@@ -3124,11 +3133,6 @@ class World extends EventEmitter {
       const t = this.currentFoe();
       const lines = [];
 
-      /* 玩家侧 buff 结算。原来由 `combat.step()` 顺带做了（它对所有单位 tick 一遍）；
-         玩家不走它了，就得自己 tick 一次 —— 否则玩家身上的持续伤害 / 增益
-         **永远不结算**（中毒不掉血、增益不消失）。 */
-      this.combat.tickBuffs(p, lines, this.battle);
-      if (p.hp <= 0) { this.playerDeath(); return this.finishCombat(lines); }
 
       /* 玩家这一手：pickSkill 挑武学（封穴时返回 null ⇒ 只能普攻），
          hits / baseAttackCount 决定连击数，与 combat.step() 里的写法一致。 */
@@ -3146,20 +3150,34 @@ class World extends EventEmitter {
       }
       if (this.battle.over) return this.finishCombat(lines);
 
-      /* ⚠️ 这里**不再**传 skipPlayer=true。
-         那个参数的语义是「玩家的 buff 已经在 combat.step() 里 tick 过了，别再减一次」，
-         而现在玩家改由上面那行 tickBuffs 负责，敌人侧的收尾与另外三条分支一致。
-         传 true 会让辅助武技打上的 `sup:` 标记**永不递减**（挂一辈子）。 */
-      const after = this.stepEnemyOnly(lines);
-      if (this.battle && this.battle.over) return this.finishCombat(after);
-      // 玩家死亡
-      if (p.hp <= 0) { this.playerDeath(); return this.finishCombat(after); }
-      return { lines: after };
+      return this.afterPlayerTurn(lines);
     }
   }
 
+  /* P0-a（2026-10-18）：玩家行动后的**统一收尾**。
+     旧实现只有普攻分支在出手前 tickBuffs(p)；绝招 / 防御 / 道具三条分支
+     只在 stepEnemyOnly 末尾递减 `sup:` 标记 ⇒ 玩家身上的 dot 永不结算、
+     普通增益（含 hujia_daofa 的刀势）回合数永不递减。
+     现在四条分支一律走这里：先结算玩家 buff（含 DoT），再让敌人出手。 */
+  afterPlayerTurn(lines) {
+    const b = this.battle;
+    const p = this.player;
+    if (!b || b.over) return this.finishCombat(lines);
+    this.combat.tickBuffs(p, lines, b);
+    if (p.hp <= 0) {
+      lines.push({ kind: 'faint', text: '你眼前一黑，什么都不知道了……' });
+      b.over = true; b.winner = 'defenders';
+      this.playerDeath();
+      return this.finishCombat(lines);
+    }
+    const after = this.stepEnemyOnly(lines);
+    if (this.battle && this.battle.over) return this.finishCombat(after);
+    if (p.hp <= 0) { this.playerDeath(); return this.finishCombat(after); }
+    return { lines: after };
+  }
+
   /** 玩家行动后，敌人行动 */
-  stepEnemyOnly(lines, skipPlayer) {
+  stepEnemyOnly(lines) {
     const battle = this.battle;
     if (!battle || battle.over) return lines;
     const p = this.player;
@@ -3167,7 +3185,13 @@ class World extends EventEmitter {
     for (const e of enemies) {
       if (e.hp <= 0 || e.dead) continue;
       if (p.hp <= 0) break;
+      /* P0-b：眩晕/震慑的敌人这一回合不出手，但 DoT 照常结算 */
+      const cannotAct = this.combat.incapacitated(e, lines);
       this.combat.tickBuffs(e, lines, battle);
+      if (cannotAct) {
+        this.combat.tickBossPhase(e, lines, battle);
+        continue;
+      }
       /* Boss 三阶段：敌人侧走 stepEnemyOnly，不经过 combat.step()，
          所以这里必须单独挂一次，否则 Boss 永远停在第一阶段（SPRINT-C）。 */
       this.combat.tickBossPhase(e, lines, battle);
@@ -3201,19 +3225,8 @@ class World extends EventEmitter {
     if (battle.cooldowns) {
       for (const k of Object.keys(battle.cooldowns)) if (battle.cooldowns[k] > 0) battle.cooldowns[k]--;
     }
-    /* 玩家侧状态结算：走「武技 / 防御 / use 物品」三条分支时不经过 combat.step()，
-       玩家身上的 buff 回合数没人减。这里**只递减辅助武技自己打的标记（`sup_`）**，
-       不碰别人挂的状态 —— 一刀切 tickBuffs 会把 dot / 蓄势的语义一起改掉，
-       而「玩家 buff 该不该按回合扣」是另一个口径，别在这轮顺手改。 */
-    if (!skipPlayer && Array.isArray(p.buffs) && p.buffs.some(b => /^sup:/.test(b.tag || ''))) {
-      const kept = [];
-      for (const b of p.buffs) {
-        if (/^sup:/.test(b.tag || '')) { b.turns--; if (b.turns > 0) kept.push(b); }
-        else kept.push(b);
-      }
-      p.buffs = kept;
-      p.recalc();
-    }
+    /* 玩家 buff 的递减已统一到 afterPlayerTurn（P0-a）：
+       这里再递减一次就是「一回合扣两遍」。 */
     return lines;
   }
 

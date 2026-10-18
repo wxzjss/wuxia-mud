@@ -157,6 +157,34 @@ class CombatEngine {
     return battle;
   }
 
+  /** 这一回合能不能行动（P0-b）：awe 震慑 / stun 眩晕。
+      命中则消耗一回合（stun 扣一层，用尽即移除）并出一句演出，返回 true。
+      ⚠️ 调用方必须在 tickBuffs 之前调用：先 tick 会把 1 回合的 stun 直接减没。 */
+  incapacitated(u, lines) {
+    if (u.vars && u.vars.awe && u.vars.awe.left > 0) {
+      u.vars.awe.left--;
+      lines.push({
+        kind: 'combat',
+        text: u.isPlayer ? '你被对方的气势压着，一时提不起手。' : (u.name + '看了看你，终究没敢动手。'),
+      });
+      return true;
+    }
+    const st = (u.buffs || []).find(b => b.tag === 'stun' && (b.turns || 0) > 0);
+    if (st) {
+      st.turns--;
+      if (st.turns <= 0) u.buffs = (u.buffs || []).filter(b => b !== st);
+      if (u.recalc) u.recalc();
+      lines.push({
+        kind: 'combat',
+        text: u.isPlayer
+          ? '你眼前一阵发花，手抬到一半又落下。'
+          : (u.name + '脸上还带着恍惚，手抬到一半又落下。'),
+      });
+      return true;
+    }
+    return false;
+  }
+
   /** 执行一回合：player 阵营先手，按 speed 排序 */
   step(battle) {
     if (battle.over) return battle;
@@ -180,19 +208,15 @@ class CombatEngine {
       const u = ent.u;
       if (u.dead || u.hp <= 0) continue;
 
-      // buff 结算
+      /* P0-b（2026-10-18）：能不能行动要在 tickBuffs **之前**判——
+         buff 的 turns 会被 tick 减一，1 回合的眩晕若先减就当场消失，永远不会生效。
+         awe（震慑）也一并收进 incapacitated，两条战斗路径共用一份判定。 */
+      const cannotAct = this.incapacitated(u, lines);
       this.tickBuffs(u, lines, battle);
       /* Boss 阶段：血掉到阈值就切（必须在行动前、buff 之后——
          buff 的 turns 会被 tickBuffs 减一，阶段 buff 是 9999 回合的常驻不受影响） */
       this.tickBossPhase(u, lines, battle);
-
-      /* 被震慑（awe）：这一回合不敢动手。回合数用完自然恢复。 */
-      if (u.vars && u.vars.awe && u.vars.awe.left > 0) {
-        u.vars.awe.left--;
-        if (u.isPlayer) lines.push({ kind: 'combat', text: '你被对方的气势压着，一时提不起手。' });
-        else lines.push({ kind: 'combat', text: `${u.name}看了看你，终究没敢动手。` });
-        continue;
-      }
+      if (cannotAct) continue;
       const enemies = this.enemiesOf(all, ent);
       if (!enemies.length) continue;
       /* 迷幻（confuse，`design/40` §4.3 P1-1）：中了迷魂香的会朝自己人动手。
@@ -519,6 +543,16 @@ class CombatEngine {
       u.stamina = Math.max(0, u.stamina - move.staminaCost);
     }
 
+    /* P0-c（2026-10-18）：破防类效果必须在**算伤害前**生效。
+       旧实现把 ignoreDef 留在 applySkillEffect 的 switch 里只出一句空文本，
+       收益恒 0 —— 全库 20 条武学声明了它（含独孤九剑 / 六脉神剑）。
+       语义：防御按 30% 计 ⇒ 穿透 0.7（与 armorPen 的 0.7 上限一致）。 */
+    const earlyEffs = [].concat(
+      skill && skill.effects ? [].concat(skill.effects) : [],
+      move && move.effects ? [].concat(move.effects) : []
+    );
+    const hasIgnoreDef = earlyEffs.some(e => e && e.type === 'ignoreDef');
+
     const ctx = {
       world: w,
       skill,
@@ -529,6 +563,7 @@ class CombatEngine {
       critRate: u.critRate + (skill ? (skill.critBonus || 0) : 0),
       critDmg: u.critDmg + (skill ? (skill.critDmgBonus || 0) : 0),
     };
+    if (hasIgnoreDef) ctx.armorPen = Math.max(ctx.armorPen || 0, 0.7);
     /* 切磋点到为止（2026-10-18 审计 #9）：双方伤害 ×0.3，
        否则 lv23 的切磋对手一招 159 就能把新档打倒，「点到为止」名不副实。 */
     if (battle && battle.duel) ctx.mult *= 0.3;
@@ -679,13 +714,33 @@ class CombatEngine {
         const dotName = eff.name || '持伤';
         const dotTag = 'dot_' + dotName;
         const exist = (t.buffs || []).find(b => b.tag === dotTag);
+        /* P0-d（2026-10-18）：同名 DoT 取 max，不是「保留旧值」——
+           旧写法先上低级毒、再上高级毒时，高级毒会被旧值压掉。
+           支持两种形态：{value:12} 固定值；{pct:0.03} 按目标最大血量百分比。 */
+        const newVal = eff.value != null
+          ? eff.value
+          : (eff.pct ? Math.floor((t.maxHp || 0) * eff.pct) : 5);
         if (exist) {
           exist.turns = Math.max(exist.turns || 0, eff.turns || 3);
-          text += t.isPlayer
+          const oldVal = exist.dot.pct
+            ? Math.floor((t.maxHp || 0) * exist.dot.pct)
+            : (exist.dot.value || 0);
+          if (newVal > oldVal) {
+            exist.dot.value = newVal;
+            exist.dot.pct = 0;
+            text += t.isPlayer
+    ? ` 你身上的${dotName}更重了。`
+    : ` ${t.name}的${dotName}更重了。`;
+          } else {
+            text += t.isPlayer
     ? ` 你身上的${dotName}又裂开了。`
     : ` ${t.name}的${dotName}又裂开了。`;
+          }
         } else {
-          t.addBuff({ name: dotName, turns: eff.turns || 3, mods: {}, tag: dotTag, dot: { value: eff.value || 5, source: u.id } });
+          t.addBuff({
+            name: dotName, turns: eff.turns || 3, mods: {}, tag: dotTag,
+            dot: { value: newVal, pct: eff.pct || 0, source: u.id },
+          });
           text += t.isPlayer
     ? ` 你身上多了一道${dotName}，血正往外渗。（金创药能止住。）`
     : ` ${t.name}中了${dotName}。`;
@@ -710,7 +765,8 @@ class CombatEngine {
         text += t.isPlayer ? ' 你内力被引走！' : ` ${t.name}内力被引走！`; break;
       }
       case 'ignoreDef':
-        text += ''; break;
+        /* 真正的收益在 oneAttack 的预扫描里（P0-c）；这里只留一句演出，不再空转。 */
+        text += '护体被这一招破开。'; break;
       case 'heal':
         u.hp = clamp(u.hp + (eff.value || 20), 0, u.maxHp); text += u.isPlayer ? ' 你真气流转，伤势略复。' : ` ${u.name}真气流转，伤势略复。`; break;
       /* 回内力（P1-5）：老引擎只有 heal（回血），没有回内的武技效果。
@@ -786,7 +842,8 @@ class CombatEngine {
     for (const b of u.buffs) {
       if (b.dot) {
         const src = this.findChar(battle, b.dot.source);
-        const dmg = Math.floor((b.dot.value || 3));
+        /* pct 形态按「目标最大血量」结算（P0-d）：对高血量 boss 也有感 */
+        const dmg = Math.floor(b.dot.pct ? (u.maxHp || 0) * b.dot.pct : (b.dot.value || 3));
         u.hp = clamp(u.hp - dmg, 0, u.maxHp);
         lines.push({
           kind: 'combat',

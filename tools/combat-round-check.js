@@ -266,9 +266,16 @@ section('§4 回合数：四条分支都要走（原来只有普攻在走）');
 section('§5 平局：只用「防御」也必须在 ' + DRAW_TURNS + ' 回合收住');
 
 {
-  const { e, w } = spar();
+  const { e, w, p } = spar();
+  /* ⚠️ P0-a 之后「玩家死亡」会立刻结束战斗（以前死亡被忽略、能一直耗到 60 回合）。
+     本节的意图是验「平局上限」，不是验死亡，所以给玩家一个耐久 fixture。 */
   let guard = 0;
-  while (w.battle && !w.battle.over && guard++ < DRAW_TURNS + 20) e.exec('defend');
+  while (w.battle && !w.battle.over && guard++ < DRAW_TURNS + 20) {
+    /* 每回合把血补满：本节验平局上限，不验耐久（P0-a 后死亡会结束战斗） */
+    p.maxHpBase = 100000; p.recalc();
+    p.hp = p.maxHp;
+    e.exec('defend');
+  }
   ok('§5-1 ★ 只按防御也会结束（原来会无限耗下去）', !w.battle || w.battle.over,
     '循环 ' + guard + ' 次后结束');
   /* finishCombat 会把 battle 清掉，所以平局的证据要看循环次数贴着上限 */
@@ -280,6 +287,7 @@ section('§5 平局：只用「防御」也必须在 ' + DRAW_TURNS + ' 回合�
   let last = '';
   let g2 = 0;
   while (w2.battle && !w2.battle.over && g2++ < DRAW_TURNS + 20) {
+    w2.player.maxHpBase = 100000; w2.player.recalc(); w2.player.hp = w2.player.maxHp;
     const r = e2.exec('defend');
     (r.lines || []).forEach((l) => { if (l && l.text) last = l.text; });
   }
