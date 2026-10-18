@@ -5768,10 +5768,6 @@
       "home": "house:cy_gs_town_1",
       "personality": "wenwan",
       "desc": "一身水气，晒得比谁都黑。",
-      "talk": [
-        "坐稳了。",
-        "这条水，我熟。"
-      ],
       "age": 60,
       "likes": [
         "sword"
@@ -5797,6 +5793,23 @@
       "tier": "B",
       "district": "gusu",
       "homeless": true,
+      "quests": [
+        "sq_cy_gs_du"
+      ],
+      "talk": [
+        "坐稳，开船了。",
+        "过渡三文，带货加两文，夜里翻倍。"
+      ],
+      "ask": [
+        {
+          "topic": "河水",
+          "keywords": [
+            "发水",
+            "四尺"
+          ],
+          "answer": "前日上游发水，河面涨了四尺，桥墩都露不出来。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -5823,10 +5836,7 @@
         "marks": [
           "船"
         ]
-      },
-      "quests": [
-        "sq_cy_gs_du"
-      ]
+      }
     },
     "cy_gs_yanzi_1": {
       "id": "cy_gs_yanzi_1",
@@ -5995,10 +6005,6 @@
       "home": "house:cy_gs_zhai_1",
       "personality": "wenwan",
       "desc": "衣裳上沾着漆点，怎么洗都留着一片印子。",
-      "talk": [
-        "看一眼不打紧，别碰。",
-        "活儿要做细，急不来。"
-      ],
       "age": 50,
       "likes": [
         "wine"
@@ -6024,6 +6030,23 @@
       "tier": "B",
       "district": "gusu",
       "homeless": true,
+      "quests": [
+        "sq_cy_gs_xiu"
+      ],
+      "talk": [
+        "看绣活？手别摸。",
+        "一幅绣屏要绣两个月，工钱三两。"
+      ],
+      "ask": [
+        {
+          "topic": "巷子",
+          "keywords": [
+            "前年",
+            "三家"
+          ],
+          "answer": "前年巷里搬走三家，空下的宅子还锁着。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -6050,10 +6073,7 @@
         "marks": [
           "工"
         ]
-      },
-      "quests": [
-        "sq_cy_gs_xiu"
-      ]
+      }
     },
     "cy_gs_home_01": {
       "id": "cy_gs_home_01",
@@ -6342,10 +6362,6 @@
       "home": "house:cy_gs_patrol_1",
       "personality": "yinzhi",
       "desc": "说话前先看你一眼，像在心里过了一遍章程。",
-      "talk": [
-        "照着规矩来。",
-        "文书压着，急不得。"
-      ],
       "age": 26,
       "likes": [
         "jade"
@@ -6371,6 +6387,20 @@
       "tier": "B",
       "district": "gusu",
       "homeless": true,
+      "talk": [
+        "哪一家的？报门牌。",
+        "巷里夜禁三更，过了时辰要验牌。"
+      ],
+      "ask": [
+        {
+          "topic": "旧宅",
+          "keywords": [
+            "西头",
+            "五年"
+          ],
+          "answer": "西头那间旧宅空了五年，院里的草长到齐腰。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",

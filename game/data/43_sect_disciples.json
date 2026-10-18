@@ -2860,10 +2860,6 @@
    "speed": 112,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「堂主见过师兄。」",
-    "「混口饭吃而已，别的我不管。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -2921,7 +2917,21 @@
    "rank": 2,
    "personality": "baozhao",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "绣阁重地，脚步轻。",
+    "阁里的线分三等，金线一两要四钱银子。"
+   ],
+   "ask": [
+    {
+     "topic": "绣架",
+     "keywords": [
+      "这幅",
+      "三个月"
+     ],
+     "answer": "这幅山水绣了三个月，还差半幅水面。"
+    }
+   ]
   },
   "disciple_mojiao_3": {
    "id": "disciple_mojiao_3",
@@ -3118,10 +3128,6 @@
    "speed": 112,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「长老见过师兄。」",
-    "「你也别装好人，这山路上谁干净过？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -3179,7 +3185,21 @@
    "rank": 3,
    "personality": "youhua",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "长老在此，有事说。",
+    "绣品出阁要过我的手，一匹抽二十文。"
+   ],
+   "ask": [
+    {
+     "topic": "针",
+     "keywords": [
+      "上月",
+      "九根"
+     ],
+     "answer": "上月领了九根针，断了两根，账上还得记。"
+    }
+   ]
   },
   "disciple_dali_0": {
    "id": "disciple_dali_0",
@@ -7554,10 +7574,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「入室弟子见过师叔。」",
-    "「大殿的烛台擦完了，还差供桌没抹。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -7613,6 +7629,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "山路滑，扶着栏杆。",
+    "庵里施药不收钱，香火随缘。"
+   ],
+   "ask": [
+    {
+     "topic": "药材",
+     "keywords": [
+      "后山",
+      "七种"
+     ],
+     "answer": "后山采的药材有七种，够配三副伤药。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -7858,10 +7888,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「记名弟子见过师叔。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -7917,6 +7943,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "来求医，还是上香？",
+    "看伤五文，抓药另算，出家人不收诊金。"
+   ],
+   "ask": [
+    {
+     "topic": "香客",
+     "keywords": [
+      "初一",
+      "十几位"
+     ],
+     "answer": "初一来了十几位香客，多半是山下扭了脚的。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -9174,10 +9214,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「执剑弟子见过师叔。」",
-    "「库房的灯油记好了数，月底要对账。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -9233,6 +9269,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "山门清静，慢慢走。",
+    "十九峰各有剑诀，学哪一峰要看根骨。"
+   ],
+   "ask": [
+    {
+     "topic": "灯油",
+     "keywords": [
+      "月底",
+      "十二斤"
+     ],
+     "answer": "库房的灯油月底对账，这个月少了十二斤，还没查出来。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -9275,10 +9325,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「内门弟子见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -9334,6 +9380,20 @@
    "personality": "wenwan",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "拆招么？点到为止。",
+    "场里一日练三回，每回半个时辰。"
+   ],
+   "ask": [
+    {
+     "topic": "脚印",
+     "keywords": [
+      "雨后",
+      "一层"
+     ],
+     "answer": "雨后地上脚印一层压一层，扫了也白扫。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -9376,10 +9436,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「外门弟子见过师兄。」",
-    "「演武场的木桩换了两根新的，钉子还松着。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -9436,6 +9492,20 @@
    "tier": "B",
    "job": "disciple",
    "sidequest": "sqd_diancang",
+   "talk": [
+    "新来的？先看三天。",
+    "外门弟子每日挑水两担，扫阶一炷香。"
+   ],
+   "ask": [
+    {
+     "topic": "木桩",
+     "keywords": [
+      "演武场",
+      "两根"
+     ],
+     "answer": "演武场的木桩换了两根新的，钉子还松着，别靠。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -9478,10 +9548,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「外门弟子见过师叔。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -9537,6 +9603,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "看可以，别下场。",
+    "剑招可以看，剑诀不外传。"
+   ],
+   "ask": [
+    {
+     "topic": "比试",
+     "keywords": [
+      "初五",
+      "九场"
+     ],
+     "answer": "初五比了九场，赢六场，输的那三场都是我急。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -9992,10 +10072,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「媚使见过师叔。」",
-    "「混口饭吃而已，别的我不管。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -10051,6 +10127,20 @@
    "personality": "yinzhi",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "白日里，只弹唱。",
+    "听曲三十文，写一支新曲要一两。"
+   ],
+   "ask": [
+    {
+     "topic": "楼里",
+     "keywords": [
+      "入夜",
+      "六盏"
+     ],
+     "answer": "入夜点六盏灯，灯亮几盏，来的人心里都有数。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -10296,10 +10386,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「外门见过师叔。」",
-    "「你也别装好人，这山路上谁干净过？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -10355,6 +10441,20 @@
    "personality": "lengmo",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "生面孔，谁引来的？",
+    "宗里教的是留人，不是打人，学费一月二两。"
+   ],
+   "ask": [
+    {
+     "topic": "香",
+     "keywords": [
+      "三更",
+      "两回"
+     ],
+     "answer": "三更前后香要换两回，闻久了人就懒得走。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -12932,10 +13032,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师叔。」",
-    "「帮里规矩，新入伙的先守三日大门，我守完了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -12992,6 +13088,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_dafeng",
+   "talk": [
+    "进门先跑三里。",
+    "门里比脚力，一炷香跑完山门到溪口。"
+   ],
+   "ask": [
+    {
+     "topic": "门主",
+     "keywords": [
+      "上月",
+      "两回"
+     ],
+     "answer": "上月门主亲自下山两回，都是夜里走的，天亮才回。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -13117,10 +13227,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师兄。」",
-    "「船帮今日靠岸七条船，货单还没核完。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -13176,6 +13282,20 @@
    "personality": "xiayi",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "船靠岸了没有？",
+    "帮里卸货一人一天三十文，管两顿。"
+   ],
+   "ask": [
+    {
+     "topic": "船货",
+     "keywords": [
+      "七条",
+      "三百石"
+     ],
+     "answer": "今日靠岸七条船，卸了三百石米，还剩两舱没动。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -15178,10 +15298,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师叔。」",
-    "「刀在鞘里，鞘上有三道旧痕。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -15238,6 +15354,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_funiu",
+   "talk": [
+    "看手，不看脸。",
+    "门里练拳先练桩，一站三个月。"
+   ],
+   "ask": [
+    {
+     "topic": "牛",
+     "keywords": [
+      "秋后",
+      "两头"
+     ],
+     "answer": "秋后山里宰牛，门里买两头，练拳的都有肉吃。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -15363,10 +15493,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师兄。」",
-    "「刀在鞘里，鞘上有三道旧痕。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -15422,6 +15548,20 @@
    "personality": "lengmo",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "下盘不稳，别说学过拳。",
+    "伏牛拳讲究贴身，退一步就没劲了。"
+   ],
+   "ask": [
+    {
+     "topic": "山货",
+     "keywords": [
+      "九月",
+      "六十斤"
+     ],
+     "answer": "九月收了六十斤核桃，换成盐，够吃一冬。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
