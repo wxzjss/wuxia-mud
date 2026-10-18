@@ -6517,7 +6517,7 @@ const ROOMNOTE_RULES = [
   { id: 'incense', keys: ['上香'], note: '香炉里多了一截烧尽的香灰。' },
   { id: 'hide',    keys: ['藏物', '藏东西', '埋'], note: '那块松动的砖，按过之后更松了。' },
   { id: 'alms',    keys: ['施舍', '施'], note: '破碗里的铜钱叠着两枚。' },
-  { id: 'wash',    keys: ['净面', '洗手', '洗脸'], note: '井台的石沿湿了一块。' },
+  { id: 'wash',    keys: ['净面', '洗手', '洗脸'], note: '水边石上湿了一片。' },
 ];
 function roomNoteRuleFor(action) {
   const hay = [action && action.cmd, ...((action && action.keywords) || [])].filter(Boolean).join('|');
