@@ -92,6 +92,10 @@ ok('B-1 ★ 每条 action 都能算出**显示名**（label → cmd → keywords
 {
   const probe = (rid, cmd, wantRe, name) => {
     w.movePlayerTo(p, rid);
+    /* 打工类 action 会消耗饱食/饮水；本文件用一个角色连跑全图，前几条动作
+       会把饥渴吃到 0，后面 get 到「你饥渴难耐，实在干不动了」——那是正确行为，
+       不是目标不存在。夹具每探一条前补满，避免跨用例污染。 */
+    p.food = p.maxFood; p.water = p.maxWater;
     const lines = (e.exec(cmd).lines || []).map(l => String(l.text || '')).join(' ');
     ok('C ' + name, wantRe.test(lines), lines.slice(0, 60) || '(空)');
   };

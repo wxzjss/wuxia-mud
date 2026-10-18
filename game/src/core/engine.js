@@ -1918,7 +1918,8 @@ class GameEngine {
   combatView() {
     const b = this.world.battle;
     if (!b) return null;
-    const p = this.world.player;
+    const w = this.world;
+    const p = w.player;
     /* 目标标记（审计 #7）：UI 靠 uid 点选、靠 targeted 画高亮。
        旧实现两者都没有 → 点敌卡发出 combatAct('target', undefined)，
        引擎没这个分支，落成普通一回合攻击（“选目标”是假的）。 */
@@ -1929,28 +1930,49 @@ class GameEngine {
       buffs: (e.buffs || []).map(x => ({ name: x.name, turns: x.turns })),
     }));
     /* 可用动作表（审计 #8）：UI 的 #combat-actions 读的就是这个字段。
-       之前 combatView 根本不发 actions → 战斗面板操作栏永远是空的，
-       出招只能靠下方快捷栏。现在按「当前招式/武器/内力」生成：
-       普攻 + 已装备武学里的武技（前 2 式/门）+ 防御 + 逃跑 + 药（前 3 件）。 */
+       2026-10-18 放全（team-lead）：原来只列「已装备前 3 门 × 前 2 式」，
+       落榜的武技 perform 能用但面板没按钮，玩家会以为没学会。
+       现在**所有已装备武学、所有武技**都列；每式带两种禁用态：
+         · 冷却中（还需 N 回合）
+         · 内力不足（需 X / 现有 Y）
+       禁用原因写进 hint，UI 已有 .disabled 样式与 onclick 拦截，引擎只给字段。 */
     const actions = [];
     actions.push({ action: 'attack', label: '普通攻击', hint: '朝当前目标出招' });
-    const moves = [];
-    for (const s of (p.skills || [])) {
-      if (!s || s.isBasic) continue;
-      if (!(s.equipped || s.standaloneActive)) continue;
-      for (const mv of (s.moves || []).slice(0, 2)) {
+    const cds = (b.cooldowns || {});
+    /* ⚠️ 2026-10-18 实测：Character 上根本没有 p.skills 这个字段（grep 全 core 无赋值），
+       旧循环是**死代码** —— 战斗面板从来没出过一个武技按钮。现在按 equippedSkills
+       （槽位 → 武学 id）重建，并补 standaloneActive（独立生效的武学 id）。 */
+    const activeIds = [];
+    for (const sid of Object.values(p.equippedSkills || {})) if (sid) activeIds.push(sid);
+    for (const sid of (p.standaloneActive || [])) if (sid) activeIds.push(sid);
+    const seenSkill = new Set();
+    for (const sid of activeIds) {
+      if (!sid || seenSkill.has(sid)) continue;
+      seenSkill.add(sid);
+      const s = w.data.skills[sid];
+      if (!s || !p.learned[sid]) continue;
+      for (const mv of (s.moves || [])) {
         if (!mv || !mv.id) continue;
-        moves.push({
+        const cd = cds[mv.id] || 0;
+        const need = (s.mpCost || 0) + (mv.mpCost || 0);
+        let disabled = false, reason = '';
+        if (cd > 0) { disabled = true; reason = '冷却中（还需 ' + cd + ' 回合）'; }
+        else if (need > p.mp) { disabled = true; reason = '内力不足（需 ' + need + ' / 现有 ' + p.mp + '）'; }
+        const parts = [];
+        if (need) parts.push('内力 ' + need);
+        if (s.name) parts.push(s.name);
+        if (reason) parts.push(reason);
+        actions.push({
           action: 'skill',
           key: s.id + '|' + mv.id,
           label: mv.name || mv.id,
-          hint: (mv.mpCost ? '内力 ' + mv.mpCost : '') + (s.name ? ' · ' + s.name : ''),
+          hint: parts.join(' · '),
+          disabled,
+          disabledReason: reason || undefined,
+          group: s.name || undefined,
         });
-        if (moves.length >= 5) break;
       }
-      if (moves.length >= 5) break;
     }
-    actions.push(...moves);
     actions.push({ action: 'defend', label: '防御', hint: '沉肩扎马，减伤' });
     actions.push({ action: 'flee', label: '逃跑', hint: '抽身脱离战斗' });
     const items = this.inventoryList().filter(i => i.usable).slice(0, 3);

@@ -459,6 +459,40 @@ const firstLine = r => ((r && r.lines || []).find(l => l.text) || {}).text || ''
       ok('C26d pct 形态按最大血量落地（300×3% = 9）', b3 && b3.dot.value === 9, b3 && String(b3.dot.value));
     }
   }
+  /* C27~C29 武技按钮全列 + 两种禁用态（2026-10-18 team-lead） */
+  {
+    const e = new GameEngine({ seed: 20261018 });
+    e.boot(); e.newGame({ name: '武', gender: 'male', birth: 'wuxue' });
+    const w = e.world, p = w.player;
+    const ids = ['luohan_qimen_3', 'huashan_qimen_3', 'jindao_qimen_3', 'tieqiang_qimen_3', 'tangmen_qimen_3', 'sup_huti_zhenqi'];
+    const slots = ['拳', '剑', '刀', '棍', '暗器', '内功'];
+    ids.forEach((sid, i) => { p.learnSkill(sid, { force: true }); p.learned[sid].level = 200; p.equippedSkills[slots[i]] = sid; });
+    const foe = w.spawnNpc('mob_bandit', p.room, 1, true);
+    foe.maxHpBase = 99999; foe.maxHp = 99999; foe.hp = 99999; foe.atk = 0;
+    w.startCombat(p, foe);
+    p.maxMp = 99999; p.mp = 99999; p.maxHpBase = 100000; p.recalc(); p.hp = p.maxHp;
+    const acts = e.view({ map: false }).combat.actions.filter(a => a.action === 'skill');
+    ok('C27 ★ 6 门已装备武学的武技全部列出（不被截断）', acts.length === 6, acts.length + ' 个按钮');
+    const fourth = acts[3];
+    ok('C27b 第 4 个武技按钮存在且可用', !!fourth && !fourth.disabled, fourth && fourth.key);
+    const r = e.combatAction('skill', { key: fourth.key });
+    const logTxt = (r.lines || []).map(l => l.text).join(' ');
+    /* 不拿 foe.hp 判：山贼有吸血/回复，可能不降反升。看出招名 + 伤害数更准。 */
+    ok('C27c 点第 4 个按钮真的出招（日志含武技名与伤害）',
+      /铁枪门杀手/.test(logTxt) && /造成 \d+ 点伤害/.test(logTxt), logTxt.slice(0, 70));
+    const acts2 = e.view({ map: false }).combat.actions.filter(a => a.action === 'skill');
+    const same = acts2.find(a => a.key === fourth.key);
+    ok('C28 ★ 用过的武技按钮显示冷却禁用态', !!same && same.disabled && /冷却中/.test(same.hint || ''),
+      same && same.hint);
+    p.mp = 0;
+    const acts3 = e.view({ map: false }).combat.actions.filter(a => a.action === 'skill');
+    const noMp = acts3.filter(a => a.disabled && /内力不足/.test(a.hint || ''));
+    ok('C29 ★ 内力不足的武技按钮禁用且写明差值', noMp.length >= 1, noMp.length + ' 个：' + (noMp[0] && noMp[0].hint));
+    /* 面板 HTML 片段（与 ui.js renderCombat 的拼法一致：button.cb-btn[.disabled] + label + <i>hint</i>） */
+    const html = acts3.slice(0, 3).map(a => '<button class="cb-btn' + (a.disabled ? ' disabled' : '') + '">'
+      + a.label + (a.hint ? '<i>' + a.hint + '</i>' : '') + '</button>').join('');
+    ok('C29b 面板 HTML 片段含 disabled 类与提示文字', /cb-btn disabled/.test(html) && /内力不足/.test(html), html.slice(0, 120));
+  }
   console.log('\n' + (fail ? '✘ ' + fail + ' 项失败：' + fails.join(' / ') : '✔ 全部通过'));
   console.log('通过 ' + pass + ' / 失败 ' + fail);
   process.exit(fail ? 1 : 0);

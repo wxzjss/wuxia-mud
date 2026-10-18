@@ -104,9 +104,17 @@ function pickFiles(base) {
   return Object.keys(base.files).filter(f => want.includes(f)).sort();
 }
 
-function checkDir(dataDir, base) {
+function checkDir(dataDir, base, opts) {
   const bad = [];
   const files = pickFiles(base);
+  /* ★ 反向断言（2026-10-18）：基线之外的新 .json 原本**静默不被检查** ——
+     量具自己瞎了却不报错，比红更危险。strict 模式下列出所有未登记分片。 */
+  const strict = !!(opts && opts.strictUnregistered);
+  const onDisk = fs.existsSync(dataDir)
+    ? fs.readdirSync(dataDir).filter(f => f.endsWith('.json')).sort()
+    : [];
+  const registered = new Set(Object.keys(base.files));
+  const unregistered = onDisk.filter(f => !registered.has(f));
   let scanned = 0;
   for (const f of files) {
     const p = path.join(dataDir, f);
@@ -130,7 +138,7 @@ function checkDir(dataDir, base) {
     }
     if (items.length) bad.push({ f, items, canonical: b.canonical });
   }
-  return { bad, scanned, total: files.length };
+  return { bad, scanned, total: files.length, onDisk, unregistered: strict ? unregistered : [] };
 }
 const fmt = v => typeof v === 'boolean' ? (v ? '有' : '无') : (v === '\r\n' ? 'CRLF' : v === '\n' ? 'LF' : v === '\t' ? 'TAB' : String(v));
 
@@ -252,6 +260,16 @@ function selftest() {
   T(after === orig['40_npcs.json'], '故障2 --fix 后 40_npcs.json 与原始**逐字节一致**');
   T(fr.fixed.some(x => x.indexOf('canonical') >= 0), '故障2b --fix 走的是 canonical 整份重排路径');
   T(checkDir(sb, base).bad.length === 0, '故障2c --fix 后 --check 归零');
+  /* ★ 反向断言自证：多一个未登记 json → strict 模式必须报出来 */
+  fs.writeFileSync(path.join(sb, 'zz_未登记分片.json'), '{}\n', 'utf8');
+  {
+    const rr = checkDir(sb, base, { strictUnregistered: true });
+    T(rr.unregistered.includes('zz_未登记分片.json'),
+      '故障2d 未登记数据片 → 反向断言报出来（防止量具静默瞎掉）', rr.unregistered.join(','));
+    const rr2 = checkDir(sb, base);
+    T(rr2.unregistered.length === 0, '故障2e 非 strict 模式不误报（--only 等场景）');
+    fs.unlinkSync(path.join(sb, 'zz_未登记分片.json'));
+  }
 
   /* 注入故障 3：BOM */
   fs.writeFileSync(path.join(sb, '50_map.json'), '﻿' + orig['50_map.json'], 'utf8');
@@ -310,14 +328,21 @@ function main() {
   const base = JSON.parse(fs.readFileSync(BASELINE, 'utf8'));
 
   if (has('check')) {
-    const r = checkDir(dataDir, base);
-    console.log('格式守卫 --check：扫 ' + r.scanned + '/' + r.total + ' 个文件');
-    if (!r.bad.length) { console.log('  ✔ 全部与基线一致'); process.exit(0); }
+    const r = checkDir(dataDir, base, { strictUnregistered: !arg('only') });
+    console.log('格式守卫 --check：扫 ' + r.scanned + '/' + r.total + ' 个文件'
+      + (r.onDisk.length ? '（磁盘 ' + r.onDisk.length + ' 个 .json）' : ''));
+    if (r.unregistered.length) {
+      console.log('  ✘ 未登记数据片：' + r.unregistered.length + ' 个（'
+        + r.unregistered.join(', ') + '）');
+      console.log('     这些文件**不在基线里 = 格式没被检查**。补登记：node tools/data-write-guard.js --baseline');
+    }
+    if (!r.bad.length && !r.unregistered.length) { console.log('  ✔ 全部与基线一致'); process.exit(0); }
     for (const b of r.bad) {
       console.log('\n  ✘ ' + b.f + (b.canonical ? '  【canonical：有逐字节断言】' : ''));
       for (const it of b.items) console.log('      ' + it.k + '：期望 ' + it.want + ' / 实际 ' + it.got);
     }
-    console.log('\n  共 ' + r.bad.length + ' 个文件偏离基线。修：node tools/data-write-guard.js --fix');
+    if (r.bad.length) console.log('\n  共 ' + r.bad.length + ' 个文件偏离基线。修：node tools/data-write-guard.js --fix');
+    if (r.unregistered.length) console.log('\n  共 ' + r.unregistered.length + ' 个数据片未登记（不在基线 = 没被检查）。');
     process.exit(1);
   }
 
