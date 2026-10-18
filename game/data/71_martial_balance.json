@@ -73,6 +73,8 @@
     "heimu_zhang": { "grade": 4, "base": "basic_fist" },
     "xuedao": { "grade": 2, "base": "basic_blade" },
     "cuixin_zhang": { "grade": 2, "base": "basic_fist" },
+    "xingxiu_zhang": { "grade": 2, "base": "basic_fist" },
+    "xingxiu_du": { "grade": 2, "base": "basic_poison" },
 
     "hujia_daofa": { "grade": 3, "base": "basic_blade" },
     "xuantie_jianfa": { "grade": 2, "base": "basic_sword" },

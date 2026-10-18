@@ -388,7 +388,7 @@
       "tier": "二流",
       "story": "星宿海的弟子每天争「大师兄」这个称呼，争赢的第二天就防着别人背后下手。",
       "entrySkills": [
-        "cuixin_zhang",
+        "xingxiu_zhang",
         "xingxiu_force_1",
         "basic_force",
         "basic_parry",
@@ -399,8 +399,8 @@
         "basic_poison"
       ],
       "skills": [
-        "tangmen_du",
-        "cuixin_zhang",
+        "xingxiu_du",
+        "xingxiu_zhang",
         "xingxiu_force_1",
         "xingxiu_force_2",
         "xingxiu_force_3",
@@ -732,7 +732,8 @@
         "qingcheng_atk_3",
         "qingcheng_qimen_1",
         "qingcheng_qimen_2",
-        "qingcheng_qimen_3"
+        "qingcheng_qimen_3",
+        "cuixin_zhang"
       ],
       "entryItems": [],
       "entrySkills": [

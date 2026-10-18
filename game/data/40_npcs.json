@@ -1600,15 +1600,15 @@
    "sect": "xingxiu",
    "rank": 5,
    "skills": {
-    "拳": "cuixin_zhang",
-    "暗器": "tangmen_du",
+    "拳": "xingxiu_zhang",
+    "暗器": "xingxiu_du",
     "内功": "xingxiu_force_3"
    },
    "learned": {
-    "cuixin_zhang": {
+    "xingxiu_zhang": {
      "level": 600
     },
-    "tangmen_du": {
+    "xingxiu_du": {
      "level": 580
     },
     "xingxiu_force_3": {
@@ -1641,8 +1641,8 @@
    "favorBase": 0.6,
    "favorInit": 8,
    "teach": [
-    "cuixin_zhang",
-    "tangmen_du"
+    "xingxiu_zhang",
+    "xingxiu_du"
    ],
    "favorToLearn": 50,
    "moneyToLearn": 1617,
@@ -1688,9 +1688,6 @@
     "贝仲卿",
     "邬灵",
     "昌从简"
-   ],
-   "crossSect": [
-    "tangmen_du"
    ],
    "quests": [
     "q_sect_xingxiu_errand"

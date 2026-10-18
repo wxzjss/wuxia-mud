@@ -917,6 +917,27 @@
       ],
       "category": "外功"
     },
+    "xingxiu_zhang": {
+      "id": "xingxiu_zhang",
+      "name": "星宿毒掌",
+      "type": "拳",
+      "maxLevel": 700,
+      "difficulty": 1.7,
+      "desc": "掌心一层青黑，拍在身上先是一凉，随后从里头烂开。",
+      "damageMult": 1.75,
+      "accuracy": 92,
+      "mpCost": 28,
+      "trainCost": 340,
+      "effects": [
+        {
+          "type": "dot",
+          "name": "内伤",
+          "turns": 4,
+          "value": 35
+        }
+      ],
+      "category": "外功"
+    },
     "sunflower_manual": {
       "id": "sunflower_manual",
       "name": "葵花宝典",
@@ -1121,6 +1142,27 @@
       "maxLevel": 700,
       "difficulty": 1.8,
       "desc": "唐门用毒之法，见血封喉。",
+      "damageMult": 1.3,
+      "accuracy": 96,
+      "mpCost": 25,
+      "trainCost": 360,
+      "effects": [
+        {
+          "type": "dot",
+          "name": "剧毒",
+          "turns": 5,
+          "value": 70
+        }
+      ],
+      "category": "旁门"
+    },
+    "xingxiu_du": {
+      "id": "xingxiu_du",
+      "name": "星宿腐尸毒",
+      "type": "暗器",
+      "maxLevel": 700,
+      "difficulty": 1.8,
+      "desc": "尸水浸过的暗青，沾上皮肉就往下烂，洗不净。",
       "damageMult": 1.3,
       "accuracy": 96,
       "mpCost": 25,

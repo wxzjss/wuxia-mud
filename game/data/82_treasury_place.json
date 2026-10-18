@@ -2346,11 +2346,11 @@
       "parry": 100,
       "speed": 70,
       "skills": {
-        "拳": "cuixin_zhang",
+        "拳": "xingxiu_zhang",
         "内功": "xingxiu_force_3"
       },
       "learned": {
-        "cuixin_zhang": {
+        "xingxiu_zhang": {
           "level": 300
         },
         "xingxiu_force_1": {

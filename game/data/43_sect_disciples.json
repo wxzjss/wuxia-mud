@@ -5096,11 +5096,11 @@
    "tag": "disciple",
    "title": "大师兄",
    "learned": {
-    "tangmen_du": {
+    "xingxiu_du": {
      "level": 51,
      "exp": 0
     },
-    "cuixin_zhang": {
+    "xingxiu_zhang": {
      "level": 62,
      "exp": 0
     },
@@ -5117,8 +5117,8 @@
     }
    },
    "skills": {
-    "暗器": "tangmen_du",
-    "拳": "cuixin_zhang",
+    "暗器": "xingxiu_du",
+    "拳": "xingxiu_zhang",
     "内功": "xingxiu_force_2"
    },
    "equipment": {
@@ -5136,8 +5136,8 @@
     "food"
    ],
    "teach": [
-    "tangmen_du",
-    "cuixin_zhang"
+    "xingxiu_du",
+    "xingxiu_zhang"
    ],
    "age": 18,
    "schedule": null,
@@ -5176,10 +5176,7 @@
      }
     ],
     "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
-   },
-   "crossSect": [
-    "tangmen_du"
-   ]
+   }
   },
   "disciple_xingxiu_1": {
    "id": "disciple_xingxiu_1",
@@ -5207,11 +5204,11 @@
    "tag": "disciple",
    "title": "师兄",
    "learned": {
-    "tangmen_du": {
+    "xingxiu_du": {
      "level": 51,
      "exp": 0
     },
-    "cuixin_zhang": {
+    "xingxiu_zhang": {
      "level": 62,
      "exp": 0
     },
@@ -5228,8 +5225,8 @@
     }
    },
    "skills": {
-    "暗器": "tangmen_du",
-    "拳": "cuixin_zhang",
+    "暗器": "xingxiu_du",
+    "拳": "xingxiu_zhang",
     "内功": "xingxiu_force_2"
    },
    "equipment": {
@@ -5247,8 +5244,8 @@
     "toy"
    ],
    "teach": [
-    "tangmen_du",
-    "cuixin_zhang"
+    "xingxiu_du",
+    "xingxiu_zhang"
    ],
    "age": 29,
    "schedule": null,
@@ -5287,10 +5284,7 @@
      }
     ],
     "arc": " someday 会挑明自己当年为什么上山"
-   },
-   "crossSect": [
-    "tangmen_du"
-   ]
+   }
   },
   "disciple_xingxiu_2": {
    "id": "disciple_xingxiu_2",
@@ -5318,11 +5312,11 @@
    "tag": "disciple",
    "title": "弟子",
    "learned": {
-    "tangmen_du": {
+    "xingxiu_du": {
      "level": 51,
      "exp": 0
     },
-    "cuixin_zhang": {
+    "xingxiu_zhang": {
      "level": 62,
      "exp": 0
     },
@@ -5339,8 +5333,8 @@
     }
    },
    "skills": {
-    "暗器": "tangmen_du",
-    "拳": "cuixin_zhang",
+    "暗器": "xingxiu_du",
+    "拳": "xingxiu_zhang",
     "内功": "xingxiu_force_2"
    },
    "equipment": {
@@ -5358,8 +5352,8 @@
     "jewelry"
    ],
    "teach": [
-    "tangmen_du",
-    "cuixin_zhang"
+    "xingxiu_du",
+    "xingxiu_zhang"
    ],
    "age": 23,
    "schedule": null,
@@ -5399,10 +5393,7 @@
      }
     ],
     "arc": "会在某个夜里想清楚自己要什么，只是现在还不想"
-   },
-   "crossSect": [
-    "tangmen_du"
-   ]
+   }
   },
   "disciple_xingxiu_3": {
    "id": "disciple_xingxiu_3",
@@ -5430,11 +5421,11 @@
    "tag": "disciple",
    "title": "弟子",
    "learned": {
-    "tangmen_du": {
+    "xingxiu_du": {
      "level": 51,
      "exp": 0
     },
-    "cuixin_zhang": {
+    "xingxiu_zhang": {
      "level": 62,
      "exp": 0
     },
@@ -5451,8 +5442,8 @@
     }
    },
    "skills": {
-    "暗器": "tangmen_du",
-    "拳": "cuixin_zhang",
+    "暗器": "xingxiu_du",
+    "拳": "xingxiu_zhang",
     "内功": "xingxiu_force_2"
    },
    "equipment": {
@@ -5470,8 +5461,8 @@
     "jewelry"
    ],
    "teach": [
-    "tangmen_du",
-    "cuixin_zhang"
+    "xingxiu_du",
+    "xingxiu_zhang"
    ],
    "age": 23,
    "schedule": null,
@@ -5510,10 +5501,7 @@
      }
     ],
     "arc": " someday 会挑明自己当年为什么上山"
-   },
-   "crossSect": [
-    "tangmen_du"
-   ]
+   }
   },
   "disciple_xuedao_0": {
    "id": "disciple_xuedao_0",

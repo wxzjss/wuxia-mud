@@ -773,7 +773,7 @@
    "tag": "shouwei",
    "title": "迎客弟子",
    "learned": {
-    "cuixin_zhang": {
+    "xingxiu_zhang": {
      "level": 64,
      "exp": 0
     },
@@ -790,7 +790,7 @@
     }
    },
    "skills": {
-    "棍": "cuixin_zhang",
+    "棍": "xingxiu_zhang",
     "招架": "jh_parry",
     "内功": "xingxiu_force_2"
    },

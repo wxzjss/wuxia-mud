@@ -104,10 +104,10 @@
       "require": { "karma": "<=-20" },
       "ranks": ["弟子", "师兄", "大师兄", "护法", "长老", "星宿老仙"],
       "rankCost": 280,
-      "skills": ["tangmen_du", "cuixin_zhang"],
+      "skills": ["xingxiu_du", "xingxiu_zhang"],
       "entryItems": [],
-      "entrySkills": ["cuixin_zhang"],
-      "rankSkills": { "1": ["tangmen_du"], "2": ["tangmen_du"], "3": ["tangmen_du"], "4": ["cuixin_zhang"], "5": ["cuixin_zhang"] }
+      "entrySkills": ["xingxiu_zhang"],
+      "rankSkills": { "1": ["xingxiu_du"], "2": ["xingxiu_du"], "3": ["xingxiu_du"], "4": ["xingxiu_zhang"], "5": ["xingxiu_zhang"] }
     },
     "gumu": {
       "id": "gumu", "name": "古墓派", "align": "中立", "region": "gumu",
