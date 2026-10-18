@@ -397,6 +397,7 @@ async function main() {
       + (K !== RAW_K ? '（按 ' + K.toFixed(2) + ' 计）' : '')
       + ' · 本次 ' + ms(CALIB_MS) + ' / 轮间 ' + MID_CALIBS.length + ' 次(峰值 ' + ms(POST_CALIB) + ')'
       + (REF_CALIB ? ' / 基线 ' + ms(REF_CALIB) : '（基线缺标定值，k 按 1）')
+      + (K >= 1.2 ? ' · 本机负载偏高，阈值已放宽 ' + Math.round((K - 1) * 100) + '%' : '')
       + (OVERLOADED ? ' · **环境过载：B1 未判**' : ''));
     if (OVERLOADED) {
       console.log('    B1 单步延迟 — 环境过载（k=' + RAW_K.toFixed(2) + ' > ' + CALIB_MAX_K
