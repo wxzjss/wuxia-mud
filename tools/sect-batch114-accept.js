@@ -414,7 +414,7 @@ if (!selftest()) { console.error('自测未过，终止。'); process.exit(1); }
   const head = ['# 114 批验收探针台账（' + (DRY ? 'DRY 预备模式' : '正式验收') + '）',
     '# 判据：①入门戏 A1/A2/A4 · ②门派差事 B1~B4 · ③巡山 C0',
     ['组', '门派', '项', '结果', '证据'].join('\t')].join('\n');
-  const outPath = arg('tsv') ? path.resolve(ROOT, arg('tsv')) : path.join(ROOT, '.livetest', 'sect-batch114.tsv');
+  const outPath = arg('tsv') ? path.resolve(ROOT, arg('tsv')) : path.join(ROOT, 'tools', '_out_sect_batch114.tsv');
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, head + '\n' + rows.map((r) => [r.group, r.sect, r.item, r.pass, String(r.detail).replace(/[\t\n]/g, ' ')].join('\t')).join('\n') + '\n', 'utf8');
 

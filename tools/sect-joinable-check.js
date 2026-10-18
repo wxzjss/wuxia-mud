@@ -95,7 +95,7 @@ if (!selftest()) { console.error('自测未过，终止。'); process.exit(1); }
   const bad = rows.filter((r) => r.verdict === '✗');
   const head = ['# 门派可入门断言台账 · 判据：专属入口（入门成功/门槛拒绝）∪ 收徒大典（有限 inDays）',
     'sect\tname\t专属入口\t收徒大典\t结论\t原因'].join('\n');
-  const outPath = arg('tsv') ? path.resolve(ROOT, arg('tsv')) : path.join(ROOT, '.livetest', 'sect-joinable.tsv');
+  const outPath = arg('tsv') ? path.resolve(ROOT, arg('tsv')) : path.join(ROOT, 'tools', '_out_sect_joinable.tsv');
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, head + '\n' + rows.map((r) => [r.id, r.name, r.own, r.fest, r.verdict, r.why].join('\t')).join('\n') + '\n', 'utf8');
 

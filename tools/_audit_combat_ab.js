@@ -283,7 +283,7 @@ const push = (item, name, pass, detail) => rows.push({ item, name, pass: pass ? 
     bad.forEach((r) => console.log('   ✘ ' + r.item + ' | ' + r.name + ' — ' + r.detail));
   }
   const head = ['# 战斗 A/B 六件独立验收（引擎态）', '# 判据：状态取数 + 文案与实际双向对账', ['项', '断言', '结果', '证据'].join('\t')].join('\n');
-  const out = arg('tsv') ? path.resolve(ROOT, arg('tsv')) : path.join(ROOT, '.livetest', 'combat-ab.tsv');
+  const out = arg('tsv') ? path.resolve(ROOT, arg('tsv')) : path.join(ROOT, 'tools', '_out_combat_ab.tsv');
   fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, head + '\n' + rows.map((r) => [r.item, r.name, r.pass, r.detail].join('\t')).join('\n') + '\n', 'utf8');
   console.log('\n台账 → ' + path.relative(ROOT, out));
