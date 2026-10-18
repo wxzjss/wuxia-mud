@@ -935,6 +935,23 @@
       "quality": "epic",
       "desc": "纸如蝉翼，字若星斗，藏书家见了要眼红。"
     },
+    "book_xuantie": {
+      "id": "book_xuantie",
+      "name": "《玄铁剑法》",
+      "type": "book",
+      "value": 9000,
+      "tags": [
+        "book"
+      ],
+      "quality": "legend",
+      "teach": "xuantie_jianfa",
+      "timeCost": 300,
+      "require": {
+        "skill": "basic_sword",
+        ">=": 150
+      },
+      "desc": "石壁上拓下的重剑剑法，字口深，墨色发乌。"
+    },
     "jade_talisman": {
       "id": "jade_talisman",
       "name": "辟邪玉符",

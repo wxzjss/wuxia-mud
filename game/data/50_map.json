@@ -313,7 +313,35 @@
           "mob_bandit",
           "mob_snake"
         ]
-      }
+      },
+      "actions": [
+        {
+          "cmd": "捕蛇",
+          "keywords": [
+            "捕蛇",
+            "捉蛇",
+            "抓蛇",
+            "取胆"
+          ],
+          "cond": {
+            "chance": 0.55
+          },
+          "failMsg": "蛇从指缝里滑走，钻回草根底下。",
+          "effects": [
+            {
+              "type": "+item",
+              "args": [
+                "venom_sac",
+                1
+              ]
+            },
+            {
+              "type": "say",
+              "raw": "你捏住蛇颈，取出一枚胆，随手把蛇放回草里。"
+            }
+          ]
+        }
+      ]
     },
     "jiangnan_hill": {
       "id": "jiangnan_hill",
@@ -2102,7 +2130,7 @@
             "看"
           ],
           "cond": {
-            "flag": "hou_dong_found"
+            "notFlag": "hou_dong_found"
           },
           "failMsg": "洞里你已经搜遍了。",
           "effects": [

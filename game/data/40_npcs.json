@@ -1944,10 +1944,6 @@
    "moneyReward": 0,
    "loot": [
     {
-     "item": "venom_sac",
-     "chance": 0.7
-    },
-    {
      "item": "herb_hanshui",
      "chance": 0.2
     }
@@ -2781,7 +2777,8 @@
    ],
    "quests": [
     "q_herb_collect",
-    "q_bounty_gall"
+    "q_bounty_gall",
+    "q_bounty_wolf"
    ],
    "ask": [
     {
@@ -3090,6 +3087,9 @@
      ],
      "answer": "今早排队排到石桥那头，到巳时才散。"
     }
+   ],
+   "quests": [
+    "q_bounty_bandit"
    ]
   },
   "swordman_wander": {

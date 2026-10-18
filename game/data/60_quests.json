@@ -446,8 +446,7 @@
               "kind": "flag",
               "key": "hou_dong_found",
               "desc": "探查后洞",
-              "count": 1,
-              "var": "hou_dong_found"
+              "count": 1
             }
           ],
           "cond": {
@@ -7913,6 +7912,13 @@
           "args": [
             "*",
             4
+          ]
+        },
+        {
+          "type": "-item",
+          "args": [
+            "manuscript_page",
+            1
           ]
         },
         {
