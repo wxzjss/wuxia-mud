@@ -82,9 +82,12 @@ function calibOnce() {
 }
 function calibrate() {
   if (Number(process.env.PERF_CALIB_FORCE_MS) > 0) return Number(process.env.PERF_CALIB_FORCE_MS);
-  calibOnce();                                   /* 热身 */
-  const a = [calibOnce(), calibOnce(), calibOnce()].sort((x, y) => x - y);
-  return a[1];
+  calibOnce(); calibOnce();                      /* 热身 2 次：第 1 次含 JIT 冷启动 */
+  /* 取 5 次中位（2026-10-18 qa 对照实验）：
+       2M×3 中位 → 10 次极差 7.3%；2M×5 中位 → 3.3%；8M×3 → 20%（长跑更易被调度打断）。
+     所以**加采样次数**而不是加迭代数。多花 ≈40ms，换 k 的稳定性，值。 */
+  const a = Array.from({ length: 7 }, () => calibOnce()).sort((x, y) => x - y);
+  return a[3];
 }
 /* 自测口：PERF_CALIB_FORCE_MS 强制标定值（仅用于演示 k>2 的环境过载分支）。 */
 const CALIB_MS = Number(process.env.PERF_CALIB_FORCE_MS) > 0
@@ -132,6 +135,13 @@ const REF_CALIB = BASE && BASE.calibration && Number(BASE.calibration.ms) > 0
 let RAW_K = REF_CALIB ? (CALIB_MS / REF_CALIB) : 1;
 let K = Math.min(CALIB_MAX_K, Math.max(1, RAW_K));   /* 机器更快时不收紧阈值 */
 let OVERLOADED = RAW_K > CALIB_MAX_K;
+
+/* --calib：只做标定并打印（量具漂移验收：同一机器连开 N 个进程，看极差）。
+   正常门禁不走这里；它不启动服务、不读世界。 */
+if (process.argv.indexOf('--calib') >= 0) {
+  console.log(JSON.stringify({ calibMs: Math.round(CALIB_MS * 100) / 100, refMs: REF_CALIB, k: Math.round(RAW_K * 1000) / 1000 }));
+  process.exit(0);
+}
 
 /* --rebaseline：把「基线标定值」重写进 _perf_baseline.json（环境变动/改工作量时才跑）。
    记录的不只是毫秒数，还有工作量口径与日期 —— 以后 k 不可比时能一眼看出为什么。 */
