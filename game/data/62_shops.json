@@ -236,7 +236,10 @@
         "馒头是今早蒸的，还热着。",
         "赶路的人，多带两个。山里没得买。"
       ],
-      "askDefault": "（她眯着眼看了你一会儿，又低头纳鞋底）"
+      "askDefault": "（她眯着眼看了你一会儿，又低头纳鞋底）",
+      "quests": [
+        "q_adv_shoe_coin"
+      ]
     },
     "jn_fruitman": {
       "id": "jn_fruitman",

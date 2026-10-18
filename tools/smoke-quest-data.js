@@ -70,7 +70,12 @@ ok('26 条 sq_npcv_* 已从 quests 移除（不存在可被「accept」接取的
    —— `sq_npcv_*` 已按区域各留 3 条剪枝（262 → 79），任务总数随之下降。
    这里改成守着「剪过枝之后的区间」，别再把旧数字当契约。 */
 ok('其余 sq_npcv_* 已剪枝（每区留 3 条）', sqIds.length > 0 && sqIds.length <= 100, '实测 ' + sqIds.length);
-ok('任务总数落在剪枝后的区间（≤ 130）', Object.keys(quests).length > 100 && Object.keys(quests).length <= 130, '实测 ' + Object.keys(quests).length);
+/* 内容预算，非完整性判据：2026-10-18 长尾玩法批新增 11 条（奇遇 5 / 悬赏 6），
+   预算上限 130 → 140。预算随内容量更新，不反过来砍内容；上限与当前数一起打印，便于看余量。 */
+const QUEST_BUDGET = 140;
+ok('任务总数落在内容预算区间（≤ ' + QUEST_BUDGET + '）',
+  Object.keys(quests).length > 100 && Object.keys(quests).length <= QUEST_BUDGET,
+  '实测 ' + Object.keys(quests).length + ' / ' + QUEST_BUDGET);
 ok('被移除的 26 条 id 未被 60_quests.json 内其它任务引用（无悬空 require/quest 指向）',
   (() => { const j = JSON.stringify(doc); return A26.every(id => (j.split('sq_' + id).length - 1) === 0); })());
 

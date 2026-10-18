@@ -41,7 +41,8 @@
       "district": "jiangnan",
       "homeless": true,
       "quests": [
-        "sq_pre_a1_chuan"
+        "sq_pre_a1_chuan",
+        "q_bounty_snake"
       ],
       "portrait": {
         "v": 1,
@@ -109,7 +110,8 @@
       "district": "jiangnan",
       "homeless": true,
       "quests": [
-        "sq_pre_a1_shi"
+        "sq_pre_a1_shi",
+        "q_bounty_page"
       ],
       "portrait": {
         "v": 1,
@@ -180,7 +182,8 @@
       "district": "jiangnan",
       "homeless": true,
       "quests": [
-        "sq_pre_a2_menfang"
+        "sq_pre_a2_menfang",
+        "q_adv_new_grave"
       ],
       "portrait": {
         "v": 1,
@@ -460,7 +463,8 @@
       "district": "jiangnan",
       "homeless": true,
       "quests": [
-        "sq_pre_a4_dukou"
+        "sq_pre_a4_dukou",
+        "q_adv_lantern_ferry"
       ],
       "portrait": {
         "v": 1,
@@ -669,7 +673,8 @@
       "district": "jiangnan",
       "homeless": true,
       "quests": [
-        "sq_pre_a5_mubei"
+        "sq_pre_a5_mubei",
+        "q_bounty_boar"
       ],
       "portrait": {
         "v": 1,

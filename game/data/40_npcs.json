@@ -2255,7 +2255,10 @@
    ],
    "equipment": {
     "武器": "wood_staff"
-   }
+   },
+   "quests": [
+    "q_bounty_bear"
+   ]
   },
   "wen_black": {
    "id": "wen_black",
@@ -2715,7 +2718,8 @@
     "你若帮我采到三株灵芝，我便教你配金创药。"
    ],
    "quests": [
-    "q_herb_collect"
+    "q_herb_collect",
+    "q_bounty_gall"
    ],
    "ask": [
     {
@@ -3070,7 +3074,8 @@
     "你若想学剑，先请我喝一壶酒。"
    ],
    "quests": [
-    "q_swordman_spar"
+    "q_swordman_spar",
+    "q_adv_drunk_sword"
    ],
    "tag": "swordsman",
    "likes": [
@@ -36782,7 +36787,10 @@
      "冻口子"
     ]
    },
-   "personality": "qienuo"
+   "personality": "qienuo",
+   "quests": [
+    "q_adv_frost_well"
+   ]
   },
   "act1_dianzhu": {
    "id": "act1_dianzhu",

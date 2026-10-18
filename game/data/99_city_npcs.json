@@ -6361,7 +6361,10 @@
         "marks": [
           "商"
         ]
-      }
+      },
+      "quests": [
+        "q_bounty_harbor"
+      ]
     },
     "cy_hb_6": {
       "id": "cy_hb_6",

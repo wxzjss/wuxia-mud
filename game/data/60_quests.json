@@ -7280,6 +7280,646 @@
           "raw": "临别冲虚又补了一句：「要摸清这批东西的来路，先去洛阳当铺问一页旧账，再去成都书坊问一副旧版。路在这两处。」"
         }
       ]
+    },
+    "q_adv_shoe_coin": {
+      "id": "q_adv_shoe_coin",
+      "name": "鞋底里的铜钱",
+      "level": 4,
+      "type": "奇遇",
+      "giver": "jn_villagekeep",
+      "require": {
+        "noSect": true
+      },
+      "requireMsg": "孙阿婆先看你腰上。没挂门派牌子，她才肯开口。",
+      "desc": "孙阿婆见你鞋头开了口，从篮底翻出一双青布鞋，非要你换上。鞋是她给出门人纳的，底厚，针脚密。",
+      "stages": [
+        {
+          "desc": "穿新鞋走一趟荒野独木桥，试试脚力",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "dumuqiao",
+              "desc": "去荒野独木桥",
+              "count": 1,
+              "var": "q_adv_shoe_coin_go"
+            }
+          ],
+          "cond": {
+            "var": "q_adv_shoe_coin_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回村口小铺，把鞋底的事说给孙阿婆听",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            150
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            90
+          ]
+        },
+        {
+          "type": "+money",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "flatbread",
+            2
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "孙阿婆接过鞋，翻过底看了一眼，说：「钱是过桥钱，纸是压脚的。我儿子那年没回来，鞋还在。你穿着走远了，就算他走过了。」"
+        }
+      ]
+    },
+    "q_adv_frost_well": {
+      "id": "q_adv_frost_well",
+      "name": "井台底下的当票",
+      "level": 5,
+      "type": "奇遇",
+      "giver": "act1_chen2",
+      "require": {
+        "item": "flatbread",
+        "count": 1
+      },
+      "requireMsg": "陈二盯着你手里那张饼，喉咙动了一下。",
+      "desc": "陈二蹲在井台边砸冰，砸两下停一停。你把饼掰了一半给他，他几口吃完，才接着砸。冰面裂开，井壁里嵌着一只锡壶。",
+      "stages": [
+        {
+          "desc": "去东市当铺，问壶里那张当票是谁的",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "jn_pawnshop",
+              "desc": "去东市当铺",
+              "count": 1,
+              "var": "q_adv_frost_well_go"
+            }
+          ],
+          "cond": {
+            "var": "q_adv_frost_well_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回村口，把朝奉的话带给陈二",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            100
+          ]
+        },
+        {
+          "type": "+rep",
+          "args": [
+            "*",
+            2
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "c_jingxin_fu",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "陈二听完，把剩下的半张饼掰成两半，递回一半：「我娘当的那只镯子，还在？」你说在。他点点头，把饼收进怀里，没再问。"
+        }
+      ]
+    },
+    "q_adv_lantern_ferry": {
+      "id": "q_adv_lantern_ferry",
+      "name": "不点灯的船",
+      "level": 6,
+      "type": "奇遇",
+      "giver": "cy_pre_ferryman",
+      "require": {
+        "time": {
+          "min": 1170,
+          "max": 300
+        }
+      },
+      "requireMsg": "韩老栓把篙往水里一戳：「天亮再说。夜里的河，不认人。」",
+      "desc": "夜里渡口起了雾。有条船不点灯，贴着对岸过去，桨声很轻。韩老栓骂了一句，把灯笼塞给你，让你去码头栈桥看它卸什么。",
+      "stages": [
+        {
+          "desc": "提灯去江口码头栈桥，看那条船靠在哪",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "jn_harbor_wharf",
+              "desc": "去江口码头栈桥",
+              "count": 1,
+              "var": "q_adv_lantern_ferry_go"
+            }
+          ],
+          "cond": {
+            "var": "q_adv_lantern_ferry_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回石桥，把看见的说给韩老栓",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            200
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            120
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "incense_agarwood",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "韩老栓听你说船是空的，蹲下去把篙横在膝上，半天才开口：「空船才压得深。你闻见舱里的沉香没有？那是给人送的。」他说完，把灯笼吹灭了。"
+        }
+      ]
+    },
+    "q_adv_drunk_sword": {
+      "id": "q_adv_drunk_sword",
+      "name": "押在桌上的剑",
+      "level": 6,
+      "type": "奇遇",
+      "giver": "swordman_wander",
+      "desc": "游方剑客趴在角落的桌上，剑横在酒碗旁边。他抬眼看你，说剑押给你，换一壶酒，要东市醉仙楼的。",
+      "stages": [
+        {
+          "desc": "去东市醉仙楼打一壶酒",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "jn_wine_house",
+              "desc": "去东市醉仙楼",
+              "count": 1,
+              "var": "q_adv_drunk_sword_go"
+            }
+          ],
+          "cond": {
+            "var": "q_adv_drunk_sword_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "提酒回悦来客栈，看他还在不在",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            160
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            100
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "manuscript_page",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "你回来时，桌上只剩剑和一枚酒钱。剑鞘下压着半页纸，画了七个人形，第七式的旁边批了四个小字：「醉时莫练。」"
+        }
+      ]
+    },
+    "q_adv_new_grave": {
+      "id": "q_adv_new_grave",
+      "name": "落闸前出城的那口棺",
+      "level": 7,
+      "type": "奇遇",
+      "giver": "cy_pre_doorkeeper",
+      "desc": "老张把更漏倒了倒，说落闸前有一口薄棺出城，四个人抬，没哭丧的。他没敢拦，只记了方向。灯笼递过来，让你去城外慈云寺后墙看看。",
+      "stages": [
+        {
+          "desc": "提灯去城外慈云寺，看那口棺停在哪里",
+          "targets": [
+            {
+              "id": "go",
+              "kind": "room",
+              "key": "jn_temple_1",
+              "desc": "去城外慈云寺",
+              "count": 1,
+              "var": "q_adv_new_grave_go"
+            }
+          ],
+          "cond": {
+            "var": "q_adv_new_grave_go"
+          },
+          "next": 1
+        },
+        {
+          "desc": "回南门，把看见的说给老张",
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+exp",
+          "args": [
+            220
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            130
+          ]
+        },
+        {
+          "type": "+rep",
+          "args": [
+            "*",
+            3
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "老张听你说棺是空的，凳上有一层盐，手在更漏上停住了。「盐镇尸。」他把门闩往里推了推，「这话你别在城里说。」"
+        }
+      ]
+    },
+    "q_bounty_boar": {
+      "id": "q_bounty_boar",
+      "name": "松林里的野猪",
+      "level": 5,
+      "type": "悬赏",
+      "giver": "cy_pre_gravedigger",
+      "desc": "老聂把扫帚靠在碑上：「坡后那片松林来了野猪，昨夜拱开一座新坟。你进林子把它办了，我替你把土填回去。」",
+      "stages": [
+        {
+          "desc": "猎两头野猪",
+          "targets": [
+            {
+              "id": "kill",
+              "kind": "kill",
+              "key": "mob_boar",
+              "desc": "猎野猪",
+              "count": 2
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            700
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            260
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            120
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "c_jingxin_fu",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "老聂把坟土拍实，拍了三回：「埋在这儿的人，家里人再没来过。猪比人惦记。」他从怀里摸出几个铜钱，数了两遍才递给你。"
+        }
+      ]
+    },
+    "q_bounty_snake": {
+      "id": "q_bounty_snake",
+      "name": "城西小道的蛇",
+      "level": 7,
+      "type": "悬赏",
+      "giver": "cy_pre_teaman",
+      "desc": "老周把茶勺往锅沿上一磕：「城西小道草窠里盘了蛇，咬了两个挑夫。你替我清了，茶钱我免你三个月。」",
+      "stages": [
+        {
+          "desc": "打死三条毒蛇",
+          "targets": [
+            {
+              "id": "kill",
+              "kind": "kill",
+              "key": "mob_snake",
+              "desc": "打死毒蛇",
+              "count": 3
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            900
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            320
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            150
+          ]
+        },
+        {
+          "type": "+rep",
+          "args": [
+            "*",
+            2
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "老周拎着壶去井台浇了一圈，回来说：「井水还得澄三天。这三天，你喝茶不收费。」"
+        }
+      ]
+    },
+    "q_bounty_harbor": {
+      "id": "q_bounty_harbor",
+      "name": "城西道上的刀口",
+      "level": 9,
+      "type": "悬赏",
+      "giver": "cy_hb_5",
+      "desc": "鲍掌柜压着嗓子：「码头的货走陆路进城，必经城西小道。这半月丢了三趟，麻袋口是刀割的，不是耗子。你替我守一趟，见人就来告诉我，别在栈里动手。」",
+      "stages": [
+        {
+          "desc": "击杀四名山贼",
+          "targets": [
+            {
+              "id": "kill",
+              "kind": "kill",
+              "key": "mob_bandit",
+              "desc": "击杀山贼",
+              "count": 4
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            1400
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            420
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "jinchuang_yao",
+            2
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "鲍掌柜把账本合上，指头在封皮上敲了两下：「少的那两包盐，我不报了。你要不要搬两袋走？」"
+        }
+      ]
+    },
+    "q_bounty_bear": {
+      "id": "q_bounty_bear",
+      "name": "黑松林的黑熊",
+      "level": 15,
+      "type": "悬赏",
+      "giver": "wen_jiangnan",
+      "desc": "张掌柜把算盘往柜台上一放：「黑松林那头黑熊伤了送货的，这个月药材进不来。熊皮归你，熊害归我。这么算，你不亏。」",
+      "stages": [
+        {
+          "desc": "猎一头黑熊",
+          "targets": [
+            {
+              "id": "kill",
+              "kind": "kill",
+              "key": "mob_black_bear",
+              "desc": "猎黑熊",
+              "count": 1
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            1800
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            700
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            300
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "roast_meat",
+            3
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "张掌柜拨了两下算盘，把熊皮折成个数：「这皮我不收，你拿走。市集上的药价，我说压三天就压三天。」"
+        }
+      ]
+    },
+    "q_bounty_gall": {
+      "id": "q_bounty_gall",
+      "name": "活蛇取胆",
+      "level": 8,
+      "type": "悬赏",
+      "giver": "old_herbalist",
+      "desc": "采药翁把一只竹篓推到你脚边：「城西小道草里的蛇，胆要活的。三条就够。蛇别弄死，取完胆放回去。这手艺你要是不会，就照我说的做。」",
+      "stages": [
+        {
+          "desc": "带回三枚蛇胆",
+          "targets": [
+            {
+              "id": "bring",
+              "kind": "item",
+              "key": "venom_sac",
+              "desc": "带回蛇胆",
+              "count": 3
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            1200
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            400
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            200
+          ]
+        },
+        {
+          "type": "-item",
+          "args": [
+            "venom_sac",
+            3
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "jinchuang_yao",
+            3
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "采药翁捏了捏蛇胆，对着光看：「火气还在，是活取。你下手轻，蛇记你的情。」他把三贴金创药塞进你手里。"
+        }
+      ]
+    },
+    "q_bounty_page": {
+      "id": "q_bounty_page",
+      "name": "缺页的宋版书",
+      "level": 20,
+      "type": "悬赏",
+      "giver": "cy_pre_bookseller",
+      "desc": "温掌柜把一本宋版书摊在柜上，缺页处的纸茬还是新的：「夜里进来的，只撕了那一页。你把它带回来，人别追进巷子。书坊经不起人命。」",
+      "stages": [
+        {
+          "desc": "找回被撕走的那一页",
+          "targets": [
+            {
+              "id": "bring",
+              "kind": "item",
+              "key": "manuscript_page",
+              "desc": "带回书页",
+              "count": 1
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            2600
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            900
+          ]
+        },
+        {
+          "type": "+pot",
+          "args": [
+            380
+          ]
+        },
+        {
+          "type": "+rep",
+          "args": [
+            "*",
+            4
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "温掌柜把纸页对着窗光看了很久，才放进书里：「是这一页。缺了的字，我补不上，也就不补了。」他合上书，没再抬头。"
+        }
+      ]
     }
   },
   "events": {
@@ -9790,6 +10430,76 @@
       {
         "text": "文墨斋的七张椅子空了一张，茶还温着。",
         "region": "shuyuan"
+      }
+    ],
+    "q_adv_shoe_coin": [
+      {
+        "text": "村口小铺的篮底又压了一双新鞋，孙阿婆说，出门的人脚上不能空。"
+      },
+      {
+        "text": "独木桥头有人捡到过一枚铜钱，捡的人没敢花，搁回桥板缝里了。"
+      }
+    ],
+    "q_adv_frost_well": [
+      {
+        "text": "东市当铺的朝奉近来翻旧票翻得勤，说有一张票上的名字，问的人不止一个。"
+      },
+      {
+        "text": "村口那眼井的冰今年砸得早，井台上总搁着半张饼。"
+      }
+    ],
+    "q_adv_lantern_ferry": [
+      {
+        "text": "夜里过江的船如今都点灯了，撑船的说是有人替他们看过一回空船。"
+      },
+      {
+        "text": "码头栈桥上常有人站着闻，说那儿的沉香三年没散。"
+      }
+    ],
+    "q_adv_drunk_sword": [
+      {
+        "text": "悦来客栈角落里那张桌子，酒钱有人替付了，剑却再没押过。"
+      },
+      {
+        "text": "醉仙楼的伙计记得，有人夜里来打酒，只要一壶，不喝，提着就走。"
+      }
+    ],
+    "q_adv_new_grave": [
+      {
+        "text": "南门落闸前出城的东西，如今门房都要掀开看一眼。"
+      },
+      {
+        "text": "慈云寺后墙的凳子空了，凳上那层盐被雨冲进了土里。"
+      }
+    ],
+    "q_bounty_boar": [
+      {
+        "text": "松林里的新坟都添了土，老聂说猪少了两头，土里不再有蹄印。"
+      }
+    ],
+    "q_bounty_snake": [
+      {
+        "text": "老周的茶摊添了两只新凳，说是挑夫如今敢在城西小道走夜路。"
+      }
+    ],
+    "q_bounty_harbor": [
+      {
+        "text": "码头往城里送货的脚夫多了两成，鲍掌柜的账，这个月没再差过。"
+      }
+    ],
+    "q_bounty_bear": [
+      {
+        "text": "市集上的药价真压了三天，张掌柜说这三天他不算利。"
+      }
+    ],
+    "q_bounty_gall": [
+      {
+        "text": "采药翁的竹篓空了三格，他说山里的蛇少了几条，是好事。"
+      }
+    ],
+    "q_bounty_page": [
+      {
+        "text": "翰墨斋缺页的那本宋版书，被掌柜摆在了最显眼的地方，缺处不补。"
       }
     ]
   }
