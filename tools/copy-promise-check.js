@@ -43,6 +43,15 @@ function auditLine(line, ctx) {
       if (/止住|止血/.test(line) && !ctx.canCure(item)) bad.push(`物品「${item}」声称能止血，但没有 cure(dot) 效果`);
       continue;
     }
+    /* ★ D2·技能（team-lead 2026-10-18 明确要求：别只测物品）：
+       技能自称能治/能疗/能救/能解毒，其 effects（含 moves[].effects）必须有 heal 或 cure。 */
+    const skill = [...ctx.skillNameToId.keys()].find(n => t.includes(n) || n.includes(t));
+    if (skill) {
+      if (/能治|可治|能疗|能救|能解毒|可解毒|能止住|可止住|能止血/.test(line) && !ctx.canHeal(skill)) {
+        bad.push(`技能「${skill}」声称能治，但 effects 没有 heal/cure`);
+      }
+      continue;
+    }
     /* 既不是指令也不是物品：只有在「承诺句」里才算违规（避免把描述性引文误判） */
     if (PROMISE.test(line)) bad.push(`提示里的解法「${t}」既不在指令表、也不是物品`);
   }
@@ -50,8 +59,9 @@ function auditLine(line, ctx) {
      断言会变成「没东西可判」的假绿。文案「金创药能止住」正是这种形态。
      规则：凡是「能止住/可止住/能止血」的句子，必须点名至少一个**真实物品**。 */
   if (/(能止住|可止住|能止血)/.test(line)) {
-    const named = [...ctx.itemNameToId.keys()].some(n => line.includes(n));
-    if (!named) bad.push('承诺句没有点名任何真实物品（防空承诺）');
+    const namedItem = [...ctx.itemNameToId.keys()].some(n => line.includes(n));
+    const namedSkill = [...ctx.skillNameToId.keys()].some(n => line.includes(n));
+    if (!namedItem && !namedSkill) bad.push('承诺句没有点名任何真实物品（防空承诺）');
   }
 
   /* 不带「」但直接写物品名 + 承诺词：也要验效果 */
@@ -59,6 +69,14 @@ function auditLine(line, ctx) {
     if (!line.includes(name)) continue;
     if (/止住|止血/.test(line) && !ctx.canCure(name) && !ctx.canCure(id)) {
       if (!bad.some(x => x.includes(name))) bad.push(`物品「${name}」声称能止血，但没有 cure(dot) 效果`);
+    }
+  }
+  /* ★ 技能同理（对称补）：文本里直接写技能名、不加「」，一样要验 effects 里有没有 heal/cure。
+     QA 2026-10-18 实测：只写在引号分支里时，「基本拳脚能治」这类会被漏判成绿。 */
+  for (const [name, id] of ctx.skillNameToId) {
+    if (!line.includes(name)) continue;
+    if (/能治|可治|能疗|能救|能解毒|可解毒|能止住|可止住|能止血/.test(line) && !ctx.canHeal(name) && !ctx.canHeal(id)) {
+      if (!bad.some(x => x.includes(name))) bad.push(`技能「${name}」声称能治，但 effects 没有 heal/cure`);
     }
   }
   return bad;
@@ -79,7 +97,18 @@ function auditLine(line, ctx) {
     const effs = Array.isArray(it.use) ? it.use : [];
     return effs.some(x => x && x.type === 'cure' && (!x.args || x.args[0] === 'dot' || /创口|流血/.test(String(x.args[0]))));
   };
-  const ctx = { cmdSet, itemNameToId, canCure };
+  /* 技能表（D2 技能分支用）：effects 或 moves[].effects 里有 heal/cure 才算"真能治" */
+  const skillNameToId = new Map();
+  for (const [id, sk] of Object.entries(w.data.skills || {})) if (sk && sk.name) skillNameToId.set(sk.name, id);
+  const asArr = (x) => (Array.isArray(x) ? x : x && typeof x === 'object' ? Object.values(x) : []);
+  const canHeal = key => {
+    const id = skillNameToId.get(key) || key;
+    const sk = w.data.skills[id];
+    if (!sk) return false;
+    const effs = [].concat(asArr(sk.effects), asArr(sk.moves).flatMap(m => asArr(m && m.effects)));
+    return effs.some(x => x && (x.type === 'heal' || x.type === 'cure'));
+  };
+  const ctx = { cmdSet, itemNameToId, canCure, skillNameToId, canHeal };
 
   /* P3 先跑反例自检：判定器必须能抓住旧文案 */
   /* 反例自检做成牙口表：负样本必须红、正样本必须绿，防「没东西可判」的假绿 */
@@ -90,9 +119,17 @@ function auditLine(line, ctx) {
     ['（金创药能止住。）', false],           // 真物品 + 真效果
     ['（血在流。）', false],                 // 不是承诺句，不误报
   ];
+  /* D2 技能两组（team-lead 要求：别只测物品）——名字从真实技能表取，避免写死 */
+  {
+    const names = [...skillNameToId.keys()];
+    const healName = names.find(n => canHeal(n));
+    const plainName = names.find(n => !canHeal(n));
+    if (plainName) teeth.push(['（' + plainName + '能治。）', true]);   // 技能存在但无 heal/cure → 必红
+    if (healName) teeth.push(['（' + healName + '能治。）', false]);   // 技能真带 heal → 必绿
+  }
   const teethBad = teeth.filter(([line, wantRed]) => (auditLine(line, ctx).length > 0) !== wantRed);
-  ok('P3 牙口自检：负样本全红、正样本全绿（守卫不是永远绿）',
-    teethBad.length === 0, teethBad.map(x => x[0]).join(' / ') || '5/5 符合预期');
+  ok('P3 牙口自检：负样本全红、正样本全绿（含物品与技能两组）',
+    teethBad.length === 0, teethBad.map(x => x[0]).join(' / ') || (teeth.length + '/' + teeth.length + ' 符合预期'));
 
   /* P1 静态扫描 core 全部源码 */
   const dir = path.join(ROOT, 'game', 'src', 'core');
@@ -112,23 +149,36 @@ function auditLine(line, ctx) {
     violations.length === 0, violations.slice(0, 4).join(' ｜ '));
   ok('P1b 扫描不是空跑（确实扫到了承诺句）', scannedLines > 0, scannedLines + ' 行');
 
-  /* P1c 数据层扫描（2026-10-18 qa-lead 指出缺口）：NPC 台词/任务文案也在玩家眼前，
-     承诺句不能只在 core 里守。扫 game/data/*.json 的原文行，同一套判定。 */
+  /* P1c 数据层扫描（2026-10-18 qa-lead 指出缺口；team-lead 批的口径）：
+     扫 game/data/*.json，但 **JSON.parse 后只遍历字符串值**，不按原文行扫——
+     避免键名（desc:/say:）与 \uXXXX 转义干扰；代价全量解析 ≈44ms。
+     三个数必须打出来（文件数 / 字符串值数 / 承诺条数），防"扫了个寂寞"的假绿。 */
   const dataDir = path.join(ROOT, 'game', 'data');
   const dataFiles = fs.readdirSync(dataDir).filter(f => f.endsWith('.json'));
   const dataViolations = [];
-  let dataScanned = 0;
+  let dataScanned = 0, stringVals = 0, parsed = 0;
+  const walkStrings = (v, out) => {
+    if (typeof v === 'string') { out.push(v); return; }
+    if (Array.isArray(v)) { for (const x of v) walkStrings(x, out); return; }
+    if (v && typeof v === 'object') { for (const x of Object.values(v)) walkStrings(x, out); }
+  };
   for (const f of dataFiles) {
-    const lines = fs.readFileSync(path.join(dataDir, f), 'utf8').split(/\r?\n/);
-    lines.forEach((line, i) => {
-      if (!PROMISE.test(line)) return;
+    let j;
+    try { j = JSON.parse(fs.readFileSync(path.join(dataDir, f), 'utf8')); } catch (err) { continue; }
+    parsed++;
+    const strs = [];
+    walkStrings(j, strs);
+    stringVals += strs.length;
+    for (const str of strs) {
+      if (!PROMISE.test(str)) continue;
       dataScanned++;
-      for (const v of auditLine(line, ctx)) dataViolations.push(`${f}:${i + 1} ${v}`);
-    });
+      for (const v of auditLine(str, ctx)) dataViolations.push(f + ' ' + v);
+    }
   }
   ok('P1c ★ 数据层（data/*.json）承诺句同样成立', dataViolations.length === 0,
     dataViolations.slice(0, 3).join(' ｜ '));
-  ok('P1d 数据层扫描面非空（防漏扫/空跑）', dataFiles.length >= 40, dataFiles.length + ' 个 json');
+  ok('P1d 数据层扫描面非空（防漏扫/空跑）',
+    parsed >= 50 && stringVals >= 50000, parsed + ' 文件 / ' + stringVals + ' 字符串值 / 承诺 ' + dataScanned + ' 条（阈值按 2026-10-18 实测 61,553 取 5 万）');
 
   /* P2 行为验证：挂真 dot → 用金创药 → dot 消失 */
   {
