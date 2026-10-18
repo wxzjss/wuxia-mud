@@ -1,0 +1,2197 @@
+{
+ "skills": {
+  "shaolin_force_3": {
+   "moves": [
+    {
+     "id": "shaolin_force_3_m1",
+     "name": "罗汉归元·少林",
+     "trigger": "active",
+     "mpCost": 20,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 31,
+      "turns": 0,
+      "text": "双掌交叠按在丹田，气往下沉，肩背松开。散掉的力气从四肢回到一处。"
+     }
+    }
+   ]
+  },
+  "shaolin_fly_3": {
+   "moves": [
+    {
+     "id": "shaolin_fly_3_m1",
+     "name": "一苇渡江·少林",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 32,
+      "turns": 3,
+      "text": "脚尖在石阶上一点，人已飘开半丈，僧袍下摆贴着地扫过去。"
+     }
+    }
+   ]
+  },
+  "shaolin_guard_3": {
+   "moves": [
+    {
+     "id": "shaolin_guard_3_m1",
+     "name": "金刚·少林",
+     "trigger": "active",
+     "mpCost": 12,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 32,
+      "turns": 3,
+      "text": "马步一沉，两臂横在胸前。拳脚落在身上，只震得起一层灰。"
+     }
+    }
+   ]
+  },
+  "wudang_force_3": {
+   "moves": [
+    {
+     "id": "wudang_force_3_m1",
+     "name": "纯阳·武当",
+     "trigger": "active",
+     "mpCost": 22,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 31,
+      "turns": 0,
+      "text": "两掌划个圆，气随掌走，绕丹田转了一圈，胸口那点闷散了。"
+     }
+    }
+   ]
+  },
+  "wudang_fly_3": {
+   "moves": [
+    {
+     "id": "wudang_fly_3_m1",
+     "name": "梯云·武当",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 32,
+      "turns": 3,
+      "text": "足尖点着檐角借力，身子斜斜掠出，落地时鞋底只沾了薄薄一层霜。"
+     }
+    }
+   ]
+  },
+  "wudang_guard_3": {
+   "moves": [
+    {
+     "id": "wudang_guard_3_m1",
+     "name": "龟蛇·武当",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 4,
+     "support": {
+      "kind": "def",
+      "value": 32,
+      "turns": 3,
+      "text": "身随剑势一转，把来路引到空处。守的是一圈绵劲。"
+     }
+    }
+   ]
+  },
+  "emei_force_3": {
+   "moves": [
+    {
+     "id": "emei_force_3_m1",
+     "name": "佛光·峨眉",
+     "trigger": "active",
+     "mpCost": 24,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 31,
+      "turns": 0,
+      "text": "垂目调息，气从鼻端细细沉下去，肩头那根绷着的弦松了。"
+     }
+    }
+   ]
+  },
+  "emei_fly_3": {
+   "moves": [
+    {
+     "id": "emei_fly_3_m1",
+     "name": "金顶·峨眉",
+     "trigger": "active",
+     "mpCost": 18,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 32,
+      "turns": 3,
+      "text": "袖口一展，人已贴着崖壁滑出去，落脚处只惊起几粒碎石。"
+     }
+    }
+   ]
+  },
+  "emei_guard_3": {
+   "moves": [
+    {
+     "id": "emei_guard_3_m1",
+     "name": "慈航·峨眉",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 32,
+      "turns": 3,
+      "text": "双掌合十护住心口，气机收到极紧。打上来的力道顺着袖口卸了。"
+     }
+    }
+   ]
+  },
+  "taishan_force_3": {
+   "moves": [
+    {
+     "id": "taishan_force_3_m1",
+     "name": "岱宗·泰山",
+     "trigger": "active",
+     "mpCost": 20,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 31,
+      "turns": 0,
+      "text": "背靠山石站定，一口气吸到脚底，再慢慢吐出来，胸口开阔了。"
+     }
+    }
+   ]
+  },
+  "taishan_fly_3": {
+   "moves": [
+    {
+     "id": "taishan_fly_3_m1",
+     "name": "十八盘·泰山",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 32,
+      "turns": 3,
+      "text": "踩着石棱往上纵，脚尖几乎不落实地，衣角在风里翻了一下。"
+     }
+    }
+   ]
+  },
+  "taishan_guard_3": {
+   "moves": [
+    {
+     "id": "taishan_guard_3_m1",
+     "name": "磐石·泰山",
+     "trigger": "active",
+     "mpCost": 12,
+     "cooldown": 4,
+     "support": {
+      "kind": "def",
+      "value": 32,
+      "turns": 3,
+      "text": "两腿分开扎住，肩背绷成一块。来势撞上来，人只晃了晃。"
+     }
+    }
+   ]
+  },
+  "hengshanN_force_3": {
+   "moves": [
+    {
+     "id": "hengshanN_force_3_m1",
+     "name": "白云·恒山",
+     "trigger": "active",
+     "mpCost": 22,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 31,
+      "turns": 0,
+      "text": "盘坐在蒲团上，气息收得很细，一缕香火似的往丹田里去。"
+     }
+    }
+   ]
+  },
+  "hengshanN_fly_3": {
+   "moves": [
+    {
+     "id": "hengshanN_fly_3_m1",
+     "name": "悬空·恒山",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 32,
+      "turns": 3,
+      "text": "提气轻身，脚尖在佛龛前一掠，人已经到了廊下。"
+     }
+    }
+   ]
+  },
+  "hengshanN_guard_3": {
+   "moves": [
+    {
+     "id": "hengshanN_guard_3_m1",
+     "name": "梵音·恒山",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 32,
+      "turns": 3,
+      "text": "双袖交叠挡在身前，身子略微前倾，把力道吃在肩上。"
+     }
+    }
+   ]
+  },
+  "luohan_force_3": {
+   "moves": [
+    {
+     "id": "luohan_force_3_m1",
+     "name": "伏虎·罗汉",
+     "trigger": "active",
+     "mpCost": 24,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 31,
+      "turns": 0,
+      "text": "十指扣在膝上，气走周天，脊背一节节撑起来。"
+     }
+    }
+   ]
+  },
+  "luohan_fly_3": {
+   "moves": [
+    {
+     "id": "luohan_fly_3_m1",
+     "name": "降龙·罗汉",
+     "trigger": "active",
+     "mpCost": 18,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 32,
+      "turns": 3,
+      "text": "脚下一蹬，整个人从墙头翻过去，落地时屈膝卸了力。"
+     }
+    }
+   ]
+  },
+  "luohan_guard_3": {
+   "moves": [
+    {
+     "id": "luohan_guard_3_m1",
+     "name": "铁布·罗汉",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 4,
+     "support": {
+      "kind": "def",
+      "value": 32,
+      "turns": 3,
+      "text": "双臂交叉护住面门，气布满前胸，硬挨了一下也只退半步。"
+     }
+    }
+   ]
+  },
+  "kongtong_force_3": {
+   "moves": [
+    {
+     "id": "kongtong_force_3_m1",
+     "name": "七伤·崆峒",
+     "trigger": "active",
+     "mpCost": 20,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 31,
+      "turns": 0,
+      "text": "掌心相对，一团气在胸前转开，先前耗掉的那口又补回来。"
+     }
+    }
+   ]
+  },
+  "kongtong_fly_3": {
+   "moves": [
+    {
+     "id": "kongtong_fly_3_m1",
+     "name": "鹤翔·崆峒",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 32,
+      "turns": 3,
+      "text": "身形一矮，贴着地皮窜出几步，脚掌落地没有声音。"
+     }
+    }
+   ]
+  },
+  "kongtong_guard_3": {
+   "moves": [
+    {
+     "id": "kongtong_guard_3_m1",
+     "name": "伏魔·崆峒",
+     "trigger": "active",
+     "mpCost": 12,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 32,
+      "turns": 3,
+      "text": "单臂竖起挡在身侧，肘尖朝前，把来拳架在外门。"
+     }
+    }
+   ]
+  },
+  "huashan_force_3": {
+   "moves": [
+    {
+     "id": "huashan_force_3_m1",
+     "name": "紫霞·华山",
+     "trigger": "active",
+     "mpCost": 22,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 29,
+      "turns": 0,
+      "text": "五心朝天坐定，气自尾闾上来，过夹脊，落在丹田里。"
+     }
+    }
+   ]
+  },
+  "huashan_fly_3": {
+   "moves": [
+    {
+     "id": "huashan_fly_3_m1",
+     "name": "金雁·华山",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 30,
+      "turns": 3,
+      "text": "脚尖在金锁关的石缝上连点，人已横掠到对面。"
+     }
+    }
+   ]
+  },
+  "huashan_guard_3": {
+   "moves": [
+    {
+     "id": "huashan_guard_3_m1",
+     "name": "落雁·华山",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 4,
+     "support": {
+      "kind": "def",
+      "value": 29,
+      "turns": 3,
+      "text": "剑不出鞘，横在胸前，身子侧过去，让力道擦着剑脊滑走。"
+     }
+    }
+   ]
+  },
+  "wuliang_force_3": {
+   "moves": [
+    {
+     "id": "wuliang_force_3_m1",
+     "name": "玉璧·无量",
+     "trigger": "active",
+     "mpCost": 24,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 29,
+      "turns": 0,
+      "text": "盘膝坐在石壁上，气机沉下去，掌心里慢慢有了暖意。"
+     }
+    }
+   ]
+  },
+  "wuliang_fly_3": {
+   "moves": [
+    {
+     "id": "wuliang_fly_3_m1",
+     "name": "白鹤·无量",
+     "trigger": "active",
+     "mpCost": 18,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 30,
+      "turns": 3,
+      "text": "足尖在松枝上一借力，衣袂荡开，人已落到坡上。"
+     }
+    }
+   ]
+  },
+  "wuliang_guard_3": {
+   "moves": [
+    {
+     "id": "wuliang_guard_3_m1",
+     "name": "松风·无量",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 29,
+      "turns": 3,
+      "text": "剑鞘横在身前，膝微屈，把门户收得只剩一条缝。"
+     }
+    }
+   ]
+  },
+  "kunlun_force_3": {
+   "moves": [
+    {
+     "id": "kunlun_force_3_m1",
+     "name": "玄冰·昆仑",
+     "trigger": "active",
+     "mpCost": 20,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 29,
+      "turns": 0,
+      "text": "背风坐定，气在胸腹间转了几转，冻僵的那点暖回来。"
+     }
+    }
+   ]
+  },
+  "kunlun_fly_3": {
+   "moves": [
+    {
+     "id": "kunlun_fly_3_m1",
+     "name": "雪岭·昆仑",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 30,
+      "turns": 3,
+      "text": "踩着雪坡斜斜滑下，脚尖挑起的雪沫还没落地，人已在前面。"
+     }
+    }
+   ]
+  },
+  "kunlun_guard_3": {
+   "moves": [
+    {
+     "id": "kunlun_guard_3_m1",
+     "name": "冰崖·昆仑",
+     "trigger": "active",
+     "mpCost": 12,
+     "cooldown": 4,
+     "support": {
+      "kind": "def",
+      "value": 29,
+      "turns": 3,
+      "text": "双臂抱圆护住胸腹，肩头耸起，受了一记也只闷哼一声。"
+     }
+    }
+   ]
+  },
+  "diancang_force_3": {
+   "moves": [
+    {
+     "id": "diancang_force_3_m1",
+     "name": "苍山·点苍",
+     "trigger": "active",
+     "mpCost": 22,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 29,
+      "turns": 0,
+      "text": "调匀呼吸，气从丹田散到四肢，掌心的麻意退了。"
+     }
+    }
+   ]
+  },
+  "diancang_fly_3": {
+   "moves": [
+    {
+     "id": "diancang_fly_3_m1",
+     "name": "洱海·点苍",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 30,
+      "turns": 3,
+      "text": "身子一矮，贴着水面掠过去，脚尖只在水皮上点了一下。"
+     }
+    }
+   ]
+  },
+  "diancang_guard_3": {
+   "moves": [
+    {
+     "id": "diancang_guard_3_m1",
+     "name": "剑屏·点苍",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 29,
+      "turns": 3,
+      "text": "剑身横在喉前，臂肘收紧，把上半身遮得严实。"
+     }
+    }
+   ]
+  },
+  "qingcheng_force_3": {
+   "moves": [
+    {
+     "id": "qingcheng_force_3_m1",
+     "name": "青冥·青城",
+     "trigger": "active",
+     "mpCost": 24,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 29,
+      "turns": 0,
+      "text": "靠在松树上换气，气息一长一短压进丹田，额头上的汗收了。"
+     }
+    }
+   ]
+  },
+  "qingcheng_fly_3": {
+   "moves": [
+    {
+     "id": "qingcheng_fly_3_m1",
+     "name": "猿纵·青城",
+     "trigger": "active",
+     "mpCost": 18,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 30,
+      "turns": 3,
+      "text": "脚尖勾住崖边老藤，身子荡出去，落下时手先着地。"
+     }
+    }
+   ]
+  },
+  "qingcheng_guard_3": {
+   "moves": [
+    {
+     "id": "qingcheng_guard_3_m1",
+     "name": "松柏·青城",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 4,
+     "support": {
+      "kind": "def",
+      "value": 29,
+      "turns": 3,
+      "text": "两臂交叠挡在胸前，腰往下塌，把力卸到腿上。"
+     }
+    }
+   ]
+  },
+  "hengshan_force_3": {
+   "moves": [
+    {
+     "id": "hengshan_force_3_m1",
+     "name": "回雁·衡山",
+     "trigger": "active",
+     "mpCost": 20,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 29,
+      "turns": 0,
+      "text": "坐在祝融峰的石上，气随山风进出，胸中浊气散了个干净。"
+     }
+    }
+   ]
+  },
+  "hengshan_fly_3": {
+   "moves": [
+    {
+     "id": "hengshan_fly_3_m1",
+     "name": "祝融·衡山",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 30,
+      "turns": 3,
+      "text": "踏着石阶连纵，衣袍鼓起来，落地时脚步轻得像没沾地。"
+     }
+    }
+   ]
+  },
+  "hengshan_guard_3": {
+   "moves": [
+    {
+     "id": "hengshan_guard_3_m1",
+     "name": "云麓·衡山",
+     "trigger": "active",
+     "mpCost": 12,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 29,
+      "turns": 3,
+      "text": "长袖一拢护住半身，脚下不丁不八，来势全落在袖上。"
+     }
+    }
+   ]
+  },
+  "jindao_force_3": {
+   "moves": [
+    {
+     "id": "jindao_force_3_m1",
+     "name": "沉金·金刀",
+     "trigger": "active",
+     "mpCost": 22,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 27,
+      "turns": 0,
+      "text": "刀横在膝上，气沉下去，虎口那股酸麻慢慢退开。"
+     }
+    }
+   ]
+  },
+  "jindao_fly_3": {
+   "moves": [
+    {
+     "id": "jindao_fly_3_m1",
+     "name": "雁行·金刀",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 27,
+      "turns": 2,
+      "text": "脚下一错步，人已经绕到侧面，靴底在土里碾出一道浅痕。"
+     }
+    }
+   ]
+  },
+  "jindao_guard_3": {
+   "moves": [
+    {
+     "id": "jindao_guard_3_m1",
+     "name": "横刀·金刀",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 4,
+     "support": {
+      "kind": "def",
+      "value": 28,
+      "turns": 2,
+      "text": "左手护腕，右臂横刀，把胸腹挡在刀背后面。"
+     }
+    }
+   ]
+  },
+  "wuhu_force_3": {
+   "moves": [
+    {
+     "id": "wuhu_force_3_m1",
+     "name": "虎息·五虎",
+     "trigger": "active",
+     "mpCost": 24,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 27,
+      "turns": 0,
+      "text": "拄刀而立，喘匀了气，再一口压进丹田，手又稳了。"
+     }
+    }
+   ]
+  },
+  "wuhu_fly_3": {
+   "moves": [
+    {
+     "id": "wuhu_fly_3_m1",
+     "name": "虎跃·五虎",
+     "trigger": "active",
+     "mpCost": 18,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 27,
+      "turns": 2,
+      "text": "侧身一纵，从对方刀风里钻过去，落地顺势矮了半截。"
+     }
+    }
+   ]
+  },
+  "wuhu_guard_3": {
+   "moves": [
+    {
+     "id": "wuhu_guard_3_m1",
+     "name": "断门·五虎",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 28,
+      "turns": 2,
+      "text": "两臂架在身前，肩背绷紧，硬接一下，脚跟往后挫了半寸。"
+     }
+    }
+   ]
+  },
+  "feihu_force_3": {
+   "moves": [
+    {
+     "id": "feihu_force_3_m1",
+     "name": "镖气·飞虎",
+     "trigger": "active",
+     "mpCost": 20,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 27,
+      "turns": 0,
+      "text": "背靠镖车换气，气沉到腰上，抖了一路的手稳住了。"
+     }
+    }
+   ]
+  },
+  "feihu_fly_3": {
+   "moves": [
+    {
+     "id": "feihu_fly_3_m1",
+     "name": "鹰扬·飞虎",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 27,
+      "turns": 2,
+      "text": "踩着车辕翻上车顶，长衫下摆扫过旗杆，人已蹲稳。"
+     }
+    }
+   ]
+  },
+  "feihu_guard_3": {
+   "moves": [
+    {
+     "id": "feihu_guard_3_m1",
+     "name": "镖旗·飞虎",
+     "trigger": "active",
+     "mpCost": 12,
+     "cooldown": 4,
+     "support": {
+      "kind": "def",
+      "value": 28,
+      "turns": 2,
+      "text": "镖旗一卷挡在身侧，另只手护住咽喉，身子缩在旗后。"
+     }
+    }
+   ]
+  },
+  "zhenyuan_force_3": {
+   "moves": [
+    {
+     "id": "zhenyuan_force_3_m1",
+     "name": "镇岳·镇远",
+     "trigger": "active",
+     "mpCost": 22,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 27,
+      "turns": 0,
+      "text": "站在院中吐纳，气一口口压下去，连日赶路的乏慢慢散了。"
+     }
+    }
+   ]
+  },
+  "zhenyuan_fly_3": {
+   "moves": [
+    {
+     "id": "zhenyuan_fly_3_m1",
+     "name": "夜行·镇远",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 27,
+      "turns": 2,
+      "text": "脚尖点着墙头，人贴墙滑出去，落地时膝盖一弯就卸了力。"
+     }
+    }
+   ]
+  },
+  "zhenyuan_guard_3": {
+   "moves": [
+    {
+     "id": "zhenyuan_guard_3_m1",
+     "name": "铁辕·镇远",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 28,
+      "turns": 2,
+      "text": "双臂护住面门与前胸，马步扎死，硬受一记只退了半步。"
+     }
+    }
+   ]
+  },
+  "kuaidao_force_3": {
+   "moves": [
+    {
+     "id": "kuaidao_force_3_m1",
+     "name": "疾息·快刀",
+     "trigger": "active",
+     "mpCost": 24,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 27,
+      "turns": 0,
+      "text": "刀尖拄地，气息沉下去，腕子上的抖停了。"
+     }
+    }
+   ]
+  },
+  "kuaidao_fly_3": {
+   "moves": [
+    {
+     "id": "kuaidao_fly_3_m1",
+     "name": "掠影·快刀",
+     "trigger": "active",
+     "mpCost": 18,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 27,
+      "turns": 2,
+      "text": "身形一晃，人已到了侧后，鞋底擦过地面只带起一点尘。"
+     }
+    }
+   ]
+  },
+  "kuaidao_guard_3": {
+   "moves": [
+    {
+     "id": "kuaidao_guard_3_m1",
+     "name": "刀背·快刀",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 4,
+     "support": {
+      "kind": "def",
+      "value": 28,
+      "turns": 2,
+      "text": "刀背横在胸前，肘收肋下，把要害全遮住了。"
+     }
+    }
+   ]
+  },
+  "baisheng_force_3": {
+   "moves": [
+    {
+     "id": "baisheng_force_3_m1",
+     "name": "胜气·百胜",
+     "trigger": "active",
+     "mpCost": 20,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 27,
+      "turns": 0,
+      "text": "退开半步调息，气归丹田，眼里的花影散了。"
+     }
+    }
+   ]
+  },
+  "baisheng_fly_3": {
+   "moves": [
+    {
+     "id": "baisheng_fly_3_m1",
+     "name": "追风·百胜",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 27,
+      "turns": 2,
+      "text": "脚下连点两步，人斜斜窜出，衣角在风里绷直。"
+     }
+    }
+   ]
+  },
+  "baisheng_guard_3": {
+   "moves": [
+    {
+     "id": "baisheng_guard_3_m1",
+     "name": "百炼·百胜",
+     "trigger": "active",
+     "mpCost": 12,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 28,
+      "turns": 2,
+      "text": "双臂交叉，刀鞘横挡，肩头微沉，把力道吃在架子上。"
+     }
+    }
+   ]
+  },
+  "dafeng_force_3": {
+   "moves": [
+    {
+     "id": "dafeng_force_3_m1",
+     "name": "长风·大风",
+     "trigger": "active",
+     "mpCost": 22,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 27,
+      "turns": 0,
+      "text": "迎风站定，气随呼吸沉下去，胸口那口堵着的松开了。"
+     }
+    }
+   ]
+  },
+  "dafeng_fly_3": {
+   "moves": [
+    {
+     "id": "dafeng_fly_3_m1",
+     "name": "乘风·大风",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 27,
+      "turns": 2,
+      "text": "借着风势一纵，人掠出老远，落地时衣袍还在往后扯。"
+     }
+    }
+   ]
+  },
+  "dafeng_guard_3": {
+   "moves": [
+    {
+     "id": "dafeng_guard_3_m1",
+     "name": "沙障·大风",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 4,
+     "support": {
+      "kind": "def",
+      "value": 28,
+      "turns": 2,
+      "text": "两臂护住头脸，身子侧过去，让风沙和拳脚都擦着背走。"
+     }
+    }
+   ]
+  },
+  "huanghe_force_3": {
+   "moves": [
+    {
+     "id": "huanghe_force_3_m1",
+     "name": "河息·黄河",
+     "trigger": "active",
+     "mpCost": 24,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 27,
+      "turns": 0,
+      "text": "靠着船帮坐下，气沉到丹田，撑了一路的胳膊松下来。"
+     }
+    }
+   ]
+  },
+  "huanghe_fly_3": {
+   "moves": [
+    {
+     "id": "huanghe_fly_3_m1",
+     "name": "踏浪·黄河",
+     "trigger": "active",
+     "mpCost": 18,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 27,
+      "turns": 2,
+      "text": "脚尖在跳板上一点，人已上了岸，裤脚都没湿。"
+     }
+    }
+   ]
+  },
+  "huanghe_guard_3": {
+   "moves": [
+    {
+     "id": "huanghe_guard_3_m1",
+     "name": "断流·黄河",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 3,
+     "support": {
+      "kind": "guard",
+      "value": 28,
+      "turns": 2,
+      "text": "木棍横在胸前，两腿分开扎住，棍身纹丝不动。"
+     }
+    }
+   ]
+  },
+  "poyang_force_3": {
+   "moves": [
+    {
+     "id": "poyang_force_3_m1",
+     "name": "湖息·鄱阳",
+     "trigger": "active",
+     "mpCost": 20,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 27,
+      "turns": 0,
+      "text": "蹲在船头换气，一口口压下去，肺里的火气平了。"
+     }
+    }
+   ]
+  },
+  "poyang_fly_3": {
+   "moves": [
+    {
+     "id": "poyang_fly_3_m1",
+     "name": "掠水·鄱阳",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 27,
+      "turns": 2,
+      "text": "踩着船舷连纵，身子一偏，人已经落到邻船船板上。"
+     }
+    }
+   ]
+  },
+  "poyang_guard_3": {
+   "moves": [
+    {
+     "id": "poyang_guard_3_m1",
+     "name": "撑篙·鄱阳",
+     "trigger": "active",
+     "mpCost": 12,
+     "cooldown": 4,
+     "support": {
+      "kind": "guard",
+      "value": 28,
+      "turns": 2,
+      "text": "横棍当胸，肩背绷成一张弓，脚下钉在船板上。"
+     }
+    }
+   ]
+  },
+  "taihu_force_3": {
+   "moves": [
+    {
+     "id": "taihu_force_3_m1",
+     "name": "芦息·太湖",
+     "trigger": "active",
+     "mpCost": 22,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 27,
+      "turns": 0,
+      "text": "坐在苇丛边调息，气归丹田，手心的汗收了。"
+     }
+    }
+   ]
+  },
+  "taihu_fly_3": {
+   "moves": [
+    {
+     "id": "taihu_fly_3_m1",
+     "name": "萍踪·太湖",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 27,
+      "turns": 2,
+      "text": "脚尖点着荷叶掠过去，水面上只留下几圈散开的纹。"
+     }
+    }
+   ]
+  },
+  "taihu_guard_3": {
+   "moves": [
+    {
+     "id": "taihu_guard_3_m1",
+     "name": "排桨·太湖",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 3,
+     "support": {
+      "kind": "guard",
+      "value": 28,
+      "turns": 2,
+      "text": "棍尾拄地，棍身斜横在身前，把上半身护住。"
+     }
+    }
+   ]
+  },
+  "jujing_force_3": {
+   "moves": [
+    {
+     "id": "jujing_force_3_m1",
+     "name": "鲸息·巨鲸",
+     "trigger": "active",
+     "mpCost": 24,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 27,
+      "turns": 0,
+      "text": "扶着桅杆喘匀气，再一口压进丹田，腿上的软劲退了。"
+     }
+    }
+   ]
+  },
+  "jujing_fly_3": {
+   "moves": [
+    {
+     "id": "jujing_fly_3_m1",
+     "name": "鲸波·巨鲸",
+     "trigger": "active",
+     "mpCost": 18,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 27,
+      "turns": 2,
+      "text": "踩着缆绳往上窜，人翻上舱顶，蹲下时手先按住木板。"
+     }
+    }
+   ]
+  },
+  "jujing_guard_3": {
+   "moves": [
+    {
+     "id": "jujing_guard_3_m1",
+     "name": "压舱·巨鲸",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 4,
+     "support": {
+      "kind": "guard",
+      "value": 28,
+      "turns": 2,
+      "text": "双臂抱头，棍横在背前，缩着身子把要害藏起来。"
+     }
+    }
+   ]
+  },
+  "qingzhu_force_3": {
+   "moves": [
+    {
+     "id": "qingzhu_force_3_m1",
+     "name": "竹息·青竹",
+     "trigger": "active",
+     "mpCost": 20,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 27,
+      "turns": 0,
+      "text": "靠在竹子上吐纳，气一节节沉下去，耳鸣消了。"
+     }
+    }
+   ]
+  },
+  "qingzhu_fly_3": {
+   "moves": [
+    {
+     "id": "qingzhu_fly_3_m1",
+     "name": "竹梢·青竹",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 27,
+      "turns": 2,
+      "text": "踩着竹枝往上纵，竹梢一弯又弹直，人已到了另一丛。"
+     }
+    }
+   ]
+  },
+  "qingzhu_guard_3": {
+   "moves": [
+    {
+     "id": "qingzhu_guard_3_m1",
+     "name": "竹栅·青竹",
+     "trigger": "active",
+     "mpCost": 12,
+     "cooldown": 3,
+     "support": {
+      "kind": "guard",
+      "value": 28,
+      "turns": 2,
+      "text": "竹棍横在胸前，两腿扎开，身子压得极低。"
+     }
+    }
+   ]
+  },
+  "tieqiang_force_3": {
+   "moves": [
+    {
+     "id": "tieqiang_force_3_m1",
+     "name": "枪息·铁枪",
+     "trigger": "active",
+     "mpCost": 22,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 27,
+      "turns": 0,
+      "text": "枪尾顿地，气沉丹田，虎口的裂口不再渗血。"
+     }
+    }
+   ]
+  },
+  "tieqiang_fly_3": {
+   "moves": [
+    {
+     "id": "tieqiang_fly_3_m1",
+     "name": "马踏·铁枪",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 27,
+      "turns": 2,
+      "text": "一脚蹬在马鞍上，人翻到马背另一侧，落地时滚了半圈。"
+     }
+    }
+   ]
+  },
+  "tieqiang_guard_3": {
+   "moves": [
+    {
+     "id": "tieqiang_guard_3_m1",
+     "name": "铁桩·铁枪",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 4,
+     "support": {
+      "kind": "guard",
+      "value": 28,
+      "turns": 2,
+      "text": "枪身横架，枪尾抵住地面，身子躲在枪杆后面。"
+     }
+    }
+   ]
+  },
+  "jinlong_force_3": {
+   "moves": [
+    {
+     "id": "jinlong_force_3_m1",
+     "name": "龙息·金龙",
+     "trigger": "active",
+     "mpCost": 24,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 27,
+      "turns": 0,
+      "text": "盘腿坐在舱里，气走了一圈，晕船的恶心压下去了。"
+     }
+    }
+   ]
+  },
+  "jinlong_fly_3": {
+   "moves": [
+    {
+     "id": "jinlong_fly_3_m1",
+     "name": "游龙·金龙",
+     "trigger": "active",
+     "mpCost": 18,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 27,
+      "turns": 2,
+      "text": "踩着桅索横掠，人从这头荡到那头，落下时脚已站稳。"
+     }
+    }
+   ]
+  },
+  "jinlong_guard_3": {
+   "moves": [
+    {
+     "id": "jinlong_guard_3_m1",
+     "name": "龙盘·金龙",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 3,
+     "support": {
+      "kind": "guard",
+      "value": 28,
+      "turns": 2,
+      "text": "双臂交叠护住胸口，肩头一沉，把来势架在臂弯上。"
+     }
+    }
+   ]
+  },
+  "tiezhang_force_3": {
+   "moves": [
+    {
+     "id": "tiezhang_force_3_m1",
+     "name": "铁息·铁掌",
+     "trigger": "active",
+     "mpCost": 20,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 27,
+      "turns": 0,
+      "text": "双掌按在膝上，气沉下去，掌心的热慢慢收回骨里。"
+     }
+    }
+   ]
+  },
+  "tiezhang_fly_3": {
+   "moves": [
+    {
+     "id": "tiezhang_fly_3_m1",
+     "name": "漂水·铁掌",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 27,
+      "turns": 2,
+      "text": "脚尖在水面上一踩，人已滑出丈余，鞋底只湿了一层。"
+     }
+    }
+   ]
+  },
+  "tiezhang_guard_3": {
+   "moves": [
+    {
+     "id": "tiezhang_guard_3_m1",
+     "name": "铁壁·铁掌",
+     "trigger": "active",
+     "mpCost": 12,
+     "cooldown": 4,
+     "support": {
+      "kind": "guard",
+      "value": 28,
+      "turns": 2,
+      "text": "两掌竖起护在胸前，肘尖下坠，硬接一记，脚下不退。"
+     }
+    }
+   ]
+  },
+  "mojiao_force_3": {
+   "moves": [
+    {
+     "id": "mojiao_force_3_m1",
+     "name": "化元·神教",
+     "trigger": "active",
+     "mpCost": 22,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 36,
+      "turns": 0,
+      "text": "五指虚抓，把散在四周的气一缕缕收回来，掌心发凉。"
+     }
+    }
+   ]
+  },
+  "mojiao_fly_3": {
+   "moves": [
+    {
+     "id": "mojiao_fly_3_m1",
+     "name": "魅影·神教",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 36,
+      "turns": 3,
+      "text": "身形一晃，黑袍鼓起来，人已贴到对方背后。"
+     }
+    }
+   ]
+  },
+  "mojiao_guard_3": {
+   "moves": [
+    {
+     "id": "mojiao_guard_3_m1",
+     "name": "黑木·神教",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 27,
+      "turns": 2,
+      "text": "两臂横在胸前，气收得极窄，来势撞上来像陷进棉里。"
+     }
+    }
+   ]
+  },
+  "xingxiu_force_3": {
+   "moves": [
+    {
+     "id": "xingxiu_force_3_m1",
+     "name": "化功·星宿",
+     "trigger": "active",
+     "mpCost": 24,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 36,
+      "turns": 0,
+      "text": "掌心朝下虚按，把对方散出的劲引过来，顺着经脉转了一圈。"
+     }
+    }
+   ]
+  },
+  "xingxiu_fly_3": {
+   "moves": [
+    {
+     "id": "xingxiu_fly_3_m1",
+     "name": "星移·星宿",
+     "trigger": "active",
+     "mpCost": 18,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 36,
+      "turns": 3,
+      "text": "脚尖点着石阶斜掠，袖子扫过栏杆，人已没了影。"
+     }
+    }
+   ]
+  },
+  "xingxiu_guard_3": {
+   "moves": [
+    {
+     "id": "xingxiu_guard_3_m1",
+     "name": "毒障·星宿",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 4,
+     "support": {
+      "kind": "def",
+      "value": 27,
+      "turns": 2,
+      "text": "袖口一拢挡在身前，身子侧开，把力道引到空处。"
+     }
+    }
+   ]
+  },
+  "xuedao_force_3": {
+   "moves": [
+    {
+     "id": "xuedao_force_3_m1",
+     "name": "血饮·血刀",
+     "trigger": "active",
+     "mpCost": 20,
+     "cooldown": 4,
+     "support": {
+      "kind": "heal",
+      "value": 26,
+      "turns": 0,
+      "text": "刀尖点地，气往下压，伤处的血慢慢止住。"
+     }
+    }
+   ]
+  },
+  "xuedao_fly_3": {
+   "moves": [
+    {
+     "id": "xuedao_fly_3_m1",
+     "name": "血影·血刀",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 36,
+      "turns": 3,
+      "text": "脚下踩着血泊滑出去，人已绕到侧后，刀还在鞘里。"
+     }
+    }
+   ]
+  },
+  "xuedao_guard_3": {
+   "moves": [
+    {
+     "id": "xuedao_guard_3_m1",
+     "name": "血衣·血刀",
+     "trigger": "active",
+     "mpCost": 12,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 27,
+      "turns": 2,
+      "text": "横刀护住胸腹，肩背一团气撑起来，硬受一记只咧嘴。"
+     }
+    }
+   ]
+  },
+  "baituo_force_3": {
+   "moves": [
+    {
+     "id": "baituo_force_3_m1",
+     "name": "蛇息·白驼",
+     "trigger": "active",
+     "mpCost": 22,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 36,
+      "turns": 0,
+      "text": "盘坐调息，气在腹中鼓荡几下，又沉回丹田。"
+     }
+    }
+   ]
+  },
+  "baituo_fly_3": {
+   "moves": [
+    {
+     "id": "baituo_fly_3_m1",
+     "name": "蛇行·白驼",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 36,
+      "turns": 3,
+      "text": "身子伏低，脚下贴着沙地滑出去，衣袍在身后拖出一道痕。"
+     }
+    }
+   ]
+  },
+  "baituo_guard_3": {
+   "moves": [
+    {
+     "id": "baituo_guard_3_m1",
+     "name": "蟾坐·白驼",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 4,
+     "support": {
+      "kind": "def",
+      "value": 27,
+      "turns": 2,
+      "text": "双臂抱圆护住胸腹，背脊弓起，把力道卸到地上。"
+     }
+    }
+   ]
+  },
+  "miaojiang_force_3": {
+   "moves": [
+    {
+     "id": "miaojiang_force_3_m1",
+     "name": "养蛊·五毒",
+     "trigger": "active",
+     "mpCost": 24,
+     "cooldown": 4,
+     "support": {
+      "kind": "heal",
+      "value": 26,
+      "turns": 0,
+      "text": "从袖里摸出一粒药丸含住，气沉下去，伤处的疼钝了。"
+     }
+    }
+   ]
+  },
+  "miaojiang_fly_3": {
+   "moves": [
+    {
+     "id": "miaojiang_fly_3_m1",
+     "name": "蛊影·五毒",
+     "trigger": "active",
+     "mpCost": 18,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 36,
+      "turns": 3,
+      "text": "赤足在石上一点，人已窜进草丛，裙角擦过叶片。"
+     }
+    }
+   ]
+  },
+  "miaojiang_guard_3": {
+   "moves": [
+    {
+     "id": "miaojiang_guard_3_m1",
+     "name": "毒壳·五毒",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 27,
+      "turns": 2,
+      "text": "双臂护住咽喉与前胸，身子缩起来，蛊虫在袖里爬动。"
+     }
+    }
+   ]
+  },
+  "hehuan_force_3": {
+   "moves": [
+    {
+     "id": "hehuan_force_3_m1",
+     "name": "采阴·合欢",
+     "trigger": "active",
+     "mpCost": 20,
+     "cooldown": 5,
+     "support": {
+      "kind": "heal",
+      "value": 26,
+      "turns": 0,
+      "text": "垂目调息，气从丹田升上来，脸上那层白退了。"
+     }
+    }
+   ]
+  },
+  "hehuan_fly_3": {
+   "moves": [
+    {
+     "id": "hehuan_fly_3_m1",
+     "name": "香影·合欢",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 36,
+      "turns": 3,
+      "text": "身形一旋，纱袖荡开，人已到了数步之外。"
+     }
+    }
+   ]
+  },
+  "hehuan_guard_3": {
+   "moves": [
+    {
+     "id": "hehuan_guard_3_m1",
+     "name": "罗帐·合欢",
+     "trigger": "active",
+     "mpCost": 12,
+     "cooldown": 4,
+     "support": {
+      "kind": "def",
+      "value": 27,
+      "turns": 2,
+      "text": "长袖交叠挡在身前，腰肢一折，把来势化了开去。"
+     }
+    }
+   ]
+  },
+  "dali_force_3": {
+   "moves": [
+    {
+     "id": "dali_force_3_m1",
+     "name": "一阳·大理",
+     "trigger": "active",
+     "mpCost": 22,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 32,
+      "turns": 0,
+      "text": "盘膝而坐，气自指端收回，沿臂上行，落进丹田。"
+     }
+    }
+   ]
+  },
+  "dali_fly_3": {
+   "moves": [
+    {
+     "id": "dali_fly_3_m1",
+     "name": "凌波·大理",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 32,
+      "turns": 3,
+      "text": "脚尖在地上走出几步，人已在丈外，步子看着并不快。"
+     }
+    }
+   ]
+  },
+  "dali_guard_3": {
+   "moves": [
+    {
+     "id": "dali_guard_3_m1",
+     "name": "龙纹·大理",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 32,
+      "turns": 3,
+      "text": "双掌护住胸口，肘收肋下，气布满前身，接了一记只退半步。"
+     }
+    }
+   ]
+  },
+  "taohua_force_3": {
+   "moves": [
+    {
+     "id": "taohua_force_3_m1",
+     "name": "潮生·桃花",
+     "trigger": "active",
+     "mpCost": 24,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 32,
+      "turns": 0,
+      "text": "坐在礁石上听潮，气随潮声起落，胸中的乱平了。"
+     }
+    }
+   ]
+  },
+  "taohua_fly_3": {
+   "moves": [
+    {
+     "id": "taohua_fly_3_m1",
+     "name": "落英·桃花",
+     "trigger": "active",
+     "mpCost": 18,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 32,
+      "turns": 3,
+      "text": "脚尖在桃枝上一点，花瓣落下来，人已到了对岸。"
+     }
+    }
+   ]
+  },
+  "taohua_guard_3": {
+   "moves": [
+    {
+     "id": "taohua_guard_3_m1",
+     "name": "花阵·桃花",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 4,
+     "support": {
+      "kind": "def",
+      "value": 32,
+      "turns": 3,
+      "text": "袖袍一展挡在身前，身子斜侧，把力道引进空处。"
+     }
+    }
+   ]
+  },
+  "gumu_force_3": {
+   "moves": [
+    {
+     "id": "gumu_force_3_m1",
+     "name": "玉女·古墓",
+     "trigger": "active",
+     "mpCost": 20,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 32,
+      "turns": 0,
+      "text": "盘坐在寒玉床上，气收进丹田，四肢的冷退了。"
+     }
+    }
+   ]
+  },
+  "gumu_fly_3": {
+   "moves": [
+    {
+     "id": "gumu_fly_3_m1",
+     "name": "踏云·古墓",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 32,
+      "turns": 3,
+      "text": "足尖在石壁上借力，人贴着壁滑出去，落地无声。"
+     }
+    }
+   ]
+  },
+  "gumu_guard_3": {
+   "moves": [
+    {
+     "id": "gumu_guard_3_m1",
+     "name": "寒玉·古墓",
+     "trigger": "active",
+     "mpCost": 12,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 32,
+      "turns": 3,
+      "text": "双袖交叠护在胸前，肩背贴墙，把来势卸在壁上。"
+     }
+    }
+   ]
+  },
+  "wuyun_force_3": {
+   "moves": [
+    {
+     "id": "wuyun_force_3_m1",
+     "name": "五云·温家",
+     "trigger": "active",
+     "mpCost": 22,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 32,
+      "turns": 0,
+      "text": "五心朝天坐定，气在胸腹转了几转，指尖的凉退了。"
+     }
+    }
+   ]
+  },
+  "wuyun_fly_3": {
+   "moves": [
+    {
+     "id": "wuyun_fly_3_m1",
+     "name": "云踪·温家",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 32,
+      "turns": 3,
+      "text": "脚尖点着瓦脊连纵，人已翻过院墙，落地时衣角才落下。"
+     }
+    }
+   ]
+  },
+  "wuyun_guard_3": {
+   "moves": [
+    {
+     "id": "wuyun_guard_3_m1",
+     "name": "云障·温家",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 4,
+     "support": {
+      "kind": "def",
+      "value": 32,
+      "turns": 3,
+      "text": "双臂护住面门，身子一侧，把力道让到肩上。"
+     }
+    }
+   ]
+  },
+  "tangmen_force_3": {
+   "moves": [
+    {
+     "id": "tangmen_force_3_m1",
+     "name": "玄天·唐门",
+     "trigger": "active",
+     "mpCost": 24,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 32,
+      "turns": 0,
+      "text": "调匀呼吸，气沉丹田，袖里那只手的抖停了。"
+     }
+    }
+   ]
+  },
+  "tangmen_fly_3": {
+   "moves": [
+    {
+     "id": "tangmen_fly_3_m1",
+     "name": "无影·唐门",
+     "trigger": "active",
+     "mpCost": 18,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 32,
+      "turns": 3,
+      "text": "脚尖在檐角一勾，人翻上屋脊，伏低时几乎看不出轮廓。"
+     }
+    }
+   ]
+  },
+  "tangmen_guard_3": {
+   "moves": [
+    {
+     "id": "tangmen_guard_3_m1",
+     "name": "机括·唐门",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 3,
+     "support": {
+      "kind": "def",
+      "value": 32,
+      "turns": 3,
+      "text": "机括匣横在胸前，另一手护住咽喉，身子缩在匣后。"
+     }
+    }
+   ]
+  },
+  "gaibang_force_3": {
+   "moves": [
+    {
+     "id": "gaibang_force_3_m1",
+     "name": "混天·丐帮",
+     "trigger": "active",
+     "mpCost": 20,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 37,
+      "turns": 0,
+      "text": "靠着破庙的柱子坐下，气沉下去，讨了一天的乏散了。"
+     }
+    }
+   ]
+  },
+  "gaibang_fly_3": {
+   "moves": [
+    {
+     "id": "gaibang_fly_3_m1",
+     "name": "逍遥·丐帮",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 31,
+      "turns": 2,
+      "text": "脚尖在墙头一点，人已翻进院子，破衣下摆挂在瓦上。"
+     }
+    }
+   ]
+  },
+  "gaibang_guard_3": {
+   "moves": [
+    {
+     "id": "gaibang_guard_3_m1",
+     "name": "棒墙·丐帮",
+     "trigger": "active",
+     "mpCost": 12,
+     "cooldown": 4,
+     "support": {
+      "kind": "guard",
+      "value": 29,
+      "turns": 2,
+      "text": "竹棒横在胸前，两腿扎开，肩背一缩，硬接一记。"
+     }
+    }
+   ]
+  },
+  "shenquan_force_3": {
+   "moves": [
+    {
+     "id": "shenquan_force_3_m1",
+     "name": "抱元·神拳",
+     "trigger": "active",
+     "mpCost": 22,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 37,
+      "turns": 0,
+      "text": "拳抵着膝，气沉到腰上，胸口那口气顺了。"
+     }
+    }
+   ]
+  },
+  "shenquan_fly_3": {
+   "moves": [
+    {
+     "id": "shenquan_fly_3_m1",
+     "name": "窜纵·神拳",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 31,
+      "turns": 2,
+      "text": "脚下一蹬窜出去，身子压低，落地时顺势滚了半圈。"
+     }
+    }
+   ]
+  },
+  "shenquan_guard_3": {
+   "moves": [
+    {
+     "id": "shenquan_guard_3_m1",
+     "name": "铁桥·神拳",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 3,
+     "support": {
+      "kind": "guard",
+      "value": 29,
+      "turns": 2,
+      "text": "两臂交叠护住头脸，肘尖朝前，硬吃一记。"
+     }
+    }
+   ]
+  },
+  "funiu_force_3": {
+   "moves": [
+    {
+     "id": "funiu_force_3_m1",
+     "name": "牛息·伏牛",
+     "trigger": "active",
+     "mpCost": 24,
+     "cooldown": 5,
+     "support": {
+      "kind": "mp",
+      "value": 37,
+      "turns": 0,
+      "text": "坐在田埂上换气，气一口口压进丹田，腿上的抖停了。"
+     }
+    }
+   ]
+  },
+  "funiu_fly_3": {
+   "moves": [
+    {
+     "id": "funiu_fly_3_m1",
+     "name": "山纵·伏牛",
+     "trigger": "active",
+     "mpCost": 18,
+     "cooldown": 4,
+     "support": {
+      "kind": "dodge",
+      "value": 31,
+      "turns": 2,
+      "text": "踩着土坡斜窜出去，脚下带起一层浮土，人已在树后。"
+     }
+    }
+   ]
+  },
+  "funiu_guard_3": {
+   "moves": [
+    {
+     "id": "funiu_guard_3_m1",
+     "name": "牛桩·伏牛",
+     "trigger": "active",
+     "mpCost": 16,
+     "cooldown": 4,
+     "support": {
+      "kind": "guard",
+      "value": 29,
+      "turns": 2,
+      "text": "双臂抱头，肩背拱起，像一堵矮墙挡在身前。"
+     }
+    }
+   ]
+  },
+  "jh2_force_3": {
+   "moves": [
+    {
+     "id": "jh2_force_3_m1",
+     "name": "浑元·江湖",
+     "trigger": "active",
+     "mpCost": 20,
+     "cooldown": 4,
+     "support": {
+      "kind": "mp",
+      "value": 37,
+      "turns": 0,
+      "text": "盘膝坐定，气走周天，胸口那团乱麻松开了。"
+     }
+    }
+   ]
+  },
+  "jh2_fly_3": {
+   "moves": [
+    {
+     "id": "jh2_fly_3_m1",
+     "name": "燕抄·江湖",
+     "trigger": "active",
+     "mpCost": 14,
+     "cooldown": 3,
+     "support": {
+      "kind": "dodge",
+      "value": 31,
+      "turns": 2,
+      "text": "脚尖在水面连点，人已到了对岸，鞋底只湿了边。"
+     }
+    }
+   ]
+  },
+  "jh2_guard_3": {
+   "moves": [
+    {
+     "id": "jh2_guard_3_m1",
+     "name": "金钟·江湖",
+     "trigger": "active",
+     "mpCost": 12,
+     "cooldown": 3,
+     "support": {
+      "kind": "guard",
+      "value": 29,
+      "turns": 2,
+      "text": "双臂一合护住胸腹，气撑满周身，硬受一记只闷哼。"
+     }
+    }
+   ]
+  }
+ }
+}
