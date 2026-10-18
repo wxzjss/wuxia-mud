@@ -5009,7 +5009,23 @@
       "desc": "两间土坯房，屋檐下挂着斗笠与蓑衣，墙根堆着柴火。灶间还冒着烟，飘出一股煮菜粥的味。",
       "exits": {
         "s": "jn_farm_1"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 米缸",
+          "label": "看 米缸",
+          "keywords": [
+            "米缸"
+          ],
+          "desc": "看 米缸",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "揭开缸盖，缸底只剩一层碎米，缸壁沾着几粒陈米。灶上温着半碗粥。"
+            }
+          ]
+        }
+      ]
     },
     "jn_farm_shed": {
       "id": "jn_farm_shed",
@@ -5853,7 +5869,23 @@
       "desc": "院门是荆条编的，虚掩着。墙角搭着鸡窝，几只母鸡在土里刨食。",
       "exits": {
         "n": "cunzhen_farm"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 鸡窝",
+          "label": "看 鸡窝",
+          "keywords": [
+            "鸡窝"
+          ],
+          "desc": "看 鸡窝",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "鸡窝里垫了新干草，草上卧着两个蛋，蛋壳还温。镰刀靠在门后。刃口豁了。"
+            }
+          ]
+        }
+      ]
     },
     "cun_home_03": {
       "id": "cun_home_03",
@@ -6148,7 +6180,24 @@
       "desc": "招待过路官员的厢房，陈设简朴但干净，窗下摆着一张书案。",
       "exits": {
         "w": "jn_yamen_back"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 书案",
+          "label": "看 书案",
+          "keywords": [
+            "书案",
+            "案上"
+          ],
+          "desc": "看 书案",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "「几时传我？」廊下有人问，没人接话。案上茶凉透了，砚台里的墨干成一块。"
+            }
+          ]
+        }
+      ]
     },
     "jn_school_room1": {
       "id": "jn_school_room1",
@@ -6810,7 +6859,23 @@
       "private": true,
       "owner": "wen_huashan_shop",
       "homeTier": "B",
-      "homeCapacity": 1
+      "homeCapacity": 1,
+      "actions": [
+        {
+          "cmd": "看 药匾",
+          "label": "看 药匾",
+          "keywords": [
+            "药匾"
+          ],
+          "desc": "看 药匾",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "药匾里摊着切好的黄芪，边上混了几片认不出的根。竹筛缺角，麻绳捆着。"
+            }
+          ]
+        }
+      ]
     },
     "hm_npcv_024": {
       "id": "hm_npcv_024",
@@ -8056,7 +8121,23 @@
       "desc": "藏经阁后的一道山坡，古松夹道。落叶积了厚厚一层，踩上去半天不散。",
       "exits": {
         "e": "shaolin_cangjing"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 扫帚",
+          "label": "看 扫帚",
+          "keywords": [
+            "扫帚"
+          ],
+          "desc": "看 扫帚",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "靠墙立着一把秃扫帚，竹枝磨短半截，柄上缠着布。松针堆在阶边。"
+            }
+          ]
+        }
+      ]
     },
     "emei_houshan": {
       "id": "emei_houshan",
@@ -8074,7 +8155,23 @@
       "desc": "武当后山的一处平台，清晨常有道士在此吐纳练剑。",
       "exits": {
         "s": "wudang_jinding"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 剑痕",
+          "label": "看 剑痕",
+          "keywords": [
+            "剑痕"
+          ],
+          "desc": "看 剑痕",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "石台边一道剑痕，深处积水，水面上浮着两片松针。半天没动。"
+            }
+          ]
+        }
+      ]
     },
     "dali_wuhua": {
       "id": "dali_wuhua",
@@ -8083,7 +8180,24 @@
       "desc": "五华楼高踞城中，登楼可望苍山洱海。楼下是热闹的边贸集市。",
       "exits": {
         "s": "road_dali_1"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 苍山",
+          "label": "看 苍山",
+          "keywords": [
+            "苍山",
+            "洱海"
+          ],
+          "desc": "看 苍山",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "苍山顶上压着云，云脚垂到洱海边，把水面压暗了一块。楼下收摊了。"
+            }
+          ]
+        }
+      ]
     },
     "miaojiang_zhai": {
       "id": "miaojiang_zhai",
@@ -8092,7 +8206,23 @@
       "desc": "苗寨挂在山腰上，吊脚楼依着山势一层层垒上去。屋檐下摆着一排陶瓮，瓮里时有窸窣声。",
       "exits": {
         "e": "miaojiang_sheng"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 陶瓮",
+          "label": "看 陶瓮",
+          "keywords": [
+            "陶瓮"
+          ],
+          "desc": "看 陶瓮",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "揭瓮盖，一股酸味冲上来，瓮底沉着几颗黑果子。檐水正滴。"
+            }
+          ]
+        }
+      ]
     },
     "xiyu_shule": {
       "id": "xiyu_shule",
@@ -8111,7 +8241,24 @@
       "desc": "退潮时露出大片滩涂，渔家老小赶海拾贝，崖边晾着渔网。",
       "exits": {
         "sw": "haitan_dock"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 潮",
+          "label": "看 潮",
+          "keywords": [
+            "潮",
+            "潮水"
+          ],
+          "desc": "看 潮",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "潮退到滩涂外头，沙上留下密密的小孔，孔边有蟹爪印。舢板翻扣着。"
+            }
+          ]
+        }
+      ]
     },
     "beijiang_shankou": {
       "id": "beijiang_shankou",
@@ -8169,7 +8316,24 @@
       "exits": {
         "w": "jinguo_ruin",
         "n": "jinguo_tomb"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 石壁",
+          "label": "看 石壁",
+          "keywords": [
+            "石壁",
+            "凿痕"
+          ],
+          "desc": "看 石壁",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "石壁上凿痕参差，横一道竖一道，摸上去硌手。铜灯里的油冻了。"
+            }
+          ]
+        }
+      ]
     },
     "jinguo_tomb": {
       "id": "jinguo_tomb",
@@ -8188,7 +8352,24 @@
       "exits": {
         "s": "road_many_1",
         "e": "many_camp"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 水面",
+          "label": "看 水面",
+          "keywords": [
+            "水面",
+            "绿沫"
+          ],
+          "desc": "看 水面",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "拨开草叶，水面浮着一层绿沫，沫子破了又合。泥里露半截白骨。"
+            }
+          ]
+        }
+      ]
     },
     "many_camp": {
       "id": "many_camp",
@@ -8227,7 +8408,24 @@
       "exits": {
         "s": "secret_guishi",
         "e": "secret_cage"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 墙根",
+          "label": "看 墙根",
+          "keywords": [
+            "墙根",
+            "空包袱"
+          ],
+          "desc": "看 墙根",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "墙根蹲着个人，兜帽压得很低，脚边搁一只空包袱。他没抬头。"
+            }
+          ]
+        }
+      ]
     },
     "secret_cage": {
       "id": "secret_cage",
@@ -8463,7 +8661,24 @@
       ],
       "exits": {
         "n": "beijiang_shankou"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 红布条",
+          "label": "看 红布条",
+          "keywords": [
+            "红布条",
+            "布条"
+          ],
+          "desc": "看 红布条",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "红布条褪成灰白，边角起了毛，一条条朝谷口抖。台下全是雾。"
+            }
+          ]
+        }
+      ]
     },
     "xiyu_bazaar": {
       "id": "xiyu_bazaar",
@@ -8618,7 +8833,23 @@
       ],
       "exits": {
         "ne": "road_xixia_1"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 号牌",
+          "label": "看 号牌",
+          "keywords": [
+            "号牌"
+          ],
+          "desc": "看 号牌",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "号牌挂满一整墙，边角磨圆了，按驿站分作三排。墨冻成一块。"
+            }
+          ]
+        }
+      ]
     },
     "xixia_pass": {
       "id": "xixia_pass",

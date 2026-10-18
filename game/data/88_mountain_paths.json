@@ -646,7 +646,24 @@
       "exits": {
         "s": "gaibang_path6",
         "n": "gaibang_path4"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 石槽",
+          "label": "看 石槽",
+          "keywords": [
+            "石槽",
+            "泉眼"
+          ],
+          "desc": "看 石槽",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "石槽沿磨出一道凹，凹里蓄着水，水面上漂着两片叶子。泉眼在响。"
+            }
+          ]
+        }
+      ]
     },
     "gaibang_path6": {
       "id": "gaibang_path6",
