@@ -1188,7 +1188,41 @@
           "mob_wolf",
           "mob_boar"
         ]
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 灌木",
+          "label": "看 灌木",
+          "keywords": [
+            "灌木",
+            "灰毛",
+            "枝"
+          ],
+          "desc": "看路边的灌木",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "灌木枝上挂着几缕灰毛，齐着膝盖高。底下的土让蹄子踩塌了。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 小径",
+          "label": "看 小径",
+          "keywords": [
+            "小径",
+            "草",
+            "路"
+          ],
+          "desc": "看脚下的小径",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "小径只容一人，草让人踩伏了。往前三步，草又立起来。"
+            }
+          ]
+        }
+      ]
     },
     "wild_forest_1": {
       "id": "wild_forest_1",
@@ -1238,7 +1272,41 @@
           "mob_black_bear",
           "mob_wolf"
         ]
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 水潭",
+          "label": "看 水潭",
+          "keywords": [
+            "水潭",
+            "潭水",
+            "蹄印"
+          ],
+          "desc": "看林中的水潭",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "潭水黑，看不见底。边上的泥里有蹄印，印子比碗口大。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 断枝",
+          "label": "看 断枝",
+          "keywords": [
+            "断枝",
+            "松树",
+            "枝"
+          ],
+          "desc": "看地上的断枝",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "松枝让雪压断过，断口发白。断枝横在地上，没人动。"
+            }
+          ]
+        }
+      ]
     },
     "wild_pool": {
       "id": "wild_pool",
@@ -1300,7 +1368,41 @@
       "exits": {
         "s": "wild_forest_1",
         "n": "wild_cave_2"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 洞口",
+          "label": "看 洞口",
+          "keywords": [
+            "洞口",
+            "黑毛",
+            "石头"
+          ],
+          "desc": "看洞口",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "洞口的石头上蹭着一层黑亮的毛，人到腰那么高。"
+            }
+          ]
+        },
+        {
+          "cmd": "听 洞风",
+          "label": "听 洞风",
+          "keywords": [
+            "洞风",
+            "风",
+            "滴水"
+          ],
+          "desc": "听洞里的风",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "风从洞里出来，一阵一阵，带着腥。风停的时候，里头有滴水声。"
+            }
+          ]
+        }
+      ]
     },
     "wild_cave_2": {
       "id": "wild_cave_2",
@@ -1322,6 +1424,40 @@
         {
           "type": "say",
           "raw": "黑暗中有低沉的咆哮声响起。"
+        }
+      ],
+      "actions": [
+        {
+          "cmd": "摸 石壁",
+          "label": "摸 石壁",
+          "keywords": [
+            "石壁",
+            "墙",
+            "壁"
+          ],
+          "desc": "摸洞里的石壁",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "石壁潮，手按上去留下一个印。往里去，石壁越来越滑。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 地面",
+          "label": "看 地面",
+          "keywords": [
+            "地面",
+            "骨头",
+            "地"
+          ],
+          "desc": "看脚下的地",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "地上有拖过的痕，骨头渣子散在两边。有一根还带着筋。"
+            }
+          ]
         }
       ]
     },
@@ -5976,7 +6112,41 @@
         "s": "jn_woods_1",
         "w": "jn_cave",
         "n": "jn_bookshop"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 爪印",
+          "label": "看 爪印",
+          "keywords": [
+            "爪印",
+            "兽爪",
+            "泥"
+          ],
+          "desc": "看泥上的爪印",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "泥上一串爪印，前头深后头浅，走得不急。印子边上的土还湿。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 树冠",
+          "label": "看 树冠",
+          "keywords": [
+            "树冠",
+            "光",
+            "树"
+          ],
+          "desc": "抬头看树冠",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "树冠合得只剩几处缝，光漏下来是一根一根的柱子。"
+            }
+          ]
+        }
+      ]
     },
     "jn_stream": {
       "id": "jn_stream",
@@ -6065,7 +6235,41 @@
       "exits": {
         "w": "jiangnan_hill",
         "se": "jn_woods_1"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 江与城",
+          "label": "看 江与城",
+          "keywords": [
+            "江",
+            "城",
+            "江城"
+          ],
+          "desc": "看山下的江与城",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "江窄成一条白线，城灰扑扑一片，屋脊挤着屋脊。"
+            }
+          ]
+        },
+        {
+          "cmd": "听 山风",
+          "label": "听 山风",
+          "keywords": [
+            "山风",
+            "风",
+            "风声"
+          ],
+          "desc": "站在山顶听风",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "风从背后推，站直了才顶得住。衣角一直响，响得听不见别的。"
+            }
+          ]
+        }
+      ]
     },
     "jn_yamen_side": {
       "id": "jn_yamen_side",
@@ -6545,7 +6749,41 @@
       "exits": {
         "n": "jn_market_east",
         "e": "jn_market_west"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 窑口",
+          "label": "看 窑口",
+          "keywords": [
+            "窑口",
+            "火",
+            "窑"
+          ],
+          "desc": "看窑口的火",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "窑口的火从砖缝里透出来，红得发白。近前一步，脸就烫。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 碗坯",
+          "label": "看 碗坯",
+          "keywords": [
+            "碗坯",
+            "坯",
+            "架子"
+          ],
+          "desc": "看架上晾的碗坯",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "架上的碗坯一排排晾着，坯底印着同一个款。有一个坯歪了，没人扶。"
+            }
+          ]
+        }
+      ]
     },
     "jn_tavern": {
       "id": "jn_tavern",
@@ -8379,7 +8617,41 @@
       "exits": {
         "w": "many_pool",
         "e": "many_ruin"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 兽骨",
+          "label": "看 兽骨",
+          "keywords": [
+            "兽骨",
+            "骨头",
+            "牛头"
+          ],
+          "desc": "看墙上钉的兽骨",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "墙上钉的兽骨有牛头那么大，骨头缝里还嵌着箭镞。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 篝火",
+          "label": "看 篝火",
+          "keywords": [
+            "篝火",
+            "火",
+            "灰"
+          ],
+          "desc": "看寨中的篝火",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "火堆烧得旺，火边的石头让烟熏得发黑。灰里埋着几个陶碗。"
+            }
+          ]
+        }
+      ]
     },
     "many_ruin": {
       "id": "many_ruin",
@@ -8398,7 +8670,41 @@
       "exits": {
         "w": "secret_black_market",
         "n": "secret_anxiang"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 摊位",
+          "label": "看 摊位",
+          "keywords": [
+            "摊位",
+            "摊",
+            "布"
+          ],
+          "desc": "看摊上盖着的布",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "摊上摆的东西用布盖着，只掀一角。掀开的那角底下是几枚旧钱。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 袖口",
+          "label": "看 袖口",
+          "keywords": [
+            "袖口",
+            "袖子",
+            "手"
+          ],
+          "desc": "看摊前两个人的袖口",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "两个人站在摊前，手缩在袖子里，袖子动，脸不动。"
+            }
+          ]
+        }
+      ]
     },
     "secret_anxiang": {
       "id": "secret_anxiang",

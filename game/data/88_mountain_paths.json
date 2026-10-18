@@ -2351,7 +2351,41 @@
       "exits": {
         "s": "gumu_mu",
         "n": "gumu_path5"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 空地",
+          "label": "看 空地",
+          "keywords": [
+            "空地",
+            "崖底",
+            "土"
+          ],
+          "desc": "看崖底的空地",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖底一块空地，寸草不生，土色发白。地当中有条石缝，缝里没有苔。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 石门",
+          "label": "看 石门",
+          "keywords": [
+            "石门",
+            "门缝",
+            "石壁"
+          ],
+          "desc": "摸崖壁上的门缝",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "石壁上一道门缝合得严，缝边没有灰，摸上去是凉的。"
+            }
+          ]
+        }
+      ]
     },
     "gumu_shan": {
       "id": "gumu_shan",
@@ -2373,7 +2407,41 @@
       "exits": {
         "u": "mojiao_path2",
         "d": "mojiao_shanmen"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 凿痕",
+          "label": "看 凿痕",
+          "keywords": [
+            "凿痕",
+            "阶面",
+            "石屑"
+          ],
+          "desc": "看阶上的凿痕",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "阶面凿痕一道挨一道，纹路还是尖的。石屑扫在阶角，堆成一小堆。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 铁钉",
+          "label": "看 铁钉",
+          "keywords": [
+            "铁钉",
+            "石缝",
+            "钉子"
+          ],
+          "desc": "看阶边的石缝",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "阶边的石缝里嵌着半截铁钉，钉头磨平了。"
+            }
+          ]
+        }
+      ]
     },
     "mojiao_path2": {
       "id": "mojiao_path2",
@@ -2383,7 +2451,41 @@
       "exits": {
         "u": "mojiao_path3",
         "d": "mojiao_path1"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 断枝",
+          "label": "看 断枝",
+          "keywords": [
+            "断枝",
+            "松树",
+            "枝"
+          ],
+          "desc": "看松树的下半截",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "松树下半截的枝全砍了，茬口一样高。地上没有落枝。"
+            }
+          ]
+        },
+        {
+          "cmd": "听 铃声",
+          "label": "听 铃声",
+          "keywords": [
+            "铃声",
+            "铃",
+            "响"
+          ],
+          "desc": "听林子里",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "林子里有一声铃响，很轻，响过就没了。"
+            }
+          ]
+        }
+      ]
     },
     "mojiao_path3": {
       "id": "mojiao_path3",
@@ -2393,7 +2495,41 @@
       "exits": {
         "u": "mojiao_path4",
         "d": "mojiao_path2"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 兽皮",
+          "label": "看 兽皮",
+          "keywords": [
+            "兽皮",
+            "皮",
+            "爪"
+          ],
+          "desc": "看柱上钉的兽皮",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "柱上钉着一张兽皮，毛磨秃了，还留着爪。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 铁链",
+          "label": "看 铁链",
+          "keywords": [
+            "铁链",
+            "链子",
+            "锁"
+          ],
+          "desc": "看柴堆后面",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "柴堆得高，劈口新。柴堆后面靠着一根铁链，链头有锁。"
+            }
+          ]
+        }
+      ]
     },
     "mojiao_path4": {
       "id": "mojiao_path4",
@@ -2403,7 +2539,41 @@
       "exits": {
         "u": "mojiao_path5",
         "d": "mojiao_path3"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 岔道",
+          "label": "看 岔道",
+          "keywords": [
+            "岔道",
+            "路面",
+            "坡"
+          ],
+          "desc": "看路面的岔",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "路面踩得实，草只在两边长。中间有一道新踩出来的岔，往坡上去。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 记号",
+          "label": "看 记号",
+          "keywords": [
+            "记号",
+            "树",
+            "烙"
+          ],
+          "desc": "看剥了皮的树",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "树身上剥了一块皮，露出白木，上面烙着一个记号。"
+            }
+          ]
+        }
+      ]
     },
     "mojiao_path5": {
       "id": "mojiao_path5",
@@ -2413,7 +2583,41 @@
       "exits": {
         "u": "mojiao_path6",
         "d": "mojiao_path4"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 水色",
+          "label": "看 水色",
+          "keywords": [
+            "水色",
+            "水",
+            "铁锈"
+          ],
+          "desc": "看槽里的水",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "水是黑的，捧起来却是清的。槽底沉着几片铁锈。"
+            }
+          ]
+        },
+        {
+          "cmd": "洗 手",
+          "label": "洗 手",
+          "keywords": [
+            "洗手",
+            "水",
+            "手"
+          ],
+          "desc": "就着泉水洗手",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "手伸进去，凉得骨头疼。抽出来，指缝里有铁腥味。"
+            }
+          ]
+        }
+      ]
     },
     "mojiao_path6": {
       "id": "mojiao_path6",
@@ -2423,7 +2627,41 @@
       "exits": {
         "u": "mojiao_hall",
         "d": "mojiao_path5"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 大殿",
+          "label": "看 大殿",
+          "keywords": [
+            "大殿",
+            "殿顶",
+            "崖下"
+          ],
+          "desc": "看崖下的大殿",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖下是黑木崖的大殿，殿顶发黑，看不见瓦。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 石阶",
+          "label": "看 石阶",
+          "keywords": [
+            "石阶",
+            "铁门",
+            "台阶"
+          ],
+          "desc": "往上看石阶",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "脚下的石阶凿在崖壁上，往上看，阶尽头是一道铁门。"
+            }
+          ]
+        }
+      ]
     },
     "mojiao_shanmen": {
       "id": "mojiao_shanmen",
@@ -2445,7 +2683,41 @@
       "exits": {
         "n": "taohuadao_path2",
         "s": "taohuadao_dock"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 渔网",
+          "label": "看 渔网",
+          "keywords": [
+            "渔网",
+            "网",
+            "网坠"
+          ],
+          "desc": "看阶边晒的渔网",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "渔网上挂着几片海草，网眼让风撑得鼓起来。网坠是石头的，磨得圆。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 贝壳",
+          "label": "看 贝壳",
+          "keywords": [
+            "贝壳",
+            "碎贝壳",
+            "阶缝"
+          ],
+          "desc": "看阶缝里的贝壳",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "阶缝里嵌着碎贝壳，白的多，有几片带紫。抠出来，边是利的。"
+            }
+          ]
+        }
+      ]
     },
     "taohuadao_path2": {
       "id": "taohuadao_path2",
@@ -2464,7 +2736,41 @@
         "风": "花往下落，落的方向跟风不一样。",
         "雾": "十步外分不清是树还是路。",
         "night": "黑里走不出这片林子，得等天亮。"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 落花",
+          "label": "看 落花",
+          "keywords": [
+            "落花",
+            "花",
+            "桃树"
+          ],
+          "desc": "看地上的落花",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "落花铺在地上，一行一行，行距一样。风来了，花也不乱。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 青果",
+          "label": "看 青果",
+          "keywords": [
+            "青果",
+            "果",
+            "枝"
+          ],
+          "desc": "看枝上的青果",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "枝上青果坐住了，指甲盖大。有一枝被人摘空了，断口新。"
+            }
+          ]
+        }
+      ]
     },
     "taohuadao_path3": {
       "id": "taohuadao_path3",
@@ -2474,7 +2780,41 @@
       "exits": {
         "n": "taohuadao_path4",
         "s": "taohuadao_path2"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 刻花",
+          "label": "看 刻花",
+          "keywords": [
+            "刻花",
+            "桃花",
+            "亭柱"
+          ],
+          "desc": "看柱上的刻花",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "柱上刻着几枝桃花，刻得浅，花瓣只剩两道弧。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 石桌",
+          "label": "看 石桌",
+          "keywords": [
+            "石桌",
+            "箫",
+            "桌子"
+          ],
+          "desc": "看亭里的石桌",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "石桌上搁着一管箫，箫身让手摸得发亮，孔里没有灰。"
+            }
+          ]
+        }
+      ]
     },
     "taohuadao_path4": {
       "id": "taohuadao_path4",
@@ -2484,7 +2824,41 @@
       "exits": {
         "n": "taohuadao_path5",
         "s": "taohuadao_path3"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 脚印",
+          "label": "看 脚印",
+          "keywords": [
+            "脚印",
+            "土",
+            "路面"
+          ],
+          "desc": "看路面上的脚印",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "路面的土是筛过的，踩上去松，脚印很深。走十步再回头，印子浅了一半。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 树",
+          "label": "看 树",
+          "keywords": [
+            "树",
+            "枝子",
+            "路"
+          ],
+          "desc": "看两旁的树",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "两旁的树一般高，枝子伸到路中间，合得严。"
+            }
+          ]
+        }
+      ]
     },
     "taohuadao_path5": {
       "id": "taohuadao_path5",
@@ -2494,7 +2868,41 @@
       "exits": {
         "n": "taohuadao_path6",
         "s": "taohuadao_path4"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 水面",
+          "label": "看 水面",
+          "keywords": [
+            "水面",
+            "花瓣",
+            "水"
+          ],
+          "desc": "看槽里的水",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "水上落着几瓣桃花，绕着槽沿转，转一圈又回来。"
+            }
+          ]
+        },
+        {
+          "cmd": "掬水",
+          "label": "掬水",
+          "keywords": [
+            "掬水",
+            "喝水",
+            "泉"
+          ],
+          "desc": "掬一捧泉水",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "水里有花香，很淡。咽下去，凉到心口。"
+            }
+          ]
+        }
+      ]
     },
     "taohuadao_path6": {
       "id": "taohuadao_path6",
@@ -2504,7 +2912,41 @@
       "exits": {
         "n": "taohuadao_forest",
         "s": "taohuadao_path5"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 海",
+          "label": "看 海",
+          "keywords": [
+            "海",
+            "浪",
+            "崖下"
+          ],
+          "desc": "看崖下的海",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖下是海，浪打在石头上，白沫子涌上来又退回去。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 落脚点",
+          "label": "看 落脚点",
+          "keywords": [
+            "落脚点",
+            "石坑",
+            "崖壁"
+          ],
+          "desc": "看崖壁上的坑",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖壁上凿着几个落脚点，间隔一样，凿痕让海风磨圆了。"
+            }
+          ]
+        }
+      ]
     },
     "taohuadao_dock": {
       "id": "taohuadao_dock",
