@@ -904,10 +904,6 @@
       "sect": "gaibang",
       "rank": 5,
       "desc": "往门口一站，门框就显得窄了。他坐下之前先看了圈屋子，谁也没漏下。声音不高，可他一开口，打岔的人都闭了嘴。",
-      "talk": [
-        "你来，坐下喝一碗。",
-        "我的事，我自己担。"
-      ],
       "personality": "haoshuang",
       "likes": [
         "wine"
@@ -949,6 +945,20 @@
         "day": "gaibang_po_miao",
         "night": "gaibang_po_miao"
       },
+      "talk": [
+        "坐，喝碗酒。",
+        "丐帮不分贵贱，只分肯不肯替人出头。"
+      ],
+      "ask": [
+        {
+          "topic": "帮务",
+          "keywords": [
+            "长老",
+            "初一"
+          ],
+          "answer": "四袋以上长老共十一人，议事在每月初一。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "A",

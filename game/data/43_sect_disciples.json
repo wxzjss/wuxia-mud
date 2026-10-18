@@ -2051,10 +2051,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「九袋长老见过师叔。」",
-    "「昨夜分舵那边递了话，说城里有几个新面孔要盯。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -2115,7 +2111,21 @@
    "rank": 4,
    "personality": "haoshuang",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "丐帮的人，说话直。",
+    "帮里九袋以上才管分派，一袋的只管跑腿。"
+   ],
+   "ask": [
+    {
+     "topic": "施粥",
+     "keywords": [
+      "申时",
+      "三十碗"
+     ],
+     "answer": "每日申时施粥，一锅三十碗，来晚就没了。"
+    }
+   ]
   },
   "disciple_gaibang_1": {
    "id": "disciple_gaibang_1",
@@ -2225,10 +2235,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「五袋弟子见过师兄。」",
-    "「讨来的馒头分了一半给巷尾的瞎眼老汉。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -2289,7 +2295,21 @@
    "rank": 2,
    "personality": "baozhao",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "兄弟，有剩饭么？",
+    "五袋管一条街，这条街七个巷口都归我。"
+   ],
+   "ask": [
+    {
+     "topic": "地盘",
+     "keywords": [
+      "巷口",
+      "拜会"
+     ],
+     "answer": "新来的得先拜会，不然讨来的钱要交三成。"
+    }
+   ]
   },
   "disciple_gaibang_3": {
    "id": "disciple_gaibang_3",
@@ -2399,10 +2419,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「一袋弟子见过师兄。」",
-    "「打狗棒法第四式我总差半分劲，得再琢磨。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -2464,7 +2480,21 @@
    "personality": "youhua",
    "tier": "A",
    "job": "disciple",
-   "sidequest": "sqd_gaibang"
+   "sidequest": "sqd_gaibang",
+   "talk": [
+    "我刚入帮，还在学。",
+    "一袋弟子一天讨三十文，交二十文上去。"
+   ],
+   "ask": [
+    {
+     "topic": "入帮",
+     "keywords": [
+      "入帮",
+      "引荐"
+     ],
+     "answer": "入帮要有人引，磕三个头，认一个师父。"
+    }
+   ]
   },
   "disciple_gaibang_5": {
    "id": "disciple_gaibang_5",
@@ -4027,10 +4057,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「大蛊师见过师叔。」",
-    "「混口饭吃而已，别的我不管。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -4092,6 +4118,20 @@
    "personality": "yinzhi",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "外乡人，别乱摸。",
+    "圣堂里的坛子有编号，一到三十六，错一个要重配。"
+   ],
+   "ask": [
+    {
+     "topic": "养蛊",
+     "keywords": [
+      "养蛊",
+      "七年"
+     ],
+     "answer": "养蛊要七年，头三年只喂，不见血。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -4134,10 +4174,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「蛊师见过师兄。」",
-    "「你也别装好人，这山路上谁干净过？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -4199,6 +4235,20 @@
    "personality": "youhua",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "手别伸过来。",
+    "我这只手碰过的草，半个时辰就枯。"
+   ],
+   "ask": [
+    {
+     "topic": "左手",
+     "keywords": [
+      "左手",
+      "铁"
+     ],
+     "answer": "左手是铁打的，天冷就僵，得用热水泡。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",

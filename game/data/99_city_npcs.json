@@ -5715,10 +5715,6 @@
       "home": "house:cy_gs_canhe_1",
       "personality": "haoshuang",
       "desc": "眼角画着一道，不知是忘了卸，还是新勾的。",
-      "talk": [
-        "听我唱一段？",
-        "嗓子今儿不太开。"
-      ],
       "age": 45,
       "likes": [
         "flower"
@@ -5744,6 +5740,20 @@
       "tier": "B",
       "district": "gusu",
       "homeless": true,
+      "talk": [
+        "听一段？三文钱。",
+        "评弹一折半个时辰，唱全本要两个时辰。"
+      ],
+      "ask": [
+        {
+          "topic": "新段",
+          "keywords": [
+            "新段",
+            "枫桥"
+          ],
+          "answer": "新段叫枫桥夜雨，还没敢在城里唱。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
