@@ -6341,10 +6341,6 @@
    "speed": 68,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「岛民见过师兄。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -6400,6 +6396,20 @@
    "personality": "baozhao",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "岛上冷，先喝口热汤。",
+    "渡口一天两班，辰时一班，未时一班。"
+   ],
+   "ask": [
+    {
+     "topic": "岛规",
+     "keywords": [
+      "拜帖",
+      "上岛"
+     ],
+     "answer": "上岛要递拜帖，没帖子的人在渡口等三日也没船。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",

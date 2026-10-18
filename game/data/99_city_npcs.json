@@ -6055,10 +6055,6 @@
       "home": "house:cy_gs_fengqiao_1",
       "personality": "baozhao",
       "desc": "蹲在摊子后面，把货来回摆正。",
-      "talk": [
-        "看一眼，不买也看一眼。",
-        "就剩这些了，便宜给你。"
-      ],
       "age": 46,
       "likes": [
         "silver"
@@ -6084,6 +6080,20 @@
       "tier": "B",
       "district": "gusu",
       "homeless": true,
+      "talk": [
+        "枫桥的糕，趁热吃。",
+        "一块糕三文，豆沙的多一文，清早蒸两屉。"
+      ],
+      "ask": [
+        {
+          "topic": "桥头",
+          "keywords": [
+            "夜船",
+            "钟声"
+          ],
+          "answer": "夜里过桥的船多，钟声一响，船上就有人应一声。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -7153,10 +7163,6 @@
       "home": "house:cy_hb_14",
       "personality": "mune",
       "desc": "裤脚挽到膝上，脚趾抠着船板。",
-      "talk": [
-        "坐稳了。",
-        "这条水，我熟。"
-      ],
       "age": 53,
       "likes": [
         "flower"
@@ -7182,6 +7188,20 @@
       "tier": "B",
       "district": "harbor",
       "homeless": true,
+      "talk": [
+        "老胳膊了，撑得慢。",
+        "这条船坐了二十六年，篷换三回，板还是原来的。"
+      ],
+      "ask": [
+        {
+          "topic": "旧事",
+          "keywords": [
+            "枫桥",
+            "翻船"
+          ],
+          "answer": "十五年前枫桥下翻过一条粮船，捞上来米都泡胀了。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
