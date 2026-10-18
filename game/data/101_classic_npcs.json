@@ -581,10 +581,6 @@
       "room": "xiangyang_gate",
       "home": "house:guo_jing",
       "desc": "甲胄的搭扣有两个是坏的，拿麻绳系着。开口之前，他先看你一会儿，像是要把你这个人看清楚。",
-      "talk": [
-        "城在，人在。",
-        "我笨，学得慢，可学过的忘不掉。"
-      ],
       "personality": "mune",
       "likes": [
         "wine"
@@ -623,6 +619,24 @@
         "day": "xiangyang_gate",
         "night": "xiangyang_gate"
       },
+      "skills": {
+        "拳": "xianglong_zhang",
+        "内功": "jiuyin_zhenjing"
+      },
+      "talk": [
+        "你是从城外来的？",
+        "守城不看武功高低，看夜里肯不肯起身。"
+      ],
+      "ask": [
+        {
+          "topic": "襄阳",
+          "keywords": [
+            "存粮",
+            "四十日"
+          ],
+          "answer": "城里存的粮够吃四十日，水路一断就得另想法子。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "A",
@@ -646,10 +660,6 @@
             "act": "沿着城头走一圈，走到哪面墙都要停下来拍一拍"
           }
         ]
-      },
-      "skills": {
-        "拳": "xianglong_zhang",
-        "内功": "jiuyin_zhenjing"
       }
     },
     "huang_rong": {
@@ -749,10 +759,6 @@
       "sect": "baituo",
       "rank": 5,
       "desc": "他走路是倒着走的，边走边往身后看。跟他搭话，他看你身后比看你多。",
-      "talk": [
-        "你身上有股味道。",
-        "往前走是为了往后退，你懂么？"
-      ],
       "personality": "yinzhi",
       "likes": [
         "incense"
@@ -799,6 +805,24 @@
         "day": "baituo_gate",
         "night": "baituo_gate"
       },
+      "skills": {
+        "拳": "hamagong",
+        "内功": "baituo_force_3"
+      },
+      "talk": [
+        "你站的地方，风不对。",
+        "养蛇先养屋，屋要干，潮一寸蛇就病一分。"
+      ],
+      "ask": [
+        {
+          "topic": "白驼山",
+          "keywords": [
+            "落雪",
+            "三个月"
+          ],
+          "answer": "山上雪落三个月，蛇都盘在灶边，喂食要隔三日一回。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "A",
@@ -822,10 +846,6 @@
             "act": "背着手在院里倒着走圈，一圈一圈"
           }
         ]
-      },
-      "skills": {
-        "拳": "hamagong",
-        "内功": "baituo_force_3"
       }
     },
     "zhou_botong": {
@@ -1273,10 +1293,6 @@
       "sect": "mojiao",
       "rank": 5,
       "desc": "短笛插在腰上，笛穗垂着。进门先站定，把屋子看了一圈才坐，挑的还是个背靠墙的位子。",
-      "talk": [
-        "坐下说话。",
-        "我要的不是这个，你知道的。"
-      ],
       "personality": "lengmo",
       "likes": [
         "music"
@@ -1313,6 +1329,24 @@
         "day": "mojiao_hall",
         "night": "mojiao_hall"
       },
+      "skills": {
+        "内功": "xixing_dafa",
+        "拳": "mojiao_atk_1"
+      },
+      "talk": [
+        "坐吧，茶还热。",
+        "绣阁的绷子借你，线自己买，一两丝线四十文。"
+      ],
+      "ask": [
+        {
+          "topic": "笛声",
+          "keywords": [
+            "三更",
+            "后崖"
+          ],
+          "answer": "夜里三更我常在后崖吹笛，守夜的听见也不拦。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "A",
@@ -1336,10 +1370,6 @@
             "act": "在殿后吹笛，吹两句就停下听一听"
           }
         ]
-      },
-      "skills": {
-        "内功": "xixing_dafa",
-        "拳": "mojiao_atk_1"
       }
     },
     "feng_qingyang": {

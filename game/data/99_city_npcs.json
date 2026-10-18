@@ -11,10 +11,6 @@
       "home": "house:cy_xy_gate_1",
       "personality": "mune",
       "desc": "靴底沾着泥，腰间刀鞘磕掉了一块漆。",
-      "talk": [
-        "城门申时落闸，要进城趁早。",
-        "路引带在身上么？"
-      ],
       "age": 48,
       "likes": [
         "silver"
@@ -40,6 +36,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "站住，路引先拿出来。",
+        "关门在申时三刻，误了就在城外蹲一宿。"
+      ],
+      "ask": [
+        {
+          "topic": "城防",
+          "keywords": [
+            "箭楼",
+            "十二人"
+          ],
+          "answer": "箭楼上一班十二人，弓箭各三十支，夜里换两回岗。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -78,10 +88,6 @@
       "home": "house:cy_xy_gate_2",
       "personality": "baozhao",
       "desc": "脸上有道旧疤，不笑，握枪的手背上青筋绷着。",
-      "talk": [
-        "路引带在身上么？",
-        "城门申时落闸，要进城趁早。"
-      ],
       "age": 33,
       "likes": [
         "book"
@@ -107,6 +113,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "把包裹打开，查一查。",
+        "带刀进城要登记，刀长过三尺得寄在门房。"
+      ],
+      "ask": [
+        {
+          "topic": "旧疤",
+          "keywords": [
+            "枣阳",
+            "三十七"
+          ],
+          "answer": "这疤是枣阳城外落的，那一仗折了三十七个弟兄。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -145,10 +165,6 @@
       "home": "house:cy_xy_gate_3",
       "personality": "qienuo",
       "desc": "背有点驼，耳朵却总竖着。",
-      "talk": [
-        "天干物燥，小心火烛。",
-        "夜里别乱走。"
-      ],
       "age": 32,
       "likes": [
         "sword"
@@ -174,6 +190,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "天黑了，早些回。",
+        "二更敲一遍锣，三更再敲一遍，听见就关窗。"
+      ],
+      "ask": [
+        {
+          "topic": "火烛",
+          "keywords": [
+            "西街",
+            "两间"
+          ],
+          "answer": "上月西街走了水，烧了两间柴房，如今夜里查得紧。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -446,10 +476,6 @@
       "home": "house:cy_xy_market_1",
       "personality": "mune",
       "desc": "蹲在那儿，半天不说话，只看着牲口。",
-      "talk": [
-        "这马认人，你别靠近。",
-        "草料又涨价了。"
-      ],
       "age": 51,
       "likes": [
         "incense"
@@ -475,6 +501,23 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "quests": [
+        "sq_cy_xy_ma"
+      ],
+      "talk": [
+        "别摸它，认生。",
+        "钉掌一副八文，连草料一日四文。"
+      ],
+      "ask": [
+        {
+          "topic": "病马",
+          "keywords": [
+            "前日",
+            "三匹"
+          ],
+          "answer": "前日来了三匹病马，灌了药，只救回一匹。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -501,10 +544,7 @@
         "marks": [
           "役"
         ]
-      },
-      "quests": [
-        "sq_cy_xy_ma"
-      ]
+      }
     },
     "cy_xy_market_2": {
       "id": "cy_xy_market_2",
@@ -516,10 +556,6 @@
       "home": "house:cy_xy_market_2",
       "personality": "youhua",
       "desc": "一身好料子，鞋底却磨得薄了。跑得多。",
-      "talk": [
-        "这位，看点什么？",
-        "货是好货，价钱好说。"
-      ],
       "age": 54,
       "likes": [
         "music"
@@ -545,6 +581,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "看马？这边都是好货。",
+        "贩马走汉水，一船装六匹，路上要喂三回。"
+      ],
+      "ask": [
+        {
+          "topic": "行情",
+          "keywords": [
+            "入秋",
+            "十五两"
+          ],
+          "answer": "入秋草料贵，好马要十五两，次一等的十两也卖。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -1469,10 +1519,6 @@
       "home": "house:cy_xy_patrol_2",
       "personality": "yinzhi",
       "desc": "说话前先看你一眼，像在心里过了一遍章程。",
-      "talk": [
-        "照着规矩来。",
-        "文书压着，急不得。"
-      ],
       "age": 44,
       "likes": [
         "silver"
@@ -1498,6 +1544,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "什么事，说清楚。",
+        "马市丢一匹马，报官要交二十文状纸钱。"
+      ],
+      "ask": [
+        {
+          "topic": "盗马",
+          "keywords": [
+            "上月",
+            "两起"
+          ],
+          "answer": "上月马市丢了两起马，都是夜里解绳牵走的。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -1892,10 +1952,6 @@
       "home": "house:cy_ly_market_1",
       "personality": "youhua",
       "desc": "一身好料子，鞋底却磨得薄了。跑得多。",
-      "talk": [
-        "货是好货，价钱好说。",
-        "这位，看点什么？"
-      ],
       "age": 41,
       "likes": [
         "book"
@@ -1921,6 +1977,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "随便看，不买也成。",
+        "蜀锦一匹二两，赊账要押铺保。"
+      ],
+      "ask": [
+        {
+          "topic": "货源",
+          "keywords": [
+            "成都",
+            "十五日"
+          ],
+          "answer": "货从成都来，走十五日水路，遇上涨水还得耽搁。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -2036,10 +2106,6 @@
       "home": "house:cy_ly_tavern_1",
       "personality": "wenwan",
       "desc": "站在柜台后头，眼睛却把满屋子的人都数了一遍。",
-      "talk": [
-        "住店还是打尖？",
-        "后堂还有位子。"
-      ],
       "age": 59,
       "likes": [
         "incense"
@@ -2065,6 +2131,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "打尖还是住店？",
+        "楼上雅间一顿三十文，清早的粥另收五文。"
+      ],
+      "ask": [
+        {
+          "topic": "牡丹宴",
+          "keywords": [
+            "初十",
+            "八桌"
+          ],
+          "answer": "牡丹宴要提前三日订，初十已经订出去八桌。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -2103,10 +2183,6 @@
       "home": "house:cy_ly_tavern_2",
       "personality": "wenwan",
       "desc": "眼角画着一道，不知是忘了卸，还是新勾的。",
-      "talk": [
-        "听我唱一段？",
-        "嗓子今儿不太开。"
-      ],
       "age": 60,
       "likes": [
         "wine"
@@ -2132,6 +2208,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "客官，听曲么？",
+        "一支曲子二十文，点牌子另加十文。"
+      ],
+      "ask": [
+        {
+          "topic": "嗓子",
+          "keywords": [
+            "昨夜",
+            "两更"
+          ],
+          "answer": "昨夜唱到两更，嗓子哑了，今儿只能唱慢的。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -2993,10 +3083,6 @@
       "home": "house:cy_ly_patrol_2",
       "personality": "yinzhi",
       "desc": "案上那叠文书压得整整齐齐，人不离座。",
-      "talk": [
-        "文书压着，急不得。",
-        "照着规矩来。"
-      ],
       "age": 36,
       "likes": [
         "silver"
@@ -3022,6 +3108,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "让一让，别挡道。",
+        "南市报失窃，先交十文，查不查得回另说。"
+      ],
+      "ask": [
+        {
+          "topic": "贼",
+          "keywords": [
+            "逢五",
+            "三个"
+          ],
+          "answer": "逢五的日子贼最多，上个月抓了三个，都说是饿急了。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",

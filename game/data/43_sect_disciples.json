@@ -1594,10 +1594,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「首座见过师叔。」",
-    "「绣了一半的经盖搁在案上，等晚课完了再动针。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -1653,7 +1649,21 @@
    "rank": 4,
    "personality": "mune",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "客人，石阶滑。",
+    "阁里抄经，一日抄三卷，墨自己磨。"
+   ],
+   "ask": [
+    {
+     "topic": "残局",
+     "keywords": [
+      "黑子",
+      "十七"
+     ],
+     "answer": "石桌那盘残局摆了半月，黑子只剩十七口气。"
+    }
+   ]
   },
   "disciple_emei_1": {
    "id": "disciple_emei_1",
@@ -1758,10 +1768,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「入室弟子见过师兄。」",
-    "「山门外积雪没化，柴房的柴得省着烧。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -1818,7 +1824,21 @@
    "rank": 2,
    "personality": "lengmo",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "找谁？先报门派。",
+    "清音阁的客房不借外人，要住去山下客栈。"
+   ],
+   "ask": [
+    {
+     "topic": "柴房",
+     "keywords": [
+      "后山",
+      "两担"
+     ],
+     "answer": "后山的柴一日只许砍两担，多了守山的要说话。"
+    }
+   ]
   },
   "disciple_emei_3": {
    "id": "disciple_emei_3",
@@ -1924,10 +1944,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「记名弟子见过师兄。」",
-    "「师姐的功课替我看着些，我去山下抓药。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -1985,7 +2001,21 @@
    "personality": "wenwan",
    "tier": "A",
    "job": "disciple",
-   "sidequest": "sqd_emei"
+   "sidequest": "sqd_emei",
+   "talk": [
+    "师姐在练功，别嚷。",
+    "抓药去山下，来回四十里，天黑前得赶回。"
+   ],
+   "ask": [
+    {
+     "topic": "山路",
+     "keywords": [
+      "雨后",
+      "半日"
+     ],
+     "answer": "雨后山路塌了半边，绕过去要多走半日。"
+    }
+   ]
   },
   "disciple_emei_5": {
    "id": "disciple_emei_5",
@@ -2644,10 +2674,6 @@
    "speed": 112,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「光明右使见过师叔。」",
-    "「混口饭吃而已，别的我不管。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -2704,7 +2730,21 @@
    "rank": 4,
    "personality": "yinzhi",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "摘了兵器再说话。",
+    "殿前值守一日两班，一班二十四人。"
+   ],
+   "ask": [
+    {
+     "topic": "教中",
+     "keywords": [
+      "上月",
+      "七个"
+     ],
+     "answer": "上月清点教众，名册上少了七个人，没人敢问。"
+    }
+   ]
   },
   "disciple_mojiao_1": {
    "id": "disciple_mojiao_1",
@@ -4331,10 +4371,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「教众见过师兄。」",
-    "「混口饭吃而已，别的我不管。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -4397,6 +4433,20 @@
    "tier": "B",
    "job": "disciple",
    "sidequest": "sqd_miaojiang",
+   "talk": [
+    "生人进寨，先喝一碗。",
+    "教里试药，一次给五十文，出事不赔。"
+   ],
+   "ask": [
+    {
+     "topic": "蛊池",
+     "keywords": [
+      "后山",
+      "九个"
+     ],
+     "answer": "后山蛊池有九个石格，夜里谁也不敢靠近。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -4439,10 +4489,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「教众见过师叔。」",
-    "「你也别装好人，这山路上谁干净过？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -4504,6 +4550,20 @@
    "personality": "lengmo",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "别碰那根柱子。",
+    "图腾柱上的银铃，一副要三两银子。"
+   ],
+   "ask": [
+    {
+     "topic": "规矩",
+     "keywords": [
+      "进寨",
+      "三碗"
+     ],
+     "answer": "进寨先喝三碗酒，喝不下就睡在寨门外。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -14484,10 +14544,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师叔。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -14544,6 +14600,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_jinlong",
+   "talk": [
+    "腰牌亮出来。",
+    "走镖一趟，镖师二两，趟子手八百文。"
+   ],
+   "ask": [
+    {
+     "topic": "镖路",
+     "keywords": [
+      "北路",
+      "乱石岗"
+     ],
+     "answer": "北路二十里有片乱石岗，上月在那里折过一辆车。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -14577,10 +14647,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师兄。」",
-    "「这一趟我们押的是药，路上要是遇见劫道的，你帮不帮？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -14636,6 +14702,20 @@
    "personality": "youhua",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "接镖还是雇人？",
+    "押药走水路便宜，一船货抽一成二。"
+   ],
+   "ask": [
+    {
+     "topic": "劫道",
+     "keywords": [
+      "初五",
+      "五个人"
+     ],
+     "answer": "初五夜里来了五个人，抢走两箱药材，追到河边没影了。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -14669,10 +14749,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师兄。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -14728,6 +14804,20 @@
    "personality": "baozhao",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "新来的？报个名。",
+    "堂口吃饭不要钱，出镖才分账。"
+   ],
+   "ask": [
+    {
+     "topic": "账目",
+     "keywords": [
+      "三月",
+      "四百两"
+     ],
+     "answer": "三月里的账差了四百两，管账的说是路上打点了。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -15592,10 +15682,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「蛇奴见过师叔。」",
-    "「混口饭吃而已，别的我不管。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -15652,6 +15738,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_baituo",
+   "talk": [
+    "生人，别往里走。",
+    "看蛇一笼五文，喂蛇的活人别接。"
+   ],
+   "ask": [
+    {
+     "topic": "蛇阵",
+     "keywords": [
+      "后山",
+      "四十九"
+     ],
+     "answer": "后山蛇阵四十九个石桩，走错一步就要挨咬。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -15685,10 +15785,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「蛇奴见过师兄。」",
-    "「你也别装好人，这山路上谁干净过？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -15744,6 +15840,20 @@
    "personality": "youhua",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "库房重地，止步。",
+    "领药材要凭条子，一次只给三味。"
+   ],
+   "ask": [
+    {
+     "topic": "箱子",
+     "keywords": [
+      "上锁",
+      "两口"
+     ],
+     "answer": "屋里两口箱子上了锁，钥匙在山主腰上，谁也不许碰。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -15777,10 +15887,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「蛇奴见过师兄。」",
-    "「混口饭吃而已，别的我不管。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -15836,6 +15942,20 @@
    "personality": "baozhao",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "站在阶下，别乱看。",
+    "山上规矩，蛇奴不得带刀进殿。"
+   ],
+   "ask": [
+    {
+     "topic": "蛇胆",
+     "keywords": [
+      "端午",
+      "二十副"
+     ],
+     "answer": "端午前后取蛇胆，每月能凑二十副，山主自己用一半。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
