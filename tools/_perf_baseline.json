@@ -40,10 +40,10 @@
     "evidence": "tools/_re_perf.txt"
   },
   "calibration": {
-    "ms": 8.95,
+    "ms": 9.31,
     "k": 1,
     "workload": "CALIB_ITER=2000000",
-    "date": "2026-10-17",
+    "date": "2026-10-18",
     "note": "负载系数基准：B1 阈值按 本次标定/此值 缩放（封顶 2.0；>2 判环境过载未判）"
   }
 }
