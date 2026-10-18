@@ -3563,10 +3563,6 @@
       "home": "house:wd_village_old",
       "personality": "mune",
       "desc": "蹲在槐树底下，手里捏着根旱烟杆，烟早就灭了。",
-      "talk": [
-        "上山的路，天亮前走，天黑前下。",
-        "每年都有不听劝的。"
-      ],
       "age": 68,
       "likes": [
         "tea"
@@ -3586,6 +3582,20 @@
         "day": "wd_village_kou",
         "night": "wd_village_kou"
       },
+      "talk": [
+        "慢慢走，别急。",
+        "上山二十五里，天亮前走，天黑前下，晌午山上起雾。"
+      ],
+      "ask": [
+        {
+          "topic": "槐树",
+          "keywords": [
+            "槐树",
+            "六十年"
+          ],
+          "answer": "村口这棵槐树六十年了，树底下歇脚不要钱。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "C",
@@ -3888,10 +3898,6 @@
       "home": "house:em_village_tea",
       "personality": "wenwan",
       "desc": "围裙上落着一层茶渍，手上的铜壶擦得发亮。",
-      "talk": [
-        "一碗三文，续水不要钱。",
-        "上山前多喝一口，山上的水贵。"
-      ],
       "age": 51,
       "likes": [
         "tea"
@@ -3911,6 +3917,20 @@
         "day": "em_village_tea",
         "night": "em_village_yard"
       },
+      "talk": [
+        "坐，水刚开的。",
+        "茶三文管添水，饼两文一个，坐多久都行。"
+      ],
+      "ask": [
+        {
+          "topic": "柱子",
+          "keywords": [
+            "柱子",
+            "入秋"
+          ],
+          "answer": "棚子的柱子糟了半截，入秋要换，木料还没凑齐。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "C",

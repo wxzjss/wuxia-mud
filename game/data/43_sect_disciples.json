@@ -25,10 +25,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「副掌门见过师叔。」",
-    "「剑坪的落叶没人扫，我扫到东头，西头又落满了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -84,7 +80,21 @@
    "rank": 4,
    "personality": "mune",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "剑坪重地，脚步轻些。",
+    "青柯坪每天卯时开坪，剑招不熟的不许下场。"
+   ],
+   "ask": [
+    {
+     "topic": "松针",
+     "keywords": [
+      "松针",
+      "一筐"
+     ],
+     "answer": "今早松针落了一筐，扫拢了正好给灶下引火。"
+    }
+   ]
   },
   "disciple_huashan_1": {
    "id": "disciple_huashan_1",
@@ -986,10 +996,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「首座见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -1047,7 +1053,21 @@
    "rank": 3,
    "personality": "lengmo",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "施主，殿里止步。",
+    "天王殿的香，头炷三文，续香不要钱。"
+   ],
+   "ask": [
+    {
+     "topic": "扫地",
+     "keywords": [
+      "卯时",
+      "四筐"
+     ],
+     "answer": "卯时扫过一遍，到晌午又积了四筐落叶。"
+    }
+   ]
   },
   "disciple_wudang_0": {
    "id": "disciple_wudang_0",
@@ -3237,10 +3257,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「王子见过师叔。」",
-    "「段家马厩今早少了匹马，去看过，是自己跑出去的。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -3302,7 +3318,21 @@
    "rank": 4,
    "personality": "haoshuang",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "阁里潮，书别摊久。",
+    "段家的书不出阁，要看就在案前看，一日五本为限。"
+   ],
+   "ask": [
+    {
+     "topic": "马厩",
+     "keywords": [
+      "马厩",
+      "青马"
+     ],
+     "answer": "马厩今早少了一匹青马，缰绳是割断的。"
+    }
+   ]
   },
   "disciple_dali_1": {
    "id": "disciple_dali_1",
@@ -3320,10 +3350,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「统领见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -3385,7 +3411,21 @@
    "rank": 3,
    "personality": "mune",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "石阶滑，扶铁索。",
+    "这一段共四十二级，巡山一日两趟，卯时与申时。"
+   ],
+   "ask": [
+    {
+     "topic": "红绳",
+     "keywords": [
+      "老树",
+      "褪色"
+     ],
+     "answer": "老树上那根红绳褪色了，成了粉色，去年三月拴的。"
+    }
+   ]
   },
   "disciple_dali_2": {
    "id": "disciple_dali_2",
@@ -3403,10 +3443,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「校尉见过师兄。」",
-    "「寺后的茶树发芽了，采头一茬得趁这几天。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -3468,7 +3504,21 @@
    "rank": 2,
    "personality": "xiayi",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "林里风紧，跟紧我。",
+    "应乐峰的茶花，头茬要趁露水没干采，过了辰时就不值钱。"
+   ],
+   "ask": [
+    {
+     "topic": "石缝",
+     "keywords": [
+      "石缝",
+      "呜呜"
+     ],
+     "answer": "风过石缝就呜呜响，磨圆的那几道声音最沉。"
+    }
+   ]
   },
   "disciple_dali_3": {
    "id": "disciple_dali_3",
@@ -3486,10 +3536,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「近卫见过师叔。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -3551,7 +3597,21 @@
    "rank": 1,
    "personality": "haoshuang",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "亭里歇脚，别动柴。",
+    "半山亭的水囊是公用，喝完了要补满，一囊三瓢。"
+   ],
+   "ask": [
+    {
+     "topic": "柴堆",
+     "keywords": [
+      "柴堆",
+      "三捆"
+     ],
+     "answer": "亭后柴堆只剩三捆，明早得下山背一趟。"
+    }
+   ]
   },
   "disciple_dali_4": {
    "id": "disciple_dali_4",
@@ -3569,10 +3629,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「侍卫见过师兄。」",
-    "「经书晒了一上午，收晚了就潮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -3635,7 +3691,21 @@
    "personality": "mune",
    "tier": "A",
    "job": "disciple",
-   "sidequest": "sqd_dali"
+   "sidequest": "sqd_dali",
+   "talk": [
+    "脚下留神，树根多。",
+    "这条林道走一趟半个时辰，落叶积半寸，雨天更慢。"
+   ],
+   "ask": [
+    {
+     "topic": "晒经",
+     "keywords": [
+      "经书",
+      "一上午"
+     ],
+     "answer": "经书晒了一上午，日头偏西就得收。"
+    }
+   ]
   },
   "disciple_dali_5": {
    "id": "disciple_dali_5",
@@ -3653,10 +3723,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「统领见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -3718,7 +3784,21 @@
    "rank": 3,
    "personality": "xiayi",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "泉边排队，别插队。",
+    "这眼泉一天接二十担，先给伙房，余下的才轮值房。"
+   ],
+   "ask": [
+    {
+     "topic": "石槽",
+     "keywords": [
+      "石槽",
+      "三年"
+     ],
+     "answer": "石槽沿口磨圆了，是三年里一担担磨出来的。"
+    }
+   ]
   },
   "disciple_tangmen_0": {
    "id": "disciple_tangmen_0",
@@ -4666,10 +4746,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「亲传弟子见过师叔。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -4731,6 +4807,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "渡口风大，站稳。",
+    "岛上的渡船只早晚两趟，辰时出，酉时回，误了就在林里等。"
+   ],
+   "ask": [
+    {
+     "topic": "箫声",
+     "keywords": [
+      "箫声",
+      "一停"
+     ],
+     "answer": "箫声一停，就只剩水声，听惯了倒睡不着。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -6625,10 +6715,6 @@
    "speed": 68,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「岛民见过师兄。」",
-    "「这一趟我们押的是药，路上要是遇见劫道的，你帮不帮？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -6688,6 +6774,20 @@
    "personality": "youhua",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "石室里别点火。",
+    "岛上淡水金贵，一人一天两瓢，多要拿鱼换。"
+   ],
+   "ask": [
+    {
+     "topic": "蝌蚪文",
+     "keywords": [
+      "石壁",
+      "一句"
+     ],
+     "answer": "石壁上的蝌蚪文，看半天认不出一句整话。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -7046,10 +7146,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「外门弟子见过师兄。」",
-    "「师叔说我的斧劈功夫还欠火候，让我先劈一个月柴。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -7106,6 +7202,20 @@
    "tier": "B",
    "job": "disciple",
    "sidequest": "sqd_taishan",
+   "talk": [
+    "库房重地，报门派。",
+    "藏宝阁的兵器三个月上一次油，一次领二两桐油。"
+   ],
+   "ask": [
+    {
+     "topic": "木牌",
+     "keywords": [
+      "木牌",
+      "名目"
+     ],
+     "answer": "每格插一片木牌，写着名目，少一片就要查半天。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -7481,10 +7591,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「外门弟子见过师兄。」",
-    "「今日山下有人送来一筐杏，分了半筐给厨房。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -7541,6 +7647,20 @@
    "tier": "B",
    "job": "disciple",
    "sidequest": "sqd_hengshan",
+   "talk": [
+    "阁里不许喧哗。",
+    "衡山的剑谱锁在第三格，钥匙在掌门手里，取一次记一笔。"
+   ],
+   "ask": [
+    {
+     "topic": "杏",
+     "keywords": [
+      "杏",
+      "半筐"
+     ],
+     "answer": "山下送来一筐杏，分给厨房半筐，剩下的搁不住。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -7916,10 +8036,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「记名弟子见过师兄。」",
-    "「师姐让我看着炉子，药煎糊了要挨说的。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -7976,6 +8092,20 @@
    "tier": "B",
    "job": "disciple",
    "sidequest": "sqd_hengshanN",
+   "talk": [
+    "灯还亮着，小声些。",
+    "阁里长明灯一晚一盏，油一月领四十文，短了要自己补。"
+   ],
+   "ask": [
+    {
+     "topic": "药炉",
+     "keywords": [
+      "药炉",
+      "糊"
+     ],
+     "answer": "师姐让我看药炉，火大了药就糊，糊了要挨说。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -8351,10 +8481,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「外门弟子见过师兄。」",
-    "「茶炉上的水开了半晌，师兄还没回来。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -8411,6 +8537,20 @@
    "tier": "B",
    "job": "disciple",
    "sidequest": "sqd_qingcheng",
+   "talk": [
+    "青城的路，慢些走。",
+    "阁中兵刃按门派分架，青城的剑在左手第三架。"
+   ],
+   "ask": [
+    {
+     "topic": "茶炉",
+     "keywords": [
+      "茶炉",
+      "两回"
+     ],
+     "answer": "茶炉上的水开了两回，师兄下山还没回来。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -8786,10 +8926,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「外门弟子见过师兄。」",
-    "「山上的雪水接了满满一缸，够用三天。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -8846,6 +8982,20 @@
    "tier": "B",
    "job": "disciple",
    "sidequest": "sqd_kongtong",
+   "talk": [
+    "报门派，再进门。",
+    "崆峒的七伤拳谱不存阁里，架上只有刀枪和伤药。"
+   ],
+   "ask": [
+    {
+     "topic": "雪水",
+     "keywords": [
+      "雪水",
+      "三天"
+     ],
+     "answer": "山上的雪水接了一缸，够喝三天，用完再化。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -9221,10 +9371,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「外门弟子见过师兄。」",
-    "「檐下的干肉冻硬了，得拿进来回回温。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -9281,6 +9427,20 @@
    "tier": "B",
    "job": "disciple",
    "sidequest": "sqd_kunlun",
+   "talk": [
+    "昆仑的锁，别乱碰。",
+    "宝阁的钥匙在掌门身上，开一次要两个执事在场。"
+   ],
+   "ask": [
+    {
+     "topic": "干肉",
+     "keywords": [
+      "干肉",
+      "回温"
+     ],
+     "answer": "檐下的干肉冻硬了，拿进灶边回一回温才切得动。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -10105,10 +10265,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师兄。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -10167,6 +10323,20 @@
    "tier": "B",
    "job": "disciple",
    "sidequest": "sqd_tiezhang",
+   "talk": [
+    "铁掌帮的地界，别乱走。",
+    "帮里走一趟镖抽两成，伤了药钱自理，死了抚恤十两。"
+   ],
+   "ask": [
+    {
+     "topic": "腰牌",
+     "keywords": [
+      "腰牌",
+      "铜的"
+     ],
+     "answer": "腰牌是铜的，进门要亮，丢了得找堂主补。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -10544,10 +10714,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「外门见过师兄。」",
-    "「混口饭吃而已，别的我不管。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -10604,6 +10770,20 @@
    "tier": "B",
    "job": "disciple",
    "sidequest": "sqd_hehuan",
+   "talk": [
+    "别问，问了就得知道。",
+    "合欢宗的名册在阁后柜里，写上去容易，抹掉要见血。"
+   ],
+   "ask": [
+    {
+     "topic": "名册",
+     "keywords": [
+      "名册",
+      "一页"
+     ],
+     "answer": "名册上我那一页还空着半行，早晚要填满。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -11889,10 +12069,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「趟子手见过师兄。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -11948,6 +12124,20 @@
    "personality": "baozhao",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "镖旗底下，站直了。",
+    "镇远的镖一趟抽两成，路上折了货，趟子手赔一半。"
+   ],
+   "ask": [
+    {
+     "topic": "镖旗",
+     "keywords": [
+      "镖旗",
+      "三回"
+     ],
+     "answer": "镖旗补过三回，老局主说旗在人在。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -16081,10 +16271,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师兄。」",
-    "「你要动手我陪你，可别指望我先动。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -16140,6 +16326,20 @@
    "personality": "mune",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "库房重地，脚步轻。",
+    "伏牛派的拳，先练三年桩，桩没站稳不教招式。"
+   ],
+   "ask": [
+    {
+     "topic": "箱子",
+     "keywords": [
+      "箱子",
+      "半开"
+     ],
+     "answer": "屋里的箱子盖半开着，里头是旧兵器，登记过三回。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -16378,10 +16578,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师兄。」",
-    "「你要动手我陪你，可别指望我先动。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -16437,6 +16633,20 @@
    "personality": "mune",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "刀门规矩，先报师承。",
+    "百胜刀门的刀，一人一把，磨刀石公用，一月换一块。"
+   ],
+   "ask": [
+    {
+     "topic": "刀鞘",
+     "keywords": [
+      "铜扣",
+      "发亮"
+     ],
+     "answer": "鞘上的铜扣每天擦得发亮，师父说刀不快，扣不能暗。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",

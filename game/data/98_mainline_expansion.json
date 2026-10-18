@@ -733,10 +733,6 @@
       "home": "house:cy_pre_gravedigger",
       "personality": "mune",
       "desc": "背驼得像一座小山。他扫坟的时候，扫帚压着地皮走，一点土都不扬。",
-      "talk": [
-        "坟头草我拔了三回。",
-        "埋在这儿的人，家里人再没来过。"
-      ],
       "age": 66,
       "likes": [
         "tea"
@@ -765,6 +761,20 @@
       "quests": [
         "sq_pre_a5_mubei",
         "q_bounty_boar"
+      ],
+      "talk": [
+        "坟头草，我拔。",
+        "这片坡埋了四十七座坟，最老的那座碑是三十年前的。"
+      ],
+      "ask": [
+        {
+          "topic": "新坟",
+          "keywords": [
+            "新坟",
+            "两座"
+          ],
+          "answer": "今年坡上添了两座新坟，碑还空着，等人来刻。"
+        }
       ],
       "portrait": {
         "v": 1,
@@ -964,10 +974,6 @@
       "home": "house:cy_pre_interpreter",
       "personality": "wenwan",
       "desc": "衣裳是浆过的，袖口却磨白了。他说话每个字都放得很正。",
-      "talk": [
-        "宫里的话，一个字都不能错。",
-        "你若要进那道门，先想清楚进去做什么。"
-      ],
       "age": 38,
       "likes": [
         "book"
@@ -995,6 +1001,20 @@
       "homeless": true,
       "quests": [
         "sq_pre_court_tongshi"
+      ],
+      "talk": [
+        "一个字都不能错。",
+        "鸿胪寺的通事，译一封信收二百文，错了要挨板子。"
+      ],
+      "ask": [
+        {
+          "topic": "宫墙",
+          "keywords": [
+            "宫墙",
+            "三里"
+          ],
+          "answer": "这道宫墙走三里才到头，墙根下不许停脚。"
+        }
       ],
       "portrait": {
         "v": 1,
@@ -1195,10 +1215,6 @@
       "home": "house:court_dowager",
       "personality": "wenwan",
       "desc": "手里捻着一串珠子，捻得很慢。她看人的时候，眼睛先看手。",
-      "talk": [
-        "宫里的规矩，比外头想的松，也比外头想的紧。",
-        "你从外头来，外头如今是什么光景？"
-      ],
       "age": 49,
       "likes": [
         "incense"
@@ -1224,6 +1240,20 @@
       "tier": "B",
       "district": "palace",
       "homeless": true,
+      "talk": [
+        "外头如今什么光景？",
+        "后宫份例，炭一月三十斤，米二十斗，过了冬至再加。"
+      ],
+      "ask": [
+        {
+          "topic": "更漏",
+          "keywords": [
+            "更漏",
+            "半刻"
+          ],
+          "answer": "宫里的更漏比外头慢半刻，守夜的人最知道。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -1262,10 +1292,6 @@
       "home": "house:court_emperor",
       "personality": "lengmo",
       "desc": "坐得很高，殿里却静得能听见更漏。他说话不看人，看殿门。",
-      "talk": [
-        "江湖的事，朕听得比你想的多。",
-        "你说一句真话，朕许你再说一句。"
-      ],
       "age": 33,
       "likes": [
         "incense"
@@ -1291,6 +1317,20 @@
       "tier": "B",
       "district": "palace",
       "homeless": true,
+      "talk": [
+        "你说一句真话。",
+        "太和殿早朝卯时三刻，奏事不过三件，过三件就散。"
+      ],
+      "ask": [
+        {
+          "topic": "地砖",
+          "keywords": [
+            "地砖",
+            "七十二"
+          ],
+          "answer": "殿里七十二根柱子，地砖每日擦一遍，一块不许有灰。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
