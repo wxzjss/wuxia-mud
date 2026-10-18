@@ -1199,7 +1199,41 @@
       "exits": {
         "u": "diancang_hall",
         "d": "dali_path5"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 洱海",
+          "label": "看 洱海",
+          "keywords": [
+            "洱海",
+            "崖底",
+            "水面"
+          ],
+          "desc": "看崖底的洱海",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖底是洱海，水面亮得晃眼。岸边的田一格一格，白墙的村子挤在田中间。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 石缝",
+          "label": "看 石缝",
+          "keywords": [
+            "石缝",
+            "香",
+            "崖壁"
+          ],
+          "desc": "看崖壁的石缝",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "石缝里插着半炷香，香头烧尽，灰还立着。"
+            }
+          ]
+        }
+      ]
     },
     "diancang_gate": {
       "id": "diancang_gate",
@@ -1221,7 +1255,41 @@
       "exits": {
         "s": "tangmen_path2",
         "n": "road_tangmen_1"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 台阶",
+          "label": "看 台阶",
+          "keywords": [
+            "台阶",
+            "阶面",
+            "石阶"
+          ],
+          "desc": "看颜色不同的几级阶",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "有几级阶面颜色发青，比两旁新。敲一敲，声音是空的。"
+            }
+          ]
+        },
+        {
+          "cmd": "摸 竹竿",
+          "label": "摸 竹竿",
+          "keywords": [
+            "竹竿",
+            "竹子",
+            "细棱"
+          ],
+          "desc": "摸路边的竹竿",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "手扶上竹竿，指下有一圈细棱，绕着竿子转了半圈。"
+            }
+          ]
+        }
+      ]
     },
     "tangmen_path2": {
       "id": "tangmen_path2",
@@ -1240,7 +1308,41 @@
         "风": "竹梢往一边倒，倒过去又弹回来。",
         "雾": "雾在竹子中间走，十步外看不见路。",
         "night": "林子黑得早，竹叶还在响。"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 竹痕",
+          "label": "看 竹痕",
+          "keywords": [
+            "竹痕",
+            "指痕",
+            "竹竿"
+          ],
+          "desc": "看竹竿上的指痕",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "竹竿上一道一道指痕，齐腰高，磨得发亮。最密的那几根，皮都透了。"
+            }
+          ]
+        },
+        {
+          "cmd": "翻 竹叶",
+          "label": "翻 竹叶",
+          "keywords": [
+            "竹叶",
+            "落叶",
+            "铁蒺藜"
+          ],
+          "desc": "翻开地上的竹叶",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "叶层翻开来，底下是黑泥。泥里嵌着两枚铁蒺藜。"
+            }
+          ]
+        }
+      ]
     },
     "tangmen_path3": {
       "id": "tangmen_path3",
@@ -1250,7 +1352,41 @@
       "exits": {
         "s": "tangmen_path4",
         "n": "tangmen_path2"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 柱子",
+          "label": "看 柱子",
+          "keywords": [
+            "柱子",
+            "细线",
+            "亭柱"
+          ],
+          "desc": "看亭柱上的线",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "柱身上有一圈细线，绕着过去，摸不出接头。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 柴堆",
+          "label": "看 柴堆",
+          "keywords": [
+            "柴堆",
+            "柴",
+            "圆孔"
+          ],
+          "desc": "看亭里的柴",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "柴堆得齐，最外那根木头上有个圆孔，孔里塞着布。"
+            }
+          ]
+        }
+      ]
     },
     "tangmen_path4": {
       "id": "tangmen_path4",
@@ -1260,7 +1396,41 @@
       "exits": {
         "s": "tangmen_path5",
         "n": "tangmen_path3"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 铜钉",
+          "label": "看 铜钉",
+          "keywords": [
+            "铜钉",
+            "钉子",
+            "树"
+          ],
+          "desc": "看树身上的铜钉",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "树身上钉着一枚铜钉，钉帽磨得平，看不出做什么用。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 路面",
+          "label": "看 路面",
+          "keywords": [
+            "路面",
+            "浅沟",
+            "新土"
+          ],
+          "desc": "看路当中的沟",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "路当中有道浅沟，横着过去，沟里填的是新土。"
+            }
+          ]
+        }
+      ]
     },
     "tangmen_path5": {
       "id": "tangmen_path5",
@@ -1270,7 +1440,41 @@
       "exits": {
         "s": "tangmen_path6",
         "n": "tangmen_path4"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 石槽",
+          "label": "看 石槽",
+          "keywords": [
+            "石槽",
+            "细槽",
+            "水"
+          ],
+          "desc": "看石槽的边",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "槽沿内侧有一道细槽，水从槽里分出一股，往旁边去了。"
+            }
+          ]
+        },
+        {
+          "cmd": "尝 泉水",
+          "label": "尝 泉水",
+          "keywords": [
+            "尝水",
+            "泉水",
+            "水"
+          ],
+          "desc": "尝一口泉水",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "水在舌上有一点苦，过后舌根发麻。"
+            }
+          ]
+        }
+      ]
     },
     "tangmen_path6": {
       "id": "tangmen_path6",
@@ -1280,7 +1484,41 @@
       "exits": {
         "s": "tangmen_gate",
         "n": "tangmen_path5"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 铁环",
+          "label": "看 铁环",
+          "keywords": [
+            "铁环",
+            "崖壁",
+            "钉子"
+          ],
+          "desc": "看崖壁上的铁环",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖壁上钉着几枚铁环，间隔一样，环上没绳。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 屋脊",
+          "label": "看 屋脊",
+          "keywords": [
+            "屋脊",
+            "唐门",
+            "青瓦"
+          ],
+          "desc": "往下看唐门的屋脊",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "往下看，唐门的屋脊一层压一层，青瓦上晒着几匾药材。"
+            }
+          ]
+        }
+      ]
     },
     "road_tangmen_1": {
       "id": "road_tangmen_1",
@@ -1331,7 +1569,41 @@
       "exits": {
         "s": "miaojiang_path2",
         "n": "road_miao_1"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 药束",
+          "label": "看 药束",
+          "keywords": [
+            "药束",
+            "干药",
+            "草绳"
+          ],
+          "desc": "看棚柱上的药束",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "棚柱上挂的干药束用草绳捆着，绳结打得很紧。凑近闻，是艾。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 草棚",
+          "label": "看 草棚",
+          "keywords": [
+            "草棚",
+            "陶罐",
+            "罐"
+          ],
+          "desc": "看半腰的草棚",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "草棚里搁着一口陶罐，罐口盖着芭蕉叶，叶边压了石头。"
+            }
+          ]
+        }
+      ]
     },
     "miaojiang_path2": {
       "id": "miaojiang_path2",
@@ -1350,7 +1622,41 @@
         "风": "气根一齐往一边摆。",
         "雾": "雾贴着坪子走，榕树只剩个影子。",
         "night": "树荫底下比外头先黑。"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 气根",
+          "label": "看 气根",
+          "keywords": [
+            "气根",
+            "树根",
+            "榕树"
+          ],
+          "desc": "看垂下来的气根",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "垂下来的气根有手指粗，末端发白。够着地的那几条，已经扎进土里。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 树洞",
+          "label": "看 树洞",
+          "keywords": [
+            "树洞",
+            "银铃",
+            "洞"
+          ],
+          "desc": "看榕树根间的洞",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "榕树根间有个洞，洞里铺着干草，草上压着一枚银铃。"
+            }
+          ]
+        }
+      ]
     },
     "miaojiang_path3": {
       "id": "miaojiang_path3",
@@ -1360,7 +1666,41 @@
       "exits": {
         "s": "miaojiang_path4",
         "n": "miaojiang_path2"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 红布",
+          "label": "看 红布",
+          "keywords": [
+            "红布",
+            "布",
+            "亭柱"
+          ],
+          "desc": "看柱上缠的布",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "柱上缠过红布，布烂了，只剩几缕缠在钉子上。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 火塘",
+          "label": "看 火塘",
+          "keywords": [
+            "火塘",
+            "灰",
+            "炭"
+          ],
+          "desc": "看亭心的火塘",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "亭心有个火塘，灰是冷的，灰里埋着几个炭头。"
+            }
+          ]
+        }
+      ]
     },
     "miaojiang_path4": {
       "id": "miaojiang_path4",
@@ -1370,7 +1710,41 @@
       "exits": {
         "s": "miaojiang_path5",
         "n": "miaojiang_path3"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 草结",
+          "label": "看 草结",
+          "keywords": [
+            "草结",
+            "打结",
+            "草"
+          ],
+          "desc": "看路边打结的草",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "路边的草打了结，结在齐膝高处，一连七八个。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 脚印",
+          "label": "看 脚印",
+          "keywords": [
+            "脚印",
+            "赤脚",
+            "泥"
+          ],
+          "desc": "看泥上的脚印",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "泥上有赤脚的印，脚趾分得开，步子短。"
+            }
+          ]
+        }
+      ]
     },
     "miaojiang_path5": {
       "id": "miaojiang_path5",
@@ -1380,7 +1754,41 @@
       "exits": {
         "s": "miaojiang_path6",
         "n": "miaojiang_path4"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 水面",
+          "label": "看 水面",
+          "keywords": [
+            "水面",
+            "水",
+            "薄灰"
+          ],
+          "desc": "看槽里的水",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "水上浮着一层薄灰，拨开，底下水是清的。"
+            }
+          ]
+        },
+        {
+          "cmd": "洗 手",
+          "label": "洗 手",
+          "keywords": [
+            "洗手",
+            "水",
+            "手"
+          ],
+          "desc": "就着泉水洗手",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "水凉，手背上的汗一冲就没了。指缝里留着一点药味。"
+            }
+          ]
+        }
+      ]
     },
     "miaojiang_path6": {
       "id": "miaojiang_path6",
@@ -1390,7 +1798,41 @@
       "exits": {
         "s": "miaojiang_sheng",
         "n": "miaojiang_path5"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 梯田",
+          "label": "看 梯田",
+          "keywords": [
+            "梯田",
+            "田",
+            "崖下"
+          ],
+          "desc": "看崖下的梯田",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "梯田从崖脚一层层叠上来，每层都蓄着水。田埂上走着一个人，背着篓。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 纸钱",
+          "label": "看 纸钱",
+          "keywords": [
+            "纸钱",
+            "石头",
+            "崖边"
+          ],
+          "desc": "看崖边的石头",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖边垒着几块石头，石头底下压着纸钱。"
+            }
+          ]
+        }
+      ]
     },
     "road_miao_1": {
       "id": "road_miao_1",
@@ -1412,7 +1854,41 @@
       "exits": {
         "s": "gaibang_path2",
         "n": "road_gaibang_1"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 刻痕",
+          "label": "看 刻痕",
+          "keywords": [
+            "刻痕",
+            "栏石",
+            "道子"
+          ],
+          "desc": "看栏石上的刻痕",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "栏石上的刻痕五道一组，一组一组排下去。末尾几组刻得浅。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 碎瓦",
+          "label": "看 碎瓦",
+          "keywords": [
+            "碎瓦",
+            "瓦片",
+            "阶"
+          ],
+          "desc": "看阶缝里的瓦片",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "阶是碎石拼的，缝里填瓦片。有一块瓦是新换的，颜色还红。"
+            }
+          ]
+        }
+      ]
     },
     "gaibang_path2": {
       "id": "gaibang_path2",
@@ -1431,7 +1907,41 @@
         "风": "布条一齐飘起来，方向是一样的。",
         "雾": "雾里只看得见前头两步的棘条。",
         "night": "棘条刮衣服的声音听着比白天近。"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 布条",
+          "label": "看 布条",
+          "keywords": [
+            "布条",
+            "布",
+            "棘条"
+          ],
+          "desc": "看棘条上的布条",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "棘条上挂的布条颜色不一，新的那条是靛蓝，边上还留着针脚。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 棘刺",
+          "label": "看 棘刺",
+          "keywords": [
+            "棘刺",
+            "刺",
+            "倒钩"
+          ],
+          "desc": "看棘条上的刺",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "棘刺有倒钩，勾住袖子就不放。刺尖是黑的。"
+            }
+          ]
+        }
+      ]
     },
     "gaibang_path3": {
       "id": "gaibang_path3",
@@ -1441,7 +1951,41 @@
       "exits": {
         "s": "gaibang_path4",
         "n": "gaibang_path2"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 刻字",
+          "label": "看 刻字",
+          "keywords": [
+            "刻字",
+            "柱子",
+            "丐"
+          ],
+          "desc": "看柱上的刻字",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "柱子上刻着一个碗口大的「丐」字，刻得歪。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 破席",
+          "label": "看 破席",
+          "keywords": [
+            "破席",
+            "席子",
+            "补丁"
+          ],
+          "desc": "看亭角的破席",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "亭角卷着一领破席，席上补了三块不同色的布。"
+            }
+          ]
+        }
+      ]
     },
     "gaibang_path4": {
       "id": "gaibang_path4",
@@ -1451,7 +1995,41 @@
       "exits": {
         "s": "gaibang_path5",
         "n": "gaibang_path3"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 树皮",
+          "label": "看 树皮",
+          "keywords": [
+            "树皮",
+            "炭画",
+            "记号"
+          ],
+          "desc": "看削过的树皮",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "树皮让刀削去一片，露出白茬，上面用炭画着两道横。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 酒坛",
+          "label": "看 酒坛",
+          "keywords": [
+            "酒坛",
+            "空坛",
+            "路面"
+          ],
+          "desc": "看路边的空酒坛",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "路面有一处被踩得发亮，草都伏了。旁边扔着几只空酒坛。"
+            }
+          ]
+        }
+      ]
     },
     "gaibang_path5": {
       "id": "gaibang_path5",
@@ -1488,7 +2066,41 @@
       "exits": {
         "s": "gaibang_po_miao",
         "n": "gaibang_path5"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 浮桥",
+          "label": "看 浮桥",
+          "keywords": [
+            "浮桥",
+            "河",
+            "桥板"
+          ],
+          "desc": "看崖下的河",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖底有条河，河上架着浮桥，桥板少了两块。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 浅窝",
+          "label": "看 浅窝",
+          "keywords": [
+            "浅窝",
+            "干饼",
+            "崖壁"
+          ],
+          "desc": "看崖壁上的窝",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "崖壁上掏了个浅窝，窝里搁着半块干饼。"
+            }
+          ]
+        }
+      ]
     },
     "road_gaibang_1": {
       "id": "road_gaibang_1",
@@ -1510,7 +2122,41 @@
       "exits": {
         "s": "gumu_path2",
         "n": "gumu_shan"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 石坊",
+          "label": "看 石坊",
+          "keywords": [
+            "石坊",
+            "牌坊",
+            "凿痕"
+          ],
+          "desc": "看阶尽头的石坊",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "石坊上没有字，枋上凿过字的地方用錾子凿平了，凿痕还在。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 落叶",
+          "label": "看 落叶",
+          "keywords": [
+            "落叶",
+            "叶子",
+            "阶"
+          ],
+          "desc": "踩一踩阶上的落叶",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "落叶踩上去不响，底下压着前年的那层，颜色发黑。"
+            }
+          ]
+        }
+      ]
     },
     "gumu_path2": {
       "id": "gumu_path2",
@@ -1529,7 +2175,41 @@
         "风": "林子里没什么风，碑缝里的草在动。",
         "雾": "雾到脚面那么高，碑面露在外头。",
         "night": "碑是凉的，坐着凉，站着不觉得。"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 平碑",
+          "label": "看 平碑",
+          "keywords": [
+            "碑",
+            "碑面",
+            "平碑"
+          ],
+          "desc": "看平放的碑",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "碑面朝天平放，字磨平了大半。用袖子擦一擦，能照见人影。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 碑阵",
+          "label": "看 碑阵",
+          "keywords": [
+            "碑阵",
+            "碑",
+            "缝"
+          ],
+          "desc": "看铺过去的碑",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "碑一块接一块铺过去，缝里长着细草，草的高度一样齐。"
+            }
+          ]
+        }
+      ]
     },
     "gumu_path3": {
       "id": "gumu_path3",
@@ -1539,7 +2219,41 @@
       "exits": {
         "s": "gumu_path4",
         "n": "gumu_path2"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 亭柱",
+          "label": "看 亭柱",
+          "keywords": [
+            "亭柱",
+            "柱子",
+            "漆"
+          ],
+          "desc": "看亭柱",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "柱上的漆掉光了，剩几道红。柱脚让水泡得发黑。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 石桌",
+          "label": "看 石桌",
+          "keywords": [
+            "石桌",
+            "棋盘",
+            "石子"
+          ],
+          "desc": "看亭里的石桌",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "亭里有张石桌，桌面刻着棋盘，棋子是石子，摆到一半。"
+            }
+          ]
+        }
+      ]
     },
     "gumu_path4": {
       "id": "gumu_path4",
@@ -1549,7 +2263,41 @@
       "exits": {
         "s": "gumu_path5",
         "n": "gumu_path3"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 蜂窝",
+          "label": "看 蜂窝",
+          "keywords": [
+            "蜂窝",
+            "蜂",
+            "树杈"
+          ],
+          "desc": "看树杈上的蜂窝",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "树杈上挂着个蜂窝，蜂进出不停。树下地上落着几只死蜂。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 拖痕",
+          "label": "看 拖痕",
+          "keywords": [
+            "拖痕",
+            "草",
+            "路面"
+          ],
+          "desc": "看路面上的拖痕",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "路面上有一道拖痕，草压平了，一直拖进林子。"
+            }
+          ]
+        }
+      ]
     },
     "gumu_path5": {
       "id": "gumu_path5",
@@ -1559,7 +2307,41 @@
       "exits": {
         "s": "gumu_path6",
         "n": "gumu_path4"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "看 水面",
+          "label": "看 水面",
+          "keywords": [
+            "水面",
+            "水",
+            "叶子"
+          ],
+          "desc": "看槽里的水",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "水面一片叶子也没有，槽底的石子粒粒分明。"
+            }
+          ]
+        },
+        {
+          "cmd": "喝 泉水",
+          "label": "喝 泉水",
+          "keywords": [
+            "喝水",
+            "泉水",
+            "水"
+          ],
+          "desc": "喝一口泉水",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "水甜，凉得慢，咽下去胸口不紧。"
+            }
+          ]
+        }
+      ]
     },
     "gumu_path6": {
       "id": "gumu_path6",
