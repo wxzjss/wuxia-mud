@@ -1055,10 +1055,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「首座见过师叔。」",
-    "「打坐的蒲团旧了，换新的得下山去购。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -1120,7 +1116,21 @@
    "rank": 4,
    "personality": "mune",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "少侠从哪条路来？",
+    "山门早课卯时起，晚课酉时散。"
+   ],
+   "ask": [
+    {
+     "topic": "后山",
+     "keywords": [
+      "松林",
+      "四十棵"
+     ],
+     "answer": "后山那片松林，今年补种了四十棵。"
+    }
+   ]
   },
   "disciple_wudang_1": {
    "id": "disciple_wudang_1",
@@ -1231,10 +1241,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「三代弟子见过师兄。」",
-    "「师弟的剑谱抄错了两页，得重抄。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -1296,7 +1302,21 @@
    "rank": 2,
    "personality": "lengmo",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "山风大，进殿说话。",
+    "拜师要过三关，最难过的是站桩。"
+   ],
+   "ask": [
+    {
+     "topic": "折扇",
+     "keywords": [
+      "师父",
+      "扇骨"
+     ],
+     "answer": "我那把折扇是师父给的，扇骨断了三根。"
+    }
+   ]
   },
   "disciple_wudang_3": {
    "id": "disciple_wudang_3",
@@ -1397,10 +1417,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「记名弟子见过师兄。」",
-    "「殿前的香灰今早才清，又有香客上了三炷。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -1463,7 +1479,21 @@
    "personality": "wenwan",
    "tier": "A",
    "job": "disciple",
-   "sidequest": "sqd_wudang"
+   "sidequest": "sqd_wudang",
+   "talk": [
+    "师弟看着面生。",
+    "记名弟子一月下山两回，采买米盐。"
+   ],
+   "ask": [
+    {
+     "topic": "下山",
+     "keywords": [
+      "初八",
+      "抄书"
+     ],
+     "answer": "上月初八下山，回来晚了半日，被罚抄书。"
+    }
+   ]
   },
   "disciple_wudang_5": {
    "id": "disciple_wudang_5",
@@ -1641,10 +1671,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「静字辈见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -1700,7 +1726,21 @@
    "rank": 3,
    "personality": "wenwan",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "师姐妹们在里头说笑。",
+    "入门先剃度，三年后才许学剑。"
+   ],
+   "ask": [
+    {
+     "topic": "杜鹃",
+     "keywords": [
+      "三月",
+      "上香"
+     ],
+     "answer": "山门的杜鹃三月开，来上香的人多。"
+    }
+   ]
   },
   "disciple_emei_2": {
    "id": "disciple_emei_2",
@@ -4935,10 +4975,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「掌门弟子见过师叔。」",
-    "「琴弦断了一根，山下才有卖的，得托人捎。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -4995,6 +5031,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "灯别挡着，往边上站。",
+    "长明灯一夜添三次油，一次半盏。"
+   ],
+   "ask": [
+    {
+     "topic": "灯芯",
+     "keywords": [
+      "灯芯",
+      "十六根"
+     ],
+     "answer": "这灯芯换得勤，一月要十六根。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -5139,10 +5189,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「弟子见过师兄。」",
-    "「这一遍功练完，手上还得捂半个时辰才回暖。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -5201,6 +5247,20 @@
    "tier": "B",
    "job": "disciple",
    "sidequest": "sqd_gumu",
+   "talk": [
+    "让让，扫到这边了。",
+    "墓前石阶一百二十级，一日扫两遍。"
+   ],
+   "ask": [
+    {
+     "topic": "扫帚",
+     "keywords": [
+      "包浆",
+      "十一年"
+     ],
+     "answer": "扫帚柄磨出包浆，用了十一年，换过两回竹枝。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",

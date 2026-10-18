@@ -218,10 +218,6 @@
       "sect": "gumu",
       "rank": 5,
       "desc": "空着的那边袖子，风一过就鼓起来，又瘪下去。脸上扣着半张面具。他也不摘，跟你说话也不摘。",
-      "talk": [
-        "我的事，与你无关。",
-        "这世上好人不多，你算一个也好。"
-      ],
       "personality": "lengmo",
       "likes": [
         "wine"
@@ -264,6 +260,24 @@
         "day": "gumu_mu",
         "night": "gumu_mu"
       },
+      "skills": {
+        "拳": "anran_xiaohunzhang",
+        "内功": "jiuyin_zhenjing"
+      },
+      "talk": [
+        "墓里凉，站久了就知道。",
+        "我不教人功夫。要学，先去外头吃三年苦。"
+      ],
+      "ask": [
+        {
+          "topic": "外头",
+          "keywords": [
+            "走了十年",
+            "墓道"
+          ],
+          "answer": "我在外头走了十年，回来还是这条墓道。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "A",
@@ -287,10 +301,6 @@
             "act": "坐在墓前的石阶上，一只袖管垂着，动也不动"
           }
         ]
-      },
-      "skills": {
-        "拳": "anran_xiaohunzhang",
-        "内功": "jiuyin_zhenjing"
       }
     },
     "xiao_longnv": {
@@ -303,10 +313,6 @@
       "sect": "gumu",
       "rank": 5,
       "desc": "白衣服。洗得很旧了，还是很白。人站在墙根暗处，你不留神，就看不出那儿还站着个人。",
-      "talk": [
-        "墓里清净。",
-        "你要走，就顺着那条道走。"
-      ],
       "personality": "lengmo",
       "likes": [
         "flower"
@@ -345,6 +351,23 @@
         "day": "gumu_mu",
         "night": "gumu_mu"
       },
+      "skills": {
+        "内功": "jiuyin_zhenjing"
+      },
+      "talk": [
+        "你从哪儿进来的？",
+        "寒玉床一日只卧两个时辰，多卧伤身。"
+      ],
+      "ask": [
+        {
+          "topic": "日子",
+          "keywords": [
+            "初几",
+            "不认得"
+          ],
+          "answer": "外头的日子我不认得，只记得今日初几。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "A",
@@ -368,9 +391,6 @@
             "act": "在寒玉床边上坐着，一动不动"
           }
         ]
-      },
-      "skills": {
-        "内功": "jiuyin_zhenjing"
       }
     },
     "li_mochou": {
