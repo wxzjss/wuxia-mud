@@ -481,6 +481,54 @@
       "trailing": true,
       "canonical": true,
       "bytes": 253950
+    },
+    "103_act1_rework.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "bytes": 4333
+    },
+    "104_birth_polish.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "bytes": 2230
+    },
+    "105_skill_effects.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "bytes": 50867
+    },
+    "106_skill_moves.json": {
+      "bom": false,
+      "char": " ",
+      "width": 1,
+      "eol": "\n",
+      "trailing": false,
+      "bytes": 45972
+    },
+    "63_mainline_act1.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "bytes": 4995
+    },
+    "69_juan2_s3.json": {
+      "bom": false,
+      "char": " ",
+      "width": 2,
+      "eol": "\n",
+      "trailing": true,
+      "bytes": 47504
     }
   }
 }
