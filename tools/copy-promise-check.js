@@ -46,6 +46,14 @@ function auditLine(line, ctx) {
     /* 既不是指令也不是物品：只有在「承诺句」里才算违规（避免把描述性引文误判） */
     if (PROMISE.test(line)) bad.push(`提示里的解法「${t}」既不在指令表、也不是物品`);
   }
+  /* ★ 防空承诺（QA 复核补的盲点）：提示里一个「」都没有时，上面两层都不会触发，
+     断言会变成「没东西可判」的假绿。文案「金创药能止住」正是这种形态。
+     规则：凡是「能止住/可止住/能止血」的句子，必须点名至少一个**真实物品**。 */
+  if (/(能止住|可止住|能止血)/.test(line)) {
+    const named = [...ctx.itemNameToId.keys()].some(n => line.includes(n));
+    if (!named) bad.push('承诺句没有点名任何真实物品（防空承诺）');
+  }
+
   /* 不带「」但直接写物品名 + 承诺词：也要验效果 */
   for (const [name, id] of ctx.itemNameToId) {
     if (!line.includes(name)) continue;
@@ -74,10 +82,17 @@ function auditLine(line, ctx) {
   const ctx = { cmdSet, itemNameToId, canCure };
 
   /* P3 先跑反例自检：判定器必须能抓住旧文案 */
-  const oldCopy = '（金创药或「包扎」能止住。）';
-  const oldBad = auditLine(oldCopy, ctx);
-  ok('P3 反例自检：旧文案里的「包扎」会被判红（守卫不是永远绿）',
-    oldBad.some(x => x.includes('包扎')), oldBad.join('；') || '(未判红)');
+  /* 反例自检做成牙口表：负样本必须红、正样本必须绿，防「没东西可判」的假绿 */
+  const teeth = [
+    ['（金创药或「包扎」能止住。）', true],   // 引号里的未知词
+    ['（能止住。）', true],                  // 没点名任何物品
+    ['（包扎能止住。）', true],              // 点名了不存在的物品
+    ['（金创药能止住。）', false],           // 真物品 + 真效果
+    ['（血在流。）', false],                 // 不是承诺句，不误报
+  ];
+  const teethBad = teeth.filter(([line, wantRed]) => (auditLine(line, ctx).length > 0) !== wantRed);
+  ok('P3 牙口自检：负样本全红、正样本全绿（守卫不是永远绿）',
+    teethBad.length === 0, teethBad.map(x => x[0]).join(' / ') || '5/5 符合预期');
 
   /* P1 静态扫描 core 全部源码 */
   const dir = path.join(ROOT, 'game', 'src', 'core');
@@ -96,6 +111,24 @@ function auditLine(line, ctx) {
   ok('P1 ★ 承诺句里的解法全部真实（指令存在 / 物品存在且有效）',
     violations.length === 0, violations.slice(0, 4).join(' ｜ '));
   ok('P1b 扫描不是空跑（确实扫到了承诺句）', scannedLines > 0, scannedLines + ' 行');
+
+  /* P1c 数据层扫描（2026-10-18 qa-lead 指出缺口）：NPC 台词/任务文案也在玩家眼前，
+     承诺句不能只在 core 里守。扫 game/data/*.json 的原文行，同一套判定。 */
+  const dataDir = path.join(ROOT, 'game', 'data');
+  const dataFiles = fs.readdirSync(dataDir).filter(f => f.endsWith('.json'));
+  const dataViolations = [];
+  let dataScanned = 0;
+  for (const f of dataFiles) {
+    const lines = fs.readFileSync(path.join(dataDir, f), 'utf8').split(/\r?\n/);
+    lines.forEach((line, i) => {
+      if (!PROMISE.test(line)) return;
+      dataScanned++;
+      for (const v of auditLine(line, ctx)) dataViolations.push(`${f}:${i + 1} ${v}`);
+    });
+  }
+  ok('P1c ★ 数据层（data/*.json）承诺句同样成立', dataViolations.length === 0,
+    dataViolations.slice(0, 3).join(' ｜ '));
+  ok('P1d 数据层扫描面非空（防漏扫/空跑）', dataFiles.length >= 40, dataFiles.length + ' 个 json');
 
   /* P2 行为验证：挂真 dot → 用金创药 → dot 消失 */
   {

@@ -83,6 +83,16 @@ const push = (item, name, pass, detail) => rows.push({ item, name, pass: pass ? 
       badTok.length === 0 && !/包扎/.test(hintText),
       'tokens=' + (hintTokens.join('/') || '(无)') + ' bad=' + (badTok.join('/') || '无'));
 
+    /* ★ 防空承诺（QA 补，2026-10-18）：动态抽取有个盲点——提示里一个「」都没有时，
+       badTok 恒为空，这条就永远绿。承诺句必须**点名至少一个真解法**，否则"能止住"就是空话。 */
+    {
+      const itemNames = Object.values(w.data.items || {}).filter((x) => x && x.name).map((x) => x.name);
+      const namedSolutions = itemNames.filter((n) => hintText.includes(n));
+      push('#3', '承诺句必须点名至少一个真解法（防空承诺：不许只说"能止住"不说用什么）',
+        /能止住|可止住|能止血/.test(hintText) ? namedSolutions.length >= 1 : true,
+        '点名的解法=' + (namedSolutions.join('/') || '(无)') + ' | 提示=' + hintText.slice(0, 40));
+    }
+
     w.giveItem(p, 'jinchuang_yao', 2);
     const med = (p.inventory || []).find((x) => x.id === 'jinchuang_yao');
     let medText = '';
@@ -97,6 +107,34 @@ const push = (item, name, pass, detail) => rows.push({ item, name, pass: pass ? 
     c.tickBuffs(p, tickAfterMed, battle);
     push('#3', '用药后下一回合不再渗血', (hpBeforeTick - p.hp) === 0, '仍掉 ' + (hpBeforeTick - p.hp) + ' 点');
     battle.over = true; w.battle = null;
+  }
+
+  /* ---- #3c 数据层承诺句（NPC 台词 / 任务文案里说"X 能止住"也要核）----
+     现有 copy-promise-check 只扫 game/src/core，数据 JSON 不在扫描面（目前 0 命中，
+     所以现在不漏；但这层迟早会有人写进去）。此处补一条只读扫描。 */
+  {
+    const PROMISE = /(能止住|可止住|能止血|能解毒|可解毒|能化解|能治|可治|能清|可清)/;
+    const cmdSet = new Set(Object.keys((e.cmds && e.cmds.CMD) || {}));
+    const itemNames = Object.values(w.data.items || {}).filter((x) => x && x.name).map((x) => x.name);
+    const dataDir = path.join(ROOT, 'game', 'data');
+    const files = fs.readdirSync(dataDir).filter((f) => f.endsWith('.json'));
+    const bad = [];
+    let hits = 0, lines = 0;
+    for (const f of files) {
+      const raw = fs.readFileSync(path.join(dataDir, f), 'utf8').split(/\r?\n/);
+      lines += raw.length;
+      raw.forEach((line, i) => {
+        if (!PROMISE.test(line)) return;
+        hits++;
+        for (const m of line.matchAll(/「([^」]+)」/g)) {
+          const tk = m[1];
+          if (cmdSet.has(tk) || itemNames.some((n) => n === tk || n.includes(tk) || tk.includes(n))) continue;
+          bad.push(f + ':' + (i + 1) + ' 「' + tk + '」');
+        }
+      });
+    }
+    push('#3', '数据层承诺句里的解法可核（不在指令表也不是物品即红）', bad.length === 0, '扫 ' + files.length + ' 文件/' + lines + ' 行，承诺行 ' + hits + '，违规 ' + (bad.slice(0, 3).join(' ; ') || 0));
+    push('#3', '数据层扫描面非空（防空跑假绿）', files.length > 0 && lines > 1000, files.length + ' 文件 / ' + lines + ' 行');
   }
 
   /* ================= #9 切磋 ================= */
