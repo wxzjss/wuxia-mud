@@ -31,6 +31,8 @@ function ok(name, cond, extra) {
 }
 
 const PROMISE = /(能止住|可止住|能止血|能解毒|可解毒|能化解|能治|可治|能清|可清)/;
+/** 注释行不是玩家可见文案；P1 扫描与 P1e 断言共用同一谓词（避免两处口径漂移）。 */
+const isCommentLine = (line) => /^\s*(\/\/|\*|\/\*)/.test(String(line || ''));
 
 /** 判定一行文案里的「解法」是否真实存在/有效；返回违规描述数组 */
 function auditLine(line, ctx) {
@@ -47,7 +49,13 @@ function auditLine(line, ctx) {
        技能自称能治/能疗/能救/能解毒，其 effects（含 moves[].effects）必须有 heal 或 cure。 */
     const skill = [...ctx.skillNameToId.keys()].find(n => t.includes(n) || n.includes(t));
     if (skill) {
-      if (/能治|可治|能疗|能救|能解毒|可解毒|能止住|可止住|能止血/.test(line) && !ctx.canHeal(skill)) {
+      /* 止血类承诺若同句已点名"真能止血的物品"，这句承诺由物品兑现，不再连坐技能
+         （QA 复核 2026-10-18：`（金创药能止血，再练基本拳脚。）` 曾把技能误判成红）。 */
+      const bleedByItem = /能止住|可止住|能止血/.test(line)
+        && [...ctx.itemNameToId.keys()].some(n => line.includes(n) && ctx.canCure(n));
+      const promiseOnSkill = /能治|可治|能疗|能救|能解毒|可解毒/.test(line)
+        || (/能止住|可止住|能止血/.test(line) && !bleedByItem);
+      if (promiseOnSkill && !ctx.canHeal(skill)) {
         bad.push(`技能「${skill}」声称能治，但 effects 没有 heal/cure`);
       }
       continue;
@@ -73,10 +81,18 @@ function auditLine(line, ctx) {
   }
   /* ★ 技能同理（对称补）：文本里直接写技能名、不加「」，一样要验 effects 里有没有 heal/cure。
      QA 2026-10-18 实测：只写在引号分支里时，「基本拳脚能治」这类会被漏判成绿。 */
-  for (const [name, id] of ctx.skillNameToId) {
-    if (!line.includes(name)) continue;
-    if (/能治|可治|能疗|能救|能解毒|可解毒|能止住|可止住|能止血/.test(line) && !ctx.canHeal(name) && !ctx.canHeal(id)) {
-      if (!bad.some(x => x.includes(name))) bad.push(`技能「${name}」声称能治，但 effects 没有 heal/cure`);
+  {
+    const bleedByItem = /能止住|可止住|能止血/.test(line)
+      && [...ctx.itemNameToId.keys()].some(n => line.includes(n) && ctx.canCure(n));
+    const promiseOnSkill = /能治|可治|能疗|能救|能解毒|可解毒/.test(line)
+      || (/能止住|可止住|能止血/.test(line) && !bleedByItem);
+    if (promiseOnSkill) {
+      for (const [name, id] of ctx.skillNameToId) {
+        if (!line.includes(name)) continue;
+        if (!ctx.canHeal(name) && !ctx.canHeal(id)) {
+          if (!bad.some(x => x.includes(name))) bad.push(`技能「${name}」声称能治，但 effects 没有 heal/cure`);
+        }
+      }
     }
   }
   return bad;
@@ -126,6 +142,8 @@ function auditLine(line, ctx) {
     const plainName = names.find(n => !canHeal(n));
     if (plainName) teeth.push(['（' + plainName + '能治。）', true]);   // 技能存在但无 heal/cure → 必红
     if (healName) teeth.push(['（' + healName + '能治。）', false]);   // 技能真带 heal → 必绿
+    if (plainName) teeth.push(['（金创药能止血，再练' + plainName + '。）', false]); // 物品已兑现，技能不连坐
+    if (plainName) teeth.push(['（' + plainName + '能止血。）', true]); // 技能自己承诺止血但无 heal → 必红
   }
   const teethBad = teeth.filter(([line, wantRed]) => (auditLine(line, ctx).length > 0) !== wantRed);
   ok('P3 牙口自检：负样本全红、正样本全绿（含物品与技能两组）',
@@ -139,15 +157,22 @@ function auditLine(line, ctx) {
   for (const f of files) {
     const lines = fs.readFileSync(path.join(dir, f), 'utf8').split(/\r?\n/);
     lines.forEach((line, i) => {
-      if (!PROMISE.test(line)) return;
-      if (!/[「"]/.test(line) && ![...itemNameToId.keys()].some(n => line.includes(n))) return;
+      /* 注释行不是玩家可见文案：整行注释直接跳过，行尾注释先剥掉再判
+         （否则在代码里写一句"旧文案示例：（包扎能止血）"也会被判红）。 */
+      if (isCommentLine(line)) return;
+      const codeOnly = line.replace(/\/\/.*$/, '');
+      if (!PROMISE.test(codeOnly)) return;
+      if (!/[「"]/.test(codeOnly) && ![...itemNameToId.keys()].some(n => codeOnly.includes(n))) return;
       scannedLines++;
-      for (const v of auditLine(line, ctx)) violations.push(`${f}:${i + 1} ${v}`);
+      for (const v of auditLine(codeOnly, ctx)) violations.push(`${f}:${i + 1} ${v}`);
     });
   }
   ok('P1 ★ 承诺句里的解法全部真实（指令存在 / 物品存在且有效）',
     violations.length === 0, violations.slice(0, 4).join(' ｜ '));
   ok('P1b 扫描不是空跑（确实扫到了承诺句）', scannedLines > 0, scannedLines + ' 行');
+  ok('P1e 注释行不参与判定（防文档例句被判红）',
+    isCommentLine('// 旧文案示例：（包扎能止血。）') && isCommentLine('  * 说明：金创药能止住') && !isCommentLine('const msg = "（金创药能止住。）";'),
+    '注释/代码两态判定正确');
 
   /* P1c 数据层扫描（2026-10-18 qa-lead 指出缺口；team-lead 批的口径）：
      扫 game/data/*.json，但 **JSON.parse 后只遍历字符串值**，不按原文行扫——
