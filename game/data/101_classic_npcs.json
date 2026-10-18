@@ -838,10 +838,6 @@
       "sect": "taohua",
       "rank": 5,
       "desc": "头发白了一半，衣襟敞着，腰带早不知道丢哪儿去了。手闲不住，这会儿正搓一片树叶，搓碎了，抖抖手，接着搓。",
-      "talk": [
-        "陪我玩一盘！",
-        "不玩？不玩我可要生气了。"
-      ],
       "personality": "haoshuang",
       "likes": [
         "food"
@@ -884,6 +880,25 @@
         "day": "taohuadao_forest",
         "night": "taohuadao_forest"
       },
+      "skills": {
+        "内功": "jiuyin_zhenjing",
+        "拳": "kongming_quan",
+        "轻功": "lingbo_weibu"
+      },
+      "talk": [
+        "来来来，陪我玩。",
+        "我教你一手，你陪我打三局。"
+      ],
+      "ask": [
+        {
+          "topic": "岔路",
+          "keywords": [
+            "四十遍",
+            "没走通"
+          ],
+          "answer": "这林子我走了四十遍，还差一条没走通，多半在西边。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "A",
@@ -907,11 +922,6 @@
             "act": "在林子空地上左手打右手，打得尘土飞扬"
           }
         ]
-      },
-      "skills": {
-        "内功": "jiuyin_zhenjing",
-        "拳": "kongming_quan",
-        "轻功": "lingbo_weibu"
       }
     },
     "xiao_feng": {
@@ -1189,10 +1199,6 @@
       "room": "gusu_yanzi",
       "home": "house:wang_yuyan",
       "desc": "书卷在手里攥着，攥得紧，一页都没翻开过。人站得笔直。你一动，她的眼就跟着动，动得比你快。",
-      "talk": [
-        "这一招该往左半步。啊，我没练过。",
-        "你别笑我，我只会说。"
-      ],
       "personality": "wenwan",
       "likes": [
         "book"
@@ -1218,6 +1224,20 @@
         "day": "gusu_yanzi",
         "night": "gusu_yanzi"
       },
+      "talk": [
+        "你身上有伤。",
+        "天下武功我都认得，使不出来。"
+      ],
+      "ask": [
+        {
+          "topic": "书",
+          "keywords": [
+            "慕容家",
+            "十二年"
+          ],
+          "answer": "慕容家的书，我看了十二年。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "A",

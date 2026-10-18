@@ -5648,10 +5648,6 @@
       "home": "house:cy_gs_yanzi_1",
       "personality": "yinzhi",
       "desc": "腰上挂着一排小工具，走一步碰出一串轻响。",
-      "talk": [
-        "活儿要做细，急不来。",
-        "看一眼不打紧，别碰。"
-      ],
       "age": 25,
       "likes": [
         "flower"
@@ -5677,6 +5673,20 @@
       "tier": "B",
       "district": "gusu",
       "homeless": true,
+      "talk": [
+        "园里的花别碰。",
+        "这园子一日扫两遍，落叶要装四筐。"
+      ],
+      "ask": [
+        {
+          "topic": "水渠",
+          "keywords": [
+            "三年",
+            "堵了两回"
+          ],
+          "answer": "廊下的水渠三年没清，今年堵了两回。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",

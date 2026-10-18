@@ -4653,10 +4653,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「入室弟子见过师兄。」",
-    "「这一趟我们押的是药，路上要是遇见劫道的，你帮不帮？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -4718,6 +4714,20 @@
    "personality": "wenwan",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "林子里别乱走。",
+    "桃林八条岔路，走错一条要绕半个时辰。"
+   ],
+   "ask": [
+    {
+     "topic": "阵",
+     "keywords": [
+      "三月初三",
+      "换"
+     ],
+     "answer": "师父布的阵，每年三月初三换一回。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -4760,10 +4770,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「记名弟子见过师兄。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -4826,6 +4832,20 @@
    "tier": "B",
    "job": "disciple",
    "sidequest": "sqd_taohua",
+   "talk": [
+    "洞里不许点灯。",
+    "抄经一日五页，墨自己磨。"
+   ],
+   "ask": [
+    {
+     "topic": "玉箫",
+     "keywords": [
+      "石桌",
+      "不许碰"
+     ],
+     "answer": "石桌上那支箫，师父不许人碰。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -5839,10 +5859,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「弟子首见过师叔。」",
-    "「混口饭吃而已，别的我不管。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -5904,6 +5920,20 @@
    "personality": "yinzhi",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "新来的？站到队尾。",
+    "门里不养闲人，一日劈三百斤柴。"
+   ],
+   "ask": [
+    {
+     "topic": "跑人",
+     "keywords": [
+      "师弟",
+      "打断腿"
+     ],
+     "answer": "前日有个师弟跑了，追回来打断腿。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -6298,10 +6328,6 @@
    "speed": 68,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「岛民见过师叔。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -6362,6 +6388,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_xiake",
+   "talk": [
+    "让开些，挡光了。",
+    "参壁一日坐六个时辰，腿麻得站不起来。"
+   ],
+   "ask": [
+    {
+     "topic": "石壁",
+     "keywords": [
+      "第三行",
+      "七年"
+     ],
+     "answer": "这壁上第三行，我看了七年也没看懂，字是反的。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
