@@ -1,0 +1,2691 @@
+{
+  "skills": {
+    "luohan_atk_1": {
+      "effects": [
+        {
+          "type": "heal",
+          "value": 30
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.18
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "香灰迷眼·罗汉",
+              "mods": {
+                "parry": -10
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "luohan_qimen_1": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "卸力·罗汉",
+          "mods": {
+            "def": -14
+          },
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.15
+          },
+          "then": [
+            {
+              "type": "silence",
+              "chance": 1,
+              "turns": 1
+            }
+          ]
+        }
+      ]
+    },
+    "luohan_atk_2": {
+      "effects": [
+        {
+          "type": "heal",
+          "value": 40
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.18
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "香灰迷眼·罗汉",
+              "mods": {
+                "parry": -14
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "luohan_qimen_2": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "卸力·罗汉",
+          "mods": {
+            "def": -18
+          },
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.18
+          },
+          "then": [
+            {
+              "type": "silence",
+              "chance": 1,
+              "turns": 1
+            }
+          ]
+        }
+      ]
+    },
+    "luohan_atk_3": {
+      "effects": [
+        {
+          "type": "heal",
+          "value": 50
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.18
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "香灰迷眼·罗汉",
+              "mods": {
+                "parry": -18
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "luohan_qimen_3": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "卸力·罗汉",
+          "mods": {
+            "def": -22
+          },
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.22
+          },
+          "then": [
+            {
+              "type": "silence",
+              "chance": 1,
+              "turns": 1
+            }
+          ]
+        }
+      ]
+    },
+    "wuliang_atk_1": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 10,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.12
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    "wuliang_qimen_1": {
+      "effects": [
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.12
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "type": "debuff",
+          "name": "剑滞·无量",
+          "mods": {
+            "speed": -8
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "wuliang_atk_2": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 14,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.16
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    "wuliang_qimen_2": {
+      "effects": [
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.16
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "type": "debuff",
+          "name": "剑滞·无量",
+          "mods": {
+            "speed": -12
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "wuliang_atk_3": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 18,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    "wuliang_qimen_3": {
+      "effects": [
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "type": "debuff",
+          "name": "剑滞·无量",
+          "mods": {
+            "speed": -16
+          },
+          "turns": 2
+        },
+        {
+          "type": "ignoreDef"
+        }
+      ]
+    },
+    "jindao_atk_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·金刀",
+          "value": 18,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·金刀",
+              "mods": {
+                "def": -14
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "jindao_qimen_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·金刀",
+          "value": 18,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.2
+        }
+      ]
+    },
+    "jindao_atk_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·金刀",
+          "value": 22,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.24
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·金刀",
+              "mods": {
+                "def": -18
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "jindao_qimen_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·金刀",
+          "value": 22,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.25
+        }
+      ]
+    },
+    "jindao_atk_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·金刀",
+          "value": 26,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.28
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·金刀",
+              "mods": {
+                "def": -22
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "jindao_qimen_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·金刀",
+          "value": 26,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.3
+        },
+        {
+          "type": "debuff",
+          "name": "断筋·金刀",
+          "mods": {
+            "def": -22
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "wuhu_atk_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·五虎",
+          "value": 18,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·五虎",
+              "mods": {
+                "def": -14
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "wuhu_qimen_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·五虎",
+          "value": 18,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.2
+        }
+      ]
+    },
+    "wuhu_atk_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·五虎",
+          "value": 22,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.24
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·五虎",
+              "mods": {
+                "def": -18
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "wuhu_qimen_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·五虎",
+          "value": 22,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.25
+        }
+      ]
+    },
+    "wuhu_atk_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·五虎",
+          "value": 26,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.28
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·五虎",
+              "mods": {
+                "def": -22
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "wuhu_qimen_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·五虎",
+          "value": 26,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.3
+        },
+        {
+          "type": "debuff",
+          "name": "断筋·五虎",
+          "mods": {
+            "def": -22
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "feihu_atk_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·飞虎",
+          "value": 18,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·飞虎",
+              "mods": {
+                "def": -14
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "feihu_qimen_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·飞虎",
+          "value": 18,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.2
+        }
+      ]
+    },
+    "feihu_atk_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·飞虎",
+          "value": 22,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.24
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·飞虎",
+              "mods": {
+                "def": -18
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "feihu_qimen_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·飞虎",
+          "value": 22,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.25
+        }
+      ]
+    },
+    "feihu_atk_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·飞虎",
+          "value": 26,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.28
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·飞虎",
+              "mods": {
+                "def": -22
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "feihu_qimen_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·飞虎",
+          "value": 26,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.3
+        },
+        {
+          "type": "debuff",
+          "name": "断筋·飞虎",
+          "mods": {
+            "def": -22
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "zhenyuan_atk_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·镇远",
+          "value": 18,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·镇远",
+              "mods": {
+                "def": -14
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "zhenyuan_qimen_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·镇远",
+          "value": 18,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.2
+        }
+      ]
+    },
+    "zhenyuan_atk_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·镇远",
+          "value": 22,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.24
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·镇远",
+              "mods": {
+                "def": -18
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "zhenyuan_qimen_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·镇远",
+          "value": 22,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.25
+        }
+      ]
+    },
+    "zhenyuan_atk_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·镇远",
+          "value": 26,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.28
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·镇远",
+              "mods": {
+                "def": -22
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "zhenyuan_qimen_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·镇远",
+          "value": 26,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.3
+        },
+        {
+          "type": "debuff",
+          "name": "断筋·镇远",
+          "mods": {
+            "def": -22
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "kuaidao_atk_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·快刀",
+          "value": 18,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·快刀",
+              "mods": {
+                "def": -14
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "kuaidao_qimen_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·快刀",
+          "value": 18,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.2
+        }
+      ]
+    },
+    "kuaidao_atk_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·快刀",
+          "value": 22,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.24
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·快刀",
+              "mods": {
+                "def": -18
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "kuaidao_qimen_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·快刀",
+          "value": 22,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.25
+        }
+      ]
+    },
+    "kuaidao_atk_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·快刀",
+          "value": 26,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.28
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·快刀",
+              "mods": {
+                "def": -22
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "kuaidao_qimen_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·快刀",
+          "value": 26,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.3
+        },
+        {
+          "type": "debuff",
+          "name": "断筋·快刀",
+          "mods": {
+            "def": -22
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "baisheng_atk_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·百胜",
+          "value": 18,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·百胜",
+              "mods": {
+                "def": -14
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "baisheng_qimen_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·百胜",
+          "value": 18,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.2
+        }
+      ]
+    },
+    "baisheng_atk_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·百胜",
+          "value": 22,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.24
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·百胜",
+              "mods": {
+                "def": -18
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "baisheng_qimen_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·百胜",
+          "value": 22,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.25
+        }
+      ]
+    },
+    "baisheng_atk_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·百胜",
+          "value": 26,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.28
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·百胜",
+              "mods": {
+                "def": -22
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "baisheng_qimen_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·百胜",
+          "value": 26,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.3
+        },
+        {
+          "type": "debuff",
+          "name": "断筋·百胜",
+          "mods": {
+            "def": -22
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "dafeng_atk_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·大风",
+          "value": 18,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·大风",
+              "mods": {
+                "def": -14
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "dafeng_qimen_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·大风",
+          "value": 18,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.2
+        }
+      ]
+    },
+    "dafeng_atk_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·大风",
+          "value": 22,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.24
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·大风",
+              "mods": {
+                "def": -18
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "dafeng_qimen_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·大风",
+          "value": 22,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.25
+        }
+      ]
+    },
+    "dafeng_atk_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·大风",
+          "value": 26,
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.28
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "破甲·大风",
+              "mods": {
+                "def": -22
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "dafeng_qimen_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "刀创·大风",
+          "value": 26,
+          "turns": 3
+        },
+        {
+          "type": "drain",
+          "ratio": 0.3
+        },
+        {
+          "type": "debuff",
+          "name": "断筋·大风",
+          "mods": {
+            "def": -22
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "tieqiang_atk_1": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 10,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·铁枪",
+              "mods": {
+                "parry": -10
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "tieqiang_qimen_1": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "棍压·铁枪",
+          "mods": {
+            "parry": -10
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·铁枪",
+          "mods": {
+            "speed": -8
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "tieqiang_atk_2": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 14,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.24
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·铁枪",
+              "mods": {
+                "parry": -14
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "tieqiang_qimen_2": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "棍压·铁枪",
+          "mods": {
+            "parry": -14
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·铁枪",
+          "mods": {
+            "speed": -12
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "tieqiang_atk_3": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 18,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.28
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·铁枪",
+              "mods": {
+                "parry": -18
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "tieqiang_qimen_3": {
+      "effects": [
+        {
+          "type": "aoe"
+        },
+        {
+          "type": "debuff",
+          "name": "棍压·铁枪",
+          "mods": {
+            "parry": -18
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·铁枪",
+          "mods": {
+            "speed": -16
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "huanghe_atk_1": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 10,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·黄河",
+              "mods": {
+                "parry": -10
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "huanghe_qimen_1": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "棍压·黄河",
+          "mods": {
+            "parry": -10
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·黄河",
+          "mods": {
+            "speed": -8
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "huanghe_atk_2": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 14,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.24
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·黄河",
+              "mods": {
+                "parry": -14
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "huanghe_qimen_2": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "棍压·黄河",
+          "mods": {
+            "parry": -14
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·黄河",
+          "mods": {
+            "speed": -12
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "huanghe_atk_3": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 18,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.28
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·黄河",
+              "mods": {
+                "parry": -18
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "huanghe_qimen_3": {
+      "effects": [
+        {
+          "type": "aoe"
+        },
+        {
+          "type": "debuff",
+          "name": "棍压·黄河",
+          "mods": {
+            "parry": -18
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·黄河",
+          "mods": {
+            "speed": -16
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "poyang_atk_1": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 10,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·鄱阳",
+              "mods": {
+                "parry": -10
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "poyang_qimen_1": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "棍压·鄱阳",
+          "mods": {
+            "parry": -10
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·鄱阳",
+          "mods": {
+            "speed": -8
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "poyang_atk_2": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 14,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.24
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·鄱阳",
+              "mods": {
+                "parry": -14
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "poyang_qimen_2": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "棍压·鄱阳",
+          "mods": {
+            "parry": -14
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·鄱阳",
+          "mods": {
+            "speed": -12
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "poyang_atk_3": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 18,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.28
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·鄱阳",
+              "mods": {
+                "parry": -18
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "poyang_qimen_3": {
+      "effects": [
+        {
+          "type": "aoe"
+        },
+        {
+          "type": "debuff",
+          "name": "棍压·鄱阳",
+          "mods": {
+            "parry": -18
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·鄱阳",
+          "mods": {
+            "speed": -16
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "taihu_atk_1": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 10,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·太湖",
+              "mods": {
+                "parry": -10
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "taihu_qimen_1": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "棍压·太湖",
+          "mods": {
+            "parry": -10
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·太湖",
+          "mods": {
+            "speed": -8
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "taihu_atk_2": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 14,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.24
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·太湖",
+              "mods": {
+                "parry": -14
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "taihu_qimen_2": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "棍压·太湖",
+          "mods": {
+            "parry": -14
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·太湖",
+          "mods": {
+            "speed": -12
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "taihu_atk_3": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 18,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.28
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·太湖",
+              "mods": {
+                "parry": -18
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "taihu_qimen_3": {
+      "effects": [
+        {
+          "type": "aoe"
+        },
+        {
+          "type": "debuff",
+          "name": "棍压·太湖",
+          "mods": {
+            "parry": -18
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·太湖",
+          "mods": {
+            "speed": -16
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "qingzhu_atk_1": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 10,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·青竹",
+              "mods": {
+                "parry": -10
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "qingzhu_qimen_1": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "棍压·青竹",
+          "mods": {
+            "parry": -10
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·青竹",
+          "mods": {
+            "speed": -8
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "qingzhu_atk_2": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 14,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.24
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·青竹",
+              "mods": {
+                "parry": -14
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "qingzhu_qimen_2": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "棍压·青竹",
+          "mods": {
+            "parry": -14
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·青竹",
+          "mods": {
+            "speed": -12
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "qingzhu_atk_3": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 18,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.28
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·青竹",
+              "mods": {
+                "parry": -18
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "qingzhu_qimen_3": {
+      "effects": [
+        {
+          "type": "aoe"
+        },
+        {
+          "type": "debuff",
+          "name": "棍压·青竹",
+          "mods": {
+            "parry": -18
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·青竹",
+          "mods": {
+            "speed": -16
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "jujing_atk_1": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 10,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·巨鲸",
+              "mods": {
+                "parry": -10
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "jujing_qimen_1": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "棍压·巨鲸",
+          "mods": {
+            "parry": -10
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·巨鲸",
+          "mods": {
+            "speed": -8
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "jujing_atk_2": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 14,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.24
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·巨鲸",
+              "mods": {
+                "parry": -14
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "jujing_qimen_2": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "棍压·巨鲸",
+          "mods": {
+            "parry": -14
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·巨鲸",
+          "mods": {
+            "speed": -12
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "jujing_atk_3": {
+      "effects": [
+        {
+          "type": "slow",
+          "value": 18,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.28
+          },
+          "then": [
+            {
+              "type": "debuff",
+              "name": "扫堂·巨鲸",
+              "mods": {
+                "parry": -18
+              },
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "jujing_qimen_3": {
+      "effects": [
+        {
+          "type": "aoe"
+        },
+        {
+          "type": "debuff",
+          "name": "棍压·巨鲸",
+          "mods": {
+            "parry": -18
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "滞步·巨鲸",
+          "mods": {
+            "speed": -16
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "baituo_atk_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "毒·白驼",
+          "value": 18,
+          "turns": 4
+        },
+        {
+          "type": "drain",
+          "ratio": 0.2
+        }
+      ]
+    },
+    "baituo_qimen_1": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "毒·白驼",
+          "value": 18,
+          "turns": 4
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.18
+          },
+          "then": [
+            {
+              "type": "silence",
+              "chance": 1,
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "baituo_atk_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "毒·白驼",
+          "value": 22,
+          "turns": 4
+        },
+        {
+          "type": "drain",
+          "ratio": 0.25
+        }
+      ]
+    },
+    "baituo_qimen_2": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "毒·白驼",
+          "value": 22,
+          "turns": 4
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.22
+          },
+          "then": [
+            {
+              "type": "silence",
+              "chance": 1,
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "baituo_atk_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "毒·白驼",
+          "value": 26,
+          "turns": 4
+        },
+        {
+          "type": "drain",
+          "ratio": 0.3
+        }
+      ]
+    },
+    "baituo_qimen_3": {
+      "effects": [
+        {
+          "type": "dot",
+          "name": "毒·白驼",
+          "value": 26,
+          "turns": 4
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.26
+          },
+          "then": [
+            {
+              "type": "silence",
+              "chance": 1,
+              "turns": 2
+            }
+          ]
+        },
+        {
+          "type": "drain",
+          "ratio": 0.3
+        }
+      ]
+    },
+    "wuyun_atk_1": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "缠丝·温家",
+          "mods": {
+            "speed": -8
+          },
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.1
+          },
+          "then": [
+            {
+              "type": "confuse",
+              "chance": 1,
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "wuyun_qimen_1": {
+      "effects": [
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.18
+          },
+          "then": [
+            {
+              "type": "confuse",
+              "chance": 1,
+              "turns": 2
+            }
+          ]
+        },
+        {
+          "type": "debuff",
+          "name": "卸劲·温家",
+          "mods": {
+            "atk": -8
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "wuyun_atk_2": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "缠丝·温家",
+          "mods": {
+            "speed": -12
+          },
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.13
+          },
+          "then": [
+            {
+              "type": "confuse",
+              "chance": 1,
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "wuyun_qimen_2": {
+      "effects": [
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.22
+          },
+          "then": [
+            {
+              "type": "confuse",
+              "chance": 1,
+              "turns": 2
+            }
+          ]
+        },
+        {
+          "type": "debuff",
+          "name": "卸劲·温家",
+          "mods": {
+            "atk": -12
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "wuyun_atk_3": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "缠丝·温家",
+          "mods": {
+            "speed": -16
+          },
+          "turns": 3
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.16
+          },
+          "then": [
+            {
+              "type": "confuse",
+              "chance": 1,
+              "turns": 2
+            }
+          ]
+        }
+      ]
+    },
+    "wuyun_qimen_3": {
+      "effects": [
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.26
+          },
+          "then": [
+            {
+              "type": "confuse",
+              "chance": 1,
+              "turns": 2
+            }
+          ]
+        },
+        {
+          "type": "debuff",
+          "name": "卸劲·温家",
+          "mods": {
+            "atk": -16
+          },
+          "turns": 2
+        },
+        {
+          "type": "debuff",
+          "name": "缠丝·温家",
+          "mods": {
+            "speed": -16
+          },
+          "turns": 2
+        }
+      ]
+    },
+    "shenquan_atk_1": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "崩劲·神拳",
+          "mods": {
+            "parry": -10
+          },
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.12
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    "shenquan_qimen_1": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "破门·神拳",
+          "mods": {
+            "def": -14
+          },
+          "turns": 3
+        },
+        {
+          "type": "slow",
+          "value": 10,
+          "turns": 2
+        }
+      ]
+    },
+    "shenquan_atk_2": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "崩劲·神拳",
+          "mods": {
+            "parry": -14
+          },
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.16
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    "shenquan_qimen_2": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "破门·神拳",
+          "mods": {
+            "def": -18
+          },
+          "turns": 3
+        },
+        {
+          "type": "slow",
+          "value": 14,
+          "turns": 2
+        }
+      ]
+    },
+    "shenquan_atk_3": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "崩劲·神拳",
+          "mods": {
+            "parry": -18
+          },
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    "shenquan_qimen_3": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "破门·神拳",
+          "mods": {
+            "def": -22
+          },
+          "turns": 3
+        },
+        {
+          "type": "slow",
+          "value": 18,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    "jinlong_atk_1": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "震腕·金龙",
+          "mods": {
+            "parry": -10
+          },
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.12
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    "jinlong_qimen_1": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "折锋·金龙",
+          "mods": {
+            "def": -14
+          },
+          "turns": 3
+        },
+        {
+          "type": "slow",
+          "value": 10,
+          "turns": 2
+        }
+      ]
+    },
+    "jinlong_atk_2": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "震腕·金龙",
+          "mods": {
+            "parry": -14
+          },
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.16
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    "jinlong_qimen_2": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "折锋·金龙",
+          "mods": {
+            "def": -18
+          },
+          "turns": 3
+        },
+        {
+          "type": "slow",
+          "value": 14,
+          "turns": 2
+        }
+      ]
+    },
+    "jinlong_atk_3": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "震腕·金龙",
+          "mods": {
+            "parry": -18
+          },
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    "jinlong_qimen_3": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "折锋·金龙",
+          "mods": {
+            "def": -22
+          },
+          "turns": 3
+        },
+        {
+          "type": "slow",
+          "value": 18,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    "funiu_atk_1": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "牛抵·伏牛",
+          "mods": {
+            "parry": -10
+          },
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.12
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    "funiu_qimen_1": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "撞山·伏牛",
+          "mods": {
+            "def": -14
+          },
+          "turns": 3
+        },
+        {
+          "type": "slow",
+          "value": 10,
+          "turns": 2
+        }
+      ]
+    },
+    "funiu_atk_2": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "牛抵·伏牛",
+          "mods": {
+            "parry": -14
+          },
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.16
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    "funiu_qimen_2": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "撞山·伏牛",
+          "mods": {
+            "def": -18
+          },
+          "turns": 3
+        },
+        {
+          "type": "slow",
+          "value": 14,
+          "turns": 2
+        }
+      ]
+    },
+    "funiu_atk_3": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "牛抵·伏牛",
+          "mods": {
+            "parry": -18
+          },
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    "funiu_qimen_3": {
+      "effects": [
+        {
+          "type": "debuff",
+          "name": "撞山·伏牛",
+          "mods": {
+            "def": -22
+          },
+          "turns": 3
+        },
+        {
+          "type": "slow",
+          "value": 18,
+          "turns": 2
+        },
+        {
+          "type": "cond",
+          "if": {
+            "chance": 0.2
+          },
+          "then": [
+            {
+              "type": "extraHit",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
