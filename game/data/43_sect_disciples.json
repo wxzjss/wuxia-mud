@@ -6935,10 +6935,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「内门弟子见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -6994,6 +6990,20 @@
    "personality": "wenwan",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "轻些，书页脆。",
+    "阁里抄经一天二十页，墨自己带，纸用阁里的。"
+   ],
+   "ask": [
+    {
+     "topic": "晒书",
+     "keywords": [
+      "第三架",
+      "半本"
+     ],
+     "answer": "前日晒书，第三架的《岱宗志》让雨打湿了半本。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -7360,10 +7370,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「内门弟子见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -7419,6 +7425,20 @@
    "personality": "wenwan",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "别碰琴，弦刚换。",
+    "衡山的谱子不借人，要听在阁里听，一曲三文。"
+   ],
+   "ask": [
+    {
+     "topic": "断弦",
+     "keywords": [
+      "后山",
+      "一半"
+     ],
+     "answer": "昨夜后山有人弹《潇湘》，弹到一半断了弦。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -7785,10 +7805,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「入门弟子见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -7844,6 +7860,20 @@
    "personality": "wenwan",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "灯下说话，小声。",
+    "阁里点长明灯，一晚三盏，油钱一月四十文。"
+   ],
+   "ask": [
+    {
+     "topic": "守灯",
+     "keywords": [
+      "窗缝",
+      "四更"
+     ],
+     "answer": "前日风从窗缝灌进来，吹灭两盏，我守到四更。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -8210,10 +8240,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「内门弟子见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -8269,6 +8295,20 @@
    "personality": "wenwan",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "鞋底的泥，擦干净。",
+    "阁里的剑谱不许抄，看一册要师叔点头。"
+   ],
+   "ask": [
+    {
+     "topic": "扫地",
+     "keywords": [
+      "三枚铜钱",
+      "没人认"
+     ],
+     "answer": "上月扫阁，扫出三枚铜钱，交上去没人认。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -8635,10 +8675,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「内门弟子见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -8694,6 +8730,20 @@
    "personality": "wenwan",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "手别扶架，架子松。",
+    "崆峒的拳谱分七卷，看一卷要养三天手。"
+   ],
+   "ask": [
+    {
+     "topic": "第七卷",
+     "keywords": [
+      "偷看",
+      "端不住碗"
+     ],
+     "answer": "前日有个师弟偷看第七卷，夜里手抖得端不住碗。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -9060,10 +9110,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「内门弟子见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -9119,6 +9165,20 @@
    "personality": "wenwan",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "山上冷，书也冷。",
+    "昆仑的谱子写在羊皮上，一年只许翻两回。"
+   ],
+   "ask": [
+    {
+     "topic": "大雪",
+     "keywords": [
+      "后窗",
+      "两盆炭"
+     ],
+     "answer": "前日大雪封了后窗，阁里点了两盆炭，还是冻手。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -9932,10 +9992,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「头目见过师兄。」",
-    "「这一趟我们押的是药，路上要是遇见劫道的，你帮不帮？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -9993,6 +10049,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "书库重地，报名字。",
+    "铁掌帮的册子记的是货，不是功夫，看一页十文。"
+   ],
+   "ask": [
+    {
+     "topic": "翻墙",
+     "keywords": [
+      "库后",
+      "一只鞋"
+     ],
+     "answer": "前夜有人翻墙，追到库后只捡到一只鞋。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -10363,10 +10433,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「内门见过师兄。」",
-    "「你也别装好人，这山路上谁干净过？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -10422,6 +10488,20 @@
    "personality": "youhua",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "别闻，架上有粉。",
+    "阁里的香谱配着毒，抄错一味，整页作废。"
+   ],
+   "ask": [
+    {
+     "topic": "配香",
+     "keywords": [
+      "半钱",
+      "整一天"
+     ],
+     "answer": "前日有个师妹配香，手抖撒了半钱，睡了整一天。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -10782,10 +10862,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师兄。」",
-    "「你要动手我陪你，可别指望我先动。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -10843,6 +10919,20 @@
    "personality": "mune",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "库房重地，退后。",
+    "金刀门的库三日一清点，刀胚按把数，少一把赔十两。"
+   ],
+   "ask": [
+    {
+     "topic": "盘库",
+     "keywords": [
+      "多出两把",
+      "半宿"
+     ],
+     "answer": "前日盘库多出两把刀胚，账上查了半宿。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -11083,10 +11173,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门人见过师兄。」",
-    "「你要动手我陪你，可别指望我先动。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -11142,6 +11228,20 @@
    "personality": "mune",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "看货可以，别上手。",
+    "库里的刀按鞘分，一等鞘配一等刀，不许乱换。"
+   ],
+   "ask": [
+    {
+     "topic": "丢刀",
+     "keywords": [
+      "七天",
+      "柴堆"
+     ],
+     "answer": "上月丢了把旧刀，门上查了七天，最后在柴堆里找着。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -11482,10 +11582,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「趟子手见过师兄。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -11541,6 +11637,20 @@
    "personality": "baozhao",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "镖旗底下，站直了。",
+    "飞虎镖局走一趟抽三成，路上丢了货，镖师赔一半。"
+   ],
+   "ask": [
+    {
+     "topic": "北道",
+     "keywords": [
+      "两拨",
+      "四十里"
+     ],
+     "answer": "前日押布走北道，遇上两拨劫道的，绕了四十里。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -11677,10 +11787,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「趟子手见过师兄。」",
-    "「这一趟我们押的是药，路上要是遇见劫道的，你帮不帮？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -11736,6 +11842,20 @@
    "personality": "youhua",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "箱子别碰，贴了封条。",
+    "镖局的箱子一箱二十件，封条写日子，少一件自己赔。"
+   ],
+   "ask": [
+    {
+     "topic": "开箱",
+     "keywords": [
+      "三匹绸",
+      "脸都青了"
+     ],
+     "answer": "前日开箱验货，里头少了三匹绸，镖头脸都青了。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -11964,10 +12084,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师兄。」",
-    "「你要动手我陪你，可别指望我先动。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -12023,6 +12139,20 @@
    "personality": "mune",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "报数，再开箱。",
+    "神拳门的库按季清，银子按封条入库，差一钱也要补。"
+   ],
+   "ask": [
+    {
+     "topic": "盘库",
+     "keywords": [
+      "四钱银",
+      "秤砣"
+     ],
+     "answer": "上月盘库少了四钱银，查到最后是秤砣磕掉一角。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -12261,10 +12391,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师兄。」",
-    "「你要动手我陪你，可别指望我先动。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -12320,6 +12446,20 @@
    "personality": "mune",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "枪架在门外，再进来。",
+    "库里的枪杆按长短排，三十六杆，一杆不许乱放。"
+   ],
+   "ask": [
+    {
+     "topic": "白蜡杆",
+     "keywords": [
+      "十根",
+      "没干透"
+     ],
+     "answer": "前日新到十根白蜡杆，晾了三天还没干透。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -12560,10 +12700,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师兄。」",
-    "「你要动手我陪你，可别指望我先动。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -12621,6 +12757,20 @@
    "personality": "mune",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "刀口朝里，别乱翻。",
+    "快刀门的刀一旬磨一次，磨石钱一月三十文。"
+   ],
+   "ask": [
+    {
+     "topic": "粗铁",
+     "keywords": [
+      "一担",
+      "五十文"
+     ],
+     "answer": "前日库房进了批粗铁，一担比上月贵了五十文。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -12861,10 +13011,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师兄。」",
-    "「你要动手我陪你，可别指望我先动。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -12920,6 +13066,20 @@
    "personality": "wenwan",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "库里的东西，别乱摸。",
+    "罗汉门的库分三层，最里那层只有掌门能开。"
+   ],
+   "ask": [
+    {
+     "topic": "铁锁",
+     "keywords": [
+      "锈住",
+      "半个时辰"
+     ],
+     "answer": "前日盘库，第三层的锁锈住了，砸了半个时辰。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -13158,10 +13318,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「外姓弟子见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -13217,6 +13373,20 @@
    "personality": "wenwan",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "皮子怕潮，门关上。",
+    "温家的库存皮货，一张貂皮值八两，潮了就废。"
+   ],
+   "ask": [
+    {
+     "topic": "漏雨",
+     "keywords": [
+      "库角",
+      "三张狐皮"
+     ],
+     "answer": "前日下雨，库角漏了水，泡坏三张狐皮。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -13455,10 +13625,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -13514,6 +13680,20 @@
    "personality": "mune",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "牌上写着名字，别拿错。",
+    "大风云的库按坊分，一坊一箱，取货要对牌。"
+   ],
+   "ask": [
+    {
+     "topic": "拿错箱",
+     "keywords": [
+      "门徒",
+      "半夜"
+     ],
+     "answer": "前日有个门徒拿错箱，翻到半夜才换回来。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -13752,10 +13932,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师兄。」",
-    "「这一趟我们押的是药，路上要是遇见劫道的，你帮不帮？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -13811,6 +13987,20 @@
    "personality": "youhua",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "夜里库房不留人。",
+    "黄河帮的货走水路，库里存的是纤绳与铁锚。"
+   ],
+   "ask": [
+    {
+     "topic": "河雾",
+     "keywords": [
+      "三趟",
+      "靠不了岸"
+     ],
+     "answer": "前夜河上起了雾，三趟货船靠不了岸。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -14049,10 +14239,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师兄。」",
-    "「这一趟我们押的是药，路上要是遇见劫道的，你帮不帮？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -14108,6 +14294,20 @@
    "personality": "youhua",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "领货的？牌呢。",
+    "太湖帮的库分鱼货与船料，鱼货三日一出清。"
+   ],
+   "ask": [
+    {
+     "topic": "坏鱼",
+     "keywords": [
+      "白鱼",
+      "半舱"
+     ],
+     "answer": "前日一船白鱼进库，冰块不够，坏了半舱。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -14346,10 +14546,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师兄。」",
-    "「这一趟我们押的是药，路上要是遇见劫道的，你帮不帮？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -14405,6 +14601,20 @@
    "personality": "youhua",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "库门开着，人别进。",
+    "鄱阳帮的库按船分，一条船一口箱，钥匙在舵主手里。"
+   ],
+   "ask": [
+    {
+     "topic": "争湖口",
+     "keywords": [
+      "两帮",
+      "六根"
+     ],
+     "answer": "上月两帮争湖口，库里的桨折了六根。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -14643,10 +14853,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师兄。」",
-    "「这一趟我们押的是药，路上要是遇见劫道的，你帮不帮？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -14702,6 +14908,20 @@
    "personality": "youhua",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "竹器怕火，火折子收好。",
+    "青竹帮的库堆竹料，一捆二十根，按捆记账。"
+   ],
+   "ask": [
+    {
+     "topic": "少竹",
+     "keywords": [
+      "三十捆",
+      "四根"
+     ],
+     "answer": "前日进了三十捆青竹，晾在场里，夜里少了四根。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -14940,10 +15160,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师兄。」",
-    "「这一趟我们押的是药，路上要是遇见劫道的，你帮不帮？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -14999,6 +15215,20 @@
    "personality": "youhua",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "鲸油的味道，忍一忍。",
+    "巨鲸帮的库存鲸油与缆绳，鲸油一坛八十文。"
+   ],
+   "ask": [
+    {
+     "topic": "空坛",
+     "keywords": [
+      "三坛",
+      "账上"
+     ],
+     "answer": "前日开坛，发现三坛见了底，账上却写着满的。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -15544,10 +15774,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「弟子见过师兄。」",
-    "「你要动手我陪你，可别指望我先动。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -15603,6 +15829,20 @@
    "personality": "mune",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "剑架上的，别碰。",
+    "无量剑派的库按东西宗分，东宗的剑不进西宗的门。"
+   ],
+   "ask": [
+    {
+     "topic": "借剑",
+     "keywords": [
+      "西宗",
+      "半个时辰"
+     ],
+     "answer": "前日西宗来借剑，东宗没给，两边在门口站了半个时辰。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",

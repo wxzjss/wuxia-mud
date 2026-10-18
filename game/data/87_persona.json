@@ -1329,7 +1329,21 @@
       "personality": "mune"
     },
     "npcv_224": {
-      "personality": "haoshuang"
+      "personality": "haoshuang",
+      "talk": [
+        "烧饼刚出炉，坐吧。",
+        "铺里的烧饼两文一个，粗茶三文，管饱。"
+      ],
+      "ask": [
+        {
+          "topic": "下套",
+          "keywords": [
+            "三个套",
+            "野兔"
+          ],
+          "answer": "前日进山下了三个套，只套着一只野兔。"
+        }
+      ]
     },
     "npcv_225": {
       "personality": "qienuo"

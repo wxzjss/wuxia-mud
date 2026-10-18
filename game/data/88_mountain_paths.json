@@ -3295,10 +3295,6 @@
       "home": "house:hs_village_tea",
       "personality": "wenwan",
       "desc": "围裙上落着一层茶渍，手上的铜壶擦得发亮。",
-      "talk": [
-        "一碗三文，续水不要钱。",
-        "上山前多喝一口，山上的水贵。"
-      ],
       "age": 51,
       "likes": [
         "tea"
@@ -3318,6 +3314,20 @@
         "day": "hs_village_tea",
         "night": "hs_village_yard"
       },
+      "talk": [
+        "坐，山风凉。",
+        "茶一碗三文，续水不要钱，饼子两文一个。"
+      ],
+      "ask": [
+        {
+          "topic": "上山",
+          "keywords": [
+            "十七个",
+            "九个"
+          ],
+          "answer": "今早上去山的有十七个，到晌午只下来九个。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "C",
@@ -3486,10 +3496,6 @@
       "home": "house:sl_village_tea",
       "personality": "wenwan",
       "desc": "围裙上落着一层茶渍，手上的铜壶擦得发亮。",
-      "talk": [
-        "一碗三文，续水不要钱。",
-        "上山前多喝一口，山上的水贵。"
-      ],
       "age": 51,
       "likes": [
         "tea"
@@ -3509,6 +3515,20 @@
         "day": "sl_village_tea",
         "night": "sl_village_yard"
       },
+      "talk": [
+        "歇脚么？长凳空着。",
+        "粗茶三文，姜汤五文，上山的人先喝姜汤。"
+      ],
+      "ask": [
+        {
+          "topic": "脚夫",
+          "keywords": [
+            "二十三碗",
+            "一队"
+          ],
+          "answer": "前日一队脚夫在这儿歇，喝了二十三碗茶。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "C",
@@ -3600,10 +3620,6 @@
       "home": "house:wd_village_porter",
       "personality": "haoshuang",
       "desc": "肩上搭着一条汗巾，脚下踩着一双草鞋，小腿上的青筋盘着。",
-      "talk": [
-        "一趟三十文，包上下。",
-        "价钱是死的，人是活的。"
-      ],
       "age": 34,
       "likes": [
         "wine"
@@ -3623,6 +3639,20 @@
         "day": "wd_village_yard",
         "night": "wd_village_tea"
       },
+      "talk": [
+        "碾子转着，别站道上。",
+        "挑货上山一趟三十文，挑到金顶加二十，不管饭。"
+      ],
+      "ask": [
+        {
+          "topic": "挑山",
+          "keywords": [
+            "两趟",
+            "半宿"
+          ],
+          "answer": "昨儿挑了两趟，肩膀磨破，夜里拿热巾敷了半宿。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "C",
@@ -3791,10 +3821,6 @@
       "home": "house:em_village_porter",
       "personality": "haoshuang",
       "desc": "肩上搭着一条汗巾，脚下踩着一双草鞋，小腿上的青筋盘着。",
-      "talk": [
-        "一趟三十文，包上下。",
-        "价钱是死的，人是活的。"
-      ],
       "age": 34,
       "likes": [
         "wine"
@@ -3814,6 +3840,20 @@
         "day": "em_village_yard",
         "night": "em_village_tea"
       },
+      "talk": [
+        "谷子刚摊开，绕着走。",
+        "打谷一天管两顿饭，工钱二十五文，天黑结。"
+      ],
+      "ask": [
+        {
+          "topic": "抢收",
+          "keywords": [
+            "急雨",
+            "二更"
+          ],
+          "answer": "前日一场急雨，抢收谷子，全村忙到二更。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "C",
