@@ -9431,6 +9431,186 @@
         "text": "剑庐没人应门，门石底下露出半截信角。",
         "region": "dali"
       }
+    ],
+    "sqd_funiu": [
+      {
+        "text": "南宫朔把棉衣数到第三遍，才在账上写了数。",
+        "region": "xiangyang"
+      }
+    ],
+    "sqd_baisheng": [
+      {
+        "text": "樟木箱一口口敞着盖，钥匙上的红绳换了新的。",
+        "region": "luoyang"
+      }
+    ],
+    "sqd_baituo": [
+      {
+        "text": "「左转。」焦六只说了这两个字，指了指三岔口。",
+        "region": "xixia"
+      }
+    ],
+    "sq_mojiao_dongfang": [
+      {
+        "text": "绣阁的灯亮到后半夜，针脚声没断过。",
+        "region": "mojiao"
+      }
+    ],
+    "sq_wen_black": [
+      {
+        "text": "炉灰盖住暗巷尽头的血渍，扫帚靠在墙根。",
+        "region": "secret"
+      }
+    ],
+    "q_main_sect": [
+      {
+        "text": "紫霄宫的香烧到一半，茶碗里的水没动过。",
+        "region": "wudang"
+      }
+    ],
+    "hk_npcv_208_feng": [
+      {
+        "text": "三条船靠了岸，缆绳在桩上多绕两圈。",
+        "region": "xiangyang"
+      }
+    ],
+    "hk_npcv_208_shaochuan": [
+      {
+        "text": "货栈的老账房翻到十年前那页，指头在船号上停住。",
+        "region": "harbor"
+      }
+    ],
+    "hk_npcv_091_xiangzi": [
+      {
+        "text": "箱子抬走了，后衙地上留着一块没沾灰的方印。",
+        "region": "yamen"
+      }
+    ],
+    "hk_npcv_091_mianao": [
+      {
+        "text": "差房的箱盖合上，镇纸压出一声轻响。",
+        "region": "yamen"
+      }
+    ],
+    "hk_npcv_174_tuntang": [
+      {
+        "text": "官仓门口的米袋换成了整袋，仓吏的鞋底沾着新糠。",
+        "region": "luoyang"
+      }
+    ],
+    "hk_npcv_174_zhangxin": [
+      {
+        "text": "仓门开了半扇，风把地上的碎米吹成一条线。",
+        "region": "luoyang"
+      }
+    ],
+    "hk_npcv_237_daoshang": [
+      {
+        "text": "通缉纸撕了，当铺墙上留着一圈浆糊印。",
+        "region": "chengdu"
+      }
+    ],
+    "hk_npcv_237_cheng": [
+      {
+        "text": "竹巷口堆着抵账的旧货，秤挂在门框上，砣上无尘。",
+        "region": "chengdu"
+      }
+    ],
+    "hk_npcv_248_jiushui": [
+      {
+        "text": "「账对上了。」俞初锁上冰窖的门，钥匙揣进袖里。",
+        "region": "xixia"
+      }
+    ],
+    "hk_npcv_215_yanyin": [
+      {
+        "text": "盐铺柜上的印盒忘了盖，印泥边留着一道纸痕。",
+        "region": "changan"
+      }
+    ],
+    "hk_npcv_215_mengming": [
+      {
+        "text": "日头落到山后，苗疆小店门口的药罐还晾着。",
+        "region": "miaojiang"
+      }
+    ],
+    "hk_npcv_083_guben": [
+      {
+        "text": "架阁库的书堆高了一册，最上头那本没有函套。",
+        "region": "yamen"
+      }
+    ],
+    "hk_npcv_083_gaizi": [
+      {
+        "text": "刮改处压着一张薄纸，卷宗重新捆过。",
+        "region": "yamen"
+      }
+    ],
+    "hk_npcv_036_juanzi": [
+      {
+        "text": "鲁拂衣把那一页翻过去，指腹在纸角按了按。",
+        "region": "shuyuan"
+      }
+    ],
+    "hk_npcv_036_kai": [
+      {
+        "text": "书架最里一排空出半指宽，灰尘断了一道线。",
+        "region": "shuyuan"
+      }
+    ],
+    "q_main_snow": [
+      {
+        "text": "藏经阁的窗纸亮到三更，经柜空出一格。",
+        "region": "shaolin"
+      }
+    ],
+    "q_main_moye": [
+      {
+        "text": "绣绷上的线断了一根，夹层的布边翻在外头。",
+        "region": "mojiao"
+      }
+    ],
+    "q_main_end": [
+      {
+        "text": "潮声退下去，清音洞的石桌上扣着一只空杯。",
+        "region": "taohuadao"
+      }
+    ],
+    "hk_bureau_clerk_ledger": [
+      {
+        "text": "胡录事把那格架子擦净，钥匙挂回腰间。",
+        "region": "yamen"
+      }
+    ],
+    "hk_npcv_102_panchang": [
+      {
+        "text": "书箱扣着，箱盖上那行歪字被人用手指描过。",
+        "region": "shuyuan"
+      }
+    ],
+    "hk_npcv_149_hegong": [
+      {
+        "text": "库房的银箱贴了新封条，旧的压在箱底。",
+        "region": "yamen"
+      }
+    ],
+    "hk_npcv_181_guanliang": [
+      {
+        "text": "后院的火盆里剩着半张名册，边角烧得整齐。",
+        "region": "yamen"
+      }
+    ],
+    "q_sect_jindao_errand": [
+      {
+        "text": "门外道上散着几把破刀，刀柄朝同一个方向。",
+        "region": "luoyang"
+      }
+    ],
+    "q_sect_wuhu_errand": [
+      {
+        "text": "「这条路清了。」雷五虎说完，把刀插回鞘里。",
+        "region": "changan"
+      }
     ]
   }
 }
