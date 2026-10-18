@@ -355,7 +355,21 @@
       "personality": "mune"
     },
     "npcv_012": {
-      "personality": "mune"
+      "personality": "mune",
+      "talk": [
+        "糖人！要糖人么？",
+        "糖人三文一个，我爹一天能吹二十个。"
+      ],
+      "ask": [
+        {
+          "topic": "收摊",
+          "keywords": [
+            "睡着",
+            "一顿骂"
+          ],
+          "answer": "前日市集收摊晚，我蹲在摊边睡着，挨了一顿骂。"
+        }
+      ]
     },
     "npcv_013": {
       "personality": "youhua",
@@ -504,7 +518,21 @@
       "personality": "youhua"
     },
     "npcv_043": {
-      "personality": "lengmo"
+      "personality": "lengmo",
+      "talk": [
+        "门房去通报了。",
+        "钱府的门槛高，拜帖要写三代，礼少了不进正门。"
+      ],
+      "ask": [
+        {
+          "topic": "远亲",
+          "keywords": [
+            "门房",
+            "两个时辰"
+          ],
+          "answer": "上月来了个远亲，在门房坐了两个时辰才见着人。"
+        }
+      ]
     },
     "npcv_044": {
       "personality": "yinzhi"
@@ -1001,7 +1029,21 @@
       "personality": "youhua"
     },
     "npcv_166": {
-      "personality": "mune"
+      "personality": "mune",
+      "talk": [
+        "等卦么？先坐。",
+        "茶食一碟五文，卦资另给先生，我不经手。"
+      ],
+      "ask": [
+        {
+          "topic": "问姻缘",
+          "keywords": [
+            "二十文",
+            "半炷香"
+          ],
+          "answer": "前日有个妇人问姻缘，先生收了二十文，说了半炷香。"
+        }
+      ]
     },
     "npcv_167": {
       "personality": "youhua"
@@ -1507,7 +1549,21 @@
       "personality": "youhua"
     },
     "npcv_274": {
-      "personality": "lengmo"
+      "personality": "lengmo",
+      "talk": [
+        "这园子，看归看。",
+        "池里的锦鲤一天喂两回，鱼食一钱银子一包。"
+      ],
+      "ask": [
+        {
+          "topic": "玉坠",
+          "keywords": [
+            "池边",
+            "水草"
+          ],
+          "answer": "前日池边丢了只玉坠，捞了半日，只捞起一把水草。"
+        }
+      ]
     },
     "npcv_275": {
       "personality": "baozhao"

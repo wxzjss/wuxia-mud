@@ -633,10 +633,6 @@
       "home": "house:cy_xy_tavern_1",
       "personality": "wenwan",
       "desc": "站在柜台后头，眼睛却把满屋子的人都数了一遍。",
-      "talk": [
-        "住店还是打尖？",
-        "后堂还有位子。"
-      ],
       "age": 37,
       "likes": [
         "incense"
@@ -662,6 +658,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "楼上还有空房。",
+        "汉江鱼一盘四十文，酒一壶十五，住店另算。"
+      ],
+      "ask": [
+        {
+          "topic": "押粮的",
+          "keywords": [
+            "二十三个人",
+            "后堂"
+          ],
+          "answer": "前日来了队押粮的，二十三个人，把后堂坐满了。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -700,10 +710,6 @@
       "home": "house:cy_xy_tavern_2",
       "personality": "haoshuang",
       "desc": "腰上系着围裙，走得比谁都快。",
-      "talk": [
-        "来了您呐！",
-        "有什么忌口？"
-      ],
       "age": 52,
       "likes": [
         "music"
@@ -729,6 +735,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "来了您呐，里边请！",
+        "跑堂的一天三十文，打翻一碗扣两文，月底结。"
+      ],
+      "ask": [
+        {
+          "topic": "丢钱袋",
+          "keywords": [
+            "楼上",
+            "桌底"
+          ],
+          "answer": "昨儿楼上一位客人丢了钱袋，翻遍桌底也没找着。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -911,10 +931,6 @@
       "home": "house:cy_xy_lane_1",
       "personality": "baozhao",
       "desc": "赤着上身，胸口的汗混着炉灰，一道道。",
-      "talk": [
-        "等一下，这火还没打完。",
-        "要好刀，得等。"
-      ],
       "age": 37,
       "likes": [
         "tea"
@@ -940,6 +956,23 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "quests": [
+        "sq_cy_xy_lu"
+      ],
+      "talk": [
+        "等火，别催。",
+        "菜刀三十文，柴刀四十五，好钢另加二十。"
+      ],
+      "ask": [
+        {
+          "topic": "铁料",
+          "keywords": [
+            "一担",
+            "三十五文"
+          ],
+          "answer": "前日铺里进了批铁料，一担涨了三十五文。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -966,10 +999,7 @@
         "marks": [
           "工"
         ]
-      },
-      "quests": [
-        "sq_cy_xy_lu"
-      ]
+      }
     },
     "cy_xy_lane_2": {
       "id": "cy_xy_lane_2",
@@ -981,10 +1011,6 @@
       "home": "house:cy_xy_lane_2",
       "personality": "mune",
       "desc": "腰上别着梆子，手里一盏灯笼，灯罩上糊着油纸。",
-      "talk": [
-        "夜里别乱走。",
-        "天干物燥，小心火烛。"
-      ],
       "age": 52,
       "likes": [
         "wine"
@@ -1010,6 +1036,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "二更了，早些回。",
+        "打更一夜两趟，二更一趟，四更一趟，月钱九十文。"
+      ],
+      "ask": [
+        {
+          "topic": "走水",
+          "keywords": [
+            "巷口",
+            "半刻钟"
+          ],
+          "answer": "昨夜巷口有户人家忘了熄火，我敲了半刻钟门。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -1116,10 +1156,6 @@
       "home": "house:cy_xy_jiangmen_1",
       "personality": "yinzhi",
       "desc": "甲胄底下压着一件洗得发白的旧里衣，腰杆比谁都直。",
-      "talk": [
-        "营里的事，少打听。",
-        "走路看着点，这儿是校场边。"
-      ],
       "age": 54,
       "likes": [
         "silver"
@@ -1145,6 +1181,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "营门口，别乱看。",
+        "巷里住的都是行伍人家，日落点卯，迟到挨军棍。"
+      ],
+      "ask": [
+        {
+          "topic": "补兵",
+          "keywords": [
+            "十二个",
+            "倒了两个"
+          ],
+          "answer": "前日补了十二个新兵，站了半个时辰就倒了两个。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -1184,10 +1234,6 @@
       "home": "house:cy_xy_jiangmen_2",
       "personality": "mune",
       "desc": "脸上有道旧疤，不笑，握枪的手背上青筋绷着。",
-      "talk": [
-        "城门申时落闸，要进城趁早。",
-        "路引带在身上么？"
-      ],
       "age": 55,
       "likes": [
         "tea"
@@ -1213,6 +1259,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "路引带了么？",
+        "城门申时落闸，误了就在外头蹲一宿。"
+      ],
+      "ask": [
+        {
+          "topic": "晚归",
+          "keywords": [
+            "半刻",
+            "十八个人"
+          ],
+          "answer": "上月有一队商贩晚了半刻，十八个人在城外过的夜。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -1251,10 +1311,6 @@
       "home": "house:cy_xy_home_01",
       "personality": "yinzhi",
       "desc": "说话慢，尾音拖得长，像什么都不必急。",
-      "talk": [
-        "坐。",
-        "这事我记下了。"
-      ],
       "age": 56,
       "likes": [
         "wine"
@@ -1280,6 +1336,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "坐，茶刚沏上。",
+        "家里三进的院子，仆役八个，月钱一月一结。"
+      ],
+      "ask": [
+        {
+          "topic": "借粮",
+          "keywords": [
+            "十二石",
+            "月底"
+          ],
+          "answer": "前日营里来人借粮，借走十二石，说月底还。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -1452,10 +1522,6 @@
       "home": "house:cy_xy_patrol_1",
       "personality": "xiayi",
       "desc": "腰上挂着铁尺，走路带风，眼睛扫得很勤。",
-      "talk": [
-        "站住，哪儿来的？",
-        "没事别在街上晃。"
-      ],
       "age": 39,
       "likes": [
         "flower"
@@ -1481,6 +1547,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "站住，哪来的？",
+        "北街案子归我管，丢了东西先来报，别自己追。"
+      ],
+      "ask": [
+        {
+          "topic": "失刀",
+          "keywords": [
+            "铁匠铺",
+            "巷尾"
+          ],
+          "answer": "前日铁匠铺丢了两把刀，追到巷尾，人没影了。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -2290,10 +2370,6 @@
       "home": "house:cy_ly_tavern_up_1",
       "personality": "yinzhi",
       "desc": "说话前先看你一眼，像在心里过了一遍章程。",
-      "talk": [
-        "照着规矩来。",
-        "文书压着，急不得。"
-      ],
       "age": 61,
       "likes": [
         "tea"
@@ -2319,6 +2395,23 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "quests": [
+        "sq_cy_ly_an"
+      ],
+      "talk": [
+        "照规矩来，先报事。",
+        "文书过堂要三签，少一个印，压半个月。"
+      ],
+      "ask": [
+        {
+          "topic": "急件",
+          "keywords": [
+            "二更",
+            "半锭"
+          ],
+          "answer": "前日府里来了急件，抄到二更，墨用干了半锭。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -2346,10 +2439,7 @@
           "官",
           "书"
         ]
-      },
-      "quests": [
-        "sq_cy_ly_an"
-      ]
+      }
     },
     "cy_ly_inn_1": {
       "id": "cy_ly_inn_1",
@@ -2589,10 +2679,6 @@
       "home": "house:cy_ly_mudan_1",
       "personality": "haoshuang",
       "desc": "一眼看得出是熬了夜的，眼底青着。",
-      "talk": [
-        "书里的话，未必作数。",
-        "考完了再说吧。"
-      ],
       "age": 26,
       "likes": [
         "silver"
@@ -2618,6 +2704,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "借过，赶着去买纸。",
+        "书院一月束脩二百文，纸墨另算，考前三天不授课。"
+      ],
+      "ask": [
+        {
+          "topic": "牡丹",
+          "keywords": [
+            "三十七朵",
+            "不让摘"
+          ],
+          "answer": "巷尾那株牡丹今年开了三十七朵，主家守着不让摘。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -2656,10 +2756,6 @@
       "home": "house:cy_ly_mudan_2",
       "personality": "yinzhi",
       "desc": "袖子里露出半卷书，书角卷得不像样。",
-      "talk": [
-        "考完了再说吧。",
-        "书里的话，未必作数。"
-      ],
       "age": 55,
       "likes": [
         "flower"
@@ -2685,6 +2781,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "考期近了，别拦我。",
+        "应举的盘缠要备足，住店一月一百五十文，饭另算。"
+      ],
+      "ask": [
+        {
+          "topic": "涨房钱",
+          "keywords": [
+            "二十文",
+            "考期"
+          ],
+          "answer": "前日客栈涨了价，一间房多要二十文，说是考期到了。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -4695,10 +4805,6 @@
       "home": "house:cy_ca_street_2",
       "personality": "haoshuang",
       "desc": "眼珠子一转，先看你穿的是什么。",
-      "talk": [
-        "这位，看点什么？",
-        "货是好货，价钱好说。"
-      ],
       "age": 56,
       "likes": [
         "silver"
@@ -4724,6 +4830,20 @@
       "tier": "B",
       "district": "changan",
       "homeless": true,
+      "talk": [
+        "看货？这是西域来的。",
+        "香料一两四十文，宝石按颗算，价钱随行就市。"
+      ],
+      "ask": [
+        {
+          "topic": "驼队",
+          "keywords": [
+            "三十六匹",
+            "四两"
+          ],
+          "answer": "前日驼队进城，三十六匹，光税就交了四两。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -4919,10 +5039,6 @@
       "home": "house:cy_ca_tavern_1",
       "personality": "wenwan",
       "desc": "手上拨着算盘，嘴里还应付着客人。",
-      "talk": [
-        "住店还是打尖？",
-        "后堂还有位子。"
-      ],
       "age": 42,
       "likes": [
         "silver"
@@ -4948,6 +5064,20 @@
       "tier": "B",
       "district": "changan",
       "homeless": true,
+      "talk": [
+        "楼上请，靠窗还有座。",
+        "醉仙楼一席八菜二两银，散座一碗面十二文。"
+      ],
+      "ask": [
+        {
+          "topic": "放榜",
+          "keywords": [
+            "贡院",
+            "三更"
+          ],
+          "answer": "前日贡院放榜，楼上楼下坐满了，酒卖到三更。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -4986,10 +5116,6 @@
       "home": "house:cy_ca_tavern_2",
       "personality": "yinzhi",
       "desc": "袖子里露出半卷书，书角卷得不像样。",
-      "talk": [
-        "书里的话，未必作数。",
-        "考完了再说吧。"
-      ],
       "age": 57,
       "likes": [
         "tea"
@@ -5015,6 +5141,20 @@
       "tier": "B",
       "district": "changan",
       "homeless": true,
+      "talk": [
+        "别吵，我在背书。",
+        "贡院考三场，一场三天，进场搜身，笔砚自带。"
+      ],
+      "ask": [
+        {
+          "topic": "同窗",
+          "keywords": [
+            "病了",
+            "姜汤"
+          ],
+          "answer": "前日同窗病了，抬回客栈，灌了两碗姜汤才醒。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -5053,10 +5193,6 @@
       "home": "house:cy_ca_tavern_up_1",
       "personality": "lengmo",
       "desc": "袖口用布条扎着，一双眼睛比谁都冷。",
-      "talk": [
-        "衙门的事，问不得。",
-        "这地方不干净，你走吧。"
-      ],
       "age": 24,
       "likes": [
         "jade"
@@ -5082,6 +5218,23 @@
       "tier": "B",
       "district": "changan",
       "homeless": true,
+      "quests": [
+        "sq_cy_ca_yan"
+      ],
+      "talk": [
+        "这地方，少来。",
+        "验一具尸首，衙门给五十文，路远的另加十文。"
+      ],
+      "ask": [
+        {
+          "topic": "溺死",
+          "keywords": [
+            "三天",
+            "指甲"
+          ],
+          "answer": "前日验了个溺死的，在水里泡了三天，指甲全黑了。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -5109,10 +5262,7 @@
           "官",
           "仵"
         ]
-      },
-      "quests": [
-        "sq_cy_ca_yan"
-      ]
+      }
     },
     "cy_ca_inn_1": {
       "id": "cy_ca_inn_1",
@@ -5201,10 +5351,6 @@
       "home": "house:cy_ca_lane_1",
       "personality": "haoshuang",
       "desc": "袖子里露出半卷书，书角卷得不像样。",
-      "talk": [
-        "考完了再说吧。",
-        "书里的话，未必作数。"
-      ],
       "age": 28,
       "likes": [
         "silver"
@@ -5230,6 +5376,23 @@
       "tier": "B",
       "district": "changan",
       "homeless": true,
+      "quests": [
+        "sq_cy_ca_ju"
+      ],
+      "talk": [
+        "借光，我赶考。",
+        "平康坊住店贵，一间房一晚四十文，通铺十二。"
+      ],
+      "ask": [
+        {
+          "topic": "坊里",
+          "keywords": [
+            "半夜",
+            "两趟"
+          ],
+          "answer": "前日坊里闹到半夜，巡街的来了两趟才散。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -5256,10 +5419,7 @@
         "marks": [
           "儒"
         ]
-      },
-      "quests": [
-        "sq_cy_ca_ju"
-      ]
+      }
     },
     "cy_ca_brothel_1": {
       "id": "cy_ca_brothel_1",
@@ -5673,10 +5833,6 @@
       "home": "house:cy_ca_patrol_1",
       "personality": "yinzhi",
       "desc": "脸上没什么表情，看人的时候多停半息。",
-      "talk": [
-        "站住，哪儿来的？",
-        "没事别在街上晃。"
-      ],
       "age": 58,
       "likes": [
         "wine"
@@ -5702,6 +5858,20 @@
       "tier": "B",
       "district": "changan",
       "homeless": true,
+      "talk": [
+        "站住，路引。",
+        "朱雀大街不许跑马，违者罚五十文，车马走偏道。"
+      ],
+      "ask": [
+        {
+          "topic": "夜巡",
+          "keywords": [
+            "坊墙",
+            "一只女鞋"
+          ],
+          "answer": "昨儿夜里巡到坊墙下，捡到一只女鞋，没找着人。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",

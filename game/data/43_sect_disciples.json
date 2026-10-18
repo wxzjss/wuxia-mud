@@ -14243,10 +14243,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师叔。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -14303,6 +14299,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_poyang",
+   "talk": [
+    "站住，报个名号。",
+    "帮里出湖一趟抽两成，撞上太湖的船，先退三里。"
+   ],
+   "ask": [
+    {
+     "topic": "湖口",
+     "keywords": [
+      "三根桨",
+      "八百文"
+     ],
+     "answer": "前日两条船在湖口撞了，折了三根桨，赔了八百文。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -14428,10 +14438,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师兄。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -14487,6 +14493,20 @@
    "personality": "baozhao",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "跑外路的，刚回。",
+    "一趟三个月，脚钱按里算，一里两文，不管风雨。"
+   ],
+   "ask": [
+    {
+     "topic": "外路",
+     "keywords": [
+      "二十七天",
+      "磨穿"
+     ],
+     "answer": "上月在外头住了二十七天，回来靴底磨穿一双。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -14520,10 +14540,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师叔。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -14580,6 +14596,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_qingzhu",
+   "talk": [
+    "夜里精神，白天困。",
+    "看夜门的一夜二十文，三更换岗，火把自备。"
+   ],
+   "ask": [
+    {
+     "topic": "夜巡",
+     "keywords": [
+      "竹林",
+      "砍竹刀"
+     ],
+     "answer": "前夜竹林里有响动，追过去只捡到一把砍竹刀。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -14705,10 +14735,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师兄。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -14764,6 +14790,20 @@
    "personality": "baozhao",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "找谁？门里等着。",
+    "帮里砍竹按担算，一担十五文，湿竹晾三天。"
+   ],
+   "ask": [
+    {
+     "topic": "卖竹",
+     "keywords": [
+      "二十担",
+      "十二文"
+     ],
+     "answer": "前日下山卖竹，二十担压到十二文一担。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -15401,10 +15441,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「弟子见过师叔。」",
-    "「刀在鞘里，鞘上有三道旧痕。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -15461,6 +15497,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_wuliang",
+   "talk": [
+    "比剑的？先看手。",
+    "东宗西宗年年比，三场两胜，输了管一年饭。"
+   ],
+   "ask": [
+    {
+     "topic": "比剑",
+     "keywords": [
+      "第三场",
+      "换了个人"
+     ],
+     "answer": "上月比到第三场，西宗那边换了个人，招式全变了。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -15586,10 +15636,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「弟子见过师兄。」",
-    "「刀在鞘里，鞘上有三道旧痕。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -15645,6 +15691,20 @@
    "personality": "lengmo",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "剑放下，再进门。",
+    "山门里不许带刃，剑交门房，取时报名字。"
+   ],
+   "ask": [
+    {
+     "topic": "取剑",
+     "keywords": [
+      "牌子",
+      "半个时辰"
+     ],
+     "answer": "昨儿有人取剑，牌子对不上，在门口站了半个时辰。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",

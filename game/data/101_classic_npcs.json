@@ -681,10 +681,6 @@
       "room": "xiangyang_street",
       "home": "house:huang_rong",
       "desc": "算盘珠子哗啦哗啦响。她一边打，一边招呼你坐，一边把桌上摊着的单子推到一边去。",
-      "talk": [
-        "你这事，我看有三条路。",
-        "先说难听的：钱我不白给。"
-      ],
       "personality": "youhua",
       "likes": [
         "food"
@@ -726,6 +722,28 @@
         "day": "xiangyang_street",
         "night": "xiangyang_street"
       },
+      "skills": {
+        "棍": "dagou_bangfa",
+        "拳": "luoying_shenjianzhang",
+        "内功": "cn_breath_art"
+      },
+      "equipment": {
+        "武器": "wood_staff"
+      },
+      "talk": [
+        "坐吧，账还没算完。",
+        "城里米价一斗一百二十文，柴一担三十，我压着没让涨。"
+      ],
+      "ask": [
+        {
+          "topic": "流民",
+          "keywords": [
+            "北门外",
+            "三十几个"
+          ],
+          "answer": "前日丐帮送来消息，北门外多了三十几个流民。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "A",
@@ -749,14 +767,6 @@
             "act": "在米铺后头翻账本，翻两页抬眼看一下门外"
           }
         ]
-      },
-      "skills": {
-        "棍": "dagou_bangfa",
-        "拳": "luoying_shenjianzhang",
-        "内功": "cn_breath_art"
-      },
-      "equipment": {
-        "武器": "wood_staff"
       }
     },
     "ouyang_feng": {
@@ -1487,10 +1497,6 @@
       "room": "changan_lane",
       "home": "house:tian_boguang",
       "desc": "刀鞘上刻着四个字，自己刻的，刻得歪歪扭扭，写的是「万里独行」。个头中不溜，两条腿倒腾得飞快，一眨眼人就到街那头去了。",
-      "talk": [
-        "我这人有个好处，说话算数。",
-        "你要打，我陪你打；你要喝，我陪你喝。"
-      ],
       "personality": "youhua",
       "likes": [
         "wine"
@@ -1527,6 +1533,27 @@
         "day": "changan_lane",
         "night": "changan_lane"
       },
+      "skills": {
+        "刀": "kuangfeng_daofa",
+        "内功": "cn_breath_art"
+      },
+      "equipment": {
+        "武器": "iron_blade"
+      },
+      "talk": [
+        "喝酒么？我请。",
+        "我这刀不快，跑得快，十里路一炷香。"
+      ],
+      "ask": [
+        {
+          "topic": "跑腿",
+          "keywords": [
+            "城东",
+            "八文"
+          ],
+          "answer": "前日从城东跑到城西，鞋底磨穿了，花了八文补。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "A",
@@ -1550,13 +1577,6 @@
             "act": "在城墙根下磨刀，磨一下用大拇指试一下"
           }
         ]
-      },
-      "skills": {
-        "刀": "kuangfeng_daofa",
-        "内功": "cn_breath_art"
-      },
-      "equipment": {
-        "武器": "iron_blade"
       }
     },
     "lin_pingzhi": {
