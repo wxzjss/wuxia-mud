@@ -35,6 +35,30 @@
 
     "rec_talisman_shield": { "category": "rune", "name": "护身符", "out": "talisman_shield", "outCount": 2, "mat": { "rune_paper": 1, "cinnabar": 1 }, "time": 15, "base": 0.9, "desc": "绘就护身之符，短时增防。" },
     "rec_talisman_speed": { "category": "rune", "name": "神行符", "out": "talisman_speed", "outCount": 2, "mat": { "rune_paper": 1, "cinnabar": 1, "spirit_sand": 1 }, "time": 20, "base": 0.85, "desc": "神行符，短时增闪避身法。" },
-    "rec_talisman_power": { "category": "rune", "name": "破敌符", "out": "talisman_power", "outCount": 1, "mat": { "rune_paper": 2, "cinnabar": 2, "spirit_sand": 1 }, "time": 25, "base": 0.8, "desc": "破敌符，短时增攻击。" }
+    "rec_talisman_power": { "category": "rune", "name": "破敌符", "out": "talisman_power", "outCount": 1, "mat": { "rune_paper": 2, "cinnabar": 2, "spirit_sand": 1 }, "time": 25, "base": 0.8, "desc": "破敌符，短时增攻击。" },
+
+    "rec_yanling_blade": { "category": "forge", "name": "雁翎刀", "out": "steel_blade", "outCount": 1, "mat": { "iron_ore": 3, "ore_iron": 1, "animal_pelt": 1 }, "time": 60, "base": 0.65, "needTool": "hammer", "trade": "铁匠", "desc": "石家三代打刀，淬火三遍，刀背留一道锤痕。成色看水。" },
+    "rec_iron_spear": { "category": "forge", "name": "铁枪", "out": "iron_spear", "outCount": 1, "mat": { "iron_ore": 2, "wood_staff": 1 }, "time": 40, "base": 0.8, "needTool": "hammer", "trade": "铁匠", "desc": "枪头归铁匠，杆子归木匠。两下里都得直。" },
+    "rec_iron_helmet": { "category": "forge", "name": "铁盔", "out": "iron_helmet", "outCount": 1, "mat": { "iron_ore": 3, "animal_pelt": 1 }, "time": 40, "base": 0.8, "needTool": "hammer", "trade": "铁匠", "desc": "盔里衬一层兽皮，老兵传的法子，戴着不硌头。" },
+
+    "rec_wax_staff": { "category": "forge", "name": "白蜡杆", "out": "wood_staff", "outCount": 1, "mat": { "hunting_knife": 1, "animal_pelt": 1 }, "time": 40, "base": 0.85, "needTool": "hammer", "trade": "木匠", "desc": "趁湿削。刀顺纹走，柄上缠一圈皮条。" },
+    "rec_paper_kite": { "category": "forge", "name": "燕子风筝", "out": "kite_swallow", "outCount": 2, "mat": { "rune_paper": 1, "silk_thread": 1 }, "time": 40, "base": 0.85, "trade": "木匠", "desc": "纸糊两层，尾巴配重，飞得起来才算成。" },
+
+    "rec_leather_armor": { "category": "forge", "name": "皮甲", "out": "leather_armor", "outCount": 1, "mat": { "animal_pelt": 2, "iron_ore": 1, "silk_thread": 1 }, "time": 60, "base": 0.65, "needTool": "hammer", "trade": "皮匠", "desc": "皮子先硝后缝，衬几块铁片，走镖的才肯穿。" },
+    "rec_waterskin": { "category": "forge", "name": "皮水囊", "out": "leather_waterskin", "outCount": 1, "mat": { "animal_pelt": 1, "silk_thread": 1 }, "time": 40, "base": 0.85, "needTool": "hammer", "trade": "皮匠", "desc": "整张牛皮缝成袋。口子扎紧，赶远路不缺水。" },
+
+    "rec_hunting_knife": { "category": "forge", "name": "猎刀", "out": "hunting_knife", "outCount": 1, "mat": { "iron_ore": 2, "animal_pelt": 1 }, "time": 40, "base": 0.85, "needTool": "hammer", "trade": "猎户", "desc": "山里人打短刀，刃开钝些，剥皮不伤毛。" },
+    "rec_chopping_blade": { "category": "forge", "name": "砍山刀", "out": "iron_blade", "outCount": 1, "mat": { "iron_ore": 3, "ore_iron": 1 }, "time": 40, "base": 0.8, "needTool": "hammer", "trade": "猎户", "desc": "背厚，刃薄。砍柴劈骨都不卷口。" },
+
+    "rec_huoxue_san": { "category": "alchemy", "name": "活血散", "out": "c_huoxue_san", "outCount": 2, "mat": { "herb_xuecao": 1, "herb_danggui": 2 }, "time": 20, "base": 0.9, "needTool": "danlu", "trade": "药师", "desc": "江南土坡采的血参，配当归焙干，研成细末。" },
+    "rec_jiedu_dan": { "category": "alchemy", "name": "解毒丹", "out": "c_jiedu_dan", "outCount": 1, "mat": { "herb_hanshui": 1, "herb_lingshen": 1 }, "time": 30, "base": 0.85, "needTool": "danlu", "trade": "药师", "desc": "寒水石镇蛇毒，灵芝吊气。药圃的方子。" },
+    "rec_huiqi_dan": { "category": "alchemy", "name": "回气丹", "out": "c_huiqi_dan", "outCount": 1, "mat": { "herb_lingshen": 2, "herb_qing": 2, "spirit_sand": 1 }, "time": 40, "base": 0.7, "needTool": "danlu", "trade": "药师", "desc": "灵芝先下，灵砂后撒，文火三炷香。急不得。" },
+
+    "rec_qingxin_cha": { "category": "alchemy", "name": "清心茶", "out": "c_qingxin_cha", "outCount": 2, "mat": { "tea_coarse": 2, "herb_qing": 1 }, "time": 20, "base": 0.9, "needTool": "danlu", "trade": "厨子", "desc": "村口粗茶掺一把青灵草，苦过喉咙人就清了。" },
+    "rec_dumpling": { "category": "alchemy", "name": "一屉水饺", "out": "dish_dumpling", "outCount": 2, "mat": { "crop_wheat": 2, "raw_meat": 1, "vegetable": 1 }, "time": 30, "base": 0.8, "needTool": "danlu", "trade": "厨子", "desc": "面要薄，馅要细，菜水挤干。一屉二十四个。" },
+
+    "rec_tangmen_dujian": { "category": "alchemy", "name": "唐门·毒箭", "out": "c_dujian", "outCount": 2, "mat": { "venom_sac": 1, "herb_hanshui": 1, "iron_ore": 1 }, "time": 30, "base": 0.7, "needTool": "danlu", "trade": "唐门毒工", "desc": "蛇胆配寒水石浸三夜，箭头黑了才算成。" },
+    "rec_tangmen_lihua": { "category": "forge", "name": "唐门·暴雨梨花针", "out": "c_lihua_zhen", "outCount": 1, "mat": { "venom_sac": 1, "ore_iron": 2, "cinnabar": 1 }, "time": 60, "base": 0.65, "needTool": "hammer", "trade": "唐门机簧", "desc": "二十七根针，一根偏了，整筒就废。" },
+    "rec_miao_mihun": { "category": "alchemy", "name": "苗疆·迷魂香", "out": "c_mihun_xiang", "outCount": 1, "mat": { "venom_sac": 1, "incense_agarwood": 1, "herb_hanshui": 1 }, "time": 40, "base": 0.7, "needTool": "danlu", "trade": "苗疆蛊工", "desc": "沉香打底，蛇胆收味，点着别闻。" }
   }
 }
