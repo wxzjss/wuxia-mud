@@ -358,10 +358,38 @@
       "personality": "mune"
     },
     "npcv_013": {
-      "personality": "youhua"
+      "personality": "youhua",
+      "talk": [
+        "上山的？歇歇脚。",
+        "挑夫一趟十八文，我只换口酒，不讨钱。"
+      ],
+      "ask": [
+        {
+          "topic": "山道",
+          "keywords": [
+            "退回去",
+            "九个"
+          ],
+          "answer": "前日一队进香的上山，走到半道退回去九个。"
+        }
+      ]
     },
     "npcv_014": {
-      "personality": "mune"
+      "personality": "mune",
+      "talk": [
+        "别过来，我没东西。",
+        "塔林后头有间柴房，劈一天柴换两个馍。"
+      ],
+      "ask": [
+        {
+          "topic": "官道",
+          "keywords": [
+            "十七户",
+            "上月"
+          ],
+          "answer": "上月官道过兵，村里跑了十七户，我抱着娃走到这儿。"
+        }
+      ]
     },
     "npcv_015": {
       "personality": "xiayi"
@@ -421,7 +449,21 @@
       "personality": "mune"
     },
     "npcv_034": {
-      "personality": "youhua"
+      "personality": "youhua",
+      "talk": [
+        "香要一把么？",
+        "一把五文，三把十二文，火折子另算。"
+      ],
+      "ask": [
+        {
+          "topic": "进香",
+          "keywords": [
+            "初一",
+            "二百多人"
+          ],
+          "answer": "初一来进香的有二百多人，台阶扫三遍也不够。"
+        }
+      ]
     },
     "npcv_035": {
       "personality": "youhua"
@@ -436,7 +478,21 @@
       "personality": "haoshuang"
     },
     "npcv_039": {
-      "personality": "wenwan"
+      "personality": "wenwan",
+      "talk": [
+        "哪儿不舒坦？",
+        "诊金二十文，药另算，堡里人看病不收钱。"
+      ],
+      "ask": [
+        {
+          "topic": "试毒",
+          "keywords": [
+            "昨夜",
+            "嘴唇发黑"
+          ],
+          "answer": "昨夜堡里抬出个试毒的弟子，嘴唇发黑，天亮才缓过来。"
+        }
+      ]
     },
     "npcv_040": {
       "personality": "haoshuang"
@@ -493,7 +549,21 @@
       "personality": "xiayi"
     },
     "npcv_058": {
-      "personality": "youhua"
+      "personality": "youhua",
+      "talk": [
+        "看路，别看我。",
+        "往北走三天到渡口，盘缠不够别逞强。"
+      ],
+      "ask": [
+        {
+          "topic": "斗笠客",
+          "keywords": [
+            "半炷香",
+            "数银子"
+          ],
+          "answer": "昨儿有个戴斗笠的在这树下数银子，数了半炷香。"
+        }
+      ]
     },
     "npcv_059": {
       "personality": "haoshuang"
@@ -523,7 +593,21 @@
       "personality": "baozhao"
     },
     "npcv_068": {
-      "personality": "youhua"
+      "personality": "youhua",
+      "talk": [
+        "拨浪鼓一响，停步。",
+        "针线八文，粗盐一斤十二文，往西还得翻倍。"
+      ],
+      "ask": [
+        {
+          "topic": "泉眼",
+          "keywords": [
+            "三十里",
+            "午时"
+          ],
+          "answer": "西边三十里有处泉眼，午时水最清，晚了都是沙。"
+        }
+      ]
     },
     "npcv_069": {
       "personality": "wenwan"
@@ -532,7 +616,21 @@
       "personality": "qienuo"
     },
     "npcv_071": {
-      "personality": "haoshuang"
+      "personality": "haoshuang",
+      "talk": [
+        "打什么？报尺寸。",
+        "窖里打铁火候难稳，刀坯要多烧一刻。"
+      ],
+      "ask": [
+        {
+          "topic": "存冰",
+          "keywords": [
+            "六月",
+            "化了一半"
+          ],
+          "answer": "窖里的冰够用到六月，去年这时已经化了一半。"
+        }
+      ]
     },
     "npcv_072": {
       "personality": "wenwan"
@@ -561,7 +659,21 @@
     "npcv_080": {
       "personality": "mune",
       "sect": "xiake",
-      "rank": 0
+      "rank": 0,
+      "talk": [
+        "我坐一会儿就走。",
+        "内堂的剩饭申时收，去晚了连汤都没有。"
+      ],
+      "ask": [
+        {
+          "topic": "淡水",
+          "keywords": [
+            "初五",
+            "一瓢"
+          ],
+          "answer": "岛上每月初五放淡水，一人一瓢，多了要挨骂。"
+        }
+      ]
     },
     "npcv_081": {
       "personality": "lengmo"
@@ -693,7 +805,21 @@
       "personality": "xiayi"
     },
     "npcv_124": {
-      "personality": "youhua"
+      "personality": "youhua",
+      "talk": [
+        "走你的路。",
+        "这道上挑夫一趟十五文，我只看不拿。"
+      ],
+      "ask": [
+        {
+          "topic": "钱袋",
+          "keywords": [
+            "石阶",
+            "没还"
+          ],
+          "answer": "前日有个买油的老头，钱袋掉在石阶上，捡的人没还。"
+        }
+      ]
     },
     "npcv_125": {
       "personality": "haoshuang"
@@ -714,10 +840,38 @@
       "personality": "yinzhi"
     },
     "npcv_131": {
-      "personality": "youhua"
+      "personality": "youhua",
+      "talk": [
+        "押大押小？快。",
+        "岩后头摆摊抽头一成，输了不许赖。"
+      ],
+      "ask": [
+        {
+          "topic": "输钱",
+          "keywords": [
+            "三两七钱",
+            "又来了"
+          ],
+          "answer": "昨儿输了三两七钱，回去挨骂，今儿又来了。"
+        }
+      ]
     },
     "npcv_132": {
-      "personality": "mune"
+      "personality": "mune",
+      "talk": [
+        "客官，喝茶么？",
+        "茶两文一碗，面八文，担子靠边放。"
+      ],
+      "ask": [
+        {
+          "topic": "塌方",
+          "keywords": [
+            "前头",
+            "半个时辰"
+          ],
+          "answer": "前头塌了一小段，挑夫绕后山，多走半个时辰。"
+        }
+      ]
     },
     "npcv_133": {
       "personality": "mune"
@@ -732,7 +886,21 @@
       "personality": "qienuo"
     },
     "npcv_137": {
-      "personality": "haoshuang"
+      "personality": "haoshuang",
+      "talk": [
+        "打什么？快说。",
+        "苗刀四十文一把，砍柴刀另算，三天来取。"
+      ],
+      "ask": [
+        {
+          "topic": "赶集",
+          "keywords": [
+            "初八",
+            "过不去"
+          ],
+          "answer": "前头寨子初八赶集，路上人挤，挑担的过不去。"
+        }
+      ]
     },
     "npcv_138": {
       "personality": "wenwan"
@@ -912,19 +1080,75 @@
       "personality": "yinzhi"
     },
     "npcv_197": {
-      "personality": "youhua"
+      "personality": "youhua",
+      "talk": [
+        "押一把？手正热。",
+        "骰子摊在松树下，赢的抽一成，输了不认。"
+      ],
+      "ask": [
+        {
+          "topic": "香客",
+          "keywords": [
+            "二更",
+            "路费"
+          ],
+          "answer": "昨儿有个进香的输光路费，蹲在石阶上哭到二更。"
+        }
+      ]
     },
     "npcv_198": {
-      "personality": "mune"
+      "personality": "mune",
+      "talk": [
+        "喝茶么？刚沏的。",
+        "粗茶两文一碗，塔林里不许高声。"
+      ],
+      "ask": [
+        {
+          "topic": "关门",
+          "keywords": [
+            "申时末",
+            "清点"
+          ],
+          "answer": "申时末塔林关门，师父清点人数，少一个就要查。"
+        }
+      ]
     },
     "npcv_199": {
       "personality": "mune"
     },
     "npcv_200": {
-      "personality": "youhua"
+      "personality": "youhua",
+      "talk": [
+        "拨浪鼓一响，来看看。",
+        "针线十文一包，糖块两文，挑上金顶加三文。"
+      ],
+      "ask": [
+        {
+          "topic": "起雾",
+          "keywords": [
+            "申时",
+            "看不见人"
+          ],
+          "answer": "昨儿申时起雾，前后山都看不见人，我早早收了。"
+        }
+      ]
     },
     "npcv_201": {
-      "personality": "wenwan"
+      "personality": "wenwan",
+      "talk": [
+        "小声些，里头有人。",
+        "借书要师父作保，一次两卷，五天还。"
+      ],
+      "ask": [
+        {
+          "topic": "批注",
+          "keywords": [
+            "酉时",
+            "前朝"
+          ],
+          "answer": "昨儿坐到酉时，翻到一页批注，字迹像是前朝人。"
+        }
+      ]
     },
     "npcv_202": {
       "personality": "wenwan"
@@ -933,10 +1157,38 @@
       "personality": "haoshuang"
     },
     "npcv_204": {
-      "personality": "wenwan"
+      "personality": "wenwan",
+      "talk": [
+        "手伸出来，我看看。",
+        "外伤包扎十文，毒伤不接，堡门里的事我不问。"
+      ],
+      "ask": [
+        {
+          "topic": "药材",
+          "keywords": [
+            "迟了两天",
+            "半夏"
+          ],
+          "answer": "山下送药的驮队迟了两天，药柜里只剩半格半夏。"
+        }
+      ]
     },
     "npcv_205": {
-      "personality": "haoshuang"
+      "personality": "haoshuang",
+      "talk": [
+        "买药还是看圃？",
+        "看可以，拔一株赔十株的价。"
+      ],
+      "ask": [
+        {
+          "topic": "乌头",
+          "keywords": [
+            "第三畦",
+            "七天"
+          ],
+          "answer": "西边第三畦的乌头今年开花早，比往年早七天。"
+        }
+      ]
     },
     "npcv_206": {
       "personality": "youhua"
@@ -954,7 +1206,21 @@
       "personality": "mune"
     },
     "npcv_211": {
-      "personality": "mune"
+      "personality": "mune",
+      "talk": [
+        "客官，赏口吃的。",
+        "帮人卸一车货，给三个铜板，管一顿。"
+      ],
+      "ask": [
+        {
+          "topic": "镖队",
+          "keywords": [
+            "十二辆车",
+            "辙"
+          ],
+          "answer": "前日过了支镖队，十二辆车，压得路面全是辙。"
+        }
+      ]
     },
     "npcv_212": {
       "personality": "mune"
@@ -987,7 +1253,21 @@
       "personality": "mune"
     },
     "npcv_222": {
-      "personality": "xiayi"
+      "personality": "xiayi",
+      "talk": [
+        "借个火，就走。",
+        "冰窖背风，赶路的常在这过夜，别动那堆柴。"
+      ],
+      "ask": [
+        {
+          "topic": "脚印",
+          "keywords": [
+            "前夜",
+            "一串印"
+          ],
+          "answer": "前夜听见窖顶有脚步，出去只看见雪地上一串印。"
+        }
+      ]
     },
     "npcv_223": {
       "personality": "mune"
@@ -1020,7 +1300,21 @@
       "personality": "mune"
     },
     "npcv_233": {
-      "personality": "youhua"
+      "personality": "youhua",
+      "talk": [
+        "看看货，不买也行。",
+        "岛上盐贵，一斤二十文，我从山下挑上来。"
+      ],
+      "ask": [
+        {
+          "topic": "船",
+          "keywords": [
+            "两个时辰",
+            "吐"
+          ],
+          "answer": "昨儿船晚了两个时辰，船上的人吐了一地。"
+        }
+      ]
     },
     "npcv_234": {
       "personality": "wenwan"
@@ -1128,13 +1422,55 @@
       "personality": "wenwan"
     },
     "npcv_269": {
-      "personality": "haoshuang"
+      "personality": "haoshuang",
+      "talk": [
+        "打刀还是打锄？",
+        "菜刀三十文，柴刀四十五，淬火等半个时辰。"
+      ],
+      "ask": [
+        {
+          "topic": "铁料",
+          "keywords": [
+            "一担",
+            "四十文"
+          ],
+          "answer": "山下铁料涨了，一担贵四十文，我这价撑不了几天。"
+        }
+      ]
     },
     "npcv_270": {
-      "personality": "wenwan"
+      "personality": "wenwan",
+      "talk": [
+        "哪儿疼？说清楚。",
+        "跌打药酒二十文一瓶，揉开就好。"
+      ],
+      "ask": [
+        {
+          "topic": "扭脚",
+          "keywords": [
+            "七八个",
+            "一天"
+          ],
+          "answer": "这几日学拳的年轻人多，一天要看七八个扭脚的。"
+        }
+      ]
     },
     "npcv_271": {
-      "personality": "haoshuang"
+      "personality": "haoshuang",
+      "talk": [
+        "住店还是打尖？",
+        "通铺一晚十文，单间二十五，热水加两文。"
+      ],
+      "ask": [
+        {
+          "topic": "背盐的",
+          "keywords": [
+            "申时",
+            "十二个人"
+          ],
+          "answer": "昨儿申时来了一队背盐的，十二个人，睡满了通铺。"
+        }
+      ]
     },
     "npcv_272": {
       "personality": "youhua"
@@ -1149,7 +1485,21 @@
       "personality": "baozhao"
     },
     "npcv_276": {
-      "personality": "mune"
+      "personality": "mune",
+      "talk": [
+        "你有糖么？",
+        "我帮阿爹看摊，一天两文，攒够十文买糖。"
+      ],
+      "ask": [
+        {
+          "topic": "后山",
+          "keywords": [
+            "申时",
+            "起雾"
+          ],
+          "answer": "阿婆说申时后山起雾，不让我往那边跑。"
+        }
+      ]
     },
     "npcv_277": {
       "personality": "mune"
