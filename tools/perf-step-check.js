@@ -268,6 +268,9 @@ async function main() {
          · 体积：反过来取三轮里**最胖**的那个（体积不受负载影响，取最保守的）。
        三轮的读数全部打印出来，不藏 —— 只挑代表轮判红。 */
     const REPEATS = 3;
+    /* 轮间负载采样（team-lead 2026-10-18）：中途起来的负载 pre/post 都看不见，
+       每轮结束补采一次，和 pre/post 一起取 max 当 k。每次 ≈40ms，3 轮共 120ms，可接受。 */
+    const MID_CALIBS = [];
     const reps = [];
 
     for (let rep = 0; rep < REPEATS; rep++) {
@@ -324,6 +327,7 @@ async function main() {
           p99: pct(sortedT, 99), max: sortedT[sortedT.length - 1],
         },
       });
+      MID_CALIBS.push(calibrate());
     }
 
     reps.forEach((r) => {
@@ -369,7 +373,7 @@ async function main() {
     /* 跑完回看标定（2026-10-18）：夹在中间的突发负载（别的 lane 开跑）
        开跑前那一刻的标定是看不见的。跑完再标一次，取两次里更差的那个当 k——
        这样「跑到一半机器被抢」也会被判成环境过载，而不是记成产品回归。 */
-    const POST_CALIB = calibrate();
+    const POST_CALIB = Math.max.apply(null, [calibrate()].concat(MID_CALIBS.length ? MID_CALIBS : [0]));
     const RAW_K_POST = REF_CALIB ? (POST_CALIB / REF_CALIB) : 1;
     if (RAW_K_POST > RAW_K) {
       RAW_K = RAW_K_POST;
@@ -381,7 +385,7 @@ async function main() {
        标定明细见文件头 §「环境负载标定」。 */
     console.log('    环境标定  k=' + RAW_K.toFixed(2)
       + (K !== RAW_K ? '（按 ' + K.toFixed(2) + ' 计）' : '')
-      + ' · 本次 ' + ms(CALIB_MS) + ' / 跑后 ' + ms(POST_CALIB)
+      + ' · 本次 ' + ms(CALIB_MS) + ' / 轮间 ' + MID_CALIBS.length + ' 次(峰值 ' + ms(POST_CALIB) + ')'
       + (REF_CALIB ? ' / 基线 ' + ms(REF_CALIB) : '（基线缺标定值，k 按 1）')
       + (OVERLOADED ? ' · **环境过载：B1 未判**' : ''));
     if (OVERLOADED) {
