@@ -117,14 +117,17 @@ function ioOnce() {
   if (bytes === 123456789) console.log('');
   return Number(process.hrtime.bigint() - t0) / 1e6;
 }
+const ioForceEnv = () => Number(process.env.PERF_IO_FORCE_MS) > 0 ? Number(process.env.PERF_IO_FORCE_MS)
+  : (Number(process.env.PERF_CALIB_IO_FORCE_MS) > 0 ? Number(process.env.PERF_CALIB_IO_FORCE_MS) : 0);
 function calibrateIO() {
-  if (Number(process.env.PERF_CALIB_IO_FORCE_MS) > 0) return Number(process.env.PERF_CALIB_IO_FORCE_MS);
+  const f = ioForceEnv();
+  if (f > 0) return f;
   ioOnce();
-  const a = Array.from({ length: 5 }, () => ioOnce()).sort((x, y) => x - y);
-  return a[2];
+  /* 9 次中位（2026-10-18 qa 实测）：io 探针受杀软/缓存影响，5 次基线会偏低 ~10%，门偏严。 */
+  const a = Array.from({ length: 9 }, () => ioOnce()).sort((x, y) => x - y);
+  return a[4];
 }
-const IO_MS = SUITE_ONLY ? 0
-  : (Number(process.env.PERF_CALIB_IO_FORCE_MS) > 0 ? Number(process.env.PERF_CALIB_IO_FORCE_MS) : calibrateIO());
+const IO_MS = SUITE_ONLY ? 0 : (ioForceEnv() > 0 ? ioForceEnv() : calibrateIO());
 
 /* 自测口：PERF_CALIB_FORCE_MS 强制标定值（仅用于演示 k>2 的环境过载分支）。 */
 const CALIB_MS = SUITE_ONLY ? 0
