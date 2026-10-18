@@ -7355,10 +7355,6 @@
       "home": "house:cy_sy_1",
       "personality": "wenwan",
       "desc": "眼底青着，一看就是熬了夜。",
-      "talk": [
-        "书要读进心里，不是摆在案上。",
-        "别出声，这儿是书楼。"
-      ],
       "age": 29,
       "likes": [
         "food"
@@ -7384,6 +7380,20 @@
       "tier": "B",
       "district": "shuyuan",
       "homeless": true,
+      "talk": [
+        "坐后排，别说话。",
+        "一部经讲到第三章，下旬考校。"
+      ],
+      "ask": [
+        {
+          "topic": "讲堂的雨",
+          "keywords": [
+            "漏雨",
+            "讲堂"
+          ],
+          "answer": "讲堂漏雨，昨日的座位挪了半边，还是湿了两排。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -7422,10 +7432,6 @@
       "home": "house:cy_sy_2",
       "personality": "mune",
       "desc": "袖口沾着一点墨，书卷气从衣裳里透出来。",
-      "talk": [
-        "别出声，这儿是书楼。",
-        "书要读进心里，不是摆在案上。"
-      ],
       "age": 26,
       "likes": [
         "wine"
@@ -7451,6 +7457,20 @@
       "tier": "B",
       "district": "shuyuan",
       "homeless": true,
+      "talk": [
+        "登个名，再上楼。",
+        "书楼只借不卖，一次两卷，十日归还。"
+      ],
+      "ask": [
+        {
+          "topic": "潮了的书架",
+          "keywords": [
+            "书架",
+            "受潮"
+          ],
+          "answer": "西头第三架潮了，我把书挪去了北墙，晾了三日。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -7489,10 +7509,6 @@
       "home": "house:cy_sy_3",
       "personality": "yinzhi",
       "desc": "眼底青着，一看就是熬了夜。",
-      "talk": [
-        "书要读进心里，不是摆在案上。",
-        "别出声，这儿是书楼。"
-      ],
       "age": 35,
       "likes": [
         "book"
@@ -7518,6 +7534,20 @@
       "tier": "B",
       "district": "shuyuan",
       "homeless": true,
+      "talk": [
+        "堂上说话，低声。",
+        "书院一年收二十个学生，束脩六两。"
+      ],
+      "ask": [
+        {
+          "topic": "翻墙的学子",
+          "keywords": [
+            "翻墙",
+            "记名"
+          ],
+          "answer": "上月有两个学子夜半翻墙，被我记了名，月底才销。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -7556,10 +7586,6 @@
       "home": "house:cy_sy_4",
       "personality": "haoshuang",
       "desc": "袖口沾着一点墨，书卷气从衣裳里透出来。",
-      "talk": [
-        "别出声，这儿是书楼。",
-        "书要读进心里，不是摆在案上。"
-      ],
       "age": 34,
       "likes": [
         "jade"
@@ -7585,6 +7611,20 @@
       "tier": "B",
       "district": "shuyuan",
       "homeless": true,
+      "talk": [
+        "同窗？挤一挤。",
+        "东斋六人一屋，灯油轮着买。"
+      ],
+      "ask": [
+        {
+          "topic": "东斋的夜",
+          "keywords": [
+            "背书",
+            "罚"
+          ],
+          "answer": "昨夜背书到三更，今早还是被罚抄了三遍。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -7623,10 +7663,6 @@
       "home": "house:cy_sy_5",
       "personality": "qienuo",
       "desc": "手里攥着半卷书，走两步看一眼。",
-      "talk": [
-        "书要读进心里，不是摆在案上。",
-        "别出声，这儿是书楼。"
-      ],
       "age": 55,
       "likes": [
         "tea"
@@ -7652,6 +7688,20 @@
       "tier": "B",
       "district": "shuyuan",
       "homeless": true,
+      "talk": [
+        "别站门口，风进。",
+        "西斋的炭一日只发两块，省着烧。"
+      ],
+      "ask": [
+        {
+          "topic": "第三回春闱",
+          "keywords": [
+            "春闱",
+            "应试"
+          ],
+          "answer": "明年春闱，我这是第三回了，再落榜就回乡教书。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -7690,10 +7740,6 @@
       "home": "house:cy_sy_6",
       "personality": "mune",
       "desc": "眼底青着，一看就是熬了夜。",
-      "talk": [
-        "别出声，这儿是书楼。",
-        "书要读进心里，不是摆在案上。"
-      ],
       "age": 32,
       "likes": [
         "silver"
@@ -7719,6 +7765,20 @@
       "tier": "B",
       "district": "shuyuan",
       "homeless": true,
+      "talk": [
+        "先生在后堂。",
+        "扫地挑水都是我，一月八十文。"
+      ],
+      "ask": [
+        {
+          "topic": "庭院的老槐",
+          "keywords": [
+            "老槐",
+            "落花"
+          ],
+          "answer": "庭院那棵老槐，昨夜落了满地花，扫到晌午才净。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -7757,10 +7817,6 @@
       "home": "house:cy_sy_7",
       "personality": "lengmo",
       "desc": "眼底青着，一看就是熬了夜。",
-      "talk": [
-        "书要读进心里，不是摆在案上。",
-        "别出声，这儿是书楼。"
-      ],
       "age": 57,
       "likes": [
         "flower"
@@ -7786,6 +7842,20 @@
       "tier": "B",
       "district": "shuyuan",
       "homeless": true,
+      "talk": [
+        "别踩垄，看脚下。",
+        "药圃种的是常用药，薄荷一畦，紫苏两畦。"
+      ],
+      "ask": [
+        {
+          "topic": "今年的雨水",
+          "keywords": [
+            "雨水",
+            "车前草"
+          ],
+          "answer": "今年雨水足，车前草长得比往年高，拔都拔不完。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",

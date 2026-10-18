@@ -3161,10 +3161,6 @@
       "home": "house:hs_village_old",
       "personality": "mune",
       "desc": "蹲在槐树底下，手里捏着根旱烟杆，烟早就灭了。",
-      "talk": [
-        "上山的路，天亮前走，天黑前下。",
-        "每年都有不听劝的。"
-      ],
       "age": 68,
       "likes": [
         "tea"
@@ -3184,6 +3180,20 @@
         "day": "hs_village_kou",
         "night": "hs_village_kou"
       },
+      "talk": [
+        "歇脚？石头干净。",
+        "上山一条道，过了半山亭就没水了。"
+      ],
+      "ask": [
+        {
+          "topic": "上山寻药的人",
+          "keywords": [
+            "寻药",
+            "上山"
+          ],
+          "answer": "每年秋后都有人上山寻药，回来的少，多半在半山折返。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "C",
@@ -3218,10 +3228,6 @@
       "home": "house:hs_village_porter",
       "personality": "haoshuang",
       "desc": "肩上搭着一条汗巾，脚下踩着一双草鞋，小腿上的青筋盘着。",
-      "talk": [
-        "一趟三十文，包上下。",
-        "价钱是死的，人是活的。"
-      ],
       "age": 34,
       "likes": [
         "wine"
@@ -3241,6 +3247,20 @@
         "day": "hs_village_yard",
         "night": "hs_village_tea"
       },
+      "talk": [
+        "挑什么？说重量。",
+        "一趟三十文，过百斤加十文。"
+      ],
+      "ask": [
+        {
+          "topic": "十八弯",
+          "keywords": [
+            "十八弯",
+            "下山"
+          ],
+          "answer": "这山路十八弯，晌午前得下来，晚了雾一起就看不见脚。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "C",
@@ -3332,10 +3352,6 @@
       "home": "house:sl_village_old",
       "personality": "mune",
       "desc": "蹲在槐树底下，手里捏着根旱烟杆，烟早就灭了。",
-      "talk": [
-        "上山的路，天亮前走，天黑前下。",
-        "每年都有不听劝的。"
-      ],
       "age": 68,
       "likes": [
         "tea"
@@ -3355,6 +3371,20 @@
         "day": "sl_village_kou",
         "night": "sl_village_kou"
       },
+      "talk": [
+        "坐会儿，不急。",
+        "往山上的道，雨后石头松。"
+      ],
+      "ask": [
+        {
+          "topic": "夜里的梆子",
+          "keywords": [
+            "梆子",
+            "夜里"
+          ],
+          "answer": "山道夜里有人敲梆子，听不清几更，只听见一声一声。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "C",
@@ -3389,10 +3419,6 @@
       "home": "house:sl_village_porter",
       "personality": "haoshuang",
       "desc": "肩上搭着一条汗巾，脚下踩着一双草鞋，小腿上的青筋盘着。",
-      "talk": [
-        "一趟三十文，包上下。",
-        "价钱是死的，人是活的。"
-      ],
       "age": 34,
       "likes": [
         "wine"
@@ -3412,6 +3438,20 @@
         "day": "sl_village_yard",
         "night": "sl_village_tea"
       },
+      "talk": [
+        "担子给我。",
+        "往山上送柴，一担十二文。"
+      ],
+      "ask": [
+        {
+          "topic": "山上的柴",
+          "keywords": [
+            "柴",
+            "人多"
+          ],
+          "answer": "山上这几日人多，柴不够烧，我一天要跑三趟。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "C",
@@ -3617,10 +3657,6 @@
       "home": "house:wd_village_tea",
       "personality": "wenwan",
       "desc": "围裙上落着一层茶渍，手上的铜壶擦得发亮。",
-      "talk": [
-        "一碗三文，续水不要钱。",
-        "上山前多喝一口，山上的水贵。"
-      ],
       "age": 51,
       "likes": [
         "tea"
@@ -3640,6 +3676,20 @@
         "day": "wd_village_tea",
         "night": "wd_village_yard"
       },
+      "talk": [
+        "坐，碗自己拿。",
+        "三文一碗，水随便续。"
+      ],
+      "ask": [
+        {
+          "topic": "天不亮的火",
+          "keywords": [
+            "烧水",
+            "天亮"
+          ],
+          "answer": "上武当的人多，天不亮我就得烧水，灶膛没凉过。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "C",
@@ -3674,10 +3724,6 @@
       "home": "house:em_village_old",
       "personality": "mune",
       "desc": "蹲在槐树底下，手里捏着根旱烟杆，烟早就灭了。",
-      "talk": [
-        "上山的路，天亮前走，天黑前下。",
-        "每年都有不听劝的。"
-      ],
       "age": 68,
       "likes": [
         "tea"
@@ -3697,6 +3743,20 @@
         "day": "em_village_kou",
         "night": "em_village_kou"
       },
+      "talk": [
+        "喝水自己舀。",
+        "上山的石阶，走到九十九道拐要两个时辰。"
+      ],
+      "ask": [
+        {
+          "topic": "村里的猴",
+          "keywords": [
+            "猴",
+            "抢食"
+          ],
+          "answer": "山里的猴这两年胆子大了，敢下村抢食，昨儿掀了晒的玉米。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "C",

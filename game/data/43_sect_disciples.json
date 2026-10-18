@@ -10647,10 +10647,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「趟子手见过师叔。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -10707,6 +10703,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_feihu",
+   "talk": [
+    "腰牌亮出来。",
+    "飞虎走北路，一趟来回四十日。"
+   ],
+   "ask": [
+    {
+     "topic": "黑风口",
+     "keywords": [
+      "黑风口",
+      "剪径"
+     ],
+     "answer": "前日过黑风口，遇上七八个剪径的，镖车没敢停。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -10740,10 +10750,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「趟子手见过师兄。」",
-    "「这一趟我们押的是药，路上要是遇见劫道的，你帮不帮？」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -10799,6 +10805,20 @@
    "personality": "youhua",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "库房重地，别乱摸。",
+    "一箱药三十斤，编号写在箱角。"
+   ],
+   "ask": [
+    {
+     "topic": "明早那趟镖",
+     "keywords": [
+      "出镖",
+      "点货"
+     ],
+     "answer": "这趟镖明早出，货还没点齐，缺两箱柴胡。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -10924,10 +10944,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「趟子手见过师叔。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -10984,6 +11000,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_zhenyuan",
+   "talk": [
+    "进镖局，先报名。",
+    "镇远走水路，镖银按货值两成半。"
+   ],
+   "ask": [
+    {
+     "topic": "山门的石阶",
+     "keywords": [
+      "石阶",
+      "滑"
+     ],
+     "answer": "山门这石阶夜里滑，上月摔了个趟子手，歇了半月。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
