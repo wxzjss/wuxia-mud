@@ -9251,6 +9251,186 @@
         "text": "码头上的野狗少了，打更的敢走夜路了。",
         "region": "harbor"
       }
+    ],
+    "sqd_mojiao": [
+      {
+        "text": "黄伯流接过铁匣，指头在匣角抹了一下，没说什么。",
+        "region": "mojiao"
+      }
+    ],
+    "sqd_dali": [
+      {
+        "text": "藏经阁的灯油下去半寸，抄本压在镇纸底下，页角齐着。",
+        "region": "dali"
+      }
+    ],
+    "sqd_xingxiu": [
+      {
+        "text": "范百龄把木匣塞进袖子，转身进了后山，没回头。",
+        "region": "xiyu"
+      }
+    ],
+    "sqd_xiake": [
+      {
+        "text": "石室的杵立在砚里，墨干成一层壳，没人收。",
+        "region": "xiake"
+      }
+    ],
+    "sqd_taishan": [
+      {
+        "text": "水缸满了，桶底在石阶上磕了两声，天还没亮。",
+        "region": "changan"
+      }
+    ],
+    "sqd_hengshan": [
+      {
+        "text": "琴声从殿里出来，比往常稳，门口浮着一点灯油味。",
+        "region": "xiangyang"
+      }
+    ],
+    "sqd_hengshanN": [
+      {
+        "text": "斋堂的登记簿摊在最上面，素口那一栏墨还没干透。",
+        "region": "changan"
+      }
+    ],
+    "sqd_qingcheng": [
+      {
+        "text": "后山那口缸满了，扁担钩挂在沿上，水一路滴到转角。",
+        "region": "chengdu"
+      }
+    ],
+    "sqd_kongtong": [
+      {
+        "text": "午课的师父从院里过，脚下没停，也没人低头看地。",
+        "region": "changan"
+      }
+    ],
+    "sqd_kunlun": [
+      {
+        "text": "风一起，院角那堆叶子又散开半个院子。",
+        "region": "xixia"
+      }
+    ],
+    "sqd_diancang": [
+      {
+        "text": "架上经卷归了位，檐外雨脚刚到石阶，门槛没湿。",
+        "region": "dali"
+      }
+    ],
+    "sqd_tiezhang": [
+      {
+        "text": "「下月补上。」话说得客气，账条角上添了个日子。",
+        "region": "xiangyang"
+      }
+    ],
+    "sqd_hehuan": [
+      {
+        "text": "柳树底下的土色深了一块，踩得比别处平。",
+        "region": "qinglou"
+      }
+    ],
+    "sqd_jindao": [
+      {
+        "text": "铜牌挂回账房钉上，刀头按长短码成三摞。",
+        "region": "luoyang"
+      }
+    ],
+    "sqd_wuhu": [
+      {
+        "text": "「信到了。」门房说完就放下帘子，没让人进。",
+        "region": "changan"
+      }
+    ],
+    "sqd_feihu": [
+      {
+        "text": "「秋收后结。」赵大有把这句记在账本上，压在旧账上头。",
+        "region": "changan"
+      }
+    ],
+    "sqd_zhenyuan": [
+      {
+        "text": "天亮时火盆还红着，梆子靠在门边，绳结换了新。",
+        "region": "luoyang"
+      }
+    ],
+    "sqd_shenquan": [
+      {
+        "text": "库房门口的石锁排成一列，大的在前，土里压出圆坑。",
+        "region": "cunzhen"
+      }
+    ],
+    "sqd_tieqiang": [
+      {
+        "text": "两根裂杆立在墙角，杆上的灰被手抹掉一截。",
+        "region": "luoyang"
+      }
+    ],
+    "sqd_kuaidao": [
+      {
+        "text": "西门烈把三个松钩逐个紧过，刀一口没拔。",
+        "region": "chengdu"
+      }
+    ],
+    "sqd_luohan": [
+      {
+        "text": "「木鱼一只没少。」石铁说完才合上账本。",
+        "region": "xiangyang"
+      }
+    ],
+    "sqd_wuyun": [
+      {
+        "text": "小秤擦得发亮，秤盘里留着几片碎药渣。",
+        "region": "chengdu"
+      }
+    ],
+    "sqd_dafeng": [
+      {
+        "text": "管账的把信压在算盘底下，没拆封。",
+        "region": "changan"
+      }
+    ],
+    "sqd_huanghe": [
+      {
+        "text": "粮车推过院子，车轴一声没响，地上留了两道浅印。",
+        "region": "harbor"
+      }
+    ],
+    "sqd_taihu": [
+      {
+        "text": "水寨师爷的案头压着一封干信，纸角没起毛。",
+        "region": "gusu"
+      }
+    ],
+    "sqd_poyang": [
+      {
+        "text": "蒙蜡的信到了湖口分舵，蜡皮一路没裂。",
+        "region": "gusu"
+      }
+    ],
+    "sqd_qingzhu": [
+      {
+        "text": "钱老成推着空车走了个来回，只说了一句「不响了」。",
+        "region": "jiangnan"
+      }
+    ],
+    "sqd_jujing": [
+      {
+        "text": "客车挪了个位，轴下那摊旧油印还在，边上多了新木屑。",
+        "region": "harbor"
+      }
+    ],
+    "sqd_jinlong": [
+      {
+        "text": "账房车停在府门口，箱子上的绳重新捆过一道。",
+        "region": "gusu"
+      }
+    ],
+    "sqd_wuliang": [
+      {
+        "text": "剑庐没人应门，门石底下露出半截信角。",
+        "region": "dali"
+      }
     ]
   }
 }
