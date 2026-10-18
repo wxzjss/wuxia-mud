@@ -29,6 +29,26 @@ node tools/perf-step-check.js
 - [ ] `kCpu / kIo` 两个读数都打出来了（谁抬起来的可追溯）
 - [ ] **安静窗口** 下 B1 必须真 12/0（这条是人工口径，自动注入只验行为）
 
+### 2.1 三档离线钉档（复制即跑，2026-10-18 实测）
+
+基线值：`calibration.ms = 9.31`、`calibration.ioMs = 19.58`
+（换机器/重标后先跑 `node tools/perf-step-check.js --calib` 读 `refMs/refIoMs`，
+再把下面前两个环境变量换成对应基线值；`kIo = PERF_IO_FORCE_MS / refIoMs`。）
+
+```sh
+# ① 正常档（k=1.00）：应当 13/0，B1 有 ✔
+PERF_CALIB_FORCE_MS=9.31 PERF_IO_FORCE_MS=19.58 node tools/perf-step-check.js 90
+
+# ② 偏宽·未判（k≈1.53）：B1 不判、零 ✔，汇总 8/0
+PERF_CALIB_FORCE_MS=9.31 PERF_IO_FORCE_MS=30 node tools/perf-step-check.js 90
+
+# ③ 过载·未判（k≈2.15）：B1 不判、零 ✔，汇总 8/0
+PERF_CALIB_FORCE_MS=20 PERF_IO_FORCE_MS=19.58 node tools/perf-step-check.js 90
+```
+
+判定看三行：`环境标定 k=…`、`B1 单步延迟 — … 未判`、`汇总 通过 N · 失败 M`。
+②③ 只要出现任何 `✔ B1` 就是回归；① 若在忙窗口出 ✘，换安静窗口重跑一次（不算回归）。
+
 ## 3. 量具自检（安静窗口）
 
 ```sh
