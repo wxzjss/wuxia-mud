@@ -1115,10 +1115,6 @@
       "home": "house:court_justice",
       "personality": "lengmo",
       "desc": "袍子是半旧的，靴子却擦得很亮。他看案卷的时候，手指按在字上，一行一行挪。",
-      "talk": [
-        "卷宗上写的，不一定是实情。",
-        "你有话就说，说完我自会去问。"
-      ],
       "age": 52,
       "likes": [
         "book"
@@ -1146,6 +1142,20 @@
       "homeless": true,
       "quests": [
         "sq_pre_court_tongshi"
+      ],
+      "talk": [
+        "卷宗放下，说。",
+        "大理寺问案，只看供词与尸格，不听哭声。"
+      ],
+      "ask": [
+        {
+          "topic": "旧案",
+          "keywords": [
+            "四个月",
+            "验状"
+          ],
+          "answer": "这桩案子压了四个月，卷里少了一页验状。"
+        }
       ],
       "portrait": {
         "v": 1,

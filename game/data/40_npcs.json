@@ -38966,10 +38966,6 @@
     "money": 500,
     "items": []
    },
-   "talk": [
-    "民状呈上来，本县自会看。",
-    "退堂之前，有事快讲。"
-   ],
    "socialDone": true,
    "teach": [
     "basic_force"
@@ -38990,6 +38986,20 @@
    "job": "official",
    "title": "县太爷",
    "personality": "lengmo",
+   "talk": [
+    "状纸呈上来。",
+    "递状先交二十文状纸钱，堂上不许喧哗。"
+   ],
+   "ask": [
+    {
+     "topic": "积案",
+     "keywords": [
+      "三十七桩",
+      "批文"
+     ],
+     "answer": "上月积了三十七桩案子，府里的批文还没下来。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",

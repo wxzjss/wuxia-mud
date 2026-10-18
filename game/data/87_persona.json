@@ -912,7 +912,21 @@
       "personality": "youhua"
     },
     "npcv_141": {
-      "personality": "youhua"
+      "personality": "youhua",
+      "talk": [
+        "看货？手别伸。",
+        "皮子一张八十文，药材按斤，路上折了两成。"
+      ],
+      "ask": [
+        {
+          "topic": "驼队",
+          "keywords": [
+            "晚到一天",
+            "两匹骆驼"
+          ],
+          "answer": "前日风大，驼队晚到一天，少了两匹骆驼。"
+        }
+      ]
     },
     "npcv_142": {
       "personality": "lengmo"
@@ -1398,7 +1412,21 @@
       "personality": "xiayi"
     },
     "npcv_261": {
-      "personality": "youhua"
+      "personality": "youhua",
+      "talk": [
+        "油彩还没卸，等我。",
+        "戏箱里的行头不许碰，碰坏一件赔半月工钱。"
+      ],
+      "ask": [
+        {
+          "topic": "赏钱",
+          "keywords": [
+            "二更",
+            "十七个"
+          ],
+          "answer": "前日唱到二更，台下扔了十七个赏钱，捡了半宿。"
+        }
+      ]
     },
     "npcv_262": {
       "personality": "yinzhi"
@@ -1502,7 +1530,21 @@
       ]
     },
     "npcv_277": {
-      "personality": "mune"
+      "personality": "mune",
+      "talk": [
+        "给口吃的吧。",
+        "我替人看葫芦，一天三文，不管饭。"
+      ],
+      "ask": [
+        {
+          "topic": "池边",
+          "keywords": [
+            "子时",
+            "起雾"
+          ],
+          "answer": "昨夜池里起雾，守池的老头说子时前后别靠近。"
+        }
+      ]
     },
     "npcv_278": {
       "personality": "mune"
@@ -1535,7 +1577,21 @@
       "personality": "mune"
     },
     "npcv_288": {
-      "personality": "xiayi"
+      "personality": "xiayi",
+      "talk": [
+        "风大，借个背风处。",
+        "往北三十里没有水井，水囊要灌满。"
+      ],
+      "ask": [
+        {
+          "topic": "狼",
+          "keywords": [
+            "火堆",
+            "半宿"
+          ],
+          "answer": "昨儿夜里有狼，围着火堆转了半宿，天亮才散。"
+        }
+      ]
     },
     "nv_huang": {
       "personality": "lengmo"
