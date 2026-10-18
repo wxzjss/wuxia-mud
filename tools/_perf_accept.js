@@ -41,22 +41,25 @@ const ok = (name, cond, extra) => {
   if (!cond) fail++;
 };
 const countB1 = (out) => (out.match(/✔ B1/g) || []).length;
+const failB1 = (out) => (out.match(/✘ B1/g) || []).length;
+const countVerdict = (out) => (out.match(/[✔✘] B1/g) || []).length;
 const unjudged = (out) => /B1 未判/.test(out);
 const summary = (out) => { const m = /通过 (\d+) · 失败 (\d+)/.exec(out); return m ? { pass: Number(m[1]), fail: Number(m[2]) } : null; };
 
 console.log('§A1  注入 k=1.00：正常档必须真的判（防「永远未判」的假保护）');
 {
   const out = run([], { PERF_CALIB_FORCE_MS: '9.31' });
-  ok('B1 有 ✔（≥4 条）', countB1(out) >= 4, countB1(out) + ' 个 ✔ B1');
-  const s = summary(out);
-  ok('全套 12/0', !!s && s.fail === 0, s ? ('通过 ' + s.pass + ' · 失败 ' + s.fail) : '未找到汇总行');
+  /* team-lead 2026-10-18 收紧版：注入 k=1.00 只断言**行为**——B1 必须产出判定（✔/✘ 均可）、
+     不得报「未判」；「安静窗口必须真 12/0」属发布前人工口径，不靠自动判据兜
+     （否则忙窗口注入必然假红，正是这条判据此前的毛病）。 */
+  ok('B1 产出判定（✔/✘ 均可，≥4 条）', countVerdict(out) >= 4, countVerdict(out) + ' 条判定');
   ok('未误报「未判」', !unjudged(out), unjudged(out) ? 'k=1.00 却报了未判' : '');
 }
 
 console.log('\n§A1b 注入 k≈1.24：仍正常判 + 「放宽 X%」留痕');
 {
   const out = run([], { PERF_CALIB_FORCE_MS: '11.5' });
-  ok('B1 有 ✔', countB1(out) >= 4, countB1(out) + ' 个 ✔ B1');
+  ok('B1 产出判定（✔/✘ 均可）', countVerdict(out) >= 4, countVerdict(out) + ' 条判定');
   ok('日志含「放宽 2x%」', /放宽 2[0-9]%/.test(out), (/放宽[^\n]*/.exec(out) || ['（无留痕）'])[0].slice(0, 46));
 }
 

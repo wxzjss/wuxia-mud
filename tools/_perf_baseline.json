@@ -44,6 +44,9 @@
     "k": 1,
     "workload": "CALIB_ITER=2000000",
     "date": "2026-10-18",
-    "note": "负载系数基准：B1 阈值按 本次标定/此值 缩放（封顶 2.0；>2 判环境过载未判）"
+    "note": "负载系数基准：B1 阈值按 本次标定/此值 缩放（封顶 2.0；>2 判环境过载未判）",
+    "ioMs": 22.73,
+    "ioWorkload": "IO_FILES=20_items.json,87_persona.json,101_classic_npcs.json x5 median",
+    "ioDate": "2026-10-18"
   }
 }

@@ -103,7 +103,11 @@ function runOne(file, idx) {
 
     let child;
     try {
-      child = spawn(process.execPath, [path.join(TOOLS, file)], {
+      /* perf-step-check 在套件里只判体积门（--suite）：延迟是环境属性，
+         放进批里会把「机器忙」记成产品红（2026-10-18 team-lead 裁定）。 */
+      const suiteArgs = [path.join(TOOLS, file)];
+      if (file === 'perf-step-check.js') suiteArgs.push('--suite');
+      child = spawn(process.execPath, suiteArgs, {
         cwd: ROOT,
         env: Object.assign({}, process.env, { WX_SAVE_DIR: saveDir, WX_SITE_DATA: siteDir }),
         stdio: ['ignore', 'pipe', 'pipe'],

@@ -55,6 +55,10 @@ process.env.WX_SITE_DATA = path.join(TMPROOT, 'site-data');
 fs.mkdirSync(process.env.WX_SAVE_DIR, { recursive: true });
 
 const STEPS = parseInt(process.argv[2], 10) > 0 ? parseInt(process.argv[2], 10) : 300;
+/* --suite（2026-10-18 team-lead 裁定，方案 2）：套件里只判体积门。
+   延迟是环境属性、体积是产品属性，混在一个批里会把「机器忙」记成「产品红」。
+   发版前单独跑 node tools/perf-step-check.js 判延迟。 */
+const SUITE_ONLY = process.argv.indexOf('--suite') >= 0;
 
 /* ==========================================================================
  *  环境负载标定（2026-10-18 门禁口径变更，team-lead 批）
@@ -89,10 +93,44 @@ function calibrate() {
   const a = Array.from({ length: 5 }, () => calibOnce()).sort((x, y) => x - y);
   return a[2];
 }
+/* ==========================================================================
+ *  I/O 标定（2026-10-18 qa 实验：k_cpu 与 p95 相关 r=-0.35，k_io r=0.88）
+ *  --------------------------------------------------------------------------
+ *  纯计算标定吃 ALU；B1 量的是 JSON.stringify + HTTP 往返，忙机上跌得远比 ALU 狠
+ *  （k_cpu=1.28 时 p95 +150%）。所以负载系数取 max(k_cpu, k_io)，k_io 用
+ *  「固定次数读 data json + JSON.parse」——约等于一次 view/exec 回包的真实工作量。
+ *  ⚠️ 基线 ioMs 必须在**安静窗口** --rebaseline 写入；本机忙时测会让基准虚高、
+ *     以后忙窗口反而报 k_io≈1（门失效）。没写 ioMs 前 k_io 按 1，并在输出里明说。
+ * ========================================================================== */
+const IO_FILES = ['20_items.json', '87_persona.json', '101_classic_npcs.json'];
+const IO_REPS = 20;   /* 单次采样内重复 20 轮：io 工作量 ~30ms，信噪比够；5 次中位 ≈150ms */
+function ioOnce() {
+  const t0 = process.hrtime.bigint();
+  let bytes = 0;
+  for (let r = 0; r < IO_REPS; r++) {
+    for (const f of IO_FILES) {
+      const t = fs.readFileSync(path.join(ROOT, 'game', 'data', f), 'utf8');
+      JSON.parse(t);
+      bytes += t.length;
+    }
+  }
+  if (bytes === 123456789) console.log('');
+  return Number(process.hrtime.bigint() - t0) / 1e6;
+}
+function calibrateIO() {
+  if (Number(process.env.PERF_CALIB_IO_FORCE_MS) > 0) return Number(process.env.PERF_CALIB_IO_FORCE_MS);
+  ioOnce();
+  const a = Array.from({ length: 5 }, () => ioOnce()).sort((x, y) => x - y);
+  return a[2];
+}
+const IO_MS = SUITE_ONLY ? 0
+  : (Number(process.env.PERF_CALIB_IO_FORCE_MS) > 0 ? Number(process.env.PERF_CALIB_IO_FORCE_MS) : calibrateIO());
+
 /* 自测口：PERF_CALIB_FORCE_MS 强制标定值（仅用于演示 k>2 的环境过载分支）。 */
-const CALIB_MS = Number(process.env.PERF_CALIB_FORCE_MS) > 0
-  ? Number(process.env.PERF_CALIB_FORCE_MS)
-  : calibrate();
+const CALIB_MS = SUITE_ONLY ? 0
+  : (Number(process.env.PERF_CALIB_FORCE_MS) > 0
+    ? Number(process.env.PERF_CALIB_FORCE_MS)
+    : calibrate());
 
 /* ---- 阈值（bytes）。KB 按 1024 记，与服务端 Content-Length 同口径 ---- */
 const KB = 1024;
@@ -132,7 +170,12 @@ catch (e) { /* main 里判空处理 */ }
 /* 负载系数 k：本次标定 / 基线标定。基线没记标定值 ⇒ k 按 1，并在输出里明说。 */
 const REF_CALIB = BASE && BASE.calibration && Number(BASE.calibration.ms) > 0
   ? Number(BASE.calibration.ms) : null;
-let RAW_K = REF_CALIB ? (CALIB_MS / REF_CALIB) : 1;
+const REF_IO = BASE && BASE.calibration && Number(BASE.calibration.ioMs) > 0
+  ? Number(BASE.calibration.ioMs) : null;
+const K_CPU = REF_CALIB ? (CALIB_MS / REF_CALIB) : 1;
+const K_IO = REF_IO ? (IO_MS / REF_IO) : 1;
+/* 负载系数 = 两个探针里更差的那个（qa 实验：只测 ALU 会低估忙机 150% 的 HTTP 变慢） */
+let RAW_K = SUITE_ONLY ? 1 : Math.max(K_CPU, K_IO);
 /* 三档判定（team-lead 最终口径 2026-10-18）：
      k < 1.3        → 按 k 缩放，正常判
      1.3 ≤ k ≤ 2.0  → B1 不判（「负载偏高·B1 未判」），体积门照常
@@ -146,12 +189,34 @@ let OVERLOADED = RAW_K > CALIB_MAX_K;
 
 /* --calib：只做标定并打印（量具漂移验收：同一机器连开 N 个进程，看极差）。
    正常门禁不走这里；它不启动服务、不读世界。 */
+if (process.argv.indexOf('--calib-io') >= 0) {
+  console.log(JSON.stringify({ ioMs: Math.round(IO_MS * 100) / 100, refIoMs: REF_IO, kIo: Math.round(K_IO * 1000) / 1000 }));
+  process.exit(0);
+}
 if (process.argv.indexOf('--calib') >= 0) {
   const tier = RAW_K > CALIB_MAX_K ? '过载未判' : (RAW_K >= B1_WIDE_K ? '偏宽未判' : '正常');
-  console.log(JSON.stringify({ calibMs: Math.round(CALIB_MS * 100) / 100, refMs: REF_CALIB, k: Math.round(RAW_K * 1000) / 1000, tier }));
+  console.log(JSON.stringify({
+    calibMs: Math.round(CALIB_MS * 100) / 100, refMs: REF_CALIB,
+    ioMs: Math.round(IO_MS * 100) / 100, refIoMs: REF_IO,
+    kCpu: Math.round(K_CPU * 1000) / 1000, kIo: Math.round(K_IO * 1000) / 1000,
+    k: Math.round(RAW_K * 1000) / 1000, tier,
+  }));
   process.exit(0);
 }
 
+/* --rebaseline-io：只重写 I/O 标定值（quiet 窗口专用；不动 CPU 基线）。
+   为什么分开：忙时跑 --rebaseline 会把 CPU 基线一起抬高，等于永久放宽。 */
+if (process.argv.indexOf('--rebaseline-io') >= 0) {
+  const f = path.join(__dirname, '_perf_baseline.json');
+  const j = JSON.parse(fs.readFileSync(f, 'utf8'));
+  j.calibration = j.calibration || {};
+  j.calibration.ioMs = Math.round(IO_MS * 100) / 100;
+  j.calibration.ioWorkload = 'IO_FILES=' + IO_FILES.join(',') + ' x5 median';
+  j.calibration.ioDate = new Date().toISOString().slice(0, 10);
+  fs.writeFileSync(f, JSON.stringify(j, null, 2) + String.fromCharCode(10));
+  console.log('已重写 I/O 标定：ioMs=' + j.calibration.ioMs + '（' + j.calibration.ioDate + '）');
+  process.exit(0);
+}
 /* --rebaseline：把「基线标定值」重写进 _perf_baseline.json（环境变动/改工作量时才跑）。
    记录的不只是毫秒数，还有工作量口径与日期 —— 以后 k 不可比时能一眼看出为什么。 */
 if (process.argv.indexOf('--rebaseline') >= 0) {
@@ -159,6 +224,7 @@ if (process.argv.indexOf('--rebaseline') >= 0) {
   const j = JSON.parse(fs.readFileSync(f, 'utf8'));
   j.calibration = {
     ms: Math.round(CALIB_MS * 100) / 100,
+    ioMs: SUITE_ONLY ? undefined : Math.round(IO_MS * 100) / 100,
     k: 1,
     workload: 'CALIB_ITER=' + CALIB_ITER,
     date: new Date().toISOString().slice(0, 10),
@@ -166,6 +232,7 @@ if (process.argv.indexOf('--rebaseline') >= 0) {
   };
   fs.writeFileSync(f, JSON.stringify(j, null, 2) + String.fromCharCode(10));
   console.log('已重写基线标定：' + JSON.stringify(j.calibration));
+  console.log('⚠️ ioMs 只有在安静窗口测才有效；忙时 rebaseline 会让 k_io 永久偏低。');
   process.exit(0);
 }
 
@@ -346,7 +413,7 @@ async function main() {
           p99: pct(sortedT, 99), max: sortedT[sortedT.length - 1],
         },
       });
-      MID_CALIBS.push(calibrate());
+      if (!SUITE_ONLY) MID_CALIBS.push(calibrate());
     }
 
     reps.forEach((r) => {
@@ -392,7 +459,13 @@ async function main() {
     /* 跑完回看标定（2026-10-18）：夹在中间的突发负载（别的 lane 开跑）
        开跑前那一刻的标定是看不见的。跑完再标一次，取两次里更差的那个当 k——
        这样「跑到一半机器被抢」也会被判成环境过载，而不是记成产品回归。 */
-    const POST_CALIB = Math.max.apply(null, [calibrate()].concat(MID_CALIBS.length ? MID_CALIBS : [0]));
+    const POST_CALIB = SUITE_ONLY ? 0 : Math.max.apply(null, [calibrate()].concat(MID_CALIBS.length ? MID_CALIBS : [0]));
+    if (POST_CALIB > 0 && REF_IO) {
+      /* 跑后也补一次 I/O 采样：忙负载中途起来时 pre 的 io 值看不见 */
+      const ioPost = calibrateIO();
+      const kIoPost = ioPost / REF_IO;
+      if (kIoPost > K_IO) { RAW_K = Math.max(K_CPU, kIoPost); B1_UNJUDGED = RAW_K >= B1_WIDE_K; OVERLOADED = RAW_K > CALIB_MAX_K; }
+    }
     const RAW_K_POST = REF_CALIB ? (POST_CALIB / REF_CALIB) : 1;
     if (RAW_K_POST > RAW_K) {
       RAW_K = RAW_K_POST;
@@ -403,10 +476,15 @@ async function main() {
 
     /* B1 四个门全部按负载系数 k 缩放（封顶 2.0；k>2 判环境过载、不进红名单）。
        标定明细见文件头 §「环境负载标定」。 */
+    if (SUITE_ONLY) {
+      console.log('    B1 延迟门跳过（--suite：套件只判体积门；发版前单独跑 node tools/perf-step-check.js）');
+    } else {
     console.log('    环境标定  k=' + RAW_K.toFixed(2)
       + (K !== RAW_K ? '（按 ' + K.toFixed(2) + ' 计）' : '')
       + ' · 本次 ' + ms(CALIB_MS) + ' / 轮间 ' + MID_CALIBS.length + ' 次(峰值 ' + ms(POST_CALIB) + ')'
       + (REF_CALIB ? ' / 基线 ' + ms(REF_CALIB) : '（基线缺标定值，k 按 1）')
+      + ' · kCpu ' + K_CPU.toFixed(2) + ' / kIo ' + K_IO.toFixed(2)
+      + (REF_IO ? '' : '（基线缺 I/O 标定，k_io 按 1）')
       + (!B1_UNJUDGED && K >= 1.2 ? ' · 本机负载偏高，阈值已放宽 ' + Math.round((K - 1) * 100) + '%' : '')
       + (OVERLOADED ? ' · **环境过载：B1 未判**' : ''));
     if (B1_UNJUDGED) {
@@ -438,6 +516,7 @@ async function main() {
         !!BASE && !!(BASE.pre && BASE.pre.p95Ms) && P_EXEC_MS.p95 <= BASE.pre.p95Ms * 1.5 * K,
         ms(P_EXEC_MS.p95) + ' vs 修前 p95 ' + (BASE && BASE.pre ? BASE.pre.p95Ms : '?') + ' ms × 1.5 × '
           + K.toFixed(2) + (BASE ? '' : '  ← 基线读不到，比值门未生效'));
+    }
     }
 
     const maxExecRaw = sExecRaw[sExecRaw.length - 1];
