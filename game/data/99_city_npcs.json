@@ -212,10 +212,6 @@
       "home": "house:cy_xy_street_1",
       "personality": "haoshuang",
       "desc": "灰布长衫洗得干净，袖口却起了毛边。",
-      "talk": [
-        "这段书，我在这儿说了三年了。",
-        "要听，就找个座儿坐下。"
-      ],
       "age": 34,
       "likes": [
         "wine"
@@ -241,6 +237,20 @@
       "tier": "B",
       "district": "xiangyang",
       "homeless": true,
+      "talk": [
+        "坐前排，听得清。",
+        "一段书说半个时辰，收三文，赏钱随意。"
+      ],
+      "ask": [
+        {
+          "topic": "城北的旧事",
+          "keywords": [
+            "旧事",
+            "战事"
+          ],
+          "answer": "昨日讲到襄阳旧战，听的人挤到街心，散场还不肯走。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -1661,10 +1671,6 @@
       "home": "house:cy_ly_street_1",
       "personality": "wenwan",
       "desc": "指甲修得齐整，指缝里却嵌着洗不掉的泥。",
-      "talk": [
-        "花这东西，急不得。",
-        "这几株费了两年工夫。"
-      ],
       "age": 30,
       "likes": [
         "jade"
@@ -1690,6 +1696,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "看花，别掐。",
+        "一盆魏紫要养三年，卖二两银。"
+      ],
+      "ask": [
+        {
+          "topic": "今年的花事",
+          "keywords": [
+            "花事",
+            "牡丹"
+          ],
+          "answer": "今年倒春寒，花苞冻坏了一批，开得好的没几盆。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -1728,10 +1748,6 @@
       "home": "house:cy_ly_street_2",
       "personality": "lengmo",
       "desc": "眼神总往虚处看，像在琢磨什么。",
-      "talk": [
-        "这幅还没干，别碰。",
-        "你要画像？坐正了。"
-      ],
       "age": 53,
       "likes": [
         "food"
@@ -1757,6 +1773,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "站远些，看整幅。",
+        "一张山水润笔五钱，题字另算。"
+      ],
+      "ask": [
+        {
+          "topic": "街上的牡丹",
+          "keywords": [
+            "牡丹",
+            "花期"
+          ],
+          "answer": "这街上牡丹开得早，画到第三日就谢了，留不住。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -6160,10 +6190,6 @@
       "home": "house:cy_hb_1",
       "personality": "baozhao",
       "desc": "裤脚挽到膝上，脚趾抠着船板。",
-      "talk": [
-        "坐稳了。",
-        "这条水，我熟。"
-      ],
       "age": 55,
       "likes": [
         "incense"
@@ -6189,6 +6215,20 @@
       "tier": "B",
       "district": "harbor",
       "homeless": true,
+      "talk": [
+        "上船就坐稳。",
+        "顺水到下游三十文，逆水五十。"
+      ],
+      "ask": [
+        {
+          "topic": "今日的潮",
+          "keywords": [
+            "涨潮",
+            "潮水"
+          ],
+          "answer": "今日申时涨潮，晚了就得等一夜，船钱也要加。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -6230,10 +6270,6 @@
       "home": "house:cy_hb_2",
       "personality": "mune",
       "desc": "一只手抠着箩筐的绳子，指节粗得不像话。",
-      "talk": [
-        "让一让，借光！",
-        "这担子沉，别撞着。"
-      ],
       "age": 44,
       "likes": [
         "music"
@@ -6259,6 +6295,20 @@
       "tier": "B",
       "district": "harbor",
       "homeless": true,
+      "talk": [
+        "让开，绳要绷了。",
+        "一条船八个人拉，上滩一趟分二十文。"
+      ],
+      "ask": [
+        {
+          "topic": "肩上的茧",
+          "keywords": [
+            "茧",
+            "肩膀"
+          ],
+          "answer": "肩上这层茧，雨天最疼，夜里翻身都得慢慢来。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -6297,10 +6347,6 @@
       "home": "house:cy_hb_3",
       "personality": "youhua",
       "desc": "一身靛蓝褂子，腰间挂着一大串钥匙。",
-      "talk": [
-        "存货要单子，取货也要单子。",
-        "你的货，还压在里头呢。"
-      ],
       "age": 27,
       "likes": [
         "book"
@@ -6326,6 +6372,20 @@
       "tier": "B",
       "district": "harbor",
       "homeless": true,
+      "talk": [
+        "单子呢？",
+        "货栈一日三文一担，过夜加两文。"
+      ],
+      "ask": [
+        {
+          "topic": "碎了的瓷器",
+          "keywords": [
+            "瓷器",
+            "赔账"
+          ],
+          "answer": "昨日那船瓷器碎了两成，账还在扯，谁也不肯认。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -6368,10 +6428,6 @@
       "home": "house:cy_hb_4",
       "personality": "yinzhi",
       "desc": "脸上堆着笑，眼睛却盯着人的手。",
-      "talk": [
-        "照章程来，一两不能少。",
-        "我也当差，您担待。"
-      ],
       "age": 48,
       "likes": [
         "silver"
@@ -6397,6 +6453,20 @@
       "tier": "B",
       "district": "harbor",
       "homeless": true,
+      "talk": [
+        "货单摊开。",
+        "一担抽五文，绸缎按匹加抽。"
+      ],
+      "ask": [
+        {
+          "topic": "本月的税额",
+          "keywords": [
+            "税额",
+            "抽税"
+          ],
+          "answer": "这个月税额还差三成，上头催得紧，我也难做。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -6516,10 +6586,6 @@
       "home": "house:cy_hb_6",
       "personality": "mune",
       "desc": "脚上只踩着一双草鞋，脚趾抠着地。",
-      "talk": [
-        "水底下的事，说了你也不信。",
-        "没下水，别论价。"
-      ],
       "age": 28,
       "likes": [
         "jade"
@@ -6545,6 +6611,20 @@
       "tier": "B",
       "district": "harbor",
       "homeless": true,
+      "talk": [
+        "下水，先讲价。",
+        "捞人二两，捞货看水深，一丈加五钱。"
+      ],
+      "ask": [
+        {
+          "topic": "翻船那日",
+          "keywords": [
+            "翻船",
+            "沉船"
+          ],
+          "answer": "前日那艘翻的船，货主到现在没露面，货还压在滩上。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -6586,10 +6666,6 @@
       "home": "house:cy_hb_7",
       "personality": "baozhao",
       "desc": "担子卸在脚边，一样样码得整齐。",
-      "talk": [
-        "看一眼，不买也看一眼。",
-        "就剩这些了，便宜给你。"
-      ],
       "age": 29,
       "likes": [
         "flower"
@@ -6615,6 +6691,20 @@
       "tier": "B",
       "district": "harbor",
       "homeless": true,
+      "talk": [
+        "鱼还跳，看哪条。",
+        "鲫鱼一斤十文，日头高了就八文。"
+      ],
+      "ask": [
+        {
+          "topic": "今早的潮",
+          "keywords": [
+            "早潮",
+            "渔船"
+          ],
+          "answer": "今早潮水退得早，船回来得也早，鱼价就压下来了。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -6720,10 +6810,6 @@
       "home": "house:cy_hb_9",
       "personality": "mune",
       "desc": "灰布短袄上打着补丁，补丁的针脚倒是齐整。",
-      "talk": [
-        "天干物燥，小心火烛。",
-        "夜里别乱走。"
-      ],
       "age": 61,
       "likes": [
         "tea"
@@ -6749,6 +6835,20 @@
       "tier": "B",
       "district": "harbor",
       "homeless": true,
+      "talk": [
+        "亥时了，还不回？",
+        "一夜敲五遍梆子，二更一遍，四更一遍。"
+      ],
+      "ask": [
+        {
+          "topic": "后街的灯",
+          "keywords": [
+            "灯油",
+            "后街"
+          ],
+          "answer": "后街那盏灯油快尽了，明日得添，不然夜里看不清路。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
