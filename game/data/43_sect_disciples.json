@@ -7169,10 +7169,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「执剑弟子见过师叔。」",
-    "「庵里的晚课结束了，得去把山门闩上。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -7228,6 +7224,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "山门要闩了，快些。",
+    "衡山剑法配琴，学琴一月一两银子。"
+   ],
+   "ask": [
+    {
+     "topic": "琴",
+     "keywords": [
+      "掌门",
+      "三更"
+     ],
+     "answer": "掌门夜里弹琴，弹到三更，山门里都听得见。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -7473,10 +7483,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「外门弟子见过师叔。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -7532,6 +7538,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "听，风里有调子。",
+    "外门弟子先学听音，三个月后才摸剑。"
+   ],
+   "ask": [
+    {
+     "topic": "晚课",
+     "keywords": [
+      "酉时",
+      "两刻"
+     ],
+     "answer": "晚课酉时起，做两刻钟，迟到的要在门外站。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -8404,10 +8424,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「入室弟子见过师叔。」",
-    "「早课的钟是我敲的，敲早了被师祖说了一顿。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -8463,6 +8479,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "山门在前，拳在后。",
+    "七伤拳先练桩，伤了筋骨得自己养。"
+   ],
+   "ask": [
+    {
+     "topic": "早课",
+     "keywords": [
+      "卯时",
+      "一炷香"
+     ],
+     "answer": "早课卯时起，钟敲一炷香，敲早了师祖要骂。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -8708,10 +8738,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「外门弟子见过师叔。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -8767,6 +8793,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "新来的？站到队尾。",
+    "门里药酒一月两坛，练拳的都得喝。"
+   ],
+   "ask": [
+    {
+     "topic": "旧伤",
+     "keywords": [
+      "三年前",
+      "一位"
+     ],
+     "answer": "三年前有位师兄练伤了肺，如今只能守着山门。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -8809,10 +8849,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「执剑弟子见过师叔。」",
-    "「山口的风一夜没停，哨位上换了三班人。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -8868,6 +8904,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "两手都空着？进来。",
+    "双剑要两手各一柄，先练左手三个月。"
+   ],
+   "ask": [
+    {
+     "topic": "山口",
+     "keywords": [
+      "守夜",
+      "三班"
+     ],
+     "answer": "山口的风一夜没停，守夜的换了三班人。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -9113,10 +9163,6 @@
    "speed": 83,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「外门弟子见过师叔。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -9172,6 +9218,20 @@
    "personality": "mune",
    "tier": "B",
    "job": "disciple",
+   "talk": [
+    "昆仑山上，少说话。",
+    "门里口粮一日两顿，练功的加一碗。"
+   ],
+   "ask": [
+    {
+     "topic": "雪",
+     "keywords": [
+      "九月",
+      "半尺"
+     ],
+     "answer": "九月里就落雪，今年积了半尺，山路难走。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "B",
@@ -10497,10 +10557,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师叔。」",
-    "「刀在鞘里，鞘上有三道旧痕。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -10559,6 +10615,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_jindao",
+   "talk": [
+    "学刀？先交束脩。",
+    "束脩一月二百文，刀自己买，门里不管。"
+   ],
+   "ask": [
+    {
+     "topic": "招牌",
+     "keywords": [
+      "挂了",
+      "十二年"
+     ],
+     "answer": "门口那块金漆招牌挂了十二年，褪了色也没换。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -10686,10 +10756,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师兄。」",
-    "「刀在鞘里，鞘上有三道旧痕。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -10747,6 +10813,20 @@
    "personality": "lengmo",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "刀拿稳，别抖。",
+    "入门先劈柴三个月，劈完才教第一式。"
+   ],
+   "ask": [
+    {
+     "topic": "后院",
+     "keywords": [
+      "二十担",
+      "一冬"
+     ],
+     "answer": "后院堆着二十担柴，都是学徒劈的，够烧一冬。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -12195,10 +12275,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师叔。」",
-    "「刀在鞘里，鞘上有三道旧痕。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -12257,6 +12333,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_kuaidao",
+   "talk": [
+    "出手要快，站好。",
+    "门里比刀，三招定输赢，慢了去劈柴。"
+   ],
+   "ask": [
+    {
+     "topic": "劈柴",
+     "keywords": [
+      "每天",
+      "两个"
+     ],
+     "answer": "每天都有两个输了的去后院劈柴，劈到天黑。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -12384,10 +12474,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师兄。」",
-    "「刀在鞘里，鞘上有三道旧痕。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -12445,6 +12531,20 @@
    "personality": "lengmo",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "刀呢？没刀别进门。",
+    "快刀门只教一刀，练三个月同一式。"
+   ],
+   "ask": [
+    {
+     "topic": "柴堆",
+     "keywords": [
+      "半人高",
+      "输招"
+     ],
+     "answer": "后院的柴堆了半人高，都是输招的人劈的。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -12478,10 +12578,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师叔。」",
-    "「刀在鞘里，鞘上有三道旧痕。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -12538,6 +12634,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_luohan",
+   "talk": [
+    "拳是真的，别问出处。",
+    "门里学拳一月一百五十文，管住不管吃。"
+   ],
+   "ask": [
+    {
+     "topic": "少林",
+     "keywords": [
+      "门主",
+      "没去过"
+     ],
+     "answer": "门主自己没去过少林，招牌上的字是求人写的。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -12663,10 +12773,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「门徒见过师兄。」",
-    "「刀在鞘里，鞘上有三道旧痕。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -12722,6 +12828,20 @@
    "personality": "lengmo",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "站桩，先站一炷香。",
+    "罗汉拳三十六式，一式练七天。"
+   ],
+   "ask": [
+    {
+     "topic": "踢门",
+     "keywords": [
+      "上个月",
+      "两个"
+     ],
+     "answer": "上个月有两个外乡人来踢门，都被三招打发了。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -13329,10 +13449,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师叔。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -13389,6 +13505,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_huanghe",
+   "talk": [
+    "先喝口热的。",
+    "拉纤一天四十文，管两顿干饭。"
+   ],
+   "ask": [
+    {
+     "topic": "封河",
+     "keywords": [
+      "十一月",
+      "三个月"
+     ],
+     "answer": "十一月封河，船都上岸，帮里靠存粮过冬。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -13514,10 +13644,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师兄。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -13573,6 +13699,20 @@
    "personality": "baozhao",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "腰牌呢？亮出来。",
+    "黄河上走货，一船抽两成，遇风浪另算。"
+   ],
+   "ask": [
+    {
+     "topic": "水性",
+     "keywords": [
+      "下游",
+      "五里"
+     ],
+     "answer": "下游五里有片漩涡，去年翻过一条粮船。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -14437,10 +14577,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师叔。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -14497,6 +14633,20 @@
    "tier": "C",
    "job": "disciple",
    "sidequest": "sqd_jujing",
+   "talk": [
+    "上船先脱鞋。",
+    "出海一趟分三成，遇上风浪只得一成。"
+   ],
+   "ask": [
+    {
+     "topic": "船底",
+     "keywords": [
+      "补过",
+      "七回"
+     ],
+     "answer": "帮主那条船补过七回，船底又漏了，正等木料。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",
@@ -14622,10 +14772,6 @@
    "speed": 58,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「帮众见过师兄。」",
-    "「走镖的话，先把腰牌亮了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -14681,6 +14827,20 @@
    "personality": "baozhao",
    "tier": "C",
    "job": "disciple",
+   "talk": [
+    "看潮么？快涨了。",
+    "搬鱼一筐两文，从船边搬到岸上。"
+   ],
+   "ask": [
+    {
+     "topic": "鱼",
+     "keywords": [
+      "昨夜",
+      "两担"
+     ],
+     "answer": "昨夜一网起了两担黄鱼，卖到晌午只剩半筐。"
+    }
+   ],
    "portrait": {
     "v": 1,
     "tier": "C",

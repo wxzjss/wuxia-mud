@@ -1597,10 +1597,6 @@
       "home": "house:cy_ly_gate_1",
       "personality": "mune",
       "desc": "灰布短袄上打着补丁，补丁的针脚倒是齐整。",
-      "talk": [
-        "天干物燥，小心火烛。",
-        "夜里别乱走。"
-      ],
       "age": 54,
       "likes": [
         "sword"
@@ -1626,6 +1622,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "灯笼别碰，油贵。",
+        "东门夜里二更关，赶车的趁早。"
+      ],
+      "ask": [
+        {
+          "topic": "火烛",
+          "keywords": [
+            "上旬",
+            "半间"
+          ],
+          "answer": "上旬东门内着火，烧了半间草棚，如今查得紧。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -1664,10 +1674,6 @@
       "home": "house:cy_ly_gate_2",
       "personality": "haoshuang",
       "desc": "甲片上的锈擦不净，站得笔直，眼睛却总往城外的路上瞟。",
-      "talk": [
-        "城门申时落闸，要进城趁早。",
-        "路引带在身上么？"
-      ],
       "age": 33,
       "likes": [
         "book"
@@ -1693,6 +1699,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "路引，包袱打开。",
+        "出城往东是白马寺，走半日，中途有块背风的石头。"
+      ],
+      "ask": [
+        {
+          "topic": "换防",
+          "keywords": [
+            "午时",
+            "二十人"
+          ],
+          "answer": "午时换防，二十人一班，城楼上还有六个。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -1885,10 +1905,6 @@
       "home": "house:cy_ly_street_3",
       "personality": "youhua",
       "desc": "眼珠子一转，先看你穿的是什么。",
-      "talk": [
-        "这位，看点什么？",
-        "货是好货，价钱好说。"
-      ],
       "age": 30,
       "likes": [
         "silver"
@@ -1914,6 +1930,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "看花还是看货？",
+        "牡丹不卖，花下的酒一坛三百文。"
+      ],
+      "ask": [
+        {
+          "topic": "花会",
+          "keywords": [
+            "初十",
+            "半条街"
+          ],
+          "answer": "初十办花会，半条街都摆满，读书人最肯花钱。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -2408,10 +2438,6 @@
       "home": "house:cy_ly_lane_1",
       "personality": "wenwan",
       "desc": "指甲修得齐整，指缝里却嵌着洗不掉的泥。",
-      "talk": [
-        "这几株费了两年工夫。",
-        "花这东西，急不得。"
-      ],
       "age": 35,
       "likes": [
         "tea"
@@ -2437,6 +2463,23 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "quests": [
+        "sq_cy_ly_hua"
+      ],
+      "talk": [
+        "看花可以，别掐。",
+        "一盆牡丹二百文，带花苞的加五十文。"
+      ],
+      "ask": [
+        {
+          "topic": "浇水",
+          "keywords": [
+            "三月",
+            "两回"
+          ],
+          "answer": "三月里要浇两回水，浇多了根要烂。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",
@@ -2463,10 +2506,7 @@
         "marks": [
           "工"
         ]
-      },
-      "quests": [
-        "sq_cy_ly_hua"
-      ]
+      }
     },
     "cy_ly_brothel_1": {
       "id": "cy_ly_brothel_1",
@@ -3016,10 +3056,6 @@
       "home": "house:cy_ly_patrol_1",
       "personality": "xiayi",
       "desc": "腰上挂着铁尺，走路带风，眼睛扫得很勤。",
-      "talk": [
-        "站住，哪儿来的？",
-        "没事别在街上晃。"
-      ],
       "age": 59,
       "likes": [
         "tea"
@@ -3045,6 +3081,20 @@
       "tier": "B",
       "district": "luoyang",
       "homeless": true,
+      "talk": [
+        "别挤，看着脚下。",
+        "大街不许骑马，违了罚二十文。"
+      ],
+      "ask": [
+        {
+          "topic": "钱袋",
+          "keywords": [
+            "去年",
+            "两起"
+          ],
+          "answer": "去年花会丢了两回钱袋，都是人挤的时候。"
+        }
+      ],
       "portrait": {
         "v": 1,
         "tier": "B",

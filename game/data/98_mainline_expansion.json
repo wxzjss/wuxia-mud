@@ -332,10 +332,6 @@
       "home": "house:cy_pre_pawn",
       "personality": "youhua",
       "desc": "眼睛在东西上只停一瞬，在你脸上停得久些。",
-      "talk": [
-        "有东西要当？先拿来我看。",
-        "死当活当，价钱不一样。"
-      ],
       "age": 48,
       "likes": [
         "silver"
@@ -363,6 +359,20 @@
       "homeless": true,
       "quests": [
         "sq_pre_a3_dangpu"
+      ],
+      "talk": [
+        "当东西？拿来看看。",
+        "死当七成价，活当五成，利钱按月算。"
+      ],
+      "ask": [
+        {
+          "topic": "牡丹",
+          "keywords": [
+            "谷雨",
+            "三朵"
+          ],
+          "answer": "谷雨前后牡丹开得最盛，巷里一株能开三朵大的。"
+        }
       ],
       "portrait": {
         "v": 1,
