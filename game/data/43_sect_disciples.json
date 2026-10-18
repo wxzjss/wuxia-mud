@@ -189,10 +189,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「执事弟子见过师兄。」",
-    "「后山那片竹林今早伐了一批，账还没对完。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -249,7 +245,21 @@
    "rank": 2,
    "personality": "lengmo",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "来者报名，登记在册。",
+    "上山要登记，姓名、籍贯、几时下山。"
+   ],
+   "ask": [
+    {
+     "topic": "门规",
+     "keywords": [
+      "私斗",
+      "逐出"
+     ],
+     "answer": "私斗罚俸一月，伤了人，逐出山门。"
+    }
+   ]
   },
   "disciple_huashan_3": {
    "id": "disciple_huashan_3",
@@ -610,10 +620,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「首座见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -670,7 +676,21 @@
    "rank": 3,
    "personality": "wenwan",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "施主从哪座山来？",
+    "寺里一日两餐，过午不食，新来的头半月最难熬。"
+   ],
+   "ask": [
+    {
+     "topic": "戒律",
+     "keywords": [
+      "酒戒",
+      "罚"
+     ],
+     "answer": "破了酒戒，罚抄经百遍，扫塔三日。"
+    }
+   ]
   },
   "disciple_shaolin_2": {
    "id": "disciple_shaolin_2",
@@ -777,10 +797,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「比丘见过师叔。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -838,7 +854,21 @@
    "rank": 1,
    "personality": "mune",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "殿里清静，脚步轻些。",
+    "天王殿的香火钱归客堂，一日清点两回。"
+   ],
+   "ask": [
+    {
+     "topic": "轮值",
+     "keywords": [
+      "轮值",
+      "三更"
+     ],
+     "answer": "轮值到三更，换班的师弟总迟半刻。"
+    }
+   ]
   },
   "disciple_shaolin_4": {
    "id": "disciple_shaolin_4",
@@ -1108,10 +1138,6 @@
    "speed": 119,
    "hostile": false,
    "leavesCorpse": false,
-   "talk": [
-    "「二代弟子见过师兄。」",
-    "「你要的书我借过，只是那页被人撕了。」"
-   ],
    "wander": {
     "chance": 0.05
    },
@@ -1173,7 +1199,21 @@
    "rank": 3,
    "personality": "wenwan",
    "tier": "A",
-   "job": "disciple"
+   "job": "disciple",
+   "talk": [
+    "山上清苦，久住便知。",
+    "太和宫的屋瓦三年一换，去年换了东边半排。"
+   ],
+   "ask": [
+    {
+     "topic": "功课",
+     "keywords": [
+      "早课",
+      "卯时"
+     ],
+     "answer": "早课卯时起，先扫院，再练一趟剑。"
+    }
+   ]
   },
   "disciple_wudang_2": {
    "id": "disciple_wudang_2",
