@@ -430,6 +430,14 @@ async function main() {
         !!BASE && !!(BASE.pre && BASE.pre.p50Ms) && P_EXEC_MS.p50 <= BASE.pre.p50Ms * 1.5 * K,
         ms(P_EXEC_MS.p50) + ' vs 修前 ' + (BASE && BASE.pre ? BASE.pre.p50Ms : '?') + ' ms × 1.5 × '
           + K.toFixed(2) + (BASE ? '' : '  ← 基线读不到，比值门未生效'));
+      /* p95 比值门（2026-10-18 qa 实测补）：原先只有 p50 有比值门，p95 只靠绝对阈值 8ms。
+         而绝对阈值对「忙机」最敏感：k=1.28 时纯计算只慢 28%，HTTP p95 却能慢 150%，
+         于是「按 28% 放宽去卡 150% 的慢」必假红。比值门用同一轮读数除以修前 p95，
+         天然抵消整体变慢——这正是当初给 p50 上比值门的理由。 */
+      ok('B1 比值 p95 ≤ 修前 p95 × 1.5 × k（_perf_baseline.json）',
+        !!BASE && !!(BASE.pre && BASE.pre.p95Ms) && P_EXEC_MS.p95 <= BASE.pre.p95Ms * 1.5 * K,
+        ms(P_EXEC_MS.p95) + ' vs 修前 p95 ' + (BASE && BASE.pre ? BASE.pre.p95Ms : '?') + ' ms × 1.5 × '
+          + K.toFixed(2) + (BASE ? '' : '  ← 基线读不到，比值门未生效'));
     }
 
     const maxExecRaw = sExecRaw[sExecRaw.length - 1];
