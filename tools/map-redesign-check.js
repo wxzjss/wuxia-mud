@@ -136,14 +136,20 @@ async function renderMap(view) {
      高亮的落地方式：按钮内联注入 `--mr-c`（该区域自己的 color），
      CSS 用它给名字画一条**同色虚线下划线** + 加粗 + 抬字号。
      两层都要守：渲染层（变量注进去了）+ CSS 层（真规则用它，不是只写在注释里）。 */
-  const mrnBtns = html.match(/<button class="mrn-btn[^>]*>/g) || [];
-  ok('★ 区域名按钮注入了高亮变量 --mr-c（每个区域自己的颜色）',
-    mrnBtns.length > 0 && mrnBtns.every(b => /--mr-c:\s*#[0-9a-fA-F]{3,6}/.test(b)),
-    mrnBtns.length + ' 个按钮，例：' + (mrnBtns[0] || '(无)').slice(0, 110));
+  const mrnItems = html.match(/<span class="mrn-item[^>]*>/g) || [];
+  ok('★ 区域名信息行注入了高亮变量 --mr-c（每个区域自己的颜色）',
+    mrnItems.length > 0 && mrnItems.every(b => /--mr-c:\s*#[0-9a-fA-F]{3,6}/.test(b)),
+    mrnItems.length + ' 个信息行，例：' + (mrnItems[0] || '(无)').slice(0, 110));
+  /* 2026-10-18 反转口径：地名索引是静态信息，不是按钮。守「真的不可点」+「信息没丢」。 */
+  const navHtml = (html.match(/<div class="map-region-nav"[\s\S]*?<\/div>\s*<\/div>/) || [''])[0];
+  ok('★ 地名索引里没有任何可点按钮（不是哑按钮）',
+    (navHtml.match(/<button/g) || []).length === 0, 'button=' + ((navHtml.match(/<button/g) || []).length));
+  ok('　信息没丢：区域名与已探数仍在', mrnItems.length > 0 && html.indexOf('mrn-num') >= 0,
+    mrnItems.length + ' 行');
   {
     const css = fs.readFileSync(path.join(ROOT, 'game/src/renderer/css/main.css'), 'utf8');
     /* 只取真规则（`{...}`），别匹配到注释里的说明文字 —— 本项目踩过「注释里有字样被误判」 */
-    const rule = (css.match(/\.mrn-btn \.mrn-name\s*\{[^}]*\}/) || [''])[0];
+    const rule = (css.match(/\.mrn-item \.mrn-name\s*\{[^}]*\}/) || [''])[0];
     ok('★ CSS 真规则里区域名用了 --mr-c 做下划线（不是只写在注释里）',
       /var\(--mr-c/.test(rule), rule.replace(/\s+/g, ' ').slice(0, 110) || 'NOT FOUND');
     ok('　区域名加粗 + 抬字号（从一片小胶囊里一眼挑得出来）',

@@ -3714,25 +3714,30 @@
     const regs = (m.regions || []).slice();
     const visited = regs.filter(r => (r.visitedCount || 0) > 0);
     const rest = regs.filter(r => !(r.visitedCount || 0));
-    const regBtn = (r) => {
-      return '<button class="mrn-btn' + (r.id === curRegion ? ' cur' : '') + '"' +
+    /* 🔴 2026-10-18 主人/team-lead 裁定：地名索引是**信息展示**，不做跳转。
+       地图只画当前区域（分层切换器 10-13 已删），点别的地名没有可平移的目标；
+       旧实现给的是 34 颗没有 onclick 的哑按钮，title 还写着「看一眼」——
+       承诺了行为却没实现，比静态信息更糟。现在输出**非按钮**元素，
+       title 只保留真实信息（区域名 + 已探数），不再出现「看一眼」。 */
+    const regItem = (r) => {
+      return '<span class="mrn-item' + (r.id === curRegion ? ' cur' : '') + '"' +
         ' style="--mr-c:' + esc(r.color || '#999') + '"' +
-        ' title="' + esc(r.name + '（看一眼；出远门走「行路」）') + '">' +
+        ' title="' + esc(r.name + ' · 已探 ' + (r.visitedCount || 0) + '/' + (r.count || 0)) + '">' +
         '<i class="mrn-dot" style="background:' + esc(r.color || '#999') + '"></i>' +
         '<span class="mrn-name">' + esc(r.name) + '</span>' +
         '<span class="mrn-num">' + (r.visitedCount || 0) + '/' + (r.count || 0) + '</span>' +
-        '</button>';
+        '</span>';
     };
-    h += '<div class="map-region-nav" title="点地名看一眼位置；出远门走驿站渡口（行路）">';
+    h += '<div class="map-region-nav" title="地图只显示当前区域；出远门走驿站渡口（行路）">';
     h += '<div class="mrn-head"><span class="mrn-title">地名索引</span>' +
       '<span class="mrn-sub">去过 ' + visited.length + '/' + regs.length +
       ' 处　出远门走「行路」</span></div>';
-    if (visited.length) h += '<div class="mrn-grid">' + visited.map(regBtn).join('') + '</div>';
+    if (visited.length) h += '<div class="mrn-grid">' + visited.map(regItem).join('') + '</div>';
     else h += '<div class="mrn-empty">还没出过门 —— 天下之大，先从脚下走起。</div>';
     if (rest.length) {
       h += '<details class="mrn-more"' + (visited.length ? '' : ' open') + '>' +
         '<summary>其余 ' + rest.length + ' 处（还没去过）</summary>' +
-        '<div class="mrn-grid">' + rest.map(regBtn).join('') + '</div></details>';
+        '<div class="mrn-grid">' + rest.map(regItem).join('') + '</div></details>';
     }
     /* 服务端「区域总览」那份数据仍在（m.regions 的 visitedCount / hasCurrent 都用上了），
        只是不再单独铺一层重复列表 —— 上面每个按钮里已经带了同一组数字。 */
@@ -4042,10 +4047,10 @@
         };
       });
 
-      /* ★ 区域名按钮的「平移视角」分支**已删**（🔴 2026-10-12 全图下线）。
-         区域模式只画本区，别的区域根本不在画布上，没有「平移过去看看」这回事。
-         地名索引里**没去过**的区域按钮（`data-pan-region`）现在是哑的 ——
-         生成侧也不该再给出这种按钮（见 mapHtml 里 `regBtn` 那段）。 */
+      /* ★ 地名索引是**信息展示，不做跳转**（2026-10-18 定稿）。
+         地图只画当前区域（全图/分层切换器已在 10-13 删除），跨区域请走「行路」；
+         索引里的元素是静态 `.mrn-item`，没有按钮、没有绑定，
+         因此这里也**不应**再出现任何 `.mrn-btn` / `[data-pan-region]` 的绑定代码。 */
 
       /* ★ 「飞往」按钮的绑定**不在这里** —— 见本函数末尾 `name === 'map' || name === 'fly'`
          那一块。「地图」的「地名索引」与「飞行」面板用的是同一批按钮

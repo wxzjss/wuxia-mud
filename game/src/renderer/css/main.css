@@ -1833,12 +1833,13 @@ body::before {
 .fly-empty { font-size: 13px; color: var(--ink-3); line-height: 1.9; }
 
 .mrn-empty { font-size: 12.5px; color: var(--ink-4); padding: 2px 0 4px; }
-.mrn-btn { display: flex; align-items: center; gap: 5px; min-width: 0;
+/* 2026-10-18：地名索引是静态信息行（非按钮）——去掉 cursor:pointer 与 hover，
+   避免给出「可以点」的错误暗示。类名同步改为 .mrn-item。 */
+.mrn-item { display: flex; align-items: center; gap: 5px; min-width: 0;
   padding: 5px 11px; border-radius: 14px; border: 1px solid var(--line-2);
   background: var(--card-2); color: var(--ink-3); font-size: 12.5px;
-  font-family: var(--font); cursor: pointer; text-align: left; }
-.mrn-btn:hover { background: var(--card-2); border-color: var(--line); }
-.mrn-btn.cur { color: var(--red); font-weight: 600; border-color: rgba(156,43,37,.4); }
+  font-family: var(--font); text-align: left; }
+.mrn-item.cur { color: var(--red); font-weight: 600; border-color: rgba(156,43,37,.4); }
 .mrn-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 2px; }
 /* ⚠️ 名字要 nowrap：中文在 flex 窄容器里会被压成一列一个字（踩过的老坑）。
    只给短串加，不给段落加 —— 给段落加会横着冲出去把卡片顶宽。 */
@@ -1857,19 +1858,14 @@ body::before {
    为什么用虚线下划线而不是给整颗按钮上色：按钮已经用**底色**区分了
    「去过（金底）/ 没去过（暗底）」两种状态（见 `.canfly` / `.nofly`），
    再上色两套语义会打架；下划线只占名字那一行，两不耽误。 */
-.mrn-btn .mrn-name { font-weight: 600; font-size: 13.5px; color: var(--ink-1);
+.mrn-item .mrn-name { font-weight: 600; font-size: 13.5px; color: var(--ink-1);
   text-decoration: underline; text-decoration-style: dashed;
   text-decoration-color: var(--mr-c, var(--line-2));
   text-decoration-thickness: 2px; text-underline-offset: 3px; }
-.mrn-btn.nofly .mrn-name { color: var(--ink-3); text-decoration-color: var(--line-2); }
 
 .mrn-num { flex: 0 0 auto; font-size: 11px; color: var(--ink-4); }
 /* 「飞往」的两种状态（主人 2026-10-11）：去过 = 能真赶路，没去过 = 只能看地图。
    必须一眼分得开 —— 否则玩家点了以为能过去，结果只挪了下视角，是「没反应」那一类。 */
-.mrn-btn.canfly { color: var(--ink); border-color: var(--line-gold); background: var(--tint-gold); }
-.mrn-btn.canfly:hover { border-color: var(--gold); background: var(--surface-hi); }
-.mrn-btn.nofly { opacity: .5; }
-.mrn-btn.nofly:hover { opacity: .75; }
 .mrn-fly { flex: 0 0 auto; font-style: normal; font-size: 10px; color: var(--gold); margin-left: 1px; }
 .mrn-more { margin-top: 7px; }
 .mrn-more > summary { font-size: 12px; color: var(--ink-4); cursor: pointer; padding: 3px 0; user-select: none; }
