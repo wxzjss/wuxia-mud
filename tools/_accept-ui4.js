@@ -257,6 +257,30 @@ let serverFogSeen = [];
     ok('未探索房（visited=false）也都有名字', unvisited.length > 0 && unvisitedNamed.length === unvisited.length,
       unvisitedNamed.length + '/' + unvisited.length + ' 未探索房有名');
     ok('地图 HTML 不含 .map-region-nav（默认隐藏）', body.indexOf('map-region-nav') < 0);
+
+    /* F2 提示（6086a54）：只画当前层是现状，但抬头必须明示「本区共 N 处，另有 M 处在别层」。
+       ⚠️ 这条只在 levelsScope==='region' 时才允许出现 —— 不分批 view 的 levels 是全世界 522，
+          拿它算提示会报出假数字，所以反向断言必须做。 */
+    const scoped = map.levelsScope;
+    ok('本区请求的 levelsScope = region', scoped === 'region', '实际 ' + scoped);
+    const hintRe = /本区共\s*(\d+)\s*处，另有\s*(\d+)\s*处在别层/;
+    const hint = hintRe.exec(body);
+    ok('地图抬头有「本区共 N 处，另有 M 处在别层」', !!hint, hint ? hint[0] : '未找到提示');
+    if (hint) {
+      const total = Number(hint[1]), rest = Number(hint[2]);
+      ok('提示里的数字与后端一致（总数=本区、另有=非本层）', total === regionRooms.length && rest === (regionRooms.length - sameLayer.length),
+        '提示 ' + total + '/' + rest + ' vs 数据 ' + regionRooms.length + '/' + (regionRooms.length - sameLayer.length));
+    }
+    /* 反向：把 api.view 换成「不分批」payload（levels 全世界 522），提示绝不许出现 */
+    const allScope = engine.view({ map: true }).map;
+    const origView = api.view;
+    api.view = async () => ({ ok: true, view: { player: engine.world.player, map: allScope } });
+    els.clear();
+    await typeCmd('地图');
+    const bodyAll = el('modal-body').innerHTML;
+    ok('不分批 payload（levelsScope=all，522）时提示不出现', !hintRe.test(bodyAll),
+      'levelsScope=' + allScope.levelsScope + ' · 提示=' + (hintRe.exec(bodyAll) || ['无'])[0]);
+    api.view = origView;
   }
 
   /* ================= 5 地名索引开关 ================= */
