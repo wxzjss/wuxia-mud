@@ -53,8 +53,9 @@ global.window = global;
 /* ⚠️ `settings` 这一份**不许手抄**：键集必须和 `app.js` 里 `settings: { … }` 的默认值
    完全一致，§8 有一条断言在守它（桩漂移 ⇒ 行为跟线上不是一回事，且上面几条照样绿）。 */
 const S = { busy: false, view: null, screen: 'game',
-  /* ⚠️ mapnames 已随迷雾探索制退役（2026-10-18），换成 dirpad —— 键集必须跟 app.js 同步 */
-  settings: { font: 100, anim: true, autosave: true, narrow: false, theme: 'dark', dirpad: false } };
+  /* ⚠️ mapnames 已随迷雾探索制退役（2026-10-18），换成 dirpad；
+     2026-10-21 地图地名索引默认隐藏又加了 mapNav —— 键集必须跟 app.js 同步 */
+  settings: { font: 100, anim: true, autosave: true, narrow: false, theme: 'dark', dirpad: false, mapNav: false } };
 
 const api = { exec: async () => ({ ok: true }), view: async () => ({ view: {} }), combat: async () => ({}), menu: async () => ({}) };
 const util = {
@@ -478,8 +479,8 @@ function ok(name, cond, extra) {
     ok('ui.js 的开关数组解析得出来', !!swKeys && swKeys.length > 0,
       swKeys ? swKeys.join(', ') : '解析失败');
 
-    /* ③ 面板 HTML 里所有 `id="set-XXX"` */
-    const ids = new Set([...UI.matchAll(/id="set-([a-z]+)"/g)].map(m => m[1]));
+    /* ③ 面板 HTML 里所有 `id="set-XXX"`（键名允许驼峰，如 2026-10-21 加的 set-mapNav） */
+    const ids = new Set([...UI.matchAll(/id="set-([A-Za-z]+)"/g)].map(m => m[1]));
 
     if (defKeys && swKeys) {
       const ghost = swKeys.filter(k => defKeys.indexOf(k) < 0);

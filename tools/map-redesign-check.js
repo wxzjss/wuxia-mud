@@ -97,6 +97,8 @@ async function renderMap(view) {
   env.WX.api.exec = async () => ({ lines: [], view });
   vm.runInContext(uisrc, env, { filename: 'ui.js' });
   env.WX.S.view = view;
+  /* 2026-10-21：地名索引改成**默认隐藏**，本套件专测那一块 ⇒ 显式打开开关。 */
+  env.WX.S.settings.mapNav = true;
   await env.WXUI.panel('map');
   await settle();
   return { html: String(env.document.getElementById('modal-body').innerHTML || ''), env };

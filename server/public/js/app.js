@@ -27,7 +27,11 @@
          （2026-10-18 主人四条 UI 之④）。开关随 wxgame.settings.v1 单键持久化，
          沿用既有收敛纪律，不新增 localStorage 键。
          ⚠️ 老存档没有这一项 —— loadSettings 的 Object.assign 自动吃到默认 false。 */
-      dirpad: false
+      dirpad: false,
+      /* 地图面板底部「地名索引」九宫格：**默认隐藏**，设置「地图地名索引」手动打开
+         （2026-10-21 主人点名：默认不渲染）。同样随 wxgame.settings.v1 单键持久化，
+         不新增 localStorage 键；老存档缺这一项时默认 false。 */
+      mapNav: false
     },
     my: null               // 当前登录（本站简易身份，存 localStorage）
   };

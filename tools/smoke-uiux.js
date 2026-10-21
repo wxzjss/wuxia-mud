@@ -1547,8 +1547,11 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
 
     /* 面板指令走本地拦截；旧词「飞往/飞行」保留为别名 —— 落在行路面板上，
        不是死键（老玩家的肌肉记忆有地方落）。带参数的照旧走后端。 */
-    ok('⑳-8 快捷键里那颗已改名「行路」', /label: '行路', cmd: 'fly'/.test(
-      fs.readFileSync(path.join(RJS, 'ui.js'), 'utf8')));
+    /* 2026-10-21 主人点名：行路 / 帮助撤出常驻快捷键位。
+       只撤按钮，指令与面板仍在 —— 下一颗断言（⑳-9）继续守住面板入口。 */
+    ok('⑳-8 默认快捷键表已撤「行路」「帮助」',
+      !/label: '行路', cmd: 'fly'/.test(fs.readFileSync(path.join(RJS, 'ui.js'), 'utf8'))
+      && !/label: '帮助', cmd: 'help'/.test(fs.readFileSync(path.join(RJS, 'ui.js'), 'utf8')));
     ok('⑳-9 「行路/飞往/飞行」都被 panelForCmd 拦成本地面板',
       env.WXUI.panelForCmd('行路') === 'fly' && env.WXUI.panelForCmd('飞行') === 'fly' && env.WXUI.panelForCmd('飞往') === 'fly',
       '行路→' + env.WXUI.panelForCmd('行路') + ' 飞往→' + env.WXUI.panelForCmd('飞往'));
@@ -1878,17 +1881,23 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
       && /\.map-node\.here \.mn-name\s*\{[^}]*color/.test(CSS12)
       && /class="map-node here"/.test(hHere));
 
-    /* ③ 迷雾探索制：没探索过的零渲染（开局只有脚下 1 格）；
-       「相邻可走」空心圈（.mn-ring）随探索制整体退役。 */
-    const hereIds = VIEW.map.rooms.filter(r => r.visited || r.current).map(r => r.id);
+    /* ③ 迷雾关闭（2026-10-21 主人点名）：本区本层**所有房间都画、都有名字**；
+       不再按 visited/current 过滤，也不再有空心圈（.mn-ring 早退役）。 */
+    const here12 = VIEW.map.rooms.find(r => r.current) || {};
+    const wantIds12 = VIEW.map.rooms
+      .filter(r => r.region === here12.region && (r.z || 0) === (here12.z || 0))
+      .map(r => r.id);
     const drawn12 = (hHere.match(/data-room="([^"]+)"/g) || []).map(s => s.slice(11, -1));
-    ok('S12-3 ★ 探索制零渲染：画布上只有 visited∪current（开局=脚下 1 格），无空心圈',
-      hereIds.length === 1
-      && drawn12.length === 1 && drawn12[0] === hereIds[0]
+    const named12 = [...hHere.matchAll(/data-room="([^"]+)"[\s\S]*?<span class="mn-name"[^>]*>([\s\S]*?)<\/span>/g)]
+      .filter(m => m[2].replace(/<wbr>/g, '').trim().length > 0);
+    ok('S12-3 ★ 迷雾关闭：本区本层全部画出且都有名字（不再按 visited 过滤）',
+      drawn12.length === wantIds12.length
+      && wantIds12.every(id => drawn12.indexOf(id) >= 0)
+      && named12.length === drawn12.length
       && hHere.indexOf('mn-ring') < 0
       && !/\.mn-ring\s*\{/.test(CSS12)
-      && UISRC12.indexOf('if (!r.visited && !r.current) return;') >= 0,
-      'visited=' + hereIds.length + ' drawn=' + drawn12.join(','));
+      && !/if \(!r\.visited && !r\.current\) return;/.test(UISRC12),
+      '本区本层 ' + wantIds12.length + ' 间 · 画出 ' + drawn12.length + ' · 有名字 ' + named12.length);
 
     /* ④ 九宫格方向盘：默认隐藏 + 设置开关（settings.dirpad 单键持久化）
        接线三件套：HTML 挂 hidden 容器 / app.js 默认 false / ui.js 渲染+applySettings 即时生效。 */
@@ -1899,21 +1908,21 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
       && /renderDirPad\(S\.view\)/.test(UISRC12)
       && /#dirpad:not\(\[hidden\]\)/.test(CSS12));
 
-    /* ⑤⑥⑦ 快捷栏瘦身（design/103 §四 · 2026-10-18 放行施工）：
-       撤 查看四周 / 打坐 / 运功疗伤（→状态面板动作钮）/ 拍卖（→场景化），
-       练武学按 §二「留（中期并入）」保留。常驻 = 背包·装备·武学·状态·地图·
-       行路·任务·帮助·吐纳·练武学 = 10 颗，门派是条件颗。 */
+    /* ⑤⑥⑦ 快捷栏（2026-10-21 主人点名后的口径）：
+       常驻 = 看·背包·装备·武学·状态·地图·任务·吐纳·练武学 = 9 颗；
+       行路 / 帮助 撤出常驻位（指令与面板仍活着），门派是条件颗。 */
     const qbEnv = loadUi(makeEnv({}));
     stubApi(qbEnv, VIEW);
     qbEnv.WX.S.view = VIEW;
     qbEnv.WXUI.renderQuickbar(VIEW);
     const qbCmds = [...qbEnv.document.getElementById('quickbar').innerHTML.matchAll(/data-cmd="([^"]+)"/g)]
       .map(m => m[1]);
-    ok('S12-5 ★ 快捷栏常驻恰好 10 颗（查看四周/打坐/运功疗伤/拍卖已撤）',
-      qbCmds.length === 10
-      && ['i', 'equipment', 'skills', 'sc', 'map', 'fly', 'quests', 'help', '吐纳', '练武学']
+    ok('S12-5 ★ 快捷栏常驻恰好 9 颗，「看」在索引 0，行路/帮助已撤',
+      qbCmds.length === 9
+      && ['look', 'i', 'equipment', 'skills', 'sc', 'map', 'quests', '吐纳', '练武学']
         .every(c => qbCmds.indexOf(c) >= 0)
-      && ['look', 'meditate', 'heal', 'auction'].every(c => qbCmds.indexOf(c) < 0),
+      && ['fly', 'help', 'meditate', 'heal', 'auction'].every(c => qbCmds.indexOf(c) < 0)
+      && qbCmds[0] === 'look',
       JSON.stringify(qbCmds));
     /* 门派条件颗：有门派的玩家多一颗「门派」 */
     const qbEnv2 = loadUi(makeEnv({}));
@@ -1925,9 +1934,28 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     qbEnv2.WXUI.renderQuickbar(sectView);
     const qbCmds2 = [...qbEnv2.document.getElementById('quickbar').innerHTML.matchAll(/data-cmd="([^"]+)"/g)]
       .map(m => m[1]);
-    ok('S12-6 ★ 门派条件颗：有门派 11 颗（多「门派」）、无门派没有',
-      qbCmds2.length === 11 && qbCmds2.indexOf('sect') >= 0 && qbCmds.indexOf('sect') < 0,
+    ok('S12-6 ★ 门派条件颗：有门派 10 颗（多「门派」）、无门派没有',
+      qbCmds2.length === 10 && qbCmds2.indexOf('sect') >= 0 && qbCmds.indexOf('sect') < 0,
       JSON.stringify(qbCmds2));
+
+    /* ★ 老玩家迁移（2026-10-21）：localStorage 里存着含 fly/help 的旧表时，
+       ① 这两颗必须摘掉；② 新加的「看」必须补到**索引 0**（不是末尾）。 */
+    const qbEnvOld = makeEnv({});
+    qbEnvOld.localStorage.setItem('wx_quickbar', JSON.stringify([
+      { label: '背包', cmd: 'i' },
+      { label: '行路', cmd: 'fly' },
+      { label: '帮助', cmd: 'help' },
+      { label: '地图', cmd: 'map' },
+    ]));
+    loadUi(qbEnvOld);
+    stubApi(qbEnvOld, VIEW);
+    qbEnvOld.WX.S.view = VIEW;
+    qbEnvOld.WXUI.renderQuickbar(VIEW);
+    const qbCmdsOld = [...qbEnvOld.document.getElementById('quickbar').innerHTML.matchAll(/data-cmd="([^"]+)"/g)]
+      .map(m => m[1]);
+    ok('S12-6b ★ 老 localStorage 迁移：fly/help 摘掉，「看」补在索引 0',
+      qbCmdsOld.indexOf('fly') < 0 && qbCmdsOld.indexOf('help') < 0 && qbCmdsOld[0] === 'look',
+      JSON.stringify(qbCmdsOld));
 
     /* 状态面板两颗恢复钮（打坐/运功疗伤的新家）：贴在血蓝条数值下方，
        走通用 .op-btn[data-cmd] 通路，panel() 渲染后 bindPanelActions 自动接事件。 */

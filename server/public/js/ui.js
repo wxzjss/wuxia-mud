@@ -1948,11 +1948,9 @@
     return {
       region: 'auto',
       neighbors: MAP_VIEW_NEIGHBORS,
-      /* 探索制取图（2026-10-18 主人四条 UI 之③·修正稿）：fog=1 ——
-         已探索房下发全名，未探索不下发；**渲染层**再对未探索零渲染（见
-         mapHtml 节点循环头部）。迷雾开关不设（探索集合本身就是开关），
-         设置面板不恢复「地图显示未探索地名」这个死开关。 */
-      fog: 1,
+      /* 2026-10-21 主人点名：战争迷雾彻底关掉 —— **不传 fog**，
+         走服务端默认值（engine.mapView 里 fog 是 opt-in，不传即全量下发）。
+         注意：别把 fog 的假值写回来 —— 服务端读的是「有没有这个参数」，不传最干净。 */
     };
   }
 
@@ -2026,7 +2024,10 @@
       html = affectsHtml(v);
     } else if (name === 'map') {
       title = '江湖舆图';
-      html = mapHtml(v);
+      /* 地名索引默认隐藏（2026-10-21 主人点名）；设置里打开才渲染。
+         显式传参而不是让 mapHtml 自己读 S：抽取测试会直接跑这个函数，
+         不传 = 默认（隐藏），传 true 才能测「打开后有一整块」。 */
+      html = mapHtml(v, !!(S.settings && S.settings.mapNav));
     } else if (name === 'social') {
       title = '人情往来';
       html = socialHtml(v);
@@ -3140,7 +3141,7 @@
   const BP_NARROW = 560; /* S | M —— 与 main.css 的窄屏断点同一个数 */
   const BP_L = 820;      /* M | L */
 
-  function mapHtml(v) {
+  function mapHtml(v, showNav) {
     /* ---- 尺寸自适应（主人报的 bug：手机上地块名看不清 / 看不全）----
        🔴 P0-C C-2（甄塑之《墨拓残卷》§3.7）：从「窄屏 / 桌面」两档改为**四档**，
        格距由 30px 抬到 52–66px —— 这是「不许砍字」能成立的前提：
@@ -3368,9 +3369,9 @@
     h += '<div class="map-paper-grain" style="width:' + (b.w * MAP_CELL) + 'px;height:' + (b.h * MAP_CELL) + 'px;' +
       'left:' + MAP_PAD + 'px;top:' + MAP_PAD + 'px"></div>';
 
-    /* 1b) 未探索羽化层（spec §3.2）：压在纸纹之上、地块之下（`z-index` 见 CSS）。
-       未探索 = **纸本身褪回页面底色，连帘纹都淡掉**，不是画一层云、
-       不是盖一层淡墨 —— 那些都还是在没去过的地方「画了东西」，语义反了。
+    /* 1b) 纸边羽化层（原「未探索羽化层」）：压在纸纹之上、地块之下（`z-index` 见 CSS）。
+       2026-10-21 迷雾关闭后，它只剩**画布边缘的纸色渐隐**这一个作用 ——
+       不再表达「未探索」，也不会盖住任何名字（地块 z-index 在它之上）。
        `--map-lit-x/y` 由「已探索格子的重心」算出（见下面 §4 之前那段），
        内联到 `.map-canvas` 上，这里只负责铺一层。 */
     h += '<div class="map-veil"></div>';
@@ -3568,10 +3569,9 @@
      *       —— 宁可这一格大一点也不许截字
      *    4. 字号地板 **clamp 10px**，永不再降（老代码会降到 7px，那是「蚂蚁」）
      *
-     *  ⚠️ 未探索的房间**连名字都不下发**（后端 fog 已裁掉 `name`），
-     *     这里就渲染一个空的 `.mn-name` —— 不是「？」，也不是淡字。
-     *     「未探索 = 纸本身褪回底色」（spec §3.2）：画个「？」等于在
-     *     没去过的地方画了个东西，语义反了。
+     *  ⚠️ 迷雾已于 2026-10-21 彻底关闭：服务端不传 fog 即全量下发（每间房都有
+     *     `name`），渲染层也不再按 visited 过滤 —— 本区本层**每一格都画、都有名字**。
+     *     所以下面 nameHtml 的空串分支只是「数据真缺名字」的兜底，不是未探索留白。
      * ================================================================ */
     const MAP_FONT_FLOOR = 10;    /* 字号地板（spec §3.9 第 6 条），永不再降 */
     const W_RATIO = 0.92;         /* 可用宽 / 格距（spec §3.9 输入项） */
@@ -3600,12 +3600,10 @@
       };
     };
     rooms.forEach(r => {
-      /* 🔴 探索制渲染（2026-10-18 主人四条 UI 之③·修正稿）：**探索过的房间才显示，
-         没探索过的不显示**——未探索（含「相邻可走」那档）一律**零渲染**，
-         连空心圈也不画：圈是「在没去过的地方画了东西」，语义反了。
-         visited 标记由引擎进房打点（`visited_<roomId>` flag，随档持久化）；
-         fog 数据侧照旧裁名，渲染层只认 visited/current。 */
-      if (!r.visited && !r.current) return;
+      /* 🔴 2026-10-21 主人点名：战争迷雾彻底关掉 —— **不再按 visited 过滤**。
+         原来这里有一句「未探索零渲染」（2026-10-18 探索制），现在整段撤掉：
+         本区本层的房间一间不少全画出来，名字由服务端全量下发。
+         验收口径：新开局打开地图，所有格子都有名字，不存在只有边框没名字的格。 */
       const left = (r.x - b.minX) * MAP_CELL + MAP_PAD;
       const top = (r.y - b.minY) * MAP_CELL + MAP_PAD;
       /* ★ 2026-10-12 主人：「把地图上地块名字的黄色字体呈现与可点击前往删了」。
@@ -3619,13 +3617,10 @@
       else if (r.visited) cls += ' known';
       else cls += ' unknown';
       const reg = (m.regions || []).find(x => x.id === r.region);
-      /* ★ P0-C C-2：三档语义（spec §3.1 的 L1/L2/L3 + §3.2 的留白）：
-           L1 我在这里  → `.here` 金字加粗（朱印已删，见下方 2026-10-18 注），全名
-           L2 我从哪来  → `.known` + 全名
-           L3 其余      → `.unknown`，**不显示名字**（未探索 = 纸褪回底色）
-         ⚠️ 老代码给没去过的格子加 `.dim`（淡字），那条**删了**：
-            「淡字」还是在未去过的地方画了东西，与 spec §3.2「未探索 = 留白」直接冲突，
-            而且淡墨与 L2 的浓墨是同一色相的两档，色觉差异下极易混。 */
+      /* ★ P0-C C-2 的三档语义仍在（L1 `.here` / L2 `.known` / L3 `.unknown`），
+         但 2026-10-21 迷雾关闭后 L3 **也显示全名** —— 三档现在只影响
+         `data-visited` 属性与点格子时的兜底文案，不再决定「画不画、给不给名字」。
+         `.unknown` 在 CSS 里本来就没有差异色（见 main.css 那条注释），不会压暗。 */
       const nm = nameHtml(r);
       /* ★ 2026-10-13 分层配套：格子角上挂 **▲ / ▼ 角标**，
          表示「这里能上楼 / 能下楼」。
@@ -3661,12 +3656,11 @@
       /* 🔴 朱砂方印（.mn-seal）已删（2026-10-18 主人四条 UI 之②：玩家位置
          **只留金色字体**，红底方块不要了）。金色 + 700 字重 + 下划线三重线索仍在，
          「颜色不得成为唯一信息载体」的底线靠字重与下划线守住。 */
-      /* ★ 「相邻可走」空心圈（.mn-ring）随探索制**整体退役**（2026-10-18 修正稿）：
-         未探索一律零渲染（见循环头部），圈再也没有可画的格子——
-         圈本来就是「在没去过的地方画东西」，探索制下语义彻底反向。 */
-      /* ⚠️ 未探索的格子**不给 title**：title 里写的是全名 + 州名，
-         鼠标一悬停就把没去过的地方剧透了（spec V-12 同理）。
-         （探索制下未探索格根本不渲染，此条对 visited 格自然成立。） */
+      /* ★ 「相邻可走」空心圈（.mn-ring）已于 2026-10-18 整体退役，
+         2026-10-21 迷雾关闭后更没有它的位置：所有格子都画、都有名字，
+         不再需要靠一圈空心表达「那边有路但没去过」。 */
+      /* ⚠️ 迷雾关掉后所有格子都有 name，title 一律写全名；
+         「尚未探索」只是数据异常（真缺 name）时的兜底，不是正常态。 */
       const title = r.name
         ? (esc(r.name) + (r.region ? '（' + esc((reg && reg.name) || r.region) + '）' : '') +
           (r.z ? '　' + esc(lvName(Number(r.z))) : '') +
@@ -3712,7 +3706,11 @@
          · **去过的排在前面**，未去过的收进一个可折叠的「其余 N 处」
        ⚠️ 2026-10-14 主人改判（design/89 §七·补）：飞行下线 —— 按钮**不再带 ↗
           也不再有 data-fly-region**（点地名只把视角平移过去看，不再替玩家赶路）；
-          出远门走「行路」面板（驿站渡口网络）。 */
+          出远门走「行路」面板（驿站渡口网络）。
+       🔴 2026-10-21 主人点名：这一整块**默认不渲染**，设置「地图地名索引」打开才出。
+         判据走 `showNav` 参数（panel('map') 从 S.settings.mapNav 传入），
+         地图面板正开着时切开关会重新渲染（见 applySettings）。 */
+    if (showNav) {
     const regs = (m.regions || []).slice();
     const visited = regs.filter(r => (r.visitedCount || 0) > 0);
     const rest = regs.filter(r => !(r.visitedCount || 0));
@@ -3739,6 +3737,7 @@
     /* 服务端「区域总览」那份数据仍在（m.regions 的 visitedCount / hasCurrent 都用上了），
        只是不再单独铺一层重复列表 —— 上面每个按钮里已经带了同一组数字。 */
     h += '</div>';
+    }
 
     h += '</div>';
     return h;
@@ -4055,15 +4054,14 @@
       /* 触屏没有 hover，方块上的 title 提示看不到 ——
          点「看得到但走不到」的格子，弹出完整房间名（主人报的「地块名看不全」）。
          可走的格子（data-go）已另有 onclick，跳过，别抢它的「走过去」。
-         未探索的仍保持神秘，只提示「尚未探索」，不剧透名字。 */
+         迷雾关闭后每格都有名字，直接报全名；「尚未探索」只留给数据真缺 name 的异常。 */
       document.querySelectorAll('#modal-body .map-node[data-room]').forEach(b => {
         if (b.getAttribute('data-go')) return;
         b.onclick = () => {
           const id = b.getAttribute('data-room');
           const room = (S.view && S.view.map && (S.view.map.rooms || []).find(r => r.id === id)) || null;
           if (!room) return;
-          const known = room.visited || room.current || room.near || room.reach;
-          if (!known) return toast('此处尚未探索');
+          if (!room.name) return toast('此处尚未探索');
           const rn = ((S.view.map.regions || []).find(x => x.id === room.region) || {}).name || '';
           toast(room.name + (rn ? '（' + rn + '）' : '') + (room.dist >= 0 ? '　' + room.dist + ' 步' : ''));
         };
@@ -4817,12 +4815,15 @@
   /* 快捷指令条 */
   /* ---- 快捷键（可自定义，存 localStorage）----
      design/103 §四（2026-10-18 放行施工）：常驻位只留「高频 + 无家可归」的动作。
-     本表删 3 项：查看四周（键盘 L + 帮助速查兜着）、打坐 / 运功疗伤（恢复族
-     并进「状态」面板动作钮——打完架点开状态，血条蓝条就在眼前）。
-     拍卖（非战斗追加项）一并撤下，场景化三件套见 §103 §二。
+     该轮撤下：打坐 / 运功疗伤（恢复族并进「状态」面板动作钮）、拍卖（场景化）。
+     2026-10-21 主人再点两条：行路 / 帮助 从常驻位撤下（指令与面板仍活着，
+     只是不再摆按钮）；「看」重新常驻并固定第一格。
      ⚠️ meditate / heal / auction / look 指令本体都活着，不进 RETIRED_QUICKBAR
         （那表只收「点了报错」的）；老玩家 localStorage 里留着的钮照样能点。 */
   const DEFAULT_QUICKBAR = [
+    /* 2026-10-21 主人点名：「看」固定占**第一行第一个**。
+       它和「地图」不是一回事 —— 看是看眼前这间房，地图是看这一片。 */
+    { label: '看', cmd: 'look' },
     { label: '背包', cmd: 'i' },
     /* 主人 2026-10-11：「玩家没有装备界面吗？屏幕下方增加快捷键『装备』」。
        面板本来就有（`equipment`），缺的是**一个看得见的手**——它原来只藏在 ☰ 菜单里。 */
@@ -4830,11 +4831,9 @@
     { label: '武学', cmd: 'skills' },
     { label: '状态', cmd: 'sc' },
     { label: '地图', cmd: 'map' },
-    /* 行路（design/89 §七·补 · 2026-10-14 主人改判）：原「飞行」快捷键。
-       放在「地图」后面 —— 一个是「看」，一个是「去」，挨着最顺。 */
-    { label: '行路', cmd: 'fly' },
     { label: '任务', cmd: 'quests' },
-    { label: '帮助', cmd: 'help' },
+    /* 2026-10-21 主人点名：撤「行路」「帮助」两键，只撤常驻位 ——
+       指令本体与面板都还在（☰ 菜单 / 指令照样进得去）。 */
     /* 🔴 2026-10-12 主人「新手教程剧情全删」——
        这里本来挂过一条「新手教程」快捷键，早先已从默认表摘掉；
        现在连**面板与指令**（guide）也一并下线了，这条注释与下面
@@ -4844,8 +4843,11 @@
   ];
 
   /* 已经下线的快捷键：老玩家 localStorage 里还存着，读出来要摘掉
-     （否则「删了按钮」这件事只对新号生效）。加新条目时同步这里。 */
-  const RETIRED_QUICKBAR = { guide: true };
+     （否则「删了按钮」这件事只对新号生效）。加新条目时同步这里。
+     ⚠️ 「行路」「帮助」2026-10-21 从默认表撤下 —— 不写进这张表，
+        老玩家那份 `wx_quickbar` 里的两颗钮会原样留着，看着就像没删。
+        它们的指令/面板仍然是活的，只是不再占常驻位。 */
+  const RETIRED_QUICKBAR = { guide: true, fly: true, help: true };
 
   function loadQuickbar() {
     try {
@@ -4859,6 +4861,14 @@
              不然每次加按钮都只有新号玩家见过。 */
           const have = {};
           mine.forEach(x => { have[x.cmd] = true; });
+          /* ⚠️「看」是唯一的特例：主人指定它必须占**第一行第一个**。
+             下面那段补齐只追加到末尾 —— 老玩家表里没有 look，按通用规则补进去
+             会落在最后一格，位置就错了。所以单独 unshift 到最前。
+             其余缺失项仍走末尾（不打扰他自己排好的顺序）。 */
+          if (!have.look) {
+            mine.unshift({ label: '看', cmd: 'look' });
+            have.look = true;
+          }
           DEFAULT_QUICKBAR.forEach(x => {
             if (!have[x.cmd]) mine.push({ label: x.label, cmd: x.cmd });
           });
@@ -5051,6 +5061,9 @@
       /* 屏幕下方方向九宫格（2026-10-18 主人四条 UI 之④）：默认收起，这里手动打开。
          原「地图显示未探索地名」行随迷雾整体关闭一并摘除（死开关不留界面）。 */
       '<div class="set-row"><label>方向九宫格（屏幕下方）</label><button class="switch' + (s.dirpad ? ' on' : '') + '" id="set-dirpad">' + (s.dirpad ? '开' : '关') + '</button></div>' +
+      /* 地图底部「地名索引」九宫格（2026-10-21 主人点名）：默认不渲染，这里手动打开。
+         ⚠️ id 必须与 S.settings 的键名逐字相同（见上面 set-autosave 的注释）。 */
+      '<div class="set-row"><label>地图地名索引</label><button class="switch' + (s.mapNav ? ' on' : '') + '" id="set-mapNav">' + (s.mapNav ? '开' : '关') + '</button></div>' +
       /* 外观：默认暗色（主人 2026-10-11 要的「浏览器强制暗色」那种整页暗），
          但浅色那套没删 —— 想切回来随时切，不用再改代码。 */
       '<div class="set-row"><label>界面配色</label>' +
@@ -5068,13 +5081,13 @@
     };
     /* ⚠️ 数组里的每一项 **k** 同时是：① 元素 id 的后半截（`set-' + k`）
          ② `S.settings` 的键名。**两边必须是同一个名字**，见上面 `set-autosave` 的注释。 */
-    ['anim', 'autosave', 'narrow', 'dirpad'].forEach(k => {
+    ['anim', 'autosave', 'narrow', 'dirpad', 'mapNav'].forEach(k => {
       const btn = $('set-' + k);
       btn.onclick = () => {
         S.settings[k] = !S.settings[k];
         btn.classList.toggle('on', S.settings[k]);
         btn.textContent = S.settings[k] ? '开' : '关';
-        if (k === 'narrow' || k === 'dirpad') applySettings();
+        if (k === 'narrow' || k === 'dirpad' || k === 'mapNav') applySettings();
       };
     });
     /* 界面配色：暗 / 浅 两套（切换立刻生效，方便一边看一边挑） */
@@ -5113,6 +5126,15 @@
     if (bg) bg.style.display = s.anim ? '' : 'none';
     /* 方向九宫格开关：即时生效（开=按当前 view 摆格子，关=收起清空） */
     renderDirPad(S.view);
+    /* 地图地名索引开关：即时生效 —— 地图面板正开着就地重绘；
+       关着不用管，下次开图自然按新设置渲染。
+       判据看 DOM 里的真面板，不另存「当前面板名」：设置面板本身也是 modal，
+       另存状态容易串（地图开着 → 开设置 → 状态还记着 map，就会把设置顶掉）。 */
+    const mb = $('modal-body'), mk = $('modal-mask');
+    if (mb && mk && !mk.classList.contains('hidden') &&
+      String(mb.innerHTML || '').indexOf('class="map-stage"') >= 0) {
+      panel('map');
+    }
   }
 
   /* ============================================================

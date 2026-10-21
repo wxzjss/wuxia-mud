@@ -128,53 +128,58 @@ let fogOn, fogOff;
 {
   const ns = nodesOf(fogOn);
   const visited = ns.filter((n) => n.visited === '1');
-  const nearU = ns.filter((n) => n.visited === '0' && n.near === '1');
-  const unknown = ns.filter((n) => n.visited === '0' && n.near === '0');
 
   ok('78/M-V-1 已探索档每个都有字（且不含截断省略号）',
     visited.length > 0 && visited.every((n) => n.nameText.length > 0 && n.nameText.indexOf('…') < 0),
     visited.length + ' 格已探索 · 例：' + (visited[0] ? visited[0].nameText : '-'));
 
-  /* 🔴 探索制（2026-10-18 主人四条 UI 之③·修正稿）：**探索过的房间显示，
-     没探索过的不显示**——未探索（含「相邻可走」档）一律零渲染。
-     M-V-2/2b/3/4 的「空心圈」判据整体作废：圈是「在没去过的地方画东西」，
-     探索制下语义反向；`.mn-ring` 渲染与 CSS 已一并退役。 */
-  ok('78/M-V-2 → 探索制：未探索零渲染（相邻可走档 0 个节点）', nearU.length === 0,
-    nearU.length + ' 个残留');
-  ok('78/M-V-3 → 探索制：完全未知档 0 个节点', unknown.length === 0,
-    unknown.length + ' 个残留');
+  /* 🔴 2026-10-21 主人点名：战争迷雾彻底关掉 —— 渲染层**不再按 visited 过滤**。
+     fog 数据能力仍留在引擎里（本节就是喂 fog=1 的数据跑渲染），
+     但画布上本区同层的房间**一间不少**，只是未探索格没有名字（后端裁掉了）。 */
+  const fgProbe = e.view({ map: true }).map;
+  const fgHere = fgProbe.rooms.find((r) => r.current) || {};
+  const fgWant = fgProbe.rooms
+    .filter((r) => r.region === fgHere.region && (r.z || 0) === (fgHere.z || 0)).length;
+  ok('78/M-V-2 → 迷雾关闭：fog 数据下也画满本区同层（未探索不再零渲染）',
+    ns.length === fgWant,
+    '画出 ' + ns.length + ' / 本区同层 ' + fgWant);
+  const unknownAll = ns.filter((n) => n.visited === '0');
+  ok('78/M-V-3 → 未探索格仍占格：名字为空、也不画「？」',
+    unknownAll.every((n) => n.nameText.length === 0)
+    && (fogOn.match(/？/g) || []).length === 0,
+    unknownAll.length + ' 个未探索格 · 「？」 ' + (fogOn.match(/？/g) || []).length + ' 个');
   const totalRings = (fogOn.match(/class="mn-ring"/g) || []).length;
-  ok('78/M-V-4 → 探索制：.mn-ring 渲染已退役（全图 0 圈）', totalRings === 0,
+  ok('78/M-V-4 → .mn-ring 渲染已退役（全图 0 圈）', totalRings === 0,
     totalRings + ' 个圈');
-  ok('78/M-V-2b → 探索制：.mn-ring CSS 规则已删（不再养死样式）',
+  ok('78/M-V-2b → .mn-ring CSS 规则已删（不再养死样式）',
     !/\.map-node\s+\.mn-ring\s*\{/.test(CSSSRC));
 
-  /* M-V-7：未探索格子的 title 不得漏房间名（探索制下未探索根本不渲染，
-     有 name 的格子全是去过的，title 剧透面自然归零；此条改为防回归：
-     渲染产物里不允许出现「尚未探索」兜底字样——那是未探索漏渲染的签名） */
-  const leak = ns.filter((n) => n.title && n.title === '尚未探索');
-  ok('78/M-V-7 → 探索制：渲染产物里没有「尚未探索」兜底（未探索=零渲染的回归签名）',
-    leak.length === 0, leak.length ? leak.length + ' 格漏渲染' : '0 格漏');
+  /* M-V-7：全量视图（生产路径）里每格都有名字，不该再出现「尚未探索」兜底。
+     这条现在防的是「fog 又被人偷偷打开」——名字一缺，兜底字样就会冒出来。 */
+  const leak = nodesOf(fogOff).filter((n) => n.title && n.title === '尚未探索');
+  ok('78/M-V-7 → 全量视图里没有「尚未探索」兜底（每格都有名字）',
+    leak.length === 0, leak.length ? leak.length + ' 格没名字' : '0 格漏');
 }
 
 /* ================================================================ */
 section('78/M-V-8 / 9 / 10 / 11 迷雾开关');
 
 {
-  /* M-V-8 → 探索制口径（2026-10-18 修正稿）：前端 mapViewOpts 恒 fog:1
-     （已探索名单由后端裁名下发），渲染层按 visited/current 零渲染未探索；
-     迷雾不再挂设置开关（探索集合本身就是开关），无 mapnames 映射 */
-  ok('78/M-V-8 → 探索制：mapViewOpts 恒 fog:1，无 mapnames 映射',
-    /fog:\s*1,/.test(UISRC) && !/S\.settings\.mapnames/.test(UISRC));
-  ok('78/M-V-8 → 探索制：mapHtml 对未探索零渲染（visited/current 才进节点循环）',
-    /if \(!r\.visited && !r\.current\) return;/.test(UISRC));
+  /* M-V-8 → 2026-10-21 口径：战争迷雾彻底关掉。
+     ① 前端 mapViewOpts **不传 fog**（服务端默认就是全量）；
+     ② 渲染层不再按 visited/current 过滤；
+     迷雾不挂设置开关（旧 mapnames 已退役，无映射）。 */
+  ok('78/M-V-8 → 迷雾已关：mapViewOpts 不再传 fog',
+    !/fog\s*:/.test(grab('mapViewOpts')));
+  ok('78/M-V-8 → 渲染层不再按 visited 过滤（未探索也画）',
+    !/if \(!r\.visited && !r\.current\) return;/.test(UISRC));
 
-  /* M-V-9：探索制下 fog=0/1 两种数据都只渲出已探索格（渲染层不看 fog） */
+  /* M-V-9：全量数据（fog=0）下每格都有名字、无圈 */
   const ns = nodesOf(fogOff);
   const ringsOff = (fogOff.match(/class="mn-ring"/g) || []).length;
   const noName = ns.filter((n) => n.nameText.length === 0);
-  ok('78/M-V-9 → 探索制：无圈（.mn-ring 已退役）', ringsOff === 0, ringsOff + ' 个圈');
-  ok('78/M-V-9 → 探索制：渲染出的格子全部有名字（未探索根本不渲染）',
+  ok('78/M-V-9 → 无圈（.mn-ring 已退役）', ringsOff === 0, ringsOff + ' 个圈');
+  ok('78/M-V-9 → 全量视图渲染出的格子全部有名字',
     noName.length === 0,
     noName.length ? noName.length + ' 格无字' : ns.length + ' 格全部有字');
 
@@ -244,14 +249,27 @@ section('78/M-V-16 / 17 回归保护（改迷雾别改坏已落地的）');
 }
 
 /* ================================================================ */
-section('迷雾默认不启用（2026-10-18 主人四条 UI 之③：地图默认全亮）');
-/* 口径：fog 渲染分支保留（能力测试照旧跑 fog=1/0 两种），但**前端默认不再启用**
-   —— mapViewOpts 恒 fog:0，设置面板的迷雾开关摘除（死开关不留界面）。 */
-ok('探索制渲染：mapViewOpts 恒 fog:1，未探索由渲染层零渲染（无 mapnames 映射）',
-  /fog:\s*1,/.test(UISRC) && !/S\.settings\.mapnames/.test(UISRC)
-  && /if \(!r\.visited && !r\.current\) return;/.test(UISRC));
-ok('迷雾默认不启用：设置面板不再有迷雾开关（set-mapnames 绑定与行模板已摘；注释里的历史提法不算）',
+section('迷雾默认关闭（2026-10-21 主人点名：彻底关掉）');
+/* 口径：fog 渲染分支保留（能力测试照旧跑 fog=1/0 两种），但**前端不启用**
+   —— mapViewOpts 不传 fog，渲染层不按 visited 过滤；迷雾开关早已摘除。 */
+ok('迷雾关闭：mapViewOpts 不传 fog、渲染层不按 visited 过滤（无 mapnames 映射）',
+  !/fog\s*:/.test(grab('mapViewOpts')) && !/S\.settings\.mapnames/.test(UISRC)
+  && !/if \(!r\.visited && !r\.current\) return;/.test(UISRC));
+ok('迷雾关闭：设置面板不再有迷雾开关（set-mapnames 绑定与行模板已摘；注释里的历史提法不算）',
   !/id="set-mapnames"/.test(UISRC) && !/'set-mapnames'/.test(UISRC) && !/s\.mapnames/.test(UISRC));
+{
+  /* 主人要的自证口径：地图 HTML 里 `data-room` 数 == 该区域（本区同层）房间总数，
+     而不是「已探索数」。开局没走过几步，这条才真正有区分力。 */
+  const probe = e.view({ map: true }).map;
+  const here = probe.rooms.find((r) => r.current) || {};
+  const want = probe.rooms
+    .filter((r) => r.region === here.region && (r.z || 0) === (here.z || 0)).length;
+  const nOff = nodesOf(fogOff);
+  ok('迷雾关闭：data-room 数 == 本区同层房间总数（不是已探索数），且每格都有名字',
+    nOff.length === want && want > 0 && nOff.every((n) => n.nameText.length > 0),
+    '画出 ' + nOff.length + ' / 本区同层 ' + want + ' · 无名格 '
+    + nOff.filter((n) => n.nameText.length === 0).length);
+}
 ok('玩家块无红底：.mn-seal 规则已从 CSS 摘除（金字 .mn-name 规则仍在）',
   !/\.map-node \.mn-seal\s*\{/.test(CSSSRC)
   && /\.map-node\.here \.mn-name \{[^}]*color:\s*var\(--map-here-name\)/.test(CSSSRC));

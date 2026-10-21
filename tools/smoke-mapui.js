@@ -648,25 +648,86 @@ engine.newGame({ name: '试侠', gender: 'male', birth: 'wuxue' });
         toastHtml.indexOf(hereRoom.name) >= 0, toastHtml || '(空)');
     }
 
-    /* ④ 点「未探索」方块 → 不剧透名字（把一个非当前房间强制设为未探索，场景确定） */
+    /* ④ 点「未探索」方块 → 迷雾关闭后照样看得见名字（2026-10-21 主人点名） */
     const env2 = loadUi(makeEnv({ innerWidth: 375 }));
     const v2 = engine.view();
     const cur2 = v2.map.rooms.find(r => r.current);
     const unknownRoom = v2.map.rooms.find(r => r.region === cur2.region && r.id !== cur2.id) || v2.map.rooms.find(r => r.id !== cur2.id);
-    ok('C-5 存在非当前房间用于验证（不剧透）', !!unknownRoom, unknownRoom ? unknownRoom.name : '无');
+    ok('C-5 存在非当前房间用于验证（未探索也可见）', !!unknownRoom, unknownRoom ? unknownRoom.name : '无');
     if (unknownRoom) {
       unknownRoom.visited = false; unknownRoom.near = false; unknownRoom.reach = false;
       const r2 = await openMap(env2, v2);
       const unkStub = r2.modal.querySelectorAll('#modal-body .map-node[data-room]')
         .find(b => b.getAttribute('data-room') === unknownRoom.id && !b.getAttribute('data-go'));
-      /* ⚠️ 探索制返修（2026-10-18 主人口径）：未探索格**零渲染** ——
-         画布上根本没有它的方块，「点了才不剧透」升级成「根本不出现 ⇒ 无从剧透」。
-         绑定侧的「此处尚未探索」兜底 toast 保留（ui.js），防的是旧档视图串档，
-         不再承担「未探索可见」的职责 —— 那条路径探索制下不可达。 */
-      ok('C-6 未探索格零渲染：画布上不存在它的方块，名字也不出现在渲染产物里',
-        !unkStub && r2.html.indexOf(unknownRoom.name) < 0,
-        unkStub ? '未探索格仍在画布上（应零渲染）'
-          : (r2.html.indexOf(unknownRoom.name) >= 0 ? '名字泄漏在渲染产物里' : '零渲染成立'));
+      /* 🔴 2026-10-21 主人点名：战争迷雾彻底关掉 —— 未探索格**照样画出**，
+         名字由服务端全量下发，渲染层不再按 visited 过滤。 */
+      ok('C-6 迷雾关闭：未探索格照样画出、名字照样显示',
+        !!unkStub && r2.html.indexOf(unknownRoom.name) >= 0,
+        unkStub ? (r2.html.indexOf(unknownRoom.name) >= 0 ? '画出且有名字' : '画出了但名字没显示')
+          : '未探索格没画出来（应照常渲染）');
+    }
+  }
+
+  /* ================================================================
+   *  地图取图参数 / 地名索引开关（2026-10-21 主人四条）
+   * ================================================================ */
+  section('地图取图参数 / 地名索引开关');
+  {
+    const env = loadUi(makeEnv({ innerWidth: 375 }));
+    let seen = null;
+    env.WX.api.view = async (p, opts) => { seen = { panel: p, opts: opts || null }; return { ok: true, view }; };
+    env.WX.api.exec = async (cmd, opt) => { env.sent.push({ cmd, opt: opt || null }); return { ok: true, lines: [] }; };
+    env.sent = [];
+    env.WX.S.view = view;
+    env.WX.S.busy = false;
+    env.WX.S.settings.mapNav = false;
+    await env.WXUI.panel('map');
+    await settle();
+    const h1 = String(env.document.getElementById('modal-body').innerHTML || '');
+    ok('M-1 ★ 地图取图请求不带 fog（服务端走默认全量下发）',
+      !!seen && !!seen.opts && !Object.prototype.hasOwnProperty.call(seen.opts, 'fog'),
+      JSON.stringify(seen));
+    ok('M-2 ★ 地名索引默认不渲染（没有 .map-region-nav / .mrn-grid）',
+      h1.indexOf('map-region-nav') < 0 && h1.indexOf('mrn-grid') < 0);
+    const hereM = view.map.rooms.find(r => r.current) || {};
+    const wantM = view.map.rooms
+      .filter(r => r.region === hereM.region && (r.z || 0) === (hereM.z || 0))
+      .map(r => r.id);
+    const drawnM = [...h1.matchAll(/data-room="([^"]+)"/g)].map(m => m[1]);
+    ok('M-3 ★ 地图 HTML 的 data-room 数 == 本区同层房间总数（不是已探索数）',
+      drawnM.length === wantM.length && wantM.every(id => drawnM.indexOf(id) >= 0),
+      '画出 ' + drawnM.length + ' / 本区同层 ' + wantM.length);
+
+    env.WX.S.settings.mapNav = true;
+    await env.WXUI.panel('map');
+    await settle();
+    const h2 = String(env.document.getElementById('modal-body').innerHTML || '');
+    ok('M-4 ★ 打开 settings.mapNav 后地名索引出现',
+      h2.indexOf('map-region-nav') >= 0 && h2.indexOf('mrn-grid') >= 0);
+
+    /* M-5 ★ applySettings 即时生效：地图正开着时把开关从关拨到开，面板要就地重绘 */
+    env.WX.S.settings.mapNav = false;
+    await env.WXUI.panel('map');
+    await settle();
+    const h3 = String(env.document.getElementById('modal-body').innerHTML || '');
+    env.WX.S.settings.mapNav = true;
+    env.WXUI.applySettings();
+    await settle(); await settle();
+    const h4 = String(env.document.getElementById('modal-body').innerHTML || '');
+    ok('M-5 ★ 地图开着时切 mapNav，applySettings 就地重绘（关→无、开→有）',
+      h3.indexOf('map-region-nav') < 0 && h4.indexOf('map-region-nav') >= 0);
+
+    /* M-6 ★ 设置面板的开关 id 与键名逐字相同，点一下真的改到 S.settings.mapNav */
+    env.WXUI.openSettings();
+    const sw = env.document.getElementById('set-mapNav');
+    const before = env.WX.S.settings.mapNav;
+    ok('M-6 设置面板有 set-mapNav 开关', !!sw);
+    if (sw && typeof sw.onclick === 'function') {
+      sw.onclick();
+      ok('M-6b ★ 点 set-mapNav 真的翻转 S.settings.mapNav',
+        env.WX.S.settings.mapNav === !before, before + ' → ' + env.WX.S.settings.mapNav);
+    } else {
+      ok('M-6b ★ 点 set-mapNav 真的翻转 S.settings.mapNav', false, '开关没绑 onclick');
     }
   }
 

@@ -316,7 +316,7 @@ async function main() {
   server.close();
 
   /* ================= §7 前端真的发出去了 ================= */
-  section('  \u00a77 前端 panel(\'map\') 真的带了分批 / 迷雾参数');
+  section('  \u00a77 前端 panel(\'map\') 真的带了分批参数（迷雾已关，不带 fog）');
   {
     const sandbox = buildSandbox();
     const ctx = vm.createContext(sandbox);
@@ -342,19 +342,18 @@ async function main() {
       WX.S.settings.mapnames = false;
       await run();
       const u1 = urls.find(u => u.indexOf('/api/view') >= 0) || '(没发出 /api/view)';
-      ok('§7-1 ★ 默认（未探索地名关）⇒ 发 fog=1', u1.indexOf('fog=1') >= 0, u1);
+      ok('§7-1 ★ 默认不再发 fog（服务端走默认全量下发）', u1.indexOf('fog=') < 0, u1);
       ok('§7-2 ★ 发 region=auto（不是前端猜州名，那是循环依赖）', u1.indexOf('region=auto') >= 0, u1);
 
       urls.length = 0;
-      /* ⚠️ 探索制返修（主人 2026-10-18 口径）：迷雾改成**探索制**之后，
-         「地图显示未探索地名」这个设置整体退役 —— 探索集合本身就是开关，没有第二个闸。
-         这里故意塞一份旧设置残留进去：真机老用户的 localStorage 里就躺着这条，
-         前端不许因为它把 fog 关掉（ui.js 的 mapViewOpts 已写死 fog:1）。 */
+      /* ⚠️ 2026-10-21 口径：战争迷雾彻底关掉，mapViewOpts **不传 fog**。
+         「地图显示未探索地名」这个设置早已退役 —— 这里故意塞一份旧设置残留进去：
+         真机老用户的 localStorage 里就躺着这条，前端不许因为它把 fog 参数带回来。 */
       WX.S.settings.mapnames = true;
       await run();
       const u2 = urls.find(u => u.indexOf('/api/view') >= 0) || '(没发出 /api/view)';
-      ok('§7-3 ★ 探索制无开关：旧 mapnames 残留也照样发 fog=1',
-        u2.indexOf('fog=1') >= 0 && u2.indexOf('fog=0') < 0, u2);
+      ok('§7-3 ★ 旧 mapnames 残留也不会带回 fog 参数',
+        u2.indexOf('fog=') < 0, u2);
 
       urls.length = 0;
       await run.call(null);
@@ -446,19 +445,20 @@ async function main() {
          画一个「？」等于在**没去过的地方画了个东西**，语义反了 ——
          「？」表达的是「这里有内容但你不知道」，而未探索表达的是「你没去过，所以这里什么都没有」。
          ⇒ 新期望：空的 `.mn-name`，且全图不再出现「？」。 */
-      /* ⚠️ 探索制返修：这条的旧期望「空 .mn-name 占位」也退役了 ——
-         未探索表达的是「你没去过，所以这里什么都没有」，
-         连空壳格子都不该有（画一个空壳等于在没去过的地方画了个东西，语义反了）。
-         ⇒ 新期望：known:false 的房间一间都不出现在画布上；「？」同样不许出现。
-         fg2 的未知房在 neighbors=1 下必有样本（邻州整片未探索），断言不会恒真。 */
+      /* 🔴 2026-10-21 主人点名：迷雾彻底关掉 —— 渲染层不再按 visited/known 过滤。
+         本区同层每一间都占一格（包括 known:false 的），「？」仍然不许出现。
+         这条同时守住「地图 HTML 的 data-room 数 == 该区域房间总数」。 */
       const drawnIds8 = new Set((hFog.match(/data-room="([^"]+)"/g) || [])
         .map(s => s.slice('data-room="'.length, -1)));
-      const unknownIds8 = new Set(fg2.rooms.filter(r => r.known === false).map(r => r.id));
-      const badDrawn = [...drawnIds8].filter(id => unknownIds8.has(id));
-      ok('§8-6 探索制零渲染：未探索格（known:false）一间都不出现在画布上，且无「？」',
-        unknownIds8.size > 0 && badDrawn.length === 0
+      const here8 = base.rooms.find(r => r.current) || {};
+      const canvasIds8 = base.rooms
+        .filter(r => r.region === here8.region && (r.z || 0) === (here8.z || 0))
+        .map(r => r.id);
+      ok('§8-6 迷雾关闭：画布画满本区同层房间（未探索也占格），无「？」',
+        canvasIds8.length > 0 && drawnIds8.size === canvasIds8.length
+        && canvasIds8.every(id => drawnIds8.has(id))
         && (hFog.match(/？/g) || []).length === 0,
-        '未知房 ' + unknownIds8.size + ' · 误画 ' + badDrawn.length
+        '画布 ' + drawnIds8.size + ' / 本区同层 ' + canvasIds8.length
         + ' · 「？」 ' + (hFog.match(/？/g) || []).length + ' 个');
 
       /* §8-7 是 C-2 的**核心验收**：spec V-1「任意房间名不被截断，全名逐字出现在 DOM 里」。
