@@ -46,13 +46,17 @@ function eq(name, a, b) { ok(name, a === b, `got=${JSON.stringify(a)} want=${JSO
 function section(t) { console.log('\n' + t); }
 
 const SEED = 20261010;
-/** 真起一局：走 GameEngine 的完整加载路径（不是空壳 World） */
+/** 真起一局：走 GameEngine 的完整加载路径（不是空壳 World）。
+ *  ⚠️ 2026-10-18：原实现每次都 new GameEngine().boot()（实测 597ms/次，负载高时更久），
+ *  本文件在 ③/⑥ 两段按出身逐版各起一次（≥24 次）→ 单套 90s、逼近 120s 上限。
+ *  boot 只负责读数据，newGame 才是换局；复用同一个 engine 反复 newGame 实测 23ms/次。
+ *  需要独立 engine 的两处（④ 的读档对照）显式 new，不走这个 helper。 */
+let SHARED = null;
 function boot(birth, gender) {
-  const e = new GameEngine({ seed: SEED, saveDir: SAVE_DIR });
-  e.boot();
-  const bd = (((e.world.data || {}).meta || {}).births || {})[birth] || {};
-  e.newGame({ name: '试侠', gender: gender || bd.gender || 'male', birth });
-  return e;
+  if (!SHARED) { SHARED = new GameEngine({ seed: SEED, saveDir: SAVE_DIR }); SHARED.boot(); }
+  const bd = (((SHARED.world.data || {}).meta || {}).births || {})[birth] || {};
+  SHARED.newGame({ name: '试侠', gender: gender || bd.gender || 'male', birth });
+  return SHARED;
 }
 const stripTags = html => String(html || '').replace(/<[^>]*>/g, '');
 
