@@ -9,7 +9,7 @@
  *   4 迷雾：真后端 mapView（无 fog）→ 本区每间房都有名字、data-room 数 == 后端本区房间数
  *   5 地名索引：默认不渲染；设置开 → 渲染；按钮点得动（有 onclick 且能触发平移/有效动作）
  *   6 fly/help 面板仍能打开
- *   7 版本戳 9 处全 20261018m；server/public 与 game/src 副本逐字节一致
+ *   7 版本戳 9 处全 20261018n；server/public 与 game/src 副本逐字节一致
  *
  * 用法：node tools/_accept-ui4.js
  * 只读：不改实现、不改数据。`_` 开头不进套件。
@@ -301,12 +301,12 @@ let serverFogSeen = [];
   }
 
   /* ================= 7 版本戳与副本一致 ================= */
-  console.log('\n§7 版本戳 20261018m + 双副本逐字节一致');
+  console.log('\n§7 版本戳 20261018n + 双副本逐字节一致');
   {
     const idx = fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'index.html'), 'utf8');
     const vs = [...idx.matchAll(/\?v=([A-Za-z0-9]+)/g)].map((m) => m[1]);
     ok('index.html ?v= 共 9 处', vs.length === 9, '实际 ' + vs.length + ' 处: ' + vs.join(','));
-    ok('9 处全部 20261018m', vs.length === 9 && vs.every((x) => x === '20261018m'), [...new Set(vs)].join(','));
+    ok('9 处全部 20261018n', vs.length === 9 && vs.every((x) => x === '20261018n'), [...new Set(vs)].join(','));
     const pairs = [['ui.js'], ['app.js']];
     for (const [f] of pairs) {
       const a = fs.readFileSync(path.join(ROOT, 'game', 'src', 'renderer', 'js', f));

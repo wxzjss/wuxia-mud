@@ -113,6 +113,18 @@ async function renderMap(view) {
 
   const { html } = await renderMap(v);
 
+  /* F2（2026-10-18）：地图只画当前层是设计现状；正文要告诉玩家「本区还有几处在别层」。
+     只在 region:auto 的请求里成立（不分批 view 的 levels 是全世界统计）。 */
+  {
+    const vScoped = e.view({ map: true, mapRegion: 'auto' });
+    const { html: htmlScoped } = await renderMap(vScoped);
+    ok('★ F2 抬头写明本区总处数与别层数（region 模式）',
+      /本区共 \d+ 处，另有 \d+ 处在别层/.test(htmlScoped),
+      (htmlScoped.match(/本区共[^<]*/) || ['(无)'])[0]);
+    ok('　F2 不分批的 view 不写这句（levels 是全世界统计，防假数字）',
+      !/另有 \d+ 处在别层/.test(html));
+  }
+
   console.log('===== ① 画布是主角：抬头收紧 + 区域清单合并 =====');
   ok('★ 区域清单合成**一块**（旧的重复块不再渲染）',
     html.indexOf('map-region-nav') >= 0 && html.indexOf('map-regions-overview') < 0 && html.indexOf('mro-item') < 0);

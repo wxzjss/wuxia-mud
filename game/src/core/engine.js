@@ -1623,6 +1623,9 @@ class GameEngine {
       } : {}),
       bridges,
       levels,
+      /* 2026-10-18：levels 的统计范围随分批变 —— region 表示「本区各层」，
+         all 表示「全世界各层」。前端只在 region 模式下才敢拿它算「另有 N 处在别层」。 */
+      levelsScope: keepRegions ? 'region' : 'all',
       /* ⚠️ `total` 恒等于**全世界**的房间数（512），不随分批变小 ——
          主人要的是「让人知道世界多大」，分母缩水成 34 就变成「探索度 1/34」，
          那是把「这世界只有 34 间房」这个假信息喂给玩家。

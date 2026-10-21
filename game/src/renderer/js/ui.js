@@ -3296,6 +3296,19 @@
     h += '<div class="map-scope">';
     h += '<span class="ms-where">' +
       '只显示你脚下这一片：' + esc(((m.regions || []).find(x => x.id === curRegion) || {}).name || '—') +
+      (() => {
+        /* F2（2026-10-18）：分层切换器已删，地图只画当前层 —— 但要让玩家知道
+           「本区还有几处在别层」，而不是以为本区就这几间。
+           只在 `levelsScope==='region'`（地图请求带 region:auto）时计算：
+           不分批的 view 里 levels 是全世界统计（合计 522），拿它算会出假数字。 */
+        if (m.levelsScope !== 'region') return '';
+        const lvs = m.levels || [];
+        const total = lvs.reduce((a, x) => a + (x.count || 0), 0);
+        const hereN = (lvs.find(x => x.z === (curZ || 0)) || {}).count;
+        if (!total || hereN == null) return '';
+        const restN = total - hereN;
+        return restN > 0 ? '　（本区共 ' + total + ' 处，另有 ' + restN + ' 处在别层）' : '';
+      })() +
       (curZ !== null && curZ !== 0
         /* 站在楼上/地下时点一句，免得玩家以为「地面那些屋全没了」。地面层（z=0）
            不加这句：那是常态，加了一行字反而啰嗦。 */
