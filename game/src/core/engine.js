@@ -947,10 +947,17 @@ class GameEngine {
     return out;
   }
 
-  /** 把条件对象翻译成人话（「需要 5 个铁矿石」这种） */
-  condText(cond) {
+  /** 把条件对象翻译成人话（「需要 5 个铁矿石」这种）。
+   *  2026-11-04：补 quest / sect / flag / and / or —— 原先只翻资源类，
+   *  这五类条件失败时 reason 为空，前端只能兜底「现在做不了这个」，
+   *  玩家不知道差什么（全图 87 处「无理由死按钮」的根因）。
+   *  只改**理由文案**，不改可见性与判定；递归深度 ≤3 防自引用环。 */
+  condText(cond, depth) {
     if (!cond) return '';
+    depth = depth || 0;
+    if (depth > 3) return '前置还没齐';   /* 防自引用环；也保证 reason 不为空 */
     const w = this.world;
+    const p = w.player || {};
     const parts = [];
     if (cond.item) {
       const d = w.getItem(cond.item);
@@ -963,8 +970,81 @@ class GameEngine {
       const s = w.getSkill(cond.skill);
       parts.push('需' + (s ? s.name : cond.skill) + (cond.level ? ' ' + cond.level + ' 级' : ''));
     }
+
+    /* 任务：缺任务 / 阶段没到 / 已过 / 已了，分开说 —— 别都回同一句 */
+    if (cond.quest !== undefined) {
+      const qid = cond.quest;
+      const q = w.data.quests && w.data.quests[qid];
+      const name = '「' + (q ? q.name : qid) + '」';
+      const st = typeof p.questStage === 'function' ? p.questStage(qid) : -1;
+      if (st < 0) parts.push('须先接下' + name);
+      else if (st >= 99) parts.push(name + '已经了了');
+      else if (cond.stage !== undefined && st < cond.stage) parts.push(name + '还没走到这一步');
+      else if (cond.stage !== undefined && st > cond.stage) parts.push(name + '这一步已经过去');
+    }
+    if (cond.questDone !== undefined) {
+      const list = [].concat(cond.questDone);
+      const done = list.every(q => (p.hasFlag ? p.hasFlag('questdone_' + q) : false));
+      if (!done) {
+        const q = w.data.quests && w.data.quests[list[0]];
+        parts.push('须先了结「' + (q ? q.name : list[0]) + '」');
+      }
+    }
+    if (cond.questNotDone !== undefined && p.hasFlag && p.hasFlag('questdone_' + cond.questNotDone)) {
+      const q = w.data.quests && w.data.quests[cond.questNotDone];
+      parts.push('「' + (q ? q.name : cond.questNotDone) + '」已经了了');
+    }
+
+    /* 门派 */
+    if (cond.sect !== undefined) {
+      const sec = (w.data.sects && w.data.sects[cond.sect]) || null;
+      parts.push('须是' + (sec ? sec.name : cond.sect) + '门下');
+    }
+    if (cond.hasSect && !p.sect) parts.push('须先有个门派');
+    if (cond.noSect && p.sect) parts.push('须是尚未入门之人');
+    if (cond.sectNot !== undefined && p.sect === cond.sectNot) {
+      const sec = (w.data.sects && w.data.sects[cond.sectNot]) || null;
+      parts.push('须不是' + (sec ? sec.name : cond.sectNot) + '门下');
+    }
+
+    /* 旗标：按前缀区分「剧情还没走到」与「这一步已经过去」，不硬翻「时机未到」 */
+    const flagWord = (f) => {
+      if (/^questdone_/.test(f)) return '这桩事已经了了';
+      if (/^q_[a-z0-9]+_/.test(f)) return '这桩事还没走到这一步';
+      return '眼下还差一个引子';
+    };
+    if (cond.flag && (!p.hasFlag || !p.hasFlag(cond.flag))) parts.push(flagWord(cond.flag));
+    if (cond.notFlag && p.hasFlag && p.hasFlag(cond.notFlag)) parts.push('这一步已经过去了');
+    if (cond.flagsAll) {
+      const miss = [].concat(cond.flagsAll).filter(f => !p.hasFlag || !p.hasFlag(f));
+      if (miss.length) parts.push(flagWord(miss[0]));
+    }
+    if (cond.flagsAny) {
+      const any = [].concat(cond.flagsAny).some(f => p.hasFlag && p.hasFlag(f));
+      if (!any) parts.push(flagWord([].concat(cond.flagsAny)[0] || ''));
+    }
+    if (cond.flagsNone) {
+      const hit = [].concat(cond.flagsNone).find(f => p.hasFlag && p.hasFlag(f));
+      if (hit) parts.push('这一步已经过去了');
+    }
+
+    /* and / or：递归取子条件；or 只报「得满足其一」，不挑一个说死 */
+    const sub = (c) => this.condText(c, depth + 1);
+    if (cond.and) {
+      for (const c of [].concat(cond.and)) {
+        const t = sub(c);
+        if (t) parts.push(t);
+      }
+    }
+    if (cond.or) {
+      const list = [].concat(cond.or).map(sub).filter(Boolean);
+      const uniq = Array.from(new Set(list)).slice(0, 3);
+      if (uniq.length === 1) parts.push(uniq[0]);
+      else if (uniq.length > 1) parts.push('须满足其一：' + uniq.join(' 或 '));
+    }
+
     if (cond.chance != null && !parts.length) parts.push('成功率 ' + Math.round(cond.chance * 100) + '%');
-    return parts.join('，');
+    return Array.from(new Set(parts)).join('，');
   }
 
   /** 武学境界（删等级后，玩家强弱只看武学功法等级之和） */

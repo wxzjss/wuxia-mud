@@ -348,5 +348,45 @@ section('【第二轮】开局任务簿：有委托人的主线不该自动接')
   ok('★ 交完之后：再次消失（不会留个永远做不了的按钮）', !logHas() && !barHas());
 }
 
+/* ---- 2026-11-04：全图「无理由死按钮」棘轮守卫 ---- */
+{
+  section('⑩ 全图动作：ok=false 必须有理由（棘轮基线 0）');
+  const e = new GameEngine({ seed: 20261105 }); e.boot();
+  e.newGame({ name: '裸', gender: 'male', birth: 'wuxue' });
+  const p = e.world.player;
+  p.quests = {}; p.sect = null; p.flags = {}; p.rank = 0;
+  const EMPTY_BASELINE = 0;
+  let total = 0; const empty = [];
+  for (const id of Object.keys(e.world.data.rooms)) {
+    p.room = id;
+    for (const a of e.roomActionsView(p)) {
+      total++;
+      if (!a.ok && !a.reason) empty.push(id + '|' + a.cmd);
+    }
+  }
+  ok('★ 全图可见不可点且无理由的动作 ≤ 基线（只降不升）',
+    empty.length <= EMPTY_BASELINE,
+    empty.length + ' 处 / 基线 ' + EMPTY_BASELINE + '（共 ' + total + ' 个动作）'
+    + (empty.length ? '：' + empty.slice(0, 3).join('；') : ''));
+
+  /* 守卫自测：注入三种假条件，必须各自产出**不同**的非空理由 */
+  const rm = e.world.getRoom('xiangyang_gate');
+  const before = rm.actions.length;
+  rm.actions.push({ cmd: '__probe_quest', label: '探针Q', cond: { quest: 'no_such_q' } });
+  rm.actions.push({ cmd: '__probe_sect', label: '探针S', cond: { sect: 'no_such_sect' } });
+  rm.actions.push({ cmd: '__probe_flag', label: '探针F', cond: { flag: 'no_such_flag' } });
+  p.room = 'xiangyang_gate';
+  const probe = e.roomActionsView(p).filter(a => /^__probe_/.test(a.cmd));
+  ok('★ 守卫自测：quest/sect/flag 假条件都产出非空理由',
+    probe.length === 3 && probe.every(a => !a.ok && a.reason),
+    probe.map(a => a.cmd + ':' + a.reason).join(' | '));
+  const uniq = new Set(probe.map(a => a.reason));
+  ok('★ 理由按条件类型分化（不是同一句糊 87 处）', uniq.size === 3,
+    Array.from(uniq).join(' / '));
+  ok('　嵌套 >3 层：仍有理由且不抛（防自引用环）',
+    !!e.condText({ and: [{ and: [{ and: [{ and: [{ quest: 'x' }] }] }] }] }));
+  rm.actions.length = before;
+}
+
 console.log(`\n${fail === 0 ? '✔ 全绿' : '✘ 有红'}：${pass} 通过 / ${fail} 失败`);
 process.exit(fail === 0 ? 0 : 1);
