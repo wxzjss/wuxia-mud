@@ -387,7 +387,45 @@
   function appendLog(lines) {
     if (!lines) return;
     const arr = Array.isArray(lines) ? lines : [lines];
-    arr.forEach(l => {
+    /* 2026-10-18：补上 `kind:'wait'` 的消费端（产出见 core/modapi.js）。
+       数据里 10 处 wait（50_map 9 / 65_mainline 1）原本**没有任何前端分支**，
+       该停顿的地方全瞬发。语义只做一件事：**把后续行延后 N 毫秒再落**，
+       不阻塞输入、不丢行、不改战斗回合。用队列保证跨批次的顺序也不乱。 */
+    for (const l of arr) {
+      if (l && typeof l === 'object' && (l.kind === 'wait' || l.type === 'wait')) {
+        const ms = Math.max(0, Math.min(1500, Number(l.ms) || 0));
+        _logQueue.push({ __wait: ms });
+      } else {
+        _logQueue.push(l);
+      }
+    }
+    drainLogQueue();
+  }
+
+  /* wait 队列：单次上限 1500ms（防数据写个巨大值把界面卡住） */
+  let _logQueue = [];
+  let _logWaitTimer = null;
+  function drainLogQueue() {
+    if (_logWaitTimer) return;        // 正在等：新来的行排队，等完按序出
+    while (_logQueue.length) {
+      const l = _logQueue.shift();
+      if (l && typeof l.__wait === 'number') {
+        if (l.__wait > 0) {
+          paintLog();                // 先把 wait 之前的行画出来，再停
+          _logWaitTimer = setTimeout(() => { _logWaitTimer = null; drainLogQueue(); }, l.__wait);
+          return;
+        }
+        continue;                    // wait 0 = 不停
+      }
+      pushLogItem(l);
+    }
+    if (logLines.length > MAX_LOG) logLines = logLines.slice(logLines.length - MAX_LOG);
+    paintLog();
+    flushChoices();
+  }
+
+  /* 单行归一化 + 入 logLines（原 appendLog 的循环体，行为保持不变） */
+  function pushLogItem(l) {
       if (!l) return;
       if (typeof l === 'string') { logLines.push({ type: 'plain', text: l }); return; }
       /* 后端给的是 kind（如 warn/npcs/items），前端按 type 渲染 —— 这里统一归一化，
@@ -424,10 +462,6 @@
          弹窗排到 paintLog 之后弹（不然会被随后的日志盖掉）。 */
       if (l.choices && l.choices.length) _pendingChoices.push({ title: l.choicesTitle || '', list: l.choices });
       logLines.push(item);
-    });
-    if (logLines.length > MAX_LOG) logLines = logLines.slice(logLines.length - MAX_LOG);
-    paintLog();
-    flushChoices();
   }
 
   /* 排队的服务端选择（一次只弹一个，剩下的等下一次） */

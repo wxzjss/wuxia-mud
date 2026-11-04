@@ -4966,7 +4966,12 @@ function buildCommands(world) {
 
   reg(['clear', '清屏'], () => ({ lines: [], clear: true }));
   reg(['version', '版本'], (ctx) => ({ lines: [{ kind: 'plain', text: `武侠行 v${ctx.world.version}　已加载 ${ctx.world.mods.length} 个 Mod` }] }));
-  reg(['mods', 'mod', 'mods列表'], () => ({ lines: [], openPanel: 'mods' }));
+  /* ⚠️ 2026-10-18：原来回 `openPanel:'mods'`，但前端没有 'mods' 面板分支，
+     玩家敲完没有任何可见结果（不是空面板，是静默无反应）。
+     不接 `showModCenter()` 的原因：它切到开始界面的 modcenter screen，
+     而那颗「返回」写死回主菜单（start.js:415），游戏内一开就把玩家踢出江湖画面。
+     ⇒ 按 team-lead 口径降级成一句人话，别留空壳入口。 */
+  reg(['mods', 'mod', 'mods列表'], () => ({ lines: [{ kind: 'hint', text: 'Mod 管理请回主菜单打开。' }] }));
   reg(['save', '存档'], () => ({ lines: [], action: 'save' }));
   reg(['load', '读档'], () => ({ lines: [], action: 'load' }));
   reg(['settings', '设置'], () => ({ lines: [], openPanel: 'settings' }));

@@ -543,6 +543,43 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     log2.scrollHeight = 4321;
     env2.WXUI.appendLog([{ type: 'plain', text: '一行' }]);
     ok('S6-3 ★ 新日志自动滚到底（scrollTop=scrollHeight）', log2.scrollTop === 4321, 'scrollTop=' + log2.scrollTop);
+
+    /* ---- wait 效果（2026-10-18）：真延迟 + 不丢行 + 顺序不乱 + 截断 ---- */
+    {
+      const envW = loadUi(makeEnv({ innerWidth: 375 }));
+      const timers = [];
+      envW.setTimeout = (fn, ms) => { timers.push({ fn, ms }); return timers.length; };
+      envW.clearTimeout = () => {};
+      envW.WXUI.appendLog([
+        { type: 'plain', text: 'WAIT_A' },
+        { kind: 'wait', ms: 900 },
+        { type: 'plain', text: 'WAIT_B' },
+      ]);
+      const logW = envW.document.getElementById('log');
+      ok('S6-4 ★ wait 之后的文本**同步不出现**（真延迟，不是立刻出）',
+        (logW.innerHTML || '').indexOf('WAIT_B') < 0);
+      ok('S6-5 wait 按数据里的 ms 排定时器（假时钟捕获，900ms）',
+        timers.length === 1 && timers[0].ms === 900, JSON.stringify(timers.map(t => t.ms)));
+      /* 等待期间又来一批：必须排队，不能插到 WAIT_B 前面 */
+      envW.WXUI.appendLog([{ type: 'plain', text: 'WAIT_C' }]);
+      ok('S6-6 等待期间的新行也不插队', (logW.innerHTML || '').indexOf('WAIT_C') < 0);
+      timers[0].fn();
+      const h = logW.innerHTML || '';
+      ok('S6-7 ★ 到点后 B/C 都出现，且顺序是 A→B→C（没吞行、没乱序）',
+        h.indexOf('WAIT_A') >= 0 && h.indexOf('WAIT_B') > h.indexOf('WAIT_A')
+        && h.indexOf('WAIT_C') > h.indexOf('WAIT_B'));
+
+      /* 上限截断：数据写 99999 也只能等 1500 */
+      const envW2 = loadUi(makeEnv({ innerWidth: 375 }));
+      const t2 = [];
+      envW2.setTimeout = (fn, ms) => { t2.push({ fn, ms }); return t2.length; };
+      envW2.clearTimeout = () => {};
+      envW2.WXUI.appendLog([{ kind: 'wait', ms: 99999 }, { type: 'plain', text: 'WAIT_D' }]);
+      ok('S6-8 ★ wait 单次截断 ≤1500ms（防数据写巨大值卡界面）',
+        t2.length === 1 && t2[0].ms === 1500, JSON.stringify(t2.map(t => t.ms)));
+      t2[0].fn();
+      ok('S6-9 截断后后续文本仍会出', (envW2.document.getElementById('log').innerHTML || '').indexOf('WAIT_D') >= 0);
+    }
   }
 
   /* ---------- §7 ☰ 菜单 ⊇ 侧栏面板全集 ---------- */
@@ -2041,6 +2078,19 @@ const MALE = VIEW.npcs.find(n => n.gender === 'male');
     ok('S13-4 任务详情预览的标签行含「日课」',
       envM6.WXUI.__html.questPreviewHtml({ name: '扫洒山门', type: '支线', daily: true })
         .indexOf('日课') >= 0);
+  }
+
+  /* ---------- §14 mods 指令：不再静默/空面板 ---- */
+  section('§14 mods 指令（2026-10-18：不再 openPanel 空壳）');
+  {
+    const r = engine.exec('mods');
+    const txt = ((r && r.lines) || []).map(l => String(l.text || '')).join(' ');
+    ok('S14-1 ★ mods 有可见回应（不再静默无反应）', /Mod 管理请回主菜单打开/.test(txt), txt || '(空)');
+    ok('S14-2 ★ mods 不再返回 openPanel:mods（空壳入口已拆）',
+      !r || r.openPanel === undefined, JSON.stringify(r && r.openPanel));
+    /* 反向守卫：命令源里不许再把 'mods' 挂到 openPanel 上 */
+    const cmdSrc = require('fs').readFileSync(require('path').join(ROOT, 'game/src/core/commands.js'), 'utf8');
+    ok('S14-3 命令源里没有 openPanel:\'mods\' 残留', cmdSrc.indexOf("openPanel: 'mods'") < 0);
   }
 
   console.log('\n———————————————————————————————');
