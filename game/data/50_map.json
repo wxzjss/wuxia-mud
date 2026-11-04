@@ -2166,6 +2166,41 @@
           ],
           "once": true,
           "spentMsg": "此处你已经悟透了，再看也无新得。"
+        },
+        {
+          "cmd": "摸石壁暗格",
+          "label": "摸石壁暗格",
+          "cond": {
+            "and": [
+              {
+                "flag": "hou_dong_found"
+              },
+              {
+                "notFlag": "took_book_jiangang"
+              }
+            ]
+          },
+          "failMsg": "这里你已经翻遍了。",
+          "once": true,
+          "spentMsg": "这里你已经翻遍了。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "石壁缝里塞着个油布包，抖开是一叠手抄的纸。"
+            },
+            {
+              "type": "+item",
+              "args": [
+                "book_jiangang"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "took_book_jiangang"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -5773,6 +5808,34 @@
             {
               "type": "narrate",
               "raw": "（这面墙是后来砌起来的，砖缝里还夹着旧日的门楣残片。）"
+            }
+          ]
+        },
+        {
+          "cmd": "翻死囚铺位",
+          "label": "翻死囚铺位",
+          "cond": {
+            "notFlag": "took_book_jinyi"
+          },
+          "failMsg": "这里你已经翻遍了。",
+          "once": true,
+          "spentMsg": "这里你已经翻遍了。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "死囚待过的铺位底下压着一本册子，纸角翻得起了毛。"
+            },
+            {
+              "type": "+item",
+              "args": [
+                "book_jinyi_neigong"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "took_book_jinyi"
+              ]
             }
           ]
         }

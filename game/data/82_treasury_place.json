@@ -585,6 +585,34 @@
             "看书"
           ],
           "desc": "按牌子进层"
+        },
+        {
+          "cmd": "翻战利品架",
+          "label": "翻战利品架",
+          "cond": {
+            "notFlag": "took_book_hujia"
+          },
+          "failMsg": "这里你已经翻遍了。",
+          "once": true,
+          "spentMsg": "这里你已经翻遍了。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "架子最下一层压着几本夺来的谱子，其中一本封皮上写着胡家两个字。"
+            },
+            {
+              "type": "+item",
+              "args": [
+                "book_hujia_daofa"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "took_book_hujia"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1008,6 +1036,34 @@
             "看书"
           ],
           "desc": "按牌子进层"
+        },
+        {
+          "cmd": "翻架底的册子",
+          "label": "翻架底的册子",
+          "cond": {
+            "notFlag": "took_book_sa_face"
+          },
+          "failMsg": "这里你已经翻遍了。",
+          "once": true,
+          "spentMsg": "这里你已经翻遍了。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "架底塞着一本册子，夹着几片干了的胭脂纸。"
+            },
+            {
+              "type": "+item",
+              "args": [
+                "book_sa_face"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "took_book_sa_face"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1422,6 +1478,34 @@
             "换东西"
           ],
           "desc": "用贡献兑换"
+        },
+        {
+          "cmd": "开旧木箱",
+          "label": "开旧木箱",
+          "cond": {
+            "notFlag": "took_book_beiming"
+          },
+          "failMsg": "这里你已经翻遍了。",
+          "once": true,
+          "spentMsg": "这里你已经翻遍了。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "库房最里头一口箱子锁着，撬开来是半卷没人读得懂的旧册。"
+            },
+            {
+              "type": "+item",
+              "args": [
+                "book_beiming"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "took_book_beiming"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1513,6 +1597,34 @@
             "换东西"
           ],
           "desc": "用功劳兑换"
+        },
+        {
+          "cmd": "翻黄绸底下的册子",
+          "label": "翻黄绸底下的册子",
+          "cond": {
+            "notFlag": "took_book_tianzi"
+          },
+          "failMsg": "这里你已经翻遍了。",
+          "once": true,
+          "spentMsg": "这里你已经翻遍了。",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "黄绸条底下压着一本册子，封皮没有字，翻开全是剑式。"
+            },
+            {
+              "type": "+item",
+              "args": [
+                "book_tianzi_sword"
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "took_book_tianzi"
+              ]
+            }
+          ]
         }
       ]
     },

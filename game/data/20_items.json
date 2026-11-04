@@ -1760,6 +1760,86 @@
       "stackable": true,
       "stackMax": 99,
       "quality": "worn"
+    },
+    "book_hujia_daofa": {
+      "id": "book_hujia_daofa",
+      "name": "《胡家刀谱》",
+      "type": "book",
+      "value": 6000,
+      "quality": "rare",
+      "teach": "hujia_daofa",
+      "timeCost": 300,
+      "desc": "辽东胡家的刀谱，边角让血浸透了，刀路还看得清。"
+    },
+    "book_beiming": {
+      "id": "book_beiming",
+      "name": "《北冥神功·玉像卷》",
+      "type": "book",
+      "value": 12000,
+      "quality": "legend",
+      "teach": "beiming_shengong",
+      "timeCost": 300,
+      "desc": "玉像脚下的旧卷，字倒着写，读久了太阳穴发胀。"
+    },
+    "book_jiangang": {
+      "id": "book_jiangang",
+      "name": "《剑罡述要》",
+      "type": "book",
+      "value": 8000,
+      "quality": "rare",
+      "teach": "dugu_sword_aura",
+      "timeCost": 300,
+      "desc": "讲剑气怎么凝成罡，华山前辈在崖上写下的心得。"
+    },
+    "book_tianzi_sword": {
+      "id": "book_tianzi_sword",
+      "name": "《御前剑式》",
+      "type": "book",
+      "value": 7000,
+      "quality": "rare",
+      "teach": "con_tianzi_sword",
+      "timeCost": 300,
+      "desc": "宫里侍卫练的剑，一招一式都照着规矩量出来。"
+    },
+    "book_jinyi_neigong": {
+      "id": "book_jinyi_neigong",
+      "name": "《锦衣吐纳法》",
+      "type": "book",
+      "value": 5000,
+      "quality": "fine",
+      "teach": "con_jinyi_neigong",
+      "timeCost": 300,
+      "desc": "天牢里捡的册子，纸翻烂了，字还认得出。"
+    },
+    "book_sa_face": {
+      "id": "book_sa_face",
+      "name": "《易容术》",
+      "type": "book",
+      "teach": "sa_face_change",
+      "cost": 500,
+      "timeCost": 260,
+      "value": 3600,
+      "require": {
+        "skill": "basic_force",
+        ">=": 60
+      },
+      "desc": "教人改换眉眼身形的册子，纸页上沾着胭脂。",
+      "quality": "rare"
+    },
+    "book_cn_iron": {
+      "id": "book_cn_iron",
+      "name": "《金钟罩要诀》",
+      "type": "book",
+      "teach": "cn_iron_shirt",
+      "cost": 500,
+      "timeCost": 260,
+      "value": 3600,
+      "require": {
+        "skill": "basic_force",
+        ">=": 60
+      },
+      "desc": "民间硬功的抄本，前几页讲怎么挨打不伤筋骨。",
+      "quality": "rare"
     }
   },
   "recipes": {

@@ -2090,7 +2090,10 @@
         "marks": [
           "商"
         ]
-      }
+      },
+      "teach": [
+        "merchant_sleeve"
+      ]
     },
     "cy_ly_market_1": {
       "id": "cy_ly_market_1",
@@ -3797,7 +3800,10 @@
         "marks": [
           "商"
         ]
-      }
+      },
+      "teach": [
+        "salt_iron_palm"
+      ]
     },
     "cy_cd_tavern_1": {
       "id": "cy_cd_tavern_1",
@@ -4808,7 +4814,10 @@
         "marks": [
           "兵"
         ]
-      }
+      },
+      "teach": [
+        "con_xuanjia_fist"
+      ]
     },
     "cy_ca_gate_2": {
       "id": "cy_ca_gate_2",

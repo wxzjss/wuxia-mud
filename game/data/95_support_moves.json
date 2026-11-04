@@ -260,6 +260,11 @@
         "basic_parry",
         "basic_medicine",
         "basic_sing",
+        "jh_fist",
+        "jh_parry",
+        "jh2_guard_1",
+        "jh2_guard_2",
+        "jh2_guard_3",
         "sup_tieqiao",
         "sup_guiyuan"
       ]
@@ -278,6 +283,10 @@
         "basic_parry",
         "basic_medicine",
         "basic_sing",
+        "jh_dodge",
+        "jh2_fly_1",
+        "jh2_fly_2",
+        "jh2_fly_3",
         "sup_yanzi_sanchaoshui",
         "sup_ta_xue"
       ]
@@ -296,6 +305,10 @@
         "basic_parry",
         "basic_medicine",
         "basic_sing",
+        "jh_blade",
+        "jh2_atk_1",
+        "jh2_atk_2",
+        "jh2_atk_3",
         "sup_xieli_fa",
         "sup_fengzhao"
       ]
@@ -314,6 +327,9 @@
         "basic_parry",
         "basic_medicine",
         "basic_sing",
+        "jh_sword",
+        "jh_staff",
+        "cn_long_fist",
         "sup_huti_zhenqi"
       ]
     },
@@ -331,6 +347,10 @@
         "basic_parry",
         "basic_medicine",
         "basic_sing",
+        "jh_neigong",
+        "jh2_force_1",
+        "jh2_force_2",
+        "jh2_force_3",
         "sup_hunyuan_qi"
       ]
     },
@@ -348,6 +368,9 @@
         "basic_parry",
         "basic_medicine",
         "basic_sing",
+        "jh2_qimen_1",
+        "jh2_qimen_2",
+        "jh2_qimen_3",
         "sup_wuying_bu"
       ]
     }

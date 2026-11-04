@@ -470,6 +470,10 @@
         {
           "item": "book_rare",
           "price": 480
+        },
+        {
+          "item": "book_cn_iron",
+          "price": 600
         }
       ]
     },

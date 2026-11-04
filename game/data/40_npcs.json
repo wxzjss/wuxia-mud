@@ -2823,7 +2823,8 @@
    "relDone": true,
    "sidequest": "sq_beggar_info",
    "teach": [
-    "basic_fist"
+    "basic_fist",
+    "sa_turtle_breath"
    ],
    "learned": {
     "basic_fist": {

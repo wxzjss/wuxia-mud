@@ -47,7 +47,8 @@
         "basic_dodge",
         "shaolin_atk_1",
         "basic_fist",
-        "shaolin_qimen_1"
+        "shaolin_qimen_1",
+        "cn_staff_sweep"
       ],
       "skills": [
         "shaolin_changquan",
@@ -69,7 +70,8 @@
         "shaolin_atk_3",
         "shaolin_qimen_1",
         "shaolin_qimen_2",
-        "shaolin_qimen_3"
+        "shaolin_qimen_3",
+        "cn_staff_sweep"
       ]
     },
     "wudang": {
@@ -85,7 +87,8 @@
         "wudang_atk_1",
         "basic_fist",
         "wudang_qimen_1",
-        "basic_sword"
+        "basic_sword",
+        "cn_breath_art"
       ],
       "skills": [
         "wudang_taiji",
@@ -106,7 +109,8 @@
         "wudang_atk_3",
         "wudang_qimen_1",
         "wudang_qimen_2",
-        "wudang_qimen_3"
+        "wudang_qimen_3",
+        "cn_breath_art"
       ]
     },
     "emei": {
@@ -259,7 +263,8 @@
         "tangmen_atk_1",
         "basic_throw",
         "tangmen_qimen_1",
-        "basic_poison"
+        "basic_poison",
+        "sa_bone_shrink"
       ],
       "skills": [
         "tangmen_anqi",
@@ -278,7 +283,8 @@
         "tangmen_atk_3",
         "tangmen_qimen_1",
         "tangmen_qimen_2",
-        "tangmen_qimen_3"
+        "tangmen_qimen_3",
+        "sa_bone_shrink"
       ]
     },
     "miaojiang": {
@@ -294,7 +300,8 @@
         "basic_throw",
         "miaojiang_qimen_1",
         "basic_poison",
-        "basic_fist"
+        "basic_fist",
+        "sa_drug_resist"
       ],
       "skills": [
         "miao_gu",
@@ -313,7 +320,8 @@
         "miaojiang_atk_3",
         "miaojiang_qimen_1",
         "miaojiang_qimen_2",
-        "miaojiang_qimen_3"
+        "miaojiang_qimen_3",
+        "sa_drug_resist"
       ]
     },
     "taohua": {
@@ -1336,7 +1344,8 @@
         "feihu_atk_3",
         "feihu_qimen_1",
         "feihu_qimen_2",
-        "feihu_qimen_3"
+        "feihu_qimen_3",
+        "biao_horse_fist"
       ],
       "entryItems": [],
       "entrySkills": [
@@ -1346,7 +1355,8 @@
         "basic_dodge",
         "feihu_atk_1",
         "basic_blade",
-        "feihu_qimen_1"
+        "feihu_qimen_1",
+        "biao_horse_fist"
       ],
       "rankSkills": {
         "1": [
@@ -1410,7 +1420,8 @@
         "zhenyuan_atk_3",
         "zhenyuan_qimen_1",
         "zhenyuan_qimen_2",
-        "zhenyuan_qimen_3"
+        "zhenyuan_qimen_3",
+        "biao_escort_blade"
       ],
       "entryItems": [],
       "entrySkills": [
@@ -1420,7 +1431,8 @@
         "basic_dodge",
         "zhenyuan_atk_1",
         "basic_blade",
-        "zhenyuan_qimen_1"
+        "zhenyuan_qimen_1",
+        "biao_escort_blade"
       ],
       "rankSkills": {
         "1": [
@@ -1632,7 +1644,8 @@
         "kuaidao_atk_3",
         "kuaidao_qimen_1",
         "kuaidao_qimen_2",
-        "kuaidao_qimen_3"
+        "kuaidao_qimen_3",
+        "cn_hidden_blade"
       ],
       "entryItems": [],
       "entrySkills": [
@@ -1642,7 +1655,8 @@
         "basic_dodge",
         "kuaidao_atk_1",
         "basic_blade",
-        "kuaidao_qimen_1"
+        "kuaidao_qimen_1",
+        "cn_hidden_blade"
       ],
       "rankSkills": {
         "1": [
@@ -1854,7 +1868,8 @@
         "dafeng_atk_3",
         "dafeng_qimen_1",
         "dafeng_qimen_2",
-        "dafeng_qimen_3"
+        "dafeng_qimen_3",
+        "cn_wind_step"
       ],
       "entryItems": [],
       "entrySkills": [
@@ -1864,7 +1879,8 @@
         "basic_dodge",
         "dafeng_atk_1",
         "basic_blade",
-        "dafeng_qimen_1"
+        "dafeng_qimen_1",
+        "cn_wind_step"
       ],
       "rankSkills": {
         "1": [
@@ -1928,7 +1944,9 @@
         "huanghe_atk_3",
         "huanghe_qimen_1",
         "huanghe_qimen_2",
-        "huanghe_qimen_3"
+        "huanghe_qimen_3",
+        "bang_wharf_staff",
+        "cn_whip_bind"
       ],
       "entryItems": [],
       "entrySkills": [
@@ -1938,7 +1956,9 @@
         "basic_dodge",
         "huanghe_atk_1",
         "basic_staff",
-        "huanghe_qimen_1"
+        "huanghe_qimen_1",
+        "bang_wharf_staff",
+        "cn_whip_bind"
       ],
       "rankSkills": {
         "1": [
@@ -2002,7 +2022,8 @@
         "taihu_atk_3",
         "taihu_qimen_1",
         "taihu_qimen_2",
-        "taihu_qimen_3"
+        "taihu_qimen_3",
+        "bang_river_force"
       ],
       "entryItems": [],
       "entrySkills": [
@@ -2012,7 +2033,8 @@
         "basic_dodge",
         "taihu_atk_1",
         "basic_blade",
-        "taihu_qimen_1"
+        "taihu_qimen_1",
+        "bang_river_force"
       ],
       "rankSkills": {
         "1": [
@@ -2224,7 +2246,8 @@
         "jujing_atk_3",
         "jujing_qimen_1",
         "jujing_qimen_2",
-        "jujing_qimen_3"
+        "jujing_qimen_3",
+        "cn_bone_needle"
       ],
       "entryItems": [],
       "entrySkills": [
@@ -2234,7 +2257,8 @@
         "basic_dodge",
         "jujing_atk_1",
         "basic_blade",
-        "jujing_qimen_1"
+        "jujing_qimen_1",
+        "cn_bone_needle"
       ],
       "rankSkills": {
         "1": [
