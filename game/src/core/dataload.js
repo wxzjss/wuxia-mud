@@ -42,7 +42,7 @@ const { deepMerge } = require('./utils');
  */
 const COLLECTIONS = ['attrs', 'traits', 'items', 'skills', 'books', 'recipes', 'sects', 'npcs',
   'rooms', 'regions', 'quests', 'dialogues', 'shops', 'events', 'stories', 'endings',
-  'achievements', 'monsters', 'herbs', 'songs', 'ranks'];
+  'achievements', 'monsters', 'herbs', 'songs', 'ranks', 'encounters'];
 
 /** 每个文件最多报多少条结构问题（防一个文件刷屏，剩下的给总数） */
 const MAX_PROBLEMS_PER_FILE = 5;

@@ -253,7 +253,7 @@ class World extends EventEmitter {
     mod = mod || { name: 'unknown' };
     const collections = ['attrs', 'traits', 'items', 'skills', 'books', 'recipes', 'sects', 'npcs',
       'rooms', 'regions', 'quests', 'dialogues', 'shops', 'events', 'stories', 'endings',
-      'achievements', 'monsters', 'herbs', 'songs', 'ranks'];
+      'achievements', 'monsters', 'herbs', 'songs', 'ranks', 'encounters'];
     const arrayMode = (mod.arrayMode || 'replace');
     for (const k of Object.keys(json)) {
       if (k === '_mod' || k === 'meta') continue;

@@ -108,6 +108,12 @@ function expectLocated(tag, e, fname) {
       const noDesc = ids.filter(id => !rooms[id].desc);
       ok('★ 每间房都有 desc', noDesc.length === 0, noDesc.slice(0, 6).join(','));
       const noExits = ids.filter(id => !rooms[id].exits || !Object.keys(rooms[id].exits).length);
+      /* 2026-10-18：encounters 曾经是「数组键 + 不在白名单」→ 整块被 mergeData 跳过，
+         表现为 data.encounters 有键但 0 条，玩家「寻访」永远说人来人往。
+         这里直接守**合并后的条数**：白名单再被谁漏掉，这条立刻红。 */
+      const enc = (g.world.data && g.world.data.encounters) || {};
+      ok('★ 数组型集合 encounters 真进合并态（≥12 条）',
+        Object.keys(enc).length >= 12, Object.keys(enc).length + ' 条');
       ok('★ 每间房都有 exits', noExits.length === 0, noExits.slice(0, 6).join(','));
       /* 具体点名一间**确实分片存**的房：73 给 name/desc，82 只补 exits */
       const t = rooms['taishan_hall'];
