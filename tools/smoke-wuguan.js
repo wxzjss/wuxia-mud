@@ -101,7 +101,10 @@ const CITIES = [
   ok('教头另授战斗辅助武技（内功/轻功/招架的保命招）',
     list.some(s => s.id.indexOf('sup_') === 0),
     list.filter(s => s.id.indexOf('sup_') === 0).map(s => s.name).join('、') || '（没有）');
-  ok('列表里没有来路不明的东西', list.every(s => /^basic_|^sup_|^jh_/.test(s.id)), list.length + ' 门');
+  /* ⚠️ 2026-11-04（docs/153）：武馆六教头按方案接手散人线武学 ——
+     「江湖」线 jh_* / jh2_*（三层阶梯）与太祖长拳 cn_long_fist。
+     白名单跟注释同步扩一档：仍只认**已知家族**，不放开成「什么都能塞」。 */
+  ok('列表里没有来路不明的东西', list.every(s => /^basic_|^sup_|^jh_|^jh2_|^cn_long_fist$/.test(s.id)), list.length + ' 门');
   ok('★ 每门都标价 100 文', list.every(s => s.money === 100), [...new Set(list.map(s => s.money))].join(','));
 
   /* 钱不够 → 学不成，且一分不扣 */
