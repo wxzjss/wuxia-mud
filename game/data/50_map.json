@@ -8103,7 +8103,8 @@
               "type": "say",
               "raw": "砖缝里插着半截箭，杆上还有牙印。"
             }
-          ]
+          ],
+          "hideWhenFlag": "questdone_q_adv_arrows"
         }
       ]
     },

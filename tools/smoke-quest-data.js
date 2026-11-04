@@ -325,5 +325,28 @@ section('【第二轮】开局任务簿：有委托人的主线不该自动接')
     step5.map(s => (s.goal || '') + '=' + s.done).join(' | ') || '（未找到该步，按未点亮处理）');
 }
 
+/* ---- 2026-11-04：q_adv_arrows「捡箭」不再是无理由死按钮 ---- */
+{
+  section('⑨ xiangyang_gate｜捡箭：没任务不出现，接了才出现');
+  const a = (rooms.xiangyang_gate.actions || []).find(x => x && x.cmd === '捡箭');
+  ok('动作带 hideWhenFlag=questdone_q_adv_arrows（once 族才会对无任务隐藏）',
+    !!a && a.hideWhenFlag === 'questdone_q_adv_arrows', a && a.hideWhenFlag);
+  const horse = quests.q_bounty_horse;
+  const hdesc = (horse.stages && horse.stages[0] && horse.stages[0].desc) || '';
+  ok('★ 厩门是解开的：目标描述含真实等待提示（马贼是 respawn，不写“立刻有人”）',
+    /不总在道上/.test(hdesc) && /转一圈再回来/.test(hdesc) && !/立刻/.test(hdesc), hdesc.slice(-40));
+  const e = new GameEngine({ seed: 20261104 }); e.boot();
+  e.newGame({ name: '箭', gender: 'male', birth: 'wuxue' });
+  const p = e.world.player; p.room = 'xiangyang_gate';
+  const logHas = () => (e.exec('look').lines || []).some(l => /此地可做.*捡箭/.test(l.text || ''));
+  const barHas = () => e.roomActionsView(p).some(x => x.cmd === '捡箭');
+  ok('★ 没接任务：日志不列「捡箭」', !logHas());
+  ok('★ 没接任务：场景栏也没有「捡箭」', !barHas());
+  p.setQuestStage('q_adv_arrows', 0);
+  ok('★ 接了任务（stage 0）：日志与场景栏都出现「捡箭」', logHas() && barHas());
+  p.setFlag('questdone_q_adv_arrows', true);
+  ok('★ 交完之后：再次消失（不会留个永远做不了的按钮）', !logHas() && !barHas());
+}
+
 console.log(`\n${fail === 0 ? '✔ 全绿' : '✘ 有红'}：${pass} 通过 / ${fail} 失败`);
 process.exit(fail === 0 ? 0 : 1);
