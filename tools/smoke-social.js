@@ -381,6 +381,26 @@ ok('view.npcs 有 canQiecuo', vn && ('canQiecuo' in vn));
 ok('view.npcs 有 canSteal', vn && ('canSteal' in vn));
 ok('view.npcs 有 homeName', vn && ('homeName' in vn));
 
+/* ---- 买书/读书全链（2026-10-18 P0：书只在 books 表 → getItem 回退） ---- */
+{
+  w.movePlayerTo(p, 'jiangnan_market');
+  w.spawnNpc('wen_jiangnan', 'jiangnan_market', 1, true);
+  p.money = 1000; p.mp = 300; p.maxMp = 300;
+  const id = 'book_basic_dodge';
+  const before = p.countItem(id);
+  const bought = e.exec('买 轻功要诀');
+  const btxt = (bought.lines || []).map(l => l.text || '').join(' ');
+  ok('★ 买 book 型商品不再崩（getItem 回退 books）', !/出了岔子|Cannot read/.test(btxt), btxt.slice(0, 60));
+  ok('　钱真扣了、书真进包', p.money === 820 && p.countItem(id) === before + 1,
+    'money=' + p.money + ' count=' + before + '→' + p.countItem(id));
+  const used = e.exec('use 轻功要诀');
+  const utxt = (used.lines || []).map(l => l.text || '').join(' ');
+  ok('★ 书能研读并学会对应武学', !!p.learned.basic_dodge && /你学会了/.test(utxt), utxt.slice(0, 70));
+  ok('　研读后书被消耗', p.countItem(id) === before, 'count=' + p.countItem(id));
+  ok('　日志里没有把原始 id 打给玩家', utxt.indexOf(id) < 0 && btxt.indexOf(id) < 0);
+  ok('　未知 id 仍然解析不出来（回退不放水）', w.getItem('__no_such_book__') === undefined);
+}
+
 console.log('\n==========================================');
 console.log('  通过 ' + pass + ' 项，失败 ' + fail + ' 项');
 console.log('==========================================');

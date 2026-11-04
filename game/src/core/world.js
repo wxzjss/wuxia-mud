@@ -254,9 +254,9 @@ class World extends EventEmitter {
    *  这里只**报警不阻断**（内容可能正在补）；计数进 modLog，bootLog 会带出来。 */
   auditItemRefs() {
     const d = this.data || {};
-    /* 只认 items：+item/randomitem 都是走 giveItem 的，books 里有定义但 items 没有
-       = 发不出来的空承诺（ref-integrity 的口径一致）。 */
-    const known = id => !!(d.items && d.items[id]);
+    /* 判据与玩家同路：直接问 getItem（items → books 回退）。
+       用表成员判断会跟着实现漂移（这轮已经漂移两次）。 */
+    const known = id => !!this.getItem(id);
     const bad = [];
     const scanEffects = (list, where) => {
       for (const f of (list || [])) {
@@ -756,7 +756,19 @@ class World extends EventEmitter {
    * 二、查询 API
    * ================================================================ */
   getRoom(id) { return this.data.rooms[id]; }
-  getItem(id) { return this.data.items[id]; }
+  /** 物品定义：items 为主；查不到时回退 books（2026-10-18 P0）。
+   *  为什么：book_basic_sword 这类书只在 books 表里有定义，商店/奇遇/任务却按
+   *  item id 发放，getItem 返回 undefined → 买书扣钱后 d.name 崩（TypeError）。
+   *  这里把书对象**映射成物品形状**返回（type:'book' 等字段照书表），
+   *  每次惰性构造、**不写回 items**（避免污染存档与数据校验/漂移）。
+   *  商店、掉落、任务奖励、奇遇 give 都走 getItem，一处修好四处通。 */
+  getItem(id) {
+    const it = this.data.items[id];
+    if (it) return it;
+    const bk = this.data.books && this.data.books[id];
+    if (!bk) return undefined;
+    return Object.assign({}, bk, { id, type: bk.type || 'book' });
+  }
   getSkill(id) { return this.data.skills[id]; }
   getSect(id) { return this.data.sects[id]; }
   getNpc(id) { return this.data.npcs[id]; }
@@ -2429,7 +2441,7 @@ class World extends EventEmitter {
    * ================================================================ */
 
   makeItem(itemId) {
-    const def = this.data.items[itemId];
+    const def = this.getItem(itemId);
     if (!def) return null;
     const it = Object.assign({}, def, { id: itemId });
     if (!it.uid) it.uid = uid('it');
@@ -2444,7 +2456,7 @@ class World extends EventEmitter {
   giveItem(ch, itemId, n, opts) {
     n = n || 1;
     const w = this;
-    const def = this.data.items[itemId];
+    const def = this.getItem(itemId);
     if (!def) return { ok: false, name: itemId };
     ch.inventory = ch.inventory || [];
     let added = 0;
@@ -2470,7 +2482,7 @@ class World extends EventEmitter {
   removeItem(ch, itemId, n) {
     n = n || 1;
     ch.inventory = ch.inventory || [];
-    const def = this.data.items[itemId];
+    const def = this.getItem(itemId);
     let removed = 0;
     for (let i = ch.inventory.length - 1; i >= 0 && removed < n; i--) {
       const it = ch.inventory[i];
@@ -2493,7 +2505,7 @@ class World extends EventEmitter {
     ch.inventory = ch.inventory || [];
     const it = ch.inventory.find(i => i.uid === uidOrId) || ch.inventory.find(i => i.id === uidOrId);
     if (!it) return { ok: false, msg: '你身上没有这件东西。' };
-    const def = this.data.items[it.id];
+    const def = this.getItem(it.id);
     if (!def) return { ok: false, msg: '这东西无法装备。' };
     const slot = def.slot || this.slotForType(def.type);
     if (!slot) return { ok: false, msg: `${def.name}不是可装备之物。` };
@@ -2526,7 +2538,7 @@ class World extends EventEmitter {
     if (!ch.equipment[slot]) return { ok: false, msg: '那个部位没有装备。' };
     const itemId = ch.equipment[slot];
     const itemUid = ch.equipmentUid ? ch.equipmentUid[slot] : null;
-    const def = this.data.items[itemId];
+    const def = this.getItem(itemId);
     const it = (ch.inventory || []).find(i => i.uid === itemUid) || Object.assign({}, def, { id: itemId, uid: itemUid || uid('it'), count: 1 });
     if (!(ch.inventory || []).includes(it)) { ch.inventory = ch.inventory || []; ch.inventory.push(it); }
     ch.equipment[slot] = null;
@@ -2559,7 +2571,7 @@ class World extends EventEmitter {
   useItem(ch, uidOrId) {
     const it = (ch.inventory || []).find(i => i.uid === uidOrId) || (ch.inventory || []).find(i => i.id === uidOrId);
     if (!it) return { ok: false, msg: '你没有这样东西。', lines: [] };
-    const def = this.data.items[it.id];
+    const def = this.getItem(it.id);
     if (!def) return { ok: false, msg: '这东西无法使用。', lines: [] };
 
     // 书籍：学武学
@@ -2582,7 +2594,10 @@ class World extends EventEmitter {
       }
       const r = ch.learnSkill(def.teach);
       ch.advanceTime(def.timeCost || 60);
-      const lines = [{ kind: 'story', text: `你翻开《${def.name}》，逐字参研…` }, { kind: 'sys', text: r.msg }];
+      /* 书名本身带《》；再包一层会变成《《轻功要诀》》。学成的 msg 由指令层统一补，
+         这里再塞一份会重复「你学会了…」两遍（2026-10-18 实测）。 */
+      const bname = /^《/.test(def.name || '') ? def.name : '《' + def.name + '》';
+      const lines = [{ kind: 'story', text: `你翻开${bname}，逐字参研…` }];
       if (def.consume !== false) this.removeItem(ch, it.id, 1);
       ch.recalc();
       return { ok: true, msg: r.msg, lines };
@@ -2640,7 +2655,7 @@ class World extends EventEmitter {
   dropItem(ch, uidOrId) {
     const it = (ch.inventory || []).find(i => i.uid === uidOrId) || (ch.inventory || []).find(i => i.id === uidOrId);
     if (!it) return { ok: false, msg: '你没有这样东西。' };
-    const def = this.data.items[it.id];
+    const def = this.getItem(it.id);
     const idx = ch.inventory.indexOf(it);
     ch.inventory.splice(idx, 1);
     this.instances.items[it.uid] = { id: it.uid, itemId: it.id, room: ch.room, count: it.count || 1, custom: it };
