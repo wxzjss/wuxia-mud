@@ -36,7 +36,6 @@ const arr = (x) => (Array.isArray(x) ? x : x && typeof x === 'object' ? Object.v
  * 每条必须写：where / id / reason / owner，缺一不可（评审时能追到人）。
  */
 const KNOWN_DANGLING = [
-  { where: 'encounters/enc_0', id: 'book_cn_long_fist', reason: '待《长拳谱》落库', owner: '数据线' },
 ];
 
 /**
