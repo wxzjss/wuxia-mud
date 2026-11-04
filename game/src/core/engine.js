@@ -162,6 +162,7 @@ class GameEngine {
     const modList = this.modLoader.getEnabledModList();
     w.loadBaseData();
     const modLog = w.loadMods(modList);
+    if (typeof w.auditItemRefs === 'function') w.auditItemRefs();
     registerBuiltinFns(w);
     this.cmds = buildCommands(w);
     this._afterCmdBuild();
@@ -192,6 +193,7 @@ class GameEngine {
     const w = new World({ dataDirs: [this.dataDir], modDirs: [this.modsDir], seed: this.world.seed });
     w.loadBaseData();
     w.loadMods(this.modLoader.getEnabledModList());
+    if (typeof w.auditItemRefs === 'function') w.auditItemRefs();
     registerBuiltinFns(w);
     if (playerSave) {
       try {

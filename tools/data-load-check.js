@@ -114,6 +114,18 @@ function expectLocated(tag, e, fname) {
       const enc = (g.world.data && g.world.data.encounters) || {};
       ok('★ 数组型集合 encounters 真进合并态（≥12 条）',
         Object.keys(enc).length >= 12, Object.keys(enc).length + ' 条');
+      /* 引用完整性守卫自证：注入一个假 encounter，auditItemRefs 必须抓到。
+         不拿现有数据当判据 —— 内容补完悬空引用后这条不能反过来红。 */
+      if (typeof g.world.auditItemRefs === 'function') {
+        const fake = '__audit_probe__';
+        g.world.data.encounters[fake] = { id: fake, effects: [{ type: 'randomitem', args: ['__no_such_item__'] }] };
+        const hits = g.world.auditItemRefs();
+        delete g.world.data.encounters[fake];
+        ok('★ 悬空物品引用检测器能抓到 randomitem 假 id',
+          hits.some(x => x.indexOf('__no_such_item__') >= 0), hits.slice(0, 3).join(' | '));
+      } else {
+        ok('★ world.auditItemRefs 存在', false, '缺方法');
+      }
       ok('★ 每间房都有 exits', noExits.length === 0, noExits.slice(0, 6).join(','));
       /* 具体点名一间**确实分片存**的房：73 给 name/desc，82 只补 exits */
       const t = rooms['taishan_hall'];

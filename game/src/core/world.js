@@ -248,6 +248,35 @@ class World extends EventEmitter {
     return require('./dataload').loadBaseData(this);
   }
 
+  /** 引用完整性体检（2026-10-18）：悬空物品 id 有三种可见形态 ——
+   *  ① 静默发不出来（旧）② 原样把英文 id 打给玩家（enc_0 修好后实测）
+   *  ③ 之后被人“修”成发空白物。只有在加载期拦，才能一次拦住三种。
+   *  这里只**报警不阻断**（内容可能正在补）；计数进 modLog，bootLog 会带出来。 */
+  auditItemRefs() {
+    const d = this.data || {};
+    /* 只认 items：+item/randomitem 都是走 giveItem 的，books 里有定义但 items 没有
+       = 发不出来的空承诺（ref-integrity 的口径一致）。 */
+    const known = id => !!(d.items && d.items[id]);
+    const bad = [];
+    const scanEffects = (list, where) => {
+      for (const f of (list || [])) {
+        if (!f || ['+item', '-item', 'randomitem', 'giveRandom'].indexOf(f.type) < 0) continue;
+        for (const id of (Array.isArray(f.args) ? f.args : [])) {
+          if (typeof id === 'string' && id && !known(id)) bad.push(where + ' → ' + id);
+        }
+      }
+    };
+    for (const e of Object.values(d.encounters || {})) scanEffects(e && e.effects, 'encounter ' + (e && e.id));
+    for (const q of Object.values(d.quests || {})) {
+      scanEffects(q && q.rewards, 'quest ' + (q && q.id));
+      for (const st of ((q && q.stages) || [])) scanEffects(st && st.effects, 'quest ' + (q && q.id) + ' stage');
+    }
+    if (bad.length) {
+      this.modLog.push({ level: 'warn', mod: '(data)', msg: '悬空物品引用 ' + bad.length + ' 处：' + bad.slice(0, 8).join('；') + (bad.length > 8 ? ' …' : '') });
+    }
+    return bad;
+  }
+
   /** 合并一份数据包（基础数据或 mod 都是这一个入口） */
   mergeData(json, mod) {
     mod = mod || { name: 'unknown' };
