@@ -355,6 +355,8 @@ section('【第二轮】开局任务簿：有委托人的主线不该自动接')
   e.newGame({ name: '裸', gender: 'male', birth: 'wuxue' });
   const p = e.world.player;
   p.quests = {}; p.sect = null; p.flags = {}; p.rank = 0;
+  /* ⚠️ 0 是地板，不许调高。新增动作若把这条弄红，说明 cond 用了 condText
+     还没覆盖的新键 —— 去 engine.condText 补那一类；调高基线等于把守卫变瞎。 */
   const EMPTY_BASELINE = 0;
   let total = 0; const empty = [];
   for (const id of Object.keys(e.world.data.rooms)) {
