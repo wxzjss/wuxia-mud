@@ -289,6 +289,7 @@ class World extends EventEmitter {
       /* terrain 是「区域 id → 装饰格数组」的双层结构，
          值是数组不是 entry 对象，走通用 merge 会被当成单条记录揉坏，
          所以整块替换（基础数据只此一份，Mod 也按整块覆盖处理）。 */
+      if (k === 'books') this._bookItemCache = Object.create(null);
       if (k === 'terrain') {
         const src = json[k] || {};
         this.data.terrain = {};
@@ -767,7 +768,13 @@ class World extends EventEmitter {
     if (it) return it;
     const bk = this.data.books && this.data.books[id];
     if (!bk) return undefined;
-    return Object.assign({}, bk, { id, type: bk.type || 'book' });
+    /* by-id 记忆化（2026-10-18 team-lead）：同一个 id 必须返回同一个对象。
+       每次 Object.assign 新对象会让 indexOf / === / Set 按身份比较的代码失配，
+       两本同样的书也不会堆叠。缓存挂实例、不写回 items；books 合并时清空。 */
+    const cache = this._bookItemCache || (this._bookItemCache = Object.create(null));
+    if (cache[id]) return cache[id];
+    cache[id] = Object.assign({}, bk, { id, type: bk.type || 'book' });
+    return cache[id];
   }
   getSkill(id) { return this.data.skills[id]; }
   getSect(id) { return this.data.sects[id]; }

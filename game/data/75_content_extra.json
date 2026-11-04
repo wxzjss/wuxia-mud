@@ -1405,6 +1405,17 @@
         "skill": "basic_force",
         ">=": 60
       }
+    },
+    "book_cn_long_fist": {
+      "id": "book_cn_long_fist",
+      "name": "《长拳谱》",
+      "type": "book",
+      "teach": "cn_long_fist",
+      "desc": "一册薄拳谱，麻纸，边上被虫蛀出几个小洞。翻开第一页只有一行字：拳打千遍，架子自正。",
+      "cost": 300,
+      "timeCost": 200,
+      "value": 1200,
+      "quality": "common"
     }
   },
   "encounters": [

@@ -401,6 +401,34 @@ ok('view.npcs 有 homeName', vn && ('homeName' in vn));
   ok('　未知 id 仍然解析不出来（回退不放水）', w.getItem('__no_such_book__') === undefined);
 }
 
+/* ---- 书回退身份稳定 + enc_0 全链（2026-10-18） ---- */
+{
+  ok('★ getItem 回退书：同一 id 两次 === true',
+    w.getItem('book_sa_drunk') === w.getItem('book_sa_drunk'));
+  ok('　items 原对象身份不受影响（steamed_bun 仍 ===）',
+    w.getItem('steamed_bun') === w.getItem('steamed_bun'));
+  const itemKeys0 = Object.keys(w.data.items).length;
+  w.giveItem(p, 'book_sa_drunk', 2);
+  ok('　回退书发放不写回 items 表', Object.keys(w.data.items).length === itemKeys0,
+    itemKeys0 + '→' + Object.keys(w.data.items).length);
+
+  w.movePlayerTo(p, 'wild_pool');
+  p.vars.lastStray = 0; p.maxMp = 9999; p.mp = 9999;
+  w.rng.next = () => 0;
+  const stray = e.exec('寻访');
+  const stxt = (stray.lines || []).map(l => l.text || '').join(' ');
+  ok('★ enc_0 发放显示书名（不是原始 id）',
+    /《长拳谱》/.test(stxt) && stxt.indexOf('book_cn_long_fist') < 0, stxt.slice(0, 80));
+  ok('　《长拳谱》真进背包', p.countItem('book_cn_long_fist') === 1,
+    'count=' + p.countItem('book_cn_long_fist'));
+  const read = e.exec('use 长拳谱');
+  const rtxt = (read.lines || []).map(l => l.text || '').join(' ');
+  ok('★ 研读《长拳谱》学会 cn_long_fist', !!p.learned.cn_long_fist && /你学会了/.test(rtxt),
+    rtxt.slice(0, 70));
+  ok('　研读后书被消耗', p.countItem('book_cn_long_fist') === 0,
+    'count=' + p.countItem('book_cn_long_fist'));
+}
+
 console.log('\n==========================================');
 console.log('  通过 ' + pass + ' 项，失败 ' + fail + ' 项');
 console.log('==========================================');
