@@ -1828,7 +1828,9 @@ section('B3 · 毒蛇使用蛇类专属招式，不再只有基本拳脚');
        另：验收举的两个例子（丹顶鹤 / 巨鼠）实测**不在当前数据里**（是举例说明），
        所以这里用上面这条更强的「白名单相等」判据替代。 */
     const HUMAN_MOB_WHITELIST = ['mob_bandit', 'mob_bandit_chief', 'mob_mo_disciple',
-      'mob_soldier', 'mob_assassin'];
+      'mob_soldier', 'mob_assassin',
+      /* design/153：背盐汉子（可打倒后扛盐）、用假票的人（可按住捆走）——都是人物，不是动物 */
+      'mob_salt_carrier', 'mob_salt_porter', 'mob_forger'];
     const missedAnimals = animalIds.filter(id => !bestiary.speciesOf(npcs[id]));
     ok('BLK-2 守卫7：判不出物种的 mob_ 模板「恰好」是那批已知人物（新增动物漏规则会红）',
       missedAnimals.length === HUMAN_MOB_WHITELIST.length

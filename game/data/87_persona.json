@@ -1854,6 +1854,15 @@
     },
     "zhu_zhishan": {
       "personality": "youhua"
+    },
+    "mob_salt_carrier": {
+      "personality": "haoshuang"
+    },
+    "mob_salt_porter": {
+      "personality": "qienuo"
+    },
+    "mob_forger": {
+      "personality": "youhua"
     }
   }
 }

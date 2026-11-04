@@ -36,6 +36,19 @@ const DATA = {
   quest: J('game/data/60_quests.json'),
   item: J('game/data/20_items.json'),
   tutorialSrc: fs.readFileSync(P('game/src/core/tutorial.js'), 'utf8'),
+  /* 房间分散在多个分片（50_map / 61 / 62 / 64 / 73 / 93 …）。判定「room target 悬空」
+     必须看合并后的房间全集：只看 50_map 会把 64_world_detail 的聚宝赌坊判成不存在
+     （design/153 q_bounty_apprentice 实测假红）。这里只补「存在性」这一层，
+     房间名/描述仍取 50_map 的原表，③ 的室内判定口径不变。 */
+  roomsAll: (function () {
+    const out = {};
+    const dir = P('game/data');
+    for (const f of fs.readdirSync(dir)) {
+      if (!f.endsWith('.json')) continue;
+      try { const j = J('game/data/' + f); if (j && j.rooms) Object.assign(out, j.rooms); } catch (e) { /* 别的分片坏了有 check-data-load 兜底 */ }
+    }
+    return out;
+  })(),
 };
 
 /* ---------------- 检查器（对「数据集」求违规，可被变异注入） ---------------- */
@@ -105,7 +118,7 @@ function audit(D) {
       }
       if (t.kind !== 'kill' && npcIds.has(t.key)) { out.c2.push(at + ' key 指向 NPC id: ' + t.key); return; }
       if (t.kind === 'item' && !itemIds.has(t.key)) out.c2.push(at + ' item 不存在: ' + t.key);
-      if (t.kind === 'room' && !rooms[t.key]) out.c2.push(at + ' room 不存在: ' + t.key);
+      if (t.kind === 'room' && !D.roomsAll[t.key]) out.c2.push(at + ' room 不存在: ' + t.key);
     }));
   }
 

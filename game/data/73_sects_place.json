@@ -939,6 +939,33 @@
               ]
             }
           ]
+        },
+        {
+          "cmd": "看 蹄印",
+          "label": "看蹄印",
+          "keywords": [
+            "看蹄印",
+            "蹄印"
+          ],
+          "desc": "看厩边的蹄印",
+          "cond": {
+            "quest": "q_bounty_horse",
+            "stage": 0,
+            "notFlag": "q_bounty_horse_hoof"
+          },
+          "hideWhenFlag": "q_bounty_horse_hoof",
+          "effects": [
+            {
+              "type": "flag",
+              "args": [
+                "q_bounty_horse_hoof"
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "蹄印出了巷口往西，后头跟着一双草鞋印。"
+            }
+          ]
         }
       ]
     },
@@ -4180,7 +4207,8 @@
         "feihu_fly_1"
       ],
       "quests": [
-        "q_sect_feihu_errand"
+        "q_sect_feihu_errand",
+        "q_bounty_horse"
       ],
       "talk": [
         "想学啊？先交束脩。",
@@ -4322,7 +4350,8 @@
         "zhenyuan_fly_1"
       ],
       "quests": [
-        "q_sect_zhenyuan_errand"
+        "q_sect_zhenyuan_errand",
+        "q_bounty_stone"
       ],
       "talk": [
         "想学啊？先交束脩。",

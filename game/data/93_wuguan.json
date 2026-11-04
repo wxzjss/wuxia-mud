@@ -46,6 +46,43 @@
       },
       "npcs": [
         "wg_zhou"
+      ],
+      "actions": [
+        {
+          "cmd": "看 墙根",
+          "label": "看墙根",
+          "keywords": [
+            "看墙根",
+            "墙根",
+            "碎木"
+          ],
+          "desc": "看墙根下的碎木",
+          "cond": {
+            "quest": "q_adv_plaque",
+            "stage": 0,
+            "notFlag": "q_adv_plaque_taken"
+          },
+          "hideWhenFlag": "q_adv_plaque_taken",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "墙根靠阴沟处落着三片碎木，每片背后都有一道薄刀痕。"
+            },
+            {
+              "type": "+item",
+              "args": [
+                "q_adv_plaque_piece",
+                3
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "q_adv_plaque_taken"
+              ]
+            }
+          ]
+        }
       ]
     },
     "wg_gusu": {
@@ -94,6 +131,36 @@
       },
       "npcs": [
         "wg_tang"
+      ],
+      "actions": [
+        {
+          "cmd": "看 刻字",
+          "label": "看刻字",
+          "keywords": [
+            "看刻字",
+            "刻字",
+            "练功桩"
+          ],
+          "desc": "看练功桩上的刻字",
+          "cond": {
+            "quest": "q_bounty_apprentice",
+            "stage": 0,
+            "notFlag": "q_bounty_apprentice_carve"
+          },
+          "hideWhenFlag": "q_bounty_apprentice_carve",
+          "effects": [
+            {
+              "type": "flag",
+              "args": [
+                "q_bounty_apprentice_carve"
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "桩上刻着「三月二十还」，字迹往下拖。"
+            }
+          ]
+        }
       ]
     },
     "wg_xiangyang": {
@@ -214,6 +281,9 @@
           ],
           "answer": "房梁让白蚁蛀了，我拿竹竿顶过两回，还得换。"
         }
+      ],
+      "quests": [
+        "q_adv_plaque"
       ]
     },
     "wg_lu": {
@@ -318,6 +388,9 @@
           ],
           "answer": "城东新开的场子，学费比我低三十文，去的多是图便宜。"
         }
+      ],
+      "quests": [
+        "q_adv_wet_book"
       ]
     },
     "wg_pei": {
@@ -529,6 +602,9 @@
           ],
           "answer": "墙上那块旧匾是前朝人写的，落款认不出，也不许拓。"
         }
+      ],
+      "quests": [
+        "q_adv_door_man"
       ]
     },
     "wg_tang": {
@@ -633,6 +709,9 @@
           ],
           "answer": "剥完一把豆子就喊停，谁的劲使过了，我看手就知道。"
         }
+      ],
+      "quests": [
+        "q_bounty_apprentice"
       ]
     },
     "wg_han": {
@@ -739,6 +818,9 @@
           ],
           "answer": "墙边木枪都卸了枪头，对打只许点，不许刺。"
         }
+      ],
+      "quests": [
+        "q_adv_arrows"
       ]
     }
   }

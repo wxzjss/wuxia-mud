@@ -4622,7 +4622,64 @@
       "desc": "桥是老石桥，桥洞底下常泊着小船。船家说，这桥夜里过的人多，白天反倒清净。桥头一块石碑，字被水汽蚀得看不清了。",
       "exits": {
         "w": "gusu_zhai_lane"
-      }
+      },
+      "actions": [
+        {
+          "cmd": "下水摸",
+          "label": "下水摸",
+          "keywords": [
+            "下水摸",
+            "下水",
+            "摸谱"
+          ],
+          "desc": "到枫桥底下摸那半册",
+          "cond": {
+            "quest": "q_adv_wet_book",
+            "stage": 0,
+            "notFlag": "q_adv_wet_book_stone"
+          },
+          "hideWhenFlag": "q_adv_wet_book_stone",
+          "effects": [
+            {
+              "type": "cond",
+              "if": {
+                "flag": "q_adv_wet_book_mud"
+              },
+              "then": [
+                {
+                  "type": "flag",
+                  "args": [
+                    "q_adv_wet_book_stone"
+                  ]
+                },
+                {
+                  "type": "narrate",
+                  "raw": "你又摸了一回，指尖碰到一块青石，石上有刻字。"
+                }
+              ],
+              "else": [
+                {
+                  "type": "flag",
+                  "args": [
+                    "q_adv_wet_book_mud"
+                  ]
+                },
+                {
+                  "type": "narrate",
+                  "raw": "手指插进河泥，摸到一叠黏住的纸。"
+                },
+                {
+                  "type": "+item",
+                  "args": [
+                    "q_adv_wet_book",
+                    1
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     "jn_granary": {
       "id": "jn_granary",

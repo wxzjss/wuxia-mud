@@ -1840,6 +1840,148 @@
       },
       "desc": "民间硬功的抄本，前几页讲怎么挨打不伤筋骨。",
       "quality": "rare"
+    },
+    "q_adv_plaque_piece": {
+      "id": "q_adv_plaque_piece",
+      "name": "碎漆木片",
+      "type": "quest",
+      "desc": "三片碎木，背面各有一道浅刀口，边缘还沾着朱漆。",
+      "value": 5,
+      "quality": "common",
+      "stackable": true,
+      "stackMax": 99
+    },
+    "q_adv_plaque_fixed": {
+      "id": "q_adv_plaque_fixed",
+      "name": "补过漆的木片",
+      "type": "quest",
+      "desc": "一片补过漆的碎木，漆色比木色新。",
+      "value": 20,
+      "quality": "fine"
+    },
+    "q_adv_wet_book": {
+      "id": "q_adv_wet_book",
+      "name": "泡烂的半册",
+      "type": "quest",
+      "desc": "半册拳谱，纸黏成一块，一碰就掉渣。",
+      "value": 30,
+      "quality": "worn"
+    },
+    "q_adv_spear_tassel": {
+      "id": "q_adv_spear_tassel",
+      "name": "枪缨",
+      "type": "quest",
+      "desc": "一撮红缨，褪成暗褐，绳结打得很紧。",
+      "value": 25,
+      "quality": "worn"
+    },
+    "q_adv_wrist_guard": {
+      "id": "q_adv_wrist_guard",
+      "name": "马教头的护腕",
+      "type": "quest",
+      "desc": "一副旧布护腕，里侧磨得发亮，能看出常年握剑的印子。",
+      "value": 60,
+      "quality": "fine"
+    },
+    "q_adv_broken_arrow": {
+      "id": "q_adv_broken_arrow",
+      "name": "断箭",
+      "type": "quest",
+      "desc": "八根断箭，箭杆有牙印，其中一根刻着「韩」字。",
+      "value": 3,
+      "quality": "worn",
+      "stackable": true,
+      "stackMax": 99
+    },
+    "q_adv_arrow": {
+      "id": "q_adv_arrow",
+      "name": "削好的箭",
+      "type": "quest",
+      "desc": "三支新削的箭，杆直，箭头自己配。",
+      "value": 15,
+      "quality": "common",
+      "stackable": true,
+      "stackMax": 99
+    },
+    "q_adv_bloody_robe": {
+      "id": "q_adv_bloody_robe",
+      "name": "叠好的血衣",
+      "type": "quest",
+      "desc": "一件叠得齐整的短褐，袖口有刀口，血是别人的。",
+      "value": 40,
+      "quality": "worn"
+    },
+    "q_bounty_tied_man": {
+      "id": "q_bounty_tied_man",
+      "name": "捆住的人",
+      "type": "quest",
+      "desc": "一个人被腰带捆着，蹲在你脚边，不抬头。",
+      "value": 0,
+      "quality": "common"
+    },
+    "q_bounty_flag_corner": {
+      "id": "q_bounty_flag_corner",
+      "name": "镖局的旗角",
+      "type": "quest",
+      "desc": "一截撕下来的旗角，边上绣着虎爪。",
+      "value": 80,
+      "quality": "fine"
+    },
+    "q_bounty_stone_crate": {
+      "id": "q_bounty_stone_crate",
+      "name": "装着石头的箱子",
+      "type": "quest",
+      "desc": "一只镖箱，封条完好，里头是半箱石头。",
+      "value": 50,
+      "quality": "common"
+    },
+    "q_bounty_old_seal": {
+      "id": "q_bounty_old_seal",
+      "name": "镖局的旧封条",
+      "type": "quest",
+      "desc": "一条用过的封条，火印还在，纸已经脆了。",
+      "value": 40,
+      "quality": "fine"
+    },
+    "q_bounty_salt_load": {
+      "id": "q_bounty_salt_load",
+      "name": "两担盐",
+      "type": "quest",
+      "desc": "两担盐，麻袋上印着官盐的戳子，底下有点潮。",
+      "value": 60,
+      "quality": "common"
+    },
+    "q_bounty_salt_ticket": {
+      "id": "q_bounty_salt_ticket",
+      "name": "盐引",
+      "type": "quest",
+      "desc": "一张盐引，边角被手指磨软了，上头写着担数。",
+      "value": 70,
+      "quality": "fine"
+    },
+    "q_bounty_seal": {
+      "id": "q_bounty_seal",
+      "name": "缺角的印",
+      "type": "quest",
+      "desc": "一方木印，右下角缺了一块，缺口是圆的。",
+      "value": 90,
+      "quality": "fine"
+    },
+    "q_bounty_iron_lot": {
+      "id": "q_bounty_iron_lot",
+      "name": "三十斤铁料",
+      "type": "quest",
+      "desc": "三捆铁料，用麻绳捆着，断面还是新的。",
+      "value": 45,
+      "quality": "common"
+    },
+    "q_bounty_apprentice_tag": {
+      "id": "q_bounty_apprentice_tag",
+      "name": "徒弟的木牌",
+      "type": "quest",
+      "desc": "一块练功用的木牌，正面刻着名字，背面刻着日子。",
+      "value": 35,
+      "quality": "worn"
     }
   },
   "recipes": {

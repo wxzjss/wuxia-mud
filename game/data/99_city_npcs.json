@@ -3803,6 +3803,9 @@
       },
       "teach": [
         "salt_iron_palm"
+      ],
+      "quests": [
+        "q_bounty_salt"
       ]
     },
     "cy_cd_tavern_1": {

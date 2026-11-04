@@ -193,7 +193,10 @@
         "打铁": "打铁先学看火。火色对了，铁自己就会走。",
         "武功": "我只懂锤子。不过天下武学，说到根上都是个「熟」字。"
       },
-      "askDefault": "（他抡起锤子，火星四溅）"
+      "askDefault": "（他抡起锤子，火星四溅）",
+      "quests": [
+        "q_bounty_iron"
+      ]
     },
     "jn_grocer": {
       "id": "jn_grocer",
@@ -373,7 +376,10 @@
         "当铺": "当一收三。不是我狠，是东西押在手里也要担风险。",
         "眼力": "看物件先看真不真，再看有没有人要。第二样比第一样难。"
       },
-      "askDefault": "（他把一张当票推过来）"
+      "askDefault": "（他把一张当票推过来）",
+      "quests": [
+        "q_bounty_forge"
+      ]
     }
   },
   "shops": {
@@ -785,6 +791,34 @@
           "say": "后院",
           "keywords": [
             "后院"
+          ]
+        },
+        {
+          "cmd": "看 印",
+          "label": "看印",
+          "keywords": [
+            "看印",
+            "印痕",
+            "当票"
+          ],
+          "desc": "看当票上的印痕",
+          "cond": {
+            "quest": "q_bounty_forge",
+            "stage": 0,
+            "notFlag": "q_bounty_forge_seal"
+          },
+          "hideWhenFlag": "q_bounty_forge_seal",
+          "effects": [
+            {
+              "type": "flag",
+              "args": [
+                "q_bounty_forge_seal"
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "印痕右下缺一角，缺口是圆的。"
+            }
           ]
         }
       ]

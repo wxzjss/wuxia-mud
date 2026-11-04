@@ -7926,6 +7926,674 @@
           "raw": "温掌柜把纸页对着窗光看了很久，才放进书里：「是这一页。缺了的字，我补不上，也就不补了。」他合上书，没再抬头。"
         }
       ]
+    },
+    "q_adv_plaque": {
+      "id": "q_adv_plaque",
+      "name": "匾上少了一片漆",
+      "level": 5,
+      "type": "奇遇",
+      "giver": "wg_zhou",
+      "desc": "匾上少了一片漆，削口齐整。周教头要你捡回墙根的三片碎木，再去码头问一句。",
+      "stages": [
+        {
+          "desc": "在馆内墙根捡三片碎漆木片，再去码头栈桥问一句",
+          "targets": [
+            {
+              "id": "piece",
+              "kind": "item",
+              "key": "q_adv_plaque_piece",
+              "desc": "捡回碎漆木片",
+              "count": 3
+            },
+            {
+              "id": "wharf",
+              "kind": "room",
+              "key": "jn_harbor_wharf",
+              "desc": "去码头栈桥",
+              "count": 1
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            80
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            120
+          ]
+        },
+        {
+          "type": "-item",
+          "args": [
+            "q_adv_plaque_piece",
+            3
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "q_adv_plaque_fixed",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "「缺的那片在门槛里，我自己有。」他把漆罐推过来，让你蘸漆按在缝上。"
+        }
+      ]
+    },
+    "q_adv_wet_book": {
+      "id": "q_adv_wet_book",
+      "name": "河底那半册",
+      "level": 5,
+      "type": "奇遇",
+      "giver": "wg_lu",
+      "desc": "风把一册拳谱吹进河里。陆教头要你下枫桥摸回残册，再摸一回。",
+      "stages": [
+        {
+          "desc": "到枫桥底下下水，摸出泡烂的半册，再摸一次",
+          "targets": [
+            {
+              "id": "book",
+              "kind": "item",
+              "key": "q_adv_wet_book",
+              "desc": "摸回泡烂的半册",
+              "count": 1
+            },
+            {
+              "id": "stone",
+              "kind": "flag",
+              "key": "q_adv_wet_book_stone",
+              "desc": "再摸一次，摸到压纸的青石",
+              "count": 1
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            60
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            100
+          ]
+        },
+        {
+          "type": "-item",
+          "args": [
+            "q_adv_wet_book",
+            1
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "wood_whistle",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "「纸还能揭三层。够了。」他揭到第三层，抽出一张没烂的递给你。"
+        }
+      ]
+    },
+    "q_adv_door_man": {
+      "id": "q_adv_door_man",
+      "name": "门口站着的人",
+      "level": 6,
+      "type": "奇遇",
+      "giver": "wg_ma",
+      "desc": "老人在门外站了十一天，来寻儿子的枪缨。马教头让你去城门问卫擎。",
+      "stages": [
+        {
+          "desc": "到长安城门问卫擎，把枪缨取回来",
+          "targets": [
+            {
+              "id": "tassel",
+              "kind": "item",
+              "key": "q_adv_spear_tassel",
+              "desc": "取回枪缨",
+              "count": 1
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            100
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            150
+          ]
+        },
+        {
+          "type": "-item",
+          "args": [
+            "q_adv_spear_tassel",
+            1
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "q_adv_wrist_guard",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "马教头站在门里没出来，只问一句：「他走了？」"
+        }
+      ]
+    },
+    "q_adv_arrows": {
+      "id": "q_adv_arrows",
+      "name": "城墙根下的箭",
+      "level": 6,
+      "type": "奇遇",
+      "giver": "wg_han",
+      "desc": "北门底下每天掉箭。韩教头只要箭杆，让你去城墙根捡八根。",
+      "stages": [
+        {
+          "desc": "到临汉门城墙根捡八根断箭",
+          "targets": [
+            {
+              "id": "arrow",
+              "kind": "item",
+              "key": "q_adv_broken_arrow",
+              "desc": "捡回断箭",
+              "count": 8
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            70
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            110
+          ]
+        },
+        {
+          "type": "-item",
+          "args": [
+            "q_adv_broken_arrow",
+            8
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "q_adv_arrow",
+            3
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "「这八根够削三支。」他把削好的箭放进你手里，说箭头自己配。"
+        }
+      ]
+    },
+    "q_adv_bloody_robe": {
+      "id": "q_adv_bloody_robe",
+      "name": "叠好的血衣",
+      "level": 7,
+      "type": "奇遇",
+      "giver": "wen_black",
+      "desc": "摊上压着一件带血印的衣裳。老刘让你看袖口，再去药圃和破庙问一句。",
+      "stages": [
+        {
+          "desc": "看过袖口，去药圃问柳婆婆，再到城西破庙看供桌下",
+          "targets": [
+            {
+              "id": "sleeve",
+              "kind": "flag",
+              "key": "q_adv_robe_sleeve",
+              "desc": "看袖口",
+              "count": 1
+            },
+            {
+              "id": "pharmacy",
+              "kind": "room",
+              "key": "jn_pharmacy_back",
+              "desc": "去药圃",
+              "count": 1
+            },
+            {
+              "id": "temple",
+              "kind": "room",
+              "key": "jiangnan_temple",
+              "desc": "去城西破庙",
+              "count": 1
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            40
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            130
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "q_adv_bloody_robe",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "「人没死，就够了。」老刘把衣裳推给你，说他这儿不留带血的东西。"
+        }
+      ]
+    },
+    "q_bounty_horse": {
+      "id": "q_bounty_horse",
+      "name": "厩门是解开的",
+      "level": 8,
+      "type": "悬赏",
+      "giver": "feihu_master",
+      "desc": "镖局的马夜里丢了，厩门没撬，绳是解开的。秦伯远要活口问路。",
+      "stages": [
+        {
+          "desc": "到城西小道打倒马贼，用腰带捆了，押回镖局",
+          "targets": [
+            {
+              "id": "hoof",
+              "kind": "flag",
+              "key": "q_bounty_horse_hoof",
+              "desc": "看厩边的蹄印",
+              "count": 1
+            },
+            {
+              "id": "tied",
+              "kind": "item",
+              "key": "q_bounty_tied_man",
+              "desc": "带回捆住的人",
+              "count": 1
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            300
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            200
+          ]
+        },
+        {
+          "type": "-item",
+          "args": [
+            "q_bounty_tied_man",
+            1
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "q_bounty_flag_corner",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "秦伯远蹲下来问他一句话，问完就不问了。「马在破庙后头，你自己去牵。」"
+        }
+      ]
+    },
+    "q_bounty_stone": {
+      "id": "q_bounty_stone",
+      "name": "一箱石头",
+      "level": 8,
+      "type": "悬赏",
+      "giver": "zhenyuan_master",
+      "desc": "镖到洛阳，箱里是石头。周慎行让你去龙门客栈问一句，再找那只箱子。",
+      "stages": [
+        {
+          "desc": "到龙门客栈问薛掌柜，再去花巷柴堆后头找箱子",
+          "targets": [
+            {
+              "id": "inn",
+              "kind": "room",
+              "key": "luoyang_inn",
+              "desc": "去龙门客栈",
+              "count": 1
+            },
+            {
+              "id": "crate",
+              "kind": "item",
+              "key": "q_bounty_stone_crate",
+              "desc": "找回镖箱",
+              "count": 1
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            260
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "-item",
+          "args": [
+            "q_bounty_stone_crate",
+            1
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "q_bounty_old_seal",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "周慎行把货一件件点过，点完扣下一成。「这一成算你的。镖局的规矩。」"
+        }
+      ]
+    },
+    "q_bounty_salt": {
+      "id": "q_bounty_salt",
+      "name": "两担盐",
+      "level": 8,
+      "type": "悬赏",
+      "giver": "cy_cd_market_2",
+      "desc": "两担官盐在城西道没了。窦盐客要你顺车辙找回，按担给钱。",
+      "stages": [
+        {
+          "desc": "顺车辙到城西破庙，打散背盐的人，把两担盐扛回来",
+          "targets": [
+            {
+              "id": "road",
+              "kind": "room",
+              "key": "jiangnan_west_road",
+              "desc": "去城西小道看车辙",
+              "count": 1
+            },
+            {
+              "id": "salt",
+              "kind": "item",
+              "key": "q_bounty_salt_load",
+              "desc": "扛回两担盐",
+              "count": 1
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            220
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            160
+          ]
+        },
+        {
+          "type": "-item",
+          "args": [
+            "q_bounty_salt_load",
+            1
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "q_bounty_salt_ticket",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "他抓一把盐放嘴里尝，说潮了，还是照两担给钱。「这事你别往外说。」"
+        }
+      ]
+    },
+    "q_bounty_forge": {
+      "id": "q_bounty_forge",
+      "name": "缺了一角的印",
+      "level": 9,
+      "type": "悬赏",
+      "giver": "jn_pawnclerk",
+      "desc": "当票的印缺了一角。古伯不报官，只要用假票的人自己说一句。",
+      "stages": [
+        {
+          "desc": "看过印，去聚宝赌坊按住用假票的人，捆了押回当铺",
+          "targets": [
+            {
+              "id": "seal",
+              "kind": "flag",
+              "key": "q_bounty_forge_seal",
+              "desc": "看当票的印",
+              "count": 1
+            },
+            {
+              "id": "tied",
+              "kind": "item",
+              "key": "q_bounty_tied_man",
+              "desc": "带回捆住的人",
+              "count": 1
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            240
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            170
+          ]
+        },
+        {
+          "type": "-item",
+          "args": [
+            "q_bounty_tied_man",
+            1
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "q_bounty_seal",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "那人说了半个字，古伯就摆手。「够了。你走吧。」"
+        }
+      ]
+    },
+    "q_bounty_iron": {
+      "id": "q_bounty_iron",
+      "name": "三十斤铁",
+      "level": 7,
+      "type": "悬赏",
+      "giver": "jn_smithman",
+      "desc": "墙根三十斤铁料只剩锈钉。石大山让你去码头问，再去船家客栈找。",
+      "stages": [
+        {
+          "desc": "到码头货栈问一句，再去船家客栈看床底",
+          "targets": [
+            {
+              "id": "shed",
+              "kind": "room",
+              "key": "jn_harbor_shed",
+              "desc": "去码头货栈",
+              "count": 1
+            },
+            {
+              "id": "iron",
+              "kind": "item",
+              "key": "q_bounty_iron_lot",
+              "desc": "找回三十斤铁料",
+              "count": 1
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            180
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            140
+          ]
+        },
+        {
+          "type": "-item",
+          "args": [
+            "q_bounty_iron_lot",
+            1
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "hunting_knife",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "石大山把铁一块块上秤，秤杆压下去又抬起来。「少了两斤。算我自己的。」"
+        }
+      ]
+    },
+    "q_bounty_apprentice": {
+      "id": "q_bounty_apprentice",
+      "name": "没回来的徒弟",
+      "level": 8,
+      "type": "悬赏",
+      "giver": "wg_tang",
+      "desc": "唐教头的徒弟三天没回。他让你看过桩上刻字，再去赌坊和竹巷。",
+      "stages": [
+        {
+          "desc": "看过桩上刻字，去赌坊问一句，再到竹巷找人",
+          "targets": [
+            {
+              "id": "carve",
+              "kind": "flag",
+              "key": "q_bounty_apprentice_carve",
+              "desc": "看桩上的刻字",
+              "count": 1
+            },
+            {
+              "id": "gamble",
+              "kind": "room",
+              "key": "jn_gambling_house",
+              "desc": "去聚宝赌坊",
+              "count": 1
+            },
+            {
+              "id": "lane",
+              "kind": "room",
+              "key": "chengdu_lane",
+              "desc": "到竹巷找人",
+              "count": 1
+            }
+          ],
+          "next": 99
+        }
+      ],
+      "rewards": [
+        {
+          "type": "+money",
+          "args": [
+            150
+          ]
+        },
+        {
+          "type": "+exp",
+          "args": [
+            150
+          ]
+        },
+        {
+          "type": "+item",
+          "args": [
+            "q_bounty_apprentice_tag",
+            1
+          ]
+        },
+        {
+          "type": "say",
+          "raw": "唐教头听完，用手掌把桩上的字抹了。「让他明天回来。就说我不问。」"
+        }
+      ]
     }
   },
   "events": {

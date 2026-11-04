@@ -340,6 +340,70 @@
               "raw": "你捏住蛇颈，取出一枚胆，随手把蛇放回草里。"
             }
           ]
+        },
+        {
+          "cmd": "捆",
+          "label": "捆人",
+          "keywords": [
+            "捆",
+            "捆人",
+            "绑了"
+          ],
+          "desc": "用腰带把倒地的人捆了",
+          "cond": {
+            "quest": "q_bounty_horse",
+            "stage": 0,
+            "notFlag": "q_bounty_horse_tied"
+          },
+          "hideWhenFlag": "q_bounty_horse_tied",
+          "effects": [
+            {
+              "type": "cond",
+              "if": {
+                "flag": "killed_mob_bandit"
+              },
+              "then": [
+                {
+                  "type": "+item",
+                  "args": [
+                    "q_bounty_tied_man",
+                    1
+                  ]
+                },
+                {
+                  "type": "despawn",
+                  "args": [
+                    "mob_bandit",
+                    "jiangnan_west_road"
+                  ]
+                },
+                {
+                  "type": "flag",
+                  "args": [
+                    "q_bounty_horse_tied"
+                  ]
+                },
+                {
+                  "type": "narrate",
+                  "raw": "你解下他的腰带，把人反手捆了。"
+                }
+              ],
+              "else": [
+                {
+                  "type": "say",
+                  "raw": "人还站着，捆不了。"
+                }
+              ]
+            }
+          ],
+          "failMsg": "这会儿捆不了人。"
+        }
+      ],
+      "respawn": [
+        {
+          "npc": "mob_bandit",
+          "count": 1,
+          "chance": 1
         }
       ]
     },
@@ -472,6 +536,89 @@
               "raw": "庙外老碑风化得厉害。捐铜像那一行还认得出，落款的年份被香灰糊了半边。"
             }
           ]
+        },
+        {
+          "cmd": "扛盐",
+          "label": "扛盐",
+          "keywords": [
+            "扛盐",
+            "两担盐",
+            "盐担"
+          ],
+          "desc": "把两担盐挑上肩",
+          "cond": {
+            "quest": "q_bounty_salt",
+            "stage": 0,
+            "notFlag": "q_bounty_salt_carried"
+          },
+          "hideWhenFlag": "q_bounty_salt_carried",
+          "effects": [
+            {
+              "type": "cond",
+              "if": {
+                "and": [
+                  {
+                    "flag": "killed_mob_salt_carrier"
+                  },
+                  {
+                    "flag": "killed_mob_salt_porter"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "type": "+item",
+                  "args": [
+                    "q_bounty_salt_load",
+                    1
+                  ]
+                },
+                {
+                  "type": "despawn",
+                  "args": [
+                    "mob_salt_carrier",
+                    "jiangnan_temple"
+                  ]
+                },
+                {
+                  "type": "despawn",
+                  "args": [
+                    "mob_salt_porter",
+                    "jiangnan_temple"
+                  ]
+                },
+                {
+                  "type": "flag",
+                  "args": [
+                    "q_bounty_salt_carried"
+                  ]
+                },
+                {
+                  "type": "narrate",
+                  "raw": "你把两担盐挑上肩，麻袋底下有点潮。"
+                }
+              ],
+              "else": [
+                {
+                  "type": "say",
+                  "raw": "背盐的还站着，先把人打散。"
+                }
+              ]
+            }
+          ],
+          "failMsg": "这会儿扛不走盐。"
+        }
+      ],
+      "respawn": [
+        {
+          "npc": "mob_salt_carrier",
+          "count": 1,
+          "chance": 1
+        },
+        {
+          "npc": "mob_salt_porter",
+          "count": 1,
+          "chance": 1
         }
       ]
     },
@@ -4104,6 +4251,36 @@
           "type": "say",
           "raw": "黑暗中有人低声道：「生面孔啊……买东西的？」"
         }
+      ],
+      "actions": [
+        {
+          "cmd": "看 袖口",
+          "label": "看袖口",
+          "keywords": [
+            "看袖口",
+            "袖口",
+            "血衣"
+          ],
+          "desc": "看衣裳的袖口",
+          "cond": {
+            "quest": "q_adv_bloody_robe",
+            "stage": 0,
+            "notFlag": "q_adv_robe_sleeve"
+          },
+          "hideWhenFlag": "q_adv_robe_sleeve",
+          "effects": [
+            {
+              "type": "flag",
+              "args": [
+                "q_adv_robe_sleeve"
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "袖口有一道三寸长的破口，边磨得起毛，是刀口。"
+            }
+          ]
+        }
       ]
     },
     "secret_xiake": {
@@ -5439,6 +5616,41 @@
             {
               "type": "say",
               "raw": "你在船家客栈蜷了一夜，江风从板缝里钻进来，醒来还算精神。"
+            }
+          ]
+        },
+        {
+          "cmd": "看 床底",
+          "label": "看床底",
+          "keywords": [
+            "看床底",
+            "床底",
+            "铁料"
+          ],
+          "desc": "看床板底下",
+          "cond": {
+            "quest": "q_bounty_iron",
+            "stage": 0,
+            "notFlag": "q_bounty_iron_found"
+          },
+          "hideWhenFlag": "q_bounty_iron_found",
+          "effects": [
+            {
+              "type": "flag",
+              "args": [
+                "q_bounty_iron_found"
+              ]
+            },
+            {
+              "type": "+item",
+              "args": [
+                "q_bounty_iron_lot",
+                1
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "铁料压在床板下，分三捆，断面还新。"
             }
           ]
         }
@@ -7499,7 +7711,43 @@
       },
       "name": "洛阳城·花巷",
       "region": "luoyang",
-      "desc": "花巷曲曲折折，两侧人家种满牡丹，院墙探出一枝枝春色。卖花姑娘提着竹篮，叫卖声脆生生的。"
+      "desc": "花巷曲曲折折，两侧人家种满牡丹，院墙探出一枝枝春色。卖花姑娘提着竹篮，叫卖声脆生生的。",
+      "actions": [
+        {
+          "cmd": "看 柴堆",
+          "label": "看柴堆",
+          "keywords": [
+            "看柴堆",
+            "柴堆"
+          ],
+          "desc": "翻花巷的柴堆",
+          "cond": {
+            "quest": "q_bounty_stone",
+            "stage": 0,
+            "notFlag": "q_bounty_stone_found"
+          },
+          "hideWhenFlag": "q_bounty_stone_found",
+          "effects": [
+            {
+              "type": "flag",
+              "args": [
+                "q_bounty_stone_found"
+              ]
+            },
+            {
+              "type": "+item",
+              "args": [
+                "q_bounty_stone_crate",
+                1
+              ]
+            },
+            {
+              "type": "narrate",
+              "raw": "柴堆后头压着一只箱子，箱底有镖局火印。"
+            }
+          ]
+        }
+      ]
     },
     "changan_gate": {
       "id": "changan_gate",
@@ -7518,7 +7766,44 @@
       },
       "name": "长安城·明德门",
       "region": "changan",
-      "desc": "五道门洞一字排开，门板包着铁皮。城墙上旗子被风扯得乱响，守军甲片上还挂着霜。"
+      "desc": "五道门洞一字排开，门板包着铁皮。城墙上旗子被风扯得乱响，守军甲片上还挂着霜。",
+      "actions": [
+        {
+          "cmd": "问 卫擎",
+          "label": "问卫擎",
+          "keywords": [
+            "问卫擎",
+            "卫擎",
+            "枪缨"
+          ],
+          "desc": "向卫擎问一句",
+          "cond": {
+            "quest": "q_adv_door_man",
+            "stage": 0,
+            "notFlag": "q_adv_door_man_tassel"
+          },
+          "hideWhenFlag": "q_adv_door_man_tassel",
+          "effects": [
+            {
+              "type": "narrate",
+              "raw": "卫擎从怀里摸出一枚枪缨，说人是他埋的。"
+            },
+            {
+              "type": "+item",
+              "args": [
+                "q_adv_spear_tassel",
+                1
+              ]
+            },
+            {
+              "type": "flag",
+              "args": [
+                "q_adv_door_man_tassel"
+              ]
+            }
+          ]
+        }
+      ]
     },
     "changan_street": {
       "id": "changan_street",
@@ -7791,7 +8076,36 @@
       },
       "name": "襄阳城·临汉门",
       "region": "xiangyang",
-      "desc": "临汉门扼守汉水，是兵家必争之地。城头箭楼森然，墙砖上留着斑驳的刀剑痕。"
+      "desc": "临汉门扼守汉水，是兵家必争之地。城头箭楼森然，墙砖上留着斑驳的刀剑痕。",
+      "actions": [
+        {
+          "cmd": "捡箭",
+          "label": "捡箭",
+          "keywords": [
+            "捡箭",
+            "拾箭",
+            "断箭"
+          ],
+          "desc": "在城墙根捡箭",
+          "cond": {
+            "quest": "q_adv_arrows",
+            "stage": 0
+          },
+          "effects": [
+            {
+              "type": "+item",
+              "args": [
+                "q_adv_broken_arrow",
+                1
+              ]
+            },
+            {
+              "type": "say",
+              "raw": "砖缝里插着半截箭，杆上还有牙印。"
+            }
+          ]
+        }
+      ]
     },
     "xiangyang_street": {
       "id": "xiangyang_street",

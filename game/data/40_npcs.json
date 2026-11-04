@@ -2537,6 +2537,9 @@
      ],
      "answer": "这把刀从北边来的，前主人没留住，价钱三十两。"
     }
+   ],
+   "quests": [
+    "q_adv_bloody_robe"
    ]
   },
   "wen_huashan_shop": {
@@ -39610,6 +39613,78 @@
      "死结腰带"
     ]
    }
+  },
+  "mob_salt_carrier": {
+   "id": "mob_salt_carrier",
+   "name": "背盐汉子",
+   "gender": "male",
+   "room": null,
+   "desc": "肩上搭一条汗巾，脚边两只盐袋，走路一高一低。",
+   "level": 6,
+   "hp": 26,
+   "atk": 3,
+   "def": 4,
+   "dodge": 8,
+   "speed": 9,
+   "attr": {
+    "力量": 6,
+    "根骨": 5,
+    "身法": 4
+   },
+   "hostile": false,
+   "tier": "mob",
+   "tag": "porter",
+   "expReward": 45,
+   "potReward": 8,
+   "moneyReward": 25
+  },
+  "mob_forger": {
+   "id": "mob_forger",
+   "name": "用假票的人",
+   "gender": "male",
+   "room": "jn_gambling_house",
+   "desc": "袖口磨破，指缝沾着印泥，眼神总往门外瞟。",
+   "level": 8,
+   "hp": 32,
+   "atk": 4,
+   "def": 5,
+   "dodge": 10,
+   "speed": 10,
+   "attr": {
+    "力量": 7,
+    "根骨": 6,
+    "身法": 6
+   },
+   "hostile": false,
+   "tier": "mob",
+   "tag": "forger",
+   "expReward": 60,
+   "potReward": 10,
+   "moneyReward": 55
+  },
+  "mob_salt_porter": {
+   "id": "mob_salt_porter",
+   "name": "背盐挑夫",
+   "gender": "male",
+   "room": null,
+   "desc": "扁担横在脚边，肩上垫一块旧布，手指缝里全是盐粒。",
+   "level": 6,
+   "hp": 24,
+   "atk": 3,
+   "def": 4,
+   "dodge": 9,
+   "speed": 9,
+   "attr": {
+    "力量": 6,
+    "根骨": 5,
+    "身法": 5
+   },
+   "hostile": false,
+   "tier": "mob",
+   "tag": "porter",
+   "expReward": 45,
+   "potReward": 8,
+   "moneyReward": 25
   }
  }
 }

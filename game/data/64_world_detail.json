@@ -19,6 +19,65 @@
           "type": "say",
           "raw": "门口站着的汉子上下打量了你一眼，没拦。进这屋的人，他都见过。"
         }
+      ],
+      "actions": [
+        {
+          "cmd": "捆",
+          "label": "捆人",
+          "keywords": [
+            "捆",
+            "捆人",
+            "绑了"
+          ],
+          "desc": "把用假票的人捆了",
+          "cond": {
+            "quest": "q_bounty_forge",
+            "stage": 0,
+            "notFlag": "q_bounty_forge_tied"
+          },
+          "hideWhenFlag": "q_bounty_forge_tied",
+          "effects": [
+            {
+              "type": "cond",
+              "if": {
+                "flag": "killed_mob_forger"
+              },
+              "then": [
+                {
+                  "type": "+item",
+                  "args": [
+                    "q_bounty_tied_man",
+                    1
+                  ]
+                },
+                {
+                  "type": "despawn",
+                  "args": [
+                    "mob_forger",
+                    "jn_gambling_house"
+                  ]
+                },
+                {
+                  "type": "flag",
+                  "args": [
+                    "q_bounty_forge_tied"
+                  ]
+                },
+                {
+                  "type": "narrate",
+                  "raw": "你按住他的肩，用麻绳把人捆了。"
+                }
+              ],
+              "else": [
+                {
+                  "type": "say",
+                  "raw": "人还站着，捆不了。"
+                }
+              ]
+            }
+          ],
+          "failMsg": "这会儿捆不了人。"
+        }
       ]
     }
   },
